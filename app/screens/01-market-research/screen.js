@@ -23,6 +23,11 @@
     if (action) line.append(el('button', { class: 'btn soft xs', type: 'button', text: action.label, onclick: action.onClick }));
     return line;
   }
+  function strengthNote(a) {
+    const s = a.read_strength;
+    if (!s || s.verdict === 'ok' || s.verdict === 'strong') return null;
+    return el('p', { class: 'micro muted', style: { marginTop: '-4px', marginBottom: '8px' }, text: 'This card stands on a ' + s.verdict + ' read: ' + s.read.toLowerCase() + (s.sample != null ? ', ' + fmt.int(s.sample) + ' in the sample' : '') + ', ' + s.sources + ' source' + (s.sources === 1 ? '' : 's') + (s.age_days != null ? ', ' + s.age_days + ' days old' : '') + '.' });
+  }
   function coversList(a, compact) {
     const c = a.covers || [];
     if (!c.length || (compact && c.length < 2)) return null;
@@ -42,7 +47,7 @@
   }
   function openAction(a) {
     const tools = CREATIVE_RULES.includes(a.rule_id) ? [el('button', { class: 'btn sm', type: 'button', text: 'Creative hand-off', onclick: () => openHandoff(a) })] : null;
-    UI.panel({ title: a.title, tools, body: el('div', { class: 'stack' }, UI.actionCard(a, { expanded: true, screen: SLUG }), coversList(a, false)) });
+    UI.panel({ title: a.title, tools, body: el('div', { class: 'stack' }, UI.actionCard(a, { expanded: true, screen: SLUG }), strengthNote(a), coversList(a, false)) });
   }
   const state = { actions: [], byFinding: {} };
   function actionFor(findingId) { return state.byFinding[findingId] || null; }
@@ -180,7 +185,7 @@
     const list = state.actions.filter((a) => a.status !== 'unavailable');
     if (!list.length) { mount('#actions', el('p', { class: 'muted', text: 'No open action.' })); return; }
     const top = list.slice(0, TOP_CARDS), rest = list.slice(TOP_CARDS);
-    const parts = top.flatMap((a, i) => [UI.actionCard(a, { expanded: i === 0, screen: SLUG }), coversList(a, true)].filter(Boolean));
+    const parts = top.flatMap((a, i) => [UI.actionCard(a, { expanded: i === 0, screen: SLUG }), strengthNote(a), coversList(a, true)].filter(Boolean));
     if (rest.length) {
       parts.push(el('div', { class: 'card scroll' }, el('h4', { text: rest.length + ' more, below the top ' + TOP_CARDS }), UI.verdictTable({
         columns: [{ key: 'rank', label: '#', unit: 'n' }, { key: 'title', label: 'Action' }, { key: 'ownerText', label: 'Owner' }, { key: 'kind', label: 'Artefact' }, { key: 'total', label: 'Score', align: 'right', format: (v) => v == null ? NA : Math.round(v) + ' /100' }, { key: 'stake', label: 'Stake', align: 'right', format: (v) => v == null ? NA : fmt.money(v) }],
@@ -1058,10 +1063,30 @@
         open.length && actionFor(open[0].finding_id) ? { label: 'Confirm the first', onClick: () => openAction(actionFor(open[0].finding_id)) } : null));
   }
 
+  function strengthBlock(st) {
+    const rows = (st && st.rows) || [];
+    if (!rows.length) return UI.emptyState({ screen: SLUG, title: 'No reads', text: 'Nothing to grade.', missing: [] });
+    const vt = { thin: 'Thin', unavailable: 'Unavailable', ok: 'Enough', strong: 'Strong' };
+    const vrows = rows.map((r) => { const a = actionFor(r.finding_id); return Object.assign({}, r, {
+      sampleText: r.sample == null ? NA : fmt.int(r.sample) + ' of ' + fmt.int(r.sample_floor) + ' needed', srcText: r.sources + ' of ' + r.source_floor, ageText: r.age_days == null ? NA : r.age_days + ' d of ' + r.age_floor + ' allowed',
+      rulesText: r.rules.join(', '), noteText: r.note || '',
+      actions: [a ? { label: 'Widen it', onClick: () => openAction(a) } : { label: vt[r.verdict], cls: 'quiet', onClick: () => {} }] }); });
+    const tbl = UI.verdictTable({
+      columns: [{ key: 'label', label: 'Read' }, { key: 'sampleText', label: 'Sample' }, { key: 'srcText', label: 'Sources' }, { key: 'ageText', label: 'Age' }, { key: 'noteText', label: 'What it is' }, { key: 'rulesText', label: 'Rules on it' }],
+      rows: vrows,
+      verdict: { at: 1, kind: (r) => r.verdict === 'thin' ? 'fix' : r.verdict === 'unavailable' ? 'na' : r.verdict === 'strong' ? 'scale' : 'keep', text: (r) => vt[r.verdict], reason: (r) => st.rule },
+      actions: { label: 'Do', onClick: () => {} }, sort: false });
+    const thin = rows.filter((r) => r.verdict === 'thin');
+    return el('div', { class: 'stack' }, el('div', { class: 'card scroll' }, tbl), el('p', { class: 'micro faint', text: 'Rule: ' + st.rule + '.' }),
+      gapLine(thin.length ? thin.length + ' read' + (thin.length === 1 ? ' is' : 's are') + ' thin: ' + thin.map((r) => r.label.toLowerCase()).join(', ') + '. The cards that stand on them say so.' : 'Every read the desk rests on is at or above its floor.',
+        thin.length && actionFor(thin[0].finding_id) ? { label: 'Widen the first', onClick: () => openAction(actionFor(thin[0].finding_id)) } : null));
+  }
+
   function loadDesk(o) {
     const d = o.desk || {};
     const w = (o.window || {}).trend;
     const parts = [];
+    parts.push(section('desk-strength', 'How strong is each read this desk rests on?', 'The sample behind each read, its independent sources and its age against a floor, and the rules that stand on it. A thin read is said on the card, not hidden.', strengthBlock(d.strength)));
     parts.push(section('desk-trends', 'Where is the category going, and which lane is under-advertised?', 'Public market sizes and growth from the web pass, a url and a date on every number, against our category mix over 12 whole months. Sales are simulated; markets are public.', trendsBlock(d.trends || { on_file: false }, d.mix || {})));
     parts.push(section('desk-lanes', 'Which lanes are competitors betting on, and what launched?', 'Competitor pages from the Ad Library pull in the brain, by lane: who pushes it, how long their ads have run, what launched in the last 24 months, and whether we sell and advertise it.', lanesBlock(d.lanes)));
     parts.push(section('desk-cadence', 'Who launches, how often, and where are we quiet?', 'Competitor launches from the web pass by brand and by lane over 12 and 24 months, against our own cadence; a lane we sell where they keep launching and we have not is in play.', cadenceBlock(d.cadence)));

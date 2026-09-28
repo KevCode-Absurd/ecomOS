@@ -1029,6 +1029,18 @@ def recipe(f):
             'size': {'text': f'{ent.get("status")}, as of {ent.get("as_of") or "undated"}', 'usd': None}, 'stop_rule': 'no money claim in a memo rests on an unconfirmed assumption without saying so', 'check_on': _check_on(f, 14), 'time_to_ship_hours': 0.5,
             'win_rule': 'status founder on the assumption',
         }
+    if rid == 'PROD-R43':
+        ent = f.get('entity') or {}
+        return {
+            'title': f'Widen the {(ent.get("label") or "read").lower()} read before acting on the {len(ent.get("rules") or [])} rules that stand on it',
+            'owner': 'person',
+            'artefact': {'kind': 'connector_setup', 'label': f'the {(ent.get("label") or "read").lower()} read above its floor: a pull or a web pass approved and run under the caps, then the desk re-run'},
+            'steps': [{'n': 1, 'who': 'agent', 'text': 'Name the pull or the web pass that widens this read (the pulls block has the command and the estimate).'},
+                      {'n': 2, 'who': 'person', 'text': 'Approve the paid call, or accept the thin read with a note on the cards that stand on it.'},
+                      {'n': 3, 'who': 'agent', 'text': f'Re-run the desk; the rules on this read ({", ".join(ent.get("rules") or [])}) re-score with the wider sample.'}],
+            'size': {'text': '; '.join(ent.get('why') or []), 'usd': None}, 'stop_rule': 'stop at the per-run or weekly cap', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 1,
+            'win_rule': 'the read at or above every floor',
+        }
     return None
 
 
@@ -1162,6 +1174,24 @@ def merge_assumptions(actions):
     return keep
 
 
+def merge_strength(actions):
+    """One card for the thin reads: the read with the most rules on it hosts the rest."""
+    rows = [a for a in actions if a.get('rule_id') == 'PROD-R43']
+    if len(rows) < 2:
+        return actions
+    rows.sort(key=lambda a: (-len((a.get('entity') or {}).get('rules') or []), a['id']))
+    host = rows[0]
+    keep = []
+    for a in actions:
+        if a is host or a not in rows:
+            keep.append(a)
+            continue
+        host['finding_ids'] = sorted(set(host['finding_ids']) | set(a['finding_ids']))
+        host['why'] = host['why'] + ' ' + a['why']
+    host['title'] = f'Widen {len(rows)} thin reads before acting on what stands on them: ' + ', '.join(((a.get('entity') or {}).get('label') or '').lower() for a in rows)
+    return keep
+
+
 CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28', 'PROD-R37', 'PROD-R38', 'PROD-R39', 'PROD-R40')
 
 
@@ -1261,13 +1291,20 @@ def rank(brand, window=None):
         a['screen'] = SCREEN
         if not rank_mod.validate_action(a):
             actions.append(a)
-    actions = merge_assumptions(merge_freshness(merge_questions(merge_marketplace(merge_surfaces(merge_candidates(merge_lanes(actions, brand)))))))
+    actions = merge_strength(merge_assumptions(merge_freshness(merge_questions(merge_marketplace(merge_surfaces(merge_candidates(merge_lanes(actions, brand))))))))
     for a in actions:   # a merge can lift the host's confidence; the total follows the rubric
         r = a['rubric']
         r['total'] = round(sum(rank_mod.WEIGHTS[k] * (r[k] if r[k] is not None else 2.5) / 5 for k in rank_mod.WEIGHTS), 1)
     actions.sort(key=rank_mod.sort_key)
     # the founder's decisions (the shared log app/data/decisions.json, written by the decision row): a "not now" parks the
     # action for 14 days and it leaves the plan; an "agent" or "person" choice rides on the card so it is not re-argued
+    # the strength of the read each card rests on, from its rule
+    br_s = audit.brain(brand) if brand else None
+    rd_s = audit.Reader(data, brand, dt.date.fromisoformat(window['ends_on']))
+    strength = audit.read_strength(br_s, brand, data, rd_s, dt.date.fromisoformat(window['ends_on']))
+    for a in actions:
+        sr = audit.strength_of_rule(strength, a.get('rule_id'))
+        a['read_strength'] = {'read': sr['label'], 'verdict': sr['verdict'], 'sample': sr['sample'], 'sources': sr['sources'], 'age_days': sr['age_days']} if sr else None
     # what each card covers: every finding behind it, so a merged card reads as a checklist, never a black box
     by_id = {f['id']: f for f in findings}
     names = {r['rule_id']: r['name'] for r in audit.RULES}
@@ -1408,7 +1445,7 @@ def overview(data, brand):
                      'gates': gates_block(brand, data, br, rd, ends_on, findings), 'scorecard': scorecard_block(brand, data, br, rd, ends_on, findings),
                      'video': audit.video_signals(br, brand, ends_on), 'tech_packs': tech_pack_block(brand, findings),
                      'hours': dict(audit.hours_table(brand, br), findings={f['entity']['id']: f['id'] for f in findings if f['rule_id'] == 'PROD-R28'}),
-                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on), 'returns': audit.return_rates(data, brand, ends_on), 'questions': audit.open_questions(br, ends_on), 'pulls': audit.pulls(br, brand, ends_on), 'first_runs': audit.first_run_read(brand, ends_on, audit.net_28d(rd)), 'brain_freshness': audit.brain_freshness(br, ends_on), 'assumptions': audit.assumptions(br)},
+                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on), 'returns': audit.return_rates(data, brand, ends_on), 'questions': audit.open_questions(br, ends_on), 'pulls': audit.pulls(br, brand, ends_on), 'first_runs': audit.first_run_read(brand, ends_on, audit.net_28d(rd)), 'brain_freshness': audit.brain_freshness(br, ends_on), 'assumptions': audit.assumptions(br), 'strength': audit.read_strength(br, brand, data, rd, ends_on)},
             'audit': {'findings': findings, 'rules': audit.RULES}}
 
 

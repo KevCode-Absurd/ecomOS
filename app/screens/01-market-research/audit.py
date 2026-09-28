@@ -161,6 +161,9 @@ Rules
   PROD-R42  Unconfirmed assumption: a calibration assumption (assumptions.json) that a money rule here prices with, whose
             status is sourced, derived or modelled rather than founder. Severity low. Money null. Capability PROD-C08
             (product economics, agent does; the confirmation is the founder's). Owner: 01-market-research.
+  PROD-R43  Thin read: a read this desk rests on (conversation, reviews, Reddit, ads, the web pass, avatars, listings, sales,
+            returns) whose sample, source count or age misses its floor while rules stand on it. Severity low. Money null.
+            Capability PROD-C04. Owner: 01-market-research.
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -269,6 +272,8 @@ RULES = [
      'inputs': ['brain.freshness', 'brain.review.conflicts'], 'capability': 'PROD-C04', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R42', 'name': 'Calibration assumption a money rule prices with that the founder has not confirmed', 'entity_type': 'brand',
      'inputs': ['brain.assumptions'], 'capability': 'PROD-C08', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R43', 'name': 'Read this desk rests on whose sample, sources or age misses its floor', 'entity_type': 'metric',
+     'inputs': ['brain.*', 'fixtures.market_trends', 'products_monthly', 'reversed_orders'], 'capability': 'PROD-C04', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -311,7 +316,8 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R39': {'id': 'PROD-C07', 'autonomy': 'agent_does'},
               'PROD-R40': {'id': 'PROD-C07', 'autonomy': 'agent_does'},
               'PROD-R41': {'id': 'PROD-C04', 'autonomy': 'agent_does'},
-              'PROD-R42': {'id': 'PROD-C08', 'autonomy': 'agent_does'}}
+              'PROD-R42': {'id': 'PROD-C08', 'autonomy': 'agent_does'},
+              'PROD-R43': {'id': 'PROD-C04', 'autonomy': 'agent_does'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -804,6 +810,7 @@ def run(brand, window=None, data=None):
     out += order_findings(brand, data, br, rd, ends_on)
     out += freshness_findings(br, ends_on)
     out += assumption_findings(br, ends_on)
+    out += strength_findings(br, brand, data, rd, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -3980,6 +3987,116 @@ def assumption_findings(br, ends_on):
         sentence = f'The {r["label"]} assumption ({r["short"]}{", " + r["unit"] if r["unit"] else ""}) is {r["status"]}, not founder-confirmed, and {len(r["readers"])} rule{"s" if len(r["readers"]) != 1 else ""} here price with it.'
         f = _finding('PROD-R42', r['field'], ends_on, 'low', ev, sentence, None, 0.9, r['source_ids'], money_reason='the stake sits on the rules that read the assumption')
         f['entity'] = {'type': 'brand', 'id': r['field'], 'label': r['label'], 'status': r['status'], 'short': r['short'], 'unit': r['unit'], 'as_of': r['as_of'], 'readers': r['readers'], 'sources': r['sources']}
+        f['id'] = r['finding_id']
+        out.append(f)
+    return out
+
+
+# ---------------------------------------------------------------- how strong is each read (round 6.4)
+
+# block key -> (label, sample floor, source floor, age floor in days, the rules that rest on it)
+READ_FLOORS = {
+    'conversation': ('Conversation and themes', 100, 2, 60, ['PROD-R07', 'PROD-R08', 'PROD-R11', 'PROD-R35']),
+    'reviews': ('Reviews by line', 200, 1, 90, ['PROD-R02', 'PROD-R22']),
+    'reddit': ('Reddit frames and mentions', 30, 1, 60, ['PROD-R09', 'PROD-R26', 'PROD-R30']),
+    'ads': ('Competitor ads (Ad Library)', 10, 1, 30, ['PROD-R06', 'PROD-R19', 'PROD-R20', 'PROD-R26']),
+    'web_pass': ('Web pass: markets and launches', 8, 3, 45, ['PROD-R04', 'PROD-R05', 'PROD-R19', 'PROD-R29', 'PROD-R33']),
+    'avatars': ('Avatars', 4, 1, 60, ['PROD-R10', 'PROD-R11']),
+    'marketplace': ('Marketplace listings', 10, 1, 30, ['PROD-R31', 'PROD-R32']),
+    'sales': ('Sales by month (simulated)', 12, 1, 45, ['PROD-R01', 'PROD-R03', 'PROD-R04', 'PROD-R18']),   # a monthly series is up to a month old by construction
+    'returns': ('Returns by line', 200, 1, 30, ['PROD-R34']),
+}
+
+
+def read_strength(br, brand, data, rd, ends_on):
+    """Per read this desk rests on: the sample behind it, how many independent sources, how old, against a floor for each;
+    thin when any floor is missed, strong when the sample is 3 times the floor with 2 or more sources, else ok. Unavailable
+    reads say so. Every rule maps to the read it rests on, so a card can carry the strength of what it stands on."""
+    rows = []
+
+    def add(key, sample, sources, age, note=None, unavailable=None):
+        label, s_floor, src_floor, age_floor, rules = READ_FLOORS[key]
+        if unavailable:
+            verdict = 'unavailable'
+        elif sample is None:
+            verdict = 'unavailable'
+        elif sample < s_floor or sources < src_floor or (age is not None and age > age_floor):
+            verdict = 'thin'
+        elif sample >= 3 * s_floor and sources >= max(2, src_floor):
+            verdict = 'strong'
+        else:
+            verdict = 'ok'
+        rows.append({'key': key, 'label': label, 'sample': sample, 'sample_floor': s_floor, 'sources': sources, 'source_floor': src_floor, 'age_days': age, 'age_floor': age_floor,
+                     'rules': rules, 'verdict': verdict, 'note': note or unavailable, 'finding_id': f'{SCREEN}.PROD-R43.{key}'})
+
+    fresh = {r.get('field'): (r.get('value') or {}) for r in br.records('freshness')} if br is not None else {}
+
+    def age_of(section):
+        last = str((fresh.get(section) or {}).get('last_updated') or '')[:10]
+        return max((ends_on - date.fromisoformat(last)).days, 0) if last else None
+
+    if br is None:
+        for key in READ_FLOORS:
+            if key not in ('sales', 'returns'):
+                add(key, None, 0, None, unavailable='no brain for this brand')
+    else:
+        conv = conversation(br)['rows']
+        add('conversation', sum(r['review_complaints'] + r['review_praise'] for r in conv), len({s for r in conv for s, n in r['by_source'].items() if n}), age_of('objection_ladders'),
+            note=f'{len(conv)} themes')
+        rl = review_lines(br)
+        add('reviews', sum(r['reviews'] or 0 for r in rl), 1 if rl else 0, age_of('products'), note=f'{len(rl)} lines with public totals')
+        reddit = [r for r in br.records('language_bank') if (r.get('value') or {}).get('subreddit')]
+        add('reddit', len(reddit), len({(r.get('value') or {}).get('subreddit') for r in reddit}), age_of('language_bank'), note='quotes, subreddits as sources')
+        comps = competitor_signals(br)
+        add('ads', sum(c.get('active_ads') or 0 for c in comps), len(comps), age_of('competitors'), note=f'active ads across {len(comps)} pages')
+        fx = web_pass(br) or {}
+        pubs = {s.get('publisher') for m in (fx.get('markets') or []) + (fx.get('launches') or []) + (fx.get('preferences') or []) for s in m.get('sources') or [] if s.get('publisher')}
+        cap = str(fx.get('captured_at') or '')[:10]
+        add('web_pass', len(fx.get('markets') or []) + len(fx.get('launches') or []), len(pubs), max((ends_on - date.fromisoformat(cap)).days, 0) if cap else None,
+            note=f'{len(fx.get("markets") or [])} markets, {len(fx.get("launches") or [])} launches, {len(pubs)} publishers' if fx else None, unavailable=None if fx else 'no web pass for this brand')
+        avs = [r for r in br.records('avatars') if (r.get('value') or {}).get('name')]
+        add('avatars', len(avs), len({(r.get('source') or {}).get('type') for r in avs if (r.get('source') or {}).get('type')}), age_of('avatars'), note='avatars, source types')
+        m = marketplace_read(br, None)
+        add('marketplace', (m.get('summary') or {}).get('judged'), 1 if m.get('rows') else 0, age_of('marketplaces'), note=f'{(m.get("summary") or {}).get("ratings") or 0:,} ratings' if m.get('rows') else None, unavailable=None if m.get('rows') else 'no listing read')
+    mix = category_mix(data, brand, rd)
+    if mix.get('unavailable'):
+        add('sales', None, 0, None, unavailable=mix.get('reason'))
+    else:
+        add('sales', len(mix.get('months') or []), 1, (ends_on - month_end(mix['last'])).days if mix.get('last') else None, note=f'{len(mix.get("months") or [])} whole months, ' + (mix.get('basis') or 'products_monthly'))
+    rr = return_rates(data, brand, ends_on)
+    if rr.get('unavailable'):
+        add('returns', None, 0, None, unavailable=rr.get('reason'))
+    else:
+        add('returns', rr.get('returns'), 1, (ends_on - month_end(rr['last'])).days if rr.get('last') else None, note=f'{rr.get("returns")} returns on {rr.get("units"):,} units')
+    order = {'thin': 0, 'unavailable': 1, 'ok': 2, 'strong': 3}
+    rows.sort(key=lambda r: (order[r['verdict']], r['label']))
+    return {'rows': rows, 'rule': 'a read is thin when its sample, its source count or its age misses the floor; strong at 3 times the sample floor with 2 or more sources; the rules that rest on each read are listed so a card carries the strength of what it stands on'}
+
+
+def strength_of_rule(strength, rule_id):
+    for r in strength.get('rows') or []:
+        if rule_id in r['rules']:
+            return r
+    return None
+
+
+def strength_findings(br, brand, data, rd, ends_on):
+    """PROD-R43: a read this desk rests on that is thin (sample, sources or age under the floor) while rules stand on it."""
+    out = []
+    for r in read_strength(br, brand, data, rd, ends_on)['rows']:
+        if r['verdict'] != 'thin':
+            continue
+        why = []
+        if r['sample'] is not None and r['sample'] < r['sample_floor']:
+            why.append(f'{r["sample"]} in the sample against a floor of {r["sample_floor"]}')
+        if r['sources'] < r['source_floor']:
+            why.append(f'{r["sources"]} source{"s" if r["sources"] != 1 else ""} against {r["source_floor"]} needed')
+        if r['age_days'] is not None and r['age_days'] > r['age_floor']:
+            why.append(f'{r["age_days"]} days old against {r["age_floor"]} allowed')
+        ev = [_ev('read_sample', r['sample'], 'count', ends_on.isoformat(), 'brain and fixtures now', r['sample_floor'], 'threshold', source='brain', simulated=False, freshness_days=0, sources=r['sources'], age_days=r['age_days'])]
+        sentence = f'The {r["label"].lower()} read is thin: {"; ".join(why)}. {len(r["rules"])} rules stand on it.'
+        f = _finding('PROD-R43', r['key'], ends_on, 'low', ev, sentence, None, 0.9, [], money_reason='a thin read has no order count; the rules on it carry the stake')
+        f['entity'] = {'type': 'metric', 'id': r['key'], 'label': r['label'], 'rules': r['rules'], 'sample': r['sample'], 'sources': r['sources'], 'age_days': r['age_days'], 'why': why}
         f['id'] = r['finding_id']
         out.append(f)
     return out

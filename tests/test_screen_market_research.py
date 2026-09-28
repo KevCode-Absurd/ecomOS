@@ -263,8 +263,8 @@ class RulesTest(ShapeMixin, unittest.TestCase):
                 self.assertTrue(rules <= {'PROD-R31', 'PROD-R32'}, rules)   # one Amazon stance card
             elif 'PROD-R35' in rules:
                 self.assertTrue(rules <= {'PROD-R07', 'PROD-R35'}, rules)   # a founder question rides on its theme card
-            elif rules == {'PROD-R41'} or rules == {'PROD-R42'}:
-                pass                                                          # one brain refresh card, one assumptions card
+            elif rules in ({'PROD-R41'}, {'PROD-R42'}, {'PROD-R43'}):
+                pass                                                          # one brain refresh card, one assumptions card, one thin-reads card
             else:
                 self.assertTrue(rules <= {'PROD-R05', 'PROD-R06', 'PROD-R20', 'PROD-R33'}, rules)   # one brief per lane
         covered = [fid for a in acts for fid in a['finding_ids']]
@@ -1224,6 +1224,27 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
         self.assertEqual(len(acts), 1)                       # one card for all three
         self.assertEqual(len(acts[0]['finding_ids']), 3)
         self.assertEqual(acts[0]['owner'], 'person')
+
+    def test_read_strength(self):
+        D = date(2026, 9, 27)
+        rd = audit.Reader(None, 'bombas', D)
+        st = audit.read_strength(audit.brain('bombas'), 'bombas', None, rd, D)
+        rows = {r['key']: r for r in st['rows']}
+        self.assertEqual(set(rows), set(audit.READ_FLOORS))
+        self.assertEqual(rows['returns']['verdict'], 'unavailable')
+        self.assertIn(rows['conversation']['verdict'], ('ok', 'strong'))
+        self.assertGreater(rows['conversation']['sources'], 2)
+        self.assertEqual(rows['sales']['sample'], 12)
+        self.assertEqual(audit.strength_of_rule(st, 'PROD-R07')['key'], 'conversation')
+        self.assertIsNone(audit.strength_of_rule(st, 'PROD-R14'))
+        for f in audit.strength_findings(audit.brain('bombas'), 'bombas', None, rd, D):
+            self.check_shape(f)
+        acts = api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions']
+        a7 = next(a for a in acts if a.get('rule_id') == 'PROD-R07')
+        self.assertEqual(a7['read_strength']['read'], 'Conversation and themes')
+        sample = api.sample_data()
+        ss = audit.read_strength(None, None, sample, audit.Reader(sample, None, date(2026, 9, 24)), date(2026, 9, 24))
+        self.assertEqual({r['key']: r['verdict'] for r in ss['rows'] if r['key'] in ('sales', 'returns', 'ads')}, {'sales': 'ok', 'returns': 'ok', 'ads': 'unavailable'})   # returns: one source, so never strong
 
     def test_demand_pattern_tags(self):
         even = {'rows': [{'category': 'socks', 'series': [100] * 12}], 'months': [f'2026-{m:02d}' for m in range(1, 13)], 'last': '2026-12'}
