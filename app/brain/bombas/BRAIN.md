@@ -28,7 +28,7 @@ Freshness: all records in date
 | [objections](objections.json) | 42 | 2026-09-28 | Compression socks are too hard to pull on, sit too high... |
 | [objection_ladders](objection_ladders.json) | 7 | 2026-09-28 | Comfort and feel: 24 complaint and 103 praise quotes.... |
 | [language_bank](language_bank.json) | 335 | 2026-09-28 | Reviewers say 'it is literally just a men's shirt'... |
-| [competitors](competitors.json) | 15 | 2026-09-28 | Competitors should be sock and fashion apparel brands... |
+| [competitors](competitors.json) | 23 | 2026-09-28 | Competitors should be sock and fashion apparel brands... |
 | [positioning](positioning.json) | 10 | 2026-09-28 | Premium everyday basics. Socks and slippers are 93... |
 | [channels](channels.json) | 13 | 2026-09-28 | Bombas announced it would begin selling socks in more... |
 | [calendar](calendar.json) | 8 | 2026-09-28 | Bombas launched ribbed seamless bralettes around March... |
@@ -37,11 +37,11 @@ Freshness: all records in date
 | [marketplaces](marketplaces.json) | 36 | 2026-09-28 | Verified Bombas ASINs on Amazon from a search pull: 29... |
 | [stack](stack.json) | 17 | 2026-09-28 | Bombas uses OneTrust for cookie and privacy consent... |
 | [site_map](site_map.json) | 6 | 2026-09-28 | The live storefront's home page is at... |
-| [content](content.json) | 3 | 2026-09-28 | Comrad Socks runs 7 creator-style ads (first person,... |
+| [content](content.json) | 3 | 2026-09-28 | Comrad Socks runs 6 creator-style ads (first person,... |
 | [seo_facts](seo_facts.json) | 2 | 2026-09-28 | Question asked on r/BuyItForLife: What's something you... |
 | [team](team.json) | 8 | 2026-09-28 | Bombas has an open Vice President, Distribution role... |
 | [decisions](decisions.json) | 2 | 2026-09-28 | S1.4 follow-up: no more Amazon reviews; pull the Ad... |
-| [learnings](learnings.json) | 12 | 2026-09-28 | On 2026-09-28 Bombas runs 23 active US Meta ads: 11... |
+| [learnings](learnings.json) | 20 | 2026-09-28 | On 2026-09-28 Bombas runs 23 active US Meta ads: 11... |
 | [open_questions](open_questions.json) | 5 | undated | What proof answers "will it do the job it claims, like... |
 | [freshness](freshness.json) | 27 | 2026-09-28 | avatars: 13 records, last updated 2026-09-28, 0 stale, 0... |
 
@@ -64,7 +64,7 @@ No records yet: changes, plans.
 
 - Documents: [documents/manifest.json](documents/manifest.json), 0 files
 - Open questions: [open_questions.json](open_questions.json), 5 open
-- Brain version b927d0021906. Generated from records; edit records, not this file.
+- Brain version ed50c1933d5e. Generated from records; edit records, not this file.
 
 ## Founder notes
 

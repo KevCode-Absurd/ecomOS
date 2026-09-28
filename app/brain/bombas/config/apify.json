@@ -3,8 +3,9 @@
  "note": "What the Apify connector pulls for this brand. Caps keep each run inside a few dollars. Token comes from the APIFY_TOKEN environment variable, never from this file.",
  "budget": {
   "max_usd_per_run": 4.0,
-  "max_usd_per_week": 15.0,
-  "ledger": "intelligence/budget.py"
+  "max_usd_per_week": 17.0,
+  "ledger": "intelligence/budget.py",
+  "note": "weekly cap raised 15 to 17 on 28 Sep for the 13-page Ad Library pull Kevin asked for; Amazon review pulls dropped"
  },
  "amazon_reviews": {
   "actor": "axesso_data~amazon-reviews-scraper",
@@ -51,39 +52,48 @@
   "pages": [
    {
     "name": "Bombas",
-    "role": "self"
+    "role": "self",
+    "page_id": "155577444523958"
    },
    {
     "name": "Stance",
-    "role": "competitor"
+    "role": "competitor",
+    "page_id": "150444458302730"
    },
    {
     "name": "Darn Tough Vermont",
-    "role": "competitor"
+    "role": "competitor",
+    "page_id": "68830566542"
    },
    {
     "name": "Smartwool",
-    "role": "competitor"
+    "role": "competitor",
+    "page_id": "30391008613"
    },
    {
     "name": "Feetures",
-    "role": "competitor"
+    "role": "competitor",
+    "page_id": "134080448768"
    },
    {
     "name": "Comrad Socks",
-    "role": "competitor"
+    "role": "competitor",
+    "page_id": "1156330774456653"
    },
    {
     "name": "Mack Weldon",
-    "role": "competitor"
+    "role": "competitor",
+    "page_id": "102556986545296"
    },
    {
     "name": "Tommy John",
-    "role": "competitor"
+    "role": "competitor",
+    "page_id": "240995385913161"
    },
    {
     "name": "MeUndies",
-    "role": "competitor"
+    "role": "competitor",
+    "page_id": "173702195995921"
    },
    {
     "name": "Allbirds",
@@ -91,15 +101,18 @@
    },
    {
     "name": "Everlane",
-    "role": "competitor"
+    "role": "competitor",
+    "page_id": "166447633392934"
    },
    {
     "name": "Vuori",
-    "role": "competitor"
+    "role": "competitor",
+    "page_id": "126525880500"
    },
    {
     "name": "Quince",
-    "role": "competitor"
+    "role": "competitor",
+    "page_id": "2240844056196530"
    }
   ],
   "search_terms": [],
@@ -113,7 +126,7 @@
    "story_bank",
    "content"
   ],
-  "notes": "signals only: format, hook type, start date, run length, platforms, a short quote as evidence; never copy text, logos, products or faces; skip the lookalike page spelled with a zero; pages only, never search terms: search terms pull random advertisers on the word socks (Kevin, 28 Sep)"
+  "notes": "signals only: format, hook type, start date, run length, platforms, a short quote as evidence; never copy text, logos, products or faces; skip the lookalike page spelled with a zero; pages only, never search terms: search terms pull random advertisers on the word socks (Kevin, 28 Sep); pages are read by page id (view_all_page_id), a name search is only the fallback for a page whose id is not known yet (Allbirds) and its items are filtered to the exact page name"
  },
  "reddit": {
   "actor": "trudax~reddit-scraper-lite",
