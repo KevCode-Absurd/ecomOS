@@ -2438,3 +2438,41 @@ def compare_rows(d: dict) -> dict:
                   "lines": ", ".join(x.replace("_", " ") for x in list((ret.get(k) or {}).get("lines", {}))[:3]) or None,
                   "win_words": "; ".join(f'"{w}"' for w in words) or None, "status": m.get("status"), "next": a["next"]["title"]}
     return {"fields": [{"key": k, "label": l, "unit": u} for k, l, u in COMPARE_FIELDS], "rows": out}
+
+
+# ---------------------------------------------------------------- monthly customer report
+
+def report(d: dict, actions: list[dict], agenda_x: dict, name: str) -> dict:
+    """A plain-words monthly report for the founder, from the same builders. Numbers only where the page has them."""
+    pct = lambda v: f"{round(v * 100)} percent" if isinstance(v, (int, float)) else "unavailable"
+    open_ = [a for a in actions if a.get("status") == "open"]
+    S = []
+    S.append({"title": "The three moves to approve", "lines": [f"{i + 1}. {a['title']}. {a['why']}" for i, a in enumerate(open_[:3])] or ["No open move."]})
+    S.append({"title": "Who buys, and who to build for next",
+              "lines": [f"{r['name']}: {pct(r['share'])} of buyers, served {pct(r['served'])}, score {r['score']}." for r in d["focus"]["rows"][:5]]
+              or ["No avatar has a share yet."]})
+    doubts = [r for r in d["ladders"]["rows"] if r["verdict"] in ("answer", "not_landing")][:3]
+    S.append({"title": "What stops them", "lines": [f"\"{r['doubt']}\": {r['one_star']} one-star mentions, " +
+                                                    ("proof on file but not landing." if r["verdict"] == "not_landing" else "no proof on file.") for r in doubts]
+              or ["Every doubt has an answer."]})
+    gap = [r["word"] for r in d["copy_gap"].get("rows", []) if r["verdict"] == "missing"][:5]
+    hooks = [h["hook"] for h in d["hooks"].get("rows", [])][:3]
+    S.append({"title": "What they say that we do not", "lines": [("Words buyers praise us with and we never say: " + ", ".join(gap) + ".") if gap else "No gap read.",
+                                                                  ("Lines they repeat: " + ", ".join(f'\"{h}\"' for h in hooks) + ".") if hooks else "No repeated lines yet."]})
+    mix, coh = d.get("mix") or {}, d.get("cohorts") or {}
+    ret = []
+    if mix.get("available"):
+        ret.append(f"Returning share of orders in {mix['latest']}: {pct(mix['share_now'])}; {pct(mix['paid_share_returning'])} of returning orders came through paid ads.")
+    if coh.get("available"):
+        ret.append(f"Most repeat buyers come back in month {coh['peak_month']}." + (f" Every cohort went quiet in {coh['calendar_break']['month']}." if coh.get("calendar_break") else ""))
+    S.append({"title": "Who comes back", "lines": ret or ["Retention reads are unavailable until store data is connected."]})
+    risks = [f"A lookalike page sends buyers to {r['links_to']}." for r in d["lookalikes"]["rows"]]
+    risks += [f"A claim is under fire: {', '.join(r['words'][:3])} ({r['hits']} 1 and 2 star reviews)." for r in d["claims_fire"]["rows"] if r["verdict"] == "under_fire"]
+    risks += [f"{m['avatar']} is let down by {m['line'].replace('_', ' ')}: {m['hits'][0]}." for m in d["misreads"].get("rows", [])[:2]]
+    S.append({"title": "Risks to the brand", "lines": risks or ["None found this month."]})
+    S.append({"title": "Due in the next 30 days", "lines": [f"{i['date']}: {i['what']}" + (" (late)" if i["overdue"] else "") for i in agenda_x.get("items", [])[:8]] or ["Nothing dated."]})
+    thin = [r["block"] for r in d.get("strength", []) if r["verdict"] in ("thin", "unavailable")]
+    S.append({"title": "What we do not know yet", "lines": [("Thin or unavailable reads: " + ", ".join(thin) + ".") if thin else "Every read rests on a fair sample.",
+                                                            "Sales and repeat numbers are simulated until the store connects. Customer words are public reviews."]})
+    text = "\n\n".join(s["title"].upper() + "\n" + "\n".join(s["lines"]) for s in S)
+    return {"title": f"{name}: customers this month", "as_of": d["ends_on"], "sections": S, "text": text}

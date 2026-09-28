@@ -1487,7 +1487,7 @@ class SinceLastVisit(unittest.TestCase):
 
     def test_storage_guarded(self):
         js = (SCREEN / 'screen.js').read_text(encoding='utf-8')
-        block = js[js.index('function renderSince'):js.index('// ---------- the next 30 days')]
+        block = js[js.index('function renderSince'):js.index('// ---------- the monthly report')]
         self.assertEqual(block.count('localStorage'), 2)
         self.assertEqual(block.count('try {'), 2)
 
@@ -1500,6 +1500,27 @@ class PhoneWidth(unittest.TestCase):
         self.assertIn('.screen .grid > * { min-width: 0; }', css)
         self.assertIn('@media (max-width: 720px)', css)
         self.assertIn('#desk .tabs { flex-wrap: wrap;', css)
+
+
+class MonthlyReport(TempBrain):
+    """Feature 6.8: a plain-words monthly report from the same builders."""
+
+    def test_report(self):
+        r = api.handle(Req(['report']))
+        titles = [s['title'] for s in r['sections']]
+        self.assertEqual(titles[0], 'The three moves to approve')
+        self.assertIn('What we do not know yet', titles)
+        self.assertNotIn('\u2014', r['text'])
+        for w in (' should ', ' consider ', ' leverage '):
+            self.assertNotIn(w, r['text'].lower())
+        self.assertIn('simulated', r['text'])
+        top = api.rank('bombas', RANK_WINDOW)['actions']
+        self.assertTrue(r['sections'][0]['lines'][0].startswith('1. '))
+
+    def test_second_brand_report(self):
+        api.BRAIN_ROOT = None
+        r = api.handle(Req(['report'], query={'brand': ['example']}))
+        self.assertNotIn('bombas', r['text'].lower())
 
 
 if __name__ == '__main__':
