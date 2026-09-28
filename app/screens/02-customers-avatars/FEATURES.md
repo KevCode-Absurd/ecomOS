@@ -38,6 +38,15 @@ Judged by `app/contracts/depth.md`. Each feature ends in an action with an owner
 | 1.9 | Where reviews say we misread an avatar: product lines from the brain's review summaries with their 1 and 2 star share against the median line, verdict problem (1.5x the median or more), split (praise and complaints name the same trait: an expectation copy brief) or fine. Misread cards: an avatar buys the line (2 or more linked reviews, from its own reviews and the reviews behind its doubts), a top complaint shares words with its job or pains, and the line sits at or above the median. Each becomes a fit block for the page, expectation copy, a product quality ticket or a fulfilment ticket, with owner and steps. Bombas: compression fails the Daily Compression Wearer on the job itself (17.3 percent 1 and 2 star, 2.24x the median) | done |
 | 1.10 | Seven new audit rules from the desk (CUST-R04 proof not landing, R05 avatar misread on a product line, R06 unserved buying situation, R07 returning buyers bought back through paid ads, R08 calendar retention cliff, R09 retention age break, R10 split product line), all 10 firing on Bombas. `rank(brand, window)` pairs every finding with the drafted work from the same builders the page uses: real title, owner, steps, artefact kind and draft, stop rule and check date where the move has one; ease rescored by owner (agent 5, agent drafts 4, person with a draft 3, connector 1). 27 actions pass `validate_action`; the top one is the compression misread | done |
 
+### Round 1 founder note (28 Sep 2026)
+
+1. You can now open Customers and avatars and see the 10 next moves first, each with an owner, steps and a drafted artefact to approve.
+2. Top move: compression fails the Daily Compression Wearer on the job itself (17.3 percent 1 and 2 star, 2.24x the median line). A fit block for the page is drafted.
+3. Every avatar card ends in its next build; red cells in the avatar by channel matrix and every ladder rung open a drafted brief.
+4. Their own words sit on each doubt; tick lines and "Use in brief" makes a copy brief. Reddit lines stay language only.
+5. Cohorts name the January cliff and the month-6 break, and the mix shows 29.9 percent of returning orders come back through paid ads; each has a move.
+6. Next, round 2: rules from the web pass (gateway product, second-order path, win-back timing by gap, RFM cells, theme impact, copy gap check) and hiking as a sized avatar.
+
 ## Contract asks
 
 - A `situations` brain record per category (buying situations as word patterns), so 1.8 reads them from the brain instead of the category-level constant in `builds.py`. Fallback: the constant.
