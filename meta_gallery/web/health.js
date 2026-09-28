@@ -371,7 +371,7 @@ function hlStructure() {
   if (!S) return '<p class="muted">Ad set details are not available yet.</p>';
   const A = S.adsets, camps = new Map();
   for (const a of A) { const k = a.campaign || 'New campaign (not in the ads data yet)'; if (!camps.has(k)) camps.set(k, []); camps.get(k).push(a); }
-  const lt = { 'Learning limited': 'bad', Learning: 'warn', 'Active (learned)': 'good', 'Not delivering yet': 'grey' };
+  const lt = { 'Learning limited': 'bad', Learning: 'warn', 'Active (learned)': 'good', 'Not delivering yet': 'grey', Unavailable: 'grey' };
   const limited = A.filter((a) => a.learning === 'Learning limited'), learning = A.filter((a) => a.learning === 'Learning'), learned = A.filter((a) => a.learning === 'Active (learned)');
   const findings = [];
   if (limited.length) findings.push({ tone: 'bad', text: `${limited.length} ad sets are learning limited: they get too few sales a week for Meta to learn (it needs about 50). Merge them so each gets more sales.`, who: limited.map((a) => a.name) });
@@ -405,10 +405,10 @@ function hlStructure() {
       ${[...camps.entries()].map(([k, l]) => `<div class="hl-camp"><h4>${esc(k)} ${isSaleCampaign(k) ? '<span class="chip sale">Sale</span>' : ''}</h4><div class="scroll"><table class="bd-table">
         <tr><th>Ad set</th><th>Who</th><th>Goal</th><th>Learning</th><th class="n">Spend</th><th class="n">Sales</th><th class="n">ROAS</th><th class="n">Seen per person</th></tr>
         ${l.map((a) => `<tr><td>${esc(a.name)}</td><td class="small">${esc(a.audience)}${a.gender !== 'All' ? ', ' + esc(a.gender.toLowerCase()) : ''}${a.advantage_audience ? ' · Advantage+' : ''}${a.interests.length ? `<br><span class="muted">${esc(a.interests.slice(0, 3).join(', '))}</span>` : ''}${a.custom.length ? `<br><span class="muted">${esc(a.custom[0])}</span>` : ''}</td>
-          <td class="small">${esc(a.goal || '')}</td><td>${hlChip(lt[a.learning] || 'grey', a.learning)}${a.conversions !== null && a.conversions !== undefined ? ` <span class="muted small">${a.conversions} sales</span>` : ''}</td>
+          <td class="small">${esc(a.goal || '')}</td><td>${hlChip(lt[a.learning] || 'grey', a.learning)}${a.learning_asof ? ` <span class="muted small">as of ${esc(shortDate(a.learning_asof))}</span>` : ''}${a.conversions !== null && a.conversions !== undefined ? ` <span class="muted small">${a.conversions} sales</span>` : ''}</td>
           <td class="n">${compact(a.spend)}</td><td class="n">${a.purchases}</td><td class="n">${hlX(a.spend && a.value ? a.value / a.spend : null)}</td><td class="n">${a.frequency ? a.frequency.toFixed(1) : 'unavailable'}</td></tr>`).join('')}
       </table></div></div>`).join('')}
-      <p class="small muted">Live ad sets from Ads Manager, checked ${esc(shortDate(S.captured_at))}. Learning status is Meta's.</p></section>`;
+      <p class="small muted">Live ad sets from Ads Manager, checked ${esc(shortDate(S.captured_at))}. Learning status is Meta's.${S.note ? ' ' + esc(S.note) : ''}</p></section>`;
 }
 
 // Ad set by ad set: keep, merge or pause, where the money goes, and in what order.
