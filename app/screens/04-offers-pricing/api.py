@@ -373,6 +373,10 @@ def approve(brand, body, brain_root=None, outbox=None, today=None):
         raise ValueError('no open move with that id')
     if act.get('status') == 'unavailable':
         raise ValueError('a connect move is done in Setup, not saved as a plan')
+    mc = act.get('margin_check') or {}
+    if mode == 'founder' and mc.get('clears') is False:
+        return {'record': None, 'errors': [f'{mc["offer"]} is under the red line ({mc["red_line_kind"]}); change the offer before approving'],
+                'registry': None}
     sf, _ = actions.surfaces(act)
     kw = {'brain_root': brain_root, 'today': today}
     if outbox:

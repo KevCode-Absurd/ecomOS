@@ -257,7 +257,7 @@ class ObjectionOfferTest(unittest.TestCase):
                 continue
             a = acts[r['theme_key'] + '.deal_breaker']
             self.assertIn(a['artefact']['kind'], ('offer', 'page_section', 'listing_fix'))
-            self.assertTrue(a['artefact']['draft'].endswith(r['spec']))   # a finished test may add its proof line first
+            self.assertIn(r['spec'], a['artefact']['draft'])   # proof lines and margin checks may be added around it
             self.assertIn(r['doubt'], r['spec'])
             self.assertTrue(a['win_rule'] and a['stop_rule'] and a['check_on'])
             if r['claim'] != 'none' and r['cost_per_claim'] is not None:
@@ -1173,6 +1173,24 @@ class ApprovalsTest(unittest.TestCase):
         b = store.Brain('bombas', self.tmp, date(2026, 10, 5))
         live = next(x for x in b.records('offers') if x['id'] == r['offer'])
         self.assertEqual((live['value']['state'], live['valid_from']), ('live', '2026-10-05'))
+
+    def test_red_line_blocks_founder_approval(self):
+        from datetime import date
+        checked = [a for a in self.acts if a.get('margin_check')]
+        self.assertTrue(checked)
+        a = dict(checked[0], margin_check=dict(checked[0]['margin_check'], clears=False))
+        orig = api.actions.rank
+        api.actions.rank = lambda brand, window=None, data=None: {'actions': [a]}
+        try:
+            r = api.approve('bombas', {'id': a['id'], 'mode': 'founder'}, brain_root=self.tmp, outbox=self.tmp / 'out', today=date(2026, 9, 28))
+            self.assertTrue(r['errors'])
+            self.assertIsNone(r['record'])
+            ok = api.approve('bombas', {'id': a['id'], 'mode': 'proposed'}, brain_root=self.tmp, outbox=self.tmp / 'out', today=date(2026, 9, 28))
+            self.assertEqual(ok['errors'], [])   # it can still be proposed for review
+        finally:
+            api.actions.rank = orig
+        for c in checked:
+            self.assertIn('Margin check', c['artefact']['draft'])
 
     def test_rejects(self):
         with self.assertRaises(ValueError):

@@ -81,6 +81,7 @@ Known gaps from round 0:
 | 4.1 | Save a move to the brand brain (`approvals.py`, `POST /api/04-offers-pricing/approve {id, mode}`): the move becomes a `plans` record written only through `Brain.put`. Mode proposed: status proposed, tier inferred, source agent with the finding ids as derived_from, so it lands in the brand brain review queue. Mode founder: status active, tier approved, source founder. The record carries the move id, the drafted artefact, steps, win and stop rules and check date, and the window for promo moves (OFFER-R11 then counts the window as planned once approved). A testable move also gets a proposed registry row in the events.md shape in this screen's outbox. Moves with a plan record leave the open plan and are listed under it. Two buttons on each action card | done |
 | 4.2 | Approved offers become offer records: a founder-approved move of kind offer, price change or landing page also writes an `offers` record through `Brain.put`, proposed while planned (so no other screen reads it as live), carrying its terms, plan id and stop rule. `POST launched {id}` (the "Mark launched" button on the planned list) turns it active with valid_from today; it refuses before the founder approves | done |
 | 4.3 | Bundles from pairs: products bought together in the last 90 days of orders (orders holding both, lift over chance, share of the first item's orders), each pair's paid prices, a bundle at 10 percent off and its margin where landed cost is on file. New rule OFFER-R26 with a "complete the set" offer for the top 3 pairs, placed in the upsell app named in the brain. Real on the sample brand's orders (tea towels with napkins at 3.0x); for Bombas it waits on order rows and joins the connect move. Desk block in Prices and packs. Web pass: Fast Bundle frequently bought together | done |
+| 4.4 | The red line blocks approval (room spec): moves priced by a margin waterfall (the first-order test by the free-item offer, the wear promise by the promise waterfall) carry a margin check in their draft; a founder approval of a move under the red line is refused with the reason, while proposing it for review stays open | done |
 
 ## Contract asks
 
@@ -217,7 +218,7 @@ Intelligems (threshold and price tests scored by profit per visitor), Rebuy (tie
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.9 | 2026-09-28 | S3.9; screenshot round0.png |
-| 4 | 4.1 save to the brain, 4.2 offer records, 4.3 bundle pairs | 2026-09-28 | in progress |
+| 4 | 4.1 save to the brain, 4.2 offer records, 4.3 bundle pairs, 4.4 red line gate | 2026-09-28 | in progress |
 | 3 | 3.1 to 3.10: registry, referral, loyalty, window creep, subscription note, depth rules, plug and play, priors, decisions | 2026-09-28 | screenshot round3.png |
 | 2 | 2.1 to 2.10: position, parity, discipline, gift pick, cart ladder, test calendar, depth by line, second order, cost against price, desk tabs | 2026-09-28 | screenshot round2.png |
 | 1 | 1.1 plan first, 1.2 objection to offer map, 1.3 free shipping line, 1.4 pack ladder, 1.5 first-order offer, 1.6 margin waterfall, 1.7 promo calendar, 1.8 gifting and holiday, 1.9 guarantee as an offer, 1.10 rank complete | 2026-09-28 | manager session; screenshot round1.png (updated as the round lands) |

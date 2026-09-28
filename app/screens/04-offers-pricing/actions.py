@@ -631,6 +631,31 @@ def add_priors(actions, ctx):
     return actions
 
 
+# Which waterfall prices each move (audit.offer_waterfalls keys). A move with a check cannot be approved by the
+# founder while its offer sits under the red line (room spec: the red line blocks approval).
+MARGIN_CHECK = {'OFFER-R08': 'first_gwp', 'OFFER-R10': 'first_gwp'}
+
+
+def attach_margin_checks(actions, ctx):
+    falls = {w['key']: w for w in ctx.waterfalls or []}
+    promise = next((w for w in ctx.waterfalls or [] if w['key'] == 'promise'), None)
+    wear = next((r for r in ctx.objections if r['claim'] == 'replacement' and r['planned_rate'] is not None and r['cost_per_claim']), None)
+    for a in actions:
+        if a.get('status') != 'open':
+            continue
+        w = falls.get(MARGIN_CHECK.get(a.get('rule_id')))
+        if a.get('rule_id') == 'OFFER-R04' and wear and (a.get('entity') or {}).get('id', '').startswith(wear['theme_key']):
+            w = promise
+        if not w:
+            continue
+        a['margin_check'] = {'offer': w['name'], 'contribution': w['contribution'], 'red_line': w['red_line'],
+                             'red_line_kind': w['red_line_kind'], 'clears': w['clears']}
+        line = (f'Margin check: {w["name"].lower()} keeps {money(w["contribution"])} after media; red line: {w["red_line_kind"]}; '
+                + ('clears it.' if w['clears'] else 'under it, so it cannot be approved as it stands.'))
+        a['artefact'] = dict(a['artefact'], draft=(a['artefact'].get('draft') or '') + '\n' + line)
+    return actions
+
+
 def merge_into(actions, child, parent):
     """A child rule's finding rides on the parent rule's action when both fire (one move fixes both)."""
     host = next((a for a in actions if a.get('rule_id') == parent and a.get('status') == 'open'), None)
@@ -1130,7 +1155,7 @@ def rank(brand='bombas', window=None, data=None):
     actions = merge_connect(merge_gifting(merge_red_line(merge_ladder(actions, ctx)), ctx))
     actions = merge_into(merge_into(actions, 'OFFER-R05', 'OFFER-R01'), 'OFFER-R06', 'OFFER-R01')
     actions = merge_into(actions, 'OFFER-R19', 'OFFER-R08')
-    actions = add_priors(covered_by_registry(actions, ctx), ctx)
+    actions = attach_margin_checks(add_priors(covered_by_registry(actions, ctx), ctx), ctx)
     actions = [a for a in actions if not RANK.validate_action(a)]
     actions.sort(key=RANK.sort_key)
     calendar = test_calendar(actions, ctx)
