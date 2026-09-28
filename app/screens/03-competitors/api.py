@@ -173,6 +173,30 @@ def plan(brand: str, today: dt.date) -> dict:
             "snoozed": len(out["actions"]) - len(acts), "findings": out["findings"], "rules": audit.RULES}
 
 
+def page_rows(m: dict) -> dict:
+    """The side-by-side table: every tracked page plus ours, with verdicts, pill counts and a battlecard draft."""
+    us = next(p for p in m["pages"] if p["role"] == "self")
+    price_us = m["packs"].get("median_per_pair") if m["packs"]["available"] else None
+    rows = []
+    for p in m["pages"]:
+        r = {k: v for k, v in p.items() if k not in ("quotes",)}
+        if p["role"] != "self":
+            gaps = [a["label"] for a in m["angles"] if a["held"] and p["name"] not in a["competitors_using"]]
+            r["battlecard"] = audit.pagemod.battlecard(p, us, price_us, gaps)
+            r["quoted_ads"] = len(p["quotes"])
+        rows.append(r)
+    comps = [r for r in rows if r["role"] != "self"]
+    pills = [{"key": "all", "label": "All", "n": len(comps)},
+             {"key": "direct", "label": "Direct", "n": sum(r["frame"] == "direct" for r in comps)},
+             {"key": "basics", "label": "Basics and apparel", "n": sum(r["frame"] == "basics" for r in comps)},
+             {"key": "threat", "label": "Threats", "n": sum(r["verdict"]["text"] == "Threat" for r in comps)}]
+    return {"rows": rows, "pills": pills, "our_top_angles": m["our_top_angles"], "snapshot": m["snapshot"],
+            "format_labels": audit.snap.FORMAT_LABEL, "line_labels": audit.snap.FIRST_LINE_LABEL,
+            "rule": f"Threat at {audit.pagemod.THREAT_AT} points or more, watch at {audit.pagemod.WATCH_AT} to "
+                    f"{audit.pagemod.THREAT_AT - 1}. Points: direct competitor 2, active ads 2x ours 1, median ad live "
+                    "30 days or more 1, runs one of our top 2 angles 1, recommended instead of us on Reddit 1."}
+
+
 def overview(brand: str, today: dt.date) -> dict:
     m = audit.market(brand, today, BRAIN_ROOT)
     brain = m.pop("brain")
@@ -181,7 +205,7 @@ def overview(brand: str, today: dt.date) -> dict:
             "simulated_note": SIMULATED_NOTE.format(name=name), "signal_note": SIGNAL_NOTE,
             "competitors": [_public(c) for c in m["competitors"]], "angles": m["angles"],
             "positioning": positioning(m), "prices": price_table(m), "board": board(m),
-            "lookalike": m["lookalike"], "gap": gaps(m),
+            "lookalike": m["lookalike"], "gap": gaps(m), "pages": page_rows(m),
             "category_median": m["category_median"], "price_position_index": m["price_position_index"]}
 
 

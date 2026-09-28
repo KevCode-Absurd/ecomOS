@@ -19,30 +19,6 @@
     return n;
   }
 
-  function band(p) {
-    if (p.low != null && p.high != null) return usd(p.low) + ' to ' + usd(p.high);
-    if (p.low != null) return 'from ' + usd(p.low);
-    return 'median only';
-  }
-
-  function compCard(c) {
-    const card = el('article', { class: 'card comp' });
-    card.append(el('div', { class: 'head' }, el('b', { text: c.name }),
-      c.ad_library_url ? el('a', { href: c.ad_library_url, target: '_blank', rel: 'noopener', class: 'small', text: 'Ad Library' }) : null));
-    card.append(el('div', { class: 'small', text: c.positioning || NA }));
-    const dl = el('dl');
-    const row = (k, v) => dl.append(el('dt', { text: k }), el('dd', { text: v }));
-    row('Price per pair', (c.price.median == null ? NA : 'median ' + usd(c.price.median)) + ', ' + band(c.price) + (c.price.rough ? ' (rough)' : ''));
-    row('Pushes', c.what_they_push || NA);
-    row('Active ads', c.active_ads == null ? NA : fmt.num(c.active_ads));
-    row('Longest run', c.longest_days == null ? NA : c.longest_days + ' days, since ' + fmt.date(c.longest_start));
-    row('Claims', 'durability ' + c.durability + ' of 3, comfort ' + c.comfort + ' of 3');
-    card.append(dl);
-    if (c.gap_to_own && c.gap_to_own.length) card.append(el('div', { class: 'gap-own', text: 'Gap to own: ' + c.gap_to_own.join(', ') + '. They show none of it.' }));
-    card.append(el('div', { class: 'muted small', text: 'Captured ' + (c.captured_at === 'undated' ? 'undated' : fmt.date(c.captured_at)) + (c.expired ? ', past its refresh date' : '') + '. Run length is a signal, not proof.' }));
-    return card;
-  }
-
   function drawMap(pos, axis) {
     const spec = pos.axes[axis];
     const q = pos.quadrants[axis];
@@ -201,6 +177,75 @@
     });
   }
 
+  // ---------- 5a. who are we up against: pills and the side-by-side table ----------
+  const pctTxt = (v) => v == null ? NA : Math.round(v * 100) + ' percent';
+  function mixText(mix, labels) {
+    const top = Object.entries(mix || {}).sort((a, b) => b[1] - a[1]).slice(0, 2);
+    return top.length ? top.map(([k, v]) => (labels[k] || k).toLowerCase() + ' ' + Math.round(v * 100) + '%').join(', ') : NA;
+  }
+  function angleChips(p) {
+    return el('div', { class: 'chips' }, ...(p.angles || []).map((a) => el('span', { class: 'chip', title: 'set by "' + a.word + '" in the ' + a.where, text: a.label + (a.n != null ? ' ' + a.n : '') + ': "' + a.word + '"' })));
+  }
+  function pagePanel(r, us, data) {
+    const L = data.format_labels;
+    const cmp = (label, a, b) => el('tr', null, el('th', { text: label }), el('td', { text: a }), el('td', { text: b }));
+    const tbl = el('table', { class: 'kit dense vs-table' }, el('thead', null, el('tr', null, el('th'), el('th', { text: r.name }), el('th', { text: us.name }))),
+      el('tbody', null,
+        cmp('Active ads', r.active_ads == null ? NA : fmt.num(r.active_ads), us.active_ads == null ? NA : fmt.num(us.active_ads)),
+        cmp('Format mix', mixText(r.format_mix, L), mixText(us.format_mix, L)),
+        cmp('Median days live', r.median_days == null ? NA : String(r.median_days), us.median_days == null ? NA : String(us.median_days)),
+        cmp('Ads live 30 days or more', r.long_runners_30d == null ? NA : String(r.long_runners_30d), us.long_runners_30d == null ? NA : String(us.long_runners_30d)),
+        cmp('Share pushing an offer', pctTxt(r.offer_share), pctTxt(us.offer_share)),
+        cmp('Offers seen', (r.offers_seen || []).join(', ') || 'none seen', (us.offers_seen || []).join(', ') || 'none seen'),
+        cmp('Main call to action', r.main_cta || NA, us.main_cta || NA),
+        cmp('New in 14 days', r.new_14d == null ? NA : String(r.new_14d), us.new_14d == null ? NA : String(us.new_14d))));
+    const body = el('div', { class: 'stack' },
+      el('div', { class: 'row' }, UI.verdict(r.verdict.kind, r.verdict.text, r.verdict.reason), el('span', { class: 'small', text: r.verdict.reason })),
+      r.positioning ? el('div', { class: 'small', text: r.positioning }) : null,
+      tbl,
+      el('h4', { text: 'Angles they run, with the word that set each tag' }), r.angles.length ? angleChips(r) : el('div', { class: 'na small', text: 'No angle tagged from ' + (r.quoted_ads || 0) + ' quoted ads and the hook labels.' }),
+      el('h4', { text: 'Battlecard draft' }), el('pre', { class: 'card sunken bc', text: r.battlecard }),
+      el('div', { class: 'row' }, UI.copyButton({ label: 'Copy battlecard', text: () => r.battlecard }),
+        r.ad_library_url ? el('a', { class: 'btn sm', href: r.ad_library_url, target: '_blank', rel: 'noopener', text: 'Open in the Ad Library' }) : null),
+      el('div', { class: 'micro faint', text: 'Build the battlecard: the agent keeps it to verified differences and refreshes it each capture.' }),
+      UI.decisionRow({ capability: 'BRAND-C57', autonomy: 'agent_does', screen: SCREEN, finding_id: SCREEN + '.page.' + r.key + '.battlecard' }),
+      el('div', { class: 'micro faint', text: 'Watch this page weekly: alert only when a new angle, offer or format crosses the rule.' }),
+      UI.decisionRow({ capability: 'BRN-C11', autonomy: 'agent_does', screen: SCREEN, finding_id: SCREEN + '.page.' + r.key + '.watch' }),
+      el('div', { class: 'micro faint', text: 'Signals only. Run length shows what a page keeps live, not what works. Never copy their text, logos, products or faces.' }));
+    UI.panel({ title: r.name + (r.frame === 'direct' ? ', direct competitor' : ', basics and apparel'), body });
+  }
+  function pagesSection(data) {
+    const us = data.rows.find((r) => r.role === 'self');
+    const comps = data.rows.filter((r) => r.role !== 'self');
+    const L = data.format_labels;
+    const cols = [
+      { key: 'name', label: 'Page', format: (v, r) => v + (r.role === 'self' ? ' (us)' : r.frame === 'direct' ? '' : ' (basics)') },
+      { key: 'active_ads', label: 'Active ads', unit: 'n' },
+      { key: 'format_mix', label: 'Format mix', format: (v) => mixText(v, L) },
+      { key: 'median_days', label: 'Median days live', unit: 'n' },
+      { key: 'offer_share', label: 'Offer share', format: pctTxt },
+      { key: 'main_cta', label: 'Main CTA', format: (v) => v || NA },
+      { key: 'new_14d', label: 'New, 14 days', format: (v) => v == null ? NA : String(v) },
+    ];
+    const empty = cols.filter((c) => ['main_cta', 'new_14d'].includes(c.key) && data.rows.every((r) => r[c.key] == null));
+    for (const c of empty) cols.splice(cols.indexOf(c), 1);
+    const box = el('div');
+    const draw = (key) => {
+      const rows = comps.filter((r) => key === 'all' || (key === 'threat' ? r.verdict.text === 'Threat' : r.frame === key));
+      box.replaceChildren(UI.verdictTable({
+        columns: cols, rows: rows.concat([Object.assign({}, us, { verdict: { kind: 'new', text: 'Us', reason: 'our page, for the side by side' } })]),
+        verdict: { at: 1, kind: (r) => r.verdict.kind, text: (r) => r.verdict.text, reason: (r) => r.verdict.reason },
+        reason: { key: 'why', label: 'Reason in numbers', text: (r) => r.role === 'self' ? 'the line we compare against' : r.verdict.short },
+        actions: { label: (r) => r.role === 'self' ? 'Ours' : r.verdict.text === 'Threat' ? 'Battlecard' : 'Open', onClick: (r) => { if (r.role !== 'self') pagePanel(r, us, data); } },
+        sort: false, onRow: (r) => { if (r.role !== 'self') pagePanel(r, us, data); },
+      }));
+    };
+    const src = data.snapshot ? 'ad-level snapshot of ' + fmt.date(data.snapshot.captured_at) : 'the brain\'s page summaries (no ad-level snapshot yet, so offer share, CTA and new in 14 days read unavailable)';
+    mount('#pages', UI.pills({ items: data.pills, current: 'all', onChange: draw }), box,
+      el('p', { class: 'micro faint', text: data.rule + ' Source: ' + src + '. Format mix is from up to 150 ads a page.' + (empty.length ? ' Hidden until a snapshot fills them: ' + empty.map((c) => c.label.toLowerCase()).join(', ') + '.' : '') }));
+    draw('all');
+  }
+
   // ---------- 6. the audit ----------
   function rulesTable(rules) {
     return UI.table({ columns: [{ key: 'rule_id', label: 'Rule' }, { key: 'name', label: 'What it checks' }, { key: 'inputs', label: 'Reads', format: (v) => (v || []).join(', ') }, { key: 'capability', label: 'Capability' }],
@@ -221,7 +266,7 @@
     mount('#map', ...mapCard(d.positioning));
     mount('#prices', ...priceTable(d.prices));
     mount('#board', ...d.board.map(boardCard));
-    mount('#cards', ...d.competitors.map(compCard));
+    pagesSection(d.pages);
     document.getElementById('audit-sub').textContent = p.findings.length + ' findings from ' + p.rules.length + ' rules. Public signals, one capture.';
     mount('#audit', auditTable(p.findings));
     mount('#rules', el('h4', { text: 'Rules' }), rulesTable(p.rules));

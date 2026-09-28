@@ -227,6 +227,60 @@ class TestApi(TempBrain):
         self.assertEqual(api.handle(Req(['overview'], query={'brand': ['nobrand']}))[0], 404)
 
 
+class TestPages(TempBrain):
+    """1.2: the tracked pages side by side, with a verdict and its reason in numbers."""
+    def setUp(self):
+        super().setUp()
+        api.BRAIN_ROOT = self.tmp
+        self.p = api.handle(Req(['overview']))['pages']
+
+    def test_twelve_pages_and_us(self):
+        rows = self.p['rows']
+        comps = [r for r in rows if r['role'] != 'self']
+        self.assertEqual(len(comps), 12)
+        self.assertEqual(sum(r['frame'] == 'direct' for r in comps), 5)
+        self.assertEqual(rows[-1]['role'], 'self')
+        self.assertEqual(rows[-1]['active_ads'], 23)
+        self.assertAlmostEqual(rows[-1]['offer_share'], round(21 / 23, 3))
+        pills = {p['key']: p['n'] for p in self.p['pills']}
+        self.assertEqual(pills['all'], 12)
+        self.assertEqual(pills['threat'], sum(r['verdict']['text'] == 'Threat' for r in comps))
+
+    def test_unavailable_not_zero(self):
+        allbirds = next(r for r in self.p['rows'] if r['name'] == 'Allbirds')
+        self.assertIsNone(allbirds['active_ads'])
+        self.assertEqual(allbirds['verdict']['kind'], 'na')
+        for r in self.p['rows']:
+            if r['source'] != 'snapshot':
+                self.assertIsNone(r['main_cta'])
+                self.assertIsNone(r['new_14d'])
+
+    def test_verdict_points_add_up(self):
+        for r in self.p['rows']:
+            if r['role'] == 'self' or r['verdict']['kind'] == 'na':
+                continue
+            v = r['verdict']
+            pts = sum(int(w.rsplit('(+', 1)[1].rstrip(')')) for w in v['why'])
+            self.assertEqual(pts, v['points'])
+            want = 'Threat' if pts >= 4 else 'Watch' if pts >= 2 else 'Ignore'
+            self.assertEqual(v['text'], want)
+
+    def test_angle_tags_keep_the_word(self):
+        feet = next(r for r in self.p['rows'] if r['name'] == 'Feetures')
+        relief = next(a for a in feet['angles'] if a['tag'] == 'relief')
+        self.assertEqual((relief['word'], relief['where']), ('relief', 'hook label'))
+        us = self.p['rows'][-1]
+        self.assertEqual(self.p['our_top_angles'], ['comfort', 'relief'])
+        self.assertTrue(all('n' in a for a in us['angles']))
+
+    def test_battlecard_is_signal_only(self):
+        for r in self.p['rows']:
+            if r['role'] == 'self':
+                continue
+            self.assertIn('brain verifies', r['battlecard'])
+            self.assertNotIn('quotes', r)
+
+
 class TestRank(TempBrain):
     """Depth contract rules 2, 3 and 13: owner, steps and artefact on every action; every finding ends in one."""
     W = {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4}

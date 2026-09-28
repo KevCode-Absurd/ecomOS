@@ -22,7 +22,7 @@ Round 0 notes (28 Sep 2026): brand price per pair is simulated net sales per uni
 | # | Feature | Status |
 |---|---|---|
 | 1.1 | Round 0 anti-patterns out: plan board first with ranked actions from `rank` (`actions.py`: real titles, steps, artefacts and drafts for COMP-R01 to R04), orientation beside it, what is wrong with evidence rows, action cards, desk, audit and rule list at the bottom; tiles, insight cards, the active-ads chart and the lookalike banner removed | done |
-| 1.2 | Competitor pills and the side-by-side table over the 12 tracked pages with verdicts | todo |
+| 1.2 | Competitor pills (all, direct, basics and apparel, threats) and the side-by-side table: the 12 pages in the brain's competitive frame plus ours, active ads, format mix, median days live, offer share, offers seen; threat, watch or ignore from 5 counted points with the reason in numbers; row opens a panel with us against them, angle tags with the word that set each, a battlecard draft (BRAND-C57) and a weekly watch (BRN-C11). `pages.py` reads an ad-level snapshot first when one exists | done |
 | 1.3 | Creative coverage matrix: angles by format, us against them, gap cells brief an ad | todo |
 | 1.4 | Hook and offer mix per competitor against ours, with the answer for each gap | todo |
 | 1.5 | Longest running competitor ads as signals, "use as reference" brief | todo |
@@ -128,4 +128,4 @@ Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `a
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
-| 1 | 1.1 | 2026-09-28 | Plan first; rank override in actions.py |
+| 1 | 1.1 to 1.2 | 2026-09-28 | Plan first; rank override in actions.py; 12 pages side by side |

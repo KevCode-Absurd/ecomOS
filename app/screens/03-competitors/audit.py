@@ -59,6 +59,24 @@ for _p in (APP / "brain", APP / "data"):
 
 from store import Brain, with_defaults  # noqa: E402
 
+HERE = Path(__file__).resolve().parent
+
+
+def _local(name: str):
+    import importlib.util
+    key = f"competitors_{name}"
+    if key in sys.modules:
+        return sys.modules[key]
+    spec = importlib.util.spec_from_file_location(key, HERE / f"{name}.py")
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules[key] = mod
+    spec.loader.exec_module(mod)
+    return mod
+
+
+snap = _local("snapshot")
+pagemod = _local("pages")
+
 SCREEN = "03-competitors"
 SEVERITY_ORDER = {"critical": 0, "high": 1, "medium": 2, "low": 3}
 PRICE_BAND = (85, 115)
@@ -283,7 +301,16 @@ def market(brand: str, today: dt.date, root: Path | None = None) -> dict:
     for c in comps:
         c["gap_to_own"] = [a["label"] for a in angles if a["held"] and c["name"] not in a["competitors_using"]]
 
+    snapshot = snap.load(brand)
+    pages = pagemod.build(brain, _value(brain, "positioning.competitive_frame"), snap, snapshot, prof)
+    us = next(p for p in pages if p["role"] == "self")
+    top = pagemod.our_top_angles(us)
+    for p in pages:
+        if p["role"] != "self":
+            p["verdict"] = pagemod.verdict(p, us, top)
     return {"brand": brand, "brain": brain, "competitors": comps, "profile": prof, "packs": packs,
+            "pages": pages, "snapshot": {k: v for k, v in (snapshot or {}).items() if k != "ads"} or None,
+            "our_top_angles": top,
             "category_median": cat_median, "price_position_index": index, "angles": angles,
             "offer_runs": offer_runs(brain, comps, prof), "lookalike": lookalike(brain),
             "competitor_set": _value(brain, "competitors.competitor_set") or []}
