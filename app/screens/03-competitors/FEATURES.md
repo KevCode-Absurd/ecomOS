@@ -39,6 +39,7 @@ Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `a
 | # | Feature | Status |
 |---|---|---|
 | 9.1 | Depth pass against depth.md section 3 on everything built in rounds 6 to 8. Found and fixed: a held move (lost outcome) left its finding open with no action (rule 3), so a held finding now reads "held", like a snooze; 2 desk blocks (coverage, map) lacked a caveat line (rule 10); one heading used "should" (rule 12). The browser smoke test now fails on any desk block without a sub line, a gap line and a caveat, and a test scans the screen's files for should, consider, leverage, em dashes, GPT and .env | done |
+| 9.2 | The room jobs table says where each job lives now (features and rules), and what each still waits on, in place of the round 0 "todo" column | done |
 
 ## Round 8: closing the loop on moves
 
@@ -240,18 +241,20 @@ Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permi
 
 ## Room jobs (JTBD)
 
-| Job | Question | Capability | Round 0 |
+Where each job lives now (round 9). The question column quotes the room spec.
+
+| Job | Question | Capability | Where it lives now |
 |---|---|---|---|
-| map every real alternative a shopper compares against, including doing nothing | who or what are we really competing with | BRAND-C18 | competitor set only; no ladder yet |
-| see which corners of the market are open | where is there room nobody has taken | BRAND-C19 | positioning map, open quadrants |
-| write and test the positioning statement against real shopper frames | does this positioning actually win against the alternative | BRAND-C20 | todo |
-| find an unclaimed angle when no slot is open head on | is there a dimension nobody has claimed, or a reframe of the whole category | BRAND-C21 | COMP-R01, gap to own on cards |
-| check whether price sits inside or outside the category's learned range | are we priced right, and is discounting undercutting us | BRAND-C24 | price tile, insight, ladder table, COMP-R02 |
-| size the market and a candidate niche from the brand's own numbers | is this idea big enough to matter at our numbers | BRAND-C23 | todo |
-| watch the tracked competitors for changes and alert only when it matters | what did they change this week that we should know about | BRN-C11 | todo (needs a second capture) |
-| turn a verified difference into something support can actually say | what do we say when a customer asks how we compare | BRAND-C57 | todo |
-| learn why an almost-buyer chose a named competitor instead | why do we lose the ones we lose, by name | BRAND-C58 | todo |
-| read competitor ads, pages, reviews and Q&A as public signal | what is the market doing that we are not seeing | BRAND-C07 | what they run board, lookalike warning |
+| map every real alternative a shopper compares against, including doing nothing | who or what are we really competing with | BRAND-C18 | category ladder (2.2), named alternatives from Reddit (2.1); COMP-R16 waits on a trends source |
+| see which corners of the market are open | where is there room nobody has taken | BRAND-C19 | positioning map with a move per corner (1.7), COMP-R11, quarterly review (5.4) |
+| write and test the positioning statement against real shopper frames | does this positioning actually win against the alternative | BRAND-C20 | frames and lines (3.6), polls logged with a score (6.5), COMP-R28 and COMP-R32 |
+| find an unclaimed angle when no slot is open head on | is there a dimension nobody has claimed, or a reframe of the whole category | BRAND-C21 | COMP-R01, coverage matrix gaps (1.3), COMP-R05 |
+| check whether price sits inside or outside the category's learned range | are we priced right, and is discounting undercutting us | BRAND-C24 | price index and ladder (1.6), COMP-R02, R09, R10, R21, logged prices and cuts (6.3), band checks (7.3) |
+| size the market and a candidate niche from the brand's own numbers | is this idea big enough to matter at our numbers | BRAND-C23 | niche sizing from our economics (2.7), COMP-R20; niche demand waits on a keyword source |
+| watch the tracked competitors for changes and alert only when it matters | what did they change this week that we should know about | BRN-C11 | captures and diffs (3.1), capture from the page (6.7), site changes logged (8.5), weekly brief (2.6), COMP-R12, R24, R25 |
+| turn a verified difference into something support can actually say | what do we say when a customer asks how we compare | BRAND-C57 | battlecards with checks (3.5, 6.4), support answers (4.8), COMP-R15, R27 |
+| learn why an almost-buyer chose a named competitor instead | why do we lose the ones we lose, by name | BRAND-C58 | win-loss kit (3.7), interviews logged (6.1), repeated reasons (6.2), reasons from interviews (7.1), COMP-R29, R31 |
+| read competitor ads, pages, reviews and Q&A as public signal | what is the market doing that we are not seeing | BRAND-C07 | pages side by side (1.2), references (1.5), review themes (2.3), placements (4.1); ad-level counts wait on the pull |
 
 ## Candidates from the room spec (pick 10 per round)
 
@@ -332,7 +335,7 @@ Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permi
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
-| 9 | 9.1 | 2026-09-28 | Depth pass |
+| 9 | 9.1 to 9.2 | 2026-09-28 | Depth pass; room jobs map |
 | 8 | 8.1 to 8.10 | 2026-09-28 | Outcomes; lost moves held; overdue reads; scoreboard; site changes; bring back snoozed; results in the brief and report; learnings for the brain; second brand check; round close. Screenshot `round8.png` |
 | 7 | 7.1 to 7.10 | 2026-09-28 | Interview reasons; coverage by name; prices seen on the band chart; price re-check cadence; logged work in the brief; queue and log in the report; briefs as rows; second brand check; form access; round close. Screenshot `round7.png` |
 | 6 | 6.1 to 6.10 | 2026-09-28 | Win-loss log; repeated loss reason; rival prices seen; battlecard checks; positioning polls; thresholds on the page; capture from the page; the team log; waiting on you; round close (and the hand-off fix). Screenshot `round6.png` |
