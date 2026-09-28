@@ -431,6 +431,17 @@
       el('h4', { text: 'Share of voice among direct pages, by ads live' }), sov, el('p', { class: 'micro faint', text: v.rule }));
   }
 
+  // ---------- 5n. the weekly brief ----------
+  async function digestSection() {
+    try {
+      const d = await api(BASE + 'digest');
+      mount('#digest', el('pre', { class: 'card sunken bc', text: d.text }),
+        el('div', { class: 'row' }, UI.copyButton({ label: 'Copy the brief', text: () => d.text }),
+          el('span', { class: 'micro faint', text: 'The agent writes this every Monday from the plan and sends it to the team channel once you say so.' })),
+        UI.decisionRow({ capability: 'BRN-C11', autonomy: 'agent_does', screen: SCREEN, compact: true, finding_id: SCREEN + '.weekly_brief' }));
+    } catch (e) { mount('#digest', el('p', { class: 'na', text: 'Brief unavailable: ' + e.message })); }
+  }
+
   // ---------- 6. the audit ----------
   function rulesTable(rules) {
     return UI.table({ columns: [{ key: 'rule_id', label: 'Rule' }, { key: 'name', label: 'What it checks' }, { key: 'inputs', label: 'Reads', format: (v) => (v || []).join(', ') }, { key: 'capability', label: 'Capability' }],
@@ -461,6 +472,7 @@
     reviewSection(d.reviews);
     presenceSection(d.presence);
     velocitySection(d.velocity);
+    digestSection();
     document.getElementById('audit-sub').textContent = p.findings.length + ' findings from ' + p.rules.length + ' rules. Public signals, one capture.';
     mount('#audit', auditTable(p.findings));
     mount('#rules', el('h4', { text: 'Rules' }), rulesTable(p.rules));

@@ -708,6 +708,18 @@ class TestVelocity(TempBrain):
         self.assertEqual(f['confidence'], 0.3)
 
 
+class TestDigest(TempBrain):
+    """2.6: the weekly brief is built in code from the plan, deterministic, signal only."""
+    def test_digest(self):
+        api.BRAIN_ROOT = self.tmp
+        d = api.handle(Req(['digest']))
+        self.assertIn('Top moves this week:', d['text'])
+        self.assertIn('Never copy', d['text'])
+        self.assertIn('1. ', d['text'])
+        self.assertNotIn('\u2014', d['text'])
+        self.assertEqual(api.handle(Req(['digest']))['text'], d['text'])
+
+
 class TestRank(TempBrain):
     """Depth contract rules 2, 3 and 13: owner, steps and artefact on every action; every finding ends in one."""
     W = {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4}

@@ -48,6 +48,10 @@ Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `a
 
 | 2.5 | Creative velocity and share of voice (`velocity.py`, the Motion and Foreplay job rebuilt as a rule): estimated new ads a week per page (active ads / median days live x 7) as a bar against the direct median, our counted rate this month beside our estimate, share of voice among direct pages by ads live (a signal of testing, never spend); rule COMP-R19 when our rate is under half the direct median: a weekly volume plan that doubles today's pace, fed by the coverage gaps (CREA-C06) | done |
 
+| 2.6 | The weekly competitor brief (the Foreplay alert job, rebuilt): `GET digest` writes the brief in code from the plan (what changed that crosses a rule, the top 5 moves with owners, threats, our pace against the direct pace, the price index); on the page with copy and a BRN-C11 decision to send it weekly; web pass recorded below | done |
+
+Web pass (28 Sep 2026; Foreplay, Motion, Atria, Pathmatics, Similarweb, Semrush and SpyFu, Meta Ad Library). Rebuilt on our data: long runners as signals (1.5), format share and offer share (1.2, 1.4), hook and angle gaps (1.3, 1.4), share of voice by ad count labelled not spend (2.5), price band gaps (1.6), word of mouth by name (2.1), review themes against rival claims (2.3), weekly alerts as a brief (2.6). Not rebuildable yet, data named: launch velocity counted and new-ad alerts (weekly snapshots or a start date per ad), spend and impressions share (modelled spend data), traffic by channel (Similarweb-type visits), keyword overlap (a keyword API), price moves (dated price captures). Sources: foreplay.co/spyder, motionapp.com, tryatria.com, sensortower.com/product/digital-advertising/pathmatics, support.similarweb.com, spyfu.com/blog/semrush-vs-spyfu, transparency.meta.com/researchtools/ad-library-tools.
+
 Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permission check had already refused that paid run and said not to retry it, so it was not re-run. Still listed under Contract asks.
 
 ### Round 1 status for Kevin (28 Sep 2026)
@@ -157,5 +161,5 @@ Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permi
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
-| 2 | 2.1 to 2.5 | 2026-09-28 | Lost by name; category ladder; review themes; Amazon against our site; creative velocity |
+| 2 | 2.1 to 2.6 | 2026-09-28 | Lost by name; category ladder; review themes; Amazon against our site; creative velocity; weekly brief |
 | 1 | 1.1 to 1.10 | 2026-09-28 | Plan first; rank override; 12 pages side by side; coverage matrix; hook and offer mix; references; price and pack ladder; positioning map with moves; changes timeline; freshness and re-pull; rank for all 14 rules. Screenshot `round1.png` |

@@ -10,6 +10,7 @@ in audit.py; this file shapes them for the page. No writes, nothing external.
   GET  overview   the desk: pages side by side, coverage matrix, hook and offer
                   mix, references, price and pack ladder, positioning map,
                   changes, freshness and the re-pull plan
+  GET  digest     the weekly competitor brief as plain text, built from the plan
   GET  audit      findings from audit.py (app/contracts/audit.md shape)
   rank(brand, window)  the depth contract override app/rank.py calls
 
@@ -231,6 +232,31 @@ def freshness(m: dict, brand: str) -> dict:
             "rule": f"Fresh up to {FRESH_DAYS} days, ageing to {AGEING_DAYS}, stale after. A page with no capture reads no capture, never 0."}
 
 
+def digest(brand: str, today: dt.date) -> dict:
+    """The weekly competitor brief: what changed, the top moves, the one number to watch. Built from the plan in code."""
+    m = audit.market_full(brand, today, BRAIN_ROOT)
+    p = plan(brand, today)
+    name = brand.capitalize()
+    acts = p["actions"][:5]
+    ch = m["changes"]
+    lines = [f"Competitor brief for {name}, week of {today.isoformat()}. Simulated sales, public signals.", "",
+             "What changed:"]
+    changed = [e for e in ch["events"] if e["verdict"] in ("follow", "watch")][:4]
+    lines += [f"- {e['page']}: {e['text']} ({e['verdict_text'].lower()})" for e in changed] or ["- nothing that crosses a rule"]
+    lines += ["", "Top moves this week:"]
+    lines += [f"{i + 1}. {a['title']} ({UI_OWNER.get(a['owner'], a['owner'])})" for i, a in enumerate(acts)] or ["none open"]
+    threats = [r["name"] for r in m["pages"] if (r.get("verdict") or {}).get("text") == "Threat"]
+    v = m["velocity"]
+    lines += ["", f"Threats: {', '.join(threats) if threats else 'none'}.",
+              f"Pace: we ship about {audit.velmod.now_rate(v)} new ads a week; direct pages about {v['direct_median_rate']} (estimate).",
+              f"Price index: {m['price_position_index'] if m['price_position_index'] is not None else 'unavailable'} (100 is the tracked median).",
+              "", "Signals only. Never copy their text, logos, products or faces."]
+    return {"text": "\n".join(lines), "actions": len(p["actions"]), "changes": len(changed), "week_of": today.isoformat()}
+
+
+UI_OWNER = {"agent": "agent does it", "agent_drafts": "agent drafts, you approve", "person": "a person does it"}
+
+
 def overview(brand: str, today: dt.date) -> dict:
     m = audit.market_full(brand, today, BRAIN_ROOT)
     brain = m.pop("brain")
@@ -252,6 +278,8 @@ def handle(req):
     try:
         if req.method == "GET" and req.path == ["overview"]:
             return overview(brand, today)
+        if req.method == "GET" and req.path == ["digest"]:
+            return digest(brand, today)
         if req.method == "GET" and req.path == ["plan"]:
             return plan(brand, today)
         if req.method == "GET" and req.path == ["audit"]:
