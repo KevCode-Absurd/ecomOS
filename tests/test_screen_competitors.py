@@ -964,6 +964,14 @@ class TestPage(unittest.TestCase):
             self.assertIn(f'id="{sec_id}"', desk)
             self.assertIn(f"'{sec_id}'", js)
 
+    def test_report_view(self):
+        html = (SCREEN / 'index.html').read_text(encoding='utf-8')
+        js = (SCREEN / 'screen.js').read_text(encoding='utf-8')
+        self.assertIn('href="?view=report"', html)
+        for i in ('r-moves', 'r-changed', 'r-threats', 'r-numbers', 'r-caveats'):
+            self.assertIn(f'id="{i}"', html)
+            self.assertIn(f"'#{i}'", js)
+
     def test_no_brand_facts_in_js(self):
         js = (SCREEN / 'screen.js').read_text(encoding='utf-8')
         for word in ('Bombas', 'Stance', 'Darn Tough', 'Smartwool', 'Feetures', 'Comrad', 'COMFORT20'):

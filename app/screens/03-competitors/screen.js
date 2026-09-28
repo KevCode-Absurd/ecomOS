@@ -508,6 +508,37 @@
     if (src) src.remove();
   }
 
+  // ---------- 7. the printable weekly report (?view=report): same page, print layout ----------
+  const OWNER = { agent: 'Agent does it', agent_drafts: 'Agent drafts, you approve', person: 'A person does it' };
+  async function loadReport() {
+    let p, d, g;
+    try { [p, d, g] = await Promise.all([api(BASE + 'plan'), api(BASE + 'overview'), api(BASE + 'digest')]); }
+    catch (e) { mount('#r-badge', 'Could not load: ' + e.message); return; }
+    mount('#r-badge', el('span', null, el('b', { text: 'Simulated data and public signals. ' }), d.simulated_note));
+    document.getElementById('r-title').textContent = 'Competitor report, week of ' + fmt.date(g.week_of);
+    document.getElementById('r-sub').textContent = p.actions.length + ' open moves from ' + p.rules.length + ' rules. Brain version ' + d.version + '.';
+    mount('#r-moves', UI.table({ columns: [{ key: 'n', label: '#', unit: 'n' }, { key: 'title', label: 'Move' }, { key: 'owner', label: 'Who', format: (v) => OWNER[v] || v },
+      { key: 'why', label: 'Why' }, { key: 'check_on', label: 'Check on', format: (v) => v ? fmt.date(v) : NA }],
+    rows: p.actions.slice(0, 10).map((a, i) => ({ n: i + 1, title: a.title, owner: a.owner, why: a.why, check_on: a.check_on })), sort: false }));
+    const ev = d.changes.events.filter((e) => e.verdict !== 'ours');
+    mount('#r-changed', ev.length ? el('ul', null, ...ev.map((e) => el('li', null, el('b', { text: fmt.date(e.when) + ', ' + e.page + ': ' }), e.text + ' (' + e.verdict_text.toLowerCase() + ')')))
+      : el('p', { class: 'muted', text: 'Nothing crossed a rule in the last 28 days.' }));
+    mount('#r-threats', UI.table({ columns: [{ key: 'name', label: 'Page' }, { key: 'v', label: 'Verdict' }, { key: 'active_ads', label: 'Active ads', unit: 'n' }, { key: 'r', label: 'Reason' }],
+      rows: d.pages.rows.filter((r) => r.role !== 'self').map((r) => ({ name: r.name, v: r.verdict.text, active_ads: r.active_ads, r: r.verdict.short })), sort: false }));
+    const v = d.velocity, pr = d.premium;
+    mount('#r-numbers', UI.table({ columns: [{ key: 'k', label: 'Number' }, { key: 'v', label: 'Now' }, { key: 'b', label: 'Against' }], sort: false, rows: [
+      { k: 'Price index (100 = tracked median)', v: d.price_position_index == null ? NA : String(d.price_position_index), b: '85 to 115' },
+      { k: 'New ads a week', v: v.our_counted_rate == null ? NA : v.our_counted_rate + ' (counted)', b: 'direct median ' + v.direct_median_rate + ' (estimate)' },
+      { k: 'Discount depth', v: pr.our_depth == null ? NA : pr.our_depth + ' percent', b: 'direct median ' + pr.direct_median_depth + ' percent' },
+      { k: 'Pack saving a pair', v: d.ladder.median_saving == null ? NA : Math.round(d.ladder.median_saving * 100) + ' percent', b: 'rule ' + Math.round(d.ladder.ladder_min * 100) + ' percent' },
+      { k: 'Threat pages', v: String(d.pages.rows.filter((r) => r.verdict && r.verdict.text === 'Threat').length), b: 'of ' + (d.pages.rows.length - 1) + ' tracked' }] }));
+    mount('#r-caveats', ...[
+      'Competitor facts are public signals from the Ad Library, public product feeds and Reddit. Run length is a signal, not proof.',
+      'Our prices and sales are simulated until the store connects.',
+      d.coverage.all.estimated ? 'Angle and format shares are estimates from page summaries until an ad-level snapshot lands.' : 'Angle and format shares are counted from an ad-level snapshot.',
+      'Never copy their text, logos, products or faces.'].map((t) => el('li', { text: t })));
+  }
+
   // ---------- 6. the audit ----------
   function rulesTable(rules) {
     return UI.table({ columns: [{ key: 'rule_id', label: 'Rule' }, { key: 'name', label: 'What it checks' }, { key: 'inputs', label: 'Reads', format: (v) => (v || []).join(', ') }, { key: 'capability', label: 'Capability' }],
@@ -550,5 +581,10 @@
     mount('#rules', el('h4', { text: 'Rules' }), rulesTable(p.rules));
   }
 
-  load();
+  if (new URLSearchParams(location.search).get('view') === 'report') {
+    document.querySelector('.screen').hidden = true;
+    document.getElementById('report').hidden = false;
+    document.getElementById('r-print').addEventListener('click', () => window.print());
+    loadReport();
+  } else load();
 })();

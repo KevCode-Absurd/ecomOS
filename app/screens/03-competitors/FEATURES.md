@@ -41,6 +41,7 @@ Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `a
 | 3.1 | Dated page-summary captures (`capture.py`, brain only, no spend) and their diff: active ads up or down 25 percent, a new format, a new or dropped offer, a new angle, a new flight; the alerts flow into the changes timeline (follow, watch, ignore) and rule COMP-R24 puts a direct competitor's new offer or angle on the plan as a counter brief; first capture on file for 28 Sep, so alerts light with the next brain refresh | done |
 | 3.2 | Price moves from the dated captures (each capture holds every page's price band): median price per pair up or down 15 percent between the latest two, shown above the price ladder; rule COMP-R25 (high for a direct page) puts a sharp cut on the plan with a value answer and a watch rule, never a reflex match (CREA-C31) | done |
 | 3.3 | Landing page tracking for the top 3 threats (`landing.py`): by threat points, the urls to visit weekly from public links in the brain (site, products feed, Ad Library page) plus ad landing domains once a snapshot exists, what to diff (headline, offer banner, guarantee, best seller price per pair, new collections), last capture "not tracked yet"; rule COMP-R26 puts "start tracking" on the plan as an agent task (BRN-C01, public read) | done |
+| 3.4 | The printable weekly report (`?view=report` on the same page, since the server serves only index.html, screen.js and screen.css from a screen folder): the top 10 moves with who and check dates, what changed, who is a threat, the numbers to watch against their bars, caveats; Print button and print styles; linked from the head | done |
 
 ## Round 2: who we lose to, the market around us, and counted signals
 
@@ -85,6 +86,8 @@ Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permi
 6. Next, round 2: run the snapshot (Kevin's approval) to make every cell counted, then the room's SERP overlap, marketplace presence, review comparison and pricing moves, and a web pass on what Foreplay, Motion, Atria and Similarweb do, rebuilt as rules.
 
 ## Contract asks
+
+- `server.py` serves only index.html, screen.js and screen.css (plus fixtures) from a screen folder; a report page or split JS files need an allow-list entry. Local fallback: the report is `?view=report` on the same page.
 
 - A snapshot run needs a permission for `snapshot.py --live` (Apify, page ids only, inside the Bombas caps) in the session settings; local fallback: the screen reads the brain's page summaries and labels every estimate.
 
@@ -182,6 +185,6 @@ Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permi
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
-| 3 | 3.1 to 3.3 | 2026-09-28 | Page-summary captures and diffs; price moves; landing page tracking |
+| 3 | 3.1 to 3.4 | 2026-09-28 | Page-summary captures and diffs; price moves; landing page tracking; printable report |
 | 2 | 2.1 to 2.10 | 2026-09-28 | Lost by name; category ladder; review themes; Amazon against our site; creative velocity; weekly brief; niche sizing; premium signals; search seeds; desk tabs. Screenshot `round2.png` |
 | 1 | 1.1 to 1.10 | 2026-09-28 | Plan first; rank override; 12 pages side by side; coverage matrix; hook and offer mix; references; price and pack ladder; positioning map with moves; changes timeline; freshness and re-pull; rank for all 14 rules. Screenshot `round1.png` |
