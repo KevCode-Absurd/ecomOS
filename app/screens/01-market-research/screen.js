@@ -149,15 +149,46 @@
       (function () { const a = actionFor(SLUG + '.PROD-R02.' + r.line.toLowerCase().replace(/ /g, '-')); return a ? el('div', { class: 'row', style: { marginTop: '6px' } }, el('button', { class: 'btn soft xs', type: 'button', text: 'Fix the top complaint', onclick: () => openAction(a) })) : null; })()))),
       gapLine('Lines with a low-star share over 10 percent and 1.5 times the brand median carry a fix action. The rest are read for the next SKU\'s angle.'));
   }
+  async function candidatePost(path, body) {
+    try { await api(BASE + path + Q, { method: 'POST', body }); load(); }
+    catch (e) { alert('Could not save: ' + e.message); }
+  }
   function pipelineBlock(p) {
     const floor = p.floor_pct != null ? 'The brand floor is ' + p.floor_pct + ' percent, from ' + p.floor_source + '.' : 'No floor on file: enter a target contribution margin on the setup screen.';
-    const heroes = state.actions.filter((a) => a.rule_id === 'PROD-R03');
-    return el('div', null,
-      el('p', { class: 'small muted', text: 'Margin gate: ' + p.gate_rule + ' ' + floor }),
-      el('div', { class: 'card scroll' }, UI.table({ columns: p.columns.map((c) => ({ key: c, label: pretty(c) })), rows: p.rows, sort: false, empty: 'No candidates yet. The pipeline fills when the first idea is screened.' })),
-      gapLine(p.rows.length ? p.rows.length + ' candidates open.' : (heroes.length ? 'The pipeline is empty while ' + heroes.length + ' hero line' + (heroes.length === 1 ? ' has' : 's have') + ' no next SKU planned.' : 'The pipeline is empty. Every category with a hero line will show a plan-the-next-SKU action here.'),
-        heroes.length ? { label: 'Plan the next SKU', onClick: () => openAction(heroes[0]) } : null));
+    const rows = p.rows || [];
+    const funnel = Charts.funnel({ title: 'Candidates by stage reached', stages: (p.funnel || []).map((f) => ({ label: f.stage, value: f.n })), unit: 'n',
+      note: 'A candidate at a later stage counts at every stage before it. ' + (p.rule || '') + '.' });
+    const stageNext = (r) => { const i = (p.stages || []).indexOf(r.stage); return i >= 0 && i < p.stages.length - 1 ? p.stages[i + 1] : null; };
+    const vrows = rows.map((r) => { const acts = (r.finding_ids || []).map(actionFor).filter(Boolean); const nx = stageNext(r); return Object.assign({}, r, {
+      stageText: r.stage + (r.closed ? '' : r.days_left != null ? (r.days_left < 0 ? ', ' + Math.abs(r.days_left) + ' d over the box' : ', ' + r.days_left + ' d left') : ''),
+      checks: (p.checks || []).map((c) => pretty(c) + ' ' + ((r.screen_result || {})[c] || 'not run')).join(', '),
+      angle: r.angle_text || 'no angle yet', price: r.planned_price, hours: r.hours_logged,
+      actions: [].concat(acts.length ? [{ label: acts[0].rule_id === 'PROD-R15' ? 'Kill or fix' : 'Decide', onClick: () => openAction(acts[0]) }] : [],
+        !r.closed && nx ? [{ label: 'Advance to ' + nx, cls: 'quiet', onClick: () => candidatePost('candidates/' + r.candidate_id, { stage: nx, who: 'person' }) }] : [],
+        !r.closed ? [{ label: 'Log 1 h', cls: 'quiet', onClick: () => candidatePost('candidates/' + r.candidate_id, { hours_add: 1, who: 'person' }) }, { label: 'Kill', cls: 'quiet', onClick: () => { if (confirm('Kill ' + r.name + '? It stays killed 90 days.')) candidatePost('candidates/' + r.candidate_id, { stage: 'killed', who: 'person' }); } }] : []) }); });
+    const t = UI.verdictTable({
+      columns: [{ key: 'name', label: 'Candidate' }, { key: 'category', label: 'Category' }, { key: 'stageText', label: 'Stage and box' }, { key: 'checks', label: 'Fast checks' }, { key: 'angle', label: 'Angle' },
+        { key: 'price', label: 'Planned price', unit: '$' }, { key: 'hours', label: 'Hours', align: 'right', format: (v) => v == null ? NA : v.toFixed(1) }],
+      rows: vrows,
+      verdict: { at: 1, kind: (r) => r.closed ? (r.stage === 'go' ? 'scale' : 'na') : (r.failed_checks || []).length >= 2 ? 'stop' : r.over_box ? 'fix' : 'keep',
+        text: (r) => r.closed ? (r.stage === 'go' ? 'Go' : 'Killed') : (r.failed_checks || []).length >= 2 ? 'Failed screen' : r.over_box ? 'Over the box' : 'In the box',
+        reason: (r) => (r.failed_checks || []).length + ' checks failed, ' + (r.age_days == null ? NA : r.age_days + ' days since screen-in against a ' + r.time_box_days + '-day box') },
+      actions: { label: 'Do', onClick: () => {} }, sort: false, empty: 'No candidates yet. Screen one from a gap above, or add one here.' });
+    const name = el('input', { class: 'text sm', placeholder: 'candidate name', style: { flex: '1 1 220px' } });
+    const cat = el('input', { class: 'text sm', placeholder: 'category, like socks', style: { maxWidth: '160px' } });
+    const price = el('input', { class: 'text sm', placeholder: 'planned price', type: 'number', style: { maxWidth: '130px' } });
+    const box = el('input', { class: 'text sm', placeholder: 'time box, days', type: 'number', value: '10', style: { maxWidth: '130px' } });
+    const angle = el('input', { class: 'text sm', placeholder: 'angle in one line (optional)', style: { flex: '1 1 260px' } });
+    const add = el('button', { class: 'btn primary sm', type: 'button', text: 'Screen it in', onclick: () => { if (!name.value.trim()) { alert('Give the candidate a name.'); return; } candidatePost('candidates', { name: name.value, category: cat.value || 'socks', planned_price: price.value || null, time_box_days: box.value || 10, angle_text: angle.value || null, who: 'person' }); } });
+    const orient = UI.orientation([{ label: 'open', value: p.open, unit: 'n' }, { label: 'over the box', value: p.over_box, unit: 'n', tone: p.over_box ? 'bad' : 'good' }, { label: 'hours logged', value: p.hours, unit: 'n' }, { label: 'margin floor', value: p.floor_pct, unit: '%' }]);
+    return el('div', { class: 'stack' }, orient,
+      el('div', { class: 'grid two' }, el('div', { class: 'card' }, funnel), el('div', { class: 'card flat' }, el('h4', { text: 'Screen a candidate in' }), el('div', { class: 'row', style: { gap: '6px', flexWrap: 'wrap' } }, name, cat, price, box), el('div', { class: 'row', style: { gap: '6px', marginTop: '6px' } }, angle, add),
+        el('p', { class: 'micro faint', text: 'It lands at screened with a time box. The 3 fast checks run when the agent screens it; you can set them from the card. Margin gate: ' + p.gate_rule + ' ' + floor }))),
+      el('div', { class: 'card scroll' }, t),
+      gapLine(p.over_box ? p.over_box + ' candidates are past their time box. Each carries a decide-or-kill action.' : (p.open ? 'Every open candidate is inside its box.' : 'The pipeline is empty. Every gap above with a screen action can fill it.'),
+        rows.find((r) => r.finding_ids && r.finding_ids.length) ? { label: 'Decide the first', onClick: () => { const r = rows.find((x) => x.finding_ids && x.finding_ids.length); const a = actionFor(r.finding_ids[0]); if (a) openAction(a); } } : null));
   }
+
   function trendsBlock(t, mix) {
     if (!t.on_file) return UI.emptyState({ screen: SLUG, title: 'No web pass on file', text: 'Run the research web pass for this brand. Every number it keeps carries a url and a date.', missing: ['web_pass'] });
     const cite = (m) => (m.sources && m.sources[0]) ? (m.sources[0].publisher + ', ' + m.sources[0].date) : 'no source';
@@ -416,7 +447,7 @@
     parts.push(section('desk-demand', 'Which lines are losing share, and which reviews say why?', 'Last 3 whole months against the same months a year earlier. A line fires when units fall or growth trails the store by 1 point or more.', demandBlock(d, w || { months: [], year_ago: [] })));
     parts.push(section('desk-price', 'Where do our prices sit against the competitor band?', 'Per-pair list price by line against the band of competitor median prices from the brain. Socks only; other categories have no competitor price on file.', priceBlock(d.price_bands || {})));
     parts.push(section('desk-reviews', 'What do reviews praise and fail, line by line?', 'Public site review totals per line, with the objection ladder rungs built from them.', reviewBlock(d.reviews || [])));
-    parts.push(section('desk-pipeline', 'What is in the next-SKU pipeline?', 'Candidates, their stage, time box and the margin gate.', pipelineBlock(d.pipeline || { columns: [], rows: [] })));
+    parts.push(section('desk-pipeline', 'What is in the next-SKU pipeline, and what is past its time box?', 'Candidates screened in from the gaps above or by hand, their stage, fast checks, time box and hours. Advance, log hours or kill from the card; every write lands in the pipeline log.', pipelineBlock(d.pipeline || { rows: [] })));
     mount('#desk', ...parts);
   }
 

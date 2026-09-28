@@ -533,6 +533,50 @@ class RankTest(unittest.TestCase):
         self.assertEqual(a, b)
 
 
+class PipelineTest(unittest.TestCase):
+    """The one thing this screen writes: candidates. Rules R14 and R15 read them."""
+
+    def setUp(self):
+        import tempfile
+        self.tmp = Path(tempfile.mkdtemp()) / 'pipeline.json'
+        self.real = audit.PIPELINE_PATH
+        audit.PIPELINE_PATH = self.tmp
+
+    def tearDown(self):
+        audit.PIPELINE_PATH = self.real
+
+    def test_add_advance_hours_kill_round_trip(self):
+        today = date(2026, 9, 28)
+        code, out = api.candidate_add('fake', {'name': 'Kids gift pack', 'category': 'socks', 'planned_price': '29.5', 'time_box_days': 7, 'who': 'person'}, today)
+        self.assertEqual(code, 201)
+        cid = out['candidate']['candidate_id']
+        self.assertEqual(out['candidate']['stage'], 'screened')
+        self.assertEqual(out['candidate']['planned_price'], 29.5)
+        self.assertEqual(api.candidate_update('fake', cid, {'stage': 'nope'}, today)[0], 400)
+        r = api.candidate_update('fake', cid, {'stage': 'researched', 'hours_add': 2.5, 'screen_result': {'demand': 'pass', 'competition': 'fail', 'store_fit': 'fail'}}, today)
+        self.assertEqual(r['candidate']['stage'], 'researched')
+        self.assertEqual(r['candidate']['hours_logged'], 2.5)
+        self.assertEqual(len(r['candidate']['log']), 2)
+        rows = audit.pipeline('fake')
+        self.assertEqual([x['candidate_id'] for x in rows], [cid])
+        fs = audit.pipeline_findings('fake', date(2026, 10, 10))
+        self.assertEqual(sorted(f['rule_id'] for f in fs), ['PROD-R14', 'PROD-R15'])   # 12 days on a 7-day box, 2 checks failed
+        for f in fs:
+            self.assertTrue(f['id'].endswith(cid))
+        api.candidate_update('fake', cid, {'stage': 'killed'}, today)
+        self.assertEqual(audit.pipeline_findings('fake', date(2026, 10, 10)), [])
+        self.assertEqual(api.candidate_update('fake', 'cand-999', {'stage': 'go'}, today)[0], 404)
+        self.assertEqual(api.candidate_add('fake', {'name': ''}, today)[0], 400)
+
+    def test_funnel_counts_stages_reached(self):
+        rows = [audit.candidate_view(r, date(2026, 9, 27)) for r in [
+            {'candidate_id': 'a', 'name': 'a', 'stage': 'gated', 'screen_in_date': '2026-09-20', 'time_box_days': 10},
+            {'candidate_id': 'b', 'name': 'b', 'stage': 'screened', 'screen_in_date': '2026-09-20', 'time_box_days': 10},
+            {'candidate_id': 'c', 'name': 'c', 'stage': 'killed', 'screen_in_date': '2026-09-01', 'time_box_days': 3}]]
+        self.assertEqual([f['n'] for f in audit.pipeline_funnel(rows)], [2, 1, 1, 0, 0])
+        self.assertFalse(rows[2]['over_box'])   # killed candidates never stall
+
+
 class Req:
     def __init__(self, path, brand='bombas', method='GET'):
         self.method, self.path, self.query, self.data = method, path, {'brand': [brand]}, None
@@ -545,6 +589,7 @@ class Req:
 class ApiTest(unittest.TestCase):
     def test_read_only_and_bad_brand(self):
         self.assertEqual(api.handle(Req(['overview'], method='POST'))[0], 405)
+        self.assertEqual(api.handle(Req(['findings'], method='POST'))[0], 405)
         self.assertEqual(api.handle(Req(['overview'], brand='../x'))[0], 400)
         self.assertEqual(api.handle(Req(['nope']))[0], 404)
 

@@ -65,6 +65,10 @@ Rules
   PROD-R13  Term group without a page: a term group (brand, category, competitor, problem) with impressions in
             the last 28 days of Search Console and no url in the brain's site map whose path carries the group's
             page words. Only runs when the data is there. Money: null. Capability PROD-C05. Owner: 01-market-research.
+  PROD-R14  Candidate stalled: a pipeline candidate whose days since screen-in exceed its time box and whose stage
+            is not go or killed. Severity low (hygiene), confidence 0.9. Capability PROD-C04. Owner: 01-market-research.
+  PROD-R15  Demand screen failed: a candidate with 2 or more of the 3 fast checks (demand, competition, store fit)
+            failed and still open. Capability PROD-C01. Owner: 01-market-research.
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -119,6 +123,8 @@ RULES = [
      'entity_type': 'brand', 'inputs': ['search_console'], 'capability': 'PROD-C05', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R13', 'name': 'Term group with impressions in 28 days and no answering page in the site map',
      'entity_type': 'page', 'inputs': ['search_console', 'google_rows', 'brain.site_map', 'brain.objection_ladders'], 'capability': 'PROD-C05', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R14', 'name': 'Candidate past its research time box with no decision', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C04', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R15', 'name': 'Candidate that failed 2 or more of the 3 fast checks (demand, competition, store fit) and is still open', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C01', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -132,7 +138,9 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R10': {'id': 'PROD-C01', 'autonomy': 'agent_does'},
               'PROD-R11': {'id': 'PROD-C12', 'autonomy': 'human_assist'},
               'PROD-R12': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
-              'PROD-R13': {'id': 'PROD-C05', 'autonomy': 'agent_does'}}
+              'PROD-R13': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
+              'PROD-R14': {'id': 'PROD-C04', 'autonomy': 'agent_does'},
+              'PROD-R15': {'id': 'PROD-C01', 'autonomy': 'agent_does'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -449,15 +457,69 @@ def review_findings(reviews, lads, rd, tr, ends_on, net_28d):
 
 # ---------------------------------------------------------------- hero line, pipeline
 
+PIPELINE_PATH = HERE / 'fixtures' / 'pipeline.json'
+STAGES = ['screened', 'researched', 'gated', 'shortlisted', 'go']
+CLOSED_STAGES = ('go', 'killed', 'kill')
+SCREEN_CHECKS = ('demand', 'competition', 'store_fit')
+SCREEN_FAIL_AT = 2
+
+
 def pipeline(brand):
-    """Open next-SKU candidates from this screen's fixture (fixtures/pipeline.json, list of rows). Empty when absent."""
-    path = HERE / 'fixtures' / 'pipeline.json'
-    if not path.is_file():
+    """Candidates from this screen's pipeline file (fixtures/pipeline.json, rows). Empty when absent."""
+    if not PIPELINE_PATH.is_file():
         return []
-    import json
-    doc = json.loads(path.read_text(encoding='utf-8'))
+    doc = json.loads(PIPELINE_PATH.read_text(encoding='utf-8'))
     rows = doc.get('rows') if isinstance(doc, dict) else doc
-    return [r for r in rows or [] if not brand or r.get('brand') in (None, brand)]
+    return [r for r in rows or [] if r.get('brand') in (None, brand or 'sample')]
+
+
+def candidate_view(r, ends_on):
+    """A candidate row with the numbers the rules and the desk read: age, time left, failed checks, stage index."""
+    since = r.get('screen_in_date')
+    age = (ends_on - date.fromisoformat(since)).days if since else None
+    box = r.get('time_box_days')
+    checks = r.get('screen_result') or {}
+    failed = [k for k in SCREEN_CHECKS if checks.get(k) == 'fail']
+    unchecked = [k for k in SCREEN_CHECKS if checks.get(k) not in ('pass', 'fail')]
+    return dict(r, age_days=age, days_left=(box - age) if box is not None and age is not None else None,
+                over_box=bool(box is not None and age is not None and age > box and r.get('stage') not in CLOSED_STAGES),
+                failed_checks=failed, unchecked_checks=unchecked, stage_index=STAGES.index(r['stage']) if r.get('stage') in STAGES else None,
+                closed=r.get('stage') in CLOSED_STAGES)
+
+
+def pipeline_funnel(rows):
+    """How many candidates reached each stage (a candidate at 'gated' has passed screened and researched)."""
+    out = []
+    for i, st in enumerate(STAGES):
+        n = sum(1 for r in rows if r.get('stage_index') is not None and r['stage_index'] >= i)
+        out.append({'stage': st, 'n': n})
+    return out
+
+
+def pipeline_findings(brand, ends_on):
+    """PROD-R14: a candidate past its time box with no decision. PROD-R15: a candidate that failed 2 or more of the
+    3 fast checks and is still open."""
+    out = []
+    for r in [candidate_view(x, ends_on) for x in pipeline(brand)]:
+        cid = r.get('candidate_id') or slug(r.get('name'))
+        if r['over_box']:
+            ev = [_ev('candidate_pipeline_age_days', r['age_days'], 'days', ends_on.isoformat(), 'since screen-in', r['time_box_days'], 'threshold', source='fixtures.pipeline', simulated=False, freshness_days=0,
+                      stage=r.get('stage')),
+                  _ev('research_hours_logged', r.get('hours_logged'), 'hours', ends_on.isoformat(), 'since screen-in', source='fixtures.pipeline', simulated=False, freshness_days=0)]
+            sentence = f'{r["name"]} has sat at {r["stage"]} for {r["age_days"]} days, past its {r["time_box_days"]}-day box. Decide or kill it.'
+            f = _finding('PROD-R14', cid, ends_on, 'low', ev, sentence, None, 0.9, [], money_reason='research time, not revenue')
+            f['entity'] = {'type': 'sku', 'id': cid, 'label': r['name'], 'stage': r.get('stage'), 'candidate': True}
+            f['id'] = f'{SCREEN}.PROD-R14.{cid}'
+            out.append(f)
+        if len(r['failed_checks']) >= SCREEN_FAIL_AT and not r['closed']:
+            ev = [_ev('demand_screen_failed_checks', len(r['failed_checks']), 'count', ends_on.isoformat(), 'at screening', SCREEN_FAIL_AT, 'threshold', source='fixtures.pipeline', simulated=False, freshness_days=0,
+                      failed=r['failed_checks'])]
+            sentence = f'{r["name"]} failed {len(r["failed_checks"])} of the 3 fast checks ({", ".join(c.replace("_", " ") for c in r["failed_checks"])}). Killing it now saves the research hours.'
+            f = _finding('PROD-R15', cid, ends_on, 'medium', ev, sentence, None, 0.7, [], money_reason='a killed candidate saves hours, not revenue')
+            f['entity'] = {'type': 'sku', 'id': cid, 'label': r['name'], 'stage': r.get('stage'), 'candidate': True, 'failed': r['failed_checks']}
+            f['id'] = f'{SCREEN}.PROD-R15.{cid}'
+            out.append(f)
+    return out
 
 
 def line_category(line, prods):
@@ -545,6 +607,7 @@ def run(brand, window=None, data=None):
     out += positioning_findings(br, prods_for_map, ends_on)
     out += avatar_findings(br, ends_on, net, prods_for_map)
     out += search_findings(br, data, brand, ends_on)
+    out += pipeline_findings(brand, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 

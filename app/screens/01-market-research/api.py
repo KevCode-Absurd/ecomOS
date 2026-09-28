@@ -520,6 +520,36 @@ def recipe(f):
             'check_on': _check_on(f, 28), 'time_to_ship_hours': 8,
             'win_rule': 'clicks on the group up 20 percent over the next 28 days, or position under 10',
         }
+    if rid == 'PROD-R14':
+        ent = f.get('entity') or {}
+        age, box = _ev_value(f, 'candidate_pipeline_age_days'), next((e.get('baseline') for e in f['evidence'] if e.get('metric') == 'candidate_pipeline_age_days'), None)
+        return {
+            'title': f'Decide or kill {ent.get("label")}: {age} days at {ent.get("stage")}, box was {box}',
+            'owner': 'agent_drafts',
+            'artefact': {'kind': 'research_note', 'label': f'a 1-page decision memo on {ent.get("label")}: what the research found in the box, the go, hold or kill, and the reason logged'},
+            'steps': [
+                {'n': 1, 'who': 'agent', 'text': 'Pull the candidate\'s log, hours and check results. Name what the time box answered and what it did not.'},
+                {'n': 2, 'who': 'agent', 'text': 'Draft the memo: go to the next stage (with the one open question and a new box), or kill (with the reason so it is not re-argued).'},
+                {'n': 3, 'who': 'person', 'text': 'Decide from the card: advance or kill. The choice writes to the pipeline and the decisions log.'}],
+            'size': {'text': f'{_ev_value(f, "research_hours_logged") or 0} hours logged', 'usd': None},
+            'stop_rule': 'no new box without a named open question', 'check_on': _check_on(f, 3), 'time_to_ship_hours': 1,
+            'win_rule': 'the candidate has a stage change or a kill logged',
+        }
+    if rid == 'PROD-R15':
+        ent = f.get('entity') or {}
+        failed = ', '.join(c.replace('_', ' ') for c in (ent.get('failed') or []))
+        return {
+            'title': f'Kill {ent.get("label")} or fix the failed checks: {failed}',
+            'owner': 'agent',
+            'artefact': {'kind': 'research_note', 'label': f'the fast-check record for {ent.get("label")}: each failed check with its number, and the kill or the one change that would flip it'},
+            'steps': [
+                {'n': 1, 'who': 'agent', 'text': f'Re-read the failed checks ({failed}) with the numbers behind them: sellers counted, lines it would sit beside, the demand signal.'},
+                {'n': 2, 'who': 'agent', 'text': 'Write the kill with the reason, or the one change (price, angle, channel) that would pass the checks.'},
+                {'n': 3, 'who': 'person', 'text': 'Confirm the kill from the card, or reset the checks with the change and a new time box.'}],
+            'size': {'text': f'{len(ent.get("failed") or [])} of 3 checks failed', 'usd': None},
+            'stop_rule': 'a killed candidate stays killed for 90 days', 'check_on': _check_on(f, 3), 'time_to_ship_hours': 1,
+            'win_rule': 'the candidate is killed or passes 2 of 3 checks',
+        }
     return None
 
 
@@ -708,9 +738,123 @@ def overview(data, brand):
                      'demand': demand(tr, reviews), 'store_growth': tr.get('store_growth'),
                      'demand_unavailable': {'reason': tr.get('reason'), 'fix': tr.get('fix')} if tr.get('unavailable') else None,
                      'price_bands': bands, 'reviews': review_mining(reviews, lads),
-                     'pipeline': {'columns': PIPELINE_COLUMNS, 'rows': pipe, 'gate_rule': MARGIN_GATE, 'floor_pct': floor,
-                                  'floor_source': 'finance_inputs.target_contribution_margin' if floor is not None else None}},
+                     'pipeline': pipeline_block(brand, ends_on, findings, floor)},
             'audit': {'findings': findings, 'rules': audit.RULES}}
+
+
+# ---------------------------------------------------------------- the pipeline: the one thing this screen writes
+
+CANDIDATE_FIELDS = ('name', 'category', 'stage', 'time_box_days', 'hours_logged', 'angle_text', 'angle_source', 'planned_price', 'cogs_estimate',
+                    'cash_plan', 'compliance', 'review_date', 'screen_result', 'source_finding')
+
+
+def _pipeline_doc():
+    if audit.PIPELINE_PATH.is_file():
+        doc = json.loads(audit.PIPELINE_PATH.read_text(encoding='utf-8'))
+        if isinstance(doc, list):
+            doc = {'rows': doc}
+    else:
+        doc = {'note': 'The candidate pipeline for the research desk, written by this screen\'s api.', 'rows': []}
+    doc.setdefault('rows', [])
+    return doc
+
+
+def _write_pipeline(doc):
+    audit.PIPELINE_PATH.parent.mkdir(parents=True, exist_ok=True)
+    audit.PIPELINE_PATH.write_text(json.dumps(doc, indent=1), encoding='utf-8')
+
+
+def _num(v, lo=0.0):
+    try:
+        x = float(v)
+    except (TypeError, ValueError):
+        return None
+    return x if x >= lo else None
+
+
+def candidate_add(brand, body, today):
+    body = body or {}
+    name = str(body.get('name') or '').strip()[:120]
+    if not name:
+        return 400, {'error': 'name is empty'}
+    doc = _pipeline_doc()
+    n = 1 + max([int(str(r.get('candidate_id', 'cand-0')).split('-')[-1]) for r in doc['rows'] if str(r.get('candidate_id', '')).startswith('cand-')] or [0])
+    row = {'candidate_id': f'cand-{n:03d}', 'brand': brand, 'name': name, 'category': str(body.get('category') or 'socks')[:40], 'stage': 'screened',
+           'screen_result': {k: (body.get('screen_result') or {}).get(k) if (body.get('screen_result') or {}).get(k) in ('pass', 'fail') else None for k in audit.SCREEN_CHECKS},
+           'time_box_days': int(_num(body.get('time_box_days'), 1) or 10), 'hours_logged': _num(body.get('hours_logged')) or 0.0,
+           'angle_text': (str(body.get('angle_text') or '').strip()[:300] or None), 'angle_source': (str(body.get('angle_source') or '').strip()[:300] or None),
+           'screen_in_date': today.isoformat(), 'planned_price': _num(body.get('planned_price')), 'cogs_estimate': _num(body.get('cogs_estimate')),
+           'cash_plan': (str(body.get('cash_plan') or '').strip()[:300] or None), 'compliance': {'labelling': None, 'category_certification': None},
+           'review_date': None, 'source_finding': (str(body.get('source_finding') or '').strip()[:120] or None), 'simulated': True,
+           'log': [{'on': today.isoformat(), 'who': str(body.get('who') or 'person')[:20], 'what': 'screened in from the research desk'}]}
+    doc['rows'].append(row)
+    _write_pipeline(doc)
+    return 201, {'ok': True, 'candidate': row}
+
+
+def candidate_update(brand, cid, body, today):
+    body = body or {}
+    doc = _pipeline_doc()
+    row = next((r for r in doc['rows'] if r.get('candidate_id') == cid and r.get('brand') in (None, brand)), None)
+    if row is None:
+        return 404, {'error': 'no such candidate', 'candidate_id': cid}
+    changes = []
+    if body.get('stage') is not None:
+        st = str(body['stage'])
+        if st not in audit.STAGES + ['killed']:
+            return 400, {'error': 'stage must be one of ' + ', '.join(audit.STAGES + ['killed'])}
+        if st != row.get('stage'):
+            changes.append(f'{row.get("stage")} to {st}')
+            row['stage'] = st
+            if st == 'shortlisted' and not row.get('review_date'):
+                row['review_date'] = (today + dt.timedelta(days=14)).isoformat()
+    if body.get('hours_add') is not None:
+        h = _num(body['hours_add'])
+        if h is None:
+            return 400, {'error': 'hours_add must be a number'}
+        row['hours_logged'] = round((row.get('hours_logged') or 0) + h, 2)
+        changes.append(f'{h:g} hours logged')
+    for k in ('angle_text', 'angle_source', 'cash_plan', 'source_finding'):
+        if body.get(k) is not None:
+            row[k] = str(body[k]).strip()[:300] or None
+            changes.append(k.replace('_', ' ') + ' set')
+    for k in ('planned_price', 'cogs_estimate'):
+        if body.get(k) is not None:
+            row[k] = _num(body[k])
+            changes.append(k.replace('_', ' ') + ' set')
+    if body.get('time_box_days') is not None:
+        row['time_box_days'] = int(_num(body['time_box_days'], 1) or row.get('time_box_days') or 10)
+        row['screen_in_date'] = today.isoformat()
+        changes.append(f'new box of {row["time_box_days"]} days')
+    if isinstance(body.get('screen_result'), dict):
+        row['screen_result'] = {k: body['screen_result'].get(k) if body['screen_result'].get(k) in ('pass', 'fail') else (row.get('screen_result') or {}).get(k) for k in audit.SCREEN_CHECKS}
+        changes.append('checks set')
+    if isinstance(body.get('compliance'), dict):
+        row['compliance'] = dict(row.get('compliance') or {}, **{k: v for k, v in body['compliance'].items() if v in ('pass', 'fail', None)})
+        changes.append('compliance set')
+    if body.get('review_date') is not None:
+        row['review_date'] = str(body['review_date'])[:10] or None
+        changes.append('review date set')
+    if not changes:
+        return 400, {'error': 'nothing to change'}
+    row.setdefault('log', []).append({'on': today.isoformat(), 'who': str(body.get('who') or 'person')[:20], 'what': '; '.join(changes)})
+    _write_pipeline(doc)
+    return {'ok': True, 'candidate': row, 'changes': changes}
+
+
+def pipeline_block(brand, ends_on, findings, floor):
+    rows = [audit.candidate_view(r, ends_on) for r in audit.pipeline(brand)]
+    by_entity = {}
+    for f in findings:
+        if f['rule_id'] in ('PROD-R14', 'PROD-R15', 'PROD-R03'):
+            by_entity.setdefault(f['entity']['id'], []).append(f['id'])
+    for r in rows:
+        r['finding_ids'] = by_entity.get(r.get('candidate_id'), [])
+    open_rows = [r for r in rows if not r['closed']]
+    return {'rows': rows, 'funnel': audit.pipeline_funnel(rows), 'stages': audit.STAGES, 'checks': list(audit.SCREEN_CHECKS),
+            'open': len(open_rows), 'over_box': sum(1 for r in open_rows if r['over_box']), 'hours': round(sum(r.get('hours_logged') or 0 for r in rows), 1),
+            'gate_rule': MARGIN_GATE, 'floor_pct': floor, 'floor_source': 'finance_inputs.target_contribution_margin' if floor is not None else None,
+            'rule': f'a candidate fires when it passes its time box, or fails {audit.SCREEN_FAIL_AT} of the {len(audit.SCREEN_CHECKS)} fast checks'}
 
 
 def _brand(req):
@@ -723,13 +867,18 @@ def _brand(req):
 
 
 def handle(req):
-    if req.method != 'GET':
-        return 405, {'error': 'read only'}
     try:
         brand = _brand(req)
         data = None if brand else req.data
         if brand:
             audit.brand_data(brand)  # ValueError for an unknown brand
+        if req.method == 'POST':
+            today = audit.last_full_day(data, brand) + dt.timedelta(days=1)
+            if req.path == ['candidates']:
+                return candidate_add(brand or 'sample', req.body, today)
+            if len(req.path) == 2 and req.path[0] == 'candidates':
+                return candidate_update(brand or 'sample', req.path[1], req.body, today)
+            return 405, {'error': 'read only, except the candidate pipeline'}
         if req.path == ['overview']:
             return overview(data, brand)
         if req.path == ['findings']:

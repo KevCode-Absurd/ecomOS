@@ -151,6 +151,23 @@ The screen is rebuilt to `app/contracts/depth.md`: the plan first, then what is 
 | 1.9 | Where the brand is falling behind: every positioning and avatar gap the audit found (PROD-R06 to R11), ranked by money at stake where a formula exists, then reach (share of buyers, competitor pages, Reddit upvotes, complaint quotes), then severity; owner, capability and the action on each row; orientation numbers (gaps, stake, share of 28-day net revenue, the quadrant we sit in) and the proof we hold and never say in an ad; the same rows feed `rank` | done |
 | 1.10 | `rank(brand, window)` in `api.py` for all 13 rules: real titles, steps with who does each, artefact kinds (research_note, page_section, ad_brief, offer, landing_page, connector_setup), size, win and stop rules, check dates; rubric overrides declared in the audit docstring (R07 reputation 4, R09 reputation 5, R11 satisfaction 4) applied in code with the total recomputed; one action per lane when a market and a competitor finding overlap; tests that every finding maps to a valid action, every rule has a recipe, the order is deterministic and the rubric totals add up. Screenshots `round1.png` and `round1b.png` (the page is 19,140 px tall; each file under 1 MB). | done |
 
+## Round 2: the rest of the room spec (from 28 Sep 2026)
+
+The candidate side of the desk: the pipeline with its gates, boxes and scorecard, and the research-tool jobs (trend against saturation, sustained ad spend, review price and complaint mining) rebuilt as rules on our own data. Ideas taken from the bank by id: PRD-052 (competitor count ladder), PRD-079 (dollar floor and multiple), PRD-023 (run length as a live test), PRD-044 and PRD-045 (12-month and multi-year trend checks), PRD-005 (felt problem).
+
+| # | Feature | Status |
+|---|---|---|
+| 2.1 | Candidate pipeline that works: `POST candidates` and `POST candidates/<id>` write `fixtures/pipeline.json` (screen in, advance, log hours, set checks, kill; every change in the row's log), seeded with 4 candidates from the round 1 findings; funnel by stage reached; a screen-in form and the actions on every card; rules PROD-R14 (candidate past its time box) and PROD-R15 (2 of 3 fast checks failed) with decide-or-kill recipes | done |
+| 2.2 | Margin gate with a waterfall per candidate | todo |
+| 2.3 | Demand pattern tag and cash timing | todo |
+| 2.4 | Trend against saturation map per lane | todo |
+| 2.5 | Ad library sustained spend signal | todo |
+| 2.6 | Review price signal | todo |
+| 2.7 | Complaint bars per listing | todo |
+| 2.8 | Differentiation angle and the 5 go-live gates | todo |
+| 2.9 | Shortlist scorecard and the go or no-go memo | todo |
+| 2.10 | Recipes for every new rule, tests, round2.png, founder note | todo |
+
 ## Round 1 note for the founder (28 Sep 2026)
 
 1. A founder can now open the research desk and see, first, the 10 moves ranked by the rubric: win back the 5 big buyer segments whose main doubt no ad answers (repeat revenue at risk computed per segment), take the "buy it for life" position with proof next to the price, answer the 4 unanswered review themes, decide the made-in-USA position, and brief the lanes competitors push that we never advertise (guarantee, merino, style, gifting before the holiday window, underwear, t-shirts, sustainability).
@@ -171,3 +188,4 @@ The screen is rebuilt to `app/contracts/depth.md`: the plan first, then what is 
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.11 | 28 Sep 2026 | S3.6, Bombas simulated set at scale 0.1 |
 | 1 | 1.1 to 1.10 | 28 Sep 2026 | plan first, 13 rules (PROD-R01 to R13), rank with a recipe per rule, web pass and social pull fixtures, round1.png and round1b.png |
+| 2 | 2.1 | 28 Sep 2026 | pipeline writes, PROD-R14 and R15; in progress |
