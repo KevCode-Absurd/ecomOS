@@ -6,9 +6,29 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | # | Feature | Status |
 |---|---|---|
-| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | todo |
-| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | todo |
-| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | todo |
+| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | done |
+| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | done |
+| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | done |
+| 0.4 | `audit.py`: 13 rules SEO-R01 to SEO-R13 in the audit contract shape | done |
+
+## Room jobs and the JTBD table (room "SEO", agent ORG)
+
+| Job | Question | Capabilities | Rule(s) in audit.py | Round 0 state |
+|---|---|---|---|---|
+| decide whether SEO is worth the spend this quarter | does this category have enough demand and margin to justify SEO work at all | ORG-C17 | none yet | candidate |
+| know what buyers are asking before a page is written | what keywords and buyer questions should this page answer | ORG-C18 | none yet | candidate (brain seo_facts has 2 Reddit questions) |
+| make sure the site structure carries the content plan | does the collection tree, URL type and menu support the money pages we need | SITE-C07 | none yet | candidate |
+| find what is technically broken, including for AI crawlers | what indexing, canonical, redirect or crawl error needs fixing, and can AI crawlers reach our pages | ORG-C20 | SEO-R07, SEO-R12 | unavailable: crawl_snapshot, robots_txt_snapshot |
+| know which product pages miss the SEO basics | which product pages have thin titles, no content stack or bad image SEO | ORG-C21 | SEO-R02 | live on search_console, fires on the home page |
+| know which collection pages give no buying help | which collection pages have no FAQ, no reviews and no grid logic | ORG-C22 | none yet | candidate |
+| confirm structured data validates | which product, review, FAQ or breadcrumb schema is missing or breaking | ORG-C23 | SEO-R06 | unavailable: schema_validation_log |
+| sequence the refresh backlog first | which pages are falling and need fixing first, ranked by revenue at risk | ORG-C26 | SEO-R05, SEO-R08 | unavailable: ga4_orders_join, page dates, product_feed_status |
+| build buyer-intent content for a money page | which cluster or comparison page should we write next, and ahead of which season | ORG-C24, ORG-C25 | none yet | candidate |
+| keep money pages linked | which money pages get no internal links, and which content pages are orphaned | ORG-C27 | SEO-R03, SEO-R04 | R03 live (quiet), R04 unavailable: crawl_snapshot |
+| know if outreach and local presence earn real links | are backlink, PR and local listing efforts landing links and reviews | ORG-C28, ORG-C29 | SEO-R09, SEO-R10 | unavailable: backlink_index, gbp_reviews |
+| confirm tracking is not the reason numbers look wrong | is GA4, Search Console and Tag Manager tracking what they should | MONEY-C20 | SEO-R11 | live on GA4 daily totals (quiet) |
+| get a revenue-first read on organic this month | is organic growing, and where is a drop coming from | ORG-C32 | SEO-R01 | live on sessions (quiet) |
+| screen a vendor pitch before signing | does this vendor's stat hold up against our own analytics | ORG-C33 | SEO-R13 | unavailable: vendor_claims |
 
 ## Candidates from the room spec (pick 10 per round)
 
@@ -102,3 +122,13 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
+| 0 | skeleton, api, 3 tiles, 2 insights, 1 chart, audit with 13 rules | 2026-09-28 | S3.19 |
+
+## Round 0 status
+
+1. Shell, api.py (summary, findings), 3 tiles (organic visits, organic share of visits, non-branded CTR), 2 insights (SEO-R02, SEO-R01), 1 chart (organic sessions vs Search Console clicks, 12 weeks), query table, landing pages; all simulated Bombas data.
+2. audit.py covers all 13 room rules; 4 read written tables (R01, R02, R03, R11), 9 read unavailable with the connector named.
+3. SEO-R02 fires on Bombas: home page, query 'bombas', CTR 35 percent at position 1.1 against a 54 percent branded curve, $83,897 at stake in 28 days, high, confidence 0.7.
+4. The branded curve (2x non-branded) is a rule constant; part of that stake may go to Bombas' own brand search ads, so read it as a ceiling.
+5. Search Console has no metric in metrics.md yet; audit.py reads it with one GROUP BY. Propose ctr_by_query_group and cwv_pass_rate in a contract session (lcp_ms reads unavailable: speed_runs has no device or measured_at field).
+6. Tests: tests/test_screen_seo.py, 11 passing; screen suite only fails the known test_screen_today tolerance. Screenshot round0.png at 1280 wide.
