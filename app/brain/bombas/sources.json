@@ -857,8 +857,13 @@
     "site": "Nordstrom",
     "note": "no-show socks product page, fetched but no additional usable quotes beyond the wool crew page",
     "extractors": [
-      "d-public"
-    ]
+      "d-public",
+      "f-reviews"
+    ],
+    "retailer": "Nordstrom",
+    "accessed": "2026-09-28",
+    "lane": "retailer",
+    "used_for_quotes": false
   },
   {
     "url": "https://www.sitejabber.com/reviews/bombas.com",
@@ -907,8 +912,12 @@
     "site": "Dick's Sporting Goods",
     "note": "HTTP 403, bot-blocked",
     "extractors": [
-      "d-public"
-    ]
+      "d-public",
+      "f-reviews"
+    ],
+    "retailer": "Dick's Sporting Goods",
+    "accessed": "2026-09-28",
+    "lane": "retailer"
   },
   {
     "url": "https://www.dickssportinggoods.com/f/top-rated-bombas-socks-x-bazaarvoice-ratings-dsg-x-brand-202194",
@@ -927,8 +936,11 @@
     "site": "Amazon",
     "note": "search results returned 503",
     "extractors": [
-      "d-public"
-    ]
+      "d-public",
+      "f-reviews"
+    ],
+    "lane": "amazon",
+    "accessed": "2026-09-28"
   },
   {
     "url": "https://www.amazon.com/Bombas-Womens-Knee-High-Compression-Socks/dp/B08Y67N1VS",
@@ -1075,6 +1087,1174 @@
     "note": "King 5 on Bombas' new retail stores and revenue mix",
     "extractors": [
       "e-job"
+    ]
+  },
+  {
+    "url": "summary://f-reviews/own_site",
+    "lane": "own_site",
+    "accessed": "2026-09-28",
+    "note": "lane summary, not a page read",
+    "sample_summary": {
+      "platform": "Yotpo public widget API",
+      "lines": [
+        "ankle",
+        "calf",
+        "no_show",
+        "merino",
+        "slippers",
+        "underwear",
+        "t_shirts",
+        "compression"
+      ],
+      "reviews_pulled": 236,
+      "per_line_plan": "newest 10 five-star, 10 one-star, 4 two-star, 3 three-star, 3 four-star",
+      "notes": "Yotpo groups reviews across sibling products and packs. A few 1-star reviews read as praise (star misclick); they were not used as complaints. One 1-star text was posted on several products and is counted once per product."
+    },
+    "quotes_used": 173,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "summary://f-reviews/amazon",
+    "lane": "amazon",
+    "accessed": "2026-09-28",
+    "note": "lane summary, not a page read",
+    "sample_summary": {
+      "public_sample": true,
+      "signed_in": false,
+      "asins_read": 8,
+      "page_reads": 17,
+      "review_bodies": 0,
+      "customers_say_excerpts_verified": 36,
+      "notes": "This is a public sample, not the full review set. Amazon hides review bodies behind sign-in, so quotes are the short Customers say excerpts, checked against the saved page; star, date and verified are unavailable for them. Every in-stock offer was a third-party reseller."
+    },
+    "quotes_used": 39,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "summary://f-reviews/retailer",
+    "lane": "retailer",
+    "accessed": "2026-09-28",
+    "note": "lane summary, not a page read",
+    "sample_summary": {
+      "target_reviews": 39,
+      "nordstrom_reviews_seen": 28,
+      "dicks": "blocked (403)",
+      "walmart": "blocked (bot check)",
+      "notes": "Target text is exact from the public reviews JSON behind the product page; Target carries only 1-pack ankle socks and leans 5-star. Incentivized Target reviews were not used. Nordstrom text was not used for quotes."
+    },
+    "quotes_used": 14,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://shop.bombas.com/products.json",
+    "ok": true,
+    "lane": "own_site",
+    "accessed": "2026-09-28",
+    "note": "public Shopify product list, 3 pages, used only to find product ids for the Yotpo widget",
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://api-cdn.yotpo.com/v1/reviews/<store>/filter.json?domain_key=10249027322210&scores=5",
+    "ok": true,
+    "lane": "own_site",
+    "pdp": "https://shop.bombas.com/products/womens-solids-ankle-sock-8-pack",
+    "accessed": "2026-09-28",
+    "line": "ankle",
+    "star_filter": 5,
+    "returned": 10,
+    "total_at_star": 60566,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://api-cdn.yotpo.com/v1/reviews/<store>/filter.json?domain_key=10249027322210&scores=1",
+    "ok": true,
+    "lane": "own_site",
+    "pdp": "https://shop.bombas.com/products/womens-solids-ankle-sock-8-pack",
+    "accessed": "2026-09-28",
+    "line": "ankle",
+    "star_filter": 1,
+    "returned": 10,
+    "total_at_star": 1274,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://api-cdn.yotpo.com/v1/reviews/<store>/filter.json?domain_key=10249027322210&scores=2",
+    "ok": true,
+    "lane": "own_site",
+    "pdp": "https://shop.bombas.com/products/womens-solids-ankle-sock-8-pack",
+    "accessed": "2026-09-28",
+    "line": "ankle",
+    "star_filter": 2,
+    "returned": 4,
+    "total_at_star": 1253,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://api-cdn.yotpo.com/v1/reviews/<store>/filter.json?domain_key=10249027322210&scores=3",
+    "ok": true,
+    "lane": "own_site",
+    "pdp": "https://shop.bombas.com/products/womens-solids-ankle-sock-8-pack",
+    "accessed": "2026-09-28",
+    "line": "ankle",
+    "star_filter": 3,
+    "returned": 3,
+    "total_at_star": 2214,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://api-cdn.yotpo.com/v1/reviews/<store>/filter.json?domain_key=10249027322210&scores=4",
+    "ok": true,
+    "lane": "own_site",
+    "pdp": "https://shop.bombas.com/products/womens-solids-ankle-sock-8-pack",
+    "accessed": "2026-09-28",
+    "line": "ankle",
+    "star_filter": 4,
+    "returned": 3,
+    "total_at_star": 2742,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://api-cdn.yotpo.com/v1/reviews/<store>/filter.json?domain_key=10249027256674&scores=5",
+    "ok": true,
+    "lane": "own_site",
+    "pdp": "https://shop.bombas.com/products/mens-solids-calf-sock-8-pack",
+    "accessed": "2026-09-28",
+    "line": "calf",
+    "star_filter": 5,
+    "returned": 10,
+    "total_at_star": 24914,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://api-cdn.yotpo.com/v1/reviews/<store>/filter.json?domain_key=10249027256674&scores=1",
+    "ok": true,
+    "lane": "own_site",
+    "pdp": "https://shop.bombas.com/products/mens-solids-calf-sock-8-pack",
+    "accessed": "2026-09-28",
+    "line": "calf",
+    "star_filter": 1,
+    "returned": 10,
+    "total_at_star": 966,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://api-cdn.yotpo.com/v1/reviews/<store>/filter.json?domain_key=10249027256674&scores=2",
+    "ok": true,
+    "lane": "own_site",
+    "pdp": "https://shop.bombas.com/products/mens-solids-calf-sock-8-pack",
+    "accessed": "2026-09-28",
+    "line": "calf",
+    "star_filter": 2,
+    "returned": 4,
+    "total_at_star": 989,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://api-cdn.yotpo.com/v1/reviews/<store>/filter.json?domain_key=10249027256674&scores=3",
+    "ok": true,
+    "lane": "own_site",
+    "pdp": "https://shop.bombas.com/products/mens-solids-calf-sock-8-pack",
+    "accessed": "2026-09-28",
+    "line": "calf",
+    "star_filter": 3,
+    "returned": 3,
+    "total_at_star": 1657,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://api-cdn.yotpo.com/v1/reviews/<store>/filter.json?domain_key=10249027256674&scores=4",
+    "ok": true,
+    "lane": "own_site",
+    "pdp": "https://shop.bombas.com/products/mens-solids-calf-sock-8-pack",
+    "accessed": "2026-09-28",
+    "line": "calf",
+    "star_filter": 4,
+    "returned": 3,
+    "total_at_star": 1833,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://api-cdn.yotpo.com/v1/reviews/<store>/filter.json?domain_key=1348502552661&scores=5",
+    "ok": true,
+    "lane": "own_site",
+    "pdp": "https://shop.bombas.com/products/womens-no-show-12-pack",
+    "accessed": "2026-09-28",
+    "line": "no_show",
+    "star_filter": 5,
+    "returned": 10,
+    "total_at_star": 7994,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://api-cdn.yotpo.com/v1/reviews/<store>/filter.json?domain_key=1348502552661&scores=1",
+    "ok": true,
+    "lane": "own_site",
+    "pdp": "https://shop.bombas.com/products/womens-no-show-12-pack",
+    "accessed": "2026-09-28",
+    "line": "no_show",
+    "star_filter": 1,
+    "returned": 10,
+    "total_at_star": 519,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://api-cdn.yotpo.com/v1/reviews/<store>/filter.json?domain_key=1348502552661&scores=2",
+    "ok": true,
+    "lane": "own_site",
+    "pdp": "https://shop.bombas.com/products/womens-no-show-12-pack",
+    "accessed": "2026-09-28",
+    "line": "no_show",
+    "star_filter": 2,
+    "returned": 4,
+    "total_at_star": 455,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://api-cdn.yotpo.com/v1/reviews/<store>/filter.json?domain_key=1348502552661&scores=3",
+    "ok": true,
+    "lane": "own_site",
+    "pdp": "https://shop.bombas.com/products/womens-no-show-12-pack",
+    "accessed": "2026-09-28",
+    "line": "no_show",
+    "star_filter": 3,
+    "returned": 3,
+    "total_at_star": 620,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://api-cdn.yotpo.com/v1/reviews/<store>/filter.json?domain_key=1348502552661&scores=4",
+    "ok": true,
+    "lane": "own_site",
+    "pdp": "https://shop.bombas.com/products/womens-no-show-12-pack",
+    "accessed": "2026-09-28",
+    "line": "no_show",
+    "star_filter": 4,
+    "returned": 3,
+    "total_at_star": 610,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://api-cdn.yotpo.com/v1/reviews/<store>/filter.json?domain_key=2371174826069&scores=5",
+    "ok": true,
+    "lane": "own_site",
+    "pdp": "https://shop.bombas.com/products/mens-merino-wool-ankle-sock-4-pack",
+    "accessed": "2026-09-28",
+    "line": "merino",
+    "star_filter": 5,
+    "returned": 10,
+    "total_at_star": 2298,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://api-cdn.yotpo.com/v1/reviews/<store>/filter.json?domain_key=2371174826069&scores=1",
+    "ok": true,
+    "lane": "own_site",
+    "pdp": "https://shop.bombas.com/products/mens-merino-wool-ankle-sock-4-pack",
+    "accessed": "2026-09-28",
+    "line": "merino",
+    "star_filter": 1,
+    "returned": 10,
+    "total_at_star": 91,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://api-cdn.yotpo.com/v1/reviews/<store>/filter.json?domain_key=2371174826069&scores=2",
+    "ok": true,
+    "lane": "own_site",
+    "pdp": "https://shop.bombas.com/products/mens-merino-wool-ankle-sock-4-pack",
+    "accessed": "2026-09-28",
+    "line": "merino",
+    "star_filter": 2,
+    "returned": 4,
+    "total_at_star": 77,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://api-cdn.yotpo.com/v1/reviews/<store>/filter.json?domain_key=2371174826069&scores=3",
+    "ok": true,
+    "lane": "own_site",
+    "pdp": "https://shop.bombas.com/products/mens-merino-wool-ankle-sock-4-pack",
+    "accessed": "2026-09-28",
+    "line": "merino",
+    "star_filter": 3,
+    "returned": 3,
+    "total_at_star": 123,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://api-cdn.yotpo.com/v1/reviews/<store>/filter.json?domain_key=2371174826069&scores=4",
+    "ok": true,
+    "lane": "own_site",
+    "pdp": "https://shop.bombas.com/products/mens-merino-wool-ankle-sock-4-pack",
+    "accessed": "2026-09-28",
+    "line": "merino",
+    "star_filter": 4,
+    "returned": 3,
+    "total_at_star": 116,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://api-cdn.yotpo.com/v1/reviews/<store>/filter.json?domain_key=7666584387756&scores=5",
+    "ok": true,
+    "lane": "own_site",
+    "pdp": "https://shop.bombas.com/products/womens-gripper-slipper-bootie-sherpa-lined",
+    "accessed": "2026-09-28",
+    "line": "slippers",
+    "star_filter": 5,
+    "returned": 10,
+    "total_at_star": 9331,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://api-cdn.yotpo.com/v1/reviews/<store>/filter.json?domain_key=7666584387756&scores=1",
+    "ok": true,
+    "lane": "own_site",
+    "pdp": "https://shop.bombas.com/products/womens-gripper-slipper-bootie-sherpa-lined",
+    "accessed": "2026-09-28",
+    "line": "slippers",
+    "star_filter": 1,
+    "returned": 10,
+    "total_at_star": 146,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://api-cdn.yotpo.com/v1/reviews/<store>/filter.json?domain_key=7666584387756&scores=2",
+    "ok": true,
+    "lane": "own_site",
+    "pdp": "https://shop.bombas.com/products/womens-gripper-slipper-bootie-sherpa-lined",
+    "accessed": "2026-09-28",
+    "line": "slippers",
+    "star_filter": 2,
+    "returned": 4,
+    "total_at_star": 190,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://api-cdn.yotpo.com/v1/reviews/<store>/filter.json?domain_key=7666584387756&scores=3",
+    "ok": true,
+    "lane": "own_site",
+    "pdp": "https://shop.bombas.com/products/womens-gripper-slipper-bootie-sherpa-lined",
+    "accessed": "2026-09-28",
+    "line": "slippers",
+    "star_filter": 3,
+    "returned": 3,
+    "total_at_star": 353,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://api-cdn.yotpo.com/v1/reviews/<store>/filter.json?domain_key=7666584387756&scores=4",
+    "ok": true,
+    "lane": "own_site",
+    "pdp": "https://shop.bombas.com/products/womens-gripper-slipper-bootie-sherpa-lined",
+    "accessed": "2026-09-28",
+    "line": "slippers",
+    "star_filter": 4,
+    "returned": 3,
+    "total_at_star": 568,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://api-cdn.yotpo.com/v1/reviews/<store>/filter.json?domain_key=10246733562210&scores=5",
+    "ok": true,
+    "lane": "own_site",
+    "pdp": "https://shop.bombas.com/products/mens-cotton-modal-blend-boxer-brief-classic-fly-3-pack",
+    "accessed": "2026-09-28",
+    "line": "underwear",
+    "star_filter": 5,
+    "returned": 10,
+    "total_at_star": 757,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://api-cdn.yotpo.com/v1/reviews/<store>/filter.json?domain_key=10246733562210&scores=1",
+    "ok": true,
+    "lane": "own_site",
+    "pdp": "https://shop.bombas.com/products/mens-cotton-modal-blend-boxer-brief-classic-fly-3-pack",
+    "accessed": "2026-09-28",
+    "line": "underwear",
+    "star_filter": 1,
+    "returned": 10,
+    "total_at_star": 35,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://api-cdn.yotpo.com/v1/reviews/<store>/filter.json?domain_key=10246733562210&scores=2",
+    "ok": true,
+    "lane": "own_site",
+    "pdp": "https://shop.bombas.com/products/mens-cotton-modal-blend-boxer-brief-classic-fly-3-pack",
+    "accessed": "2026-09-28",
+    "line": "underwear",
+    "star_filter": 2,
+    "returned": 4,
+    "total_at_star": 51,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://api-cdn.yotpo.com/v1/reviews/<store>/filter.json?domain_key=10246733562210&scores=3",
+    "ok": true,
+    "lane": "own_site",
+    "pdp": "https://shop.bombas.com/products/mens-cotton-modal-blend-boxer-brief-classic-fly-3-pack",
+    "accessed": "2026-09-28",
+    "line": "underwear",
+    "star_filter": 3,
+    "returned": 2,
+    "total_at_star": 47,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://api-cdn.yotpo.com/v1/reviews/<store>/filter.json?domain_key=10246733562210&scores=4",
+    "ok": true,
+    "lane": "own_site",
+    "pdp": "https://shop.bombas.com/products/mens-cotton-modal-blend-boxer-brief-classic-fly-3-pack",
+    "accessed": "2026-09-28",
+    "line": "underwear",
+    "star_filter": 4,
+    "returned": 3,
+    "total_at_star": 55,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://api-cdn.yotpo.com/v1/reviews/<store>/filter.json?domain_key=10246730809698&scores=5",
+    "ok": true,
+    "lane": "own_site",
+    "pdp": "https://shop.bombas.com/products/womens-premium-weight-boyfriend-t-shirt",
+    "accessed": "2026-09-28",
+    "line": "t_shirts",
+    "star_filter": 5,
+    "returned": 8,
+    "total_at_star": 157,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://api-cdn.yotpo.com/v1/reviews/<store>/filter.json?domain_key=10246730809698&scores=1",
+    "ok": true,
+    "lane": "own_site",
+    "pdp": "https://shop.bombas.com/products/womens-premium-weight-boyfriend-t-shirt",
+    "accessed": "2026-09-28",
+    "line": "t_shirts",
+    "star_filter": 1,
+    "returned": 10,
+    "total_at_star": 11,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://api-cdn.yotpo.com/v1/reviews/<store>/filter.json?domain_key=10246730809698&scores=2",
+    "ok": true,
+    "lane": "own_site",
+    "pdp": "https://shop.bombas.com/products/womens-premium-weight-boyfriend-t-shirt",
+    "accessed": "2026-09-28",
+    "line": "t_shirts",
+    "star_filter": 2,
+    "returned": 3,
+    "total_at_star": 10,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://api-cdn.yotpo.com/v1/reviews/<store>/filter.json?domain_key=10246730809698&scores=3",
+    "ok": true,
+    "lane": "own_site",
+    "pdp": "https://shop.bombas.com/products/womens-premium-weight-boyfriend-t-shirt",
+    "accessed": "2026-09-28",
+    "line": "t_shirts",
+    "star_filter": 3,
+    "returned": 3,
+    "total_at_star": 10,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://api-cdn.yotpo.com/v1/reviews/<store>/filter.json?domain_key=10246730809698&scores=4",
+    "ok": true,
+    "lane": "own_site",
+    "pdp": "https://shop.bombas.com/products/womens-premium-weight-boyfriend-t-shirt",
+    "accessed": "2026-09-28",
+    "line": "t_shirts",
+    "star_filter": 4,
+    "returned": 3,
+    "total_at_star": 22,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://api-cdn.yotpo.com/v1/reviews/<store>/filter.json?domain_key=6271509299372&scores=5",
+    "ok": true,
+    "lane": "own_site",
+    "pdp": "https://shop.bombas.com/products/womens-performance-compression-sock-3-pack-20-30mmhg",
+    "accessed": "2026-09-28",
+    "line": "compression",
+    "star_filter": 5,
+    "returned": 10,
+    "total_at_star": 3869,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://api-cdn.yotpo.com/v1/reviews/<store>/filter.json?domain_key=6271509299372&scores=1",
+    "ok": true,
+    "lane": "own_site",
+    "pdp": "https://shop.bombas.com/products/womens-performance-compression-sock-3-pack-20-30mmhg",
+    "accessed": "2026-09-28",
+    "line": "compression",
+    "star_filter": 1,
+    "returned": 10,
+    "total_at_star": 644,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://api-cdn.yotpo.com/v1/reviews/<store>/filter.json?domain_key=6271509299372&scores=2",
+    "ok": true,
+    "lane": "own_site",
+    "pdp": "https://shop.bombas.com/products/womens-performance-compression-sock-3-pack-20-30mmhg",
+    "accessed": "2026-09-28",
+    "line": "compression",
+    "star_filter": 2,
+    "returned": 4,
+    "total_at_star": 457,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://api-cdn.yotpo.com/v1/reviews/<store>/filter.json?domain_key=6271509299372&scores=3",
+    "ok": true,
+    "lane": "own_site",
+    "pdp": "https://shop.bombas.com/products/womens-performance-compression-sock-3-pack-20-30mmhg",
+    "accessed": "2026-09-28",
+    "line": "compression",
+    "star_filter": 3,
+    "returned": 3,
+    "total_at_star": 667,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://api-cdn.yotpo.com/v1/reviews/<store>/filter.json?domain_key=6271509299372&scores=4",
+    "ok": true,
+    "lane": "own_site",
+    "pdp": "https://shop.bombas.com/products/womens-performance-compression-sock-3-pack-20-30mmhg",
+    "accessed": "2026-09-28",
+    "line": "compression",
+    "star_filter": 4,
+    "returned": 3,
+    "total_at_star": 600,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://www.target.com/p/bombas-women-39-s-1pk-original-ankle-socks-pink-4-10/-/A-94755131",
+    "ok": true,
+    "retailer": "Target",
+    "accessed": "2026-09-28",
+    "note": "Reviews read from Target's public reviews JSON (r2d2.target.com/ggc/v2/summary) used by the product page. Rating distribution {'1': 0, '2': 0, '3': 0, '4': 0, '5': 38}, 8 text reviews. Target shares reviews across color variants; duplicates removed by review id and credited to the first TCIN read.",
+    "lane": "retailer",
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://www.target.com/p/bombas-women-39-s-1pk-marl-ankle-socks-gray-4-10/-/A-94755133",
+    "ok": true,
+    "retailer": "Target",
+    "accessed": "2026-09-28",
+    "note": "Reviews read from Target's public reviews JSON (r2d2.target.com/ggc/v2/summary) used by the product page. Rating distribution {'1': 0, '2': 0, '3': 0, '4': 2, '5': 37}, 10 text reviews. Target shares reviews across color variants; duplicates removed by review id and credited to the first TCIN read.",
+    "lane": "retailer",
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://www.target.com/p/bombas-women-39-s-1pk-solid-ankle-socks-white-4-10/-/A-94755136",
+    "ok": true,
+    "retailer": "Target",
+    "accessed": "2026-09-28",
+    "note": "Reviews read from Target's public reviews JSON (r2d2.target.com/ggc/v2/summary) used by the product page. Rating distribution {'1': 2, '2': 0, '3': 0, '4': 3, '5': 45}, 11 text reviews. Target shares reviews across color variants; duplicates removed by review id and credited to the first TCIN read.",
+    "lane": "retailer",
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://www.target.com/p/bombas-men-39-s-ankle-socks-black-6-12/-/A-94757330",
+    "ok": true,
+    "retailer": "Target",
+    "accessed": "2026-09-28",
+    "note": "Reviews read from Target's public reviews JSON (r2d2.target.com/ggc/v2/summary) used by the product page. Rating distribution {'1': 3, '2': 0, '3': 1, '4': 1, '5': 31}, 9 text reviews. Target shares reviews across color variants; duplicates removed by review id and credited to the first TCIN read.",
+    "lane": "retailer",
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://www.target.com/p/bombas-men-39-s-marled-ankle-socks-charcoal-6-12/-/A-94757329",
+    "ok": true,
+    "retailer": "Target",
+    "accessed": "2026-09-28",
+    "note": "Reviews read from Target's public reviews JSON (r2d2.target.com/ggc/v2/summary) used by the product page. Rating distribution {'1': 0, '2': 0, '3': 0, '4': 1, '5': 8}, 1 text reviews. Target shares reviews across color variants; duplicates removed by review id and credited to the first TCIN read.",
+    "lane": "retailer",
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://www.target.com/p/bombas-women-s-1pk-original-ankle-socks/-/A-94831430",
+    "ok": true,
+    "retailer": "Target",
+    "accessed": "2026-09-28",
+    "note": "Reviews read from Target's public reviews JSON (r2d2.target.com/ggc/v2/summary) used by the product page. Rating distribution {'1': 0, '2': 0, '3': 0, '4': 0, '5': 38}, 8 text reviews. Target shares reviews across color variants; duplicates removed by review id and credited to the first TCIN read.",
+    "lane": "retailer",
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://www.target.com/p/bombas-men-39-s-ankle-socks-navy-blue-6-12/-/A-94757337",
+    "ok": true,
+    "retailer": "Target",
+    "accessed": "2026-09-28",
+    "note": "Reviews read from Target's public reviews JSON (r2d2.target.com/ggc/v2/summary) used by the product page. Rating distribution {'1': 3, '2': 0, '3': 1, '4': 1, '5': 23}, 6 text reviews. Target shares reviews across color variants; duplicates removed by review id and credited to the first TCIN read.",
+    "lane": "retailer",
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://www.target.com/p/bombas-men-39-s-marled-ankle-socks-washed-black-6-12/-/A-94757332",
+    "ok": true,
+    "retailer": "Target",
+    "accessed": "2026-09-28",
+    "note": "Reviews read from Target's public reviews JSON (r2d2.target.com/ggc/v2/summary) used by the product page. Rating distribution {'1': 0, '2': 0, '3': 0, '4': 1, '5': 8}, 1 text reviews. Target shares reviews across color variants; duplicates removed by review id and credited to the first TCIN read.",
+    "lane": "retailer",
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://www.target.com/p/bombas-men-s-marled-ankle-socks/-/A-94851242",
+    "ok": true,
+    "retailer": "Target",
+    "accessed": "2026-09-28",
+    "note": "Reviews read from Target's public reviews JSON (r2d2.target.com/ggc/v2/summary) used by the product page. Rating distribution {'1': 0, '2': 0, '3': 0, '4': 1, '5': 8}, 1 text reviews. Target shares reviews across color variants; duplicates removed by review id and credited to the first TCIN read.",
+    "lane": "retailer",
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://www.nordstrom.com/s/nest-slipper-women/8490069",
+    "ok": true,
+    "retailer": "Nordstrom",
+    "accessed": "2026-09-28",
+    "note": "Page blocks curl (JS bot challenge); read via WebFetch, which returns a model-rendered markdown view. Review text is as returned by that view and should be treated as near-verbatim, not byte-verified. Star ratings were cross-checked against the page's star distribution; reviews whose star label conflicted or could not be pinned down were left out. 8 reviews, 2.8 avg. Excluded 'Poor quality' (tool labelled it 5 stars, distribution says it must be 1 or 2). Not used for quotes: page text came through a summarizing fetch tool and could not be checked word for word.",
+    "lane": "retailer",
+    "used_for_quotes": false,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://www.nordstrom.com/s/toe-block-ankle-socks/8528216",
+    "ok": true,
+    "retailer": "Nordstrom",
+    "accessed": "2026-09-28",
+    "note": "Page blocks curl (JS bot challenge); read via WebFetch, which returns a model-rendered markdown view. Review text is as returned by that view and should be treated as near-verbatim, not byte-verified. Star ratings were cross-checked against the page's star distribution; reviews whose star label conflicted or could not be pinned down were left out. 1 review. Not used for quotes: page text came through a summarizing fetch tool and could not be checked word for word.",
+    "lane": "retailer",
+    "used_for_quotes": false,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://www.nordstrom.com/s/bombas-cushioned-no-show-socks/5106828",
+    "ok": true,
+    "retailer": "Nordstrom",
+    "accessed": "2026-09-28",
+    "note": "Page blocks curl (JS bot challenge); read via WebFetch, which returns a model-rendered markdown view. Review text is as returned by that view and should be treated as near-verbatim, not byte-verified. Star ratings were cross-checked against the page's star distribution; reviews whose star label conflicted or could not be pinned down were left out. Excluded 'Not for me' (tool labelled it 1 star but distribution shows 0% 1-star). Not used for quotes: page text came through a summarizing fetch tool and could not be checked word for word.",
+    "lane": "retailer",
+    "used_for_quotes": false,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://www.nordstrom.com/s/bombas-sunday-faux-fur-slipper-women/7996729",
+    "ok": true,
+    "retailer": "Nordstrom",
+    "accessed": "2026-09-28",
+    "note": "Page blocks curl (JS bot challenge); read via WebFetch, which returns a model-rendered markdown view. Review text is as returned by that view and should be treated as near-verbatim, not byte-verified. Star ratings were cross-checked against the page's star distribution; reviews whose star label conflicted or could not be pinned down were left out. 21 reviews, 4.2 avg; stars consistent with distribution. Not used for quotes: page text came through a summarizing fetch tool and could not be checked word for word.",
+    "lane": "retailer",
+    "used_for_quotes": false,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://www.nordstrom.com/s/solid-calf-socks/5780034",
+    "ok": true,
+    "retailer": "Nordstrom",
+    "accessed": "2026-09-28",
+    "note": "Page blocks curl (JS bot challenge); read via WebFetch, which returns a model-rendered markdown view. Review text is as returned by that view and should be treated as near-verbatim, not byte-verified. Star ratings were cross-checked against the page's star distribution; reviews whose star label conflicted or could not be pinned down were left out. 31 reviews, 4.6 avg; three 1-star match 10%. Not used for quotes: page text came through a summarizing fetch tool and could not be checked word for word.",
+    "lane": "retailer",
+    "used_for_quotes": false,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://www.nordstrom.com/s/bombas-assorted-6-pack-solid-ankle-socks/8253651",
+    "ok": true,
+    "retailer": "Nordstrom",
+    "accessed": "2026-09-28",
+    "note": "Page blocks curl (JS bot challenge); read via WebFetch, which returns a model-rendered markdown view. Review text is as returned by that view and should be treated as near-verbatim, not byte-verified. Star ratings were cross-checked against the page's star distribution; reviews whose star label conflicted or could not be pinned down were left out. 21 reviews, 4.2 avg. Excluded 'they changed their material' (labelled 5 stars with negative text; could be 3, 4 or 5). One duplicate listing of 'Cheaply Made' collapsed. Not used for quotes: page text came through a summarizing fetch tool and could not be checked word for word.",
+    "lane": "retailer",
+    "used_for_quotes": false,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://www.nordstrom.com/s/knee-high-compression-socks/8545838",
+    "ok": true,
+    "retailer": "Nordstrom",
+    "accessed": "2026-09-28",
+    "note": "Read via WebFetch. No reviews yet. Not used for quotes: page text came through a summarizing fetch tool and could not be checked word for word.",
+    "lane": "retailer",
+    "used_for_quotes": false,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://www.nordstrom.com/s/merino-wool-blend-quarter-socks/7945287",
+    "ok": true,
+    "retailer": "Nordstrom",
+    "accessed": "2026-09-28",
+    "note": "Read via WebFetch. No reviews yet. Not used for quotes: page text came through a summarizing fetch tool and could not be checked word for word.",
+    "lane": "retailer",
+    "used_for_quotes": false,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://www.nordstrom.com/s/ultra-stretch-calf-socks/8490080",
+    "ok": true,
+    "retailer": "Nordstrom",
+    "accessed": "2026-09-28",
+    "note": "Read via WebFetch. No reviews yet. Not used for quotes: page text came through a summarizing fetch tool and could not be checked word for word.",
+    "lane": "retailer",
+    "used_for_quotes": false,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://www.nordstrom.com/s/bombas-marl-calf-crew-socks/7571855",
+    "ok": true,
+    "retailer": "Nordstrom",
+    "accessed": "2026-09-28",
+    "note": "Read via WebFetch. 2 ratings-only reviews (one 5, one 4); no text. Not used for quotes: page text came through a summarizing fetch tool and could not be checked word for word.",
+    "lane": "retailer",
+    "used_for_quotes": false,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://www.nordstrom.com/brands/bombas--17866",
+    "ok": false,
+    "retailer": "Nordstrom",
+    "accessed": "2026-09-28",
+    "note": "curl got a JS bot challenge page. Nordstrom carries Bombas (socks, slippers, compression). Not used for quotes: page text came through a summarizing fetch tool and could not be checked word for word.",
+    "lane": "retailer",
+    "used_for_quotes": false,
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://www.dickssportinggoods.com/f/bombas",
+    "ok": false,
+    "retailer": "Dick's Sporting Goods",
+    "accessed": "2026-09-28",
+    "note": "HTTP 403 ('Site Unavailable') via curl and via WebFetch. Search results show Dick's carries Bombas (originals ankle and calf, performance golf and running, merino hiking calf, compression, ribbed quarter). No reviews collected; review widget passkey not reachable.",
+    "lane": "retailer",
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://www.walmart.com/search?q=bombas+socks",
+    "ok": false,
+    "retailer": "Walmart",
+    "accessed": "2026-09-28",
+    "note": "'Robot or human?' press-and-hold bot check via curl and WebFetch. Web search shows Bombas listings on Walmart; seller (Walmart vs marketplace) not verified. No reviews collected.",
+    "lane": "retailer",
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://www.walmart.com/reviews/product/475961564",
+    "ok": false,
+    "retailer": "Walmart",
+    "accessed": "2026-09-28",
+    "note": "'Robot or human?' press-and-hold bot check via curl and WebFetch. Web search shows Bombas listings on Walmart; seller (Walmart vs marketplace) not verified. No reviews collected.",
+    "lane": "retailer",
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://www.walmart.com/ip/BOMBAS-Originals-Ankle-Socks-White-Large-4-Pack/7606767691",
+    "ok": false,
+    "retailer": "Walmart",
+    "accessed": "2026-09-28",
+    "note": "'Robot or human?' press-and-hold bot check via curl and WebFetch. Web search shows Bombas listings on Walmart; seller (Walmart vs marketplace) not verified. No reviews collected.",
+    "lane": "retailer",
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://www.target.com/s?searchTerm=bombas",
+    "ok": true,
+    "retailer": "Target",
+    "accessed": "2026-09-28",
+    "note": "Search page loads but products render client-side; redsky search API returned PerimeterX 'Access denied' (HTTP 435). Target appears to carry only Bombas 1-pack ankle socks (men's and women's solid, marl, original). TCINs found via web search.",
+    "lane": "retailer",
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0CVLKH8M2",
+    "ok": false,
+    "lane": "amazon",
+    "accessed": "2026-09-28",
+    "note": "curl with basic UA: robot check (captcha) page. WebFetch of same URL returned page shell only (no bullets/ratings).",
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://www.amazon.com/product-reviews/B0CVLKH8M2/?filterByStar=critical",
+    "ok": false,
+    "lane": "amazon",
+    "accessed": "2026-09-28",
+    "note": "Redirected to Amazon sign-in (/ap/signin). Review pages need login; not attempted for other ASINs.",
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://www.amazon.com/s?k=bombas&rh=p_123%3A232733",
+    "ok": true,
+    "lane": "amazon",
+    "accessed": "2026-09-28",
+    "note": "Search loaded but returned \"No results\" (brand filter id was a guess). No data used.",
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://www.amazon.com/s?k=bombas+slippers&rh=p_4%3ABOMBAS",
+    "ok": true,
+    "lane": "amazon",
+    "accessed": "2026-09-28",
+    "note": "Brand-filtered search: only 2 results, both women's ankle socks (B0816V68VN, B08ZRZRLVM). No Bombas slippers found.",
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://www.amazon.com/s?k=bombas+underwear+t-shirt&rh=p_4%3ABOMBAS",
+    "ok": true,
+    "lane": "amazon",
+    "accessed": "2026-09-28",
+    "note": "Brand-filtered search: \"No results\". No Bombas underwear or t-shirts found.",
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://www.amazon.com/stores/Bombas",
+    "ok": false,
+    "lane": "amazon",
+    "accessed": "2026-09-28",
+    "note": "HTTP 404. No Bombas brand store at this path.",
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://www.amazon.com/dp/B07MTXGV9R",
+    "ok": true,
+    "lane": "amazon",
+    "accessed": "2026-09-28",
+    "note": "curl with desktop Safari UA: full page. No A+ content rendered in the public HTML. Review list gated: page says \"Sign in to see customer reviews.\" Offer sold by third-party seller \"Coastal Co. Goods\", not Bombas.",
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://www.amazon.com/dp/B086BPVJ2T",
+    "ok": true,
+    "lane": "amazon",
+    "accessed": "2026-09-28",
+    "note": "curl with desktop Safari UA: full page. No A+ content rendered in the public HTML. Review list gated: page says \"Sign in to see customer reviews.\" Listing shows \"Currently unavailable\"; no price or buy box.",
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://www.amazon.com/dp/B087JLQF85",
+    "ok": true,
+    "lane": "amazon",
+    "accessed": "2026-09-28",
+    "note": "curl with desktop Safari UA: full page. No A+ content rendered in the public HTML. Review list gated: page says \"Sign in to see customer reviews.\" Offer sold by third-party seller \"Pacific Noir\", not Bombas.",
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0GQLTVSNF",
+    "ok": true,
+    "lane": "amazon",
+    "accessed": "2026-09-28",
+    "note": "curl with desktop Safari UA: full page. No A+ content rendered in the public HTML. Review list gated: page says \"Sign in to see customer reviews.\" Listing shows \"Currently unavailable\"; no price or buy box.",
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0GSQPT83J",
+    "ok": true,
+    "lane": "amazon",
+    "accessed": "2026-09-28",
+    "note": "curl with desktop Safari UA: full page. No A+ content rendered in the public HTML. Review list gated: page says \"Sign in to see customer reviews.\" Listing shows \"Currently unavailable\"; no price or buy box.",
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0GRRMNL3X",
+    "ok": true,
+    "lane": "amazon",
+    "accessed": "2026-09-28",
+    "note": "curl with desktop Safari UA: full page. No A+ content rendered in the public HTML. Review list gated: page says \"Sign in to see customer reviews.\" Listing shows \"Currently unavailable\"; no price or buy box.",
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "https://www.amazon.com/dp/B07S9T9824",
+    "ok": true,
+    "lane": "amazon",
+    "accessed": "2026-09-28",
+    "note": "curl with desktop Safari UA: full page. No A+ content rendered in the public HTML. Review list gated: page says \"Sign in to see customer reviews.\" Offer sold by third-party seller \"Dumas V\", not Bombas.",
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "web search (4 queries, amazon.com results)",
+    "ok": true,
+    "lane": "amazon",
+    "accessed": "2026-09-28",
+    "note": "Used only to find ASINs. Found listings by URL/title; no data taken from snippets.",
+    "extractors": [
+      "f-reviews"
+    ]
+  },
+  {
+    "url": "summary://h-reddit/attempt",
+    "ok": false,
+    "lane": "1",
+    "accessed": "2026-09-28",
+    "note": "Reddit extractor could not run. Every endpoint form tried (old.reddit.com HTML and search.json, www.reddit.com search.json and top.json, with a descriptive non-browser User-Agent, no login, no API key, low rate) was blocked at Reddit's own edge: old.reddit.com returned an HTTP 302 to its login wall, www.reddit.com returned an HTTP 403 'blocked by network security' page. Confirmed via two independent network paths (this session's outbound proxy, and Anthropic's separate WebFetch tool) that the block is Reddit's edge rejecting this environment's egress, not a local proxy or allowlist issue. No browser-spoofing User-Agent and no retry hammering were attempted, per the task's own constraints. Zero post or comment text was ever retrieved, so no language_bank, objections, avatars, competitors, positioning, seo_facts, content or learnings records were written for either lane.",
+    "extractors": [
+      "h-reddit"
+    ]
+  },
+  {
+    "url": "https://old.reddit.com/r/BuyItForLife/search.json?q=bombas&restrict_sr=1&sort=top",
+    "ok": false,
+    "lane": "1",
+    "accessed": "2026-09-28",
+    "note": "HTTP 302 redirect to old.reddit.com login wall (reason=lor2)",
+    "extractors": [
+      "h-reddit"
+    ]
+  },
+  {
+    "url": "https://old.reddit.com/r/BuyItForLife/",
+    "ok": false,
+    "lane": "1",
+    "accessed": "2026-09-28",
+    "note": "HTTP 302 redirect to old.reddit.com login wall",
+    "extractors": [
+      "h-reddit"
+    ]
+  },
+  {
+    "url": "https://www.reddit.com/r/BuyItForLife/search.json?q=bombas&restrict_sr=1&sort=top",
+    "ok": false,
+    "lane": "1",
+    "accessed": "2026-09-28",
+    "note": "HTTP 403, Reddit edge bot-defense page ('blocked by network security')",
+    "extractors": [
+      "h-reddit"
+    ]
+  },
+  {
+    "url": "https://www.reddit.com/search.json?q=bombas&sort=top",
+    "ok": false,
+    "lane": "2",
+    "accessed": "2026-09-28",
+    "note": "HTTP 403, same edge block page, repeated on retry",
+    "extractors": [
+      "h-reddit"
+    ]
+  },
+  {
+    "url": "https://www.reddit.com/r/socks/.json",
+    "ok": false,
+    "lane": "2",
+    "accessed": "2026-09-28",
+    "note": "HTTP 403 edge block page",
+    "extractors": [
+      "h-reddit"
+    ]
+  },
+  {
+    "url": "https://www.reddit.com/r/socks/top.json?limit=5&t=year",
+    "ok": false,
+    "lane": "2",
+    "accessed": "2026-09-28",
+    "note": "HTTP 403 edge block page",
+    "extractors": [
+      "h-reddit"
+    ]
+  },
+  {
+    "url": "https://old.reddit.com/r/socks/.json",
+    "ok": false,
+    "lane": "2",
+    "accessed": "2026-09-28",
+    "note": "HTTP 302 redirect to login wall, confirmed via response headers",
+    "extractors": [
+      "h-reddit"
+    ]
+  },
+  {
+    "url": "https://old.reddit.com/r/socks/top/.json?t=year&limit=10",
+    "ok": false,
+    "lane": "2",
+    "accessed": "2026-09-28",
+    "note": "HTTP 302 redirect to login wall",
+    "extractors": [
+      "h-reddit"
+    ]
+  },
+  {
+    "url": "https://old.reddit.com/r/BuyItForLife/search.json?q=bombas",
+    "ok": false,
+    "lane": "2",
+    "accessed": "2026-09-28",
+    "note": "retried via Anthropic's separate WebFetch tool (different network path from the sandbox proxy): tool reported it is unable to fetch old.reddit.com at all",
+    "extractors": [
+      "h-reddit"
+    ]
+  },
+  {
+    "url": "https://www.reddit.com/r/socks/search.json?q=best+socks&restrict_sr=1&sort=top&t=year",
+    "ok": false,
+    "lane": "2",
+    "accessed": "2026-09-28",
+    "note": "retried via Anthropic's separate WebFetch tool: tool reported it is unable to fetch www.reddit.com at all",
+    "extractors": [
+      "h-reddit"
     ]
   }
 ]

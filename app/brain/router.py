@@ -29,6 +29,7 @@ ROUTES = [
     ("Site or landing page work", "`site_map`, `policies`, `claims`, `visual`"),
     ("Email and retention", "`calendar`, `offers`, `voice`, `learnings`"),
     ("Anything numeric", "the metric contract at `/api/metrics`, never this file"),
+    ("Answering an objection", "`objection_ladders`, then `claims`"),
     ("Checking a claim for copy", "records with tier `approved` or `site_backed` only; the QA gate enforces it"),
 ]
 
