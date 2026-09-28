@@ -3,6 +3,7 @@ contract shape, the two insight rules, the repeat chart and the founder voice ex
 Writes go to a temp copy of app/brain, never the repo."""
 import importlib.util
 import json
+import re
 import shutil
 import sys
 import tempfile
@@ -1613,3 +1614,43 @@ class SizedStop(unittest.TestCase):
         self.assertEqual(ss['size'], {'text': '$1,200 at stake; size unavailable', 'usd': 1200})
         ss = api.builds.size_stop('copy', [{'metric': 'one_star_mentions', 'value': None, 'unit': 'n'}], None, None)
         self.assertEqual(ss['size']['text'], 'size unavailable')
+
+
+class ReadsInOnePass(unittest.TestCase):
+    """Feature 7.2: depth rule 10. Every desk block has a question or imperative heading, a rule line, a window and a caveat."""
+
+    DIR = ROOT / 'app' / 'screens' / '02-customers-avatars'
+    VERBS = ('Fix', 'Move', 'Stop', 'Build', 'Answer', 'Read', 'Pick', 'Give', 'Run', 'Show', 'Cut', 'Find')
+
+    def desk_ids(self):
+        js = (self.DIR / 'screen.js').read_text(encoding='utf-8')
+        block = js[js.index('const DESK = ['):js.index('let deskTabs')]
+        return re.findall(r"'([a-z]+-wrap)'", block)
+
+    def test_every_desk_block_has_notes(self):
+        ids = self.desk_ids()
+        self.assertGreater(len(ids), 30)
+        self.assertEqual(set(ids), set(api.builds.BLOCKS))
+
+    def test_headings_are_questions_or_imperatives_with_a_rule_line(self):
+        html = (self.DIR / 'index.html').read_text(encoding='utf-8')
+        for sid in self.desk_ids():
+            m = re.search(r'<section[^>]*id="' + sid + r'"[^>]*>\s*<div class="sec-head"><h2>([^<]+)</h2>(.*)', html)
+            self.assertIsNotNone(m, sid)
+            h = m.group(1)
+            self.assertTrue(h.endswith('?') or h.startswith(self.VERBS), h)
+            self.assertIn('class="sub"', m.group(2), sid)
+
+    def test_notes_carry_window_and_a_short_caveat(self):
+        api.BRAIN_ROOT = None
+        for brand in ('bombas', 'example'):
+            d = api.handle(Req(['overview'], query={'brand': [brand]}))
+            self.assertEqual(set(d['blocks']), set(api.builds.BLOCKS))
+            for sid, b in d['blocks'].items():
+                self.assertTrue(b['window'], sid)
+                for sent in re.split(r'(?<=\.) ', b['caveat']):
+                    self.assertLess(len(sent.split()), 20, sent)
+                self.assertNotRegex(b['caveat'], r'\b(should|consider|leverage)\b|—')
+        d = api.handle(Req(['overview']))
+        self.assertIn('simulated', d['blocks']['cohort-wrap']['window'])
+        self.assertTrue(d['blocks']['ladders-wrap']['caveat'].startswith('Based on '))

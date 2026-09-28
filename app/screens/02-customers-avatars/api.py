@@ -481,6 +481,7 @@ def _build_overview(brain: Brain) -> dict:
     out["strength"] = builds.strength(out)
     builds.card_meta(out)
     out["compare"] = builds.compare_rows(out)
+    out["blocks"] = builds.block_notes(out)
     return out
 
 

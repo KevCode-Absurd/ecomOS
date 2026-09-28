@@ -2571,3 +2571,60 @@ def size_stop(kind: str, evidence: list[dict], money: dict | None, check_on: str
         "budget_move": "Stop if returning orders fall 5 percent for 2 weeks",
     }[kind]
     return {"size": size, "stop_rule": stop[len("Stop if "):]}
+
+
+# ---------------------------------------------------------------- window and caveat per block (depth.md section 3, rule 10)
+
+# section id -> (source kind, strength block or None, caveat). Caveats are about method, never about a brand.
+BLOCKS = {
+    "focus-wrap": ("brain", "Avatar cards", "Shares are estimates from public reviews, not orders."),
+    "avatars-wrap": ("brain", "Avatar cards", "An avatar backed by one source is a guess until a second source agrees."),
+    "offers-wrap": ("brain", "Doubts rung by rung", "A cell counts proof records on file, not how well the offer converts."),
+    "compare-wrap": ("brain", "Avatar cards", "Rows reuse the blocks above, so a thin read there is thin here."),
+    "voiceads-wrap": ("ads", "Who our ads speak to", "Hooks are matched to avatars by words in the hook; an ad can speak to more than one."),
+    "split-wrap": ("brain", "Where avatars speak", "Lines come from linked reviews, not from orders by avatar."),
+    "gate-wrap": ("brain", "Avatar cards", "A pass means the record exists, not that a buyer confirmed it."),
+    "recheck-wrap": ("brain", None, "Expiry dates are set on each record; a record past its date is not trusted."),
+    "forces-wrap": ("brain", "Four forces", "Lines are coded by word patterns, so irony and negation can slip through."),
+    "survey-wrap": ("brain", None, "Answers take about 4 weeks to reach a usable count."),
+    "cover-wrap": ("brain", "Doubts rung by rung", "Ads and pages read unavailable until ads name an angle and pages are scanned."),
+    "ladders-wrap": ("brain", "Doubts rung by rung", "The review pull over-samples some sources; read counts as direction."),
+    "macros-wrap": ("brain", None, "A reply built from a policy waits for a person to check the policy."),
+    "gap-wrap": ("brain", "Copy gap and hooks", "A word we never say may still be on a page the brain has not read."),
+    "perc-wrap": ("brain", "Perception gap", "Our side is the positioning records, not every page we run."),
+    "hier-wrap": ("brain", "Theme costs", "The order follows stars earned per theme, not a tested result."),
+    "hooks-wrap": ("brain", "Copy gap and hooks", "A repeated line is a hook to test, not a proven winner."),
+    "themes-wrap": ("brain", "Theme costs", "Stars move with the product and the season as well as the theme."),
+    "words-wrap": ("brain", "Doubts rung by rung", "Reddit lines are language only, never a testimonial."),
+    "served-wrap": ("brain", "Avatar cards", "Served well is five-star share on the avatar's doubts, from reviews."),
+    "price-wrap": ("brain", "Doubts rung by rung", "Per-pair price by pack is unavailable until pack prices are in the brain."),
+    "claims-wrap": ("brain", "Claims under fire", "A claim word in a bad review is a flag to read, not proof the claim is false."),
+    "look-wrap": ("ads", None, "The Ad Library flags likely impostors; a person confirms before any report."),
+    "timing-wrap": ("brain", "Doubt seasons", "Months with few dated complaints swing more than busy months."),
+    "moments-wrap": ("brain", None, "Dates are US dates; a moment the avatar record does not name is not listed."),
+    "market-wrap": ("brain", "Where avatars speak", "The review pull samples Amazon heavily, so shares are direction."),
+    "returns-wrap": ("brain", None, "A proxy from public reviews until return reasons are aggregated."),
+    "misread-wrap": ("brain", "Where avatars speak", "A misread needs 2 or more linked reviews; one line is not enough."),
+    "paths-wrap": ("store", None, "Order-level rules wait on the customer paths aggregate."),
+    "cohort-wrap": ("store", "Cohorts", "Repeat in 3 months counts a buyer active in 2 months twice, so it is an upper bound."),
+    "health-wrap": ("store", None, "Ticket rates read unavailable until tickets are aggregated."),
+    "mix-wrap": ("store", None, "Channel is the last click the store records, not what brought the buyer back."),
+    "voice-wrap": ("brain", None, "Examples you mark change every writer's brief from the next draft."),
+}
+
+
+def block_notes(d: dict) -> dict:
+    """For each desk block: the window it reads and one caveat line, with the sample when the strength read has it."""
+    months = d.get("mix", {}).get("months") or d.get("health", {}).get("months") or []
+    store = (f"Store data {months[0]} to {months[-1]}, simulated" if months else "Store data unavailable")
+    brain = f"Brain as of {d.get('today')}"
+    ads = f"Ad Library read in the brain, as of {d.get('today')}"
+    strength = {r["block"]: r for r in d.get("strength") or []}
+    out = {}
+    for sid, (src, block, caveat) in BLOCKS.items():
+        window = {"brain": brain, "ads": ads, "store": store}[src]
+        s = strength.get(block) if block else None
+        if s and s["n"] is not None:
+            caveat = f"Based on {s['n']:,} {s['basis']}" + (" (thin)" if s["verdict"] == "thin" else "") + ". " + caveat
+        out[sid] = {"window": window, "caveat": caveat}
+    return out

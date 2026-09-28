@@ -122,7 +122,7 @@ Lead's review: rounds 1 to 4 passed. Focus: returns and tickets by avatar, depth
 | # | Feature | Status |
 |---|---|---|
 | 7.1 | Depth rule 5, sized with a stop rule: every action that moves money or traffic (offer, ad brief, page section, listing, copy, flow, email, budget move) carries a size from its finding's first number (money first when known), a stop condition with a count and a check date. Thresholds are named in `builds.size_stop`; the card shows the size where it said "stake unavailable" | done |
-| 7.2 | Depth rule 10, reads in one pass: every desk block has a plain question or imperative heading, one line with the window and the rule in numbers, and one caveat line (tested over every section) | todo |
+| 7.2 | Depth rule 10, reads in one pass: all 33 desk blocks keep their question heading and rule line, and now show the window they read (brain date, Ad Library read, or store months, simulated) beside the heading and one caveat line at the foot, with the sample from the strength read when there is one ("Based on 3,844,512 first-time buyers, simulated."). Built in `builds.block_notes`; tested for every desk id, both brands, sentences under 20 words | done |
 | 7.3 | Depth rule 9, gaps not only totals: every desk block shows a never-tried cell, a cross-source check or a competitor position; blocks that only total get one | todo |
 | 7.4 | Depth rule 14, the founder can disagree: "Not now" shows on the item with its date and the day it comes back | todo |
 | 7.5 | Money on retention against own history: cohort cliffs (CUST-R08, R09) priced from the cohort's own median active share, null with the reason when flat | todo |
