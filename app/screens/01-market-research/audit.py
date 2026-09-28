@@ -106,6 +106,9 @@ Rules
             (5 or more Instagram posts on the lane tag, 3 or more Reddit mentions, or a competitor page running
             creator-style ads). One platform's demand is a lead, not proof (bank idea PRD-022). Severity low.
             Capability PROD-C02 (validate demand on video-commerce platforms, agent does). Owner: 01-market-research.
+  PROD-R27  Spec missing: a candidate at gated or later whose newest tech pack lacks tolerances, a BOM or a packaging
+            cost line, or has none. Packs are versioned on the candidate (tech_packs, newest last). Capability
+            PROD-C13 (build tech packs, BOMs and packaging specs, agent does). Owner: 01-market-research.
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -182,6 +185,8 @@ RULES = [
     {'rule_id': 'PROD-R25', 'name': 'Open candidate whose scheduled review date has arrived', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C11', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R26', 'name': 'Lane with an open candidate whose demand shows on exactly one platform (Instagram pull, Reddit, creator ads)', 'entity_type': 'metric',
      'inputs': ['fixtures.social_pull', 'brain.language_bank', 'brain.content', 'fixtures.pipeline'], 'capability': 'PROD-C02', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R27', 'name': 'Candidate at gated or later with no current versioned spec (tolerances, BOM, packaging cost)', 'entity_type': 'sku',
+     'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C13', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -208,7 +213,8 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R23': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
               'PROD-R24': {'id': 'PROD-C10', 'autonomy': 'agent_does'},
               'PROD-R25': {'id': 'PROD-C11', 'autonomy': 'founder_gate'},
-              'PROD-R26': {'id': 'PROD-C02', 'autonomy': 'agent_does'}}
+              'PROD-R26': {'id': 'PROD-C02', 'autonomy': 'agent_does'},
+              'PROD-R27': {'id': 'PROD-C13', 'autonomy': 'agent_does'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -685,6 +691,7 @@ def run(brand, window=None, data=None):
     out += gate_findings(brand, data, br, rd, ends_on)
     out += shortlist_findings(brand, data, br, rd, ends_on)
     out += video_findings(br, brand, ends_on)
+    out += tech_pack_findings(brand, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -2411,5 +2418,44 @@ def video_findings(br, brand, ends_on):
         f = _finding('PROD-R26', r['key'], ends_on, 'low', ev, sentence, None, 0.5, [], money_reason='a demand signal has no order count')
         f['entity'] = {'type': 'metric', 'id': r['key'], 'label': r['label'], 'platform': r['platforms'][0], 'candidates': r['candidates']}
         f['id'] = f'{SCREEN}.PROD-R26.{r["key"]}'
+        out.append(f)
+    return out
+
+
+# ---------------------------------------------------------------- tech pack and spec versions per candidate (PROD-C13)
+
+TECH_PACK_LINES = ('tolerances', 'bom', 'packaging_cost')
+SPEC_STAGE_MIN = 2   # gated or later needs a current spec before sourcing
+
+
+def tech_pack_status(cand):
+    """current: the newest pack has tolerances, a BOM and a packaging cost line and status current; partial: a pack exists
+    with a line missing; none: no pack."""
+    packs = cand.get('tech_packs') or []
+    if not packs:
+        return {'status': 'none', 'version': None, 'missing': list(TECH_PACK_LINES), 'pack': None}
+    latest = packs[-1]
+    missing = [k for k in TECH_PACK_LINES if latest.get(k) in (None, '', False)]
+    status = 'current' if not missing and latest.get('status', 'current') == 'current' else 'partial'
+    return {'status': status, 'version': latest.get('version'), 'missing': missing, 'pack': latest}
+
+
+def tech_pack_findings(brand, ends_on):
+    """PROD-R27: a candidate at gated or later with no current versioned spec."""
+    out = []
+    for cand in pipeline(brand):
+        if cand.get('stage') in CLOSED_STAGES or cand.get('stage') not in STAGES or STAGES.index(cand['stage']) < SPEC_STAGE_MIN:
+            continue
+        tp = tech_pack_status(cand)
+        if tp['status'] == 'current':
+            continue
+        cid = cand.get('candidate_id') or slug(cand.get('name'))
+        ev = [_ev('tech_pack_status', 0, 'flag', ends_on.isoformat(), 'candidate now', 1, 'threshold', source='fixtures.pipeline', simulated=False, freshness_days=0,
+                  version=tp['version'], missing=tp['missing'], stage=cand.get('stage'))]
+        what = ('no spec yet' if tp['status'] == 'none' else f'{tp["version"]} is missing {", ".join(m.replace("_", " ") for m in tp["missing"])}')
+        sentence = f'{cand["name"]} is at {cand["stage"]} with no current versioned spec ({what}). Sourcing cannot quote it.'
+        f = _finding('PROD-R27', cid, ends_on, 'medium', ev, sentence, None, 0.9, [], money_reason='a spec gap delays sourcing; it has no order count')
+        f['entity'] = {'type': 'sku', 'id': cid, 'label': cand['name'], 'candidate': True, 'stage': cand.get('stage'), 'missing': tp['missing'], 'version': tp['version']}
+        f['id'] = f'{SCREEN}.PROD-R27.{cid}'
         out.append(f)
     return out

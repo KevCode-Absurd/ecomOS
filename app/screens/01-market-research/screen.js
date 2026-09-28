@@ -685,6 +685,32 @@
         single.length && actionFor(single[0].finding_id) ? { label: 'Confirm the first', onClick: () => openAction(actionFor(single[0].finding_id)) } : null));
   }
 
+  function techPackBlock(t) {
+    const rows = (t && t.rows) || [];
+    if (!rows.length) return el('p', { class: 'muted', text: 'No candidate to spec.' });
+    const openSpec = (r) => {
+      const tol = el('input', { class: 'text sm', placeholder: 'tolerances, like length plus or minus 5 mm, weight plus or minus 3 g', value: (r.pack && r.pack.tolerances) || '' });
+      const bom = el('textarea', { class: 'text sm', rows: 4, placeholder: 'bill of materials, one line per material with share, like 62% cotton, 33% nylon, 5% spandex; cuff elastic; packaging card', style: { width: '100%' } });
+      if (r.pack && r.pack.bom) bom.value = r.pack.bom;
+      const cost = el('input', { class: 'text sm', type: 'number', step: '0.01', placeholder: 'packaging cost a unit, $', value: r.pack && r.pack.packaging_cost != null ? r.pack.packaging_cost : '' });
+      const note = el('input', { class: 'text sm', placeholder: 'note (optional)' });
+      const save = el('button', { class: 'btn primary sm', type: 'button', text: 'Save as the current version', onclick: () => candidatePost('candidates/' + r.candidate_id, { tech_pack: { tolerances: tol.value, bom: bom.value, packaging_cost: cost.value || null, note: note.value }, who: 'person' }) });
+      UI.panel({ title: r.name + ': tech pack ' + (r.version ? '(current ' + r.version + ')' : '(none yet)'), body: el('div', { class: 'stack' }, el('div', { class: 'small muted', text: t.rule + '.' }), tol, bom, cost, note, el('div', { class: 'row' }, save), r.finding_id && actionFor(r.finding_id) ? UI.actionCard(actionFor(r.finding_id), { expanded: true, screen: SLUG }) : null) });
+    };
+    const vrows = rows.map((r) => Object.assign({}, r, { tol: r.pack && r.pack.tolerances ? 'yes' : 'missing', bomText: r.pack && r.pack.bom ? 'yes' : 'missing', pk: r.pack && r.pack.packaging_cost != null ? fmt.money(r.pack.packaging_cost) : 'missing',
+      updated: r.pack && r.pack.updated_at ? fmt.date(r.pack.updated_at) : NA, versionText: r.version || 'none',
+      actions: [{ label: r.status === 'current' ? 'New version' : 'Write the spec', onClick: () => openSpec(r) }] }));
+    const tbl = UI.verdictTable({
+      columns: [{ key: 'name', label: 'Candidate' }, { key: 'stage', label: 'Stage' }, { key: 'versionText', label: 'Version' }, { key: 'tol', label: 'Tolerances' }, { key: 'bomText', label: 'BOM' }, { key: 'pk', label: 'Packaging cost' }, { key: 'updated', label: 'Updated' }, { key: 'versions', label: 'Versions', unit: 'n' }],
+      rows: vrows,
+      verdict: { at: 1, kind: (r) => r.closed ? 'na' : r.status === 'current' ? 'keep' : r.needs_spec ? 'fix' : 'watch', text: (r) => r.closed ? 'Closed' : r.status === 'current' ? 'Ready to quote' : r.needs_spec ? 'Spec missing' : r.status === 'partial' ? 'Partial' : 'Not yet needed', reason: (r) => r.missing.length ? 'missing ' + r.missing.map(pretty).join(', ') : 'complete' },
+      actions: { label: 'Do', onClick: () => {} }, sort: false });
+    const gaps = rows.filter((r) => !r.closed && r.needs_spec && r.status !== 'current');
+    return el('div', { class: 'stack' }, el('div', { class: 'card scroll' }, tbl), el('p', { class: 'micro faint', text: t.rule + '. Packaging cost here is the line sourcing quotes on; the margin gate above reads the finance inputs until a pack is priced.' }),
+      gapLine(gaps.length ? gaps.length + ' candidate' + (gaps.length === 1 ? '' : 's') + ' past the gate with no current spec: ' + gaps.map((r) => r.name).join(', ') + '. Sourcing cannot quote them.' : 'Every candidate past the gate has a current spec.',
+        gaps.length ? { label: 'Write the first', onClick: () => openSpec(gaps[0]) } : null));
+  }
+
   function loadDesk(o) {
     const d = o.desk || {};
     const w = (o.window || {}).trend;
@@ -708,6 +734,7 @@
     parts.push(section('desk-gates', 'Is each candidate ready to fund: an owned angle and the 5 go-live gates?', 'Angle confidence (filled, sourced, not a competitor claim) and the gates per candidate: provable claim, owned difference, brand threshold, contribution margin, ad-cost ceiling, plus the compliance check.', gatesBlock(d.gates)));
     parts.push(section('desk-scorecard', 'Which candidates does the founder decide on this week?', 'The fixed scorecard with the brand\'s weights: demand, margin, differentiation, compliance and cash timing, each scored in code, ranked, with the go or no-go memo drafted from the numbers and the review date.', scorecardBlock(d.scorecard)));
     parts.push(section('desk-video', 'Is the demand one clip or a real pattern?', 'Independent platforms showing demand per lane: the Instagram hashtag pull, Reddit mentions and upvotes, competitor creator-style ads and our own, with the candidates that rest on each lane.', videoBlock(d.video)));
+    parts.push(section('desk-tech-packs', 'Which candidates have a real, versioned spec ready for sourcing?', 'Tech pack versions per candidate: tolerances, the bill of materials and the packaging cost line. A pack saved from the card becomes the current version and supersedes the last.', techPackBlock(d.tech_packs)));
     parts.push(section('desk-pattern', 'Is each candidate evergreen, seasonal or a trend, and when does cash move?', 'The demand pattern from our own 12-month series by category and the web pass, with the cash timing it implies and the cash plan attached to each candidate.', patternBlock(d.pattern)));
     parts.push(section('desk-pipeline', 'What is in the next-SKU pipeline, and what is past its time box?', 'Candidates screened in from the gaps above or by hand, their stage, fast checks, time box and hours. Advance, log hours or kill from the card; every write lands in the pipeline log.', pipelineBlock(d.pipeline || { rows: [] })));
     const jumps = UI.pills({ items: parts.map((p) => ({ key: p.id, label: p.querySelector('h2').textContent.replace(/\?.*$/, '?').split(',')[0].slice(0, 42) })), onChange: (key) => { const t = document.getElementById(key); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); } });

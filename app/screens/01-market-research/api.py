@@ -714,6 +714,21 @@ def recipe(f):
             'stop_rule': 'no funding on one platform\'s demand', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 2,
             'win_rule': '2 or more platforms above the floor, or the demand check set to fail',
         }
+    if rid == 'PROD-R27':
+        ent = f.get('entity') or {}
+        missing = ', '.join(m.replace('_', ' ') for m in (ent.get('missing') or [])) or 'the spec'
+        return {
+            'title': f'Write the spec for {ent.get("label")} so sourcing can quote it: {missing}',
+            'owner': 'agent',
+            'artefact': {'kind': 'ticket', 'label': f'a versioned tech pack for {ent.get("label")}: tolerances, the bill of materials with fibre content, and the packaging cost line, ready for an RFQ'},
+            'steps': [
+                {'n': 1, 'who': 'agent', 'text': 'Draft the pack from the angle and the closest live SKU: construction, yarn and fibre content, sizes and tolerances.'},
+                {'n': 2, 'who': 'agent', 'text': 'Fill the BOM lines and the packaging cost from the finance inputs (packaging per order) or a quote.'},
+                {'n': 3, 'who': 'person', 'text': 'Review the lines and save the pack from the card as the current version. Sourcing sends the RFQ from it.'}],
+            'size': {'text': f'{ent.get("version") or "no version"} at {ent.get("stage")}', 'usd': None},
+            'stop_rule': 'no RFQ without a current pack', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 4,
+            'win_rule': 'a current pack with tolerances, BOM and packaging cost',
+        }
     return None
 
 
@@ -741,7 +756,7 @@ def merge_lanes(actions):
     return keep
 
 
-CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25')
+CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27')
 
 
 def merge_candidates(actions):
@@ -942,7 +957,7 @@ def overview(data, brand):
                      'pattern': pattern_block(brand, data, rd, findings), 'lane_map': audit.lane_map(br, ends_on), 'spend': audit.spend_signal(br, brand, ends_on),
                      'price_signal': price_signal_block(br, brand, data, findings), 'complaints': audit.listing_complaints(br),
                      'gates': gates_block(brand, data, br, rd, ends_on, findings), 'scorecard': scorecard_block(brand, data, br, rd, ends_on, findings),
-                     'video': audit.video_signals(br, brand, ends_on)},
+                     'video': audit.video_signals(br, brand, ends_on), 'tech_packs': tech_pack_block(brand, findings)},
             'audit': {'findings': findings, 'rules': audit.RULES}}
 
 
@@ -1043,6 +1058,15 @@ def candidate_update(brand, cid, body, today):
     if body.get('review_date') is not None:
         row['review_date'] = str(body['review_date'])[:10] or None
         changes.append('review date set')
+    if isinstance(body.get('tech_pack'), dict):
+        tp = body['tech_pack']
+        packs = row.setdefault('tech_packs', [])
+        for p in packs:
+            if p.get('status') == 'current':
+                p['status'] = 'superseded'
+        packs.append({'version': f'v{len(packs) + 1}', 'tolerances': str(tp.get('tolerances') or '').strip()[:300] or None, 'bom': str(tp.get('bom') or '').strip()[:600] or None,
+                      'packaging_cost': _num(tp.get('packaging_cost')), 'status': 'current', 'updated_at': today.isoformat(), 'note': str(tp.get('note') or '').strip()[:200] or None})
+        changes.append(f'tech pack v{len(packs)} added')
     if not changes:
         return 400, {'error': 'nothing to change'}
     row.setdefault('log', []).append({'on': today.isoformat(), 'who': str(body.get('who') or 'person')[:20], 'what': '; '.join(changes)})
@@ -1116,6 +1140,17 @@ def scorecard_block(brand, data, br, rd, ends_on, findings):
         r['finding_id'] = by_entity.get(r['candidate_id'])
         r['memo'] = audit.memo_text(r, sc['weights'])
     return sc
+
+
+def tech_pack_block(brand, findings):
+    by_entity = {f['entity']['id']: f['id'] for f in findings if f['rule_id'] == 'PROD-R27'}
+    rows = []
+    for c in audit.pipeline(brand):
+        tp = audit.tech_pack_status(c)
+        rows.append({'candidate_id': c.get('candidate_id'), 'name': c.get('name'), 'stage': c.get('stage'), 'closed': c.get('stage') in audit.CLOSED_STAGES,
+                     'needs_spec': c.get('stage') in audit.STAGES and audit.STAGES.index(c['stage']) >= audit.SPEC_STAGE_MIN, 'status': tp['status'], 'version': tp['version'],
+                     'missing': tp['missing'], 'pack': tp['pack'], 'versions': len(c.get('tech_packs') or []), 'finding_id': by_entity.get(c.get('candidate_id'))})
+    return {'rows': rows, 'lines': list(audit.TECH_PACK_LINES), 'rule': f'a candidate at {audit.STAGES[audit.SPEC_STAGE_MIN]} or later needs a current pack with tolerances, a BOM and a packaging cost line; saving a pack supersedes the last one'}
 
 
 def pipeline_block(brand, ends_on, findings, floor):

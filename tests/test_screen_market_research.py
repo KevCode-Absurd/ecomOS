@@ -802,6 +802,27 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
         self.assertEqual(audit.demand_pattern('socks', even, {'markets': [], 'launches': []}, 'Holiday gift box')['tag'], 'seasonal')
         self.assertIsNone(audit.demand_pattern('hats', even, fx)['tag'])
 
+    def test_tech_pack_versions_and_rule(self):
+        today = date(2026, 9, 28)
+        code, out = api.candidate_add('fake', {'name': 'Spec me', 'category': 'socks', 'planned_price': 20}, today)
+        cid = out['candidate']['candidate_id']
+        api.candidate_update('fake', cid, {'stage': 'gated'}, today)
+        fs = audit.tech_pack_findings('fake', today)
+        self.assertEqual([f['entity']['id'] for f in fs], [cid])
+        self.assertIn('no spec yet', fs[0]['sentence'])
+        self.check_shape(fs[0])
+        r = api.candidate_update('fake', cid, {'tech_pack': {'tolerances': 'length plus or minus 5 mm', 'bom': '', 'packaging_cost': 0.4}}, today)
+        self.assertEqual(r['candidate']['tech_packs'][-1]['version'], 'v1')
+        self.assertEqual(audit.tech_pack_status(r['candidate'])['status'], 'partial')
+        self.assertIn('bom', audit.tech_pack_status(r['candidate'])['missing'])
+        self.assertTrue(audit.tech_pack_findings('fake', today))
+        r = api.candidate_update('fake', cid, {'tech_pack': {'tolerances': 'length plus or minus 5 mm', 'bom': '62% cotton, 33% nylon, 5% spandex', 'packaging_cost': 0.4}}, today)
+        packs = r['candidate']['tech_packs']
+        self.assertEqual([p['version'] for p in packs], ['v1', 'v2'])
+        self.assertEqual([p['status'] for p in packs], ['superseded', 'current'])
+        self.assertEqual(audit.tech_pack_status(r['candidate'])['status'], 'current')
+        self.assertEqual(audit.tech_pack_findings('fake', today), [])
+
     def test_funnel_counts_stages_reached(self):
         rows = [audit.candidate_view(r, date(2026, 9, 27)) for r in [
             {'candidate_id': 'a', 'name': 'a', 'stage': 'gated', 'screen_in_date': '2026-09-20', 'time_box_days': 10},
