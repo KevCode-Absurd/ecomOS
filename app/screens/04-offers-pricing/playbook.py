@@ -186,3 +186,9 @@ REGISTRY_SURFACES = [
     (('price point',), 'list price'),
 ]
 PRICE_TEST_WORDS = ('price rise', 'price point', 'new price', 'price test', 'price cut')   # plus a dollar amount in a variant
+
+# Referral and loyalty (screen 04, OFFER-R23 and OFFER-R24).
+PROGRAM_WORDS = {'referral': ('referral', 'refer_a_friend', 'refer'), 'loyalty': ('loyalty', 'rewards', 'points', 'vip')}
+REFERRAL_CAC_SHARE = 0.5  # room spec: referral should acquire for under half of paid CAC
+LOYALTY_EARN = 0.05       # earn rate to design around: 5 percent back (the lowest common rate in loyalty tools)
+LOYALTY_MARGIN_CAP = 0.25 # reward cost above 25 percent of gross margin is too rich (our own heuristic, not a benchmark)

@@ -480,6 +480,23 @@
       actionLine(ready.length + ' moves can start on ' + fmt.date(ready.length ? ready[0].start : null) + ' side by side. ' + (tests.length - ready.length) + ' wait for a shared surface or the peak.', null));
   }
 
+  function buyersBlock(d) {
+    const head = { title: 'What do we offer people who already buy?', sub: 'Referral and loyalty, priced in product at landed cost against paid media per new customer and gross margin.' };
+    const ro = d.referral, lo = d.loyalty;
+    const parts = [];
+    const ra = ACTIONS.find((x) => x.rule_id === 'OFFER-R23'), la = ACTIONS.find((x) => x.rule_id === 'OFFER-R24');
+    if (ro && !ro.unavailable) parts.push(el('div', { class: 'card' }, el('h4', { text: 'Referral: give one, get one' }), kv([
+      ['Terms', ro.terms], ['Paid media per new customer', fmt.money(ro.paid_cac)], ['Cost per referred customer', fmt.money(ro.cost_per_referral) + ', ' + pct(ro.share_of_cac, 0) + ' of paid'],
+      ['Cap (half of paid)', fmt.money(ro.cap)]]), el('p', { class: 'micro faint', text: ro.basis + '.' })));
+    else parts.push(el('div', { class: 'card' }, el('h4', { text: 'Referral' }), el('p', { class: 'muted small', text: NA + ': ' + ((ro || {}).reason || 'no data') })));
+    if (lo && !lo.unavailable) parts.push(el('div', { class: 'card' }, el('h4', { text: 'Loyalty: ' + pct(lo.earn, 0) + ' back' }), kv([
+      ['Gross margin', pct(lo.gross_margin, 0)], ['Paid in cash', pct(lo.cash_share_of_margin, 1) + ' of gross margin'],
+      ['Paid in product', pct(lo.product_share_of_margin, 1) + ' of gross margin'], ['Cap', pct(lo.cap, 0) + ' of gross margin (our own heuristic)']]),
+      el('p', { class: 'micro faint', text: lo.basis + '.' })));
+    const line = [ra ? 'No referral offer: launch give-one-get-one at ' + fmt.money(ro.cost_per_referral) + ' a customer.' : '', la ? 'No loyalty program: pay points in product.' : ''].filter(Boolean).join(' ') || 'Referral and loyalty offers are in place.';
+    return section('desk-buyers', head, el('div', { class: 'grid two' }, ...parts), actionLine(line, ra || la));
+  }
+
   function returnsChart(r) {
     if (!r || !r.groups || !r.groups.length) return el('p', { class: 'muted small', text: 'Returns by reason ' + NA + '.' });
     const rows = r.groups.slice().sort((a, b) => b.per_1000 - a.per_1000);
@@ -536,8 +553,8 @@
     const TABS = [
       { key: 'launch', label: 'Launch next', rules: ['OFFER-R11', 'OFFER-R12', 'OFFER-R21'],
         blocks: () => [testsBlock(d.tests), registryBlock(d.registry), calendarBlock(d.calendar), depthBlock(d.depth), giftingBlock(d.gifting), secondOrderBlock(d.cohorts)] },
-      { key: 'offers', label: 'Offers', rules: ['OFFER-R08', 'OFFER-R10', 'OFFER-R19', 'OFFER-R20', 'OFFER-R04', 'OFFER-R14', 'OFFER-R15'],
-        blocks: () => [firstOrderBlock(d.first_order), cartBlock(d.cart), objectionBlock(d.objections || [], d.returns), guaranteeBlock(d.guarantee, d.returns), stackBlock(d.stack || [])] },
+      { key: 'offers', label: 'Offers', rules: ['OFFER-R08', 'OFFER-R10', 'OFFER-R19', 'OFFER-R20', 'OFFER-R23', 'OFFER-R24', 'OFFER-R04', 'OFFER-R14', 'OFFER-R15'],
+        blocks: () => [firstOrderBlock(d.first_order), cartBlock(d.cart), buyersBlock(d), objectionBlock(d.objections || [], d.returns), guaranteeBlock(d.guarantee, d.returns), stackBlock(d.stack || [])] },
       { key: 'prices', label: 'Prices and packs', rules: ['OFFER-R22', 'OFFER-R16', 'OFFER-R17', 'OFFER-R07', 'OFFER-R09'],
         blocks: () => [costBlock(d.costs), positionBlock(d.position, d.brand || {}), parityBlock(d.parity), ladderBlock(d.ladder), waterfallBlock(d.waterfalls)] },
       { key: 'shipping', label: 'Shipping and discounts', rules: ['OFFER-R01', 'OFFER-R05', 'OFFER-R06', 'OFFER-R18'],

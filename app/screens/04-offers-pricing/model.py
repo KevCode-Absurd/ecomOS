@@ -1019,3 +1019,42 @@ def registry(rd, surface_rules, price_words):
                   if price else None)
     return {'unavailable': False, 'source': source, 'entries': out, 'elasticity': elasticity,
             'elasticity_reason': None if price else 'no finished price test in the registry, so price elasticity is unknown'}
+
+
+# ---------------------------------------------------------------- referral and loyalty
+
+def has_program(rd, words):
+    """True when a brain offers or stack record names the program."""
+    for sec in ('offers', 'stack'):
+        for r in rd.records(sec):
+            text = (str(r.get('id')) + ' ' + str(r.get('field')) + ' ' + json.dumps(r.get('value'))).lower()
+            if any(w in text for w in words):
+                return r['id']
+    return None
+
+
+def referral_offer(rd, gift, share):
+    """A give-one-get-one referral paid in product: cost per referred first order against paid media per new
+    customer. Pays when it stays under `share` of that CAC."""
+    t = window_totals(rd)
+    if not t or not t['new_customer_orders'] or not gift:
+        return {'unavailable': True, 'reason': 'needs the daily aggregate and a gift item'}
+    cac = t['spend'] / t['new_customer_orders']
+    cost = round(2 * gift['cost'] + (fin_value(rd, 'threepl_pick_pack', rd.ends_on, unit='usd_per_unit') or 0) * 2, 2)
+    return {'unavailable': False, 'paid_cac': round(cac, 2), 'cap': round(cac * share, 2), 'cost_per_referral': cost,
+            'share_of_cac': round(cost / cac, 4), 'gift': gift, 'clears': cost <= cac * share,
+            'terms': f'give a friend a free {gift["category"]} single with their first order, get one yourself when they buy',
+            'basis': 'paid media per new customer over 28 days; cost is 2 gift items at landed cost plus the pick fee'}
+
+
+def loyalty_design(rd, earn, cap):
+    """Points at `earn` back, paid in product at landed cost against paid in cash: the share of gross margin each takes."""
+    cr = cogs_ratio(rd)
+    if cr.get('ratio') is None:
+        return {'unavailable': True, 'reason': cr.get('reason')}
+    gm = 1 - cr['ratio']
+    cash = earn / gm
+    product = earn * cr['ratio'] / gm
+    return {'unavailable': False, 'earn': earn, 'gross_margin': round(gm, 4), 'cash_share_of_margin': round(cash, 4),
+            'product_share_of_margin': round(product, 4), 'cap': cap, 'cash_clears': cash <= cap, 'product_clears': product <= cap,
+            'basis': 'landed cost over net sales, last 3 full months; a point redeemed as product costs its landed cost'}

@@ -93,6 +93,10 @@ Rules
              and the paid price per pack (last 3 full months against the same 3 a year before) rose less than the
              cost did (model.cost_moves). One finding for all such SKUs. Money: margin dollars leaked per pack times
              packs in the last 12 full months, scaled to 28 days. Capability MONEY-C05 (founder gate).
+  OFFER-R23  No referral offer (room spec: referral beats paid CAC): no brain offers or stack record names a
+             referral program, and a give-one-get-one paid in product (model.referral_offer) costs under
+             playbook.REFERRAL_CAC_SHARE of paid media per new customer. Money null: referral volume is what the
+             launch finds. Capability LIFE-C45 (founder gate).
   OFFER-R03  Margin after discount per SKU. Needs cogs_landed keyed by the store's SKUs. Unavailable while no
              finance_inputs SKU key matches a product SKU. Capability MONEY-C05 (founder gate). Owner: 04.
   OFFER-R04  A deal-breaker rung with no proof: the top rung of an objection ladder whose proof is empty or
@@ -177,6 +181,8 @@ RULES = [
      'inputs': ['cohorts', 'brain.offers'], 'capability': 'LIFE-C36', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R22', 'name': 'Cost rose, price did not', 'entity_type': 'sku',
      'inputs': ['finance_inputs.cogs_landed', 'products_monthly'], 'capability': 'MONEY-C05', 'owner_screen': SCREEN},
+    {'rule_id': 'OFFER-R23', 'name': 'No referral offer', 'entity_type': 'offer', 'inputs': ['brain.offers', 'brain.stack', 'daily'],
+     'capability': 'LIFE-C45', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R03', 'name': 'Margin after discount per SKU', 'entity_type': 'sku',
      'inputs': ['finance_inputs.cogs_landed keyed by product SKU', 'products'], 'capability': 'MONEY-C05',
      'owner_screen': SCREEN},
@@ -203,6 +209,7 @@ CAPABILITY = {'OFFER-R01': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R20': {'id': 'LIFE-C41', 'autonomy': 'founder_gate'},
               'OFFER-R21': {'id': 'LIFE-C36', 'autonomy': 'founder_gate'},
               'OFFER-R22': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
+              'OFFER-R23': {'id': 'LIFE-C45', 'autonomy': 'founder_gate'},
               'OFFER-R06': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R04': {'id': 'LIFE-C36', 'autonomy': 'founder_gate'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
@@ -936,6 +943,27 @@ def rule_cost(rd):
                      sentence, money, 0.8, [], end)]
 
 
+def referral(rd):
+    cands = _model().gwp_candidates(rd, _playbook().GWP_RATIO)
+    return _model().referral_offer(rd, cands[0] if cands else None, _playbook().REFERRAL_CAC_SHARE)
+
+
+def rule_referral(rd):
+    end = rd.ends_on
+    if _model().has_program(rd, _playbook().PROGRAM_WORDS['referral']):
+        return []
+    ro = referral(rd)
+    if ro.get('unavailable') or not ro['clears']:
+        return []
+    evidence = [_ev('referral_cost_per_new_customer', ro['cost_per_referral'], 'usd', end, baseline=ro['cap'], baseline_kind='half_paid_cac',
+                    source='finance_inputs, daily'),
+                _ev('paid_media_per_new_customer', ro['paid_cac'], 'usd', end, source='daily')]
+    sentence = (f'There is no referral offer. Paid media costs ${ro["paid_cac"]:,.2f} per new customer; a give-one-get-one '
+                f'paid in product would cost ${ro["cost_per_referral"]:,.2f}.')
+    return [_finding('OFFER-R23', {'type': 'offer', 'id': 'referral', 'label': 'Referral offer'}, 'medium', evidence, sentence,
+                     None, 0.6, [], end, money_reason='referral volume is what the launch finds')]
+
+
 def rule_ladder(rd):
     end = rd.ends_on
     pb = _playbook()
@@ -1107,7 +1135,7 @@ def run(brand, window=None, data=None):
     """Findings for one brand, sorted by severity then money at stake. `window` is {ends_on} or None."""
     ends_on = date.fromisoformat(window['ends_on']) if window and window.get('ends_on') else last_full_day(data, brand)
     rd = Reader(data, brand, ends_on)
-    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_cost(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
+    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_cost(rd) + rule_referral(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
            rule_unanswered(rd))
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f.get('money_at_stake') or {}).get('usd') or -1), f['id']))
     return out

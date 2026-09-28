@@ -947,5 +947,24 @@ class RegistryTest(unittest.TestCase):
             self.assertTrue(self.reg['elasticity_reason'])
 
 
+class ReferralTest(unittest.TestCase):
+    """Round 3 feature 2: a referral offer paid in product, capped at half of paid CAC."""
+
+    def test_referral(self):
+        rd = audit.Reader(None, 'bombas', audit.last_full_day(None, 'bombas'))
+        ro = audit.referral(rd)
+        self.assertFalse(ro['unavailable'])
+        self.assertAlmostEqual(ro['cap'], round(ro['paid_cac'] * audit._playbook().REFERRAL_CAC_SHARE, 2))
+        self.assertEqual(ro['clears'], ro['cost_per_referral'] <= ro['paid_cac'] * audit._playbook().REFERRAL_CAC_SHARE)
+        out = api.actions.rank('bombas')
+        has = api.model.has_program(rd, audit._playbook().PROGRAM_WORDS['referral'])
+        f = next((f for f in out['findings'] if f['rule_id'] == 'OFFER-R23'), None)
+        self.assertEqual(bool(f), not has and ro['clears'])
+        if f:
+            a = next(a for a in out['actions'] if a['rule_id'] == 'OFFER-R23')
+            self.assertIn('Cap', a['artefact']['draft'])
+            self.assertTrue(a['stop_rule'])
+
+
 if __name__ == '__main__':
     unittest.main()

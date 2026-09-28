@@ -83,6 +83,7 @@ class Ctx:
         self.depth = model.depth_by_line(rd, playbook.DEPTH_TIERS)
         self.cohorts = audit.cohort_curve(rd)
         self.costs = audit.cost_moves(rd)
+        self.referral = audit.referral(rd)
         self.registry = model.registry(rd, playbook.REGISTRY_SURFACES, playbook.PRICE_TEST_WORDS)
         self.ship_rate = (model.brain_value(rd, 'offers.standard_shipping_cost')[0] or {}).get('cost_usd') if rd.brand else None
         self.scenarios = (model.threshold_scenarios(rd, self.threshold, self.ship_rate, self.be['value'], (self.po or {}).get('units') or 1)
@@ -518,6 +519,8 @@ def surfaces(a):
         return (['product page pack selector'] if ent == 'push' else ['pack price']), 35
     if r == 'OFFER-R09':
         return ['new packs'], 56
+    if r == 'OFFER-R23':
+        return ['referral'], 56
     if r == 'OFFER-R22':
         return ['list price'], 35
     if r == 'OFFER-R21':
@@ -821,6 +824,29 @@ def cost_action(f, a, ctx):
     return a
 
 
+def referral_action(f, a, ctx):
+    ro = ctx.referral
+    lines = ['Offer spec: give one, get one',
+             f'Terms: {ro["terms"]}.',
+             f'Cost: {money(ro["cost_per_referral"])} per referred first order (2 items at landed cost and the pick fee), '
+             f'{ro["share_of_cac"] * 100:.0f} percent of the {money(ro["paid_cac"])} paid media spends per new customer.',
+             f'Cap: stop if cost per referred customer passes {money(ro["cap"])}, half of paid CAC.',
+             'Where: the order confirmation page, the second-order flow, the account page.',
+             'Win: referred first orders at or above 2 percent of new customers in 56 days. Stop: the cap above, or fraud above 5 percent of referrals.']
+    a.update({
+        'title': 'Launch a give-one-get-one referral paid in product',
+        'owner': 'agent_drafts',
+        'artefact': {'kind': 'offer', 'label': 'Referral offer spec', 'draft': '\n'.join(lines)},
+        'steps': steps(('agent', 'Confirm the gift item has stock for 90 days.'),
+                       ('agent', 'Draft the offer, the page copy and the confirmation-page block.'),
+                       ('person', 'Approve. The retention lead picks the referral tool and sets it up.'),
+                       ('agent', f'Read referred orders and cost per referral monthly; call it on {ctx.check_on(56)}.')),
+        'size': {'text': f'{money(ro["cost_per_referral"])} per referred customer against {money(ro["paid_cac"])} paid', 'usd': None},
+        'win_rule': 'Referred first orders at or above 2 percent of new customers in 56 days.',
+        'stop_rule': f'Cost per referred customer above {money(ro["cap"])}.', 'check_on': ctx.check_on(56), 'time_to_ship_hours': 10})
+    return a
+
+
 def returns_block(rd):
     """returns_by_reason for the window, or the labelled fixture when the metric is unavailable."""
     m = rd.m('returns_by_reason', audit.WINDOW)
@@ -982,7 +1008,7 @@ BUILDERS = {'OFFER-R01': threshold_action, 'OFFER-R04': rung_action, 'OFFER-R08'
             'OFFER-R14': guarantee_action, 'OFFER-R05': stale_action, 'OFFER-R06': pull_action, 'OFFER-R15': claims_action,
             'OFFER-R16': position_action, 'OFFER-R17': parity_action, 'OFFER-R18': discount_action,
             'OFFER-R19': discount_action, 'OFFER-R20': cart_action, 'OFFER-R21': second_order_action,
-            'OFFER-R22': cost_action}
+            'OFFER-R22': cost_action, 'OFFER-R23': referral_action}
 
 
 def build(f, rd, ctx, nr):
@@ -1023,4 +1049,4 @@ def rank(brand='bombas', window=None):
     return {'screen': SCREEN, 'brand': brand, 'window': w, 'simulated': True, 'net_revenue_28d': nr,
             'actions': actions, 'findings': findings, 'objections': ctx.objections, 'returns': returns_block(rd),
             'ladder': dict(ctx.ladder, moves=ctx.ladder_rows), 'first_order': ctx.first_order, 'waterfalls': ctx.waterfalls, 'calendar': ctx.calendar, 'gifting': ctx.gifting, 'guarantee': ctx.guarantee, 'position': ctx.position, 'parity': ctx.parity,
-            'discipline': dict(ctx.discipline, policy=discount_policy(ctx)), 'cart': ctx.cart, 'tests': calendar, 'depth': ctx.depth, 'cohorts': ctx.cohorts, 'costs': ctx.costs, 'registry': ctx.registry}
+            'discipline': dict(ctx.discipline, policy=discount_policy(ctx)), 'cart': ctx.cart, 'tests': calendar, 'depth': ctx.depth, 'cohorts': ctx.cohorts, 'costs': ctx.costs, 'registry': ctx.registry, 'referral': ctx.referral}
