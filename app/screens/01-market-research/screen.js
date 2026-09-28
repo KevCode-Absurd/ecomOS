@@ -1110,6 +1110,24 @@
         hot.length && actionFor(hot[0].finding_id) ? { label: 'Fix the first', onClick: () => openAction(actionFor(hot[0].finding_id)) } : null));
   }
 
+  function samplesBlock(sm) {
+    const rows = (sm && sm.rows) || [];
+    if (!rows.length) return UI.emptyState({ screen: SLUG, title: 'No candidate at the sample gate', text: 'From shortlisted on, or once a first run is decided, a sample must run through our own chain.', missing: ['pipeline'] });
+    const vt = { none: 'No sample', ordered: 'Ordered', received: 'Received, not tested', tested_pass: 'Passed', tested_fail: 'Failed' };
+    const enter = (r) => { const o = prompt('Sample for ' + r.name + ': ordered on (YYYY-MM-DD)', r.ordered_on || ''); if (o == null) return; const rc = prompt('Received on (YYYY-MM-DD, or empty)', r.received_on || ''); if (rc == null) return;
+      const res = prompt('Result after a test through our own fulfilment: pass, fail, or empty', r.result || ''); if (res == null) return; const notes = prompt('Note', r.notes || ''); if (notes == null) return;
+      candidatePost('candidates/' + r.candidate_id, { sample: { ordered_on: o || null, received_on: rc || null, through_own_chain: !!res, result: res || null, notes }, who: 'person' }); };
+    const vrows = rows.map((r) => { const a = actionFor(r.finding_id); return Object.assign({}, r, { ord: r.ordered_on ? fmt.date(r.ordered_on) : NA, rec: r.received_on ? fmt.date(r.received_on) : NA, res: r.result || NA, note: r.notes || '',
+      run: r.first_run_decided ? 'decided' : 'not yet',
+      actions: [a ? { label: r.verdict === 'tested_fail' ? 'Send it back' : 'Run the sample', onClick: () => openAction(a) } : { label: 'Passed', cls: 'quiet', onClick: () => {} }, { label: 'Sample', cls: 'quiet', onClick: () => enter(r) }] }); });
+    const tbl = UI.verdictTable({ columns: [{ key: 'name', label: 'Candidate' }, { key: 'stage', label: 'Stage' }, { key: 'run', label: 'First run' }, { key: 'ord', label: 'Ordered' }, { key: 'rec', label: 'Received' }, { key: 'res', label: 'Result' }, { key: 'note', label: 'Note' }], rows: vrows,
+      verdict: { at: 1, kind: (r) => r.verdict === 'tested_pass' ? 'keep' : r.verdict === 'tested_fail' ? 'stop' : r.verdict === 'none' ? 'fix' : 'watch', text: (r) => vt[r.verdict], reason: () => sm.rule }, actions: { label: 'Do', onClick: () => {} }, sort: false });
+    const open = rows.filter((r) => r.verdict !== 'tested_pass');
+    return el('div', { class: 'stack' }, el('div', { class: 'card scroll' }, tbl), el('p', { class: 'micro faint', text: 'Rule: ' + sm.rule + '.' }),
+      gapLine(open.length ? open.length + ' candidate' + (open.length === 1 ? '' : 's') + ' at the sample gate without a passed sample: ' + open.map((r) => r.name).join(', ') + '.' : 'Every candidate at the gate has a passed sample.',
+        open.length && actionFor(open[0].finding_id) ? { label: 'Open the first', onClick: () => openAction(actionFor(open[0].finding_id)) } : null));
+  }
+
   function loadDesk(o) {
     const d = o.desk || {};
     const w = (o.window || {}).trend;
@@ -1142,6 +1160,7 @@
     parts.push(section('desk-video', 'Is the demand one clip or a real pattern?', 'Independent platforms showing demand per lane: the Instagram hashtag pull, Reddit mentions and upvotes, competitor creator-style ads and our own, with the candidates that rest on each lane.', videoBlock(d.video)));
     parts.push(section('desk-tech-packs', 'Which candidates have a real, versioned spec ready for sourcing?', 'Tech pack versions per candidate: tolerances, the bill of materials and the packaging cost line. A pack saved from the card becomes the current version and supersedes the last.', techPackBlock(d.tech_packs)));
     parts.push(section('desk-first-run', 'How big is the first run, and does it have to be that big?', 'From gated on, the first production run per candidate: units wanted, the format and its MOQ, the cash it ties up as a share of 28-day net revenue, and the lower-MOQ alternative considered (bank idea BRD-249).', firstRunsBlock(d.first_runs)));
+    parts.push(section('desk-samples', 'Has a sample run through our own chain?', 'From shortlisted on, or once a first run is decided: the sample ordered, received and tested through the store\'s own fulfilment before any MOQ order (bank idea PRD-098).', samplesBlock(d.samples)));
     parts.push(section('desk-hours', 'Has any candidate used up its research hours?', 'Hours logged per candidate against the hours allowed through its stage, from the brand\'s budget per stage. Research cannot sprawl past the box.', hoursBlock(d.hours)));
     parts.push(section('desk-trend-checks', 'Does each lane\'s trend rest on history, or on a forecast?', 'The 12-month rate against the multi-year rate per lane from the web pass series: a trend is trusted with 3 or more years of history on the exact term; a last year over twice the multi-year rate is a spike.', trendChecksBlock(d.trend_checks)));
     parts.push(section('desk-pattern', 'Is each candidate evergreen, seasonal or a trend, and when does cash move?', 'The demand pattern from our own 12-month series by category and the web pass, with the cash timing it implies and the cash plan attached to each candidate.', patternBlock(d.pattern)));

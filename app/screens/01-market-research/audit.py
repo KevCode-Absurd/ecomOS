@@ -169,6 +169,10 @@ Rules
             Money null. Capability PROD-C34 (build and optimise the listing, human assist). Owner: 01-market-research.
   PROD-R45  No owner: a candidate at shortlisted or later with no named person to run the post-test diagnosis (bank idea
             PRD-126). Severity low. Money null. Capability PROD-C11. Owner: 01-market-research.
+  PROD-R46  Sample gate: a candidate at shortlisted or later, or with a first run decided, whose sample has not been ordered,
+            received and tested through the store's own fulfilment chain (bank idea PRD-098). High once a first run is
+            decided or the test failed, else medium. Money null. Capability PROD-C16 (the sample gate, human assist).
+            Owner: 01-market-research.
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -282,6 +286,8 @@ RULES = [
     {'rule_id': 'PROD-R44', 'name': 'Line with 20 or more mined complaint quotes where one theme carries 40 percent or more', 'entity_type': 'sku',
      'inputs': ['brain.products', 'brain.marketplaces'], 'capability': 'PROD-C34', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R45', 'name': 'Candidate at shortlisted or later with no named owner', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C11', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R46', 'name': 'Candidate at shortlisted or later, or with a first run decided, whose sample has not passed a test through our own chain', 'entity_type': 'sku',
+     'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C16', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -327,7 +333,8 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R42': {'id': 'PROD-C08', 'autonomy': 'agent_does'},
               'PROD-R43': {'id': 'PROD-C04', 'autonomy': 'agent_does'},
               'PROD-R44': {'id': 'PROD-C34', 'autonomy': 'human_assist'},
-              'PROD-R45': {'id': 'PROD-C11', 'autonomy': 'founder_gate'}}
+              'PROD-R45': {'id': 'PROD-C11', 'autonomy': 'founder_gate'},
+              'PROD-R46': {'id': 'PROD-C16', 'autonomy': 'human_assist'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -823,6 +830,7 @@ def run(brand, window=None, data=None):
     out += strength_findings(br, brand, data, rd, ends_on)
     out += line_theme_findings(br, ends_on)
     out += owner_findings(brand, ends_on)
+    out += sample_findings(brand, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -4250,5 +4258,59 @@ def owner_findings(brand, ends_on):
         f = _finding('PROD-R45', cid, ends_on, 'low', ev, sentence, None, 0.9, [], money_reason='a missing owner has no order count')
         f['entity'] = {'type': 'sku', 'id': cid, 'label': c.get('name'), 'candidate': True, 'stage': st}
         f['id'] = f'{SCREEN}.PROD-R45.{cid}'
+        out.append(f)
+    return out
+
+
+# ---------------------------------------------------------------- the sample gate (round 7.1, bank idea PRD-098)
+
+SAMPLE_STAGE_MIN = 3   # shortlisted or later, or any candidate with a first run decided: a sample must have run through our own chain first
+
+
+def sample_read(brand, ends_on):
+    """Per open candidate at shortlisted or later, or with a first run decided: the sample on file (ordered, received, tested
+    through the store's own fulfilment chain, result), and the verdict: none, ordered, received, tested pass, tested fail."""
+    rows = []
+    for c in pipeline(brand):
+        st = c.get('stage')
+        idx = STAGES.index(st) if st in STAGES else None
+        if st in CLOSED_STAGES or idx is None:
+            continue
+        if idx < SAMPLE_STAGE_MIN and not c.get('first_run'):
+            continue
+        s = c.get('sample') or {}
+        if not s:
+            verdict = 'none'
+        elif s.get('result') in ('pass', 'fail'):
+            verdict = 'tested_' + s['result']
+        elif s.get('received_on'):
+            verdict = 'received'
+        elif s.get('ordered_on'):
+            verdict = 'ordered'
+        else:
+            verdict = 'none'
+        rows.append({'candidate_id': c.get('candidate_id'), 'name': c.get('name'), 'stage': st, 'first_run_decided': bool(c.get('first_run')), 'ordered_on': s.get('ordered_on'), 'received_on': s.get('received_on'),
+                     'through_own_chain': s.get('through_own_chain'), 'result': s.get('result'), 'notes': s.get('notes'), 'verdict': verdict, 'finding_id': f'{SCREEN}.PROD-R46.{c.get("candidate_id")}'})
+    order = {'none': 0, 'tested_fail': 1, 'ordered': 2, 'received': 3, 'tested_pass': 4}
+    rows.sort(key=lambda r: (order[r['verdict']], r['name'] or ''))
+    return {'rows': rows, 'rule': 'from shortlisted on, or once a first run is decided, a sample must have been ordered, received and tested through the store\'s own fulfilment chain before any MOQ order (bank idea PRD-098); a failed test sends the candidate back to researched'}
+
+
+def sample_findings(brand, ends_on):
+    """PROD-R46: a candidate at shortlisted or later, or with a first run decided, whose sample has not passed a test through our own chain."""
+    out = []
+    for r in sample_read(brand, ends_on)['rows']:
+        if r['verdict'] == 'tested_pass':
+            continue
+        cid = r['candidate_id']
+        state = {'none': 'no sample is on file', 'ordered': f'the sample was ordered on {r["ordered_on"]} and has not arrived', 'received': f'the sample arrived on {r["received_on"]} and has not been tested through our own chain',
+                 'tested_fail': f'the sample failed its test ({r["notes"] or "no note"})'}[r['verdict']]
+        ev = [_ev('sample_tested_through_own_chain', 1 if r['verdict'] == 'tested_pass' else 0, 'flag', ends_on.isoformat(), 'candidate now', 1, 'threshold', source='fixtures.pipeline', simulated=False, freshness_days=0,
+                  verdict=r['verdict'], first_run_decided=r['first_run_decided'])]
+        sentence = f'{r["name"]} is at {r["stage"]}' + (' with a first run decided' if r['first_run_decided'] else '') + f' and {state}.'
+        sev = 'high' if r['first_run_decided'] or r['verdict'] == 'tested_fail' else 'medium'
+        f = _finding('PROD-R46', cid, ends_on, sev, ev, sentence, None, 0.9, [], money_reason='the bet is the first run cash, priced on the first-run card')
+        f['entity'] = {'type': 'sku', 'id': cid, 'label': r['name'], 'candidate': True, 'stage': r['stage'], 'verdict': r['verdict'], 'first_run_decided': r['first_run_decided']}
+        f['id'] = r['finding_id']
         out.append(f)
     return out

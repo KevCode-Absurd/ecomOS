@@ -228,6 +228,21 @@ The candidate side of the desk: the pipeline with its gates, boxes and scorecard
 | 6.9 | Second brand pass: every route answers on Tallgrass Goods (overview, rank, calendar, week, report, changes, log, product candidates, tests; a hand-off or brief for a thing that does not exist answers 400 with the reason); the gift window on the calendar no longer speaks of socks, it reads the brand's own web pass or a plain holiday line; the page renders with no script error | done |
 | 6.10 | Recipes for PROD-R40 to R45 (every rule has a recipe or a connect action), tests for each feature (97 in the file), `round6.png` to `round6d.png` (the Bombas page, 44,196 px tall, 4 parts each under 1 MB) and `round6s.png` (the sample brand), the round 6 founder note | done |
 
+## Round 7: memory, hand-offs out, and the last gates (from 28 Sep 2026)
+
+| # | Feature | Status |
+|---|---|---|
+| 7.1 | The sample gate (bank idea PRD-098): from shortlisted on, or once a first run is decided, a sample ordered, received and tested through the store's own fulfilment chain, entered on the row; rule PROD-R46 no passed sample (high once a first run is decided or the test failed), a person runs it, merged into the candidate card | done |
+| 7.2 | Kill memory: killed candidates with the reason and the date, a 90-day hold; rule PROD-R47 a new candidate that reads like one killed inside 90 days | todo |
+| 7.3 | The weekly report runner: `weekly.py --brand X` writes the desk report and the week plan to a dated file and lists past reports from Exports; scheduling it is the lead's call (contract ask) | todo |
+| 7.4 | Decisions on this desk: every choice from the shared decisions log for this screen with its action, when and the note, as a table under the plan and a CSV | todo |
+| 7.5 | Send to creative: the creative hand-off written as a file and a row in a hand-off table (events contract shape) from the card panel; contract ask for the shared table | todo |
+| 7.6 | The web pass history: a passing check keeps a dated copy; the trends block says what changed since the last capture (new launches, growth moved, new preferences); first capture says so | todo |
+| 7.7 | One SKU first (bank idea PRD-093): variants on the candidate; rule PROD-R48 a first run with more than one variant before any sell-through | todo |
+| 7.8 | Custom packaging after proof (bank idea PRD-100): rule PROD-R49 a first run in a custom or printed format with no passed sample and no sell-through | todo |
+| 7.9 | A per-process memo for the audit run keyed on the writable files' mtimes and the brain version, so a page load runs the audit once; second brand pass | todo |
+| 7.10 | Recipes, tests, round7.png, founder note | todo |
+
 ## Round 6 note for the founder (28 Sep 2026)
 
 1. The desk now says what it stands on. Every card carries the strength of the read behind it (sample, sources, age against a floor), a thin read is said under the card, and a block grades all 9 reads; the brain sections the rules read show their age against the contract TTL, stale records and open conflicts; the calibration assumptions behind the simulated numbers sit in a table with their status, and the 3 that money rules price with without founder confirmation (gross margin, return share, category mix) are one founder-gate card.

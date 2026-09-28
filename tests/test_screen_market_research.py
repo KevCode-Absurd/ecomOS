@@ -1305,6 +1305,30 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
             audit.PIPELINE_PATH = self.real2
             api.HANDOFF_PATH, api.TESTS_PATH = saved_paths
 
+    def test_sample_gate(self):
+        D = date(2026, 9, 27)
+        self.real2 = audit.PIPELINE_PATH
+        try:
+            audit.PIPELINE_PATH = self.tmp
+            self.tmp.write_text(json.dumps({'rows': [{'candidate_id': 'a', 'brand': 'fake', 'name': 'A', 'stage': 'shortlisted'},
+                                                     {'candidate_id': 'b', 'brand': 'fake', 'name': 'B', 'stage': 'gated', 'first_run': {'units': 500}},
+                                                     {'candidate_id': 'c', 'brand': 'fake', 'name': 'C', 'stage': 'gated'},
+                                                     {'candidate_id': 'd', 'brand': 'fake', 'name': 'D', 'stage': 'shortlisted', 'sample': {'ordered_on': '2026-09-01', 'received_on': '2026-09-10', 'through_own_chain': True, 'result': 'pass'}},
+                                                     {'candidate_id': 'e', 'brand': 'fake', 'name': 'E', 'stage': 'shortlisted', 'sample': {'ordered_on': '2026-09-01', 'received_on': '2026-09-10', 'result': 'fail', 'notes': 'seam split'}}]}), encoding='utf-8')
+            v = {r['candidate_id']: r['verdict'] for r in audit.sample_read('fake', D)['rows']}
+            self.assertEqual(v, {'a': 'none', 'b': 'none', 'd': 'tested_pass', 'e': 'tested_fail'})   # c: gated with no first run is not at the gate yet
+            found = {f['id'].split('.')[-1]: f for f in audit.sample_findings('fake', D)}
+            self.assertEqual(set(found), {'a', 'b', 'e'})
+            self.assertEqual((found['a']['severity'], found['b']['severity'], found['e']['severity']), ('medium', 'high', 'high'))
+            for f in found.values():
+                self.check_shape(f)
+            self.assertIn('back', api.recipe(found['e'])['title'])
+            r = api.candidate_update('fake', 'a', {'sample': {'ordered_on': '2026-09-20'}, 'who': 'person'}, D)
+            self.assertEqual(r['changes'], ['sample ordered'])
+            self.assertEqual({x['candidate_id']: x['verdict'] for x in audit.sample_read('fake', D)['rows']}['a'], 'ordered')
+        finally:
+            audit.PIPELINE_PATH = self.real2
+
     def test_demand_pattern_tags(self):
         even = {'rows': [{'category': 'socks', 'series': [100] * 12}], 'months': [f'2026-{m:02d}' for m in range(1, 13)], 'last': '2026-12'}
         peaked = {'rows': [{'category': 'socks', 'series': [50] * 10 + [300, 400]}], 'months': even['months'], 'last': '2026-12'}

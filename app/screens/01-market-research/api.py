@@ -1065,6 +1065,22 @@ def recipe(f):
             'size': {'text': f'at {ent.get("stage")}', 'usd': None}, 'stop_rule': 'no go without an owner', 'check_on': _check_on(f, 3), 'time_to_ship_hours': 0.2,
             'win_rule': 'an owner named on the candidate',
         }
+    if rid == 'PROD-R46':
+        ent = f.get('entity') or {}
+        name = ent.get('label') or 'the candidate'
+        v = ent.get('verdict')
+        step1 = {'none': 'Order one sample of the candidate from the shortlisted supplier to the store\'s own address, through the normal checkout and 3PL path.',
+                 'ordered': 'Chase the sample; log the received date when it lands.', 'received': 'Test the sample through the store\'s own fulfilment chain: pick, pack, ship to a real address, open it, wear or use it.',
+                 'tested_fail': 'Send the candidate back to researched with the failure noted; a new sample needs a new supplier or spec.'}.get(v, 'Order a sample.')
+        return {
+            'title': f'Run a sample of {name} through our own chain before any MOQ order' if v != 'tested_fail' else f'Send {name} back: its sample failed',
+            'owner': 'person',
+            'artefact': {'kind': 'ticket', 'label': f'the sample record on {name}: ordered, received, tested through our own fulfilment, pass or fail with a note (bank idea PRD-098)'},
+            'steps': [{'n': 1, 'who': 'person', 'text': step1}, {'n': 2, 'who': 'agent', 'text': 'Log the dates and the result on the pipeline row (Sample); the gate reads them at once.'},
+                      {'n': 3, 'who': 'person', 'text': 'Only a passed sample unlocks the first run order.'}],
+            'size': {'text': f'{(v or "none").replace("_", " ")}' + (', first run decided' if ent.get('first_run_decided') else ''), 'usd': None}, 'stop_rule': 'no MOQ order without a passed sample', 'check_on': _check_on(f, 14), 'time_to_ship_hours': 1,
+            'win_rule': 'a sample tested through our own chain with result pass',
+        }
     return None
 
 
@@ -1216,7 +1232,7 @@ def merge_strength(actions):
     return keep
 
 
-CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28', 'PROD-R37', 'PROD-R38', 'PROD-R39', 'PROD-R40', 'PROD-R45')
+CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28', 'PROD-R37', 'PROD-R38', 'PROD-R39', 'PROD-R40', 'PROD-R45', 'PROD-R46')
 
 
 def merge_candidates(actions):
@@ -1469,7 +1485,7 @@ def overview(data, brand):
                      'gates': gates_block(brand, data, br, rd, ends_on, findings), 'scorecard': scorecard_block(brand, data, br, rd, ends_on, findings),
                      'video': audit.video_signals(br, brand, ends_on), 'tech_packs': tech_pack_block(brand, findings),
                      'hours': dict(audit.hours_table(brand, br), findings={f['entity']['id']: f['id'] for f in findings if f['rule_id'] == 'PROD-R28'}),
-                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on), 'returns': audit.return_rates(data, brand, ends_on), 'questions': audit.open_questions(br, ends_on), 'pulls': audit.pulls(br, brand, ends_on), 'first_runs': audit.first_run_read(brand, ends_on, audit.net_28d(rd)), 'brain_freshness': audit.brain_freshness(br, ends_on), 'assumptions': audit.assumptions(br), 'strength': audit.read_strength(br, brand, data, rd, ends_on), 'line_themes': audit.line_theme_matrix(br)},
+                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on), 'returns': audit.return_rates(data, brand, ends_on), 'questions': audit.open_questions(br, ends_on), 'pulls': audit.pulls(br, brand, ends_on), 'first_runs': audit.first_run_read(brand, ends_on, audit.net_28d(rd)), 'brain_freshness': audit.brain_freshness(br, ends_on), 'assumptions': audit.assumptions(br), 'strength': audit.read_strength(br, brand, data, rd, ends_on), 'line_themes': audit.line_theme_matrix(br), 'samples': audit.sample_read(brand or 'sample', ends_on)},
             'audit': {'findings': findings, 'rules': audit.RULES}}
 
 
@@ -1558,6 +1574,20 @@ def candidate_update(brand, cid, body, today):
     if body.get('pack_units') is not None:
         row['pack_units'] = int(_num(body['pack_units'], 1) or 1)
         changes.append('pack units set')
+    if isinstance(body.get('sample'), dict):
+        sm = body['sample']
+        cur = dict(row.get('sample') or {})
+        for k in ('ordered_on', 'received_on'):
+            if sm.get(k) is not None:
+                cur[k] = str(sm[k])[:10] or None
+        if sm.get('through_own_chain') is not None:
+            cur['through_own_chain'] = bool(sm['through_own_chain'])
+        if sm.get('result') in ('pass', 'fail', None) and 'result' in sm:
+            cur['result'] = sm['result']
+        if sm.get('notes') is not None:
+            cur['notes'] = str(sm['notes']).strip()[:300] or None
+        row['sample'] = cur
+        changes.append('sample ' + (cur.get('result') or ('received' if cur.get('received_on') else 'ordered' if cur.get('ordered_on') else 'noted')))
     if body.get('owner') is not None:
         row['owner'] = str(body['owner']).strip()[:60] or None
         changes.append(f'owner {row["owner"] or "cleared"}')
