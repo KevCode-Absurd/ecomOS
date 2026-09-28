@@ -1105,6 +1105,31 @@ def recipe(f):
             'size': {'text': f'{ent.get("variants")} variants planned', 'usd': None}, 'stop_rule': 'no MOQ per variant before the core product sells', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 1,
             'win_rule': 'one variant in the first run, the rest queued behind a sell-through read',
         }
+    if rid == 'PROD-R52':
+        ent = f.get('entity') or {}
+        lo, pl = ent.get('low') or {}, ent.get('planned') or {}
+        return {
+            'title': f'Fix the one-point margin on {ent.get("label") or "the candidate"}: it clears the floor at ${(pl.get("price") or 0):g} and not at ${(lo.get("price") or 0):g}',
+            'owner': 'agent',
+            'artefact': {'kind': 'research_note', 'label': f'the three-point margin for {ent.get("label")}: low, planned and high price and the bulk cost, each against the floor, with the move that clears the low point (a cost cut, a pack, a floor price on promotions) written on the candidate (bank idea PRD-080)'},
+            'steps': [{'n': 1, 'who': 'agent', 'text': 'Name the cost line that moves the low point over the floor (landed cost at bulk, fulfilment per order, the pack size).'},
+                      {'n': 2, 'who': 'agent', 'text': f'Set the promotion floor: no price under ${(lo.get("price") or 0):g} unless the bulk cost is in hand.'},
+                      {'n': 3, 'who': 'person', 'text': 'Approve the floor price and the cost move, or re-plan the price.'}],
+            'size': {'text': f'{(lo.get("margin_pct") or 0):g} percent at the low price against a {(ent.get("floor_pct") or 0):g} percent floor', 'usd': None}, 'stop_rule': 'no launch promotion below the floor price', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 1,
+            'win_rule': 'the margin clears the floor at the low price, or a floor price is written on the candidate',
+        }
+    if rid == 'PROD-R53':
+        ent = f.get('entity') or {}
+        return {
+            'title': f'Get our own supplier quote for {ent.get("label") or "the candidate"}: the cost on file is {ent.get("cost_basis_label") or "not ours"}',
+            'owner': 'agent_drafts',
+            'artefact': {'kind': 'research_note', 'label': f'the quote request for {ent.get("label")}: the spec from the tech pack, the quantities at the first run and at bulk, the landed cost terms (unit, freight, duty, packaging), sent to 2 or more suppliers, and the quote written on the candidate with its date (bank idea PRD-081)'},
+            'steps': [{'n': 1, 'who': 'agent', 'text': 'Draft the quote request from the tech pack and the first run: units at the first run and at 500 and 1,000 units.'},
+                      {'n': 2, 'who': 'person', 'text': 'Send it to 2 or more suppliers and enter the landed quote on the candidate as cost source "quote" with its date.'},
+                      {'n': 3, 'who': 'agent', 'text': 'Re-run the margin gate at every point on the quoted cost; the bulk quote fills the bulk cost point.'}],
+            'size': {'text': f'cost on file ${(ent.get("cogs") or 0):,.2f}' if ent.get('cogs') is not None else 'no cost on file', 'usd': None}, 'stop_rule': 'no MOQ order on a cost a supplier has not quoted', 'check_on': _check_on(f, 14), 'time_to_ship_hours': 1,
+            'win_rule': 'the cost on the candidate is a dated supplier quote',
+        }
     if rid == 'PROD-R51':
         ent = f.get('entity') or {}
         reject = ent.get('verdict') == 'reject'
@@ -1298,7 +1323,7 @@ def merge_strength(actions):
     return keep
 
 
-CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28', 'PROD-R37', 'PROD-R38', 'PROD-R39', 'PROD-R40', 'PROD-R45', 'PROD-R46', 'PROD-R47', 'PROD-R48', 'PROD-R49', 'PROD-R50', 'PROD-R51')
+CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28', 'PROD-R37', 'PROD-R38', 'PROD-R39', 'PROD-R40', 'PROD-R45', 'PROD-R46', 'PROD-R47', 'PROD-R48', 'PROD-R49', 'PROD-R50', 'PROD-R51', 'PROD-R52', 'PROD-R53')
 
 
 def merge_candidates(actions):
@@ -1551,7 +1576,7 @@ def overview(data, brand):
                      'gates': gates_block(brand, data, br, rd, ends_on, findings), 'scorecard': scorecard_block(brand, data, br, rd, ends_on, findings),
                      'video': audit.video_signals(br, brand, ends_on), 'tech_packs': tech_pack_block(brand, findings),
                      'hours': dict(audit.hours_table(brand, br), findings={f['entity']['id']: f['id'] for f in findings if f['rule_id'] == 'PROD-R28'}),
-                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on), 'returns': audit.return_rates(data, brand, ends_on), 'questions': audit.open_questions(br, ends_on), 'pulls': audit.pulls(br, brand, ends_on), 'first_runs': audit.first_run_read(brand, ends_on, audit.net_28d(rd)), 'brain_freshness': audit.brain_freshness(br, ends_on), 'assumptions': audit.assumptions(br), 'strength': audit.read_strength(br, brand, data, rd, ends_on), 'line_themes': audit.line_theme_matrix(br), 'samples': audit.sample_read(brand or 'sample', ends_on), 'kills': audit.kill_memory(brand or 'sample', ends_on), 'packaging': audit.packaging_read(brand or 'sample', ends_on), 'readiness': audit.launch_readiness(brand, data, br, rd, ends_on), 'price_bands': audit.price_band_read(brand or 'sample'), 'audit_memo': audit.memo_stats()},
+                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on), 'returns': audit.return_rates(data, brand, ends_on), 'questions': audit.open_questions(br, ends_on), 'pulls': audit.pulls(br, brand, ends_on), 'first_runs': audit.first_run_read(brand, ends_on, audit.net_28d(rd)), 'brain_freshness': audit.brain_freshness(br, ends_on), 'assumptions': audit.assumptions(br), 'strength': audit.read_strength(br, brand, data, rd, ends_on), 'line_themes': audit.line_theme_matrix(br), 'samples': audit.sample_read(brand or 'sample', ends_on), 'kills': audit.kill_memory(brand or 'sample', ends_on), 'packaging': audit.packaging_read(brand or 'sample', ends_on), 'readiness': audit.launch_readiness(brand, data, br, rd, ends_on), 'price_bands': audit.price_band_read(brand or 'sample'), 'margin_points': audit.margin_point_read(brand, data, br, rd, ends_on), 'audit_memo': audit.memo_stats()},
             'audit': {'findings': findings, 'rules': audit.RULES}}
 
 
@@ -1643,6 +1668,23 @@ def candidate_update(brand, cid, body, today):
         if body.get(k) is not None:
             row[k] = _num(body[k])
             changes.append(k.replace('_', ' ') + ' set')
+    for k in ('price_low', 'price_high', 'bulk_cogs'):
+        if body.get(k) is not None:
+            row[k] = _num(body[k])
+            changes.append(k.replace('_', ' ') + (' set' if row[k] is not None else ' cleared'))
+    if body.get('cogs_source') is not None:
+        src = str(body['cogs_source']).strip().lower()
+        if src not in audit.COGS_SOURCES:
+            return 400, {'error': 'cogs_source must be one of ' + ', '.join(audit.COGS_SOURCES)}
+        row['cogs_source'] = src
+        changes.append(f'cost source {src}')
+    if body.get('quote_on') is not None:
+        q = str(body['quote_on']).strip()
+        try:
+            row['quote_on'] = dt.date.fromisoformat(q).isoformat() if q else None
+        except ValueError:
+            return 400, {'error': 'quote_on must be a date like 2026-09-28'}
+        changes.append('quote date set' if q else 'quote date cleared')
     if body.get('pack_units') is not None:
         row['pack_units'] = int(_num(body['pack_units'], 1) or 1)
         changes.append('pack units set')

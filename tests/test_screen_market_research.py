@@ -1527,6 +1527,36 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
         finally:
             audit.PIPELINE_PATH = self.real2
 
+    def test_margin_points_and_cost_basis(self):
+        D = date(2026, 9, 27)
+        rows = [{'field': 'shipping_label', 'scope': 'carrier_zone', 'scope_key': 'usps:zones_1_4', 'value': 4.0, 'unit': 'usd_per_order', 'effective_from': '2025-01-01', 'effective_to': None},
+                {'field': 'packaging', 'scope': 'global', 'scope_key': '', 'value': 1.0, 'unit': 'usd_per_order', 'effective_from': '2025-01-01', 'effective_to': None},
+                {'field': 'threepl_pick_pack', 'scope': 'global', 'scope_key': '', 'value': 3.0, 'unit': 'usd_per_order', 'effective_from': '2025-01-01', 'effective_to': None},
+                {'field': 'payment_fee_percent', 'scope': 'channel', 'scope_key': 'online_store', 'value': 3.0, 'unit': 'percent', 'effective_from': '2025-01-01', 'effective_to': None},
+                {'field': 'payment_fee_fixed', 'scope': 'channel', 'scope_key': 'online_store', 'value': 0.3, 'unit': 'usd_per_order', 'effective_from': '2025-01-01', 'effective_to': None},
+                {'field': 'target_contribution_margin', 'scope': 'global', 'scope_key': '', 'value': 25.0, 'unit': 'percent', 'effective_from': '2025-01-01', 'effective_to': None}]
+        fin = metrics.finance.Finance(rows)
+        cand = {'candidate_id': 'a', 'name': 'A', 'category': 'socks', 'stage': 'gated', 'planned_price': 20.0, 'price_low': 8.0, 'price_high': 24.0, 'cogs_estimate': 4.0, 'bulk_cogs': 3.0, 'pack_units': 1}
+        pts = audit.margin_points(cand, fin, None, D.isoformat(), 2.0, 25.0)
+        self.assertEqual(pts['planned']['price'], 20.0)
+        self.assertTrue(pts['planned']['passes'])
+        self.assertFalse(pts['low']['passes'])                       # 8 - 4 cost - 4 fulfilment - 0.39 fee is under water
+        self.assertEqual(pts['low']['contribution_usd'], -0.39)
+        self.assertGreater(pts['bulk']['margin_pct'], pts['planned']['margin_pct'])
+        self.assertEqual(audit.margin_points({'planned_price': 20.0}, fin, None, D.isoformat(), 2.0, 25.0)['low']['unavailable'], 'not entered')
+        self.assertEqual(audit.cost_basis({'cogs_estimate': 4.0}, {'value': 4.0}), 'estimate')
+        self.assertEqual(audit.cost_basis({'cogs_estimate': 4.0, 'cogs_source': 'quote'}, {'value': 4.0}), 'quote')
+        self.assertEqual(audit.cost_basis({}, {'value': 4.0}), 'category_median')
+        self.assertEqual(audit.cost_basis({}, {'value': None}), 'none')
+        self.assertIn('PROD-R52', api.CANDIDATE_RULES)
+        self.assertIn('PROD-R53', api.CANDIDATE_RULES)
+        self.tmp.write_text(json.dumps({'rows': [dict(cand, brand='fake')]}), encoding='utf-8')
+        self.assertEqual(api.candidate_update('fake', 'a', {'cogs_source': 'nonsense', 'who': 'person'}, D)[0], 400)
+        self.assertEqual(api.candidate_update('fake', 'a', {'quote_on': 'yesterday', 'who': 'person'}, D)[0], 400)
+        r = api.candidate_update('fake', 'a', {'cogs_source': 'quote', 'quote_on': '2026-09-20', 'price_low': '9', 'who': 'person'}, D)
+        self.assertEqual(r['changes'], ['price low set', 'cost source quote', 'quote date set'])
+        self.assertEqual((r['candidate']['cogs_source'], r['candidate']['quote_on'], r['candidate']['price_low']), ('quote', '2026-09-20', 9.0))
+
     def test_demand_pattern_tags(self):
         even = {'rows': [{'category': 'socks', 'series': [100] * 12}], 'months': [f'2026-{m:02d}' for m in range(1, 13)], 'last': '2026-12'}
         peaked = {'rows': [{'category': 'socks', 'series': [50] * 10 + [300, 400]}], 'months': even['months'], 'last': '2026-12'}

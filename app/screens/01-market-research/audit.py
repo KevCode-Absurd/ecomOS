@@ -190,6 +190,12 @@ Rules
             structure noted (bank idea PRD-077: too low to cover paid acquisition), or inside the $9 to $20 caution band
             with no band check noted (bank idea PRD-078: the target band for a paid-acquisition launch is $50 to $150).
             Money: null (an unlaunched SKU has no baseline). Capability PROD-C08
+  PROD-R52  Margin clears at one price only: an open candidate at researched or later whose modelled margin passes the floor
+            at the planned price but fails at the low price entered on the candidate (bank idea PRD-080: model the low end,
+            the high end and the future bulk cost, not one point). Money: null. Capability PROD-C08
+  PROD-R53  Cost is not our own quote: an open candidate at gated or later whose landed cost is an estimate, a competitor-implied
+            number or the category median, not the brand's own supplier quote (bank idea PRD-081). Money: null.
+            Capability PROD-C08
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -314,6 +320,8 @@ RULES = [
     {'rule_id': 'PROD-R49', 'name': 'Candidate with a first run decided in a custom or printed format before a passed sample and any sell-through', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C07', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R50', 'name': 'Candidate at go, or shortlisted with a first run decided, with a hard stop open on the launch checklist', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline', 'finance_inputs', 'brain.competitors'], 'capability': 'PROD-C10', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R51', 'name': 'Candidate at researched or later priced at or under $9.99 with no offer structure, or in the $9 to $20 caution band with no band check', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C08', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R52', 'name': 'Candidate whose modelled margin passes at the planned price and fails at the low price', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline', 'finance_inputs'], 'capability': 'PROD-C08', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R53', 'name': 'Candidate at gated or later whose landed cost is not the brand\'s own supplier quote', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline', 'finance_inputs'], 'capability': 'PROD-C08', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -365,7 +373,9 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R48': {'id': 'PROD-C07', 'autonomy': 'agent_does'},
               'PROD-R49': {'id': 'PROD-C07', 'autonomy': 'agent_does'},
               'PROD-R50': {'id': 'PROD-C10', 'autonomy': 'founder_gate'},
-              'PROD-R51': {'id': 'PROD-C08', 'autonomy': 'agent_does'}}
+              'PROD-R51': {'id': 'PROD-C08', 'autonomy': 'agent_does'},
+              'PROD-R52': {'id': 'PROD-C08', 'autonomy': 'agent_does'},
+              'PROD-R53': {'id': 'PROD-C08', 'autonomy': 'agent_does'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -955,6 +965,7 @@ def _run_audit(brand, ends_on, data):
     out += packaging_findings(brand, ends_on)
     out += readiness_findings(brand, data, br, rd, ends_on)
     out += price_band_findings(brand, ends_on)
+    out += margin_point_findings(brand, data, br, rd, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -4765,4 +4776,101 @@ def price_band_findings(brand, ends_on):
         f['entity'] = {'type': 'sku', 'id': cid, 'label': r['name'], 'candidate': True, 'stage': r['stage'], 'planned_price': r['planned_price'], 'verdict': r['verdict'], 'pack_units': r['pack_units']}
         f['id'] = f'{SCREEN}.PROD-R51.{cid}'
         out.append(f)
+    return out
+
+
+# ---------------------------------------------------------------- margin at three points, and whose number the cost is
+
+COGS_SOURCES = ('quote', 'estimate', 'competitor_implied')
+COST_BASIS_LABEL = {'quote': 'our own supplier quote', 'estimate': 'an estimate', 'competitor_implied': 'a competitor-implied number', 'category_median': 'the category median from finance inputs', 'none': 'no cost on file'}
+COST_BASIS_STAGE_MIN = 2   # gated or later: the cost must be our own quote
+
+
+def cost_basis(cand, cogs):
+    """Whose number the landed cost is: quote (the brand's own supplier quote, with its date), estimate, competitor_implied,
+    category_median (derived from finance inputs) or none."""
+    if cand.get('cogs_estimate') is None:
+        return 'category_median' if cogs and cogs.get('value') is not None else 'none'
+    src = str(cand.get('cogs_source') or '').strip().lower()
+    return src if src in COGS_SOURCES else 'estimate'
+
+
+def margin_points(cand, fin, br, day, upo, floor_pct):
+    """The margin gate at every price and cost point on the candidate: the low price, the planned price, the high price, and
+    the planned price at the expected bulk cost (bank idea PRD-080). A point not entered reads unavailable, never invented."""
+    out = {}
+    planned = cand.get('planned_price')
+    for key, price, cogs in (('low', cand.get('price_low'), None), ('planned', planned, None), ('high', cand.get('price_high'), None), ('bulk', planned, cand.get('bulk_cogs'))):
+        if not isinstance(price, (int, float)) or price <= 0 or (key == 'bulk' and not isinstance(cogs, (int, float))):
+            out[key] = {'price': price if isinstance(price, (int, float)) else None, 'cogs': cogs, 'margin_pct': None, 'passes': None, 'unavailable': 'not entered'}
+            continue
+        c2 = dict(cand, planned_price=price)
+        if cogs is not None:
+            c2['cogs_estimate'] = cogs
+        g = margin_gate(c2, fin, br, day, upo, floor_pct)
+        out[key] = {'price': price, 'cogs': (g.get('cogs') or {}).get('value'), 'margin_pct': g.get('margin_pct'), 'contribution_usd': g.get('contribution_usd'), 'passes': g.get('passes_floor'),
+                    'unavailable': g.get('reason') if g.get('unavailable') else None}
+    return out
+
+
+def margin_point_read(brand, data, br, rd, ends_on):
+    """Per open candidate: the margin at the low, planned, high and bulk-cost points, the cost basis, and the verdicts:
+    points (one_price when the planned passes and the low fails, all_clear when every entered point passes, fails when the
+    planned fails, not_run when the low or high price is missing, no_price) and cost (quote, estimate, competitor_implied,
+    category_median, none)."""
+    fin_rows = finance_rows(data, brand)
+    fin = metrics().finance.Finance(fin_rows) if fin_rows else None
+    floor = fin.value('target_contribution_margin', ends_on.isoformat()) if fin else None
+    upo = units_per_order(data, brand, rd)
+    day = ends_on.isoformat()
+    rows = []
+    for c in pipeline(brand):
+        st = c.get('stage')
+        if st in CLOSED_STAGES:
+            continue
+        idx = STAGES.index(st) if st in STAGES else None
+        pts = margin_points(c, fin, br, day, upo, floor)
+        cogs = cogs_estimate_for(c, fin, day)
+        basis = cost_basis(c, cogs)
+        pl, lo, hi = pts['planned'], pts['low'], pts['high']
+        if pl['margin_pct'] is None:
+            pv = 'no_price' if pl['price'] is None else 'not_run'
+        elif pl['passes'] is False:
+            pv = 'fails'
+        elif lo['passes'] is False:
+            pv = 'one_price'
+        elif lo['margin_pct'] is None or hi['margin_pct'] is None:
+            pv = 'not_run'
+        else:
+            pv = 'all_clear'
+        rows.append({'candidate_id': c.get('candidate_id'), 'name': c.get('name'), 'stage': st, 'stage_index': idx, 'points': pts, 'floor_pct': floor, 'cost_basis': basis, 'cost_basis_label': COST_BASIS_LABEL[basis],
+                     'cogs': cogs.get('value'), 'quote_on': c.get('quote_on'), 'points_verdict': pv, 'cost_verdict': 'quote' if basis == 'quote' else 'not_quote' if basis != 'none' else 'none',
+                     'finding_ids': {'points': f'{SCREEN}.PROD-R52.{c.get("candidate_id")}', 'cost': f'{SCREEN}.PROD-R53.{c.get("candidate_id")}'}})
+    order = {'one_price': 0, 'fails': 1, 'not_run': 2, 'no_price': 3, 'all_clear': 4}
+    rows.sort(key=lambda r: (order[r['points_verdict']], 0 if r['cost_verdict'] == 'not_quote' else 1, r['name'] or ''))
+    return {'rows': rows, 'floor_pct': floor, 'sources': list(COGS_SOURCES),
+            'rule': 'the margin gate runs at the low price, the planned price, the high price and the planned price at the expected bulk cost; a margin that clears the floor at the planned price but fails at the low price is one-point margin (bank idea PRD-080); from gated on the landed cost must be the brand\'s own supplier quote, not an estimate, a competitor-implied number or the category median (bank idea PRD-081)'}
+
+
+def margin_point_findings(brand, data, br, rd, ends_on):
+    """PROD-R52: the margin passes at the planned price and fails at the low price. PROD-R53: at gated or later, the cost is not our own quote."""
+    out = []
+    for r in margin_point_read(brand, data, br, rd, ends_on)['rows']:
+        cid = r['candidate_id']
+        if r['points_verdict'] == 'one_price':
+            lo, pl = r['points']['low'], r['points']['planned']
+            ev = [_ev('margin_pct_at_low_price', lo['margin_pct'], 'percent', ends_on.isoformat(), 'candidate now', r['floor_pct'], 'threshold', source='fixtures.pipeline', simulated=False, freshness_days=0, price=lo['price']),
+                  _ev('margin_pct_at_planned_price', pl['margin_pct'], 'percent', ends_on.isoformat(), 'candidate now', r['floor_pct'], 'threshold', source='fixtures.pipeline', simulated=False, freshness_days=0, price=pl['price'])]
+            sentence = f'{r["name"]} clears the {r["floor_pct"]:g} percent floor at ${pl["price"]:g} ({pl["margin_pct"]:g} percent) and fails it at ${lo["price"]:g} ({lo["margin_pct"]:g} percent); one promotion or one price test and the margin is gone.'
+            f = _finding('PROD-R52', cid, ends_on, 'medium', ev, sentence, None, 0.8, [], money_reason='an unlaunched SKU has no baseline to price the gap')
+            f['entity'] = {'type': 'sku', 'id': cid, 'label': r['name'], 'candidate': True, 'stage': r['stage'], 'low': lo, 'planned': pl, 'floor_pct': r['floor_pct']}
+            f['id'] = f'{SCREEN}.PROD-R52.{cid}'
+            out.append(f)
+        if r['cost_verdict'] == 'not_quote' and (r['stage_index'] or 0) >= COST_BASIS_STAGE_MIN:
+            ev = [_ev('cost_basis_is_own_quote', 0, 'flag', ends_on.isoformat(), 'candidate now', 1, 'threshold', source='fixtures.pipeline', simulated=False, freshness_days=0, basis=r['cost_basis'], cogs=r['cogs'], stage=r['stage'])]
+            sentence = f'{r["name"]} is at {r["stage"]} with its landed cost from {r["cost_basis_label"]}' + (f' (${r["cogs"]:,.2f})' if r['cogs'] is not None else '') + '; every margin number here rests on a number a supplier has not quoted us.'
+            f = _finding('PROD-R53', cid, ends_on, 'medium', ev, sentence, None, 0.8, [], money_reason='an unlaunched SKU has no baseline to price the gap')
+            f['entity'] = {'type': 'sku', 'id': cid, 'label': r['name'], 'candidate': True, 'stage': r['stage'], 'cost_basis': r['cost_basis'], 'cost_basis_label': r['cost_basis_label'], 'cogs': r['cogs']}
+            f['id'] = f'{SCREEN}.PROD-R53.{cid}'
+            out.append(f)
     return out
