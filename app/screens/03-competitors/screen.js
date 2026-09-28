@@ -807,6 +807,7 @@
       { k: 'New ads a week', v: v.our_counted_rate == null ? NA : v.our_counted_rate + ' (counted)', b: 'direct median ' + v.direct_median_rate + ' (estimate)' },
       { k: 'Discount depth', v: pr.our_depth == null ? NA : pr.our_depth + ' percent', b: 'direct median ' + pr.direct_median_depth + ' percent' },
       { k: 'Pack saving a ' + U, v: d.ladder.median_saving == null ? NA : Math.round(d.ladder.median_saving * 100) + ' percent', b: 'rule ' + Math.round(d.ladder.ladder_min * 100) + ' percent' },
+      { k: 'Moves read (win share)', v: g.results && g.results.read ? g.results.read + ' (' + fmt.pct(g.results.win_share) + ')' : NA, b: (g.results ? g.results.held + ' held, ' + g.results.overdue + ' overdue' : NA) },
       { k: 'Threat pages', v: String(d.pages.rows.filter((r) => r.verdict && r.verdict.text === 'Threat').length), b: 'of ' + (d.pages.rows.length - 1) + ' tracked' }] }));
     mount('#r-caveats', ...[
       'Competitor facts are public signals from the Ad Library, public product feeds and Reddit. Run length is a signal, not proof.',

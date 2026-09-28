@@ -359,13 +359,18 @@ def digest(brand: str, today: dt.date) -> dict:
     lines += [f"- {x}" for x in lw["lines"][:6]] or ["- nothing yet: interviews, prices seen and card checks go on the screen"]
     if lw["n"] > 6:
         lines.append(f"- and {lw['n'] - 6} more on the screen")
+    sb, held = scoreboard(brand), p.get("held") or []
+    lines += ["", "Results: " + (f"{sb['read']} moves read, win share {round(sb['win_share'] * 100)} percent" if sb["read"] else "no move read yet")
+              + (f"; {len(held)} held after a lost result" if held else "")
+              + (f"; {len(p.get('overdue') or [])} reads overdue." if p.get("overdue") else ".")]
     threats = [r["name"] for r in m["pages"] if (r.get("verdict") or {}).get("text") == "Threat"]
     v = m["velocity"]
     lines += ["", f"Threats: {', '.join(threats) if threats else 'none'}.",
               f"Pace: we ship about {audit.velmod.now_rate(v)} new ads a week; direct pages about {v['direct_median_rate']} (estimate).",
               f"Price index: {m['price_position_index'] if m['price_position_index'] is not None else 'unavailable'} (100 is the tracked median).",
               "", "Signals only. Never copy their text, logos, products or faces."]
-    return {"text": "\n".join(lines), "actions": len(p["actions"]), "changes": len(changed), "week_of": today.isoformat(), "logged": lw}
+    return {"text": "\n".join(lines), "actions": len(p["actions"]), "changes": len(changed), "week_of": today.isoformat(), "logged": lw,
+            "results": {"read": sb["read"], "win_share": sb["win_share"], "held": len(held), "overdue": len(p.get("overdue") or [])}}
 
 
 UI_OWNER = {"agent": "agent does it", "agent_drafts": "agent drafts, you approve", "person": "a person does it"}

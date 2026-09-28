@@ -1972,5 +1972,19 @@ class TestSnoozedList(unittest.TestCase):
         self.assertIn('snoozed_list', json.dumps(api.handle(Req(['plan']))))
 
 
+class TestResultsInBrief(TempInputs):
+    """8.7: the weekly brief and the report carry moves read, win share, held and overdue."""
+    def test_results(self):
+        g = api.handle(Req(['digest']))
+        self.assertIn('Results: no move read yet.', g['text'])
+        self.assertEqual(g['results'], {'read': 0, 'win_share': None, 'held': 0, 'overdue': 0})
+        acts = api.handle(Req(['plan']))['actions']
+        self.post({'kind': 'outcome', 'action_id': acts[0]['id'], 'result': 'lost'})
+        self.post({'kind': 'outcome', 'action_id': acts[1]['id'], 'result': 'won'})
+        g = api.handle(Req(['digest']))
+        self.assertIn('Results: 2 moves read, win share 50 percent; 1 held after a lost result.', g['text'])
+        self.assertIn("k: 'Moves read (win share)'", (SCREEN / 'screen.js').read_text(encoding='utf-8'))
+
+
 if __name__ == '__main__':
     unittest.main()
