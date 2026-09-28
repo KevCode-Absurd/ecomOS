@@ -255,3 +255,11 @@ ATTACH_DAYS = 90
 ATTACH_TOP = 5
 ATTACH_GAP = 0.05
 ATTACH_MIN_ORDERS = 60
+
+# Returns on code orders (screen 04, OFFER-R38). Orders 180 days long, ending 30 days back so returns can land.
+# Code orders returning RETURN_RATIO times the full-price rate or more, each side RETURN_MIN orders, means the code
+# buys orders that come back. Our own rule, written down.
+RETURN_DAYS = 180
+RETURN_LAG = 30
+RETURN_RATIO = 1.25
+RETURN_MIN = 200

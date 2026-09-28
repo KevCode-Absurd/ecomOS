@@ -157,6 +157,10 @@ Rules
              by orders, one whose attach rate sits ATTACH_GAP or more under the median (model.attach_rates). The move
              is a "goes with" placement on its page and in its cart line with its most co-bought partner. Money: orders
              x the gap to the median x the partner's unit margin, scaled to 28 days. Medium. Capability LIFE-C41.
+  OFFER-R38  Code orders come back more: orders with a code returned or refunded playbook.RETURN_RATIO times the
+             full-price rate or more, each side RETURN_MIN orders, over RETURN_DAYS ending RETURN_LAG days back
+             (model.returns_by_code). Money null: the holdout read counts the refunds. Medium. Rides on the
+             welcome code holdout when that move exists. Capability LIFE-C02.
   OFFER-R03  Margin after discount per SKU. Needs cogs_landed keyed by the store's SKUs. Unavailable while no
              finance_inputs SKU key matches a product SKU. Capability MONEY-C05 (founder gate). Owner: 04.
   OFFER-R04  A deal-breaker rung with no proof: the top rung of an objection ladder whose proof is empty or
@@ -273,6 +277,8 @@ RULES = [
      'inputs': ['orders', 'products'], 'capability': 'MONEY-C05', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R37', 'name': 'A top product rarely gets a second item', 'entity_type': 'sku',
      'inputs': ['orders', 'products'], 'capability': 'LIFE-C41', 'owner_screen': SCREEN},
+    {'rule_id': 'OFFER-R38', 'name': 'Code orders come back more', 'entity_type': 'offer',
+     'inputs': ['orders'], 'capability': 'LIFE-C02', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R03', 'name': 'Margin after discount per SKU', 'entity_type': 'sku',
      'inputs': ['finance_inputs.cogs_landed keyed by product SKU', 'products'], 'capability': 'MONEY-C05',
      'owner_screen': SCREEN},
@@ -314,6 +320,7 @@ CAPABILITY = {'OFFER-R01': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R35': {'id': 'LIFE-C42', 'autonomy': 'founder_gate'},
               'OFFER-R36': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R37': {'id': 'LIFE-C41', 'autonomy': 'founder_gate'},
+              'OFFER-R38': {'id': 'LIFE-C02', 'autonomy': 'founder_gate'},
               'OFFER-R06': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R04': {'id': 'LIFE-C36', 'autonomy': 'founder_gate'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
@@ -1443,6 +1450,30 @@ def rule_attach(rd):
     return out
 
 
+def returns_by_code(rd):
+    pb = _playbook()
+    return _model().returns_by_code(rd, pb.RETURN_DAYS, pb.RETURN_LAG)
+
+
+def rule_code_returns(rd):
+    end = rd.ends_on
+    pb = _playbook()
+    rc = returns_by_code(rd)
+    if rc['unavailable'] or rc['ratio'] is None or rc['ratio'] < pb.RETURN_RATIO:
+        return []
+    if min(rc['code']['orders'], rc['full_price']['orders']) < pb.RETURN_MIN:
+        return []
+    c, f = rc['code'], rc['full_price']
+    ev = [_ev('returned_share', c['returned'], 'ratio', end, baseline=f['returned'], baseline_kind='full_price_orders',
+              window=f'{rc["start"]} to {rc["end"]}')]
+    if c['refund_share'] is not None:
+        ev.append(_ev('refunded_share_of_net', c['refund_share'], 'ratio', end, baseline=f['refund_share'], baseline_kind='full_price_orders',
+                      window=f'{rc["start"]} to {rc["end"]}'))
+    return [_finding('OFFER-R38', {'type': 'offer', 'id': 'code_returns', 'label': 'Returns on code orders'}, 'medium', ev,
+                     f'Code orders come back {c["returned"] * 100:.1f} percent of the time; full-price ones {f["returned"] * 100:.1f} percent.',
+                     None, 0.6, [], end, money_reason='the extra refunds are counted in the holdout read')]
+
+
 def rule_ladder(rd):
     end = rd.ends_on
     pb = _playbook()
@@ -1614,7 +1645,7 @@ def run(brand, window=None, data=None):
     """Findings for one brand, sorted by severity then money at stake. `window` is {ends_on} or None."""
     ends_on = date.fromisoformat(window['ends_on']) if window and window.get('ends_on') else last_full_day(data, brand)
     rd = Reader(data, brand, ends_on)
-    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_cost(rd) + rule_referral(rd) + rule_loyalty(rd) + rule_window_creep(rd) + rule_bundles(rd) + rule_launched(rd) + rule_upsell(rd) + rule_bnpl(rd) + rule_threshold_match(rd) + rule_cohorts(rd) + rule_welcome(rd) + rule_test_trust(rd) + rule_price_moves(rd) + rule_claim_stress(rd) + rule_paid(rd) + rule_attach(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
+    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_cost(rd) + rule_referral(rd) + rule_loyalty(rd) + rule_window_creep(rd) + rule_bundles(rd) + rule_launched(rd) + rule_upsell(rd) + rule_bnpl(rd) + rule_threshold_match(rd) + rule_cohorts(rd) + rule_welcome(rd) + rule_test_trust(rd) + rule_price_moves(rd) + rule_claim_stress(rd) + rule_paid(rd) + rule_attach(rd) + rule_code_returns(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
            rule_unanswered(rd))
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f.get('money_at_stake') or {}).get('usd') or -1), f['id']))
     return out

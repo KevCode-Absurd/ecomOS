@@ -97,6 +97,7 @@ class Ctx:
         self.stress = audit.guarantee_stress(rd)
         self.paid = audit.paid_prices(rd)
         self.attach = audit.attach_rates(rd)
+        self.code_returns = audit.returns_by_code(rd)
         self.ship_rate = (model.brain_value(rd, 'offers.standard_shipping_cost')[0] or {}).get('cost_usd') if rd.brand else None
         self.scenarios = (model.threshold_scenarios(rd, self.threshold, self.ship_rate, self.be['value'], (self.po or {}).get('units') or 1)
                           if self.threshold is not None and self.be.get('value') is not None else [])
@@ -551,6 +552,8 @@ def surfaces(a):
         return ['loyalty'], 90
     if r == 'OFFER-R23':
         return ['referral'], 56
+    if r == 'OFFER-R38':
+        return ['first order offer', 'pop-up'], 35
     if r == 'OFFER-R37':
         return ['product page cross-sell', 'cart line'], 35
     if r == 'OFFER-R36':
@@ -1255,6 +1258,24 @@ def attach_action(f, a, ctx):
     return a
 
 
+def code_returns_action(f, a, ctx):
+    """OFFER-R38 alone (no welcome holdout move): hold the code back and count refunds in each arm."""
+    rc = ctx.code_returns
+    a.update({'title': 'Hold the code back from 10 percent of new visitors and count refunds per arm', 'owner': 'agent_drafts',
+              'artefact': {'kind': 'test_brief', 'label': 'Code holdout with refunds', 'draft': '\n'.join([
+                  f['sentence'], 'Arms: A with the code as today. B, 10 percent of new visitors, no code. 28 days, then 30 more for returns.',
+                  'Primary metric: profit per visitor after refunds, per arm.', 'Stop: B first orders down 40 percent against A for 7 days.',
+                  f'Basis: {rc["basis"]}.'])},
+              'steps': steps(('agent', 'Draft the holdout brief with refunds in the metric.'), ('person', 'Approve the holdout.'),
+                             ('person', 'Set the pop-up tool to hold back 10 percent.'),
+                             ('agent', f'Read profit per visitor after refunds; call it on {ctx.check_on(65)}.')),
+              'size': {'text': f'{rc["code"]["orders"]:,} code orders in {rc["start"]} to {rc["end"]}', 'usd': None},
+              'win_rule': 'Keep the code if A beats B on profit per visitor after refunds.',
+              'stop_rule': 'B first orders down 40 percent against A for 7 days.',
+              'check_on': ctx.check_on(65), 'time_to_ship_hours': 3})
+    return a
+
+
 def bunches(rd):
     """Order-value bunches and the tiers above them, from real order bins only (never from the fixture)."""
     dist = rd.m('order_value_distribution', audit.WINDOW, step=5)
@@ -1431,7 +1452,7 @@ BUILDERS = {'OFFER-R01': threshold_action, 'OFFER-R04': rung_action, 'OFFER-R08'
             'OFFER-R22': cost_action, 'OFFER-R23': referral_action, 'OFFER-R24': loyalty_action,
             'OFFER-R25': discount_action, 'OFFER-R26': bundle_action,
             'OFFER-R27': launched_action, 'OFFER-R29': bnpl_action,
-            'OFFER-R30': match_action, 'OFFER-R31': cohort_action, 'OFFER-R32': welcome_action, 'OFFER-R33': trust_action, 'OFFER-R34': moves_action, 'OFFER-R35': stress_action, 'OFFER-R36': paid_action, 'OFFER-R37': attach_action}
+            'OFFER-R30': match_action, 'OFFER-R31': cohort_action, 'OFFER-R32': welcome_action, 'OFFER-R33': trust_action, 'OFFER-R34': moves_action, 'OFFER-R35': stress_action, 'OFFER-R36': paid_action, 'OFFER-R37': attach_action, 'OFFER-R38': code_returns_action}
 UNAVAILABLE_BUILDERS = {'OFFER-R34': recapture_action}
 
 
@@ -1469,6 +1490,7 @@ def rank(brand='bombas', window=None, data=None):
     actions = merge_connect(merge_gifting(merge_red_line(merge_ladder(actions, ctx)), ctx))
     actions = merge_into(merge_into(actions, 'OFFER-R05', 'OFFER-R01'), 'OFFER-R06', 'OFFER-R01')
     actions = merge_into(merge_into(actions, 'OFFER-R19', 'OFFER-R08'), 'OFFER-R31', 'OFFER-R08')
+    actions = merge_into(actions, 'OFFER-R38', 'OFFER-R32')
     actions = flag_stale_inputs(attach_margin_checks(add_priors(covered_by_registry(actions, ctx), ctx), ctx), ctx)
     actions = [a for a in actions if not RANK.validate_action(a)]
     actions.sort(key=RANK.sort_key)
@@ -1476,5 +1498,5 @@ def rank(brand='bombas', window=None, data=None):
     return {'screen': SCREEN, 'brand': brand, 'window': w, 'simulated': True, 'net_revenue_28d': nr,
             'actions': actions, 'findings': findings, 'objections': ctx.objections, 'returns': returns_block(rd),
             'ladder': dict(ctx.ladder, moves=ctx.ladder_rows), 'first_order': ctx.first_order, 'waterfalls': ctx.waterfalls, 'calendar': ctx.calendar, 'gifting': ctx.gifting, 'guarantee': ctx.guarantee, 'position': ctx.position, 'parity': ctx.parity,
-            'discipline': dict(ctx.discipline, policy=discount_policy(ctx), windows=ctx.depth_history, window_creep_points=playbook.WINDOW_CREEP_POINTS), 'cart': ctx.cart, 'tests': calendar, 'depth': ctx.depth, 'cohorts': ctx.cohorts, 'costs': ctx.costs, 'registry': ctx.registry, 'referral': ctx.referral, 'loyalty': ctx.loyalty, 'bundles': ctx.bundles, 'proposed_tests': ctx.proposed_rows, 'launched': ctx.launched, 'discount_cohorts': audit.discount_cohorts(rd), 'welcome': ctx.welcome, 'trust': ctx.trust, 'price_moves': ctx.price_moves, 'stress': ctx.stress, 'paid': ctx.paid, 'attach': ctx.attach, 'bunches': bunches(rd),
+            'discipline': dict(ctx.discipline, policy=discount_policy(ctx), windows=ctx.depth_history, window_creep_points=playbook.WINDOW_CREEP_POINTS), 'cart': ctx.cart, 'tests': calendar, 'depth': ctx.depth, 'cohorts': ctx.cohorts, 'costs': ctx.costs, 'registry': ctx.registry, 'referral': ctx.referral, 'loyalty': ctx.loyalty, 'bundles': ctx.bundles, 'proposed_tests': ctx.proposed_rows, 'launched': ctx.launched, 'discount_cohorts': audit.discount_cohorts(rd), 'welcome': ctx.welcome, 'trust': ctx.trust, 'price_moves': ctx.price_moves, 'stress': ctx.stress, 'paid': ctx.paid, 'attach': ctx.attach, 'code_returns': ctx.code_returns, 'bunches': bunches(rd),
             'subscription': model.subscription_note(rd, ctx.cohorts, (ctx.depth or {}).get('rows'), (ctx.depth or {}).get('target'))}

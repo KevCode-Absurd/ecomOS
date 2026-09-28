@@ -1543,3 +1543,29 @@ def attach_rates(rd, days, min_orders):
     median = att_sorted[mid] if len(att_sorted) % 2 else (att_sorted[mid - 1] + att_sorted[mid]) / 2
     return {'unavailable': False, 'rows': rows, 'median': round(median, 4), 'orders': total, 'days': days, 'start': start, 'end': end,
             'basis': f'orders {start} to {end}; attach is orders with the product that carry another product; partner is the product most often in the same order'}
+
+
+# ---------------------------------------------------------------- do code orders come back more?
+
+def returns_by_code(rd, days, lag):
+    """Orders with a code against orders without, placed in the `days` ending `lag` days before the window end (so
+    returns have time to land): the share returned or refunded, and refunded dollars over net sales."""
+    orders = rd.table('orders')
+    if not isinstance(orders, list) or not orders:
+        return {'unavailable': True, 'reason': 'the orders table is not connected', 'fix': 'shopify'}
+    end = rd.ends_on - timedelta(days=lag)
+    start = end - timedelta(days=days - 1)
+    out = {}
+    for key in ('code', 'full_price'):
+        rows = [o for o in orders if start.isoformat() <= str(o.get('created_at'))[:10] <= end.isoformat() and not o.get('cancelled_at')
+                and bool(((o.get('discount') or {}).get('amount') or 0) > 0) == (key == 'code')]
+        n = len(rows)
+        back = [o for o in rows if o.get('return') or o.get('refund')]
+        net = sum(float(o.get('subtotal') or 0) - float((o.get('discount') or {}).get('amount') or 0) for o in rows)
+        refunded = sum(float((o.get('refund') or {}).get('amount') or 0) for o in rows)
+        out[key] = {'orders': n, 'returned': round(len(back) / n, 4) if n else None,
+                    'refund_share': round(refunded / net, 4) if net else None}
+    c, f = out['code']['returned'], out['full_price']['returned']
+    return {'unavailable': False, **out, 'ratio': round(c / f, 3) if c is not None and f else None,
+            'start': start.isoformat(), 'end': end.isoformat(),
+            'basis': f'orders {start.isoformat()} to {end.isoformat()}, {lag} days before the window end so returns can land'}

@@ -1819,5 +1819,31 @@ class AttachTest(unittest.TestCase):
         self.assertIn('No discount', a['artefact']['draft'])
 
 
+class CodeReturnsTest(unittest.TestCase):
+    """Round 7 feature 3: do code orders come back more. model.returns_by_code and OFFER-R38."""
+
+    def test_split(self):
+        import datetime as dtm
+        mk = lambda code, back: {'created_at': '2026-06-01T10:00:00Z', 'subtotal': 100,
+                                 'discount': {'code': 'X', 'amount': 10} if code else None,
+                                 'return': 'R1' if back else None, 'refund': {'amount': 90} if back else None}
+        orders = [mk(True, True)] * 2 + [mk(True, False)] * 8 + [mk(False, True)] + [mk(False, False)] * 9
+        class R:
+            ends_on = dtm.date(2026, 9, 24)
+            def table(self, name):
+                return orders if name == 'orders' else None
+        rc = api.model.returns_by_code(R(), 180, 30)
+        self.assertEqual((rc['code']['returned'], rc['full_price']['returned'], rc['ratio']), (0.2, 0.1, 2.0))
+        self.assertEqual(rc['code']['refund_share'], 0.2)            # 180 / 900
+
+    def test_sample_quiet(self):
+        sys.path.insert(0, str(ROOT / 'app'))
+        import server
+        rd = audit.Reader(server.Data(), None, audit.last_full_day(server.Data(), None))
+        rc = audit.returns_by_code(rd)
+        self.assertLess(rc['ratio'], api.actions.playbook.RETURN_RATIO)
+        self.assertEqual([f for f in audit.run(None, None, server.Data()) if f['rule_id'] == 'OFFER-R38'], [])
+
+
 if __name__ == '__main__':
     unittest.main()
