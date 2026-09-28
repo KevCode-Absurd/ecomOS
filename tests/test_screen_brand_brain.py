@@ -499,3 +499,37 @@ class Round1Health(TempBrain):
         self.assertEqual((status, res['tier']), (201, 'forbidden'))
         self.assertEqual(api.handle(Req(['approve', 'bombas.claims.nope'], 'POST', body={'choice': 'approve'}))[0], 404)
         self.assertEqual(api.handle(Req(['approve', rid], 'POST', body={'choice': 'maybe'}))[0], 400)
+
+
+class Round1Connectors(TempBrain):
+    """Round 1 feature 5: what is connected, what each fills, unavailable never zero, connect steps."""
+
+    def test_categories_and_sources(self):
+        cn = api.handle(Req(['health']))['connectors']
+        self.assertGreaterEqual(cn['counts']['sources'], 80)
+        by = {c['category']: c for c in cn['categories']}
+        self.assertIn(by['public']['verdict']['kind'], ('keep', 'fix'))   # fix when a public source failed over 10 percent of its pulls
+        self.assertTrue(by['public']['via'])
+        if by['public']['verdict']['kind'] == 'fix':
+            self.assertIn('pulls failed', by['public']['verdict']['reason'])
+        self.assertEqual(by['store']['verdict']['text'], 'Connect one')
+        self.assertEqual(len(by['store']['steps']), 4)
+        self.assertEqual(by['store']['steps'][0]['who'], 'person')
+        self.assertIsNone(by['store']['last_pull'])
+        self.assertEqual(cn['categories'][0]['verdict']['kind'], 'stop')  # the category that unblocks most rooms first
+        src = {r['id']: r for r in cn['sources']}
+        self.assertEqual(src['site']['status'], 'connected')
+        self.assertIsNotNone(src['site']['pulls'])
+        self.assertIsNone(src['shopify']['pulls'])      # never pulled: unavailable, not 0
+        self.assertIsNone(src['shopify']['health'])
+        self.assertEqual(src['shopify']['status'], 'not connected')
+        self.assertTrue(src['shopify']['unblocks_rooms'])
+        self.assertIn(src['apify_reddit']['status'], ('connected', 'not connected'))
+
+    def test_upload_counts_as_connected_once_a_document_lands(self):
+        cn = api.handle(Req(['health']))['connectors']
+        self.assertEqual(next(r for r in cn['sources'] if r['id'] == 'upload')['status'], 'not connected')
+        api.handle(Req(['documents'], 'POST', body={'name': 'notes.md', 'text': '# Notes'}))
+        cn = api.handle(Req(['health']))['connectors']
+        up = next(r for r in cn['sources'] if r['id'] == 'upload')
+        self.assertEqual((up['status'], up['last_pull']), ('connected', DAY))

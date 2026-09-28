@@ -234,14 +234,44 @@ def connectors(brain, today: dt.date | None = None) -> dict:
         c["sources"] += 1
         c["connected"] += 1 if r["status"] == "connected" else 0
         c["unblocks_rooms"].update(r["unblocks_rooms"])
-    categories = [dict(c, unblocks_rooms=sorted(c["unblocks_rooms"])) for c in cats.values()]
-    categories.sort(key=lambda c: (c["connected"] > 0, -len(c["unblocks_rooms"])))
+    categories = []
+    for c in cats.values():
+        members = [r for r in rows if (r["category"] or "other") == c["category"]]
+        live = [r for r in members if r["status"] == "connected"]
+        fills = sorted({sec for r in members for sec in r["fills_sections"]})
+        last = max((r["last_pull"] for r in live if r["last_pull"]), default=None)
+        age = (today - dt.date.fromisoformat(last)).days if last else None
+        rooms_n = len(c["unblocks_rooms"])
+        if live:
+            v = {"kind": "keep", "text": "Connected", "reason": "via " + ", ".join(r["name"] for r in live[:3])}
+            if any(r["verdict"]["kind"] == "fix" for r in live):
+                v = {"kind": "fix", "text": "Fix", "reason": "; ".join(r["name"] + ": " + r["verdict"]["reason"] for r in live if r["verdict"]["kind"] == "fix")}
+        elif all(r["access"] == "public" for r in members):
+            v = {"kind": "wait", "text": "Not pulled", "reason": "public, the brain has not read it yet"}
+        elif rooms_n:
+            v = {"kind": "stop" if rooms_n >= 4 else "wait", "text": "Connect one", "reason": f"unblocks {rooms_n} rooms; pick one of {len(members)}"}
+        else:
+            v = {"kind": "na", "text": "Optional", "reason": "no room waits on it"}
+        categories.append({"category": c["category"], "label": c["category"].replace("_", " "), "sources": c["sources"], "connected": c["connected"],
+                           "via": [r["name"] for r in live], "alternatives": [{"id": r["id"], "name": r["name"], "access": r["access"]} for r in members],
+                           "fills_sections": fills, "unblocks_rooms": sorted(c["unblocks_rooms"]), "last_pull": last, "age_days": age, "verdict": v,
+                           "steps": _connect_steps(c["category"], [r["name"] for r in members], fills) if not live else []})
+    order = {"stop": 0, "fix": 1, "wait": 2, "keep": 3, "na": 4}
+    categories.sort(key=lambda c: (order.get(c["verdict"]["kind"], 9), -len(c["unblocks_rooms"]), c["category"]))
     connected = [r for r in rows if r["status"] == "connected"]
     return {"sources": rows, "categories": categories,
             "counts": {"sources": len(rows), "connected": len(connected), "public": sum(1 for r in rows if r["access"] == "public"),
                        "categories_with_a_connection": sum(1 for c in categories if c["connected"])},
             "health_pct": (round(sum(r["health"] for r in connected if r["health"] is not None) / max(1, sum(1 for r in connected if r["health"] is not None)), 2) if any(r["health"] is not None for r in connected) else None),
             "note": "Public sources show their last pull from the brain's source log. Private connectors need a read-only key in Setup; none is live for the sample brand, so their fields read unavailable, never 0."}
+
+
+def _connect_steps(category: str, names: list[str], fills: list[str]) -> list[dict]:
+    pick = ", ".join(names[:4]) + (" or another in the list" if len(names) > 4 else "")
+    return [{"n": 1, "who": "person", "text": f"In Setup, pick the {category.replace('_', ' ')} source you use: {pick}. Paste a read-only key. Keys never touch a page."},
+            {"n": 2, "who": "agent", "text": "Run the first pull in mock, then live, inside the caps. Fill the tables it owns."},
+            {"n": 3, "who": "agent", "text": f"Propose records into the review queue for {', '.join(x.replace('_', ' ') for x in fills[:4]) or 'its sections'}. Rules waiting on this source run again."},
+            {"n": 4, "who": "person", "text": "Accept the proposed records. The rooms it unblocks show the numbers on their next load."}]
 
 
 def _connector_verdict(status: str, age: int | None, shelf: int | None, failed: int, pulls: int | None, rooms_n: int) -> dict:

@@ -428,6 +428,46 @@
       rows, sort: false, maxRows: 40,
     });
   }
+  // ---------- 5c. connectors ----------
+  function connectPanel(c) {
+    const body = el('div', { class: 'stack' });
+    body.append(el('div', { class: 'row' }, UI.verdict(c.verdict.kind, c.verdict.text, c.verdict.reason), el('span', { class: 'chip', text: c.sources + ' options' }), c.last_pull ? el('span', { class: 'chip', text: 'last pull ' + fmt.date(c.last_pull) }) : null));
+    body.append(el('div', null, el('b', { text: 'Fills: ' }), c.fills_sections.map(pretty).join(', ') + '.'));
+    body.append(el('div', null, el('b', { text: 'Unblocks: ' }), (c.unblocks_rooms.map(pretty).join(', ') || 'no room yet') + '.'));
+    body.append(el('div', null, el('b', { text: 'Options: ' }), c.alternatives.map((a) => a.name).join(', ') + '.'));
+    if (c.steps.length) body.append(UI.actionCard({ id: '05-brand-brain.connect.' + c.category, title: 'Connect a ' + pretty(c.category) + ' source', why: c.verdict.reason + '.', severity: c.verdict.kind === 'stop' ? 'high' : 'medium', owner: 'person', capability: { id: 'BRN-C02', autonomy: 'human_assist' }, artefact: { kind: 'connector_setup', label: 'one ' + pretty(c.category) + ' source connected, read-only' }, steps: c.steps, finding_ids: [], time_to_ship_hours: 1 }, { screen: SCREEN, expanded: true }));
+    else body.append(el('div', { class: 'small muted', text: 'Connected via ' + c.via.join(', ') + '. Pull details are in the sources tab.' }));
+    UI.panel({ title: pretty(c.category) + ' connectors', body });
+  }
+  function connectorsTable(cn) {
+    const rows = cn.categories.map((c) => Object.assign({}, c, { via_text: (c.via.slice(0, 2).map((v) => v.replace(/\s*\(.*\)\s*/g, '')).join(', ') + (c.via.length > 2 ? ' +' + (c.via.length - 2) : '')) || (c.alternatives.every((a) => a.access === 'public') ? 'not pulled' : 'none'), fills_text: c.fills_sections.slice(0, 4).map(pretty).join(', ') + (c.fills_sections.length > 4 ? ' +' + (c.fills_sections.length - 4) : ''), rooms_n: c.unblocks_rooms.length, age: c.connected ? c.age_days : null }));
+    return UI.verdictTable({
+      columns: [
+        { key: 'label', label: 'Category' },
+        { key: 'via_text', label: 'Connected via' },
+        { key: 'sources', label: 'Options', unit: 'n', align: 'right' },
+        { key: 'fills_text', label: 'Fills' },
+        { key: 'rooms_n', label: 'Rooms it unblocks', unit: 'n', align: 'right' },
+        { key: 'age', label: 'Last pull', unit: 'days', align: 'right' },
+      ],
+      verdict: { at: 1, kind: (r) => r.verdict.kind, text: (r) => r.verdict.text, reason: (r) => r.verdict.reason },
+      actions: { label: (r) => r.connected ? 'Open' : 'Connect', onClick: (r) => connectPanel(r) },
+      rows, sort: false, maxRows: 30,
+    });
+  }
+  function sourcesTable(cn) {
+    return UI.verdictTable({
+      columns: [
+        { key: 'name', label: 'Source' }, { key: 'category', label: 'Category', format: pretty }, { key: 'access', label: 'Access', format: pretty },
+        { key: 'pulls', label: 'Pulls', unit: 'n', align: 'right' }, { key: 'failed', label: 'Failed', unit: 'n', align: 'right' },
+        { key: 'health', label: 'Health', unit: '%', align: 'right' }, { key: 'age_days', label: 'Last pull', unit: 'days', align: 'right' },
+        { key: 'fills', label: 'Fills', format: (v, r) => r.fills_sections.slice(0, 3).map(pretty).join(', ') + (r.fills_sections.length > 3 ? ' +' + (r.fills_sections.length - 3) : '') },
+      ],
+      verdict: { at: 1, kind: (r) => r.verdict.kind, text: (r) => r.verdict.text, reason: (r) => r.verdict.reason },
+      rows: cn.sources, sort: false, maxRows: 100,
+    });
+  }
+
   async function loadHealth() {
     let h, actions = [];
     try { h = await api(BASE + 'health'); } catch (e) { mount('#health', el('p', { class: 'muted', text: 'Health unavailable: ' + e.message })); return null; }
@@ -446,9 +486,14 @@
       onCell: (cell, row, col) => { if (cell) cellPanel(row.key, col.key); },
       note: h.note + ' Amber cells are inferred or unverified records a founder can settle. Colour scale caps at 60 so the language bank does not wash out the rest.',
     });
+    const cn = h.connectors || { categories: [], sources: [], counts: {} };
     mount('#health', UI.tabs({ items: [
       { key: 'actions', label: 'Sections and actions', n: h.counts.weak, panel: () => healthTable(h, byAct) },
       { key: 'heat', label: 'Heatmap by tier', panel: () => matrix },
+      { key: 'connectors', label: 'Connectors', n: cn.counts.connected, panel: () => el('div', { class: 'stack' },
+        UI.orientation([{ label: 'connected', value: cn.counts.connected, unit: 'n' }, { label: 'categories live', value: cn.counts.categories_with_a_connection, unit: 'n', title: 'of ' + cn.categories.length }, { label: 'pull health', value: cn.health_pct, unit: '%', title: 'successful pulls over all pulls, public sources' }, { label: 'sources on offer', value: cn.counts.sources, unit: 'n' }]),
+        connectorsTable(cn), el('div', { class: 'micro faint', text: cn.note })) },
+      { key: 'sources', label: 'All sources', n: cn.counts.sources, panel: () => sourcesTable(cn) },
     ], current: h.counts.weak ? 'actions' : 'heat' }));
     return h;
   }
