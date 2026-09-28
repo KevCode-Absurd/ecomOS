@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ecomOS brand brain documents manifest",
+  "description": "One line per uploaded file under app/brain/<brand>/documents/. Only file and added_at are required. Files are kept as they are and never validated for content.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": [
+      "file",
+      "added_at"
+    ],
+    "additionalProperties": false,
+    "properties": {
+      "file": {
+        "type": "string",
+        "description": "path relative to the brand folder, under documents/"
+      },
+      "added_at": {
+        "type": "string",
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+      },
+      "added_by": {
+        "type": "string"
+      },
+      "note": {
+        "type": "string",
+        "description": "what this is and why it matters, in the founder's words"
+      },
+      "sections": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "sections it may inform, optional"
+      },
+      "tags": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "supersedes": {
+        "type": "string",
+        "description": "file this replaces"
+      },
+      "visibility": {
+        "type": "string",
+        "enum": [
+          "public",
+          "private"
+        ],
+        "description": "defaults to private"
+      },
+      "extracted": {
+        "type": "boolean",
+        "description": "true once records were proposed from it"
+      },
+      "indexed": {
+        "type": "boolean"
+      }
+    }
+  }
+}

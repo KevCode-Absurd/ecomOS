@@ -1,6 +1,6 @@
 # Brand brain v2: review of the skill and the design for ecomOS
 
-Date: 28 Sep 2026. Status: design for Kevin's review (session S1.1). Input: Kevin's `brand-brain` skill (9 markdown files, 7 phases, 2 gates, living-system rules). Companion files: `app/brain/schema.json`, `app/brain/validate.py`, `app/brain/example/`.
+Date: 28 Sep 2026. Status: design for Kevin's review (session S1.1). Input: Kevin's `brand-brain` skill (9 markdown files, 7 phases, 2 gates, living-system rules). Companion files: `app/brain/schema.json` (records), `app/brain/documents.schema.json` (upload manifest), `app/brain/validate.py`, `app/brain/example/`.
 
 ## 1. What the skill does well
 
@@ -34,13 +34,17 @@ The skill is a chat workflow that writes prose files for one use: ads and creati
 
 Everything in section 1 survives. Everything in section 2 is fixed by the design below.
 
-## 3. Brain v2: records, not prose
+## 3. Brain v2: records and documents
 
-The brain is a set of **records**. A record is one fact about one brand, in one section, with its provenance.
+Kevin's rule (28 Sep 2026): provenance is welcome, never required. A founder must be able to drop in anything they think matters without filling a form. So the brain holds two kinds of content, and tells them apart.
+
+### 3.1 Records: structured facts, provenance when it exists
+
+A record is one fact about one brand in one section. Only `id`, `brand`, `section` and a `value` or `text` are required. Everything else is optional and used when present.
 
 ```json
 {
-  "id": "bombas.offers.free_shipping_threshold",
+  "id": "bombas.offers.free_shipping_threshold_usd",
   "brand": "bombas",
   "section": "offers",
   "field": "free_shipping_threshold_usd",
@@ -49,25 +53,40 @@ The brain is a set of **records**. A record is one fact about one brand, in one 
   "source": {"type": "site", "ref": "https://bombas.com/pages/shipping", "captured_at": "2026-09-28"},
   "confidence": 0.95,
   "tier": "site_backed",
-  "status": "active",
-  "visibility": "public",
-  "valid_from": "2026-09-28",
   "expires_at": "2026-10-05",
-  "evidence": [{"quote": "Free shipping on orders over $50", "ref": "https://bombas.com/pages/shipping"}],
-  "history": []
+  "evidence": [{"quote": "Free shipping on orders over $50", "ref": "https://bombas.com/pages/shipping"}]
 }
 ```
 
-Rules that hold for every record:
+A founder's quick note is also a valid record:
 
-- `source.type` is one of `site`, `ad_library`, `connector`, `document`, `interview`, `press`, `review`, `ticket`, `founder`, `agent`, `inferred`. A summary is not a fact; `agent` and `inferred` records carry the record ids they were derived from.
-- `tier` is one of `approved` (founder confirmed), `site_backed` (quoted from a live page), `reported` (press, interview, filing), `evidence` (reviews, tickets), `inferred` (a model's read, labelled), `forbidden` (founder said never, or unprovable). Claims copy can use only `approved` and `site_backed`.
-- `visibility` is `public` or `private`. Private records come only from connected sources, uploads and the founder. A context package for public-facing work can exclude private records.
-- `expires_at` comes from the section's TTL (section 4). An expired record is `stale`, still readable, flagged in every package that carries it.
-- `history` keeps prior values with the date they changed. Nothing is deleted; `status` moves to `retired`.
-- No em dash in any string. The validator rejects it.
+```json
+{"id": "bombas.learnings.note_2026_09_28_1", "brand": "bombas", "section": "learnings",
+ "text": "Founder-face videos beat product-only statics for us in Q2. Do not know why yet."}
+```
 
-Prose still exists, but as **derived summaries** (section 5), regenerated from records, never hand-edited.
+Rules:
+
+- **What is required:** `id`, `brand`, `section`, and `value` or `text`. Nothing else.
+- **What is used when present:** `source` (type, ref, captured_at), `confidence`, `tier`, `evidence`, `expires_at`, `visibility`, `history`. A record without a source gets `tier: unverified` and `confidence: null`. It is still read; the package shows it as "unverified, added by founder on <date>".
+- **Where the line matters:** claims used in customer-facing copy must be `approved` or `site_backed`. Everything else can be unverified. The QA gate enforces this in one place, so the rest of the brain stays free.
+- **Tiers:** `approved` (founder confirmed), `site_backed` (quoted from a live page), `reported` (press, interview, filing), `evidence` (reviews, tickets), `inferred` (a model's read, labelled), `unverified` (no source given), `forbidden` (founder said never).
+- **Visibility:** `public` or `private`. Defaults to `private` for anything the founder adds and `public` for anything from a public source. Public-facing packages can exclude private records.
+- **History:** a changed value keeps its prior values. Nothing is deleted; `status` moves to `retired`.
+- **No em dash** in any string. The validator rejects it.
+
+### 3.2 Documents: unstructured uploads, kept as they are
+
+Anything the founder or team drops in: a brand book, a deck, a research PDF, a Loom transcript, a spreadsheet of past tests, a screenshot, a Slack export, a note. Stored as the file it is under `app/brain/<brand>/documents/` with one manifest line:
+
+```json
+{"file": "documents/2026-09-28-brand-book-v3.pdf", "added_at": "2026-09-28", "added_by": "kevin",
+ "note": "current brand book, supersedes v2", "sections": ["voice", "visual"], "extracted": false}
+```
+
+Only `file` and `added_at` are required. `note`, `sections`, `tags`, `added_by`, `supersedes` are optional. Documents are not validated for content. They are indexed for search (keyword now, embeddings later through `intelligence/knowledge_search.py`) so an agent can pull the right page as T3 evidence. Extraction into records is optional, asynchronous, and proposed through the review queue; a document never has to be extracted to be useful.
+
+Prose summaries still exist, but as **derived summaries** (section 5), regenerated from records and documents, never hand-edited.
 
 ## 4. Sections: what the brain holds across the 25 domains
 
@@ -133,6 +152,20 @@ Example: capability "write a paid social creative brief" gets T0, T1 for `produc
 
 Summaries are written by a task agent (Haiku or Sonnet) on change, never by hand, and each cites the record ids it summarises so a wrong summary can be traced.
 
+### 5.1 The brand context file: `BRAIN.md`, a router not a store
+
+Each brand gets one small markdown file, `app/brain/<brand>/BRAIN.md`, the way a `CLAUDE.md` works for a repo. It is what a person or an agent reads first. It holds under about 1,500 tokens and links out for everything else:
+
+1. The T0 card: who the brand is, the diagnosis line, red lines, current promos, freshness warnings.
+2. A section index: each of the 28 sections with record count, last update and one line, linking to its file.
+3. A routing table: for this kind of work, read this. Example rows: "writing ad copy: `claims`, `voice`, `avatars`, then skill `agents/skills/CREA/ad-copy/SKILL.md`"; "pricing a promo: `offers`, `economics`, then `finance_inputs` in the data layer and capability MONEY-C04"; "anything numeric: the metric contract at `/api/metrics`, never this file".
+4. A founder notes block: free text the founder edits by hand. Regeneration preserves it word for word.
+5. Links to the documents manifest and the open questions.
+
+It is regenerated from the records on every publish. It copies nothing from skills, agent files or the data layer; it names them by path or id. An agent that needs to execute something follows the link and loads only that skill. This is how one file gives full brand context without holding everything.
+
+Adding context is one action from anywhere: paste a note, upload a file, answer a question, forward an email, drop a file in the linked Drive folder or Slack channel. Each becomes a record or a document, and `BRAIN.md` updates on the next publish.
+
 ## 6. Ingestion: from sources to records
 
 ```
@@ -162,12 +195,14 @@ Review queue rules: `identity`, `claims`, `red lines`, `decisions` and any `forb
 
 ## 7. Keeping it fresh: the mechanism Kevin asked for
 
-The founder enters the website, connects what they have, and the brain keeps improving from four clocks:
+The founder enters the website, connects what they have, and the brain keeps improving from five clocks:
 
 1. **Continuous.** Connectors sync daily. Facts that come from data (hero product, best flow, top ad) are recomputed from the data layer and the brain stores the pointer plus the date. The site is crawled daily and diffed; a changed price, a new product, a new promo, a removed page lands in `changes` and updates its section.
 2. **Event driven.** A new document in the linked Drive folder or Slack channel triggers the document extractor. A new ad in the Ad Library triggers the ad extractor. A spike in one ticket reason triggers the objections extractor.
 3. **Scheduled ask.** Every week (configurable to every 2 days), the keeper computes gaps: expired records, sections with low confidence, open conflicts, open questions, and the rooms that are blocked by them. It sends a short digest with 3 to 5 targeted questions and a place to attach files. Delivered to the app inbox and, where connected, Slack or email. Answers become `approved` records; attachments run through the document extractor. Never more than 5 questions; the rest wait.
 4. **Session write-back.** Every agent run can call `propose_brain_update` with records it believes are new (a hook that worked, an objection that came up, a product that is out of stock). They go to the review queue, not to the brain. The founder sees "3 proposed updates" on the brain screen and clears them in a minute.
+
+5. **Weekly audit of the brain and what it links to.** Alongside the questions, a job reviews the brain itself and proposes improvements into the review queue: stale or contradicting records, sections with nothing in them that a room needs, documents added but never read or extracted, summaries that drifted from their records, routing rows that point at a missing file, skills and agent files the routing table links to that overlap, are never used, or reference facts the brain now contradicts, and records that could be merged. Each proposal shows the before and after. The founder accepts or ignores them from the brain screen. Accepted skill changes become a commit in `agents/skills/`. The audit is how the brain, and the skills around it, get better without a person rereading everything.
 
 Health is visible: the brand brain screen shows per section freshness, confidence, stale count, conflicts, and what a connect or an answer would unlock. The weekly digest includes one line on brain health.
 
@@ -177,13 +212,13 @@ Versioning: each publish is a version with a diff. Any package names the version
 
 The skill runs in one chat. The product runs as a service. Steps, in order:
 
-1. **Split the skill into a package.** `app/brain/` with `schema.json`, `validate.py`, `store.py` (read and write records, versions), `extract/` (one module per extractor), `merge.py`, `package.py` (the context builder), `keeper.py` (the scheduler entry). No chat in any of them. Inputs are a brand id and a source; outputs are records.
+1. **Split the skill into a package.** `app/brain/` with `schema.json`, `validate.py`, `store.py` (read and write records, versions), `extract/` (one module per extractor), `merge.py`, `package.py` (the context builder), `router.py` (writes `BRAIN.md`), `audit.py` (the weekly audit), `keeper.py` (the scheduler entry). No chat in any of them. Inputs are a brand id and a source; outputs are records.
 2. **Replace gates with a review queue.** A `review` table with proposed records, risk level, and who cleared them. The setup screen and the brand brain screen read it. Nothing waits on a chat.
 3. **Store.** SQLite per brand for the demo. Postgres with a `brand_id` on every row when hosted. Records, versions, summaries, review queue, changes. Assets in object storage (S3 or R2) with a manifest table: product id, role (packshot, lifestyle, UGC, ad), rights, source, hash.
 4. **Connectors as adapters.** One class per platform with `pull(table, window)` and `status()`, a `mock` mode that returns the generated tables, a `live` mode that calls the API. OAuth apps for Shopify, Meta, Google, Klaviyo. Tokens in a secrets manager, read-only scopes, never in the repo.
 5. **Jobs and schedules.** A worker process that runs crawls, extractors, syncs and the weekly ask. Cron or a queue (Cloud Run Jobs, Render cron, or a Python worker with Redis). Every job writes a run record with duration, rows and errors.
 6. **Model calls server side.** Extractors call the Claude API with structured outputs for their fixed schema. Bulk runs (tagging thousands of reviews) go through the Batch API at half price. The T0 card and T1 summaries sit first in every prompt for prompt caching. Budget ledger enforced per brand per day.
-7. **The brain API.** `GET /brain/<brand>/card`, `GET /brain/<brand>/sections/<name>`, `GET /brain/<brand>/package?capability=<id>`, `POST /brain/<brand>/records` (proposed), `POST /brain/<brand>/review/<id>`, `GET /brain/<brand>/health`, `GET /brain/<brand>/versions`. Agents and screens use only these.
+7. **The brain API.** `GET /brain/<brand>/card`, `GET /brain/<brand>/sections/<name>`, `GET /brain/<brand>/package?capability=<id>`, `POST /brain/<brand>/records` (proposed), `POST /brain/<brand>/review/<id>`, `GET /brain/<brand>/BRAIN.md`, `POST /brain/<brand>/documents` (any file plus an optional note), `GET /brain/<brand>/health`, `GET /brain/<brand>/versions`. Agents and screens use only these.
 8. **Auth and tenancy.** Login (magic link or an auth provider), brands per account, roles (founder, team, agency), every query scoped by brand id. Rate limits on crawling, respect robots.txt, per-brand data export and deletion.
 9. **Hosting.** One app service (the existing `app/server.py` grown up, behind auth), one worker, one database, one bucket. Fly, Render or Cloud Run all fit. Logs and a health page.
 10. **Migration path from the demo.** The Bombas brain is built as JSON files under `app/brain/bombas/` with this exact schema. The store module reads files now and a database later. Nothing above it changes.
@@ -194,9 +229,18 @@ Session S1.2 runs the extractors that need no private access: site crawl, Ad Lib
 
 Calibration fields that S1.2 must fill or mark open, because the generator needs them: revenue band and source, AOV estimate from the price ladder and pack sizes, repeat rate if stated anywhere, channel mix from interviews, seasonality from the promo history in emails and ads, giving units by year, retail partners.
 
-## 10. Decisions for Kevin
+## 10. Decisions
+
+Made by Kevin on 28 Sep 2026:
+
+- Provenance is optional. Records need only id, brand, section and a value or text. Source, date, confidence and tier are used when present. Raw uploads are kept as documents with a one-line manifest entry and are never blocked.
+- The brain is structured for the whole product, not for ads.
+- One small `BRAIN.md` per brand routes to sections, skills, agent files and the data layer. It does not hold everything.
+- Founders and teams can add context at any time, from anywhere, and it refines the brain.
+- A weekly job audits the brain and the skills it links to, and proposes improvements, alongside at most 5 questions.
+
+Still open:
 
 1. The 28 sections in section 4: cut or add any before S1.2 runs.
 2. Auto-publish low-risk changes with a 7-day revert window, versus gating everything. Recommendation: auto-publish.
-3. The weekly ask: default weekly, 5 questions max, delivered in-app and to Slack when connected. Or every 2 days.
-4. Whether agent write-back is on from day one (recommended, always through the review queue).
+3. Ask cadence: weekly, or every 2 days.

@@ -19,15 +19,40 @@ class BrainSchemaTests(unittest.TestCase):
     def test_example_folder_is_valid(self):
         self.assertEqual(validate.check_path(EXAMPLE), [])
 
-    def test_missing_source_is_rejected(self):
-        rec = good()
-        del rec["source"]
-        self.assertTrue(any("missing source" in e for e in validate.check_record(rec)))
+    def test_bare_note_without_provenance_is_valid(self):
+        rec = {"id": "example.learnings.note_1", "brand": "example", "section": "learnings",
+               "text": "A note the founder typed, nothing else."}
+        self.assertEqual(validate.check_record(rec), [])
 
-    def test_missing_date_is_rejected(self):
+    def test_record_needs_value_or_text(self):
+        rec = {"id": "example.learnings.note_2", "brand": "example", "section": "learnings"}
+        self.assertTrue(any("value or a text" in e for e in validate.check_record(rec)))
+
+    def test_source_when_given_needs_a_date(self):
         rec = good()
         rec["source"].pop("captured_at")
         self.assertTrue(any("captured_at" in e for e in validate.check_record(rec)))
+
+    def test_sourced_tier_without_source_is_rejected(self):
+        rec = good()
+        del rec["source"]
+        self.assertTrue(any("needs a source" in e for e in validate.check_record(rec)))
+
+    def test_documents_manifest_requires_file_and_date(self):
+        errs = validate.check_manifest(EXAMPLE / "documents" / "manifest.json")
+        self.assertEqual(errs, [])
+        bad = EXAMPLE.parent / "_tmp_docs" / "documents"
+        bad.mkdir(parents=True, exist_ok=True)
+        p = bad / "manifest.json"
+        p.write_text(json.dumps([{"note": "no file"}]), encoding="utf-8")
+        try:
+            errs = validate.check_manifest(p)
+        finally:
+            p.unlink()
+            bad.rmdir()
+            bad.parent.rmdir()
+        self.assertTrue(any("missing file" in e for e in errs))
+        self.assertTrue(any("missing added_at" in e for e in errs))
 
     def test_em_dash_is_rejected(self):
         rec = good()
