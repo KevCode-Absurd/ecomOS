@@ -1,0 +1,630 @@
+{
+ "version": "2026-09-28",
+ "note": "Machine copy of sessions/SESSIONS.md. scripts/session.py prints one session's first line, reads and budget.",
+ "sessions": [
+  {
+   "id": "S1.2a",
+   "title": "Brain store, package builder and BRAIN.md router",
+   "stage": 1,
+   "model": "opus",
+   "reads": [
+    "app/CLAUDE.md",
+    "app/contracts/brand-brain.md#3,5",
+    "app/brain/schema.json",
+    "app/brain/example/"
+   ],
+   "writes": [
+    "app/brain/store.py",
+    "app/brain/package.py",
+    "app/brain/router.py",
+    "tests/test_brain_package.py",
+    "app/brain/STATUS.md"
+   ],
+   "done_when": "package(brand, capability, budget) returns T0 plus T1 plus T2 under budget with dates and tiers on every record; router writes BRAIN.md for the example brand under 1,500 tokens and preserves the founder notes block across regeneration; tests pass",
+   "first_line": "Work in app/brain. Session S1.2a per sessions/SESSIONS.md: build store.py, package.py and router.py against app/contracts/brand-brain.md sections 3 and 5.",
+   "budget_tokens": 22000,
+   "parallel_group": null,
+   "needs": []
+  },
+  {
+   "id": "S1.2b",
+   "title": "brain_sections overlay for every capability",
+   "stage": 1,
+   "model": "sonnet",
+   "reads": [
+    "app/contracts/brand-brain.md#4,5",
+    "scripts/session.py --capabilities <AGENT> (one agent at a time, never catalogue.json whole)"
+   ],
+   "writes": [
+    "agents/brain_sections.json",
+    "tests/test_brain_sections.py"
+   ],
+   "done_when": "every capability id in agents/catalogue.json has sections, tiers, budget and public_facing; validator rejects unknown sections",
+   "first_line": "Work in agents/. Session S1.2b per sessions/SESSIONS.md: write agents/brain_sections.json, one agent at a time via scripts/session.py --capabilities.",
+   "budget_tokens": 12000,
+   "parallel_group": null,
+   "needs": [
+    "S1.2a"
+   ]
+  },
+  {
+   "id": "S1.3a",
+   "title": "Bombas extractor: site crawl",
+   "stage": 1,
+   "model": "sonnet",
+   "reads": [
+    "app/contracts/brand-brain.md#3,4",
+    "app/brain/schema.json",
+    "app/brain/extract/README.md (the site crawl row)"
+   ],
+   "writes": [
+    "app/brain/bombas/raw/a-site/<section>.json",
+    "app/brain/bombas/raw/<same>/sources.json"
+   ],
+   "done_when": "python3 app/brain/validate.py on the raw folder passes; every record has a public source with url and date; nothing copied from the brand beyond quotes as evidence",
+   "first_line": "Work in app/brain/bombas/raw. Session S1.3a per sessions/SESSIONS.md: run the site crawl extractor for Bombas (sitemap, products.json, legal pages, CSS). Public sources only. Web research through a sub-agent that returns records, not pages.",
+   "budget_tokens": 15000,
+   "parallel_group": "S1.3",
+   "needs": [
+    "S1.2a"
+   ]
+  },
+  {
+   "id": "S1.3b",
+   "title": "Bombas extractor: Meta Ad Library",
+   "stage": 1,
+   "model": "opus",
+   "reads": [
+    "app/contracts/brand-brain.md#3,4",
+    "app/brain/schema.json",
+    "app/brain/extract/README.md (the Meta Ad Library row)"
+   ],
+   "writes": [
+    "app/brain/bombas/raw/b-meta/<section>.json",
+    "app/brain/bombas/raw/<same>/sources.json"
+   ],
+   "done_when": "python3 app/brain/validate.py on the raw folder passes; every record has a public source with url and date; nothing copied from the brand beyond quotes as evidence",
+   "first_line": "Work in app/brain/bombas/raw. Session S1.3b per sessions/SESSIONS.md: run the Meta Ad Library extractor for Bombas (Bombas page and 5 competitor pages). Public sources only. Web research through a sub-agent that returns records, not pages.",
+   "budget_tokens": 15000,
+   "parallel_group": "S1.3",
+   "needs": [
+    "S1.2a"
+   ]
+  },
+  {
+   "id": "S1.3c",
+   "title": "Bombas extractor: press, interviews and podcasts",
+   "stage": 1,
+   "model": "sonnet",
+   "reads": [
+    "app/contracts/brand-brain.md#3,4",
+    "app/brain/schema.json",
+    "app/brain/extract/README.md (the press, interviews and podcasts row)"
+   ],
+   "writes": [
+    "app/brain/bombas/raw/c-press,/<section>.json",
+    "app/brain/bombas/raw/<same>/sources.json"
+   ],
+   "done_when": "python3 app/brain/validate.py on the raw folder passes; every record has a public source with url and date; nothing copied from the brand beyond quotes as evidence",
+   "first_line": "Work in app/brain/bombas/raw. Session S1.3c per sessions/SESSIONS.md: run the press, interviews and podcasts extractor for Bombas (transcripts and articles, revenue band with source). Public sources only. Web research through a sub-agent that returns records, not pages.",
+   "budget_tokens": 15000,
+   "parallel_group": "S1.3",
+   "needs": [
+    "S1.2a"
+   ]
+  },
+  {
+   "id": "S1.3d",
+   "title": "Bombas extractor: public reviews and forums",
+   "stage": 1,
+   "model": "sonnet",
+   "reads": [
+    "app/contracts/brand-brain.md#3,4",
+    "app/brain/schema.json",
+    "app/brain/extract/README.md (the public reviews and forums row)"
+   ],
+   "writes": [
+    "app/brain/bombas/raw/d-public/<section>.json",
+    "app/brain/bombas/raw/<same>/sources.json"
+   ],
+   "done_when": "python3 app/brain/validate.py on the raw folder passes; every record has a public source with url and date; nothing copied from the brand beyond quotes as evidence",
+   "first_line": "Work in app/brain/bombas/raw. Session S1.3d per sessions/SESSIONS.md: run the public reviews and forums extractor for Bombas (retailer reviews, Reddit, Trustpilot). Public sources only. Web research through a sub-agent that returns records, not pages.",
+   "budget_tokens": 15000,
+   "parallel_group": "S1.3",
+   "needs": [
+    "S1.2a"
+   ]
+  },
+  {
+   "id": "S1.3e",
+   "title": "Bombas extractor: job postings and stack",
+   "stage": 1,
+   "model": "sonnet",
+   "reads": [
+    "app/contracts/brand-brain.md#3,4",
+    "app/brain/schema.json",
+    "app/brain/extract/README.md (the job postings and stack row)"
+   ],
+   "writes": [
+    "app/brain/bombas/raw/e-job/<section>.json",
+    "app/brain/bombas/raw/<same>/sources.json"
+   ],
+   "done_when": "python3 app/brain/validate.py on the raw folder passes; every record has a public source with url and date; nothing copied from the brand beyond quotes as evidence",
+   "first_line": "Work in app/brain/bombas/raw. Session S1.3e per sessions/SESSIONS.md: run the job postings and stack extractor for Bombas (roles, tools named, agencies). Public sources only. Web research through a sub-agent that returns records, not pages.",
+   "budget_tokens": 15000,
+   "parallel_group": "S1.3",
+   "needs": [
+    "S1.2a"
+   ]
+  },
+  {
+   "id": "S1.3m",
+   "title": "Bombas merge and first publish",
+   "stage": 1,
+   "model": "opus",
+   "reads": [
+    "app/contracts/brand-brain.md#6",
+    "app/brain/validate.py (docstring)",
+    "app/brain/store.py (docstring)",
+    "app/brain/bombas/raw/**"
+   ],
+   "writes": [
+    "app/brain/bombas/<section>.json",
+    "app/brain/bombas/sources.json",
+    "app/brain/bombas/assumptions.json",
+    "app/brain/bombas/BRAIN.md",
+    "app/brain/STATUS.md"
+   ],
+   "done_when": "one active record per scalar field, conflicts listed with both values, calibration fields (revenue band, AOV estimate, repeat rate, channel mix, seasonality) filled or in open_questions, BRAIN.md generated",
+   "first_line": "Work in app/brain/bombas. Session S1.3m per sessions/SESSIONS.md: merge raw/ into the brain, resolve conflicts (site wins), write sources.json and assumptions.json, publish BRAIN.md.",
+   "budget_tokens": 30000,
+   "parallel_group": null,
+   "needs": [
+    "S1.3a",
+    "S1.3b",
+    "S1.3c",
+    "S1.3d",
+    "S1.3e"
+   ]
+  },
+  {
+   "id": "S1.4",
+   "title": "Brain review with Kevin",
+   "stage": 1,
+   "model": "fable",
+   "reads": [
+    "app/brain/bombas/BRAIN.md",
+    "app/brain/bombas/freshness.json",
+    "app/brain/bombas/open_questions.json",
+    "a 30-record sample per section via scripts/session.py --sample bombas <section>"
+   ],
+   "writes": [
+    "app/brain/bombas/open_questions.json",
+    "corrections as founder records",
+    "app/brain/STATUS.md"
+   ],
+   "done_when": "Kevin signs off identity, products, offers, avatars and claims; every correction is a founder record with a date",
+   "first_line": "Work in app/brain/bombas. Session S1.4 per sessions/SESSIONS.md: review the Bombas brain with Kevin, section by section, corrections as founder records.",
+   "budget_tokens": 20000,
+   "parallel_group": null,
+   "needs": [
+    "S1.3m"
+   ]
+  },
+  {
+   "id": "S1.5",
+   "title": "Keeper: gaps, the ask, the weekly audit",
+   "stage": 1,
+   "model": "opus",
+   "reads": [
+    "app/contracts/brand-brain.md#6.1,7",
+    "app/brain/sources.registry.json",
+    "app/brain/questions.bank.json",
+    "app/brain/store.py (docstring)"
+   ],
+   "writes": [
+    "app/brain/keeper.py",
+    "app/brain/audit.py",
+    "tests/test_brain_keeper.py",
+    "app/brain/STATUS.md"
+   ],
+   "done_when": "with the example brain and no sources connected, keeper.ask() returns the top 5 by importance; marking a source connected drops the questions it answers; a declined source turns them into plain questions; audit() lists stale, empty, drifted and broken-link findings",
+   "first_line": "Work in app/brain. Session S1.5 per sessions/SESSIONS.md: build keeper.py (gaps and the ask) and audit.py per contract sections 6.1 and 7.",
+   "budget_tokens": 25000,
+   "parallel_group": null,
+   "needs": [
+    "S1.2a"
+   ]
+  },
+  {
+   "id": "S2.1a",
+   "title": "Field census: Meta Marketing API insights and creatives",
+   "stage": 2,
+   "model": "sonnet",
+   "reads": [
+    "PRODUCT-PLAN.md#4.2 (the row for this platform)",
+    "app/contracts/data-sources.md",
+    "app/contracts/connectors/TEMPLATE.md"
+   ],
+   "writes": [
+    "app/contracts/connectors/a-<platform>.md"
+   ],
+   "done_when": "fields, grain, breakdowns, attribution, limits, retention, auth scopes and one sample row, each with the doc url it came from",
+   "first_line": "Work in app/contracts/connectors. Session S2.1a per sessions/SESSIONS.md: field census of Meta Marketing API insights and creatives from the official docs, into the template. Docs through a sub-agent that returns the field list, not pages.",
+   "budget_tokens": 10000,
+   "parallel_group": "S2.1",
+   "needs": []
+  },
+  {
+   "id": "S2.1b",
+   "title": "Field census: Meta Ad Library, datasets and catalog",
+   "stage": 2,
+   "model": "sonnet",
+   "reads": [
+    "PRODUCT-PLAN.md#4.2 (the row for this platform)",
+    "app/contracts/data-sources.md",
+    "app/contracts/connectors/TEMPLATE.md"
+   ],
+   "writes": [
+    "app/contracts/connectors/b-<platform>.md"
+   ],
+   "done_when": "fields, grain, breakdowns, attribution, limits, retention, auth scopes and one sample row, each with the doc url it came from",
+   "first_line": "Work in app/contracts/connectors. Session S2.1b per sessions/SESSIONS.md: field census of Meta Ad Library, datasets and catalog from the official docs, into the template. Docs through a sub-agent that returns the field list, not pages.",
+   "budget_tokens": 10000,
+   "parallel_group": "S2.1",
+   "needs": []
+  },
+  {
+   "id": "S2.1c",
+   "title": "Field census: Google Ads API",
+   "stage": 2,
+   "model": "sonnet",
+   "reads": [
+    "PRODUCT-PLAN.md#4.2 (the row for this platform)",
+    "app/contracts/data-sources.md",
+    "app/contracts/connectors/TEMPLATE.md"
+   ],
+   "writes": [
+    "app/contracts/connectors/c-<platform>.md"
+   ],
+   "done_when": "fields, grain, breakdowns, attribution, limits, retention, auth scopes and one sample row, each with the doc url it came from",
+   "first_line": "Work in app/contracts/connectors. Session S2.1c per sessions/SESSIONS.md: field census of Google Ads API from the official docs, into the template. Docs through a sub-agent that returns the field list, not pages.",
+   "budget_tokens": 10000,
+   "parallel_group": "S2.1",
+   "needs": []
+  },
+  {
+   "id": "S2.1d",
+   "title": "Field census: Google Merchant Center",
+   "stage": 2,
+   "model": "sonnet",
+   "reads": [
+    "PRODUCT-PLAN.md#4.2 (the row for this platform)",
+    "app/contracts/data-sources.md",
+    "app/contracts/connectors/TEMPLATE.md"
+   ],
+   "writes": [
+    "app/contracts/connectors/d-<platform>.md"
+   ],
+   "done_when": "fields, grain, breakdowns, attribution, limits, retention, auth scopes and one sample row, each with the doc url it came from",
+   "first_line": "Work in app/contracts/connectors. Session S2.1d per sessions/SESSIONS.md: field census of Google Merchant Center from the official docs, into the template. Docs through a sub-agent that returns the field list, not pages.",
+   "budget_tokens": 10000,
+   "parallel_group": "S2.1",
+   "needs": []
+  },
+  {
+   "id": "S2.1e",
+   "title": "Field census: GA4 Data API",
+   "stage": 2,
+   "model": "sonnet",
+   "reads": [
+    "PRODUCT-PLAN.md#4.2 (the row for this platform)",
+    "app/contracts/data-sources.md",
+    "app/contracts/connectors/TEMPLATE.md"
+   ],
+   "writes": [
+    "app/contracts/connectors/e-<platform>.md"
+   ],
+   "done_when": "fields, grain, breakdowns, attribution, limits, retention, auth scopes and one sample row, each with the doc url it came from",
+   "first_line": "Work in app/contracts/connectors. Session S2.1e per sessions/SESSIONS.md: field census of GA4 Data API from the official docs, into the template. Docs through a sub-agent that returns the field list, not pages.",
+   "budget_tokens": 10000,
+   "parallel_group": "S2.1",
+   "needs": []
+  },
+  {
+   "id": "S2.1f",
+   "title": "Field census: Shopify Admin API",
+   "stage": 2,
+   "model": "sonnet",
+   "reads": [
+    "PRODUCT-PLAN.md#4.2 (the row for this platform)",
+    "app/contracts/data-sources.md",
+    "app/contracts/connectors/TEMPLATE.md"
+   ],
+   "writes": [
+    "app/contracts/connectors/f-<platform>.md"
+   ],
+   "done_when": "fields, grain, breakdowns, attribution, limits, retention, auth scopes and one sample row, each with the doc url it came from",
+   "first_line": "Work in app/contracts/connectors. Session S2.1f per sessions/SESSIONS.md: field census of Shopify Admin API from the official docs, into the template. Docs through a sub-agent that returns the field list, not pages.",
+   "budget_tokens": 10000,
+   "parallel_group": "S2.1",
+   "needs": []
+  },
+  {
+   "id": "S2.1g",
+   "title": "Field census: Klaviyo API",
+   "stage": 2,
+   "model": "sonnet",
+   "reads": [
+    "PRODUCT-PLAN.md#4.2 (the row for this platform)",
+    "app/contracts/data-sources.md",
+    "app/contracts/connectors/TEMPLATE.md"
+   ],
+   "writes": [
+    "app/contracts/connectors/g-<platform>.md"
+   ],
+   "done_when": "fields, grain, breakdowns, attribution, limits, retention, auth scopes and one sample row, each with the doc url it came from",
+   "first_line": "Work in app/contracts/connectors. Session S2.1g per sessions/SESSIONS.md: field census of Klaviyo API from the official docs, into the template. Docs through a sub-agent that returns the field list, not pages.",
+   "budget_tokens": 10000,
+   "parallel_group": "S2.1",
+   "needs": []
+  },
+  {
+   "id": "S2.1h",
+   "title": "Field census: Gorgias API",
+   "stage": 2,
+   "model": "sonnet",
+   "reads": [
+    "PRODUCT-PLAN.md#4.2 (the row for this platform)",
+    "app/contracts/data-sources.md",
+    "app/contracts/connectors/TEMPLATE.md"
+   ],
+   "writes": [
+    "app/contracts/connectors/h-<platform>.md"
+   ],
+   "done_when": "fields, grain, breakdowns, attribution, limits, retention, auth scopes and one sample row, each with the doc url it came from",
+   "first_line": "Work in app/contracts/connectors. Session S2.1h per sessions/SESSIONS.md: field census of Gorgias API from the official docs, into the template. Docs through a sub-agent that returns the field list, not pages.",
+   "budget_tokens": 10000,
+   "parallel_group": "S2.1",
+   "needs": []
+  },
+  {
+   "id": "S2.1i",
+   "title": "Field census: Google Search Console",
+   "stage": 2,
+   "model": "sonnet",
+   "reads": [
+    "PRODUCT-PLAN.md#4.2 (the row for this platform)",
+    "app/contracts/data-sources.md",
+    "app/contracts/connectors/TEMPLATE.md"
+   ],
+   "writes": [
+    "app/contracts/connectors/i-<platform>.md"
+   ],
+   "done_when": "fields, grain, breakdowns, attribution, limits, retention, auth scopes and one sample row, each with the doc url it came from",
+   "first_line": "Work in app/contracts/connectors. Session S2.1i per sessions/SESSIONS.md: field census of Google Search Console from the official docs, into the template. Docs through a sub-agent that returns the field list, not pages.",
+   "budget_tokens": 10000,
+   "parallel_group": "S2.1",
+   "needs": []
+  },
+  {
+   "id": "S2.1j",
+   "title": "Field census: Amazon SP-API and Ads API",
+   "stage": 2,
+   "model": "sonnet",
+   "reads": [
+    "PRODUCT-PLAN.md#4.2 (the row for this platform)",
+    "app/contracts/data-sources.md",
+    "app/contracts/connectors/TEMPLATE.md"
+   ],
+   "writes": [
+    "app/contracts/connectors/j-<platform>.md"
+   ],
+   "done_when": "fields, grain, breakdowns, attribution, limits, retention, auth scopes and one sample row, each with the doc url it came from",
+   "first_line": "Work in app/contracts/connectors. Session S2.1j per sessions/SESSIONS.md: field census of Amazon SP-API and Ads API from the official docs, into the template. Docs through a sub-agent that returns the field list, not pages.",
+   "budget_tokens": 10000,
+   "parallel_group": "S2.1",
+   "needs": []
+  },
+  {
+   "id": "S2.1k",
+   "title": "Field census: WooCommerce REST API",
+   "stage": 2,
+   "model": "sonnet",
+   "reads": [
+    "PRODUCT-PLAN.md#4.2 (the row for this platform)",
+    "app/contracts/data-sources.md",
+    "app/contracts/connectors/TEMPLATE.md"
+   ],
+   "writes": [
+    "app/contracts/connectors/k-<platform>.md"
+   ],
+   "done_when": "fields, grain, breakdowns, attribution, limits, retention, auth scopes and one sample row, each with the doc url it came from",
+   "first_line": "Work in app/contracts/connectors. Session S2.1k per sessions/SESSIONS.md: field census of WooCommerce REST API from the official docs, into the template. Docs through a sub-agent that returns the field list, not pages.",
+   "budget_tokens": 10000,
+   "parallel_group": "S2.1",
+   "needs": []
+  },
+  {
+   "id": "S2.1l",
+   "title": "Field census: Mailchimp API",
+   "stage": 2,
+   "model": "sonnet",
+   "reads": [
+    "PRODUCT-PLAN.md#4.2 (the row for this platform)",
+    "app/contracts/data-sources.md",
+    "app/contracts/connectors/TEMPLATE.md"
+   ],
+   "writes": [
+    "app/contracts/connectors/l-<platform>.md"
+   ],
+   "done_when": "fields, grain, breakdowns, attribution, limits, retention, auth scopes and one sample row, each with the doc url it came from",
+   "first_line": "Work in app/contracts/connectors. Session S2.1l per sessions/SESSIONS.md: field census of Mailchimp API from the official docs, into the template. Docs through a sub-agent that returns the field list, not pages.",
+   "budget_tokens": 10000,
+   "parallel_group": "S2.1",
+   "needs": []
+  },
+  {
+   "id": "S2.2",
+   "title": "Data sources v2 contract",
+   "stage": 2,
+   "model": "fable",
+   "reads": [
+    "app/contracts/data-sources.md",
+    "app/contracts/connectors/*.md",
+    "app/contracts/metrics.md",
+    "PRODUCT-PLAN.md#4.3"
+   ],
+   "writes": [
+    "app/contracts/data-sources.md",
+    "app/contracts/finance-inputs.md",
+    "app/contracts/calibration.md"
+   ],
+   "done_when": "every table names the census field it maps to; finance_inputs has fields with effective dates; calibration lists the brain fields the generator reads",
+   "first_line": "Work in app/contracts. Session S2.2 per sessions/SESSIONS.md: rewrite data-sources.md from the connector census files, add finance-inputs.md and calibration.md.",
+   "budget_tokens": 40000,
+   "parallel_group": null,
+   "needs": [
+    "S2.1a",
+    "S2.1c",
+    "S2.1e",
+    "S2.1f",
+    "S2.1g"
+   ]
+  },
+  {
+   "id": "S2.3",
+   "title": "Generator v2 for Bombas",
+   "stage": 2,
+   "model": "opus",
+   "reads": [
+    "app/CLAUDE.md",
+    "app/contracts/data-sources.md",
+    "app/contracts/calibration.md",
+    "app/brain/bombas/BRAIN.md",
+    "app/data/generate.py"
+   ],
+   "writes": [
+    "app/data/generate.py",
+    "app/data/brands/bombas/",
+    "app/data/brands/bombas/assumptions.json",
+    "tests/test_generate_v2.py"
+   ],
+   "done_when": "24 months daily, deterministic, orders are the one truth, SQLite at scale 1.0 not committed, JSON aggregates committed, every table matches its census fields",
+   "first_line": "Work in app/data. Session S2.3 per sessions/SESSIONS.md: generator v2 reading the Bombas brain calibration, 24 months daily, SQLite at scale 1.0.",
+   "budget_tokens": 50000,
+   "parallel_group": null,
+   "needs": [
+    "S2.2",
+    "S1.3m"
+   ]
+  },
+  {
+   "id": "S2.4",
+   "title": "Brand-supplied numbers and margin metrics",
+   "stage": 2,
+   "model": "opus",
+   "reads": [
+    "app/contracts/finance-inputs.md",
+    "app/contracts/metrics.md",
+    "app/metrics.py"
+   ],
+   "writes": [
+    "app/data/brands/bombas/finance_inputs.json",
+    "app/metrics.py",
+    "tests/test_app_metrics.py"
+   ],
+   "done_when": "contribution_margin, gross_margin, break_even_roas and cash_runway_weeks answer once inputs exist and read unavailable before",
+   "first_line": "Work in app/. Session S2.4 per sessions/SESSIONS.md: finance_inputs table and the margin metrics in metrics.py.",
+   "budget_tokens": 25000,
+   "parallel_group": null,
+   "needs": [
+    "S2.2"
+   ]
+  },
+  {
+   "id": "S2.5",
+   "title": "Data review with Kevin",
+   "stage": 2,
+   "model": "fable",
+   "reads": [
+    "app/data/brands/bombas/README.md",
+    "app/data/brands/bombas/aggregates/*.json"
+   ],
+   "writes": [
+    "app/data/brands/bombas/REVIEW.md"
+   ],
+   "done_when": "ratios by month, channel shares, funnel rates, repeat curves and margin by channel look like a brand of this size; Kevin agrees",
+   "first_line": "Work in app/data/brands/bombas. Session S2.5 per sessions/SESSIONS.md: sanity report with charts for Kevin's review.",
+   "budget_tokens": 20000,
+   "parallel_group": null,
+   "needs": [
+    "S2.3",
+    "S2.4"
+   ]
+  },
+  {
+   "id": "S3.0",
+   "title": "Setup screen round 0",
+   "stage": 3,
+   "model": "opus",
+   "reads": [
+    "app/CLAUDE.md",
+    "app/contracts/",
+    "app/screens/setup/"
+   ],
+   "writes": [
+    "app/screens/setup/*"
+   ],
+   "done_when": "website, documents, connectors in mock mode from sources.registry.json, finance inputs, first audit stub",
+   "first_line": "Work in app/screens/setup. Round 0 per sessions/SESSIONS.md.",
+   "budget_tokens": 20000,
+   "parallel_group": null,
+   "needs": [
+    "S1.5",
+    "S2.4"
+   ]
+  },
+  {
+   "id": "S3.1",
+   "title": "Audit contract",
+   "stage": 3,
+   "model": "fable",
+   "reads": [
+    "app/CLAUDE.md",
+    "app/contracts/",
+    "agents/loop/DIAGNOSE.md"
+   ],
+   "writes": [
+    "app/contracts/audit.md"
+   ],
+   "done_when": "finding schema, severity scale, money at stake rule, audit.py interface per screen",
+   "first_line": "Work in app/contracts. Session S3.1 per sessions/SESSIONS.md: write audit.md.",
+   "budget_tokens": 25000,
+   "parallel_group": null,
+   "needs": []
+  },
+  {
+   "id": "S3.x",
+   "title": "Any screen, round 0 then rounds of 10",
+   "stage": 3,
+   "model": "opus builds, fable ranks",
+   "reads": [
+    "app/CLAUDE.md",
+    "app/contracts/",
+    "app/screens/<slug>/",
+    "scripts/session.py --room <name> for the spec slice"
+   ],
+   "writes": [
+    "app/screens/<slug>/*"
+   ],
+   "done_when": "per app/BUILD-PLAN.md: one feature per commit, FEATURES.md updated",
+   "first_line": "Work in app/screens/<slug>. Round N. (Give me 10 candidates, or: build feature N.M.)",
+   "budget_tokens": 20000,
+   "parallel_group": null,
+   "needs": [
+    "S3.1"
+   ]
+  }
+ ]
+}

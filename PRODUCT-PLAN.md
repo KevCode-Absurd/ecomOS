@@ -275,6 +275,8 @@ Prompt caching on the stable prefix (brain identity, tool list, contract) cuts r
 
 ## 9. Sessions: how we build this without burning tokens
 
+Update 28 Sep 2026: the session cards, budgets and rules now live in `sessions/SESSIONS.md` and `sessions/sessions.json`, printed by `scripts/session.py <id>`. The tables below are the first cut; the sessions folder wins where they differ.
+
 One session per numbered item. Each session starts fresh, reads only what its line names, commits after each deliverable, and pushes. `/clear` between items. Memory is the file it writes and the git log, never the transcript.
 
 ### Session models
