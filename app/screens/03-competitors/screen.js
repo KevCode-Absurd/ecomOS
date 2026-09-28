@@ -745,8 +745,15 @@
       ['pack ladder', 'pack-ladder.csv', d.ladder.ladders.map((r) => ({ style: r.style, single: r.single, biggest: r.biggest, biggest_units: r.biggest_pairs, saving: r.saving }))],
       ['search seeds', 'search-seeds.csv', d.search.rows.map((r) => ({ term: r.term, kind: r.kind, pages: r.pages.join('; ') }))],
       ['room metrics', 'room-metrics.csv', d.room_metrics.map((r) => ({ metric: r.key, value: r.value, formula: r.formula, unavailable: r.unavailable }))],
+      ['what worked', 'scoreboard.csv', ((d.scoreboard || {}).rows || []).map((r) => ({ kind: r.label, won: r.won, lost: r.lost, flat: r.flat, not_shipped: r['not shipped'], win_share: r.win_share }))],
     ];
-    mount('#exports', el('h4', { text: 'Exports' }), el('div', { class: 'row' }, ...sets.map(([label, file, rows]) => el('button', { class: 'btn sm', type: 'button', text: label + ' (' + rows.length + ')', onclick: () => UI.csv(rows, null, file) }))),
+    const team = el('button', { class: 'btn sm', type: 'button', text: 'team records' });
+    team.addEventListener('click', async () => {
+      try { const r = await api(BASE + 'inputs');
+        UI.csv(r.records.map((x) => ({ id: x.id, kind: x.kind, date: x.date || null, record: x.summary, by: x.by, logged_at: x.logged_at })), null, 'team-records.csv'); }
+      catch (e) { team.textContent = 'team records unavailable'; }
+    });
+    mount('#exports', el('h4', { text: 'Exports' }), el('div', { class: 'row' }, ...sets.map(([label, file, rows]) => el('button', { class: 'btn sm', type: 'button', text: label + ' (' + rows.length + ')', onclick: () => UI.csv(rows, null, file) })), team),
       el('p', { class: 'micro faint', text: 'CSV of each desk table as it stands on this capture. Unavailable cells export empty, never 0.' }));
   }
 

@@ -2141,5 +2141,15 @@ class TestVisits(TempInputs):
         self.assertIn('COMP-R26', [f['rule_id'] for f in late['findings']])
 
 
+class TestTeamExport(unittest.TestCase):
+    """9.7: the exports include the team's records and the scoreboard."""
+    def test_exports(self):
+        js = (SCREEN / 'screen.js').read_text(encoding='utf-8')
+        body = js.split('function exportsSection(')[1].split('\n  }\n')[0]
+        self.assertIn("'team-records.csv'", body)
+        self.assertIn("'scoreboard.csv'", body)
+        self.assertIn("api(BASE + 'inputs')", body)
+
+
 if __name__ == '__main__':
     unittest.main()

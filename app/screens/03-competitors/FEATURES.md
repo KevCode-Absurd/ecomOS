@@ -44,6 +44,7 @@ Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `a
 | 9.4 | The room's "open corner with real demand": when no tracked brand claims a map corner and the shopper frame that asks for it has mentions (strong durability: buy it for life), COMP-R11 turns high and says "shoppers ask for it: N Reddit mentions", with the count as evidence; a corner with no matching frame stays medium and shows the demand as unavailable. Reddit frames stand in until a keyword source gives search demand | done |
 | 9.5 | Rival traffic by channel (the Similarweb pick from the web pass): COMP-R35 is an unavailable finding with a person-owned connect step for a read-only site traffic source, shown under "Connect first" and counted on the ad volume block's gap line; no traffic number is guessed | done |
 | 9.6 | Site visits count as tracking: the site change log gains "checked, no change"; any visit logged to a top threat's site in the last 7 days marks it tracked, so COMP-R26 (untracked threat pages) closes while the team visits weekly and comes back when visits stop; "no change" visits stay off the changes timeline; each landing card shows the last visit | done |
+| 9.7 | Exports gain the team's records (every interview, price, check, poll, threshold, outcome and site change with its date, summary and who) and the "what worked" scoreboard as CSV, next to the 7 desk tables | done |
 
 ## Round 8: closing the loop on moves
 
@@ -339,7 +340,7 @@ Where each job lives now (round 9). The question column quotes the room spec.
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
-| 9 | 9.1 to 9.6 | 2026-09-28 | Depth pass; room jobs map; price drift across captures; open corners with demand; traffic connect step; visits count as tracking |
+| 9 | 9.1 to 9.7 | 2026-09-28 | Depth pass; room jobs map; price drift across captures; open corners with demand; traffic connect step; visits count as tracking; team exports |
 | 8 | 8.1 to 8.10 | 2026-09-28 | Outcomes; lost moves held; overdue reads; scoreboard; site changes; bring back snoozed; results in the brief and report; learnings for the brain; second brand check; round close. Screenshot `round8.png` |
 | 7 | 7.1 to 7.10 | 2026-09-28 | Interview reasons; coverage by name; prices seen on the band chart; price re-check cadence; logged work in the brief; queue and log in the report; briefs as rows; second brand check; form access; round close. Screenshot `round7.png` |
 | 6 | 6.1 to 6.10 | 2026-09-28 | Win-loss log; repeated loss reason; rival prices seen; battlecard checks; positioning polls; thresholds on the page; capture from the page; the team log; waiting on you; round close (and the hand-off fix). Screenshot `round6.png` |
