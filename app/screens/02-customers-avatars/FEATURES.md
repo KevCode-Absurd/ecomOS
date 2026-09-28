@@ -52,7 +52,7 @@ Web pass: Peel, Triple Whale, Lifetimely, Klaviyo predictive, Daasity RFM, Thema
 | 2.6 | Draft a new avatar from a gap: for every gap or watch situation, a drafted avatar record from the brain (mentions by source from the language bank, up to 5 non-Reddit quotes with links, the competitors that serve it; job, share and pains left unavailable). "Add as provisional avatar" posts to `POST avatars/draft`, which writes it through `Brain.put` as tier inferred with an agent source and `derived_from`, once. Bombas: hiking and outdoor (2 Reddit mentions, served by Stance, Darn Tough, Smartwool) and style | done |
 | 2.7 | Which avatar moments are coming and what ships before each: moments named in avatar triggers matched to US dates (holiday gifting, winter, Valentine's, Mother's and Father's Day, back to school, summer, race season, New Year), 6 months ahead, with ads live 21 days and emails 14 days before, last year's sales index for that month, a timeline and a dated plan card per moment (check date is the ads-live date; late when that date has passed). Bombas: winter from 15 Nov (ads by 25 Oct, 1.51x) and holiday gifting from 1 Dec (ads by 10 Nov, 1.93x) | done |
 | 2.8 | What we ask buyers to close these gaps: a post-purchase survey where every question names the gaps it closes (which avatar sounds like you, with the unserved situations as options; what almost stopped you, from the rungs without proof; what you bought before, for avatars missing push or habit lines; how you heard about us; who the order is for). Days to 385 answers (a share within 5 points) from orders a day and an assumed 15 percent response. "Open the survey draft" gives the spec, owner and steps; answers are written back to the avatar records as drafts a person approves. Bombas: 5 questions, 15 gaps | done |
-| 2.9 | Order-level rules pack: gateway product, second-order path, win-back day from order gaps, RFM cells; reads the aggregate when it exists | todo |
+| 2.9 | Which first product brings buyers back and when to nudge them: gateway products (180-day repeat 1.3x the median first product or more, 100 or more first buyers) and dead ends (0.7x or less), the second-order path (next product at 15 percent or more of repeaters, email on its median day minus 5), win-back timing from the median order gap (due 1x, win-back 1.5x, lapsed 3x), and a save flow when the 3+ orders, 91 to 364 days cell grows 20 percent. Reads a `customer_paths` aggregate; tested on a fixture. Bombas shows the rules and an honest unavailable state until the aggregate exists (Contract asks) | done |
 | 2.10 | `rank` and audit rules for round 2, screenshot `round2.png` | todo |
 
 ### Round 1 founder note (28 Sep 2026)
@@ -65,6 +65,8 @@ Web pass: Peel, Triple Whale, Lifetimely, Klaviyo predictive, Daasity RFM, Thema
 6. Next, round 2: rules from the web pass (gateway product, second-order path, win-back timing by gap, RFM cells, theme impact, copy gap check) and hiking as a sized avatar.
 
 ## Contract asks
+
+- A `customer_paths` aggregate from `generate.py` (first product repeat and next product, order gaps, RFM cells; shape in `builds.PATHS_SHAPE`). Fallback: 2.9 shows the rules and unavailable.
 
 - A `situations` brain record per category (buying situations as word patterns), so 1.8 reads them from the brain instead of the category-level constant in `builds.py`. Fallback: the constant.
 - An `avatar` entity type in `audit.md` (round 0 note). Fallback: type `brand` with the avatar key.

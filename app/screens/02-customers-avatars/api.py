@@ -271,6 +271,15 @@ def _mix(brand: str) -> dict:
     return builds.mix(monthly, channels, as_of)
 
 
+def _paths(brand: str) -> dict:
+    try:
+        from tables import brand_data
+        rows = brand_data(brand).table("customer_paths")
+    except (ImportError, ValueError, KeyError, FileNotFoundError):
+        return builds.paths(None, f"no customer_paths aggregate for {brand}; order rows are too large to read here")
+    return builds.paths(rows)
+
+
 def _moments(brand: str, avatars: list[dict]) -> dict:
     try:
         from tables import brand_data
@@ -347,7 +356,7 @@ def overview(brain: Brain) -> dict:
             "coverage": builds.coverage(avatars, all_rungs), "ladders": lad,
             "copy_gap": builds.copy_gap({sec: brain.records(sec) for sec in ("voice", "claims", "identity", "offers", "policies", "products", "visual", "story_bank")},
                                         brain.records("language_bank"), _brand_tokens(brain), audit.source_name),
-            "gate": gate, "survey": builds.survey(gate["rows"], lad["rows"], frc["rows"], srv["segments"], opd),
+            "paths": _paths(brain.brand), "gate": gate, "survey": builds.survey(gate["rows"], lad["rows"], frc["rows"], srv["segments"], opd),
             "moments": _moments(brain.brand, avatars),
             "forces": frc,
             "hooks": builds.hooks(brain.records("language_bank"), all_rungs, avatars, _brand_tokens(brain), audit.source_name),

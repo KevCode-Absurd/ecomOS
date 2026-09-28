@@ -259,6 +259,28 @@
     }));
   }
 
+  // ---------- desk: order-level paths ----------
+  function renderPaths(x) {
+    document.getElementById('paths-sub').textContent = 'Gateway products, the second-order path, win-back timing from order gaps and value cells. Order-level rules; they read the customer_paths aggregate.';
+    if (!x.available) {
+      mount('#paths', el('div', { class: 'card flat connect' },
+        el('b', { text: 'Unavailable: ' + x.reason + '.' }),
+        el('p', { class: 'small', text: 'The rules are built and wait on the data. When the aggregate lands, this section fills with no change to the page.' }),
+        el('ul', { class: 'small' }, ...x.rules.map((r) => el('li', { text: r }))),
+        el('p', { class: 'micro faint', text: 'Shape asked of the data layer: ' + x.shape })));
+      return;
+    }
+    const V = { gateway: ['scale', 'Gateway'], dead_end: ['cut', 'Dead end'], normal: ['keep', 'Normal'] };
+    mount('#paths', el('div', { class: 'grid side-wide' },
+      el('div', { class: 'card tight' }, UI.verdictTable({
+        columns: [{ key: 'sku_group', label: 'First product' }, { key: 'first_buyers', label: 'First buyers', unit: 'n' }, { key: 'repeat_180d', label: 'Repeat 180d', unit: '%' },
+          { key: 'ratio', label: 'x median', unit: 'x' }, { key: 'next_t', label: 'Next they buy' }],
+        rows: x.products.map((p) => Object.assign({}, p, { next_t: p.next ? p.next.sku_group + ', ' + Math.round(p.next.share * 100) + ' percent, day ' + p.next.median_days : 'no clear path' })),
+        verdict: { at: 1, kind: (r) => V[r.verdict][0], text: (r) => V[r.verdict][1] }, sort: false })),
+      el('div', { class: 'stack' }, ...x.moves.map((m) => UI.actionCard({ id: m.id, title: m.title, severity: 'medium', owner: m.owner, capability: m.capability, steps: m.steps,
+        why: m.draft.split('\n')[1] || '', artefact: { kind: m.kind, label: KIND_LABEL[m.kind] || m.kind, draft: m.draft } }, { compact: true, screen: SLUG })))));
+  }
+
   // ---------- desk: moments ----------
   function renderMoments(x) {
     document.getElementById('moments-sub').textContent = 'Moments named in avatar triggers, matched to US dates, 6 months ahead. Ads live 21 days before, emails 14 days before. Index: that month last year against the 12-month average, simulated. ' + x.line;
@@ -604,6 +626,7 @@
     renderDrafts(d.drafts);
     renderMisreads(d.misreads);
     renderMoments(d.moments);
+    renderPaths(d.paths);
     renderCohorts(d.cohorts);
     renderMix(d.mix);
     mount('#avatars', ...(d.avatars.length ? d.avatars.map(avatarCard) : [el('p', { class: 'muted', text: 'No avatar records yet.' })]));

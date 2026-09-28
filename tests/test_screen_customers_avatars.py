@@ -773,5 +773,41 @@ class Survey(TempBrain):
         self.assertIn('unavailable', x['action']['draft'])
 
 
+PATHS_FIXTURE = [
+    {'kind': 'first_product', 'sku_group': 'ankle', 'first_buyers': 5000, 'repeat_180d': 0.38, 'value_180d': 96.0,
+     'next': [{'sku_group': 'quarter', 'share': 0.31, 'median_days': 41}]},
+    {'kind': 'first_product', 'sku_group': 'calf', 'first_buyers': 3000, 'repeat_180d': 0.24, 'value_180d': 80.0, 'next': []},
+    {'kind': 'first_product', 'sku_group': 'slippers', 'first_buyers': 2000, 'repeat_180d': 0.14, 'value_180d': 70.0, 'next': []},
+    {'kind': 'first_product', 'sku_group': 'tiny', 'first_buyers': 20, 'repeat_180d': 0.9, 'value_180d': 70.0, 'next': []},
+    {'kind': 'order_gap', 'group': 'all', 'median_days': 62, 'n': 50000},
+    {'kind': 'rfm', 'frequency': '3+', 'recency': '91-364', 'customers': 1300, 'prior_customers': 1000, 'revenue_share': 0.1},
+]
+
+
+class Paths(unittest.TestCase):
+    """Feature 2.9: order-level rules read the customer_paths aggregate; unavailable without it."""
+
+    def test_rules_on_fixture(self):
+        x = api.builds.paths(PATHS_FIXTURE)
+        prods = {p['sku_group']: p for p in x['products']}
+        self.assertNotIn('tiny', prods)
+        self.assertEqual(prods['ankle']['verdict'], 'gateway')
+        self.assertEqual(prods['slippers']['verdict'], 'dead_end')
+        self.assertEqual(prods['ankle']['next']['sku_group'], 'quarter')
+        ids = {m['id'].split('.paths.')[1]: m for m in x['moves']}
+        self.assertIn('gateway.ankle', ids)
+        self.assertIn('day 36', ids['next.ankle']['title'])
+        self.assertIn('day 93', ids['winback']['title'])
+        self.assertIn('churning_hv', ids)
+        for m in x['moves']:
+            self.assertTrue(m['draft'].startswith('DRAFT'))
+
+    def test_bombas_unavailable_not_zero(self):
+        d = api._paths('bombas')
+        self.assertFalse(d['available'])
+        self.assertEqual(d['moves'], [])
+        self.assertIn('customer_paths', d['shape'])
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -1342,3 +1342,83 @@ def survey(gate_rows: list[dict], ladders_rows: list[dict], forces_rows: list[di
             "target": SURVEY_N, "response_rate": RESPONSE_RATE, "action": action,
             "line": f"{len(qs)} questions close {sum(len(q['gap_ids']) for q in qs)} named gaps." +
                     (f" At {int(RESPONSE_RATE * 100)} percent response it takes {days} days to get {SURVEY_N} answers." if days else "")}
+
+
+# ---------------------------------------------------------------- order-level rules (aggregate customer_paths)
+
+GATEWAY_HI = 1.3          # a first product whose 180-day repeat is 1.3x the median first product or more
+DEAD_END = 0.7            # 0.7x or less
+GATEWAY_MIN_BUYERS = 100
+NEXT_SHARE = 0.15         # the most common second product, shown at 15 percent or more of repeaters
+NEXT_MIN = 50
+DUE_X, WINBACK_X, LAPSED_X = 1.0, 1.5, 3.0
+CHURN_MOVE = 0.20         # churning high-value cell up 20 percent or more on the prior period
+PATHS_SHAPE = ('aggregates/customer_paths.json rows: {kind: "first_product", sku_group, first_buyers, repeat_180d, value_180d, '
+               'next: [{sku_group, share, median_days}]}; {kind: "order_gap", group, median_days, n}; '
+               '{kind: "rfm", frequency ("1", "2", "3+"), recency ("0-90", "91-364", "365+"), customers, prior_customers, revenue_share}')
+
+
+def paths(rows: list[dict] | None, reason: str | None = None) -> dict:
+    """Gateway products, second-order paths, win-back timing from order gaps and RFM cells, from the customer_paths aggregate."""
+    if not rows:
+        return {"available": False, "reason": reason or "no customer_paths aggregate yet", "shape": PATHS_SHAPE,
+                "rules": ["Gateway: first product with 180-day repeat at 1.3x the median first product or more (100 or more first buyers).",
+                          "Second order: the most common next product at 15 percent or more of repeaters, with its median days.",
+                          "Win-back: due at 1x the median gap between orders, win-back at 1.5x, lapsed at 3x.",
+                          "RFM: 9 cells of order count by days since the last order; alert when 3+ orders, 91 to 364 days grows 20 percent."],
+                "moves": []}
+    fp = [r for r in rows if r.get("kind") == "first_product" and (r.get("first_buyers") or 0) >= GATEWAY_MIN_BUYERS]
+    med = _median([r["repeat_180d"] for r in fp if r.get("repeat_180d") is not None])
+    prods = []
+    for r in fp:
+        ratio = r["repeat_180d"] / med if med else None
+        verdict = "gateway" if ratio and ratio >= GATEWAY_HI else ("dead_end" if ratio is not None and ratio <= DEAD_END else "normal")
+        nxt = max(r.get("next") or [], key=lambda n: n.get("share") or 0, default=None)
+        path = nxt if nxt and (nxt.get("share") or 0) >= NEXT_SHARE and r["first_buyers"] * r["repeat_180d"] >= NEXT_MIN else None
+        prods.append({"sku_group": r["sku_group"], "first_buyers": r["first_buyers"], "repeat_180d": r["repeat_180d"],
+                      "value_180d": r.get("value_180d"), "ratio": round(ratio, 2) if ratio else None, "verdict": verdict, "next": path})
+    prods.sort(key=lambda p: -(p["ratio"] or 0))
+    gaps = [r for r in rows if r.get("kind") == "order_gap"]
+    timing = [{"group": g["group"], "median_days": g["median_days"], "n": g.get("n"), "due": round(g["median_days"] * DUE_X),
+               "winback": round(g["median_days"] * WINBACK_X), "lapsed": round(g["median_days"] * LAPSED_X)} for g in gaps if g.get("median_days")]
+    rfm = [r for r in rows if r.get("kind") == "rfm"]
+    churn = next((r for r in rfm if r.get("frequency") == "3+" and r.get("recency") == "91-364"), None)
+    churn_move = (churn["customers"] / churn["prior_customers"] - 1) if churn and churn.get("prior_customers") else None
+    moves = []
+    for p in prods:
+        if p["verdict"] == "gateway":
+            moves.append({"id": f"{SCREEN}.paths.gateway.{p['sku_group']}", "kind": "ad_brief", "owner": "agent_drafts",
+                          "title": f"Lead acquisition with {p['sku_group']}: its buyers come back {p['ratio']}x as often",
+                          "capability": {"id": "CREA-C06", "autonomy": "agent_does"},
+                          "draft": f"DRAFT ad brief\nProduct: {p['sku_group']}\nWhy: 180-day repeat {round(p['repeat_180d'] * 100, 1)} percent, {p['ratio']}x the median first product\nAudience: new buyers only",
+                          "steps": [{"n": 1, "who": "agent", "text": "Draft 3 first-order ads that lead with this product."},
+                                    {"n": 2, "who": "person", "text": "Approve and launch at a capped test budget."},
+                                    {"n": 3, "who": "agent", "text": "Read 60-day repeat of the new buyers against the median."}]})
+        if p["next"]:
+            day = max(7, int(p["next"]["median_days"]) - 5)
+            moves.append({"id": f"{SCREEN}.paths.next.{p['sku_group']}", "kind": "flow", "owner": "agent_drafts",
+                          "title": f"Show {p['next']['sku_group']} to {p['sku_group']} buyers on day {day}",
+                          "capability": {"id": "LIFE-C07", "autonomy": "founder_gate"},
+                          "draft": f"DRAFT flow step\nAfter a first order of: {p['sku_group']}\nFeature: {p['next']['sku_group']} ({round(p['next']['share'] * 100)} percent of repeaters buy it next)\nSend on day: {day} (median {p['next']['median_days']} days, minus 5)",
+                          "steps": [{"n": 1, "who": "agent", "text": "Draft the email step with the next product and a five-star line."},
+                                    {"n": 2, "who": "person", "text": "Approve and set it live in the email tool."},
+                                    {"n": 3, "who": "agent", "text": "Read the second-order rate of this group after 60 days."}]})
+    if timing:
+        t = next((x for x in timing if x["group"] == "all"), timing[0])
+        moves.append({"id": f"{SCREEN}.paths.winback", "kind": "flow", "owner": "agent_drafts",
+                      "title": f"Start win-back at day {t['winback']}, from the {t['median_days']}-day median gap",
+                      "capability": {"id": "LIFE-C08", "autonomy": "founder_gate"},
+                      "draft": f"DRAFT win-back timing\nDue: day {t['due']}\nWin-back: day {t['winback']}\nLapsed, sunset: day {t['lapsed']}",
+                      "steps": [{"n": 1, "who": "agent", "text": "Compare the flow's start day with the day above."},
+                                {"n": 2, "who": "person", "text": "Approve the new trigger days in the email tool."},
+                                {"n": 3, "who": "agent", "text": "Read win-back orders after 28 days."}]})
+    if churn_move is not None and churn_move >= CHURN_MOVE:
+        moves.append({"id": f"{SCREEN}.paths.churning_hv", "kind": "flow", "owner": "agent_drafts",
+                      "title": f"Save high-value buyers going quiet: up {round(churn_move * 100)} percent",
+                      "capability": {"id": "LIFE-C08", "autonomy": "founder_gate"},
+                      "draft": f"DRAFT save flow\nFor: 3 or more orders, last order 91 to 364 days ago ({churn['customers']:,} buyers)\nEmail 1: what is new; Email 2: a thank-you perk a person sets",
+                      "steps": [{"n": 1, "who": "agent", "text": "Build the segment and draft 2 emails."},
+                                {"n": 2, "who": "person", "text": "Approve the emails and any perk."},
+                                {"n": 3, "who": "agent", "text": "Read the cell size next month."}]})
+    return {"available": True, "products": prods, "median_repeat": med, "timing": timing, "rfm": rfm,
+            "churn_move": round(churn_move, 4) if churn_move is not None else None, "moves": moves}
