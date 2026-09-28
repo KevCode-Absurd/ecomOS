@@ -6,9 +6,45 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | # | Feature | Status |
 |---|---|---|
-| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | todo |
-| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | todo |
-| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | todo |
+| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | done |
+| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | done |
+| 0.3 | 3 metric tiles (gross margin, online store contribution after marketing, MER), 2 insights (margin basis, MER against target), 1 chart (margin ladder by month) on Bombas | done |
+| 0.4 | `audit.py`: all 11 room rules (FIN-R01 to FIN-R11) in the contract shape; P&L ladder, sales lines, margin by SKU and cash facts | done |
+
+## Room jobs
+
+| Job | Question | Capabilities |
+|---|---|---|
+| know real profit per order, SKU and channel | what did we actually make on this, after every real cost | MONEY-C01, MONEY-C02, MONEY-C03 |
+| price or re-price a product from a profit target | is this price actually profitable at our margin target | MONEY-C04 |
+| gate a promo before it goes live | will this sale, BOGO or gift-with-purchase lose money | MONEY-C05 |
+| see the cash runway before it is a crisis | when do we run low on cash if nothing changes | MONEY-C06 |
+| plan inventory cash and the cash conversion cycle | how much cash is tied up in stock, and for how long | MONEY-C07 |
+| compare financing, the data room and insurance | what does this loan, investor ask or coverage gap do to our cash | MONEY-C08, MONEY-C58, MONEY-C59 |
+| know CAC, payback and LTV:CAC before scaling spend | can we afford to spend more on acquisition | MONEY-C09 |
+| forecast revenue from cohorts and the calendar | what will next month's revenue look like, new vs returning | MONEY-C10 |
+| build and defend the OPEX and payroll budget | what can we afford to spend, and what does the next dollar buy | MONEY-C11 |
+| stay compliant on sales tax, liabilities and FX | are we exposed on nexus, gift-card liability or currency risk | MONEY-C12 |
+| trust the daily and weekly numbers | do Shopify, Meta, GA4, the processor and the books agree | MONEY-C14, MONEY-C15 |
+| know which SKUs and subscribers make money | which products or plans should we grow, fix or cut | MONEY-C17, MONEY-C18 |
+| set the acquisition financial calendar | how much can we safely spend around BFCM and promos | LOOP-C05 |
+| turn every payout, bill and payroll run into one ledger | where did this payout or bill actually land | MONEY-C51 to MONEY-C57, MONEY-C60 |
+
+## JTBD rules (audit.py)
+
+| Rule | Room insight | Inputs | Capability | Bombas, round 0 |
+|---|---|---|---|---|
+| FIN-R01 | margin leak by SKU | products_monthly, finance_inputs, orders, reversed_orders, paid_media_monthly | MONEY-C02 | fires: 6 single-pair SKUs lose $1 to $7 per unit after marketing while units rise |
+| FIN-R02 | cash below floor | bank_ledger, cash floor in the brain | MONEY-C06 | unavailable |
+| FIN-R03 | promo missed break-even | promo_models | MONEY-C05 | unavailable |
+| FIN-R04 | CAC payback outruns cash cycle | accounts_payable | MONEY-C09 | unavailable |
+| FIN-R05 | platform-books gap unexplained | finance_inputs.pnl_actual | MONEY-C15 | unavailable |
+| FIN-R06 | payout deposit stuck | payouts, bank_ledger | MONEY-C52 | unavailable |
+| FIN-R07 | COD remittance stuck | cod_remittance | MONEY-C52 | not run: markets IN only |
+| FIN-R08 | inventory cash overhang | inventory, inbound_pos, order_lines | MONEY-C07 | runs, silent: every SKU sits under lead time + 30 days |
+| FIN-R09 | subscription churn spike | subscription_cohorts | MONEY-C18 | not run: no subscriptions |
+| FIN-R10 | budget overrun | budget_annual | MONEY-C11 | unavailable |
+| FIN-R11 | sales tax nexus exposure | sales_tax_filings | MONEY-C12 | unavailable |
 
 ## Candidates from the room spec (pick 10 per round)
 
@@ -105,3 +141,13 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
+| 0 | shell, api, tiles, insights, chart, audit | 28 Sep 2026 | S3.23 |
+
+## Round 0 status
+
+1. Built: index.html, screen.js, api.py, audit.py (11 rules), tests/test_screen_finance_cash.py (9 pass), round0.png at 1280 wide.
+2. Dollars come from the scale 1.0 aggregates. The 0.1 data.sqlite gives only rates (fees, fulfillment, returns per dollar; days of stock).
+3. Bombas, Aug 2026: gross margin 72.4 percent, online store CM3 30.5 percent, MER 4.06x. All simulated.
+4. Months before Jan 2025 have no cost rows and read None. Retail (POS) has no card fee rows, so its CM2 reads unavailable.
+5. Donated pairs carry no cost row, so gross margin reads about 9 points over the brain's 63 percent model (insight 1).
+6. Next: cost donated items, CM3 by acquisition channel, 13-week cash forecast, payout aging. app/metrics.py margin metrics read unavailable for brand folders.
