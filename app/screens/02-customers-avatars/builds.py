@@ -1450,15 +1450,18 @@ MAX_OPEN_RUNGS = 4
 
 
 def survey(gate_rows: list[dict], ladders_rows: list[dict], forces_rows: list[dict], segments: list[dict],
-           orders_per_day: float | None) -> dict:
-    """A post-purchase survey whose every question closes a named gap on this screen."""
+           orders_per_day: float | None, sales_rows: list[dict] | None = None) -> dict:
+    """A post-purchase survey whose every question closes a named gap on this screen. The situation question also
+    settles every avatar whose share of sales and share from reviews disagree (the "Settle it" moves, 8.5)."""
     qs = []
     options = [r["name"] for r in gate_rows if "(Reddit)" not in r["name"]] + \
               [s["segment"].capitalize() + " buyer" for s in segments if s["verdict"] in ("gap", "watch")]
     no_share = [r["name"] for r in gate_rows if not r["checks"]["share"] and "(Reddit)" not in r["name"]]
+    settle = [r for r in sales_rows or [] if r.get("action")]
     qs.append({"q": "Which of these sounds most like you?", "type": "single choice", "options": options + ["None of these"],
-               "closes": f"share for {len(no_share)} avatars with no share, and sizes the unserved situations",
-               "gap_ids": [f"{SCREEN}.gate.{r['key']}.share" for r in gate_rows if not r["checks"]["share"]]})
+               "closes": f"share for {len(no_share)} avatars with no share, and sizes the unserved situations" +
+                         (f"; settles {len(settle)} avatars where reviews and sales disagree" if settle else ""),
+               "gap_ids": [f"{SCREEN}.gate.{r['key']}.share" for r in gate_rows if not r["checks"]["share"]] + [r["action"]["id"] for r in settle]})
     open_r = [r for r in ladders_rows if r["verdict"] == "answer"][:MAX_OPEN_RUNGS]
     if open_r:
         qs.append({"q": "What almost stopped you from buying?", "type": "multiple choice",
@@ -2982,7 +2985,7 @@ def sales_share(avatars: list[dict], buys: dict[str, dict[str, int]], ls: dict) 
                    "capability": {"id": "LIFE-C29", "autonomy": "founder_gate"},
                    "draft": f"DRAFT survey check\nAvatar: {a['name']}\n{why}\nAsk: which of these fits you best, one line per avatar situation\n"
                             "Read: 385 answers, then set the avatar share from answers and retire the estimate.",
-                   "steps": [{"n": 1, "who": "agent", "text": "Add the avatar's situation line to the post-purchase survey."},
+                   "steps": [{"n": 1, "who": "agent", "text": "Add the avatar's situation line to survey question 1, \"Which of these sounds most like you?\"."},
                              {"n": 2, "who": "person", "text": "Approve the question and turn it on in the survey tool."},
                              {"n": 3, "who": "agent", "text": "At 385 answers, write the share to the avatar record with its source."}]}
         rows.append({"key": a["key"], "name": a["name"], "review_share": rev, "sales_share": share, "sales_usd": round(s) if s else None,

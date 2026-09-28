@@ -1969,3 +1969,18 @@ class CompareToPage(unittest.TestCase):
         self.assertIn('openAvatarPage(a.value', block)
         self.assertIn('openAvatarPage(b.value', block)
         self.assertIn('differences', block)
+
+
+class SettleInSurvey(TempBrain):
+    """Feature 8.5: every "Settle it" move lands in the survey's situation question and is counted in what it closes."""
+
+    def test_every_settle_it_is_closed_by_the_survey(self):
+        d = api.handle(Req(['overview']))
+        settle = {r['action']['id'] for r in d['sales_share']['rows'] if r.get('action')}
+        self.assertTrue(settle)
+        q = d['survey']['questions'][0]
+        self.assertTrue(settle <= set(q['gap_ids']))
+        self.assertIn(f'settles {len(settle)} avatars', q['closes'])
+        for r in d['sales_share']['rows']:
+            if r.get('action'):
+                self.assertIn('survey question 1', r['action']['steps'][0]['text'])

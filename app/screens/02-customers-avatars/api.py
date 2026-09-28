@@ -475,7 +475,7 @@ def _build_overview(brain: Brain) -> dict:
             "claims_fire": builds.claims_fire(brain.records("claims"), brain.records("language_bank"), _brand_tokens(brain), audit.source_name,
                                               audit.product_words(brain)),
             "perception": builds.perception(brain.records("positioning") + brain.records("identity"), brain.records("language_bank"),
-                                            _brand_tokens(brain), audit.source_name), "survey": builds.survey(gate["rows"], lad["rows"], frc["rows"], srv["segments"], opd),
+                                            _brand_tokens(brain), audit.source_name), "survey": builds.survey(gate["rows"], lad["rows"], frc["rows"], srv["segments"], opd, sales.get("rows")),
             "moments": _moments(brain.brand, avatars),
             "forces": frc,
             "hooks": builds.hooks(brain.records("language_bank"), all_rungs, avatars, _brand_tokens(brain), audit.source_name),
@@ -598,7 +598,8 @@ def _plans(brand: str, window: dict) -> dict:
         plans[("CUST-R12", "copy_gap")] = d["copy_gap"]["action"]
     win = daily_window(brand, ends)
     opd = sum(r.get("orders") or 0 for r in win["rows"]) / len(win["rows"]) if not win["unavailable"] else None
-    sv = builds.survey(d["gate"]["rows"], builds.ladders(all_rungs, avatars)["rows"], d["forces"]["rows"], d["served"]["segments"], opd)
+    sv = builds.survey(d["gate"]["rows"], builds.ladders(all_rungs, avatars)["rows"], d["forces"]["rows"], d["served"]["segments"], opd,
+                       (d.get("sales_share") or {}).get("rows"))
     plans[("CUST-R13", "provisional_avatars")] = sv["action"]
     for r in d["forces"]["rows"]:
         if r.get("action"):
