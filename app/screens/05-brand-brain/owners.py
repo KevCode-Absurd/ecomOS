@@ -29,10 +29,13 @@ def _verdict(state: str, due_in) -> dict:
 
 def owners(brain, shelf_days: dict, meta: set, stats: dict) -> dict:
     recs = {}
+    review_now = set()
     for r in brain.records("team"):
         f = r.get("field") or ""
         if f.startswith("owner_") and isinstance(r.get("value"), dict):
             recs[f[6:]] = r
+        elif f.startswith("review_now_") and isinstance(r.get("value"), dict) and r["value"].get("open", True):
+            review_now.add(f[11:])
     rows = []
     today = brain.today
     for sec, st in stats.items():
@@ -50,17 +53,20 @@ def owners(brain, shelf_days: dict, meta: set, stats: dict) -> dict:
         except ValueError:
             days_since = None
         due_in = (cadence - days_since) if days_since is not None else None
+        flagged = sec in review_now
         if not st.get("count"):
             state = "empty"
         elif days_since is None:
             state = "never"
-        elif due_in < 0:
+        elif due_in < 0 or flagged:
             state = "overdue"
+            if flagged and due_in >= 0:
+                due_in = 0
         elif due_in <= 7:
             state = "due_soon"
         else:
             state = "ok"
-        rows.append({"section": sec, "label": sec.replace("_", " "), "records": st.get("count", 0), "owner": v.get("owner"), "assigned": bool(v.get("owner")), "cadence_days": cadence, "cadence_default": not (r and v.get("cadence_days")),
+        rows.append({"section": sec, "label": sec.replace("_", " "), "records": st.get("count", 0), "owner": v.get("owner"), "assigned": bool(v.get("owner")), "cadence_days": cadence, "cadence_default": not (r and v.get("cadence_days")), "flagged": flagged,
                      "last": last, "basis": basis, "days_since": days_since, "due_in": due_in, "state": state, "record": r["id"] if r else None,
                      "verdict": _verdict(state, due_in)})
     rows.sort(key=lambda x: ({"overdue": 0, "due_soon": 1, "never": 2, "ok": 3, "empty": 4}[x["state"]], x["due_in"] if x["due_in"] is not None else 10 ** 6, x["section"]))

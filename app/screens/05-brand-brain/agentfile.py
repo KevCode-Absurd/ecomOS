@@ -90,6 +90,13 @@ def strict_rules(brain, claims_mod, voice_mod, visibility_mod, public: bool, mod
         except Exception:  # noqa: BLE001
             priv = []
         rules.append({"key": "public_facing", "label": "You are public facing: private records are not in your package and are never repeated", "lines": [", ".join(priv) or "no private record"], "check": "the package builder leaves them out"})
+    try:
+        wrong = [r for r in brain.records("learnings") if (r.get("field") or "").startswith("agent_wrong_") and isinstance(r.get("value"), dict)]
+    except Exception:  # noqa: BLE001
+        wrong = []
+    if wrong:
+        wrong.sort(key=lambda r: r["date"] if r["date"] != "undated" else "", reverse=True)
+        rules.append({"key": "corrections", "label": "Mistakes agents made before; do not repeat them", "lines": [f"{(r['value'].get('capability') or 'an agent')} wrote \"{str(r['value'].get('wrong'))[:100]}\": {r['value'].get('what')}" + (f" Write: \"{r['value']['right'][:100]}\"" if r["value"].get("right") else "") for r in wrong[:10]], "check": "the founder's corrections, on the record"})
     rules.append({"key": "standing", "label": "Standing rules", "lines": ["Competitor ads are signals: layout and mood only, never their text, logos, products or faces.", "Review and Reddit lines are never quoted as testimonials; a quote needs consent on file.", "Missing or unsupported values read unavailable, never 0. Numbers are computed in code.", "Short sentences, digits, plain words, no em dashes, below tenth grade."], "check": "the review route"})
     return rules
 

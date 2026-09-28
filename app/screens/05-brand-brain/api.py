@@ -9,6 +9,8 @@ question, and accept or ignore on a proposed record. Nothing external.
   GET  agentfile/endpoints      this route table as JSON, for an agent or an MCP wrapper
   GET  brainmd                  the router BRAIN.md text
   GET|POST brainmd/notes        the founder notes block in BRAIN.md, read and set; kept across regeneration
+  GET  feedback                 what agents got wrong: the corrections on record, by capability and kind
+  POST feedback                 {capability, kind, wrong, what, right, fact}: a correction as a learning; the misused fact's section goes to review
   GET  expiring                 records expiring within 7 days, by the source that refreshes them
   POST expiring/confirm         {ids}: confirm founder or document records still true; expiry moves on by the shelf life
   GET  glossary                 the brand's own words: names, programmes, codes and founder terms with wrong spellings
@@ -219,6 +221,9 @@ _pspec.loader.exec_module(parity)
 _sspec = importlib.util.spec_from_file_location("brand_brain_sitediff", HERE / "sitediff.py")
 sitediff = importlib.util.module_from_spec(_sspec)
 _sspec.loader.exec_module(sitediff)
+_fbspec = importlib.util.spec_from_file_location("brand_brain_feedback", HERE / "feedback.py")
+feedback = importlib.util.module_from_spec(_fbspec)
+_fbspec.loader.exec_module(feedback)
 _exspec = importlib.util.spec_from_file_location("brand_brain_expiring", HERE / "expiring.py")
 expiring = importlib.util.module_from_spec(_exspec)
 _exspec.loader.exec_module(expiring)
@@ -1947,6 +1952,27 @@ def handle(req):
         return cd
     if req.method == "POST" and parts == ["claims"]:
         return claim_add(brain, req.body)
+    if req.method == "GET" and parts == ["feedback"]:
+        fb = feedback.summary(brain)
+        fb.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "BRN-C12", "autonomy": "founder_gate"})
+        return fb
+    if req.method == "POST" and parts == ["feedback"]:
+        n = 1 + sum(1 for r in brain.records("learnings", include_retired=True) if (r.get("field") or "").startswith("agent_wrong_"))
+        rec = feedback.record(brain, req.body or {}, n)
+        if isinstance(rec, tuple):
+            return rec
+        errs = founder_put(brain, rec, "correction", rec["text"][:160])
+        if errs:
+            return 400, {"error": "; ".join(errs)}
+        flagged = None
+        fact = rec["value"].get("fact")
+        if fact:
+            sec = fact.split(".")[1]
+            flag = {"id": f"{brain.brand}.team.review_now_{sec}", "brand": brain.brand, "section": "team", "field": f"review_now_{sec}", "value": {"section": sec, "open": True, "because": rec["id"], "fact": fact}, "text": f"Review {sec.replace('_', ' ')} now: an agent misused {fact}.",
+                    "tier": "approved", "confidence": 1.0, "visibility": "private", "source": {"type": "founder", "ref": "05-brand-brain what agents got wrong", "captured_at": brain.today.isoformat()}}
+            if not founder_put(brain, flag, "correction", flag["text"]):
+                flagged = flag["id"]
+        return 201, {"ok": True, "record": rec["id"], "flagged": flagged, "version": brain.version(), "next": "On the record: the brain file lists it under mistakes agents made." + (" The section is flagged for review today." if flagged else "")}
     if req.method == "GET" and parts == ["expiring"]:
         ex = expiring.expiring(brain, health.SHELF_DAYS)
         ex.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "BRN-C02", "autonomy": "agent_does"})
@@ -2048,6 +2074,10 @@ def handle(req):
         errs = founder_put(brain, rec, "owner", rec["text"][:160])
         if errs:
             return 400, {"error": "; ".join(errs)}
+        if (req.body or {}).get("reviewed"):
+            flag = next((r for r in brain.raw("team") if r.get("field") == f"review_now_{sec}" and r.get("status", "active") != "retired"), None)
+            if flag:
+                brain.retire(flag["id"])
         return 201, {"ok": True, "record": rec["id"], "value": rec["value"], "version": brain.version()}
     if req.method == "GET" and parts == ["redlines"]:
         reg = redlines.register(brain)

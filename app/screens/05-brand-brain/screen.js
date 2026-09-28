@@ -67,6 +67,7 @@
     loadDrift(m.actions || []);
     loadLocks();
     loadGlossary();
+    loadFeedback();
     loadAudiences(m.actions || []);
     loadRedlines(m.actions || []);
     loadOwners(m.actions || []);
@@ -1540,6 +1541,22 @@
       return card;
     });
     mount('#audiences', el('div', { class: 'row' }, act ? UI.decisionRow({ capability: 'BRN-C10', autonomy: 'agent_does', owner: act.owner, screen: SCREEN, compact: true, finding_id: act.id, current: act.decision, stub: act.title + '. ' + act.artefact.label + '.' }) : null, status), el('div', { class: 'grid two' }, ...cards), el('p', { class: 'micro faint', text: au.note }));
+  }
+  async function loadFeedback() {
+    let fb;
+    try { fb = await api(BASE + 'feedback'); } catch (e) { mount('#feedback', el('p', { class: 'muted', text: 'Feedback unavailable: ' + e.message })); return; }
+    mount('#feedback-tools', UI.orientation([{ label: 'corrections', value: fb.counts.total, unit: 'n' }, { label: 'with a misused fact', value: fb.counts.with_fact, unit: 'n' }, { label: 'capabilities', value: Object.keys(fb.counts.by_capability).length, unit: 'n' }]));
+    const status = el('span', { class: 'micro muted' });
+    const list = fb.corrections.length ? el('div', { class: 'stack' }, ...fb.corrections.slice(0, 20).map((c) => el('div', { class: 'row card flat small' }, el('span', { class: 'chip mono', text: c.capability || 'agent' }), el('span', { class: 'chip warn', text: pretty(c.kind) }), el('span', null, el('b', { text: '"' + (c.wrong || '').slice(0, 100) + '": ' }), c.what + (c.right ? ' Write: "' + c.right.slice(0, 100) + '"' : '')), c.fact ? el('span', { class: 'chip mono', text: c.fact }) : null, el('span', { class: 'micro faint', text: c.date ? fmt.date(c.date) : '' })))) : el('p', { class: 'muted small', text: 'No correction yet. The first one teaches every agent.' });
+    const cap = el('input', { class: 'text sm', placeholder: 'capability, like CREA-C06', style: { maxWidth: '160px' } });
+    const kind = el('select', { class: 'text sm' }, ...fb.kinds.map((k) => el('option', { value: k, text: pretty(k) })));
+    const wrong = el('input', { class: 'text sm', placeholder: 'the agent\'s line, as written', style: { flex: '2 1 300px' } });
+    const what = el('input', { class: 'text sm', placeholder: 'what was wrong', style: { flex: '1 1 220px' } });
+    const right = el('input', { class: 'text sm', placeholder: 'the right line (optional)', style: { flex: '2 1 300px' } });
+    const fact = el('input', { class: 'text sm', placeholder: 'record it misused (optional), like bombas.offers.free_shipping_threshold_usd', style: { flex: '1 1 300px' } });
+    const add = el('button', { class: 'btn primary sm', type: 'button', text: 'Record the correction' });
+    add.addEventListener('click', async () => { add.disabled = true; try { const r = await api(BASE + 'feedback', { method: 'POST', body: { capability: cap.value.trim(), kind: kind.value, wrong: wrong.value.trim(), what: what.value.trim(), right: right.value.trim(), fact: fact.value.trim() } }); status.textContent = r.next; loadFeedback(); loadOwners(); loadPlan(); } catch (e) { add.disabled = false; status.textContent = 'Could not record: ' + e.message; } });
+    mount('#feedback', list, el('div', { class: 'row', style: { marginTop: '8px' } }, cap, kind, wrong, what), el('div', { class: 'row' }, right, fact, add, status), el('p', { class: 'micro faint', text: fb.note }));
   }
   async function loadGlossary() {
     let g;

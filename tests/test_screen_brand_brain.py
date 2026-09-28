@@ -2704,10 +2704,34 @@ class Round7Expiring(TempBrain):
         self.assertIn('confirm', [c['kind'] for c in api.handle(Req(['changes']))['changes']])
 
 
+class Round7Feedback(TempBrain):
+    """Round 7 feature 5: what agents got wrong: a correction as a learning, listed in the brain file, the misused fact's section flagged for review."""
+
+    def test_correction_flag_and_brain_file(self):
+        status, res = api.handle(Req(['feedback'], 'POST', body={'capability': 'CREA-C06', 'kind': 'wrong_fact', 'wrong': 'Free shipping on every order.', 'what': 'free shipping starts at $75', 'right': 'Free standard shipping on orders over $75.', 'fact': 'bombas.offers.free_shipping_threshold_usd'}))
+        self.assertEqual((status, res['record'], res['flagged']), (201, 'bombas.learnings.agent_wrong_001', 'bombas.team.review_now_offers'))
+        fb = api.handle(Req(['feedback']))
+        self.assertEqual((fb['counts']['total'], fb['counts']['by_capability']['CREA-C06'], fb['corrections'][0]['fact']), (1, 1, 'bombas.offers.free_shipping_threshold_usd'))
+        f = api.handle(Req(['agentfile'], query={'capability': ['CREA-C06']}))
+        self.assertIn('corrections', [x['key'] for x in f['strict']])
+        self.assertIn('Free shipping on every order.', f['text'])
+        ow = next(r for r in api.handle(Req(['owners']))['rows'] if r['section'] == 'offers')
+        self.assertEqual((ow['state'], ow['flagged']), ('overdue', True))
+        self.assertTrue(any(f['entity']['id'] == 'review_offers' for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R35'))
+        api.handle(Req(['owners', 'offers'], 'POST', body={'reviewed': True}))
+        ow = next(r for r in api.handle(Req(['owners']))['rows'] if r['section'] == 'offers')
+        self.assertFalse(ow['flagged'])
+        self.assertEqual(api.handle(Req(['feedback'], 'POST', body={'wrong': 'x'}))[0], 400)
+        self.assertEqual(api.handle(Req(['feedback'], 'POST', body={'wrong': 'x line', 'what': 'y', 'capability': 'bad'}))[0], 400)
+        self.assertEqual(api.handle(Req(['feedback'], 'POST', body={'wrong': 'x line', 'what': 'y', 'fact': 'bombas.offers.nope'}))[0], 404)
+        self.assertEqual(api.handle(Req(['feedback'], 'POST', body={'wrong': 'x line', 'what': 'y'}))[1]['record'], 'bombas.learnings.agent_wrong_002')
+        self.assertIn('correction', [c['kind'] for c in api.handle(Req(['changes']))['changes']])
+
+
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
-    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'], ['onepage'], ['brainmd', 'notes'], ['alerts'], ['glossary'], ['expiring'],
+    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'], ['onepage'], ['brainmd', 'notes'], ['alerts'], ['glossary'], ['expiring'], ['feedback'],
               ['decisions'], ['flows'], ['claims'], ['site', 'diff'], ['parity'], ['contracts'], ['legal'], ['voice'], ['battlecards'], ['permissions'],
               ['export'], ['assumptions'], ['facts'], ['summaries'], ['changes'], ['learn'], ['report'], ['digest'], ['review'], ['bottlenecks'], ['audit']]
 
