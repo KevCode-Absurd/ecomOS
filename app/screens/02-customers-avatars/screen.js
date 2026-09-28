@@ -490,6 +490,24 @@
       note: 'Blank: this lever answers none of the avatar\'s doubts. Columns after the policies are offers no ladder uses yet.' }));
   }
 
+  // ---------- desk: compare two avatars ----------
+  function renderCompare(c) {
+    const keys = Object.keys(c.rows);
+    if (keys.length < 2) { mount('#compare', el('p', { class: 'muted small', text: 'Two avatars are needed to compare.' })); return; }
+    const pick = (i) => { const s = el('select', { 'aria-label': 'Avatar ' + (i + 1) }, ...keys.map((k) => el('option', { value: k, text: c.rows[k].name }))); s.value = keys[i]; return s; };
+    const a = pick(0), b = pick(1);
+    const show = (v, u) => v == null ? NA : u === '%' ? Math.round(v * 1000) / 10 + ' percent' : u === 'x' ? v + 'x' : String(v);
+    const draw = () => {
+      const A = c.rows[a.value], B = c.rows[b.value];
+      mount('#compare', UI.table({ columns: [{ key: 'label', label: '' }, { key: 'a', label: A.name }, { key: 'b', label: B.name }],
+        rows: c.fields.map((f) => ({ label: f.label, a: show(A[f.key], f.unit), b: show(B[f.key], f.unit) })), sort: false }));
+      document.querySelectorAll('#compare tbody tr').forEach((tr) => { if (tr.children[1] && tr.children[1].textContent !== tr.children[2].textContent) tr.classList.add('diff'); });
+    };
+    a.addEventListener('change', draw); b.addEventListener('change', draw);
+    mount('#compare-tools', a, el('span', { class: 'muted small', text: 'against' }), b);
+    draw();
+  }
+
   // ---------- desk: focus ----------
   function renderFocus(x) {
     const w = x.weights;
@@ -950,7 +968,7 @@
 
   // ---------- the desk, grouped into tabs by job ----------
   const DESK = [
-    { key: 'avatars', label: 'Avatars', ids: ['focus-wrap', 'avatars-wrap', 'voiceads-wrap', 'split-wrap', 'gate-wrap', 'recheck-wrap', 'forces-wrap', 'survey-wrap', 'served-wrap', 'market-wrap', 'returns-wrap', 'misread-wrap'] },
+    { key: 'avatars', label: 'Avatars', ids: ['focus-wrap', 'avatars-wrap', 'compare-wrap', 'voiceads-wrap', 'split-wrap', 'gate-wrap', 'recheck-wrap', 'forces-wrap', 'survey-wrap', 'served-wrap', 'market-wrap', 'returns-wrap', 'misread-wrap'] },
     { key: 'doubts', label: 'Doubts and words', ids: ['ladders-wrap', 'cover-wrap', 'themes-wrap', 'words-wrap', 'hooks-wrap', 'gap-wrap', 'macros-wrap'] },
     { key: 'offers', label: 'Offers and claims', ids: ['offers-wrap', 'price-wrap', 'claims-wrap', 'timing-wrap'] },
     { key: 'retention', label: 'Retention', ids: ['paths-wrap', 'cohort-wrap', 'mix-wrap', 'moments-wrap', 'health-wrap'] },
@@ -987,6 +1005,7 @@
     renderOffers(d.offer_map);
     renderPrice(d.price);
     renderFocus(d.focus);
+    renderCompare(d.compare);
     renderAdVoice(d.ad_voice);
     renderSplit(d.split);
     renderGate(d.gate);

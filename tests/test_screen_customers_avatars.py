@@ -1442,5 +1442,20 @@ class Agenda(TempBrain):
         self.assertLess(len(x['items']), 25)
 
 
+class Compare(TempBrain):
+    """Feature 6.4: comparable rows per avatar."""
+
+    def test_compare(self):
+        c = api.handle(Req(['overview']))['compare']
+        keys = [f['key'] for f in c['fields']]
+        for row in c['rows'].values():
+            for k in keys:
+                self.assertIn(k, row)
+        dur = c['rows']['durability_disappointed_repeat_customer']
+        self.assertEqual(dur['build_rank'], 1)
+        self.assertEqual(dur['proof'], 'no')
+        self.assertNotIn('Reddit', dur['win_words'] or '')
+
+
 if __name__ == '__main__':
     unittest.main()

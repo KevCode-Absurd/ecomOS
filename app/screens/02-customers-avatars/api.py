@@ -453,6 +453,7 @@ def overview(brain: Brain) -> dict:
             "words": builds.words(brain.records("language_bank"), all_rungs, avatars, _brand_tokens(brain), audit.source_name), "formats": _formats(brain, avatars)}
     out["strength"] = builds.strength(out)
     builds.card_meta(out)
+    out["compare"] = builds.compare_rows(out)
     return out
 
 

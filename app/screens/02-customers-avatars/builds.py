@@ -2407,3 +2407,32 @@ def agenda(d: dict, actions: list[dict], tests_rows: list[dict], today: str) -> 
     over = sum(1 for x in items if x["overdue"])
     return {"items": items, "today": today, "overdue": over,
             "line": f"{len(items)} dated moves in the next {AGENDA_DAYS} days" + (f", {over} overdue." if over else ".")}
+
+
+# ---------------------------------------------------------------- compare two avatars
+
+COMPARE_FIELDS = [("share", "Share of buyers", "%"), ("served", "Served well", "%"), ("build_rank", "Build rank", "n"),
+                  ("top_doubt", "Top doubt", ""), ("proof", "Proof on it", ""), ("open_doubts", "Doubts without an answer", "n"),
+                  ("ads", "Our ads", ""), ("returns", "Return risk, x median", "x"), ("speaks", "Speaks on", ""),
+                  ("price_share", "Price share of one-star", "%"), ("lines", "Lines it buys", ""), ("win_words", "Their win words", ""),
+                  ("status", "Evidence", ""), ("next", "Next build", "")]
+
+
+def compare_rows(d: dict) -> dict:
+    """One flat row per avatar with the fields a strategist compares, from the page's own builders."""
+    idx = lambda rows: {r["key"]: r for r in rows}
+    served = {p["key"]: p["y"] for p in d["served"].get("points", [])}
+    price, ret, mkt = idx(d["price"]["rows"]), idx(d["returns"].get("rows", [])), idx(d["marketplace"]["rows"])
+    out = {}
+    for a in d["avatars"]:
+        k, m, t = a["key"], a.get("meta") or {}, a.get("top_objection")
+        words = [w["text"] for r in d["words"]["rows"] if k in r["avatars"] for w in r["win_words"] if not w["language_only"]][:3]
+        out[k] = {"name": a["name"], "share": a["share_estimate"], "served": served.get(k), "build_rank": m.get("focus_rank"),
+                  "top_doubt": t["doubt"] if t else None, "proof": ("yes" if t["proof"] else "no") if t else None,
+                  "open_doubts": sum(1 for r in d["ladders"]["rows"] if k in r["avatars"] and r["verdict"] in ("answer", "not_landing")),
+                  "ads": m.get("ads"), "returns": ret[k]["ratio"] if k in ret else None,
+                  "speaks": ("Amazon" if mkt[k]["verdict"] == "marketplace" else "our site") if k in mkt else None,
+                  "price_share": price[k]["price_share"] if k in price else None,
+                  "lines": ", ".join(x.replace("_", " ") for x in list((ret.get(k) or {}).get("lines", {}))[:3]) or None,
+                  "win_words": "; ".join(f'"{w}"' for w in words) or None, "status": m.get("status"), "next": a["next"]["title"]}
+    return {"fields": [{"key": k, "label": l, "unit": u} for k, l, u in COMPARE_FIELDS], "rows": out}
