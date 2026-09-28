@@ -87,6 +87,16 @@ Known gaps from round 0:
 | 4.7 | Upsell take rate (room spec): new rule OFFER-R28, unavailable until the upsell app the brain names (Rebuy for Bombas) connects, so it shows as its own connect move ("Connect Rebuy, read-only") with what to pull; silent for a brand whose brain names no upsell app | done |
 | 4.8 | Export all briefs (depth.md section 7): `GET /api/04-offers-pricing/briefs` builds one plain-text file of every open move (why, owner, score, stake, steps with who, the drafted artefact, win and stop rules, check date); an "Export all briefs" button beside the plan downloads it. Works for a brand with no folder too | done |
 | 4.9 | Stale inputs: a move that rests on a brain record older than 90 days names it in its why and gets a first step for a person to refresh it on the brand brain screen. Quiet for Bombas today (every record is current) | done |
+| 4.10 | Round close: 786 screen tests run, only the 4 known site speed tests fail; rank tests green; phone width clean at 390 px; round4.png; this note | done |
+
+### Round 4 note for Kevin (28 Sep 2026)
+
+1. What a founder can do now: on any move, press "Propose as a plan" (it goes to the brand brain review queue) or "I approve: save as a plan" (an approved brain record), written only through the brain's own store.
+2. An approved offer becomes an offer record, planned until you press "Mark launched"; from then it is live for every screen, and after its check date the screen drafts a before and after read with a keep, change or end decision.
+3. The red line now blocks approval: an offer under its margin line can be proposed for review but not approved.
+4. Every approved test is proposed to the experiment registry (waiting in this screen's outbox until the shared table exists), and approved moves take their slot first in the test calendar.
+5. New from data: bundles from products bought together (real on the sample brand; Bombas waits on order rows), upsell take rate waits on Rebuy, and one export holds every brief.
+6. Next (round 5): offer records read back into the stack and the waterfalls, gift card liability once the ledger connects, and the web pass again for what the best tools added since.
 
 ## Contract asks
 
@@ -223,7 +233,7 @@ Intelligems (threshold and price tests scored by profit per visitor), Rebuy (tie
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.9 | 2026-09-28 | S3.9; screenshot round0.png |
-| 4 | 4.1 save to the brain, 4.2 offer records, 4.3 bundle pairs, 4.4 red line gate, 4.5 approved first, 4.6 launched read, 4.7 upsell connect, 4.8 brief pack, 4.9 stale inputs | 2026-09-28 | in progress |
+| 4 | 4.1 to 4.10: save to the brain, offer records, bundle pairs, red line gate, approved first, launched read, upsell connect, brief pack, stale inputs | 2026-09-28 | screenshot round4.png |
 | 3 | 3.1 to 3.10: registry, referral, loyalty, window creep, subscription note, depth rules, plug and play, priors, decisions | 2026-09-28 | screenshot round3.png |
 | 2 | 2.1 to 2.10: position, parity, discipline, gift pick, cart ladder, test calendar, depth by line, second order, cost against price, desk tabs | 2026-09-28 | screenshot round2.png |
 | 1 | 1.1 plan first, 1.2 objection to offer map, 1.3 free shipping line, 1.4 pack ladder, 1.5 first-order offer, 1.6 margin waterfall, 1.7 promo calendar, 1.8 gifting and holiday, 1.9 guarantee as an offer, 1.10 rank complete | 2026-09-28 | manager session; screenshot round1.png (updated as the round lands) |
