@@ -180,7 +180,7 @@ def source_categories(brand: str) -> list[dict]:
     cats: dict[str, dict] = {}
     for sid, s in registry.items():
         cat = cats.setdefault(s['category'], {'category': s['category'], 'sources': [],
-                                               'public': s['access'] == 'public'})
+                                               'public': s['access'] == 'public' or s['category'] == 'public'})
         cat['sources'].append({'id': sid, 'name': s['name'], 'note': s.get('note', ''),
                                'sections': s.get('fills_sections', []), 'tables': s.get('fills_tables', []),
                                'rooms': sorted(rooms_by_source.get(sid, ())), 'mock': bool(s.get('mock', True))})
@@ -199,7 +199,9 @@ def set_connection(brand: str, body: dict) -> dict:
     category = str(body.get('category') or '')
     choice = str(body.get('choice') or '')
     source = body.get('source') or None
-    cats = {s['category'] for s in registry.values() if s['access'] != 'public'}
+    # The public category is the open web: it never needs a brand connection. Keyed tools that
+    # pull public data (Apify) are operator tools configured in the environment, not brand choices.
+    cats = {s['category'] for s in registry.values() if s['access'] != 'public'} - {'public'}
     if category not in cats:
         raise ValueError('unknown or public category')
     if choice not in CHOICES:
