@@ -1059,3 +1059,68 @@ def gate(avatars: list[dict], all_rungs: list[dict]) -> dict:
     return {"rows": rows, "checks": [{"key": k, "label": l, "core": c} for k, l, c, _ in GATE], "validated": val,
             "tasks": sum(len(r["tasks"]) for r in rows),
             "line": f"{val} of {len(rows)} avatars pass every core check. The rest stay provisional: brief them, but do not bet a launch on them."}
+
+
+# ---------------------------------------------------------------- hook bank: phrases buyers repeat
+
+HOOK_MIN = 3        # distinct 4 and 5 star reviews
+HOOK_TOP = 15
+HOOK_FILL = {"a", "an", "the", "and", "or", "of", "to", "in", "on", "for", "is", "are", "it", "i", "my", "they", "these", "this",
+             "so", "very", "with", "but", "that", "was", "be", "as", "at", "have", "has", "me", "you", "we", "just", "them", "their",
+             "not", "do", "does", "did", "all"}
+
+
+def hooks(lang_records: list[dict], all_rungs: list[dict], avatars: list[dict], brand_tokens: set[str], source_name) -> dict:
+    """2 to 4 word phrases found in 3 or more distinct 4 and 5 star reviews, with the avatars whose doubts they sit on."""
+    avatar_of = {}
+    names = {a["id"]: a["name"] for a in avatars}
+    for r in all_rungs:
+        for pid in r["derived_from"]:
+            avatar_of.setdefault(pid, set()).update(names[x] for x in r["avatars"] if x in names)
+    grams: dict[str, dict] = {}
+    n = 0
+    for rec in lang_records:
+        v = rec.get("value") if isinstance(rec.get("value"), dict) else {}
+        for rv in v.get("reviews") or []:
+            star = rv.get("star")
+            if not isinstance(star, int) or star < 4 or source_name(rv.get("source") or "") == "Reddit":
+                continue
+            n += 1
+            toks = re.findall(r"[a-z']+", " ".join([v.get("phrase") or "", rv.get("quote") or ""]).lower().replace("’", "'"))
+            seen = set()
+            for k in (2, 3, 4):
+                for i in range(len(toks) - k + 1):
+                    g = toks[i:i + k]
+                    if g[0] in HOOK_FILL or g[-1] in HOOK_FILL:
+                        continue
+                    content = [t for t in g if t not in HOOK_FILL and t not in GENERIC and t not in brand_tokens and len(t) >= 3]
+                    if not content or any(len(b) >= 5 and t.startswith(b[:5]) for t in g for b in brand_tokens):
+                        continue
+                    key = " ".join(g)
+                    if key in seen:
+                        continue
+                    seen.add(key)
+                    e = grams.setdefault(key, {"hook": key, "ids": set(), "avatars": {}})
+                    e["ids"].add(rec["id"])
+                    for nm in avatar_of.get(rec["id"], set()):
+                        e["avatars"][nm] = e["avatars"].get(nm, 0) + 1
+    rows = [g for g in grams.values() if len(g["ids"]) >= HOOK_MIN]
+    # keep the longest phrase when a shorter one only appears inside it
+    rows.sort(key=lambda g: (-len(g["ids"]), -len(g["hook"]), g["hook"]))
+    kept = []
+    for g in rows:
+        if any(g["hook"] in k["hook"] and len(k["ids"]) >= len(g["ids"]) for k in kept):
+            continue
+        kept.append(g)
+    kept = kept[:HOOK_TOP]
+    out = [{"hook": g["hook"], "reviews": len(g["ids"]),
+            "avatars": [k for k, _ in sorted(g["avatars"].items(), key=lambda kv: (-kv[1], kv[0]))[:3]]} for g in kept]
+    brief = {"id": f"{SCREEN}.hooks", "kind": "ad_brief", "owner": "agent_drafts", "title": "Ad brief from the hooks buyers repeat",
+             "capability": {"id": "CREA-C04", "autonomy": "agent_does"},
+             "head": ["AD BRIEF: hooks in the buyers' own words", "Rule: open on the hook as written. One hook per variant.",
+                      "Formats: static first frame and a 6-second video open."],
+             "steps": [{"n": 1, "who": "agent", "text": "Write one first line and one first frame per picked hook."},
+                       {"n": 2, "who": "person", "text": "Approve the variants. Creative makes them."},
+                       {"n": 3, "who": "agent", "text": "Tag each ad with its hook and read cost per order after 7 days."}]}
+    return {"rows": out, "praise_reviews": n, "brief": brief,
+            "line": f"{len(out)} phrases repeat across 3 or more praise reviews. Each is a tested opening line, written by buyers."}

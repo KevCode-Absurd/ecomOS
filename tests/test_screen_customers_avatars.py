@@ -659,5 +659,28 @@ class Gate(TempBrain):
         self.assertEqual(g['everyday_comfort_seeker']['status'], 'validated')
 
 
+class Hooks(TempBrain):
+    """Feature 2.4: hook bank from phrases repeated across praise reviews."""
+
+    def test_hooks(self):
+        h = api.handle(Req(['overview']))['hooks']
+        self.assertTrue(h['rows'])
+        fill = api.builds.HOOK_FILL
+        for r in h['rows']:
+            self.assertGreaterEqual(r['reviews'], 3)
+            w = r['hook'].split()
+            self.assertTrue(2 <= len(w) <= 4)
+            self.assertNotIn(w[0], fill)
+            self.assertNotIn(w[-1], fill)
+            self.assertFalse(any(t.startswith('bomba') for t in w))
+            self.assertLessEqual(len(r['avatars']), 3)
+        self.assertIn('stay in place', [r['hook'] for r in h['rows']])
+        self.assertEqual(h['brief']['owner'], 'agent_drafts')
+
+    def test_reddit_never_counts(self):
+        recs = [{'id': f'r{i}', 'value': {'reviews': [{'star': 5, 'source': 'reddit', 'quote': 'stay in place forever'}]}} for i in range(5)]
+        self.assertEqual(api.builds.hooks(recs, [], [], set(), audit.source_name)['rows'], [])
+
+
 if __name__ == '__main__':
     unittest.main()

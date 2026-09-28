@@ -299,6 +299,23 @@
     }));
   }
 
+  // ---------- desk: hook bank ----------
+  function renderHooks(h) {
+    document.getElementById('hooks-sub').textContent = '2 to 4 word phrases in 3 or more distinct 4 and 5 star reviews, from ' + h.praise_reviews + ' praise reviews, Reddit left out. ' + h.line;
+    const picked = new Set(h.rows.slice(0, 5));
+    const grid = el('div', { class: 'hooks' }, ...h.rows.map((r) => {
+      const cb = el('input', { type: 'checkbox', checked: picked.has(r) });
+      cb.addEventListener('change', () => { if (cb.checked) picked.add(r); else picked.delete(r); });
+      return el('label', { class: 'hook' }, cb, el('span', null, el('b', { text: '"' + r.hook + '"' }), ' ',
+        el('span', { class: 'chip', text: r.reviews + ' reviews' }), el('span', { class: 'micro muted', text: ' ' + r.avatars.join(', ') })));
+    }));
+    mount('#hooks-tools', el('button', { class: 'btn soft sm', type: 'button', text: 'Brief the picked hooks', onclick: () => {
+      const lines = h.brief.head.concat(['', 'Hooks:'], Array.from(picked).map((r) => '- "' + r.hook + '" (' + r.reviews + ' reviews; ' + r.avatars.join(', ') + ')'));
+      briefPanel(Object.assign({}, h.brief, { draft: lines.join('\n') }));
+    } }));
+    mount('#hooks', grid);
+  }
+
   // ---------- desk: theme impact ----------
   function divBar(v, max) {
     const w = Math.round(50 * Math.min(1, Math.abs(v) / (max || 1)));
@@ -517,6 +534,7 @@
     renderCoverage(d.coverage, d.formats);
     renderLadders(d.ladders, d.avatars);
     renderGap(d.copy_gap);
+    renderHooks(d.hooks);
     renderThemes(d.themes);
     renderWords(d.words, d.avatars);
     renderServed(d.served, d.avatars);
