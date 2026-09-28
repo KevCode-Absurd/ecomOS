@@ -47,6 +47,16 @@ Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `a
 | 3.7 | Win-loss interview kit (BRAND-C58, human assist): screener, 6-question guide, reason-code sheet and readout for 5 interviews against each name we lose to, shown and copyable under the losses table; rule COMP-R29 puts the interviews on the plan as a person task while none are on file | done |
 | 3.8 | Thresholds the brand tunes: 12 rule thresholds (price band, stale days, angle share, threat and watch points, coverage gap, ad surge, price move, discount depth gap, pack saving, Amazon undercut) read from a `plans` record `competitor_thresholds`, reset to defaults each run, shown in the audit as "thresholds in force" with value, default and source | done |
 | 3.9 | Plug and play on a second brand: a minimal hat brand (one competitor record, one product line) renders every route (overview, plan, digest, audit, rank) with honest unavailable states and no Bombas fact; the category word now comes from the brain (pull config, else the first product line), so ladder labels, search seeds, the interview screener, frame lines and price sentences say "hats" for a hat brand; test added. Known limit: the price model still reads bands "per pair" | done |
+| 3.10 | Round close: 29 rules ranked through `rank` (27 actions on this capture), every rule with a builder and a desk group, full page and report checked at 1280 and 360 wide with no page scroll, all screen tests green apart from the 4 known site speed ones; screenshot `round3.png` | done |
+
+### Round 3 status for Kevin (28 Sep 2026)
+
+1. The screen now watches rivals over time. Dated captures of every page turn a new offer, a new angle, an ad surge or a price cut into an alert with a move. The first capture is on file, so alerts start with the next brain refresh.
+2. New things to ship: battlecards for support with a freshness date, a win-loss interview kit, a positioning test (shoppers frame socks as "buy it for life"; our line never says it), and weekly tracking of the top 3 threats' pages.
+3. A printable weekly report (the head's "Printable weekly report" link) carries the top 10 moves, what changed, the threats and the numbers to watch.
+4. Plug and play is proven: a made-up hat brand renders every route with no Bombas facts, and the category word follows the brand. Twelve rule thresholds can be tuned from one brain record.
+5. Honest gaps: still no ad-level pull (Kevin can run it), no site captures of rival pages yet, no search or trends data. Each shows as unavailable with a connect step. The price model still reads bands "per pair".
+6. Next, round 4: counted matrix cells and ad alerts once the pull lands, first landing page captures, a threat score history chart, answers the support team can paste, and a quarterly positioning review.
 
 ## Round 2: who we lose to, the market around us, and counted signals
 
@@ -190,6 +200,6 @@ Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permi
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
-| 3 | 3.1 to 3.9 | 2026-09-28 | Page-summary captures and diffs; price moves; landing page tracking; printable report; battlecards; positioning test; win-loss kit; tunable thresholds; second brand |
+| 3 | 3.1 to 3.10 | 2026-09-28 | Page-summary captures and diffs; price moves; landing page tracking; printable report; battlecards; positioning test; win-loss kit; tunable thresholds; second brand. Screenshot `round3.png` |
 | 2 | 2.1 to 2.10 | 2026-09-28 | Lost by name; category ladder; review themes; Amazon against our site; creative velocity; weekly brief; niche sizing; premium signals; search seeds; desk tabs. Screenshot `round2.png` |
 | 1 | 1.1 to 1.10 | 2026-09-28 | Plan first; rank override; 12 pages side by side; coverage matrix; hook and offer mix; references; price and pack ladder; positioning map with moves; changes timeline; freshness and re-pull; rank for all 14 rules. Screenshot `round1.png` |
