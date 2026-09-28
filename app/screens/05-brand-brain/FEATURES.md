@@ -152,6 +152,23 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 | 4.9 | Start a new brain (`newbrand.py`, `GET newbrand`, `POST newbrand`, `POST newbrand/dryrun`): the intake writes a brain folder from the founder's words only (name, store url, category, market as approved founder identity records; the Apify config with nothing confirmed; an empty documents manifest; the keeper's 5 opening questions; BRAIN.md) and the same screen opens on `?brand=<slug>` with every route honest about what is missing; the brains on file are listed; the dry run replays the onboarding runner on saved fixtures in mock mode, free lanes only, into the connectors' mock folder and shows each lane, its status and the estimate a live run would cost, with no network call | done | Start a second brand in a minute and see what the live onboarding would run and cost before paying for anything |
 | 4.10 | What stays inside (`visibility.py`, `GET visibility`, `POST visibility`, `POST visibility/fix`): every record's public or private flag audited against its source and its section: a private-source record (connector, founder, agent, document, ticket) marked public in a section private by nature is a leak to any public-facing agent; a public-source record marked private in a section public by nature is over-restricted; counts by section; fix one or fix all (the flag flips, the change is logged, nothing else moves); the brand card built from public records only, so the founder reads what a public-facing capability gets; rule BRN-R28 (medium with a leak) | done | Know what a shopping assistant or support bot may read before one is connected, and fix the wrong flags in one click |
 
+## Round 5 (manager, 28 Sep 2026): 10 features, one commit each
+
+Sources: the 5 things no tool does (`WEB-PASS.md`): rejected ideas with a reason and a review date, competitor moves scored against the bottleneck; the web pass leftovers 3 (AI reviewer first in the route), 14 (a brain file agents read), 15 (asset rights and expiry), 16 (UGC permission), 18 (rule sets the founder edits), 24 (audit trail); and round 4's honest gaps.
+
+| # | Feature | Status | What a founder can do |
+|---|---|---|---|
+| 5.1 | Rejected ideas with a reason and a review date (`POST bottlenecks/reject`, `POST bottlenecks/unreject`): Reject writes a learnings record with the reason and a review date (90 days by default); the idea leaves the unlocks and agents read the learnings before proposing; after the review date it returns flagged with the reason, and rule BRN-R29 puts the review on the master list (keep it out or bring it back); Bring back retires the rejection, never deletes it | done | Stop the same idea coming back every week, without losing why you said no |
+| 5.2 | Competitor moves scored against the bottleneck | todo | |
+| 5.3 | Channel rule sets the founder edits | todo | |
+| 5.4 | Review first: one route for any draft | todo | |
+| 5.5 | The brain file agents read | todo | |
+| 5.6 | What changed since this export | todo | |
+| 5.7 | Who read what this week | todo | |
+| 5.8 | Asset rights and expiry | todo | |
+| 5.9 | UGC permission on file | todo | |
+| 5.10 | Positioning drift from the language bank | todo | |
+
 ### Round 4 status for Kevin (28 Sep 2026)
 
 1. What you can do now: see the diagnosis's bottlenecks with what is already moving on each and pick the next unlock from 4,650 ideas; point the screen at any brain folder and get the same screen with honest gaps; see the 5 objection rungs with 66 one-star lines behind them and no proof, and attach a record as proof in one click; read what the brain says about itself (drift, broken links, duplicates, read coverage) and regenerate the router; see the 6 peaks in the next 90 days, what each waits on, and decide the offer once for every screen; put an earlier value back on any record; check a draft or a PNG against the palette and set the logo rules; see when a snooze runs out and undo a decision; start a second brain in a minute and dry run the onboarding offline; audit which records a public-facing agent may read and fix the wrong flags.

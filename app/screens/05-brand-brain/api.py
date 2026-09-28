@@ -1556,6 +1556,29 @@ def handle(req):
         return bottlenecks_view(brain, _window(req, brain))
     if req.method == "POST" and parts == ["bottlenecks", "pick"]:
         return idea_pick(brain, req.body)
+    if req.method == "POST" and parts == ["bottlenecks", "reject"]:
+        body = req.body or {}
+        idea_id = str(body.get("idea_id") or "").strip().upper()
+        if not re.fullmatch(r"[A-Z]{2,6}-\d{3,4}", idea_id):
+            return 400, {"error": "idea_id must be a bank id like OFF-103"}
+        res = bottlenecks.reject(brain, idea_id, str(body.get("bottleneck") or "").strip() or None, str(body.get("reason") or "").strip(), str(body.get("review_on") or "").strip() or None)
+        if not res["ok"]:
+            return (404 if res.get("error") == "no such idea" else 400), res
+        errs = founder_put(brain, res["record"], kind="founder_edit", what=f"rejected idea {idea_id}: {res['record']['value']['title'][:80]}")
+        if errs:
+            return 400, {"error": "record not valid", "details": errs}
+        return 201, {"ok": True, "record": res["record"]["id"], "idea_id": idea_id, "review_on": res["record"]["value"]["review_on"], "next": f"Out until {res['record']['value']['review_on']}. Agents read the learnings before proposing; the rule brings it back for review on that date.", "version": brain.version()}
+    if req.method == "POST" and parts == ["bottlenecks", "unreject"]:
+        body = req.body or {}
+        idea_id = str(body.get("idea_id") or "").strip().upper()
+        rej = bottlenecks.rejected_ideas(brain).get(idea_id)
+        if rej is None:
+            return 404, {"error": "no rejected idea with that id", "idea_id": idea_id}
+        before_v = brain.version()
+        brain.retire(rej["record"])
+        changes.log(brain, "retired", "learnings", rej["record"], f"brought back idea {idea_id}: the rejection is retired, never deleted")
+        changes.version_step(brain, before_v, f"unrejected {idea_id}")
+        return 201, {"ok": True, "idea_id": idea_id, "retired": rej["record"], "next": "Back in the unlocks. The rejection stays in history.", "version": brain.version()}
     if req.method == "GET" and parts == ["report"]:
         try:
             days = max(1, min(90, int(req.arg("days", "7") or 7)))

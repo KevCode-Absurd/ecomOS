@@ -159,6 +159,14 @@ def build(f: dict, nr: float | None) -> dict:
                         {"n": 3, "who": "person", "text": "Pick the record as proof, or approve the drafted fact as an approved record."},
                         {"n": 4, "who": "agent", "text": f"Attach it to the rung. The surfaces that use the rung ({surfaces or 'copy, page, listing, macro'}) read the proof on their next brief."}],
                  check_on=_check_on(f, 7), time_to_ship_hours=1)
+    elif rid == "BRN-R29":
+        rj = f.get("rejected") or {}
+        a.update(title=f"Review the rejected idea {rj.get('idea_id')}: keep it out or bring it back", owner="person",
+                 artefact={"kind": "brain_record", "label": "the rejection extended with a new review date, or the idea back in the unlocks", "draft": None},
+                 steps=[{"n": 1, "who": "agent", "text": f"Show the idea, the reason you gave ({rj.get('reason') or 'none'}) and what changed in the brain since {rj.get('rejected_on') or 'then'}."},
+                        {"n": 2, "who": "person", "text": "Keep it out with a new review date, or bring it back so it can be picked."},
+                        {"n": 3, "who": "agent", "text": "Write the record. Agents read the learnings before proposing."}],
+                 check_on=_check_on(f, 7), time_to_ship_hours=0.25)
     elif rid == "BRN-R28":
         vb = f.get("visibility") or {}
         nl, nr = len(vb.get("leaks") or []), len(vb.get("restricted") or [])

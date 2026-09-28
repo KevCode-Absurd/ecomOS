@@ -1877,6 +1877,41 @@ class Round4Visibility(TempBrain):
         self.assertEqual(api.handle(Req(['visibility'], 'POST', body={}))[0], 400)
 
 
+class Round5Rejected(TempBrain):
+    """Round 5 feature 1: rejected ideas with a reason and a review date leave the unlocks; the rule brings them back for review; bring back retires the rejection."""
+
+    def test_reject_review_and_bring_back(self):
+        u = api.handle(Req(['bottlenecks']))
+        idea = u['bottlenecks'][0]['ideas'][0]['id']
+        status, res = api.handle(Req(['bottlenecks', 'reject'], 'POST', body={'idea_id': idea, 'bottleneck': 'bottleneck_1', 'reason': 'tried in 2025, no lift'}))
+        self.assertEqual((status, res['review_on']), (201, '2026-12-27'))  # 90 days by default
+        rec = next(r for r in self.section('learnings') if r['id'] == res['record'])
+        self.assertEqual((rec['tier'], rec['source']['type'], rec['visibility'], rec['value']['reason']), ('approved', 'founder', 'private', 'tried in 2025, no lift'))
+        u = api.handle(Req(['bottlenecks']))
+        self.assertNotIn(idea, [i['id'] for i in u['bottlenecks'][0]['ideas']])
+        self.assertEqual((u['rejected'], u['rejected_due'], u['bottlenecks'][0]['rejected'][0]['idea_id']), (1, 0, idea))
+        self.assertFalse([f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R29'])
+        # a review date in the past: the idea returns, flagged, and the rule fires
+        api.handle(Req(['bottlenecks', 'reject'], 'POST', body={'idea_id': idea, 'bottleneck': 'bottleneck_1', 'reason': 'old', 'review_on': '2026-09-01'}))
+        u = api.handle(Req(['bottlenecks']))
+        it = next(i for i in u['bottlenecks'][0]['ideas'] if i['id'] == idea)
+        self.assertEqual(it['was_rejected']['review_on'], '2026-09-01')
+        self.assertEqual(u['rejected_due'], 1)
+        f = next(f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R29')
+        self.assertIn('the review date 2026-09-01 has passed', f['sentence'])
+        a = next(a for a in api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions'] if a['rule_id'] == 'BRN-R29')
+        self.assertEqual((a['owner'], api.rank_mod.validate_action(a)), ('person', []))
+        status, res = api.handle(Req(['bottlenecks', 'unreject'], 'POST', body={'idea_id': idea}))
+        self.assertEqual(status, 201)
+        self.assertEqual(next(r['status'] for r in self.section('learnings') if r['id'] == res['retired']), 'retired')
+        u = api.handle(Req(['bottlenecks']))
+        self.assertEqual(u['rejected'], 0)
+        self.assertIsNone(next(i for i in u['bottlenecks'][0]['ideas'] if i['id'] == idea)['was_rejected'])
+        self.assertEqual(api.handle(Req(['bottlenecks', 'reject'], 'POST', body={'idea_id': 'ZZZ-999'}))[0], 404)
+        self.assertEqual(api.handle(Req(['bottlenecks', 'reject'], 'POST', body={'idea_id': idea, 'review_on': 'soon'}))[0], 400)
+        self.assertEqual(api.handle(Req(['bottlenecks', 'unreject'], 'POST', body={'idea_id': idea}))[0], 404)
+
+
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
