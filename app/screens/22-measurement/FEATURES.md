@@ -6,9 +6,10 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | # | Feature | Status |
 |---|---|---|
-| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | todo |
-| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | todo |
-| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | todo |
+| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | done |
+| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | done |
+| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | done |
+| 0.4 | `audit.py`: 16 rules in the audit contract shape, one per room insight plus one per job the insights leave out | done |
 
 ## Candidates from the room spec (pick 10 per round)
 
@@ -28,6 +29,25 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 - how much does each channel, including untracked ones, actually add to revenue  (MONEY-C63)
 - which customers are we winning, keeping or losing right now  (LIFE-C12)
 - is our tagging layer itself clean, consented and firing once per event  (MONEY-C65)
+
+### Jobs to be done and the audit rules that cover them
+
+| Job | Question | Capability | Rules in `audit.py` |
+|---|---|---|---|
+| audit GA4 setup end to end | is GA4 actually tracking revenue and events correctly | MONEY-C20 | MEAS-R01 |
+| audit the Meta pixel and CAPI | is Meta double-counting, under-matching or missing events | MONEY-C21 | MEAS-R02 (unavailable: pixel_capi_events) |
+| enforce UTM and campaign-link discipline | which of our channels look bigger or smaller than they are because of bad links | MONEY-C22 | MEAS-R03 |
+| reconcile attribution models and run incrementality checks | which number is right when platforms disagree, and did this channel actually add sales | MONEY-C23 | MEAS-R04, MEAS-R12, MEAS-R13 (unavailable: holdout_tests) |
+| reconcile GA4, Meta, Shopify and marketplace order counts | do all our systems agree on how many orders we actually got | MONEY-C24 | MEAS-R06, MEAS-R05 (unavailable: bot_scores) |
+| maintain the metric contract and revenue definitions | what does this number actually mean, and who owns it | BRN-C06 | MEAS-R07 |
+| run the daily data-quality trust check | can I trust yesterday's numbers before I act on them | BRN-C02 | MEAS-R08, MEAS-R11 |
+| diagnose funnel and landing-page performance | where in the funnel are we actually losing people, compared to our own history | DIAG-C01 | MEAS-R09 |
+| triage a revenue or metric movement | why did this number move, before anyone reacts to it | DIAG-C01 | MEAS-R09 |
+| keep the standard dashboards current | are the numbers on our dashboards still the ones we trust | MONEY-C30 | MEAS-R16 (unavailable: dashboard_registry) |
+| ask any question about the brand's numbers and trust the answer | what is our real return on X, computed from one warehouse instead of five exports | BRN-C02, ORCH-C04 | MEAS-R08 |
+| build marketing mix modeling for cross-channel budget allocation | how much does each channel, including untracked ones, actually add to revenue | MONEY-C63 | MEAS-R15 (unavailable: mmm_outputs) |
+| build RFM and cohort segmentation | which customers are we winning, keeping or losing right now | LIFE-C12 | MEAS-R10 (unavailable: rfm_scores) |
+| audit tag management and server-side tracking | is our tagging layer itself clean, consented and firing once per event | MONEY-C65 | MEAS-R14 (unavailable: tag_manager_log) |
 
 ### Metrics specified
 
@@ -98,3 +118,13 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
+| 0 | shell, api, 3 tiles, 2 insights, 1 chart, 16-rule audit | 2026-09-28 | Bombas simulated, scale 0.1 data.sqlite |
+
+## Round 0 status
+
+- Built: index.html, screen.js, api.py, audit.py; tiles MER, platform claims vs store, GA4 purchase capture; 2 rule insights; 90-day orders chart (store, GA4, Meta, Google).
+- Also on the page: reconciliation table with Meta plus Google total (period ROAS = total value / total spend), daily trust check, incrementality placeholders (lift unavailable, test named).
+- Audit: 16 rules (MEAS-R01 to R16). On Bombas 9 fire: GA4 capture 92.6 percent ($62,559), UTM leakage on YouTube creators, TikTok and Pinterest, Google value gap widening, 3 order-count gaps, conversion rate defined twice.
+- 11 findings read unavailable with the table and fix named: CAPI events, bot scores, RFM, holdout tests (4 platforms), tag log, MMM, dashboard registry, other paid spend's UTM mapping.
+- Store orders, GA4 daily and other paid spend are counted in data.sqlite (same file as ad rows), so ratios hold at any data scale; the committed aggregates are scale 1.0 and data.sqlite was rebuilt at 0.1.
+- Tests: tests/test_screen_measurement.py, 13 passing. Screenshot round0.png at 1280 wide. Next: data sources for pixel_capi_events and holdout_tests in a contract session.
