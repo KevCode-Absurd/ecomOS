@@ -1416,5 +1416,32 @@ class TestWinLoss(TempInputs):
         self.assertEqual(api.audit.inpmod.REASON_CODES, api.audit.lossmod.REASON_CODES)
 
 
+class TestRepeatLoss(TempInputs):
+    """6.2: a loss reason repeated 3 times against one name puts the answer on the plan."""
+    def test_rule_and_action(self):
+        rank = lambda: api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions']
+        self.assertNotIn('COMP-R31', [a['rule_id'] for a in rank()])
+        for r in ('fit and sizing', 'fit and sizing', 'durability'):
+            self.interview('loss', 'Stance', r)
+        self.assertNotIn('COMP-R31', [a['rule_id'] for a in rank()])
+        self.interview('loss', 'Stance', 'fit and sizing')
+        self.interview('win', 'Stance', 'comfort and feel')
+        a = next(a for a in rank() if a['rule_id'] == 'COMP-R31')
+        self.assertEqual(a['severity'], 'high')
+        self.assertEqual(a['artefact']['kind'], 'page_section')
+        self.assertIn('3 people chose Stance', a['why'])
+        self.assertIn('fit and sizing', a['title'])
+        self.assertTrue(a['stop_rule'] and a['check_on'] and a['size'])
+        self.assertEqual(api.actions.ranker.validate_action(a), [])
+        self.assertIn('20 percent of 5 interviews', a['artefact']['draft'])
+        self.assertEqual(api.audit.RULE_GROUP['COMP-R31'], 'lost')
+        self.assertIn('COMP-R31', api.SECTION_RULES['losses'])
+
+    def test_every_reason_has_a_move(self):
+        self.assertEqual(set(api.audit.lossmod.REASON_MOVE), set(api.audit.inpmod.REASON_CODES))
+        kinds = {'ad_brief', 'offer', 'page_section', 'ticket', 'research_note'}
+        self.assertTrue(all(v[0] in kinds for v in api.audit.lossmod.REASON_MOVE.values()))
+
+
 if __name__ == '__main__':
     unittest.main()

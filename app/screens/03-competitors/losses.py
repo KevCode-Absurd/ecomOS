@@ -81,6 +81,17 @@ def build(m: dict, brain, interviews: list[dict] | None = None, win_loss=None) -
                     "ad angles and whether they are a tracked, priced page. Reddit counts only; never quoted, no usernames."}
 
 
+# COMP-R31: the answer to a loss reason repeated 3 or more times against one name: artefact kind, what it is, the move
+REASON_MOVE = {
+    "price and value": ("offer", "a pack step offer", "Show the saving a pair on the pack ladder and add a pack step that beats their price per pair."),
+    "durability": ("page_section", "a durability proof block", "Put the guarantee and the durability proof on the product page, above the fold."),
+    "fit and sizing": ("page_section", "a fit and size block", "Add a size finder and a fit note on each product page, with the free exchange."),
+    "comfort and feel": ("ad_brief", "2 comfort proof ads", "Brief 2 ads that show the feel: the proof point, a close-up, a wear test."),
+    "style": ("ad_brief", "2 style ads", "Brief 2 ads that lead with the look: colours, outfits, the range side by side."),
+    "availability": ("ticket", "a stock and delivery ticket", "Open a ticket to fix the stock gaps and say the delivery date on the page."),
+    "trust": ("page_section", "a trust block", "Add reviews with counts, the guarantee and the returns promise near the buy button."),
+    "other": ("research_note", "a follow-up round", "Run 3 more interviews on this name to find the real reason."),
+}
 REASON_CODES = ["price and value", "durability", "fit and sizing", "comfort and feel", "style", "availability", "trust", "other"]
 
 

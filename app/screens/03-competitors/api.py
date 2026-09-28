@@ -299,7 +299,7 @@ def placements(m: dict) -> dict:
 
 
 # Every desk block ends in a line that names the gap and offers the action (depth.md section 2, row 5).
-SECTION_RULES = {"review": ["COMP-R28", "COMP-R11"], "season": ["COMP-R30"], "history": [], "handoff": [], "macros": ["COMP-R15"], "pages": ["COMP-R15"], "cards": ["COMP-R27"], "landing": ["COMP-R26"], "losses": ["COMP-R15", "COMP-R29"],
+SECTION_RULES = {"review": ["COMP-R28", "COMP-R11"], "season": ["COMP-R30"], "history": [], "handoff": [], "macros": ["COMP-R15"], "pages": ["COMP-R15"], "cards": ["COMP-R27"], "landing": ["COMP-R26"], "losses": ["COMP-R31", "COMP-R15", "COMP-R29"],
                  "category": ["COMP-R16"], "reviews": ["COMP-R17"], "coverage": ["COMP-R05", "COMP-R01"], "velocity": ["COMP-R19"],
                  "mix": ["COMP-R06", "COMP-R07", "COMP-R08"], "placements": [], "refs": ["COMP-R03"], "changes": ["COMP-R24", "COMP-R12"],
                  "niche": ["COMP-R20"], "map": ["COMP-R11"], "frames": ["COMP-R28"], "premium": ["COMP-R21"],

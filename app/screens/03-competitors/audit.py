@@ -303,6 +303,8 @@ RULES = [
      "inputs": ["brain competitors recommended_instead", "win-loss interviews"], "capability": "BRAND-C58", "owner_screen": SCREEN},
     {"rule_id": "COMP-R30", "name": "holiday season close and no gifting ad", "entity_type": "brand",
      "inputs": ["calendar (US holidays)", "tracked page angles", "brain offers.gifting"], "capability": "CREA-C06", "owner_screen": SCREEN},
+    {"rule_id": "COMP-R31", "name": "the same loss reason repeats against one named competitor", "entity_type": "brand",
+     "inputs": ["win-loss interviews logged on this screen"], "capability": "BRAND-C58", "owner_screen": SCREEN},
     {"rule_id": "COMP-R08", "name": "discount on most ads while direct peers run none", "entity_type": "offer",
      "inputs": ["brain offers.promo_share_active_ads", "brain competitors offers_seen"], "capability": "LIFE-C38",
      "owner_screen": SCREEN},
@@ -310,7 +312,7 @@ RULES = [
 # what a strategist groups the findings by on the page (depth.md section 2: grouped by bottleneck)
 RULE_GROUP = {"COMP-R01": "creative", "COMP-R05": "creative", "COMP-R06": "creative", "COMP-R03": "offer", "COMP-R07": "offer",
               "COMP-R08": "offer", "COMP-R09": "offer", "COMP-R02": "price", "COMP-R10": "price", "COMP-R11": "position",
-              "COMP-R04": "watch", "COMP-R12": "watch", "COMP-R13": "watch", "COMP-R14": "watch", "COMP-R15": "lost", "COMP-R16": "lost", "COMP-R17": "lost", "COMP-R18": "price", "COMP-R19": "creative", "COMP-R20": "position", "COMP-R21": "offer", "COMP-R22": "position", "COMP-R23": "position", "COMP-R24": "watch", "COMP-R25": "price", "COMP-R26": "watch", "COMP-R27": "watch", "COMP-R28": "position", "COMP-R29": "lost", "COMP-R30": "creative"}
+              "COMP-R04": "watch", "COMP-R12": "watch", "COMP-R13": "watch", "COMP-R14": "watch", "COMP-R15": "lost", "COMP-R16": "lost", "COMP-R17": "lost", "COMP-R18": "price", "COMP-R19": "creative", "COMP-R20": "position", "COMP-R21": "offer", "COMP-R22": "position", "COMP-R23": "position", "COMP-R24": "watch", "COMP-R25": "price", "COMP-R26": "watch", "COMP-R27": "watch", "COMP-R28": "position", "COMP-R29": "lost", "COMP-R30": "creative", "COMP-R31": "lost"}
 GROUP_LABEL = {"lost": "Shoppers we lose, by name", "creative": "Ads they run that we do not", "offer": "Offers they say that we do not",
                "price": "Price against theirs", "position": "Corners of the map", "watch": "Watch and protect"}
 RUBRIC_OVERRIDES = {"COMP-R01": {"reputation": 5}, "COMP-R02": {"reputation": 3}, "COMP-R04": {"reputation": 5, "satisfaction": 4},
@@ -1133,6 +1135,24 @@ def rule_winloss(m, ends_on):
                      [x["record"] for x in fired], ends_on, 0.5, "no baseline: the win rate is unknown")]
 
 
+def rule_repeat_loss(m, ends_on):
+    """COMP-R31: the same coded reason in 3 or more logged losses against the same named competitor."""
+    out = []
+    wl = (m.get("losses") or {}).get("win_loss") or {}
+    for w in wl.get("rows", []):
+        rp = w.get("repeat")
+        if not rp:
+            continue
+        ev = [_row("losses_same_reason", rp["n"], "n", "interviews logged", ends_on, None, wl["repeat_at"], "threshold", "team"),
+              _row("losses_against_name", w["losses"], "n", "interviews logged", ends_on, None, None, "threshold", "team"),
+              _row("win_rate_against_name", w["win_rate"], "ratio", "interviews logged", ends_on, None, None, "threshold", "team")]
+        sentence = f"{rp['n']} people chose {w['name']} over us for the same reason: {rp['reason']}."
+        key = w["name"].lower().replace(" ", "_")
+        out.append(_finding("COMP-R31", "high", {"type": "brand", "id": f"repeat_{key}", "label": f"losses to {w['name']}"}, ev, sentence,
+                            [], ends_on, min(0.9, 0.3 + 0.1 * w["n"]), "no baseline: lost orders to a named brand are not measured"))
+    return out
+
+
 def rule_season(m, ends_on):
     sn = m.get("season") or {}
     if not sn.get("fires"):
@@ -1172,7 +1192,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
         out += [_unavailable("COMP-R16", "low", {"type": "ladder_rung", "id": "lower_rungs", "label": "lower rungs of the ladder"},
                              ["search trends by rung"], "a search trends source (read only)",
                              "Connect a search trends source for the category and each lower rung.", ends_on)]
-        out += rule_ladder(m, ends_on) + rule_corners(m, ends_on) + rule_refresh(m, ends_on) + rule_freshness(m, ends_on) + rule_losses(m, ends_on) + rule_attack(m, ends_on) + rule_presence(m, ends_on) + rule_velocity(m, ends_on) + rule_niche(m, ends_on) + rule_premium(m, ends_on) + rule_search(m, ends_on) + rule_new_move(m, ends_on) + rule_price_cut(m, ends_on) + rule_landing(m, ends_on) + rule_cards(m, ends_on) + rule_frames(m, ends_on) + rule_winloss(m, ends_on) + rule_season(m, ends_on)
+        out += rule_ladder(m, ends_on) + rule_corners(m, ends_on) + rule_refresh(m, ends_on) + rule_freshness(m, ends_on) + rule_losses(m, ends_on) + rule_attack(m, ends_on) + rule_presence(m, ends_on) + rule_velocity(m, ends_on) + rule_niche(m, ends_on) + rule_premium(m, ends_on) + rule_search(m, ends_on) + rule_new_move(m, ends_on) + rule_price_cut(m, ends_on) + rule_landing(m, ends_on) + rule_cards(m, ends_on) + rule_frames(m, ends_on) + rule_winloss(m, ends_on) + rule_repeat_loss(m, ends_on) + rule_season(m, ends_on)
     out += rule_price(m, ends_on) + rule_lookalike(m, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f["severity"]], f["id"]))
     return out

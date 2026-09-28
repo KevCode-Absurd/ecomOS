@@ -589,6 +589,30 @@ def act_winloss(f: dict, m: dict) -> dict:
             "win_rule": None, "stop_rule": None, "check_on": _plus(f["last_seen"], 21), "time_to_ship_hours": 12}
 
 
+def act_repeat_loss(f: dict, m: dict) -> dict:
+    """COMP-R31: one reason keeps costing us shoppers to one name. Ship the answer the reason calls for, then re-interview."""
+    key = f["entity"]["id"].removeprefix("repeat_")
+    w = next(x for x in m["losses"]["win_loss"]["rows"] if x["name"].lower().replace(" ", "_") == key)
+    reason = w["repeat"]["reason"]
+    kind, label, move = audit.lossmod.REASON_MOVE.get(reason, audit.lossmod.REASON_MOVE["other"])
+    name = m["brand"].capitalize()
+    draft = "\n".join([f"{label.capitalize()} for {name}: answer {reason}, the reason {w['repeat']['n']} people picked {w['name']}.",
+                        f"Win rate against {w['name']}: {round(w['win_rate'] * 100)} percent of {w['n']} interviews." if w["win_rate"] is not None else "",
+                        f"Move: {move}",
+                        "Use only proof on file in the brain. Never name them negatively.",
+                        f"Then run 5 more interviews against {w['name']}; the reason must drop below {m['losses']['win_loss']['repeat_at']} losses."])
+    return {"title": f"Answer {reason}: {w['repeat']['n']} shoppers picked {w['name']} over us for it", "owner": "agent_drafts",
+            "artefact": {"kind": kind, "label": label, "draft": draft},
+            "steps": _steps(("agent", f"Read the {w['n']} interviews against {w['name']} and the proof on file for {reason}."),
+                            ("agent", f"Draft {label}."),
+                            ("person", "Approve; the team ships it."),
+                            ("person", f"Run 5 more interviews against {w['name']} after 30 days; log them here.")),
+            "size": {"text": f"1 {label}, then 5 interviews"},
+            "win_rule": f"The win rate against {w['name']} rises and {reason} drops below {m['losses']['win_loss']['repeat_at']} losses",
+            "stop_rule": f"The next 5 interviews still give {reason} 3 or more times: try the next answer on the list",
+            "check_on": _plus(f["last_seen"], 30), "time_to_ship_hours": 4}
+
+
 def act_season(f: dict, m: dict) -> dict:
     """COMP-R30: the season is close and we run no gifting ad. Brief 3 gifting ads with our gifting offer."""
     sn = m["season"]
@@ -627,7 +651,7 @@ BUILDERS = {"COMP-R01": act_angle, "COMP-R02": act_price, "COMP-R03": act_offer_
             "COMP-R24": act_new_move, "COMP-R25": act_price_cut,
             "COMP-R26": act_landing, "COMP-R27": act_card,
             "COMP-R28": act_frames, "COMP-R29": act_winloss,
-            "COMP-R30": act_season}   # R16 has no data source yet: always a connect action
+            "COMP-R30": act_season, "COMP-R31": act_repeat_loss}   # R16 has no data source yet: always a connect action
 
 
 def action(f: dict, m: dict, net_revenue: float | None) -> dict:

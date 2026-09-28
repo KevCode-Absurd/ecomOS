@@ -413,6 +413,23 @@
     row.append(b, status);
     return row;
   }
+  // the win-loss reason breakdown (room visual): losses to one named brand by coded reason
+  function lossReasons(rows, codes) {
+    const lost = rows.filter((r) => r.losses);
+    if (!lost.length) return null;
+    const box = el('div');
+    const pick = el('select', { class: 'text sm', 'aria-label': 'Named brand' }, ...lost.map((r) => el('option', { value: r.name, text: r.name })));
+    const draw = () => {
+      const r = lost.find((x) => x.name === pick.value) || lost[0];
+      const used = codes.filter((c) => r.reasons[c]);
+      box.replaceChildren(Charts.bar({ labels: used, series: [{ name: 'losses to ' + r.name, values: used.map((c) => r.reasons[c]) }], unit: 'n', height: 200,
+        title: 'Losses to ' + r.name + ' by reason', benchmark: 3 }),
+        el('p', { class: 'micro faint', text: r.repeat ? r.repeat.n + ' losses for ' + r.repeat.reason + ': on the plan (3 or more is a repeat).' : 'No reason repeats 3 or more times yet.' }));
+    };
+    pick.addEventListener('change', draw);
+    draw();
+    return el('div', { class: 'stack' }, el('div', { class: 'row' }, el('span', { class: 'small', text: 'Why we lose to' }), pick), box);
+  }
   function winLossBlock(ls) {
     const wl = ls.win_loss || { rows: [], n: 0 };
     const rows = wl.rows.filter((r) => r.n);
@@ -422,6 +439,7 @@
       el('p', { class: 'small' }, el('b', { text: 'Win rate against a named brand: ' }), rate + '.'),
       rows.length ? UI.table({ columns: [{ key: 'name', label: 'Against' }, { key: 'wins', label: 'Wins', unit: 'n' }, { key: 'losses', label: 'Losses', unit: 'n' },
         { key: 'win_rate', label: 'Win rate', format: (v) => v == null ? NA : fmt.pct(v) }], rows, sort: false }) : null,
+      lossReasons(rows, ls.reason_codes || []),
       inputForm('interview', [{ key: 'outcome', label: 'Outcome', options: ['loss', 'win'] }, { key: 'competitor', label: 'Against', options: ls.names || [] },
         { key: 'reason', label: 'Reason code', options: ls.reason_codes || [] }, { key: 'date', label: 'Date', type: 'date', value: new Date().toISOString().slice(0, 10) }], 'Log the interview'),
       el('p', { class: 'micro faint', text: 'Kept in a local file for this brand, never sent anywhere. No names, no quotes: the outcome, the name, one reason and the date.' }));

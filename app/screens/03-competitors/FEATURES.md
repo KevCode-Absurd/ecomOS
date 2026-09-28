@@ -39,6 +39,7 @@ Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `a
 | # | Feature | Status |
 |---|---|---|
 | 6.1 | Win-loss interviews logged on the page (`inputs.py`, `GET/POST inputs`): outcome, the named competitor (from the names on file), one reason code and the date; no names or quotes kept; a local, git-ignored file per brand; win rate by name (wins / (wins + losses)) fills the room metric; COMP-R29 holds until 5 are logged and says how many are on file | done |
+| 6.2 | The same loss reason keeps repeating (room rule, COMP-R31, high): 3 or more logged losses with one reason code against one named competitor put an answer on the plan, picked by reason in code (price and value: a pack step offer; durability: a proof block; fit: a size block; comfort or style: 2 ads; availability: a stock ticket; trust: a trust block; other: 3 more interviews), with a win rule, a stop rule and a 30-day check; a bar chart of losses by reason for each name (the room's win-loss visual) | done |
 
 ## Round 5: hand-offs, execution lanes and the season
 
@@ -256,9 +257,9 @@ Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permi
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
+| 6 | 6.1 to 6.2 | 2026-09-28 | Win-loss log; repeated loss reason |
 | 5 | 5.1 to 5.10 | 2026-09-28 | Hand-offs; action lanes; season plan; quarterly review; exports (and the 5.4 load fix); browser smoke test; team notes; brief pack; check due lane; round close |
 | 4 | 4.1 to 4.10 | 2026-09-28 | Placements and new channel alerts; gap lines; stop rules; unit from the brain; never zero; phone width; threat history; support answers; room metrics. Screenshot `round4.png` |
 | 3 | 3.1 to 3.10 | 2026-09-28 | Page-summary captures and diffs; price moves; landing page tracking; printable report; battlecards; positioning test; win-loss kit; tunable thresholds; second brand. Screenshot `round3.png` |
 | 2 | 2.1 to 2.10 | 2026-09-28 | Lost by name; category ladder; review themes; Amazon against our site; creative velocity; weekly brief; niche sizing; premium signals; search seeds; desk tabs. Screenshot `round2.png` |
 | 1 | 1.1 to 1.10 | 2026-09-28 | Plan first; rank override; 12 pages side by side; coverage matrix; hook and offer mix; references; price and pack ladder; positioning map with moves; changes timeline; freshness and re-pull; rank for all 14 rules. Screenshot `round1.png` |
-| 6 | 6.1 | 2026-09-28 | Win-loss log |
