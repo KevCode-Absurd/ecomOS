@@ -47,6 +47,16 @@ Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `a
 | 4.7 | Who is getting more dangerous: threat points per page across the dated captures as a trend strip, highest first, with ads now; a gap line names any page whose points rose since the first capture (refresh its battlecard, read its new ads); one capture on file now, so it says the trend starts with the next | done |
 | 4.8 | What support can paste today: answers to "how do you compare to X" for each name we lose to and to the top 3 review doubts, built only from verified brain proof plus the guarantee, each with its source record; a doubt or name with no proof gets no answer and lands on "proof to add" (Stance, look better); copy one or all; BRAND-C57 decision | done |
 | 4.9 | The room's 15 specified metrics in the audit, each with value, formula and, when it cannot be computed, the reason (price change count needs 2 captures, new creative count needs 2 ad-level snapshots, win rate needs interviews, niche size and positioning test score need their sources); none reads 0 for unknown | done |
+| 4.10 | Round close: 29 rules, 23 desk blocks each ending in a gap line, every money action sized with a stop rule, brand facts and the price unit only from the brain, unavailable never zero, 360 px clean on every tab; all screen tests green apart from the 4 known site speed ones; screenshot `round4.png` | done |
+
+### Round 4 status for Kevin (28 Sep 2026)
+
+1. Every block on the desk now ends in one line: the gap, the move, who owns it and a button to it, or what holds. A founder can read the desk top to bottom and act at each stop.
+2. New: support answers you can paste (from verified proof only), each rival's threat trend, where rivals run their ads with an alert when one enters a new placement, and the room's 15 metrics with their formulas.
+3. Every action that spends money or traffic now has a size, a stop rule and a check date. The 6 that lacked a stop rule have one.
+4. Nothing reads 0 when it was never read (5 fixes), the price unit comes from the brain, and the page is clean at phone width on every tab.
+5. Fixed on the way: the live server served a stale mix of code after an edit; it now reloads the whole screen. Still missing: the ad-level pull, rival site captures, search and trend data; each is a connect step.
+6. Next, round 5: exact counts once the pull lands, the first rival page captures, a quarterly positioning review, and an Amazon listing comparison against rivals once their listings are pulled.
 
 ## Round 3: watching over time, reports and the rest of the room
 
@@ -214,7 +224,7 @@ Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permi
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
-| 4 | 4.1 to 4.9 | 2026-09-28 | Placements and new channel alerts; gap lines; stop rules; unit from the brain; never zero; phone width; threat history; support answers; room metrics |
+| 4 | 4.1 to 4.10 | 2026-09-28 | Placements and new channel alerts; gap lines; stop rules; unit from the brain; never zero; phone width; threat history; support answers; room metrics. Screenshot `round4.png` |
 | 3 | 3.1 to 3.10 | 2026-09-28 | Page-summary captures and diffs; price moves; landing page tracking; printable report; battlecards; positioning test; win-loss kit; tunable thresholds; second brand. Screenshot `round3.png` |
 | 2 | 2.1 to 2.10 | 2026-09-28 | Lost by name; category ladder; review themes; Amazon against our site; creative velocity; weekly brief; niche sizing; premium signals; search seeds; desk tabs. Screenshot `round2.png` |
 | 1 | 1.1 to 1.10 | 2026-09-28 | Plan first; rank override; 12 pages side by side; coverage matrix; hook and offer mix; references; price and pack ladder; positioning map with moves; changes timeline; freshness and re-pull; rank for all 14 rules. Screenshot `round1.png` |
