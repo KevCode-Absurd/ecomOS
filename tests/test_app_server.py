@@ -87,8 +87,9 @@ class ServerTest(unittest.TestCase):
         status, body = self.call('/api/screens')
         self.assertEqual(status, 200)
         slugs = [s['slug'] for s in body['screens']]
-        self.assertEqual(len(slugs), 28)
-        self.assertEqual(slugs[0], '00-today')
+        self.assertEqual(len(slugs), 29)  # setup plus the 28 rooms
+        self.assertEqual(slugs[0], 'setup')
+        self.assertEqual(slugs[1], '00-today')
         self.assertEqual(slugs[-1], '27-wild-bets-pr')
         self.assertTrue(all(s['room'] and s['purpose'] for s in body['screens']))
 
@@ -172,7 +173,7 @@ class ServerTest(unittest.TestCase):
 
 class ContractParsingTest(unittest.TestCase):
     def test_real_index_and_contract(self):
-        self.assertEqual(len(server.read_index()), 28)
+        self.assertEqual(len(server.read_index()), 29)
         metrics = server.read_metric_contract()
         self.assertGreaterEqual(len(metrics), 25)
         groups = {m['group'] for m in metrics}

@@ -2,6 +2,7 @@
 
 | Folder | Room | Purpose |
 |---|---|---|
+| `setup` | Setup | the entry point: enter the website, upload documents, connect sources, brand numbers, first audit |
 | `00-today` | Today | the break in the pipeline, the top 10, pending decisions, ask anything |
 | `01-market-research` | Products and research | demand, competition, price bands, product candidates, review mining |
 | `02-customers-avatars` | Brand and customers | who buys and why, avatars with evidence, language bank, brand health |

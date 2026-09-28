@@ -51,7 +51,7 @@ SAMPLE = DATA / 'sample-brand'
 CONTRACTS = APP / 'contracts'
 DECISIONS = DATA / 'decisions.json'
 
-SAFE_SLUG = re.compile(r'^[0-9]{2}-[a-z0-9-]{2,40}$')
+SAFE_SLUG = re.compile(r'^(?:[0-9]{2}-[a-z0-9-]{2,40}|setup)$')  # setup: the onboarding entry point
 SAFE_FILE = re.compile(r'^[A-Za-z0-9_.-]{1,80}$')
 SAFE_NAME = re.compile(r'^[a-z0-9_]{1,40}$')
 WEB_FILES = ('index.html', 'shell.js', 'ui-kit.css', 'ui-kit.js', 'charts.js', 'kit.html')
