@@ -159,6 +159,15 @@ def build(f: dict, nr: float | None) -> dict:
                         {"n": 3, "who": "person", "text": "Pick the record as proof, or approve the drafted fact as an approved record."},
                         {"n": 4, "who": "agent", "text": f"Attach it to the rung. The surfaces that use the rung ({surfaces or 'copy, page, listing, macro'}) read the proof on their next brief."}],
                  check_on=_check_on(f, 7), time_to_ship_hours=1)
+    elif rid == "BRN-R30":
+        az = f.get("asset") or {}
+        act = az.get("action") or {}
+        st = az.get("state")
+        steps = {"expired_live": [{"n": 1, "who": "person", "text": f"Decide: take {az.get('name')} down from {', '.join(az.get('where') or []) or 'where it is live'} today, or renew."}, {"n": 2, "who": "agent", "text": "Send the drafted renewal request to the rights holder, or list the placements to remove."}, {"n": 3, "who": "person", "text": "Confirm the takedown or the new term; the record updates."}],
+                 "inside_window": [{"n": 1, "who": "agent", "text": "Send the drafted renewal request to the rights holder with the current use listed."}, {"n": 2, "who": "person", "text": "Approve the price and the term."}, {"n": 3, "who": "agent", "text": "Write the new expiry date on the record."}]}.get(st, [{"n": 1, "who": "person", "text": f"Find the licence for {az.get('name')} and type the expiry date on the asset record."}, {"n": 2, "who": "agent", "text": "The window check runs from that date."}])
+        a.update(title=act.get("title") or f"Check the right to {label}", owner=act.get("owner") or "person",
+                 artefact={"kind": "email" if st in ("expired_live", "inside_window") else "brain_record", "label": "a renewal request to the rights holder, or the takedown list" if st in ("expired_live", "inside_window") else "the expiry date on the asset record", "draft": act.get("draft")},
+                 steps=steps, check_on=_check_on(f, 3 if st == "expired_live" else 7), time_to_ship_hours=0.5)
     elif rid == "BRN-R29":
         rj = f.get("rejected") or {}
         a.update(title=f"Review the rejected idea {rj.get('idea_id')}: keep it out or bring it back", owner="person",

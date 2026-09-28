@@ -8,6 +8,9 @@ question, and accept or ignore on a proposed record. Nothing external.
                                 judgement rules, the package, where to check (markdown)
   GET  agentfile/endpoints      this route table as JSON, for an agent or an MCP wrapper
   GET  brainmd                  the router BRAIN.md text
+  GET  assets                   asset rights and expiry: the register with windows and the renewal or takedown
+  POST assets                   {name, kind, rights_holder, licence, where, expires_on, live}: an asset on file
+  POST assets/<key>/retire|offline  retire an asset record, or mark it not live
   GET  trail?days=7             who read what: section reads by reader, facts handed to agents, private facts to public readers
   POST export/diff              {bundle | content_base64}: what changed since that export, record by record
   POST export/diff/start|part|finish  the same export in 24 KB base64 parts (the server takes 32 KB a request)
@@ -188,6 +191,9 @@ _pspec.loader.exec_module(parity)
 _sspec = importlib.util.spec_from_file_location("brand_brain_sitediff", HERE / "sitediff.py")
 sitediff = importlib.util.module_from_spec(_sspec)
 _sspec.loader.exec_module(sitediff)
+_asspec = importlib.util.spec_from_file_location("brand_brain_assets", HERE / "assets.py")
+assets = importlib.util.module_from_spec(_asspec)
+_asspec.loader.exec_module(assets)
 _trspec = importlib.util.spec_from_file_location("brand_brain_trail", HERE / "trail.py")
 trail = importlib.util.module_from_spec(_trspec)
 _trspec.loader.exec_module(trail)
@@ -1855,6 +1861,34 @@ def handle(req):
         return cd
     if req.method == "POST" and parts == ["claims"]:
         return claim_add(brain, req.body)
+    if req.method == "GET" and parts == ["assets"]:
+        reg = assets.register(brain)
+        reg.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "LOOP-C29", "autonomy": "founder_gate"})
+        return reg
+    if req.method == "POST" and parts == ["assets"]:
+        rec = assets.record(brain, req.body or {})
+        if isinstance(rec, tuple):
+            return rec
+        errs = founder_put(brain, rec, "asset", rec["text"][:160])
+        if errs:
+            return 400, {"error": "; ".join(errs)}
+        return 201, {"ok": True, "record": rec["id"], "version": brain.version(), "next": "On file. The window check runs on every load; the master list carries the renewal or the takedown when it is due."}
+    if req.method == "POST" and len(parts) == 3 and parts[0] == "assets" and parts[2] in ("retire", "offline"):
+        key = re.sub(r"[^a-z0-9_]+", "", parts[1])
+        raw = next((r for r in brain.raw("content") if r.get("field") == f"asset_{key}" and r.get("status", "active") != "retired"), None)
+        if raw is None:
+            return 404, {"error": "no asset with that key", "key": key}
+        before_v = brain.version()
+        if parts[2] == "retire":
+            brain.retire(raw["id"])
+            changes.log(brain, "asset", "content", raw["id"], f"asset {key} retired from the register")
+            changes.version_step(brain, before_v, f"asset {key} retired")
+            return 201, {"ok": True, "retired": raw["id"], "version": brain.version()}
+        new = dict(raw, value=dict(raw.get("value") or {}, live=False), text=str(raw.get("text") or "").replace("; live.", "; not live."))
+        errs = founder_put(brain, new, "asset", f"asset {key} marked not live")
+        if errs:
+            return 400, {"error": "; ".join(errs)}
+        return 201, {"ok": True, "record": raw["id"], "live": False, "version": brain.version()}
     if req.method == "GET" and parts == ["trail"]:
         try:
             days = max(1, min(90, int(req.arg("days", "7") or 7)))

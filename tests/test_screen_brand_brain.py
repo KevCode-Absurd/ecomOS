@@ -47,6 +47,8 @@ class TempBrain(unittest.TestCase):
     def setUp(self):
         self.tmp = Path(tempfile.mkdtemp())
         shutil.copytree(BRAIN / 'bombas', self.tmp / 'bombas')
+        for log in ('reads.log.jsonl', 'review/agent-reads.jsonl'):  # session logs a running server writes; never test state
+            (self.tmp / 'bombas' / log).unlink(missing_ok=True)
         api.BRAIN_ROOT = self.tmp
 
     def tearDown(self):
@@ -2132,10 +2134,54 @@ class Round5Trail(TempBrain):
         self.assertIn('Private facts handed to a public-facing reader: 1', t['text'])
 
 
+class Round5Assets(TempBrain):
+    """Round 5 feature 8: asset rights and expiry; the register, the windows, the renewal request or the takedown; rule BRN-R30."""
+
+    def test_register_states_rule_and_actions(self):
+        self.assertEqual(api.handle(Req(['assets']))['counts']['on_file'], 0)
+        for body in ({'name': 'Hero video by Maya', 'kind': 'creator', 'rights_holder': 'Maya R', 'licence': '12 months paid social', 'where': 'Meta ads, PDP', 'expires_on': '2026-10-15'},
+                     {'name': 'Stock photo cosy socks', 'kind': 'photo', 'rights_holder': 'Stocksy', 'where': ['homepage'], 'expires_on': '2026-09-01'},
+                     {'name': 'Brand font Conforto', 'kind': 'font', 'rights_holder': 'the foundry', 'where': 'site', 'expires_on': '2027-06-30'},
+                     {'name': 'Jingle', 'kind': 'music', 'rights_holder': 'a composer'}):
+            status, res = api.handle(Req(['assets'], 'POST', body=body))
+            self.assertEqual(status, 201, body)
+        reg = api.handle(Req(['assets']))
+        by = {a['key']: a for a in reg['assets']}
+        self.assertEqual((by['hero_video_by_maya']['state'], by['hero_video_by_maya']['days_left'], by['hero_video_by_maya']['window_days']), ('inside_window', 17, 30))
+        self.assertEqual((by['stock_photo_cosy_socks']['state'], by['stock_photo_cosy_socks']['days_left']), ('expired_live', -27))
+        self.assertEqual(by['brand_font_conforto']['state'], 'ok')
+        self.assertEqual(by['jingle']['state'], 'no_date')
+        self.assertEqual([a['key'] for a in reg['assets']][:2], ['stock_photo_cosy_socks', 'hero_video_by_maya'])  # expired and live first, then the window
+        self.assertEqual(reg['counts'], {'on_file': 4, 'expired_live': 1, 'inside_window': 1, 'no_date': 1, 'live': 4})
+        self.assertEqual(reg['next']['name'], 'Hero video by Maya')
+        self.assertIn('Maya R', by['hero_video_by_maya']['action']['draft'])
+        fs = {f['entity']['id']: f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R30'}
+        self.assertEqual((fs['asset_stock_photo_cosy_socks']['severity'], fs['asset_hero_video_by_maya']['severity'], fs['asset_jingle']['severity']), ('high', 'medium', 'low'))
+        self.assertNotIn('asset_brand_font_conforto', fs)
+        acts = {a['entity']['id']: a for a in api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions'] if a['rule_id'] == 'BRN-R30'}
+        self.assertTrue(acts['asset_stock_photo_cosy_socks']['title'].startswith('Take down or renew Stock photo cosy socks'))
+        self.assertEqual((acts['asset_stock_photo_cosy_socks']['owner'], acts['asset_stock_photo_cosy_socks']['artefact']['kind']), ('person', 'email'))
+        self.assertEqual(acts['asset_hero_video_by_maya']['owner'], 'agent_drafts')
+        for a in acts.values():
+            self.assertEqual(api.rank_mod.validate_action(a), [])
+        # not live: the expired photo stops being a takedown
+        status, res = api.handle(Req(['assets', 'stock_photo_cosy_socks', 'offline'], 'POST'))
+        self.assertEqual((status, res['live']), (201, False))
+        self.assertEqual(next(a['state'] for a in api.handle(Req(['assets']))['assets'] if a['key'] == 'stock_photo_cosy_socks'), 'expired')
+        self.assertNotIn('asset_stock_photo_cosy_socks', [f['entity']['id'] for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R30'])
+        status, res = api.handle(Req(['assets', 'jingle', 'retire'], 'POST'))
+        self.assertEqual(status, 201)
+        self.assertEqual(api.handle(Req(['assets']))['counts']['on_file'], 3)
+        self.assertEqual(api.handle(Req(['assets'], 'POST', body={'name': 'x', 'kind': 'hologram'}))[0], 400)
+        self.assertEqual(api.handle(Req(['assets'], 'POST', body={'name': 'x', 'expires_on': 'soon'}))[0], 400)
+        self.assertEqual(api.handle(Req(['assets', 'nope', 'retire'], 'POST'))[0], 404)
+        self.assertGreaterEqual(sum(1 for c in api.handle(Req(['changes']))['changes'] if c['kind'] == 'asset'), 5)
+
+
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
-    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'],
+    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'],
               ['decisions'], ['flows'], ['claims'], ['site', 'diff'], ['parity'], ['contracts'], ['legal'], ['voice'], ['battlecards'], ['permissions'],
               ['export'], ['assumptions'], ['facts'], ['summaries'], ['changes'], ['learn'], ['report'], ['digest'], ['review'], ['bottlenecks'], ['audit']]
 

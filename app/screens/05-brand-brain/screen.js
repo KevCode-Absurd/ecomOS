@@ -62,6 +62,7 @@
     loadUnlocks();
     loadMoves();
     loadLadderProof(m.actions || []);
+    loadAssets(m.actions || []);
     loadSelfAudit(m.actions || []);
     loadPeaks(m.actions || []);
     loadVisual(m.actions || []);
@@ -1347,6 +1348,37 @@
       } },
       rows, sort: false, maxRows: 40, empty: 'No vendors known yet. Add a contract below.',
     });
+  }
+  async function loadAssets(actions) {
+    let ar;
+    try { ar = await api(BASE + 'assets'); } catch (e) { mount('#assets', el('p', { class: 'muted', text: 'Assets unavailable: ' + e.message })); return; }
+    const byAct = {}; for (const a of actions || []) if (a.rule_id === 'BRN-R30' && a.entity) byAct[a.entity.id] = a;
+    const c = ar.counts;
+    mount('#assets-tools', UI.orientation([{ label: 'on file', value: c.on_file, unit: 'n' }, { label: 'expired, live', value: c.expired_live, unit: 'n', tone: c.expired_live ? 'bad' : 'good' }, { label: 'inside the window', value: c.inside_window, unit: 'n', tone: c.inside_window ? 'warn' : null }, { label: 'no date', value: c.no_date, unit: 'n' }, { label: 'next expiry', value: null, unit: 'n', unavailable_label: ar.next ? ar.next.name + ' in ' + ar.next.days_left + ' d' : 'none on file' }]));
+    const status = el('span', { class: 'micro muted' });
+    const open = (r) => {
+      const act = byAct['asset_' + r.key];
+      const body = el('div', { class: 'stack' }, el('div', { class: 'row' }, UI.verdict(r.verdict.kind, r.verdict.text), el('span', { class: 'chip', text: r.kind }), r.live ? el('span', { class: 'chip warn', text: 'live' }) : el('span', { class: 'chip', text: 'not live' }), ...(r.where || []).map((w) => el('span', { class: 'chip', text: w }))),
+        el('div', { class: 'small' }, el('b', { text: 'Rights: ' }), (r.rights_holder || NA) + (r.licence ? ', ' + r.licence : '') + (r.expires_on ? ', until ' + fmt.date(r.expires_on) : ', no expiry on file')));
+      if (r.action) body.append(el('div', { class: 'small' }, el('b', { text: r.action.title })), r.action.draft ? el('pre', { class: 'card sunken brief', text: r.action.draft }) : null, el('div', { class: 'row' }, r.action.draft ? UI.copyButton({ label: 'Copy the request', text: () => r.action.draft }) : null, act ? UI.decisionRow({ capability: 'LOOP-C29', autonomy: 'founder_gate', owner: act.owner, screen: SCREEN, compact: true, finding_id: act.id, current: act.decision, stub: act.title + '. ' + act.artefact.label + '.' }) : null));
+      const off = el('button', { class: 'btn sm', type: 'button', text: 'Mark not live' });
+      off.addEventListener('click', async () => { off.disabled = true; try { await api(BASE + 'assets/' + r.key + '/offline', { method: 'POST' }); panel.close(); loadAssets(actions); loadPlan(); } catch (e) { off.disabled = false; status.textContent = 'Could not: ' + e.message; } });
+      const ret = el('button', { class: 'btn sm soft', type: 'button', text: 'Remove from the register' });
+      ret.addEventListener('click', async () => { ret.disabled = true; try { await api(BASE + 'assets/' + r.key + '/retire', { method: 'POST' }); panel.close(); loadAssets(actions); loadPlan(); } catch (e) { ret.disabled = false; status.textContent = 'Could not: ' + e.message; } });
+      body.append(el('div', { class: 'row' }, r.live ? off : null, ret, status));
+      const panel = UI.panel({ title: r.name, body });
+    };
+    const table = UI.verdictTable({ columns: [{ key: 'name', label: 'Asset' }, { key: 'kind', label: 'Kind' }, { key: 'rights_holder', label: 'Rights holder', format: (v) => v || NA }, { key: 'where', label: 'Live on', format: (v) => (v || []).join(', ') || NA }, { key: 'expires_on', label: 'Expires', format: (v) => v ? fmt.date(v) : NA }, { key: 'days_left', label: 'Days', num: true }],
+      verdict: { at: 1, kind: (r) => r.verdict.kind, text: (r) => r.verdict.text, reason: (r) => r.action ? r.action.title : 'nothing due' }, rows: ar.assets, sort: false, empty: 'No asset on file. Add the first one below: the creator video, the stock photo, the licensed font.', onRow: open, actions: { label: 'Open', onClick: open } });
+    const name = el('input', { class: 'text sm', placeholder: 'asset name, like: hero video by Maya', style: { flex: '1 1 220px' } });
+    const kind = el('select', { class: 'text sm' }, ...ar.kinds.map((k) => el('option', { value: k, text: k })));
+    const holder = el('input', { class: 'text sm', placeholder: 'rights holder', style: { flex: '1 1 160px' } });
+    const licence = el('input', { class: 'text sm', placeholder: 'licence, like: 12 months paid social', style: { flex: '1 1 200px' } });
+    const where = el('input', { class: 'text sm', placeholder: 'live on, comma separated: Meta ads, PDP', style: { flex: '1 1 200px' } });
+    const exp = el('input', { class: 'text sm', type: 'date', title: 'expires on' });
+    const add = el('button', { class: 'btn primary sm', type: 'button', text: 'Put it on file' });
+    add.addEventListener('click', async () => { if (!name.value.trim()) { status.textContent = 'Name the asset first.'; return; } add.disabled = true; try { const r = await api(BASE + 'assets', { method: 'POST', body: { name: name.value.trim(), kind: kind.value, rights_holder: holder.value.trim(), licence: licence.value.trim(), where: where.value, expires_on: exp.value || null, live: true } }); status.textContent = r.next; loadAssets(actions); loadPlan(); } catch (e) { add.disabled = false; status.textContent = 'Could not save: ' + e.message; } });
+    mount('#assets', table, el('div', { class: 'row', style: { marginTop: '8px' } }, name, kind, holder), el('div', { class: 'row' }, licence, where, exp, add, status), el('p', { class: 'micro faint', text: ar.note }));
   }
   async function loadContracts() {
     let cr, actions = [];

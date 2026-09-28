@@ -149,6 +149,11 @@ BRN-R29 rejected idea due for review. A learnings record `rejected_idea_<id>`
     review date has passed (bottlenecks.py). Severity low. Capability PROP-C06.
     The founder keeps it out for another period or brings it back. Owner:
     05-brand-brain.
+BRN-R30 asset right expiring or expired. A content record `asset_<slug>`
+    (assets.py) whose right expired while the asset is live (high), ends inside
+    its window (medium: 30 days for creator and music, 60 for photo, video,
+    font), or has no expiry date (low). Capability LOOP-C29. Owner:
+    05-brand-brain.
 BRN-R07 competitor snapshot stale. A configured Ad Library page was captured
     more than SNAPSHOT_STALE_DAYS (7) ago, or never. Severity low. Capability
     BRN-C11 (competitor snapshot, signals only). Owner: 05-brand-brain.
@@ -239,6 +244,8 @@ RULES = [
      "inputs": ["every section"], "capability": "LOOP-C22", "owner_screen": SCREEN},
     {"rule_id": "BRN-R29", "name": "rejected idea due for review", "entity_type": "brand",
      "inputs": ["learnings.rejected_idea_*"], "capability": "PROP-C06", "owner_screen": SCREEN},
+    {"rule_id": "BRN-R30", "name": "asset right expiring or expired", "entity_type": "brand",
+     "inputs": ["content.asset_*"], "capability": "LOOP-C29", "owner_screen": SCREEN},
 ]
 AUTONOMY = {"BRN-C12": "agent_does", "BRN-C07": "founder_gate", "BRN-C03": "agent_does",
             "CREA-C19": "agent_does", "CREA-C04": "agent_does", "BRN-C11": "agent_does", "CREA-C06": "agent_does",
@@ -256,6 +263,9 @@ _lspec.loader.exec_module(legal)
 _pspec = importlib.util.spec_from_file_location("brand_brain_parity", Path(__file__).resolve().parent / "parity.py")
 parity = importlib.util.module_from_spec(_pspec)
 _pspec.loader.exec_module(parity)
+_asspec = importlib.util.spec_from_file_location("brand_brain_assets", Path(__file__).resolve().parent / "assets.py")
+assets = importlib.util.module_from_spec(_asspec)
+_asspec.loader.exec_module(assets)
 _bnspec = importlib.util.spec_from_file_location("brand_brain_bottlenecks", Path(__file__).resolve().parent / "bottlenecks.py")
 bottlenecks = importlib.util.module_from_spec(_bnspec)
 _bnspec.loader.exec_module(bottlenecks)
@@ -791,6 +801,20 @@ def rule_self_audit(brain: Brain, ends_on: str) -> list[dict]:
     return out
 
 
+def rule_assets(brain: Brain, ends_on: str) -> list[dict]:
+    out = []
+    for a in assets.register(brain)["assets"]:
+        if not a.get("action"):
+            continue
+        sev = {"expired_live": "high", "inside_window": "medium"}.get(a["state"], "low")
+        ev = [_row("days_left", a["days_left"], "n", ends_on, None, a["window_days"], "content"), _row("live", 1 if a["live"] else 0, "flag", ends_on, None, None, "content")]
+        why = {"expired_live": f"the right expired on {a['expires_on']} and it is still live", "inside_window": f"the right ends on {a['expires_on']}, {a['days_left']} days away", "no_date": "no expiry date is on file", "bad_date": "the expiry date is unreadable"}[a["state"]]
+        f = _finding("BRN-R30", sev, {"type": "brand", "id": f"asset_{a['key']}", "label": a["name"]}, ev, f"{a['name']} ({a['kind']}, {', '.join(a['where']) or 'use not on file'}): {why}.", [a["record"]], ends_on, 0.95)
+        f["asset"] = {k: a[k] for k in ("key", "name", "kind", "state", "days_left", "expires_on", "where", "rights_holder", "action")}
+        out.append(f)
+    return out
+
+
 def rule_rejected_due(brain: Brain, ends_on: str) -> list[dict]:
     out = []
     for v in bottlenecks.rejected_ideas(brain).values():
@@ -843,7 +867,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
         bank = keeper.load_bank()
     except (OSError, ValueError, KeyError):
         bank = None
-    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_untiered_claims(brain, ends_on) + rule_site_changes(brain, ends_on) + rule_parity(brain, ends_on) + rule_contracts(brain, ends_on) + rule_legal(brain, ends_on) + rule_picked_ideas(brain, ends_on) + rule_ladder_proof(brain, ends_on) + rule_self_audit(brain, ends_on) + rule_peaks(brain, ends_on) + rule_visual(brain, ends_on) + rule_visibility(brain, ends_on) + rule_rejected_due(brain, ends_on) + rule_permissions(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
+    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_untiered_claims(brain, ends_on) + rule_site_changes(brain, ends_on) + rule_parity(brain, ends_on) + rule_contracts(brain, ends_on) + rule_legal(brain, ends_on) + rule_picked_ideas(brain, ends_on) + rule_ladder_proof(brain, ends_on) + rule_self_audit(brain, ends_on) + rule_peaks(brain, ends_on) + rule_visual(brain, ends_on) + rule_visibility(brain, ends_on) + rule_rejected_due(brain, ends_on) + rule_assets(brain, ends_on) + rule_permissions(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
     if bank is None:
         for rid, sev in (("BRN-R02", "medium"), ("BRN-R03", "medium")):
             f = _finding(rid, sev, {"type": "brand", "id": "question_bank", "label": "question bank"},
