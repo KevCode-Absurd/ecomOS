@@ -203,6 +203,23 @@ Sources: round 6's candidates (the alert digest, notes on audience profiles, res
 | 7.9 | Restore from an export (`restore.py`, `POST export/restore`): after a dropped export's diff, name the sections and plan the restore (re-added, changed, retired per section), then apply: the export's records are written back through the store with the export named as their source, the current values go into history, records the export does not hold are retired; changes and freshness are never restored; one logged change per section | done | Undo a bad week in one section without losing the record of what happened since |
 | 7.10 | Change a number safely (`numbers.py`, `GET numbers`, `POST numbers/change`, `POST numbers/done`): change a scalar fact (a threshold, a price, a window, a code) in one place as a founder edit with the old value kept in history; the dependents trace (records, ladder rungs, snippets, facts, the ads that carry the code) becomes a plans record with a done flag per place; rule BRN-R37 keeps it on the master list (medium while an ad or a snippet is left) until every dependent is marked done and the plan retires itself | done | Change the free shipping threshold once and never leave an old $75 in a snippet, a fact or an ad |
 
+## Round 8 (manager, 28 Sep 2026): 10 features, one commit each
+
+Sources: round 7's candidates (the brand book, the round schedule, the new-hire questions), the room jobs still thin (provenance, undo, bulk approval), and what the other managers' screens will need from the brain (a contradiction check before a write, a CSV of the records).
+
+| # | Feature | Status | What a founder can do |
+|---|---|---|---|
+| 8.1 | The brand book (`brandbook.py`, `GET brandbook`): one printable document from the records, in the order a brand book reads (who we are, what we stand for, who we speak to, how we speak, our words, the lines we never cross, the lines and numbers that never change, what we look like with hex codes and logo rules, what we say about the basics, where it lives); every empty section says so; copy, download or print from the package block; the read is logged | done | Hand an agency or a new designer the brand book, true to the records, without writing it |
+| 8.2 | The round schedule | todo | |
+| 8.3 | Ten questions for a new hire, with the answer key | todo | |
+| 8.4 | Check an agent's answers against the brain | todo | |
+| 8.5 | Trust over time | todo | |
+| 8.6 | Where every fact came from: the sources register | todo | |
+| 8.7 | A contradiction check before a write | todo | |
+| 8.8 | Approve a whole source after a review | todo | |
+| 8.9 | The records as a CSV | todo | |
+| 8.10 | Undo from the changes list | todo | |
+
 ### Round 7 status for Kevin (28 Sep 2026)
 
 1. What you can do now: read one alert digest a week with what is new since the last; put your own line on an audience profile built from reviews; have the scanner catch a misspelt brand name or a lower-case programme name; get the proof request drafted for every claim that is not yet approved and approve it with the evidence on the record; record what an agent got wrong so every agent reads the correction and the misused fact goes to review today; see what goes stale this week by source and confirm your own records in a click; run the weekly round from a checklist that remembers its ticks and logs the close; read one trust number per section with the formula; restore a section from an export without losing what happened since; change a number once and get every place that still says the old value as work until each is done.

@@ -9,6 +9,7 @@ question, and accept or ignore on a proposed record. Nothing external.
   GET  agentfile/endpoints      this route table as JSON, for an agent or an MCP wrapper
   GET  brainmd                  the router BRAIN.md text
   GET|POST brainmd/notes        the founder notes block in BRAIN.md, read and set; kept across regeneration
+  GET  brandbook                the brand book from the records (markdown): identity, positioning, audiences, voice, glossary, red lines, locks, palette, facts
   GET  round                    the founder round as a checklist: questions, the review queue, moves, reviews due, carried over
   POST round/tick               {key, done}: tick or untick an item; POST round/close closes the round with one dated decision
   GET  trust                    section trust, explained: strong, fresh, reviewed, owned, weighted, with the formula
@@ -230,6 +231,9 @@ _pspec.loader.exec_module(parity)
 _sspec = importlib.util.spec_from_file_location("brand_brain_sitediff", HERE / "sitediff.py")
 sitediff = importlib.util.module_from_spec(_sspec)
 _sspec.loader.exec_module(sitediff)
+_bbspec = importlib.util.spec_from_file_location("brand_brain_brandbook", HERE / "brandbook.py")
+brandbook = importlib.util.module_from_spec(_bbspec)
+_bbspec.loader.exec_module(brandbook)
 _rdspec = importlib.util.spec_from_file_location("brand_brain_roundlist", HERE / "roundlist.py")
 roundlist = importlib.util.module_from_spec(_rdspec)
 _rdspec.loader.exec_module(roundlist)
@@ -2037,6 +2041,27 @@ def handle(req):
         return cd
     if req.method == "POST" and parts == ["claims"]:
         return claim_add(brain, req.body)
+    if req.method == "GET" and parts == ["brandbook"]:
+        ident = {}
+        for r in brain.records("identity"):
+            f = r.get("field") or ""
+            if f in ("name", "one_line_pitch", "category", "founded", "headquarters", "giving_model", "mission", "site_url", "market") and isinstance(r.get("value"), (str, int, float)):
+                ident[f] = r["value"]
+            elif f == "headquarters" and isinstance(r.get("value"), dict):
+                ident[f] = ", ".join(str(x) for x in r["value"].values() if isinstance(x, str))
+        pos = {}
+        for r in brain.records("positioning"):
+            if r["id"].endswith(".positioning.frame"):
+                pos["frame"] = r.get("text") or str(r.get("value"))
+            elif r.get("field") == "proof_points":
+                pos["proof_points"] = ", ".join(str(x) for x in r["value"]) if isinstance(r.get("value"), list) else r.get("text")
+            elif r.get("field") == "category_frame":
+                pos["category_frame"] = r.get("text") or str(r.get("value"))
+        parts_ = {"name": ident.get("name"), "identity": ident, "positioning": pos, "audiences": audiences.profiles(brain, ladderproof)["profiles"], "voice": voice.sheet(brain), "glossary": glossary.terms(brain)["terms"],
+                  "redlines": redlines.register(brain)["lines"], "locks": locks.zones(brain, voice), "visual": visual.palette(brain), "facts": facts.pairs(brain)["pairs"], "tokens": package_mod.tokens}
+        res = brandbook.build(brain, parts_)
+        _log_read(brain, ["identity", "positioning", "avatars", "voice", "claims", "visual", "content"], req.arg("reader") or "brandbook")
+        return res
     if req.method == "GET" and parts == ["round"]:
         return round_view(brain, req)
     if req.method == "POST" and parts == ["round", "tick"]:

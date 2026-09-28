@@ -2868,10 +2868,35 @@ class Round7Checklist(TempBrain):
         self.assertEqual(api.handle(Req(['round', 'tick'], 'POST', body={}))[0], 400)
 
 
+class Round8BrandBook(TempBrain):
+    """Round 8 feature 1: the brand book from the records, every section present and honest when empty."""
+
+    def test_book_sections_and_content(self):
+        api.handle(Req(['claims'], 'POST', body={'text': 'waterproof', 'tier': 'forbidden'}))
+        api.handle(Req(['visual', 'logo'], 'POST', body={'min_size_px': '120', 'never': 'stretch it'}))
+        api.handle(Req(['facts', 'returns'], 'POST', body={'answer': 'Returns are accepted within 30 days, refunded to the original payment method.'}))
+        b = api.handle(Req(['brandbook']))
+        self.assertTrue(b['text'].startswith('# Bombas brand book'))
+        for sec in ('Who we are', 'What we stand for', 'Who we speak to', 'How we speak', 'Our words', 'The lines we never cross', 'The lines and numbers that never change', 'What we look like', 'What we say about the basics', 'Where it lives'):
+            self.assertTrue(any(x.startswith(sec) for x in b['sections']), sec)
+        self.assertIn('Never say: waterproof', b['text'])
+        self.assertIn('#223859', b['text'])
+        self.assertIn('minimum 120 px', b['text'])
+        self.assertIn('Honeycomb Arch Support System', b['text'])
+        self.assertIn('Returns are accepted within 30 days', b['text'])
+        self.assertIn('_voice sheet not filled yet_', b['text'])
+
+    def test_example_book_is_honest(self):
+        shutil.copytree(BRAIN / 'example', self.tmp / 'example')
+        b = api.handle(Req(['brandbook'], query={'brand': ['example']}))
+        self.assertIn('_no palette on file yet_', b['text'])
+        self.assertIn('_no red line yet_', b['text'])
+
+
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
-    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'], ['onepage'], ['brainmd', 'notes'], ['alerts'], ['glossary'], ['expiring'], ['feedback'], ['numbers'], ['proofs'], ['trust'], ['round'],
+    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'], ['onepage'], ['brainmd', 'notes'], ['alerts'], ['glossary'], ['expiring'], ['feedback'], ['numbers'], ['proofs'], ['trust'], ['round'], ['brandbook'],
               ['decisions'], ['flows'], ['claims'], ['site', 'diff'], ['parity'], ['contracts'], ['legal'], ['voice'], ['battlecards'], ['permissions'],
               ['export'], ['assumptions'], ['facts'], ['summaries'], ['changes'], ['learn'], ['report'], ['digest'], ['review'], ['bottlenecks'], ['audit']]
 
