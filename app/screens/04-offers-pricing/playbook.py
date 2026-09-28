@@ -205,3 +205,5 @@ STALE_DAYS = 90           # a move built on a brain record older than this says 
 # page (read in web pass 2); lift claims were not read in full, so the move is a test, not a promise.
 BNPL_MIN_USD = 35
 BNPL_WORDS = ('installment', 'afterpay', 'klarna', 'affirm', 'sezzle', 'pay in 4', 'shop pay installments')
+LOYALTY_FIRST_REWARD = (0.03, 0.10)   # first reward worth 3 to 10 percent of AOV (web pass 2: Smile.io)
+LOYALTY_ORDERS_TO_FIRST = (1, 3)      # and reachable in 1 to 3 orders

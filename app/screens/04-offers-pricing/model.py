@@ -1063,7 +1063,7 @@ def referral_offer(rd, gift, share):
             'basis': 'paid media per new customer over 28 days; cost is 2 gift items at landed cost plus the pick fee'}
 
 
-def loyalty_design(rd, earn, cap):
+def loyalty_design(rd, earn, cap, first_reward=None, orders_to_first=None):
     """Points at `earn` back, paid in product at landed cost against paid in cash: the share of gross margin each takes."""
     cr = cogs_ratio(rd)
     if cr.get('ratio') is None:
@@ -1071,7 +1071,18 @@ def loyalty_design(rd, earn, cap):
     gm = 1 - cr['ratio']
     cash = earn / gm
     product = earn * cr['ratio'] / gm
-    return {'unavailable': False, 'earn': earn, 'gross_margin': round(gm, 4), 'cash_share_of_margin': round(cash, 4),
+    po = per_order(window_totals(rd))
+    first = None
+    if po and first_reward and orders_to_first:
+        aov = po['net']
+        lo, hi = aov * first_reward[0], aov * first_reward[1]
+        per_order_points = aov * earn
+        # the reward inside the band that is reached in the fewest orders within the allowed range
+        n = max(orders_to_first[0], min(orders_to_first[1], math.ceil(lo / per_order_points))) if per_order_points else None
+        value = round(min(hi, per_order_points * n), 2) if n else None
+        first = {'aov': round(aov, 2), 'band': [round(lo, 2), round(hi, 2)], 'orders_to_reach': n, 'value': value,
+                 'in_band': bool(value is not None and lo <= value <= hi), 'cost_in_product': round(value * cr['ratio'], 2) if value else None}
+    return {'unavailable': False, 'earn': earn, 'gross_margin': round(gm, 4), 'first_reward': first, 'cash_share_of_margin': round(cash, 4),
             'product_share_of_margin': round(product, 4), 'cap': cap, 'cash_clears': cash <= cap, 'product_clears': product <= cap,
             'basis': 'landed cost over net sales, last 3 full months; a point redeemed as product costs its landed cost'}
 

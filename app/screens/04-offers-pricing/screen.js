@@ -533,7 +533,8 @@
     else parts.push(el('div', { class: 'card' }, el('h4', { text: 'Referral' }), el('p', { class: 'muted small', text: NA + ': ' + ((ro || {}).reason || 'no data') })));
     if (lo && !lo.unavailable) parts.push(el('div', { class: 'card' }, el('h4', { text: 'Loyalty: ' + pct(lo.earn, 0) + ' back' }), kv([
       ['Gross margin', pct(lo.gross_margin, 0)], ['Paid in cash', pct(lo.cash_share_of_margin, 1) + ' of gross margin'],
-      ['Paid in product', pct(lo.product_share_of_margin, 1) + ' of gross margin'], ['Cap', pct(lo.cap, 0) + ' of gross margin (our own heuristic)']]),
+      ['Paid in product', pct(lo.product_share_of_margin, 1) + ' of gross margin'],
+      ['First reward', lo.first_reward ? fmt.money(lo.first_reward.value) + ' after ' + lo.first_reward.orders_to_reach + ' orders, costs ' + fmt.money(lo.first_reward.cost_in_product) + ' in product' : NA], ['Cap', pct(lo.cap, 0) + ' of gross margin (our own heuristic)']]),
       el('p', { class: 'micro faint', text: lo.basis + '.' })));
     const line = [ra ? 'No referral offer: launch give-one-get-one at ' + fmt.money(ro.cost_per_referral) + ' a customer.' : '', la ? 'No loyalty program: pay points in product.' : ''].filter(Boolean).join(' ') || 'Referral and loyalty offers are in place.';
     return section('desk-buyers', head, el('div', { class: 'grid two' }, ...parts), actionLine(line, ra || la));

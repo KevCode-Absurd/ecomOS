@@ -979,6 +979,10 @@ class LoyaltyTest(unittest.TestCase):
         self.assertFalse(lo['unavailable'])
         self.assertAlmostEqual(lo['cash_share_of_margin'], round(lo['earn'] / lo['gross_margin'], 4), places=3)
         self.assertLess(lo['product_share_of_margin'], lo['cash_share_of_margin'])
+        fr = lo['first_reward']
+        pb = audit._playbook()
+        self.assertTrue(pb.LOYALTY_ORDERS_TO_FIRST[0] <= fr['orders_to_reach'] <= pb.LOYALTY_ORDERS_TO_FIRST[1])
+        self.assertLessEqual(fr['value'], fr['band'][1] + 0.01)
         out = api.actions.rank('bombas')
         f = next((f for f in out['findings'] if f['rule_id'] == 'OFFER-R24'), None)
         has = api.model.has_program(rd, audit._playbook().PROGRAM_WORDS['loyalty'])

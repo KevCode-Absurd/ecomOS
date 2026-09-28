@@ -948,6 +948,9 @@ def loyalty_action(f, a, ctx):
              f'Redeem: points buy product only, never cash off. In cash the program would cost {lo["cash_share_of_margin"] * 100:.1f} percent of '
              f'gross margin; in product it costs {lo["product_share_of_margin"] * 100:.1f} percent, because a reward item costs its landed cost.',
              'Tiers: none at launch. One rule is easier to read and to price.',
+             (f'First reward: worth {money(lo["first_reward"]["value"])}, reached in {lo["first_reward"]["orders_to_reach"]} orders at the '
+              f'{money(lo["first_reward"]["aov"])} AOV, inside the {money(lo["first_reward"]["band"][0])} to {money(lo["first_reward"]["band"][1])} band; '
+              f'paid in product it costs {money(lo["first_reward"]["cost_in_product"])}.' if lo.get('first_reward') else 'First reward: unavailable, no AOV.'),
              'Where: the account page, the order confirmation, the second-order flow.',
              f'Stop: reward cost above {lo["cap"] * 100:.0f} percent of gross margin (our own cap, not a benchmark).',
              'Win: month 2 active share up 1 point for members against non-members in 90 days.']

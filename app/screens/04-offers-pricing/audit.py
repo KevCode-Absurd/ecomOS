@@ -1006,7 +1006,7 @@ def rule_referral(rd):
 
 def loyalty(rd):
     pb = _playbook()
-    return _model().loyalty_design(rd, pb.LOYALTY_EARN, pb.LOYALTY_MARGIN_CAP)
+    return _model().loyalty_design(rd, pb.LOYALTY_EARN, pb.LOYALTY_MARGIN_CAP, pb.LOYALTY_FIRST_REWARD, pb.LOYALTY_ORDERS_TO_FIRST)
 
 
 def rule_loyalty(rd):
