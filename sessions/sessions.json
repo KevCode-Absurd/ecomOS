@@ -33,14 +33,15 @@
    "model": "sonnet",
    "reads": [
     "app/contracts/brand-brain.md#4,5",
+    "app/brain/package.py (resolve docstring)",
     "scripts/session.py --capabilities <AGENT> (one agent at a time, never catalogue.json whole)"
    ],
    "writes": [
-    "agents/brain_sections.json",
+    "app/brain/capabilities.overlay.json",
     "tests/test_brain_sections.py"
    ],
    "done_when": "every capability id in agents/catalogue.json has sections, tiers, budget and public_facing; validator rejects unknown sections",
-   "first_line": "Work in agents/. Session S1.2b per sessions/SESSIONS.md: write agents/brain_sections.json, one agent at a time via scripts/session.py --capabilities.",
+   "first_line": "Work in app/brain. Session S1.2b per sessions/SESSIONS.md: write app/brain/capabilities.overlay.json ({capability id: {brain_sections, brain_budget, public_facing}}) for every capability, one agent at a time via scripts/session.py --capabilities; package.resolve already reads it.",
    "budget_tokens": 12000,
    "parallel_group": null,
    "needs": [
@@ -1622,7 +1623,7 @@
    "reads": [
     "app/contracts/brand-brain.md#5",
     "app/brain/package.py (docstring)",
-    "agents/brain_sections.json",
+    "app/brain/capabilities.overlay.json",
     "scripts/session.py --capabilities MEDIA"
    ],
    "writes": [
