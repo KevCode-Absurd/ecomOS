@@ -1047,6 +1047,8 @@ def ladder_group_action(members, rows, verdict, ctx):
             f'Why not a deeper price: on {worst["line"]} a 15 percent saving gives {money(worst["give_away_12m"])} a year to '
             f'shoppers who already buy the pack; {worst["trade_up_needed"] * 100:.0f} percent of single buyers would have to trade up to pay for it.',
             'Page: preselect the pack. Show the price per item under each option. Add "Save N percent an item" on the pack.',
+            'Label: mark the pack "Most popular" when it already sells the most units of its line, and list it between the single '
+            'and the next size up so it reads as the middle choice. Measure the mix of pack sizes, not only conversion.',
             'Ads: one ad per line that leads with the pack price per item.',
             'Win: single share of packs down 5 points in 28 days and margin per order up.',
             'Stop: product page conversion down more than 3 percent relative for 7 days.'])

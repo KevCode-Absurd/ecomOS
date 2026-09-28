@@ -379,6 +379,8 @@ class PackLadderTest(unittest.TestCase):
         for a in acts:
             self.assertTrue(a['artefact']['draft'])
             self.assertTrue(a['stop_rule'] and a['win_rule'])
+            if a['id'].endswith('.push'):
+                self.assertIn('Most popular', a['artefact']['draft'])
 
     def test_margin_uses_finance_cost(self):
         cogs = api.model.cogs_by_sku(self.rd, self.rd.ends_on)
