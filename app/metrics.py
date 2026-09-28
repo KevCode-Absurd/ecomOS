@@ -29,6 +29,7 @@ CONNECTOR = {
     'flows': 'klaviyo', 'campaign_sends': 'klaviyo', 'payouts': 'shopify_payments',
     'speed_runs': 'speed_lab', 'carrier_events': 'carrier_events',
     'cash_balances': 'accounting', 'shipping_labels': 'shipping_labels',
+    'finance_inputs': 'finance_inputs',
 }
 PAID_STATES = ('paid', 'partially_refunded', 'refunded')
 COD_MARKETS = ('IN',)  # markets where cash on delivery, and so return to origin, exist
@@ -800,74 +801,313 @@ def m_ltv(ctx, name, kw):
 
 # ---------------------------------------------------------------- money
 
-def payout_totals(ctx, gateways):
-    """Fees, refunds and chargebacks from settlements, pro rata by days of overlap with the window."""
-    rows = ctx.rows('payouts')
-    need(rows, ('gateway', 'period_start', 'period_end', 'fees', 'refunds', 'chargebacks'), 'payouts')
-    mine = [r for r in rows if r['gateway'] in gateways]
-    if not mine:
-        raise Unavailable('no payouts for the store gateways', fix='shopify_payments')
-    cover(ctx.win, min(r['period_start'] for r in mine), max(r['period_end'] for r in mine), 'payouts')
-    tot = {'fees': 0.0, 'refunds': 0.0, 'chargebacks': 0.0}
-    for r in mine:
-        s, e = date.fromisoformat(r['period_start']), date.fromisoformat(r['period_end'])
-        overlap = (min(e, ctx.win.end) - max(s, ctx.win.start)).days + 1
-        if overlap <= 0:
+# Brand-supplied costs (contracts/finance-inputs.md). finance.py resolves the row in
+# force on a date; these functions only add up orders against it.
+MARKETPLACES = ('amazon', 'walmart', 'target_plus', 'tiktok_shop', 'ebay', 'etsy', 'faire')
+MARGIN_FIELDS = {
+    'gross': ('cogs_landed',),
+    'variable': ('cogs_landed', 'packaging', 'shipping_label', 'threepl_pick_pack',
+                 'payment_fee_percent', 'payment_fee_fixed'),
+    'returns': ('returns_processing',),
+    'operating': ('threepl_storage', 'app_fees', 'agency_fees', 'fixed_costs', 'headcount_cost'),
+    'cash': ('cash_balance', 'credit_line_available'),
+}
+
+
+def _finance_module():
+    from importlib.util import module_from_spec, spec_from_file_location
+    from pathlib import Path
+    spec = spec_from_file_location('ecomos_finance', Path(__file__).resolve().parent / 'data' / 'finance.py')
+    mod = module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+finance = _finance_module()
+
+
+def fin(ctx, *groups):
+    """The Finance resolver, once every field the metric lists has at least one row."""
+    fields = [f for g in groups for f in MARGIN_FIELDS[g]]
+    try:
+        rows = ctx.rows('finance_inputs')
+    except Unavailable:
+        raise Unavailable('the brand has not supplied its costs yet, so there is nothing to take from revenue',
+                          fix=f'finance_inputs.{fields[0]}', waiting_for=fields)
+    f = prep('finance_inputs', rows, finance.Finance)
+    missing = [x for x in fields if not f.has(x)]
+    if missing:
+        raise Unavailable(f'finance inputs have no {", ".join(missing)}', fix=f'finance_inputs.{missing[0]}',
+                          waiting_for=missing)
+    return f
+
+
+def lines(o):
+    return [li for li in o.get('line_items') or () if li.get('sku') and (li.get('qty') or 0) > 0]
+
+
+def gross(ctx, f, paid):
+    """COGS of units sold, per SKU. Any SKU without a landed cost makes the total unavailable."""
+    by_sku, cogs, missing = {}, 0.0, set()
+    for day, _, _, o in paid:
+        items = lines(o)
+        if not items:
+            raise Unavailable(f'order {o.get("id")} has no line items, so its cost of goods is unknown', fix='shopify')
+        for li in items:
+            s = by_sku.setdefault(li['sku'], {'sku': li['sku'], 'units': 0, 'revenue': 0.0, 'cogs': 0.0})
+            s['units'] += li['qty']
+            s['revenue'] += li.get('line_total') if li.get('line_total') is not None else (li.get('price') or 0) * li['qty']
+            unit = f.value('cogs_landed', day, li['sku'])
+            if unit is None:
+                missing.add(li['sku'])
+                s['cogs'] = None
+            elif s['cogs'] is not None:
+                s['cogs'] += unit * li['qty']
+                cogs += unit * li['qty']
+    skus = []
+    for s in sorted(by_sku.values(), key=lambda s: -s['revenue']):
+        margin = None if s['cogs'] is None or not s['revenue'] else round((s['revenue'] - s['cogs']) / s['revenue'], 6)
+        skus.append({'sku': s['sku'], 'units': s['units'], 'revenue': money(s['revenue']),
+                     'cogs': None if s['cogs'] is None else money(s['cogs']), 'margin': margin})
+    if missing:
+        have = len(by_sku) - len(missing)
+        raise Unavailable(f'COGS on {have} of {len(by_sku)} SKUs sold in this window', fix='finance_inputs.cogs_landed',
+                          partial=True, missing_skus=sorted(missing), by_sku=skus, waiting_for=['cogs_landed'])
+    return cogs, skus
+
+
+def order_costs(f, day, o):
+    """Fulfillment, payment and marketplace fees for one order, from the rows in force on its day."""
+    items = lines(o)
+    units = sum(li['qty'] for li in items)
+    out = {'fulfillment': 0.0, 'payment_fees': 0.0, 'marketplace_fees': 0.0, 'unshipped': 0}
+    pack = [f.value('packaging', day, li['sku']) for li in items]
+    pack = max([p for p in pack if p is not None], default=None)
+    if pack is None:
+        pack = f.value('packaging', day)
+    if pack is None:
+        raise Unavailable(f'no packaging cost in force on {day}', fix='finance_inputs.packaging', waiting_for=['packaging'])
+    pick = f.value('threepl_pick_pack', day, unit='usd_per_order')
+    if pick is None:
+        raise Unavailable(f'no 3PL pick and pack fee in force on {day}', fix='finance_inputs.threepl_pick_pack',
+                          waiting_for=['threepl_pick_pack'])
+    extra = f.value('threepl_pick_pack', day, unit='usd_per_unit') or 0.0  # optional second row
+    ful = o.get('fulfilment') or {}
+    if ful.get('carrier'):
+        label = f.label(day, ful['carrier'], ful.get('zone'), o.get('ship_state'))
+        if label is None:
+            raise Unavailable(f'no shipping label cost for {ful["carrier"]} to {ful.get("zone") or o.get("ship_state")} on {day}',
+                              fix='finance_inputs.shipping_label', waiting_for=['shipping_label'])
+        out['fulfillment'] = pack + pick + extra * max(units - 1, 0) + label['value']
+    else:
+        out['unshipped'] = 1
+    charged = o.get('total')
+    if charged is None:
+        charged = net_revenue(o) + (o.get('shipping') or 0) + (o.get('tax') or 0)
+    channel = o.get('channel') or 'online_store'
+    if channel in MARKETPLACES or f.get('marketplace_fee_percent', day, channel):
+        pct = f.value('marketplace_fee_percent', day, channel)
+        fixed = f.value('marketplace_fee_fixed', day, channel)
+        if pct is None or fixed is None:
+            raise Unavailable(f'no marketplace fees for {channel} on {day}', fix='finance_inputs.marketplace_fee_percent',
+                              waiting_for=['marketplace_fee_percent', 'marketplace_fee_fixed'])
+        out['marketplace_fees'] = charged * pct / 100 + fixed
+        if f.get('payment_fee_percent', day, channel) is None:
+            return out
+    pct = f.value('payment_fee_percent', day, channel)
+    fixed = f.value('payment_fee_fixed', day, channel)
+    if pct is None or fixed is None:
+        raise Unavailable(f'no payment fees for the {channel} channel on {day}', fix='finance_inputs.payment_fee_percent',
+                          waiting_for=['payment_fee_percent', 'payment_fee_fixed'])
+    out['payment_fees'] = charged * pct / 100 + fixed
+    return out
+
+
+def before_marketing(ctx, f):
+    """Per order and per channel: net revenue plus shipping charged, minus COGS, fulfillment and fees."""
+    paid = paid_in_window(ctx, ctx.win)
+    if not paid:
+        raise Unavailable('no paid orders in this window')
+    cogs, skus = gross(ctx, f, paid)
+    tot = {'orders': len(paid), 'net_revenue': 0.0, 'shipping_charged': 0.0, 'cogs': cogs, 'fulfillment': 0.0,
+           'payment_fees': 0.0, 'marketplace_fees': 0.0}
+    by_channel, first, unshipped = {}, {'orders': 0, 'contribution': 0.0}, 0
+    for day, _, net, o in paid:
+        c = order_costs(f, day, o)
+        unshipped += c['unshipped']
+        oc = sum(f.value('cogs_landed', day, li['sku']) * li['qty'] for li in lines(o))
+        ship = o.get('shipping') or 0
+        contrib = net + ship - oc - c['fulfillment'] - c['payment_fees'] - c['marketplace_fees']
+        tot['net_revenue'] += net
+        tot['shipping_charged'] += ship
+        for k in ('fulfillment', 'payment_fees', 'marketplace_fees'):
+            tot[k] += c[k]
+        ch = by_channel.setdefault(o.get('channel') or 'online_store', [0, 0.0, 0.0])
+        ch[0] += 1
+        ch[1] += net
+        ch[2] += contrib
+        if o.get('customer_is_new'):
+            first['orders'] += 1
+            first['contribution'] += contrib
+    if unshipped:
+        ctx.notes.append(f'{unshipped} paid orders have not shipped, so they carry no label, packing or 3PL cost yet.')
+    tot['contribution'] = (tot['net_revenue'] + tot['shipping_charged'] - tot['cogs'] - tot['fulfillment']
+                           - tot['payment_fees'] - tot['marketplace_fees'])
+    channels = [{'channel': c, 'orders': v[0], 'net_revenue': money(v[1]), 'contribution_before_marketing': money(v[2]),
+                 'per_order': money(v[2] / v[0]), 'margin_rate': round(v[2] / v[1], 6) if v[1] else None}
+                for c, v in sorted(by_channel.items(), key=lambda kv: -kv[1][1])]
+    return tot, channels, first, skus
+
+
+def returns_cost(ctx, f):
+    """Returns opened in the window times the processing fee, refunded revenue, and lost chargebacks."""
+    rows = ctx.rows('reversed_orders')
+    need(rows, ('order_id', 'type', 'opened_at'), 'reversed_orders')
+    fee, refunded, chargebacks, n = 0.0, 0.0, 0.0, 0
+    for r in rows:
+        day = str(r.get('opened_at') or '')[:10]
+        if not ctx.win.has(day):
             continue
-        share = overlap / ((e - s).days + 1)
-        tot['fees'] += share * (r['fees'] or 0)
-        tot['refunds'] += share * (r['refunds'] or 0)
-        tot['chargebacks'] += share * ((r['chargebacks'] or 0) + (r.get('chargeback_fees') or 0))
-    return tot
+        if r['type'] == 'return':
+            each = f.value('returns_processing', day)
+            if each is None:
+                raise Unavailable(f'no returns processing fee in force on {day}', fix='finance_inputs.returns_processing',
+                                  waiting_for=['returns_processing'])
+            n += 1
+            fee += each
+            if r.get('outcome') == 'refunded':
+                refunded += r.get('amount') or 0
+        elif r['type'] == 'chargeback' and r.get('outcome') != 'won':
+            chargebacks += (r.get('amount') or 0) + (r.get('fee') or 0)
+    return {'returns': n, 'returns_processing': fee, 'refunds': refunded, 'chargebacks': chargebacks}
+
+
+def contribution(ctx, f):
+    tot, channels, first, skus = before_marketing(ctx, f)
+    ret = returns_cost(ctx, f)
+    spend, _, _ = paid_totals(ctx, {})
+    value = (tot['contribution'] - ret['returns_processing'] - ret['refunds'] - ret['chargebacks'] - spend['spend'])
+    inputs = {k: (v if k == 'orders' else money(v)) for k, v in tot.items() if k != 'contribution'}
+    inputs.update({'returns_cost': money(ret['returns_processing'] + ret['refunds']), 'returns': ret['returns'],
+                   'chargebacks': money(ret['chargebacks']), 'marketing_spend': money(spend['spend'])})
+    return value, inputs, channels, first, spend['spend']
+
+
+@metric('gross_margin')
+def m_gross_margin(ctx, name, kw):
+    f = fin(ctx, 'gross')
+    paid = paid_in_window(ctx, ctx.win)
+    if not paid:
+        raise Unavailable('no paid orders in this window')
+    cogs, skus = gross(ctx, f, paid)
+    net = sum(n for _, _, n, _ in paid)
+    ctx.notes.append('Net revenue is after discounts, before shipping charged and refunds. COGS uses the landed cost in force on each order day.')
+    return ctx.ok(ratio(net - cogs, net, 'net revenue'), 'ratio', {'net_revenue': money(net), 'cogs': money(cogs)},
+                  by_sku=skus, target=_target(f, ctx, 'target_gross_margin'))
+
+
+@metric('gross_profit_per_order')
+def m_gross_profit_per_order(ctx, name, kw):
+    f = fin(ctx, 'gross')
+    paid = paid_in_window(ctx, ctx.win)
+    if not paid:
+        raise Unavailable('no paid orders in this window')
+    cogs, _ = gross(ctx, f, paid)
+    net = sum(n for _, _, n, _ in paid)
+    return ctx.ok(money((net - cogs) / len(paid)), 'usd', {'net_revenue': money(net), 'cogs': money(cogs), 'orders': len(paid)})
+
+
+def _target(f, ctx, field):
+    v = f.value(field, ctx.win.e)
+    return None if v is None else round(v / 100, 6)
 
 
 @metric('contribution_margin')
 def m_contribution_margin(ctx, name, kw):
-    paid = paid_in_window(ctx, ctx.win)
-    if not paid:
-        raise Unavailable('no paid orders in this window')
-    if any(r.get('cogs') is None for _, _, _, r in paid):
-        raise Unavailable('some orders have no cost of goods', fix='cost sheet')
-    net = sum(n for _, _, n, _ in paid)
-    known = {'net_revenue': money(net), 'cogs': money(sum(r['cogs'] for _, _, _, r in paid)),
-             'shipping_charged': money(sum(r.get('shipping') or 0 for _, _, _, r in paid))}
-    gateways = sorted({r.get('gateway') for _, _, _, r in paid if r.get('gateway')})
-    pay = payout_totals(ctx, gateways)
-    known.update({'payment_fees': money(pay['fees']), 'returns_cost': money(pay['refunds']),
-                  'chargebacks': money(pay['chargebacks'])})
-    tot, _, _ = paid_totals(ctx, {})
-    known['marketing_spend'] = money(tot['spend'])
-    if 'shipping_cost' in paid[0][3]:
-        if any(r.get('shipping_cost') is None for _, _, _, r in paid):
-            raise Unavailable('some orders have no shipping cost', fix='shipping_labels', known_inputs=known)
-        known['shipping_cost'] = money(sum(r['shipping_cost'] for _, _, _, r in paid))
-    else:
-        try:
-            labels = ctx.rows('shipping_labels')
-        except Unavailable as exc:
-            raise Unavailable('no shipping label cost: orders carry what the customer paid for shipping, '
-                              'not what the brand paid the carrier', fix=exc.fix, known_inputs=known)
-        need(labels, ('order_id', 'cost'), 'shipping_labels')
-        ids = {r['id'] for _, _, _, r in paid}
-        known['shipping_cost'] = money(sum(r['cost'] or 0 for r in labels if r['order_id'] in ids))
-    value = (net + known['shipping_charged'] - known['cogs'] - known['shipping_cost'] - known['payment_fees']
-             - known['returns_cost'] - known['chargebacks'] - known['marketing_spend'])
-    ctx.notes.append('Fees, refunds and chargebacks come from settlements, pro rata by days in the window.')
-    return ctx.ok(money(value), 'usd', known, margin_rate=round(value / net, 6) if net else None)
+    f = fin(ctx, 'variable', 'returns')
+    value, inputs, channels, _, _ = contribution(ctx, f)
+    net = inputs['net_revenue']
+    ctx.notes.append('Per channel is before marketing; paid spend is not split by store channel. '
+                     'Returns cost is returns opened in the window, not returns of these orders.')
+    return ctx.ok(money(value), 'usd', inputs, per_order=money(value / inputs['orders']),
+                  margin_rate=round(value / net, 6) if net else None, by_channel=channels,
+                  target=_target(f, ctx, 'target_contribution_margin'))
+
+
+@metric('break_even_roas')
+def m_break_even_roas(ctx, name, kw):
+    f = fin(ctx, 'variable')
+    tot, _, _, _ = before_marketing(ctx, f)
+    rate = tot['contribution'] / tot['net_revenue'] if tot['net_revenue'] else 0
+    if rate <= 0:
+        raise Unavailable('orders lose money before any marketing, so no ROAS breaks even')
+    ctx.notes.append('Before marketing and before returns. A platform ROAS under this loses money on the order.')
+    return ctx.ok(round(1 / rate, 4), 'x', {'net_revenue': money(tot['net_revenue']),
+                                            'contribution_before_marketing': money(tot['contribution'])},
+                  margin_before_marketing=round(rate, 6))
+
+
+@metric('first_order_payback')
+def m_first_order_payback(ctx, name, kw):
+    f = fin(ctx, 'variable')
+    _, _, first, _ = before_marketing(ctx, f)
+    if not first['orders']:
+        raise Unavailable('no first orders in this window')
+    per_first = first['contribution'] / first['orders']
+    target = f.value('target_cac', ctx.win.e)
+    try:
+        spend, _, _ = paid_totals(ctx, {})
+        cac, basis = spend['spend'] / first['orders'], 'actual CAC: all paid spend over first orders in the window'
+    except Unavailable:
+        if target is None:
+            raise Unavailable('no paid spend and no target CAC, so the cost to acquire is unknown',
+                              fix='finance_inputs.target_cac', waiting_for=['target_cac'])
+        cac, basis = target, 'target CAC, since no paid spend is connected'
+    if not cac:
+        raise Unavailable('cost to acquire is 0, so payback has no base')
+    return ctx.ok(round(per_first / cac, 4), 'x', {'contribution_per_first_order': money(per_first),
+                                                   'first_orders': first['orders'], 'cac': money(cac)},
+                  basis=basis, pays_back=per_first >= cac,
+                  vs_target_cac=round(per_first / target, 4) if target else None)
+
+
+def operating(ctx, f):
+    value, inputs, _, _, _ = contribution(ctx, f)
+    monthly = {k: f.monthly(k, ctx.win.start, ctx.win.end) for k in MARGIN_FIELDS['operating']}
+    gaps = [k for k, v in monthly.items() if v is None]
+    if gaps:
+        raise Unavailable(f'{", ".join(gaps)} not in force on every day of this window',
+                          fix=f'finance_inputs.{gaps[0]}', waiting_for=gaps)
+    inputs.update({k: money(v) for k, v in monthly.items()})
+    inputs['contribution_margin'] = money(value)
+    return value - sum(monthly.values()), inputs
+
+
+@metric('operating_margin')
+def m_operating_margin(ctx, name, kw):
+    f = fin(ctx, 'variable', 'returns', 'operating')
+    value, inputs = operating(ctx, f)
+    ctx.notes.append('Monthly costs are spread evenly over the days of each month.')
+    return ctx.ok(money(value), 'usd', inputs, margin_rate=round(value / inputs['net_revenue'], 6))
 
 
 @metric('cash_runway_weeks')
 def m_runway(ctx, name, kw):
-    rows = ctx.rows('cash_balances')
-    need(rows, ('date', 'cash'), 'cash_balances')
-    inside = sorted((str(r['date']), r['cash']) for r in rows if ctx.win.has(str(r['date'])) and r['cash'] is not None)
-    if len(inside) < 2:
-        raise Unavailable('fewer than 2 cash balances in this window', fix='accounting')
-    weeks = max(ctx.win.days / 7, 1)
-    burn = (inside[0][1] - inside[-1][1]) / weeks
+    f = fin(ctx, 'cash', 'variable', 'returns', 'operating')
+    cash = f.latest('cash_balance', ctx.win.e)
+    credit = f.latest('credit_line_available', ctx.win.e)
+    if cash is None or credit is None:
+        field = 'cash_balance' if cash is None else 'credit_line_available'
+        raise Unavailable(f'no {field} dated on or before {ctx.win.e}', fix=f'finance_inputs.{field}', waiting_for=[field])
+    value, inputs = operating(ctx, f)
+    burn = -value / (ctx.win.days / 7)
+    inputs.update({'cash': money(cash['value']), 'cash_as_of': cash['effective_from'],
+                   'credit_line_available': money(credit['value']), 'operating_margin': money(value),
+                   'weekly_net_burn': money(burn)})
     if burn <= 0:
-        return ctx.ok(None, 'weeks', {'cash': money(inside[-1][1]), 'weekly_net_burn': money(burn)}, not_burning=True)
-    return ctx.ok(round(inside[-1][1] / burn, 1), 'weeks', {'cash': money(inside[-1][1]), 'weekly_net_burn': money(burn)})
+        raise Unavailable('the brand made money in this window, so there is no burn to run out', not_burning=True,
+                          known_inputs=inputs)
+    return ctx.ok(round((cash['value'] + credit['value']) / burn, 1), 'weeks', inputs)
 
 
 @metric('sales_tax_collected')

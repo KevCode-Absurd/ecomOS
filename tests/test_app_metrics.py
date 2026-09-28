@@ -185,8 +185,8 @@ class SampleBrandTest(unittest.TestCase):
                 self.assertIsNotNone(r['value'], name)
                 self.assertTrue(r['freshness']['sources'], name)
         cm = self.data.metric('contribution_margin')
-        self.assertEqual(cm['fix'], 'shipping_labels')
-        self.assertIn('cogs', cm['known_inputs'])
+        self.assertTrue(cm['fix'].startswith('finance_inputs.'), cm['fix'])
+        self.assertTrue(cm['waiting_for'])
 
     def test_mobile_checkout_break(self):
         r = self.data.metric('money_at_stake', device='mobile')
@@ -221,6 +221,165 @@ class SampleBrandTest(unittest.TestCase):
         spend = self.data.metric('spend', channel='meta')['value']
         value = self.data.metric('purchase_value', channel='meta')['value']
         self.assertAlmostEqual(r['value'], value / spend, places=3)
+
+
+MARGIN_METRICS = ('gross_margin', 'gross_profit_per_order', 'contribution_margin', 'break_even_roas',
+                  'first_order_payback', 'operating_margin', 'cash_runway_weeks')
+BOMBAS_FINANCE = ROOT / 'app' / 'data' / 'brands' / 'bombas' / 'finance_inputs.json'
+
+
+def fin_row(field, value, unit, key='', scope=None, frm='2026-01-01', to=None, **extra):
+    row = {'field': field, 'scope': scope or ('global' if not key else 'sku'), 'scope_key': key, 'value': value,
+           'unit': unit, 'effective_from': frm, 'effective_to': to, 'entered_by': 'test', 'entered_at': '2026-09-01',
+           'note': 'fixture', 'confidence': 'simulated'}
+    row.update(extra)
+    return row
+
+
+class MarginMetricsTest(FixtureBrand):
+    """2 orders on 2 days, costs from finance_inputs. Every expected number is worked out by hand below."""
+
+    def setUp(self):
+        super().setUp()
+        self.brand['channels'] = {'paid_social': 'primary'}
+        self.write('brand.json', self.brand)
+        self.write('orders.json', {'rows': [
+            order(1, '2026-09-01', subtotal=100.0, total=100.0, channel='online_store', ship_state='NY',
+                  line_items=[{'sku': 'A', 'qty': 1, 'line_total': 100.0}],
+                  fulfilment={'carrier': 'USPS', 'shipped_at': '2026-09-01T13:00:00Z'}),
+            order(2, '2026-09-02', subtotal=250.0, discount={'amount': 50.0}, shipping=5.0, total=205.0,
+                  channel='shop_app', ship_state='TX', customer_is_new=False,
+                  line_items=[{'sku': 'A', 'qty': 2, 'line_total': 200.0}, {'sku': 'B', 'qty': 1, 'line_total': 50.0}],
+                  fulfilment={'carrier': 'UPS', 'zone': 6, 'shipped_at': '2026-09-02T13:00:00Z'}),
+        ]})
+        self.write('reversed_orders.json', {'rows': [
+            {'order_id': 1, 'type': 'return', 'opened_at': '2026-09-02T10:00:00Z', 'amount': 50.0, 'outcome': 'refunded'},
+            {'order_id': 2, 'type': 'chargeback', 'opened_at': '2026-09-02T11:00:00Z', 'amount': 20.0, 'fee': 15.0, 'outcome': 'lost'},
+        ]})
+        self.write('ad_rows.csv', 'date,ad_id,spend,impressions,clicks,purchases,purchase_value,reach\n'
+                                  '2026-09-01,a1,60,1000,20,1,90,800\n2026-09-02,a1,40,900,15,1,120,700\n')
+
+    def finance(self, drop=()):
+        rows = [
+            fin_row('cogs_landed', 20.0, 'usd_per_unit', 'A', to='2026-09-01'),
+            fin_row('cogs_landed', 25.0, 'usd_per_unit', 'A', frm='2026-09-02'),
+            fin_row('cogs_landed', 10.0, 'usd_per_unit', 'B'),
+            fin_row('packaging', 1.0, 'usd_per_order'),
+            fin_row('threepl_pick_pack', 2.0, 'usd_per_order'),
+            fin_row('threepl_pick_pack', 0.5, 'usd_per_unit'),
+            fin_row('shipping_label', 5.0, 'usd_per_order', 'usps:zones_1_4', scope='carrier_zone', states=['NY']),
+            fin_row('shipping_label', 8.0, 'usd_per_order', 'ups:zones_5_6', scope='carrier_zone', states=['TX']),
+            fin_row('payment_fee_percent', 3.0, 'percent', 'online_store', scope='channel'),
+            fin_row('payment_fee_fixed', 0.3, 'usd_per_order', 'online_store', scope='channel'),
+            fin_row('payment_fee_percent', 3.0, 'percent', 'shop_app', scope='channel'),
+            fin_row('payment_fee_fixed', 0.3, 'usd_per_order', 'shop_app', scope='channel'),
+            fin_row('returns_processing', 4.0, 'usd_per_return'),
+            fin_row('threepl_storage', 300.0, 'usd_per_month'),
+            fin_row('app_fees', 3000.0, 'usd_per_month', 'klaviyo', scope='vendor'),
+            fin_row('agency_fees', 300.0, 'usd_per_month', 'agency', scope='vendor'),
+            fin_row('fixed_costs', 600.0, 'usd_per_month'),
+            fin_row('headcount_cost', 3000.0, 'usd_per_month'),
+            fin_row('cash_balance', 10000.0, 'usd', frm='2026-08-01'),
+            fin_row('credit_line_available', 2000.0, 'usd', frm='2026-08-01'),
+            fin_row('target_cac', 50.0, 'usd'),
+            fin_row('target_gross_margin', 70.0, 'percent'),
+        ]
+        rows = [r for r in rows if (r['field'], r['scope_key']) not in drop and r['field'] not in drop]
+        self.write('finance_inputs.json', {'rows': rows})
+
+    def m(self, name):
+        return metrics.compute(name, self.data(), window='2d')
+
+    def test_unavailable_before_inputs(self):
+        for name in MARGIN_METRICS:
+            r = self.m(name)
+            self.assertTrue(r['unavailable'], name)
+            self.assertIsNone(r['value'], name)
+            self.assertTrue(r['fix'].startswith('finance_inputs.'), (name, r['fix']))
+            self.assertIn(r['fix'].split('.', 1)[1], r['waiting_for'], name)
+
+    def test_values_after_inputs(self):
+        self.finance()
+        # order 1: 100 - cogs 20 - (1 + 2 + 5) - (100 x 3% + 0.3) = 68.70
+        # order 2: 200 + 5 - cogs (2 x 25 + 10) - (1 + 2 + 2 x 0.5 + 8) - (205 x 3% + 0.3) = 126.55
+        self.assertAlmostEqual(self.m('gross_margin')['value'], 220 / 300, places=5)
+        self.assertEqual(self.m('gross_profit_per_order')['value'], 110.0)
+        cm = self.m('contribution_margin')
+        self.assertFalse(cm['unavailable'], cm.get('reason'))
+        self.assertAlmostEqual(cm['value'], 195.25 - (4 + 50) - 35 - 100, places=2)
+        self.assertEqual(cm['inputs']['marketing_spend'], 100.0)
+        self.assertEqual({c['channel']: c['contribution_before_marketing'] for c in cm['by_channel']},
+                         {'online_store': 68.7, 'shop_app': 126.55})
+        self.assertAlmostEqual(self.m('break_even_roas')['value'], round(300 / 195.25, 4), places=4)
+        payback = self.m('first_order_payback')
+        self.assertAlmostEqual(payback['value'], 68.7 / 100, places=4)
+        self.assertEqual(payback['vs_target_cac'], round(68.7 / 50, 4))
+        self.assertAlmostEqual(self.m('operating_margin')['value'], 6.25 - 2 * 240, places=2)
+        runway = self.m('cash_runway_weeks')
+        self.assertEqual(runway['value'], round(12000 / (473.75 / (2 / 7)), 1))
+
+    def test_ratio_is_totals_not_average_of_orders(self):
+        self.finance()
+        # per-order gross margins are 0.8 and 0.7; their average 0.75 is not the period margin
+        self.assertAlmostEqual(self.m('gross_margin')['value'], round(220 / 300, 6))
+        self.assertNotAlmostEqual(self.m('gross_margin')['value'], 0.75, places=3)
+
+    def test_partial_cogs_names_the_gap(self):
+        self.finance(drop={('cogs_landed', 'B')})
+        r = self.m('gross_margin')
+        self.assertTrue(r['unavailable'])
+        self.assertEqual(r['reason'], 'COGS on 1 of 2 SKUs sold in this window')
+        self.assertEqual(r['missing_skus'], ['B'])
+        self.assertEqual({s['sku']: s['margin'] is not None for s in r['by_sku']}, {'A': True, 'B': False})
+
+    def test_missing_field_names_the_input(self):
+        self.finance(drop={'packaging'})
+        r = self.m('contribution_margin')
+        self.assertTrue(r['unavailable'])
+        self.assertEqual(r['fix'], 'finance_inputs.packaging')
+        self.assertTrue(self.m('gross_margin')['unavailable'] is False)
+
+    def test_not_burning_is_unavailable_not_zero(self):
+        self.finance()
+        rows = json.loads((self.dir / 'finance_inputs.json').read_text())['rows']
+        for r in rows:
+            if r['field'] in ('headcount_cost', 'fixed_costs', 'app_fees', 'agency_fees', 'threepl_storage'):
+                r['value'] = 0.0
+        self.write('finance_inputs.json', {'rows': rows})
+        r = self.m('cash_runway_weeks')
+        self.assertTrue(r['unavailable'])
+        self.assertTrue(r['not_burning'])
+        self.assertIsNone(r['value'])
+
+
+class BombasFinanceInputsTest(unittest.TestCase):
+    finance = load('ecomos_finance_t', ROOT / 'app' / 'data' / 'finance.py')
+
+    def test_file_follows_the_contract(self):
+        rows = self.finance.load(BOMBAS_FINANCE)
+        self.assertEqual(self.finance.validate(rows), [])
+        for r in rows:
+            self.assertTrue(r['assumed'], r)
+            self.assertTrue(r['reason'], r)
+            self.assertEqual(r['confidence'], 'simulated')
+        fields = {r['field'] for r in rows}
+        for f in ('cogs_landed', 'packaging', 'shipping_label', 'threepl_pick_pack', 'returns_processing',
+                  'payment_fee_percent', 'app_fees', 'agency_fees', 'fixed_costs', 'headcount_cost',
+                  'cash_balance', 'target_cac', 'target_mer', 'target_gross_margin', 'target_contribution_margin'):
+            self.assertIn(f, fields)
+
+    def test_value_in_force_on_a_date(self):
+        fin = self.finance.Finance(self.finance.load(BOMBAS_FINANCE))
+        before = fin.value('cogs_landed', '2026-03-31', 'BMB-SK-M-ANK-4')
+        after = fin.value('cogs_landed', '2026-04-01', 'BMB-SK-M-ANK-4')
+        self.assertGreater(after, before)
+        self.assertIsNone(fin.value('cogs_landed', '2024-12-31', 'BMB-SK-M-ANK-4'))
+        self.assertEqual(fin.label('2026-05-01', 'USPS', state='CA')['scope_key'], 'usps:zones_7_9')
+        self.assertEqual(fin.latest('cash_balance', '2026-09-24')['effective_from'], '2026-09-01')
+
+    def test_overlap_is_reported(self):
+        rows = [fin_row('packaging', 1.0, 'usd_per_order'), fin_row('packaging', 2.0, 'usd_per_order', frm='2026-05-01')]
+        self.assertTrue(any('overlap' in p for p in self.finance.validate(rows)))
 
 
 if __name__ == '__main__':
