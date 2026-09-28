@@ -263,6 +263,28 @@
         : [el('p', { class: 'muted small', text: 'No misread found for this brain.' })]));
   }
 
+  // ---------- desk: evidence gate ----------
+  function renderGate(g) {
+    document.getElementById('gate-sub').textContent = 'Each avatar against the checks a researcher runs before a launch. Core checks (bold) must all pass to leave provisional. Every red cell is a task. ' + g.line;
+    const tbl = el('table', { class: 'gate' });
+    tbl.append(el('thead', null, el('tr', null, el('th', { text: 'Avatar' }), el('th', { text: 'Status' }),
+      ...g.checks.map((c) => el('th', { class: c.core ? 'core' : '', text: c.label })))));
+    const body = el('tbody');
+    for (const r of g.rows) {
+      const tr = el('tr', null, el('td', { text: r.name }),
+        el('td', null, UI.verdict(r.status === 'validated' ? 'keep' : 'wait', r.status === 'validated' ? 'Validated' : 'Provisional', r.passed + ' of ' + r.total + ' checks')));
+      for (const c of g.checks) {
+        const ok = r.checks[c.key];
+        const task = r.tasks.find((t) => t.check === c.key);
+        tr.append(el('td', { class: 'g ' + (ok ? 'ok' : 'no') }, ok ? el('span', { text: 'yes', 'aria-label': 'passes' })
+          : el('button', { class: 'btn xs ' + (c.core ? 'soft' : 'quiet'), type: 'button', text: 'Fix', title: task ? task.title : '', onclick: () => task && briefPanel(task) })));
+      }
+      body.append(tr);
+    }
+    tbl.append(body);
+    mount('#gate', el('div', { class: 'matrix-wrap' }, tbl), el('p', { class: 'micro faint', text: g.tasks + ' tasks in all. Checks read the avatar records and ladders in the brain only.' }));
+  }
+
   // ---------- desk: copy gap ----------
   function renderGap(x) {
     if (!x.available) { mount('#gap', UI.emptyState({ screen: SLUG, title: 'Copy gap unavailable', text: x.reason })); return; }
@@ -491,6 +513,7 @@
     renderPlan(d, r);
     renderWrong(a, r);
     renderActions(r);
+    renderGate(d.gate);
     renderCoverage(d.coverage, d.formats);
     renderLadders(d.ladders, d.avatars);
     renderGap(d.copy_gap);

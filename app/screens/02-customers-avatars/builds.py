@@ -1013,3 +1013,49 @@ def copy_gap(sections: dict[str, list[dict]], lang_records: list[dict], brand_to
     return {"available": True, "rows": top, "our_records": len(ours), "praise_reviews": n_docs, "missing": len(missing), "used": used,
             "action": action,
             "line": f"Of the {len(top)} words buyers use most when they praise us, {len(missing)} never appear in our site and founder records."}
+
+
+# ---------------------------------------------------------------- avatar evidence gate
+
+GATE_QUOTES = 5
+GATE = [  # key, label, core (needed to leave provisional), task
+    ("job", "Job stated", True, ("agent", "research_note", "BRAND-C01", "Write the job from the avatar's quotes in one line.")),
+    ("quotes", f"{GATE_QUOTES}+ quotes", True, ("agent", "research_note", "BRAND-C01", f"Pull quotes until the avatar has {GATE_QUOTES}, with links.")),
+    ("sources", "2+ sources", True, ("agent", "research_note", "BRAND-C01", "Find the same pattern in a second independent source.")),
+    ("share", "Share known", True, ("person", "research_note", "LIFE-C29", "Ask buyers in the post-purchase survey which situation fits them.")),
+    ("doubt", "Doubt mapped", True, ("agent", "brain_record", "BRAND-C13", "Link the avatar to the ladder rungs its quotes raise.")),
+    ("proof", "Top doubt proven", False, ("agent_drafts", "copy", "BRAND-C13", "Answer the top doubt with a proof record.")),
+    ("moments", "2+ moments", False, ("agent", "brain_record", "BRAND-C01", "Add the moments that start a purchase, from the quotes.")),
+    ("pains", "2+ pains", False, ("agent", "brain_record", "BRAND-C01", "Add the pains in the buyers' words.")),
+    ("fresh", "Checked in time", False, ("agent", "brain_record", "BRAND-C15", "Re-check the avatar against the newest reviews.")),
+]
+
+
+def gate(avatars: list[dict], all_rungs: list[dict]) -> dict:
+    """A checklist per avatar. It stays provisional until every core check passes; each failed check is a task."""
+    rows = []
+    for a in avatars:
+        mine = [r for r in all_rungs if a["id"] in r["avatars"]]
+        top = a.get("top_objection")
+        checks = {"job": bool(a.get("job")), "quotes": a["quote_count"] >= GATE_QUOTES, "sources": len(a["sources"]) >= 2,
+                  "share": a["share_estimate"] is not None, "doubt": bool(mine), "proof": bool(top and top["proof"]),
+                  "moments": len(a.get("triggers") or []) >= 2, "pains": len(a.get("pains") or []) >= 2, "fresh": not a["expired"]}
+        core = all(checks[k] for k, _, c, _ in GATE if c)
+        tasks = []
+        for k, label, c, (owner, kind, cap, text) in GATE:
+            if checks[k]:
+                continue
+            tasks.append({"id": f"{SCREEN}.gate.{a['key']}.{k}", "check": k, "label": label, "core": c, "owner": owner, "kind": kind,
+                          "title": f"{a['name']}: {text[0].lower() + text[1:].rstrip('.')}",
+                          "capability": {"id": cap, "autonomy": {"agent": "agent_does", "agent_drafts": "founder_gate", "person": "human_assist"}[owner]},
+                          "draft": f"DRAFT task for {a['name']}\nCheck failing: {label}\nHave: {a['quote_count']} quotes from {', '.join(a['sources']) or 'no source'}\nDo: {text}",
+                          "steps": [{"n": 1, "who": "agent" if owner != "person" else "person", "text": text},
+                                    {"n": 2, "who": "agent", "text": "Write the result into the avatar record as a draft."},
+                                    {"n": 3, "who": "person", "text": "Approve the record. The gate re-checks itself."}]})
+        rows.append({"key": a["key"], "name": a["name"], "checks": checks, "passed": sum(checks.values()), "total": len(checks),
+                     "status": "validated" if core else "provisional", "tasks": tasks})
+    rows.sort(key=lambda r: (r["status"] == "validated", r["passed"], r["name"]))
+    val = sum(1 for r in rows if r["status"] == "validated")
+    return {"rows": rows, "checks": [{"key": k, "label": l, "core": c} for k, l, c, _ in GATE], "validated": val,
+            "tasks": sum(len(r["tasks"]) for r in rows),
+            "line": f"{val} of {len(rows)} avatars pass every core check. The rest stay provisional: brief them, but do not bet a launch on them."}

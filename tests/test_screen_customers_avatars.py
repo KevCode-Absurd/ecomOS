@@ -635,5 +635,29 @@ class CopyGap(TempBrain):
         self.assertFalse(api.builds.copy_gap({}, [], set(), audit.source_name)['available'])
 
 
+class Gate(TempBrain):
+    """Feature 2.3: avatar evidence gate; each failed check is a task."""
+
+    def test_checks_and_tasks(self):
+        g = api.handle(Req(['overview']))['gate']
+        core = [c['key'] for c in g['checks'] if c['core']]
+        for r in g['rows']:
+            self.assertEqual(r['status'] == 'validated', all(r['checks'][k] for k in core))
+            failed = [k for k, v in r['checks'].items() if not v]
+            self.assertEqual(sorted(t['check'] for t in r['tasks']), sorted(failed))
+            for t in r['tasks']:
+                self.assertIn(t['owner'], ('agent', 'agent_drafts', 'person'))
+                self.assertEqual(t['steps'][-1]['who'], 'person')
+        self.assertEqual(g['tasks'], sum(len(r['tasks']) for r in g['rows']))
+
+    def test_five_quotes_two_sources_validates(self):
+        rows = self.section('avatars')
+        a = next(r for r in rows if r['id'] == 'bombas.avatars.everyday_comfort_seeker')
+        a['evidence'] = a['evidence'] + [{'quote': f'extra line {i}', 'ref': 'https://www.amazon.com/x'} for i in range(3)]
+        self.write('avatars', rows)
+        g = {r['key']: r for r in api.handle(Req(['overview']))['gate']['rows']}
+        self.assertEqual(g['everyday_comfort_seeker']['status'], 'validated')
+
+
 if __name__ == '__main__':
     unittest.main()

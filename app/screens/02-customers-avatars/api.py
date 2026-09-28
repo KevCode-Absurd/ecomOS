@@ -285,6 +285,7 @@ def overview(brain: Brain) -> dict:
             "coverage": builds.coverage(avatars, all_rungs), "ladders": (lad := builds.ladders(all_rungs, avatars)),
             "copy_gap": builds.copy_gap({sec: brain.records(sec) for sec in ("voice", "claims", "identity", "offers", "policies", "products", "visual", "story_bank")},
                                         brain.records("language_bank"), _brand_tokens(brain), audit.source_name),
+            "gate": builds.gate(avatars, all_rungs),
             "themes": builds.theme_impact(brain.records("language_bank"), lad["rows"], ends_on),
             "words": builds.words(brain.records("language_bank"), all_rungs, avatars, _brand_tokens(brain), audit.source_name), "formats": _formats(brain, avatars)}
 
