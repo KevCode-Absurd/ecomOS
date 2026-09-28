@@ -1105,6 +1105,18 @@ def recipe(f):
             'size': {'text': f'{ent.get("variants")} variants planned', 'usd': None}, 'stop_rule': 'no MOQ per variant before the core product sells', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 1,
             'win_rule': 'one variant in the first run, the rest queued behind a sell-through read',
         }
+    if rid == 'PROD-R59':
+        ent = f.get('entity') or {}
+        return {
+            'title': f'Run the 10-point quick screen on {ent.get("label") or "the candidate"} before more research time goes in ({ent.get("answered")} of {ent.get("of")} answered)',
+            'owner': 'agent_drafts',
+            'artefact': {'kind': 'research_note', 'label': f'the quick screen for {ent.get("label")}: 10 yes-or-no points with one line of evidence each, any no logged as the drop reason, written on the candidate (bank idea PRD-120)'},
+            'steps': [{'n': 1, 'who': 'agent', 'text': 'Draft the 10 answers from what is already on the candidate (the angle, the category, the price, the lane) and mark the ones that need a person.'},
+                      {'n': 2, 'who': 'person', 'text': 'Answer the rest in minutes; a no is a drop reason, so write it and decide before the next hour is logged.'},
+                      {'n': 3, 'who': 'agent', 'text': 'Write the screen on the candidate; the hours block and the fast checks read it.'}],
+            'size': {'text': f'{(ent.get("hours_logged") or 0):g} hours logged before the screen', 'usd': None}, 'stop_rule': 'no more research hours or paid pulls until the 10 points are answered', 'check_on': _check_on(f, 3), 'time_to_ship_hours': 0.5,
+            'win_rule': '10 of 10 points answered on the candidate, with any no written as the drop reason',
+        }
     if rid == 'PROD-R58':
         ent = f.get('entity') or {}
         return {
@@ -1389,7 +1401,7 @@ def merge_strength(actions):
 
 
 LANE_RULES = ('PROD-R06', 'PROD-R19', 'PROD-R20', 'PROD-R33', 'PROD-R26', 'PROD-R29')
-CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28', 'PROD-R37', 'PROD-R38', 'PROD-R39', 'PROD-R40', 'PROD-R45', 'PROD-R46', 'PROD-R47', 'PROD-R48', 'PROD-R49', 'PROD-R50', 'PROD-R51', 'PROD-R52', 'PROD-R53', 'PROD-R54', 'PROD-R55', 'PROD-R56', 'PROD-R57', 'PROD-R58')
+CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28', 'PROD-R37', 'PROD-R38', 'PROD-R39', 'PROD-R40', 'PROD-R45', 'PROD-R46', 'PROD-R47', 'PROD-R48', 'PROD-R49', 'PROD-R50', 'PROD-R51', 'PROD-R52', 'PROD-R53', 'PROD-R54', 'PROD-R55', 'PROD-R56', 'PROD-R57', 'PROD-R58', 'PROD-R59')
 
 
 def merge_candidates(actions):
@@ -1647,7 +1659,7 @@ def overview(data, brand):
                      'gates': gates_block(brand, data, br, rd, ends_on, findings), 'scorecard': scorecard_block(brand, data, br, rd, ends_on, findings),
                      'video': audit.video_signals(br, brand, ends_on), 'tech_packs': tech_pack_block(brand, findings),
                      'hours': dict(audit.hours_table(brand, br), findings={f['entity']['id']: f['id'] for f in findings if f['rule_id'] == 'PROD-R28'}),
-                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on), 'returns': audit.return_rates(data, brand, ends_on), 'questions': audit.open_questions(br, ends_on), 'pulls': audit.pulls(br, brand, ends_on), 'first_runs': audit.first_run_read(brand, ends_on, audit.net_28d(rd)), 'brain_freshness': audit.brain_freshness(br, ends_on), 'assumptions': audit.assumptions(br), 'strength': audit.read_strength(br, brand, data, rd, ends_on), 'line_themes': audit.line_theme_matrix(br), 'samples': audit.sample_read(brand or 'sample', ends_on), 'kills': audit.kill_memory(brand or 'sample', ends_on), 'packaging': audit.packaging_read(brand or 'sample', ends_on), 'readiness': audit.launch_readiness(brand, data, br, rd, ends_on), 'price_bands': audit.price_band_read(brand or 'sample'), 'margin_points': audit.margin_point_read(brand, data, br, rd, ends_on), 'identical_sellers': audit.identical_sellers_read(brand or 'sample', br), 'opportunity': audit.lane_opportunity(br, products(data, brand), ends_on), 'sourcing': audit.sourcing_read(brand or 'sample'), 'floors': dict(audit.floors_read(br), proposals=audit.propose_floors(br, products(data, brand), rd)), 'requotes': audit.requote_read(brand or 'sample'), 'cost_floors': audit.cost_floor_read(brand, data, br, rd, ends_on), 'audit_memo': audit.memo_stats()},
+                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on), 'returns': audit.return_rates(data, brand, ends_on), 'questions': audit.open_questions(br, ends_on), 'pulls': audit.pulls(br, brand, ends_on), 'first_runs': audit.first_run_read(brand, ends_on, audit.net_28d(rd)), 'brain_freshness': audit.brain_freshness(br, ends_on), 'assumptions': audit.assumptions(br), 'strength': audit.read_strength(br, brand, data, rd, ends_on), 'line_themes': audit.line_theme_matrix(br), 'samples': audit.sample_read(brand or 'sample', ends_on), 'kills': audit.kill_memory(brand or 'sample', ends_on), 'packaging': audit.packaging_read(brand or 'sample', ends_on), 'readiness': audit.launch_readiness(brand, data, br, rd, ends_on), 'price_bands': audit.price_band_read(brand or 'sample'), 'margin_points': audit.margin_point_read(brand, data, br, rd, ends_on), 'identical_sellers': audit.identical_sellers_read(brand or 'sample', br), 'opportunity': audit.lane_opportunity(br, products(data, brand), ends_on), 'sourcing': audit.sourcing_read(brand or 'sample'), 'floors': dict(audit.floors_read(br), proposals=audit.propose_floors(br, products(data, brand), rd)), 'requotes': audit.requote_read(brand or 'sample'), 'quick_screens': audit.quick_screen_read(brand or 'sample'), 'cost_floors': audit.cost_floor_read(brand, data, br, rd, ends_on), 'audit_memo': audit.memo_stats()},
             'audit': {'findings': findings, 'rules': audit.RULES}}
 
 
@@ -1863,6 +1875,18 @@ def candidate_update(brand, cid, body, today):
         row['time_box_days'] = int(_num(body['time_box_days'], 1) or row.get('time_box_days') or 10)
         row['screen_in_date'] = today.isoformat()
         changes.append(f'new box of {row["time_box_days"]} days')
+    if isinstance(body.get('quick_screen'), dict):
+        qs = dict(row.get('quick_screen') or {})
+        for k, _ in audit.QUICK_SCREEN_POINTS:
+            v = body['quick_screen'].get(k)
+            if v in (True, False, 'yes', 'no', 'y', 'n', 1, 0):
+                qs[k] = v in (True, 'yes', 'y', 1)
+            elif v is None or v == '':
+                qs.pop(k, None) if k in body['quick_screen'] else None
+        qs['answered_on'] = today.isoformat()
+        row['quick_screen'] = qs
+        q = audit.quick_screen_of(row)
+        changes.append(f'quick screen {q["answered"]} of {q["of"]}' + (f', no on {", ".join(q["no"])}' if q['no'] else ''))
     if isinstance(body.get('screen_result'), dict):
         row['screen_result'] = {k: body['screen_result'].get(k) if body['screen_result'].get(k) in ('pass', 'fail') else (row.get('screen_result') or {}).get(k) for k in audit.SCREEN_CHECKS}
         changes.append('checks set')

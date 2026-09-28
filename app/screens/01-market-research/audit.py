@@ -211,6 +211,9 @@ Rules
             source), or which has no cost floor check at gated or later (bank idea PRD-094). Money: null. Capability PROD-C08
   PROD-R58  No post-launch read set: a candidate at go, or with a launch target set, with no post-launch metric, floor, read
             date and owner written before the test starts (bank idea PRD-125). Money: null. Capability PROD-C11
+  PROD-R59  Quick screen skipped: an open candidate with research hours logged, or past screened, whose 10-point quick screen
+            is not complete (bank idea PRD-120: minutes on the quick screen before any tool time or deep research).
+            Money: null. Capability PROD-C01
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -342,6 +345,7 @@ RULES = [
     {'rule_id': 'PROD-R56', 'name': 'Candidate whose ordered units crossed 500 or 1,000 since its quote', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C13', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R57', 'name': 'Candidate at gated or later with no cost floor check, or a landed cost more than twice the floor seen', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline', 'finance_inputs'], 'capability': 'PROD-C08', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R58', 'name': 'Candidate at go or with a launch target and no post-launch metric, floor, read date and owner', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C11', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R59', 'name': 'Candidate with hours logged or past screened whose 10-point quick screen is incomplete', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C01', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -400,7 +404,8 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R55': {'id': 'PROD-C13', 'autonomy': 'agent_does'},
               'PROD-R56': {'id': 'PROD-C13', 'autonomy': 'agent_does'},
               'PROD-R57': {'id': 'PROD-C08', 'autonomy': 'agent_does'},
-              'PROD-R58': {'id': 'PROD-C11', 'autonomy': 'founder_gate'}}
+              'PROD-R58': {'id': 'PROD-C11', 'autonomy': 'founder_gate'},
+              'PROD-R59': {'id': 'PROD-C01', 'autonomy': 'agent_does'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -997,6 +1002,7 @@ def _run_audit(brand, ends_on, data):
     out += requote_findings(brand, ends_on)
     out += cost_floor_findings(brand, data, br, rd, ends_on)
     out += post_launch_findings(brand, ends_on)
+    out += quick_screen_findings(brand, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -5359,5 +5365,63 @@ def post_launch_findings(brand, ends_on):
         f = _finding('PROD-R58', cid, ends_on, 'medium', ev, sentence, None, 0.9, [], money_reason='the bet is the first run cash, priced on the first-run card')
         f['entity'] = {'type': 'sku', 'id': cid, 'label': c.get('name'), 'candidate': True, 'stage': st, 'missing': pl['missing'], 'launch_target': c.get('launch_target'), 'review_date': c.get('review_date')}
         f['id'] = f'{SCREEN}.PROD-R58.{cid}'
+        out.append(f)
+    return out
+
+
+# ---------------------------------------------------------------- the quick 10-point screen before research time
+
+QUICK_SCREEN_POINTS = [
+    ('felt_problem', 'Solves a felt problem or serves a passionate community'), ('not_novelty', 'Not a novelty: a reason to buy that lasts'),
+    ('model_fit', 'Fits the store\'s business model (margin band, order size, repeat or gift use)'), ('offline_scarcity', 'Hard to find offline, or better online'),
+    ('weight_size', 'Weight and size ship well (no freight surprise)'), ('content_feasible', 'Content or a demo is feasible in our own creative'),
+    ('no_fandom', 'No fandom, licensing or trademark flag'), ('no_regulatory', 'No obvious regulatory or certification flag'),
+    ('price_room', 'Price room: sells above the reject line with a plausible margin'), ('repeat_or_gift', 'Repeat purchase or gift use is plausible'),
+]
+
+
+def quick_screen_of(cand):
+    """The quick screen on a candidate: each point yes, no or unanswered; counts; verdict: not_run (nothing answered), partial,
+    clear (10 yes), drops (any no). A no is a drop reason, not a kill: the candidate is logged with it before any research time."""
+    qs = cand.get('quick_screen') or {}
+    points = [{'key': k, 'label': l, 'answer': (True if qs.get(k) is True else False if qs.get(k) is False else None)} for k, l in QUICK_SCREEN_POINTS]
+    yes = sum(1 for p in points if p['answer'] is True)
+    no = [p['key'] for p in points if p['answer'] is False]
+    answered = yes + len(no)
+    verdict = 'not_run' if answered == 0 else 'drops' if no else 'clear' if yes == len(points) else 'partial'
+    return {'points': points, 'yes': yes, 'no': no, 'answered': answered, 'of': len(points), 'verdict': verdict, 'answered_on': qs.get('answered_on')}
+
+
+def quick_screen_read(brand):
+    """Per open candidate: the quick screen with its verdict, the hours logged and whether research time went in before it was complete."""
+    rows = []
+    for c in pipeline(brand):
+        st = c.get('stage')
+        if st in CLOSED_STAGES:
+            continue
+        q = quick_screen_of(c)
+        idx = STAGES.index(st) if st in STAGES else 0
+        hours = c.get('hours_logged') or 0
+        before = q['verdict'] in ('not_run', 'partial') and (hours > 0 or idx > 0)
+        rows.append({'candidate_id': c.get('candidate_id'), 'name': c.get('name'), 'stage': st, 'hours_logged': hours, 'yes': q['yes'], 'no': q['no'], 'answered': q['answered'], 'of': q['of'], 'verdict': q['verdict'],
+                     'research_before_screen': before, 'finding_id': f'{SCREEN}.PROD-R59.{c.get("candidate_id")}'})
+    order = {'drops': 0, 'not_run': 1, 'partial': 2, 'clear': 3}
+    rows.sort(key=lambda r: (0 if r['research_before_screen'] else 1, order[r['verdict']], r['name'] or ''))
+    return {'rows': rows, 'points': [{'key': k, 'label': l} for k, l in QUICK_SCREEN_POINTS],
+            'rule': 'every candidate answers the 10 quick-screen points before an hour of research or a paid pull goes in; a no is logged as the drop reason, and the candidate moves on only with the reason written (bank idea PRD-120)'}
+
+
+def quick_screen_findings(brand, ends_on):
+    """PROD-R59: research hours logged, or a stage past screened, with the quick screen incomplete."""
+    out = []
+    for r in quick_screen_read(brand)['rows']:
+        if not r['research_before_screen']:
+            continue
+        cid = r['candidate_id']
+        ev = [_ev('quick_screen_answered', r['answered'], 'count', ends_on.isoformat(), 'candidate now', r['of'], 'threshold', source='fixtures.pipeline', simulated=False, freshness_days=0, hours_logged=r['hours_logged'], stage=r['stage'])]
+        sentence = f'{r["name"]} has {r["hours_logged"]:g} research hours logged at {r["stage"]} with {r["answered"]} of {r["of"]} quick-screen points answered; minutes on the screen come before hours on the research.'
+        f = _finding('PROD-R59', cid, ends_on, 'low', ev, sentence, None, 0.9, [], money_reason='the research hours are the cost, priced on the hours block')
+        f['entity'] = {'type': 'sku', 'id': cid, 'label': r['name'], 'candidate': True, 'stage': r['stage'], 'answered': r['answered'], 'of': r['of'], 'hours_logged': r['hours_logged']}
+        f['id'] = f'{SCREEN}.PROD-R59.{cid}'
         out.append(f)
     return out

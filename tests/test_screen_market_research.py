@@ -1735,6 +1735,40 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
         finally:
             audit.PIPELINE_PATH = self.real2
 
+    def test_quick_screen_before_research_time(self):
+        D = date(2026, 9, 27)
+        self.real2 = audit.PIPELINE_PATH
+        try:
+            audit.PIPELINE_PATH = self.tmp
+            allyes = {k: True for k, _ in audit.QUICK_SCREEN_POINTS}
+            self.tmp.write_text(json.dumps({'rows': [{'candidate_id': 'a', 'brand': 'fake', 'name': 'A', 'stage': 'screened', 'hours_logged': 2.0},
+                                                     {'candidate_id': 'b', 'brand': 'fake', 'name': 'B', 'stage': 'researched', 'hours_logged': 0, 'quick_screen': dict(allyes, weight_size=False)},
+                                                     {'candidate_id': 'c', 'brand': 'fake', 'name': 'C', 'stage': 'screened', 'hours_logged': 0},
+                                                     {'candidate_id': 'd', 'brand': 'fake', 'name': 'D', 'stage': 'gated', 'hours_logged': 5, 'quick_screen': allyes},
+                                                     {'candidate_id': 'e', 'brand': 'fake', 'name': 'E', 'stage': 'researched', 'hours_logged': 1, 'quick_screen': {'felt_problem': True}}]}), encoding='utf-8')
+            read = audit.quick_screen_read('fake')
+            by = {r['candidate_id']: r for r in read['rows']}
+            self.assertEqual(len(read['points']), 10)
+            self.assertEqual({k: v['verdict'] for k, v in by.items()}, {'a': 'not_run', 'b': 'drops', 'c': 'not_run', 'd': 'clear', 'e': 'partial'})
+            self.assertEqual({k: v['research_before_screen'] for k, v in by.items()}, {'a': True, 'b': False, 'c': False, 'd': False, 'e': True})
+            self.assertEqual(by['b']['no'], ['weight_size'])
+            found = audit.quick_screen_findings('fake', D)
+            self.assertEqual(sorted(f['id'].split('.')[-1] for f in found), ['a', 'e'])
+            fa = next(f for f in found if f['id'].endswith('.a'))
+            self.assertIn('2 research hours logged at screened with 0 of 10', fa['sentence'])
+            self.assertEqual(fa['severity'], 'low')
+            self.check_shape(fa)
+            self.assertIn('quick screen', api.recipe(fa)['title'])
+            self.assertIn('PROD-R59', api.CANDIDATE_RULES)
+            r = api.candidate_update('fake', 'a', {'quick_screen': {'felt_problem': 'y', 'not_novelty': 'n', 'moon': 'y'}, 'who': 'person'}, D)
+            self.assertEqual(r['changes'], ['quick screen 2 of 10, no on not_novelty'])
+            self.assertEqual(audit.quick_screen_of(r['candidate'])['verdict'], 'drops')
+            r = api.candidate_update('fake', 'a', {'quick_screen': {k: 'yes' for k, _ in audit.QUICK_SCREEN_POINTS}, 'who': 'person'}, D)
+            self.assertEqual(audit.quick_screen_of(r['candidate'])['verdict'], 'clear')
+            self.assertEqual(sorted(f['id'].split('.')[-1] for f in audit.quick_screen_findings('fake', D)), ['e'])
+        finally:
+            audit.PIPELINE_PATH = self.real2
+
     def test_demand_pattern_tags(self):
         even = {'rows': [{'category': 'socks', 'series': [100] * 12}], 'months': [f'2026-{m:02d}' for m in range(1, 13)], 'last': '2026-12'}
         peaked = {'rows': [{'category': 'socks', 'series': [50] * 10 + [300, 400]}], 'months': even['months'], 'last': '2026-12'}

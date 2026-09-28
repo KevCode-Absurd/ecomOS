@@ -313,7 +313,11 @@
     try { await api(BASE + path + Q, { method: 'POST', body }); load(); }
     catch (e) { alert('Could not save: ' + e.message); }
   }
-  function pipelineBlock(p) {
+  function pipelineBlock(p, qs) {
+    const qsBy = {}; (((qs && qs.rows) || [])).forEach((r) => { qsBy[r.candidate_id] = r; });
+    const quickScreen = (r) => { const pts = (qs && qs.points) || []; const cur = qsBy[r.candidate_id] || {}; const answers = {};
+      for (const pt of pts) { const v = prompt('Quick screen for ' + r.name + ': ' + pt.label + ' (y, n, or empty to skip)', ''); if (v == null) return; if (v.trim()) answers[pt.key] = v.trim().toLowerCase().startsWith('y') ? 'yes' : 'no'; }
+      if (!Object.keys(answers).length) return; candidatePost('candidates/' + r.candidate_id, { quick_screen: answers, who: 'person' }); };
     const floor = p.floor_pct != null ? 'The brand floor is ' + p.floor_pct + ' percent, from ' + p.floor_source + '.' : 'No floor on file: enter a target contribution margin on the setup screen.';
     const rows = p.rows || [];
     const ho = p.handoff || {};
@@ -324,10 +328,11 @@
     const stageNext = (r) => { const i = (p.stages || []).indexOf(r.stage); return i >= 0 && i < p.stages.length - 1 ? p.stages[i + 1] : null; };
     const vrows = rows.map((r) => { const acts = (r.finding_ids || []).map(actionFor).filter(Boolean); const nx = stageNext(r); return Object.assign({}, r, {
       stageText: r.stage + (r.closed ? '' : r.days_left != null ? (r.days_left < 0 ? ', ' + Math.abs(r.days_left) + ' d over the box' : ', ' + r.days_left + ' d left') : ''),
-      checks: (p.checks || []).map((c) => pretty(c) + ' ' + ((r.screen_result || {})[c] || 'not run')).join(', '),
+      checks: (qsBy[r.candidate_id] ? 'quick screen ' + qsBy[r.candidate_id].answered + ' of ' + qsBy[r.candidate_id].of + (qsBy[r.candidate_id].no.length ? ' (no on ' + qsBy[r.candidate_id].no.map(pretty).join(', ') + ')' : '') + '; ' : '') + (p.checks || []).map((c) => pretty(c) + ' ' + ((r.screen_result || {})[c] || 'not run')).join(', '),
       angle: r.angle_text || 'no angle yet', price: r.planned_price, hours: r.hours_logged, laneText: r.lane ? ((p.lanes || []).find((l) => l.key === r.lane) || { label: r.lane }).label : 'none',
       actions: [].concat(acts.length ? [{ label: acts[0].rule_id === 'PROD-R15' ? 'Kill or fix' : 'Decide', onClick: () => openAction(acts[0]) }] : [],
         [{ label: 'Brief', cls: 'quiet', onClick: () => openBrief(r.candidate_id) }],
+        !r.closed ? [{ label: 'Quick screen' + (qsBy[r.candidate_id] ? ' ' + qsBy[r.candidate_id].answered + '/' + qsBy[r.candidate_id].of : ''), cls: 'quiet', onClick: () => quickScreen(r) }] : [],
         !r.closed ? [{ label: r.owner ? 'Owner: ' + r.owner : 'Owner', cls: 'quiet', onClick: () => { const v = prompt('Who owns ' + r.name + ' (reads the test and runs the diagnosis)?', r.owner || ''); if (v != null) candidatePost('candidates/' + r.candidate_id, { owner: v, who: 'person' }); } }] : [],
         !r.closed && (r.failed_checks || []).length ? [{ label: 'Log override', cls: 'quiet', onClick: () => { const v = prompt('Why does ' + r.name + ' move on with ' + r.failed_checks.join(', ') + ' failed? Name the signal.'); if (v != null && v.trim()) candidatePost('candidates/' + r.candidate_id, { override_reason: v, who: 'person' }); } }] : [],
         !r.closed && nx ? [{ label: 'Advance to ' + nx, cls: 'quiet', onClick: () => candidatePost('candidates/' + r.candidate_id, { stage: nx, who: 'person' }) }] : [],
@@ -1436,7 +1441,7 @@
     parts.push(section('desk-hours', 'Has any candidate used up its research hours?', 'Hours logged per candidate against the hours allowed through its stage, from the brand\'s budget per stage. Research cannot sprawl past the box.', hoursBlock(d.hours)));
     parts.push(section('desk-trend-checks', 'Does each lane\'s trend rest on history, or on a forecast?', 'The 12-month rate against the multi-year rate per lane from the web pass series: a trend is trusted with 3 or more years of history on the exact term; a last year over twice the multi-year rate is a spike.', trendChecksBlock(d.trend_checks)));
     parts.push(section('desk-pattern', 'Is each candidate evergreen, seasonal or a trend, and when does cash move?', 'The demand pattern from our own 12-month series by category and the web pass, with the cash timing it implies and the cash plan attached to each candidate.', patternBlock(d.pattern)));
-    parts.push(section('desk-pipeline', 'What is in the next-SKU pipeline, and what is past its time box?', 'Candidates screened in from the gaps above or by hand, their stage, fast checks, time box and hours. Advance, log hours or kill from the card; every write lands in the pipeline log.', pipelineBlock(d.pipeline || { rows: [] })));
+    parts.push(section('desk-pipeline', 'What is in the next-SKU pipeline, and what is past its time box?', 'Candidates screened in from the gaps above or by hand, their stage, fast checks, time box and hours. Advance, log hours or kill from the card; every write lands in the pipeline log.', pipelineBlock(d.pipeline || { rows: [] }, d.quick_screens)));
     parts.push(section('desk-kills', 'What did we kill, and why?', 'Killed candidates with the reason and the date, on a 90-day hold; an open candidate that reads like one of them gets the kill note before any hours go in.', killsBlock(d.kills)));
     parts.push(section('desk-pulls', 'How fresh is what this desk reads, and what would a refresh cost?', 'Every pull the desk depends on: its last capture, age against its window, the blocks it feeds and the estimate for a run under the brand\'s caps. A person approves each paid call; nothing runs from here.', pullsBlock(d.pulls)));
     parts.push(section('desk-brain', 'How fresh is the brain this desk reads?', 'The brain sections behind the rules here, each with its records, last update, age against the contract TTL, stale and conflict counts and confidence; a conflict waits on the founder, a stale section waits on a pull or the keeper.', brainFreshnessBlock(d.brain_freshness)));
