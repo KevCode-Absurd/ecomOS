@@ -290,6 +290,29 @@ def freshness(m: dict, brand: str) -> dict:
             "rule": f"Fresh up to {FRESH_DAYS} days, ageing to {AGEING_DAYS}, stale after. A page with no capture reads no capture, never 0."}
 
 
+def scoreboard(brand: str) -> dict:
+    """What worked against rivals: logged outcomes by the group of the rule behind each move. Win share = won / (won + lost + flat);
+    not shipped is counted apart. Unavailable until an outcome is logged."""
+    outs = audit.inpmod.outcomes(audit.inpmod.read(brand, "outcome")).values()
+    groups: dict[str, dict] = {}
+    for o in outs:
+        rid = next((p for p in o["action_id"].split(".") if p.startswith("COMP-R")), None)
+        g = audit.RULE_GROUP.get(rid, "watch")
+        row = groups.setdefault(g, {"group": g, "label": audit.GROUP_LABEL.get(g, g), "won": 0, "lost": 0, "flat": 0, "not shipped": 0})
+        row[o["result"]] += 1
+    rows = []
+    for g in audit.GROUP_LABEL:
+        if g in groups:
+            r = groups[g]
+            read = r["won"] + r["lost"] + r["flat"]
+            r["win_share"] = round(r["won"] / read, 3) if read else None
+            rows.append(r)
+    read = sum(r["won"] + r["lost"] + r["flat"] for r in rows)
+    return {"rows": rows, "read": read, "win_share": round(sum(r["won"] for r in rows) / read, 3) if read else None,
+            "not_shipped": sum(r["not shipped"] for r in rows),
+            "rule": "Win share = won / (won + lost + flat) of the moves read. Not shipped is counted apart: it says nothing about the idea."}
+
+
 def logged_week(brand: str, today: dt.date, days: int = 7) -> dict:
     """What the team logged on this screen in the last `days` days (by the record's own date, else when it was logged)."""
     start = (today - dt.timedelta(days=days - 1)).isoformat()
@@ -499,7 +522,7 @@ def overview(brand: str, today: dt.date) -> dict:
             "room_metrics": room_metrics(m, pos, bc),
             "coverage": {"all": m["coverage"], "direct": m["coverage_direct"]}, "mix": m["mix"], "references": m["references"], "ladder": m["ladder"], "changes": m["changes"], "freshness": freshness(m, brand), "losses": m["losses"], "category": m["category"], "reviews": m["reviews"], "presence": m["presence"], "velocity": m["velocity"], "niche": m["niche"], "premium": m["premium"], "search": m["search"], "price_moves": m["price_moves"], "landing": m["landing"], "placements": placements(m), "season": m["season"],
             "review": review(m, pos, audit.framemod.build(m, brain, moves), today), "macros": macros(m), "history": audit.capmod.history(brand), "gap_lines": gap_lines(ranked),
-            "frames": audit.framemod.build(m, brain, moves),
+            "frames": audit.framemod.build(m, brain, moves), "scoreboard": scoreboard(brand),
             "category_median": m["category_median"], "price_position_index": m["price_position_index"]}
 
 

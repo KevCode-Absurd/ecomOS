@@ -1921,5 +1921,20 @@ class TestOverdue(unittest.TestCase):
         self.assertIn('a5', [x['id'] for x in q['items']])   # undecided and drafted: still asks for approval
 
 
+class TestScoreboard(TempInputs):
+    """8.4: what worked against rivals, from logged outcomes by rule group; unavailable until one is logged."""
+    def test_scoreboard(self):
+        sb = api.handle(Req(['overview']))['scoreboard']
+        self.assertEqual((sb['rows'], sb['read'], sb['win_share']), ([], 0, None))
+        acts = api.handle(Req(['plan']))['actions']
+        creative = [a for a in acts if api.audit.RULE_GROUP.get(a['rule_id']) == 'creative'][:3]
+        for a, res in zip(creative, ('won', 'flat', 'not shipped')):
+            self.assertEqual(self.post({'kind': 'outcome', 'action_id': a['id'], 'result': res})[0], 201)
+        sb = api.handle(Req(['overview']))['scoreboard']
+        row = next(r for r in sb['rows'] if r['group'] == 'creative')
+        self.assertEqual((row['won'], row['flat'], row['not shipped'], row['win_share']), (1, 1, 1, 0.5))
+        self.assertEqual((sb['read'], sb['not_shipped'], sb['win_share']), (2, 1, 0.5))
+
+
 if __name__ == '__main__':
     unittest.main()

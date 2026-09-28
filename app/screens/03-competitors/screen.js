@@ -904,6 +904,13 @@
     gapLines(d.gap_lines);
     exportsSection(d);
     inputsLog();
+    const sb = d.scoreboard || { rows: [] };
+    mount('#scoreboard', el('h4', { text: 'What worked against them' }), sb.rows.length ? UI.table({ columns: [{ key: 'label', label: 'Kind of move' }, { key: 'won', label: 'Won', unit: 'n' },
+      { key: 'lost', label: 'Lost', unit: 'n' }, { key: 'flat', label: 'Flat', unit: 'n' }, { key: 'not shipped', label: 'Not shipped', unit: 'n' },
+      { key: 'win_share', label: 'Win share', format: (v) => v == null ? NA : fmt.pct(v) }], rows: sb.rows, sort: false })
+      : el('p', { class: 'small muted', text: 'Unavailable until a move\'s outcome is logged on the check due lane.' }),
+      sb.read ? el('p', { class: 'small', text: sb.read + ' moves read, win share ' + fmt.pct(sb.win_share) + (sb.not_shipped ? '; ' + sb.not_shipped + ' not shipped.' : '.') }) : null,
+      el('p', { class: 'micro faint', text: sb.rule }));
     deskTabs();
     const fmtM = (r) => r.value == null ? NA : r.unit === '%' ? fmt.pct(r.value) : fmt.num(r.value) + (r.unit === 'days' ? ' days' : r.unit === 'points' ? ' points' : '');
     mount('#metrics', el('h4', { text: 'Room metrics' }), UI.table({ columns: [{ key: 'key', label: 'Metric', format: (v) => pretty(v) }, { key: 'v', label: 'Value' },
