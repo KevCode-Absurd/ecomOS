@@ -22,7 +22,7 @@ def _refs(records: list[dict], ids: list[str]) -> list[str]:
 
 def _entry(records, field, value, status, ids, reasoning, unit=None, as_of=None):
     missing = [i for i in ids if not _find(records, i)]
-    if missing and status != "assumed":
+    if missing and status not in ("assumed", "founder", "modelled"):
         status = "assumed"
         reasoning += f" Records missing at merge time: {', '.join(missing)}."
     out = {"field": field, "value": value, "status": status}
@@ -158,6 +158,60 @@ def build(records: list[dict], today: str) -> tuple[list[dict], list[dict]]:
                     "93 to 7 split as of March 2023. Footwear near 20 percent of sales by late 2025 is a single report "
                     "at 0.5 confidence.", unit="percent of revenue", as_of="2023-03"))
 
+    # Founder and modelled overrides (S1.4 review, 28 Sep 2026): an approved economics record wins over any
+    # estimate above; a modelled (inferred) record answers an open question and marks the assumption modelled.
+    def _founder(field, key=None):
+        r = _find(records, f"{BRAND}.economics.{field}")
+        if not r or r.get("tier") not in ("approved", "inferred"):
+            return None, None
+        v = r.get("value")
+        return (v.get(key) if key and isinstance(v, dict) else v), r
+    answered = set()
+    v, r = _founder("revenue_point_usd")
+    if v:
+        for e in a:
+            if e["field"] == "revenue_band":
+                e["value"]["point_usd"] = v
+                e["status"] = "founder"; e["source_ids"] = [r["id"]]
+                e["reasoning"] = "Kevin set the simulated point at the low end of the public band, as an uneven number."
+    v, r = _founder("aov_usd")
+    if v:
+        for e in a:
+            if e["field"] == "aov_usd":
+                e["value"]["estimate"] = v; e["status"] = "founder"; e["source_ids"] = [r["id"]]
+        answered.add("aov")
+    v, r = _founder("repeat_rate_12m")
+    if v:
+        for e in a:
+            if e["field"] == "repeat_rate_12m":
+                e["value"] = v; e["status"] = "founder"; e["source_ids"] = [r["id"]]
+        answered.add("repeat_rate")
+    v, r = _founder("channel_mix")
+    if v:
+        for e in a:
+            if e["field"] == "channel_mix":
+                e["value"] = {**v, "history": e["value"].get("history")}; e["status"] = "founder"; e["source_ids"] = [r["id"]]
+                e["reasoning"] = "Kevin's split for the simulation: site 74, wholesale 12, owned stores 6, marketplaces 8."
+        answered.add("channel_mix")
+    v, r = _founder("paid_media_split")
+    if v:
+        a.append(_entry(records, "paid_media_split", v, "founder", [r["id"]],
+                        "Kevin set Meta 60 and Google 20 and asked for the rest to be made up.", unit="percent of paid spend", as_of=today))
+        answered.add("paid_spend_split")
+    v, r = _founder("gross_margin_model")
+    if v:
+        a.append(_entry(records, "gross_margin", v, "modelled", [r["id"]],
+                        "Modelled from DTC basics benchmarks with the donated item counted as a second unit at about half the sold unit's cost. Not a Bombas figure.", unit="percent of net revenue", as_of=today))
+        answered.add("gross_margin")
+    v, r = _founder("return_share_model")
+    if v:
+        a.append(_entry(records, "return_share", v, "modelled", [r["id"]],
+                        "Modelled from sock and basics return norms and the guarantee's replacement policy. Not a Bombas figure.", unit="percent of orders", as_of=today))
+        answered.add("return_rate")
+    v, r = _founder("monthly_revenue_shape")
+    if v:
+        answered.add("seasonality")
+
     questions = [
         ("repeat_rate", "What share of first time buyers order again within 12 months?", "avatars",
          "Sets retention in the simulated orders and every LTV number.", "Shopify or Klaviyo, or the founder"),
@@ -178,5 +232,5 @@ def build(records: list[dict], today: str) -> tuple[list[dict], list[dict]]:
         "id": f"{BRAND}.open_questions.{key}", "brand": BRAND, "section": "open_questions", "field": key,
         "value": {"question": q, "section": sec, "why": why, "who_can_answer": who, "asked_on": None, "answered_on": None},
         "text": q, "visibility": "private",
-    } for key, q, sec, why, who in questions]
+    } for key, q, sec, why, who in questions if key not in answered]
     return a, oq

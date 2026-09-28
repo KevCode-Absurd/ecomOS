@@ -45,7 +45,7 @@ POLL_MAX_S = 1800
 PRICES_PER_1000 = {
     "axesso_data~amazon-reviews-scraper": 0.90,
     "junglee~amazon-reviews-scraper": 3.00,
-    "junglee~amazon-crawler": 3.00,
+    "junglee~amazon-crawler": 54.00,  # observed 28 Sep 2026: $8.64 for 160 search results; listed $0.005 per result did not hold
     "curious_coder~facebook-ads-library-scraper": 0.75,
     "apify~facebook-ads-scraper": 3.40,
     "trudax~reddit-scraper-lite": 3.40,

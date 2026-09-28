@@ -20,30 +20,31 @@ Freshness: all records in date
 | [voice](voice.json) | 3 | 2026-09-28 | Bombas repeats the same donation tagline word for word across its... |
 | [visual](visual.json) | 16 | 2026-09-28 | Bombas main stylesheet defines a black color token named black as... |
 | [products](products.json) | 30 | 2026-09-28 | Bombas sells a digital gift card in denominations from 25 to 300... |
-| [offers](offers.json) | 9 | 2026-09-28 | Bombas offers free standard shipping on US orders of 75 dollars or... |
+| [offers](offers.json) | 10 | 2026-09-28 | Bombas offers free standard shipping on US orders of 75 dollars or... |
 | [policies](policies.json) | 10 | 2026-09-28 | Bombas accepts returns for a refund within 30 days of purchase, or... |
 | [claims](claims.json) | 6 | 2026-09-28 | Bombas ankle socks are described as moisture-wicking with a... |
 | [avatars](avatars.json) | 13 | 2026-09-28 | Cold Weather Wool Sock Loyalist: warm, durable socks for cold... |
 | [objections](objections.json) | 42 | 2026-09-28 | Compression socks are too hard to pull on, sit too high or too... |
 | [objection_ladders](objection_ladders.json) | 7 | 2026-09-28 | Comfort and feel: 24 complaint and 103 praise quotes. Top rung... |
 | [language_bank](language_bank.json) | 335 | 2026-09-28 | Reviewers say 'it is literally just a men's shirt' (complaint). |
-| [competitors](competitors.json) | 508 | 2026-09-28 | 1-VoIP runs 1 active Meta ads; longest has run 171 days. |
+| [competitors](competitors.json) | 15 | 2026-09-28 | Competitors should be sock and fashion apparel brands similar to... |
 | [positioning](positioning.json) | 4 | 2026-09-28 | Reddit frame 'buy it for life' appears in 9 posts or comments. |
 | [channels](channels.json) | 13 | 2026-09-28 | Bombas announced it would begin selling socks in more than 190... |
 | [calendar](calendar.json) | 8 | 2026-09-28 | Bombas launched ribbed seamless bralettes around March 1, 2023, in... |
-| [economics](economics.json) | 12 | 2026-09-28 | Bombas exceeded 100 million dollars in revenue in 2018 and was... |
+| [economics](economics.json) | 21 | 2026-09-28 | Average order value 73 dollars stands. |
 | [operations](operations.json) | 6 | 2026-09-28 | Bombas' distribution runs through a network of third-party... |
-| [marketplaces](marketplaces.json) | 9 | 2026-09-28 | Amazon ASIN B07MTXGV9R (Bombas Women's Originals Ankle Socks,... |
+| [marketplaces](marketplaces.json) | 36 | 2026-09-28 | Verified Bombas ASINs on Amazon from a search pull: 29 distinct... |
 | [stack](stack.json) | 17 | 2026-09-28 | Bombas uses OneTrust for cookie and privacy consent management. |
 | [site_map](site_map.json) | 6 | 2026-09-28 | The live storefront's home page is at https://shop.bombas.com/,... |
-| [content](content.json) | 28 | 2026-09-28 | According to Helen runs 1 creator-style ads (first person, review... |
+| [content](content.json) | 3 | 2026-09-28 | Comrad Socks runs 7 creator-style ads (first person, review voice). |
 | [seo_facts](seo_facts.json) | 2 | 2026-09-28 | Question asked on r/BuyItForLife: What's something you WON'T spend... |
 | [team](team.json) | 8 | 2026-09-28 | Bombas has an open Vice President, Distribution role reporting... |
-| [learnings](learnings.json) | 493 | 2026-09-28 | Signal, not proof: COS ads by format {'dpa': 1}; 1 have run 30... |
-| [open_questions](open_questions.json) | 12 | undated | What is the average order value on the US site? |
-| [freshness](freshness.json) | 25 | 2026-09-28 | avatars: 13 records, last updated 2026-09-28, 0 stale, 0 open... |
+| [decisions](decisions.json) | 1 | 2026-09-28 | S1.4 review: identity, products, offers, avatars, claims, calendar... |
+| [learnings](learnings.json) | 12 | 2026-09-28 | On 2026-09-28 Bombas runs 23 active US Meta ads: 11 image, 8... |
+| [open_questions](open_questions.json) | 5 | undated | What proof answers "will it do the job it claims, like support or... |
+| [freshness](freshness.json) | 26 | 2026-09-28 | avatars: 13 records, last updated 2026-09-28, 0 stale, 0 open... |
 
-No records yet: diagnosis, decisions, changes, plans.
+No records yet: diagnosis, changes, plans.
 
 ## Routing
 
@@ -61,8 +62,8 @@ No records yet: diagnosis, decisions, changes, plans.
 ## Links
 
 - Documents: [documents/manifest.json](documents/manifest.json), 0 files
-- Open questions: [open_questions.json](open_questions.json), 12 open
-- Brain version ae0278b2e712. Generated from records; edit records, not this file.
+- Open questions: [open_questions.json](open_questions.json), 5 open
+- Brain version 9acdcc645732. Generated from records; edit records, not this file.
 
 ## Founder notes
 
