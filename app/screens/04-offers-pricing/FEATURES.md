@@ -140,6 +140,7 @@ Known gaps from round 0:
 | # | Feature | Status |
 |---|---|---|
 | 7.1 | What shoppers really pay per product: list price against the paid price after codes (each order's code spread over its lines by line value), the share of list kept and the share of units sold with a code, 90 days, from order rows. New rule OFFER-R36 when a product with 50 or more units sells 45 percent or more of them with a code; the move is a 28-day test that excludes those products from the code, judged on profit per visitor. Sample brand: 96 percent of list kept, the highest is Cornbread Pan at 39 percent coded, so quiet. Bombas: unavailable, with the store connect move | done |
+| 7.2 | Which top products rarely get a second item (room job LIFE-C41, placements, read from order rows while the upsell app's events wait): per product, the share of its orders that carry another product, the median across products, and its most co-bought mate with the mate's unit margin. New rule OFFER-R37 when one of the 5 biggest products sits 5 points or more under the median; the move is a "goes with" block under add to cart plus a cart line, no discount, judged on profit per visitor. Sample brand: 12-inch Skillet, 513 orders, 30 percent against 44 percent, mate Chainmail Scrubber | done |
 
 ## Contract asks
 

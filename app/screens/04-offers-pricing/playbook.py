@@ -247,3 +247,11 @@ CLAIM_STRESS = 2
 PAID_DAYS = 90
 PAID_MIN_UNITS = 50
 CODE_DEPENDENT = 0.45
+
+# Attach rate by anchor product (screen 04, OFFER-R37; room job LIFE-C41, which placements convert). Orders with
+# the product that carry a second product. Among the ATTACH_TOP products by orders, one ATTACH_GAP or more under the
+# median attach rate is a cross-sell placement to build. Our own rule, written down.
+ATTACH_DAYS = 90
+ATTACH_TOP = 5
+ATTACH_GAP = 0.05
+ATTACH_MIN_ORDERS = 60

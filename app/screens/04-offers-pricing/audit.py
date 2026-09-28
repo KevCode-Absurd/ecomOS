@@ -153,6 +153,10 @@ Rules
   OFFER-R36  A product leans on the code: playbook.CODE_DEPENDENT or more of its units in PAID_DAYS sold with a code,
              at least PAID_MIN_UNITS units (model.paid_prices). One finding for all such products. Money: code dollars
              on those products scaled to 28 days. Medium. Unavailable without order rows. Capability MONEY-C05.
+  OFFER-R37  A top product rarely gets a second item (room job LIFE-C41): among the playbook.ATTACH_TOP products
+             by orders, one whose attach rate sits ATTACH_GAP or more under the median (model.attach_rates). The move
+             is a "goes with" placement on its page and in its cart line with its most co-bought partner. Money: orders
+             x the gap to the median x the partner's unit margin, scaled to 28 days. Medium. Capability LIFE-C41.
   OFFER-R03  Margin after discount per SKU. Needs cogs_landed keyed by the store's SKUs. Unavailable while no
              finance_inputs SKU key matches a product SKU. Capability MONEY-C05 (founder gate). Owner: 04.
   OFFER-R04  A deal-breaker rung with no proof: the top rung of an objection ladder whose proof is empty or
@@ -267,6 +271,8 @@ RULES = [
      'inputs': ['brain.economics.return_share_model', 'finance_inputs', 'daily'], 'capability': 'LIFE-C42', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R36', 'name': 'A product leans on the code', 'entity_type': 'sku',
      'inputs': ['orders', 'products'], 'capability': 'MONEY-C05', 'owner_screen': SCREEN},
+    {'rule_id': 'OFFER-R37', 'name': 'A top product rarely gets a second item', 'entity_type': 'sku',
+     'inputs': ['orders', 'products'], 'capability': 'LIFE-C41', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R03', 'name': 'Margin after discount per SKU', 'entity_type': 'sku',
      'inputs': ['finance_inputs.cogs_landed keyed by product SKU', 'products'], 'capability': 'MONEY-C05',
      'owner_screen': SCREEN},
@@ -307,6 +313,7 @@ CAPABILITY = {'OFFER-R01': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R34': {'id': 'BRN-C11', 'autonomy': 'agent_does'},
               'OFFER-R35': {'id': 'LIFE-C42', 'autonomy': 'founder_gate'},
               'OFFER-R36': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
+              'OFFER-R37': {'id': 'LIFE-C41', 'autonomy': 'founder_gate'},
               'OFFER-R06': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R04': {'id': 'LIFE-C36', 'autonomy': 'founder_gate'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
@@ -1410,6 +1417,32 @@ def rule_paid(rd):
                      {'usd': usd, 'formula': '(list - paid) x units on these products x 28 / 90', 'window': '28d'}, 0.6, [], end)]
 
 
+def attach_rates(rd):
+    pb = _playbook()
+    return _model().attach_rates(rd, pb.ATTACH_DAYS, pb.ATTACH_MIN_ORDERS)
+
+
+def rule_attach(rd):
+    end = rd.ends_on
+    pb = _playbook()
+    ar = attach_rates(rd)
+    if ar['unavailable']:
+        return []   # order rows are asked for by OFFER-R31 and R32
+    out = []
+    for r in ar['rows'][:pb.ATTACH_TOP]:
+        gap = ar['median'] - r['attach']
+        if gap < pb.ATTACH_GAP or not r['partner']:
+            continue
+        usd = round(r['orders'] * gap * r['partner_margin'] * 28 / ar['days'], 2) if r['partner_margin'] is not None else None
+        ev = [_ev('attach_rate', r['attach'], 'ratio', end, baseline=ar['median'], baseline_kind='median_product', window=f'{ar["days"]}d')]
+        out.append(_finding('OFFER-R37', {'type': 'sku', 'id': 'attach_' + r['sku'].lower(), 'label': r['title']}, 'medium', ev,
+                            f'{r["title"]} is in {r["orders"]:,} orders, but only {r["attach"] * 100:.0f} percent carry a second item, '
+                            f'against {ar["median"] * 100:.0f} percent for the median product. {r["partner_title"] or r["partner"]} is its most common mate.',
+                            {'usd': usd, 'formula': 'orders x (median - attach) x partner unit margin x 28 / 90', 'window': '28d'} if usd is not None else None,
+                            0.6, [], end, money_reason='no unit cost for the partner'))
+    return out
+
+
 def rule_ladder(rd):
     end = rd.ends_on
     pb = _playbook()
@@ -1581,7 +1614,7 @@ def run(brand, window=None, data=None):
     """Findings for one brand, sorted by severity then money at stake. `window` is {ends_on} or None."""
     ends_on = date.fromisoformat(window['ends_on']) if window and window.get('ends_on') else last_full_day(data, brand)
     rd = Reader(data, brand, ends_on)
-    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_cost(rd) + rule_referral(rd) + rule_loyalty(rd) + rule_window_creep(rd) + rule_bundles(rd) + rule_launched(rd) + rule_upsell(rd) + rule_bnpl(rd) + rule_threshold_match(rd) + rule_cohorts(rd) + rule_welcome(rd) + rule_test_trust(rd) + rule_price_moves(rd) + rule_claim_stress(rd) + rule_paid(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
+    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_cost(rd) + rule_referral(rd) + rule_loyalty(rd) + rule_window_creep(rd) + rule_bundles(rd) + rule_launched(rd) + rule_upsell(rd) + rule_bnpl(rd) + rule_threshold_match(rd) + rule_cohorts(rd) + rule_welcome(rd) + rule_test_trust(rd) + rule_price_moves(rd) + rule_claim_stress(rd) + rule_paid(rd) + rule_attach(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
            rule_unanswered(rd))
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f.get('money_at_stake') or {}).get('usd') or -1), f['id']))
     return out

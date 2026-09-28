@@ -96,6 +96,7 @@ class Ctx:
         self.price_moves = audit.price_moves(rd)
         self.stress = audit.guarantee_stress(rd)
         self.paid = audit.paid_prices(rd)
+        self.attach = audit.attach_rates(rd)
         self.ship_rate = (model.brain_value(rd, 'offers.standard_shipping_cost')[0] or {}).get('cost_usd') if rd.brand else None
         self.scenarios = (model.threshold_scenarios(rd, self.threshold, self.ship_rate, self.be['value'], (self.po or {}).get('units') or 1)
                           if self.threshold is not None and self.be.get('value') is not None else [])
@@ -550,6 +551,8 @@ def surfaces(a):
         return ['loyalty'], 90
     if r == 'OFFER-R23':
         return ['referral'], 56
+    if r == 'OFFER-R37':
+        return ['product page cross-sell', 'cart line'], 35
     if r == 'OFFER-R36':
         return ['first order offer'], 35
     if r == 'OFFER-R35':
@@ -1227,6 +1230,31 @@ def paid_action(f, a, ctx):
     return a
 
 
+def attach_action(f, a, ctx):
+    """OFFER-R37: a "goes with" placement for a top product, with its most co-bought partner, as a page test."""
+    r = next((x for x in ctx.attach['rows'] if 'attach_' + x['sku'].lower() == f['entity']['id']), None)
+    if not r:
+        return a
+    mate = r['partner_title'] or r['partner']
+    draft = '\n'.join([f'Page section: "Goes with" on {r["title"]}', f['sentence'],
+                        f'Placement 1: under the add to cart button, {mate} at {money(r["partner_price"])}, one tap to add.',
+                        f'Placement 2: in the cart, a one-line "add {mate}" when {r["title"]} is in the cart alone.',
+                        'No discount on the pair. The pair sells because they are used together.',
+                        'Arms: A as today. B shows both placements. 50/50, 28 days.',
+                        'Primary metric: profit per visitor on the product page. Second: attach rate on its orders.',
+                        'Stop: add to cart on the product page in B down 10 percent against A for 7 days.'])
+    a.update({'title': f'Add "goes with {mate}" to {r["title"]} and its cart line', 'owner': 'agent_drafts',
+              'artefact': {'kind': 'page_section', 'label': f'"Goes with" block for {r["title"]}', 'draft': draft},
+              'steps': steps(('agent', 'Draft the block and the cart line with the pair photo.'), ('person', 'Approve the copy.'),
+                             ('person', 'The site team adds both placements to arm B.'),
+                             ('agent', f'Read attach rate and profit per visitor weekly; call it on {ctx.check_on(35)}.')),
+              'size': {'text': f'{r["orders"]:,} orders in {ctx.attach["days"]} days; {(ctx.attach["median"] - r["attach"]) * 100:.0f} points to the median attach rate', 'usd': None},
+              'win_rule': 'B lifts attach rate and keeps profit per visitor.',
+              'stop_rule': 'Add to cart on the product page in B down 10 percent against A for 7 days.',
+              'check_on': ctx.check_on(35), 'time_to_ship_hours': 4})
+    return a
+
+
 def bunches(rd):
     """Order-value bunches and the tiers above them, from real order bins only (never from the fixture)."""
     dist = rd.m('order_value_distribution', audit.WINDOW, step=5)
@@ -1403,7 +1431,7 @@ BUILDERS = {'OFFER-R01': threshold_action, 'OFFER-R04': rung_action, 'OFFER-R08'
             'OFFER-R22': cost_action, 'OFFER-R23': referral_action, 'OFFER-R24': loyalty_action,
             'OFFER-R25': discount_action, 'OFFER-R26': bundle_action,
             'OFFER-R27': launched_action, 'OFFER-R29': bnpl_action,
-            'OFFER-R30': match_action, 'OFFER-R31': cohort_action, 'OFFER-R32': welcome_action, 'OFFER-R33': trust_action, 'OFFER-R34': moves_action, 'OFFER-R35': stress_action, 'OFFER-R36': paid_action}
+            'OFFER-R30': match_action, 'OFFER-R31': cohort_action, 'OFFER-R32': welcome_action, 'OFFER-R33': trust_action, 'OFFER-R34': moves_action, 'OFFER-R35': stress_action, 'OFFER-R36': paid_action, 'OFFER-R37': attach_action}
 UNAVAILABLE_BUILDERS = {'OFFER-R34': recapture_action}
 
 
@@ -1448,5 +1476,5 @@ def rank(brand='bombas', window=None, data=None):
     return {'screen': SCREEN, 'brand': brand, 'window': w, 'simulated': True, 'net_revenue_28d': nr,
             'actions': actions, 'findings': findings, 'objections': ctx.objections, 'returns': returns_block(rd),
             'ladder': dict(ctx.ladder, moves=ctx.ladder_rows), 'first_order': ctx.first_order, 'waterfalls': ctx.waterfalls, 'calendar': ctx.calendar, 'gifting': ctx.gifting, 'guarantee': ctx.guarantee, 'position': ctx.position, 'parity': ctx.parity,
-            'discipline': dict(ctx.discipline, policy=discount_policy(ctx), windows=ctx.depth_history, window_creep_points=playbook.WINDOW_CREEP_POINTS), 'cart': ctx.cart, 'tests': calendar, 'depth': ctx.depth, 'cohorts': ctx.cohorts, 'costs': ctx.costs, 'registry': ctx.registry, 'referral': ctx.referral, 'loyalty': ctx.loyalty, 'bundles': ctx.bundles, 'proposed_tests': ctx.proposed_rows, 'launched': ctx.launched, 'discount_cohorts': audit.discount_cohorts(rd), 'welcome': ctx.welcome, 'trust': ctx.trust, 'price_moves': ctx.price_moves, 'stress': ctx.stress, 'paid': ctx.paid, 'bunches': bunches(rd),
+            'discipline': dict(ctx.discipline, policy=discount_policy(ctx), windows=ctx.depth_history, window_creep_points=playbook.WINDOW_CREEP_POINTS), 'cart': ctx.cart, 'tests': calendar, 'depth': ctx.depth, 'cohorts': ctx.cohorts, 'costs': ctx.costs, 'registry': ctx.registry, 'referral': ctx.referral, 'loyalty': ctx.loyalty, 'bundles': ctx.bundles, 'proposed_tests': ctx.proposed_rows, 'launched': ctx.launched, 'discount_cohorts': audit.discount_cohorts(rd), 'welcome': ctx.welcome, 'trust': ctx.trust, 'price_moves': ctx.price_moves, 'stress': ctx.stress, 'paid': ctx.paid, 'attach': ctx.attach, 'bunches': bunches(rd),
             'subscription': model.subscription_note(rd, ctx.cohorts, (ctx.depth or {}).get('rows'), (ctx.depth or {}).get('target'))}

@@ -1495,3 +1495,51 @@ def paid_prices(rd, days, min_units):
             'kept': round(sum(r['paid'] * r['units'] for r in rows) / sum(r['list'] * r['units'] for r in rows if r['list']), 4) if units else None,
             'code_share': round(sum(r['code_share'] * r['units'] for r in rows) / units, 4) if units else None,
             'basis': f'order lines {start} to {end}; each order\'s code spread over its lines by line value; list price from the products table'}
+
+
+# ---------------------------------------------------------------- which products rarely get a second item?
+
+def attach_rates(rd, days, min_orders):
+    """Per product over the last `days`: orders that contain it, the share of those with another product (attach
+    rate), and its most co-bought partner with the partner's price and unit margin (products table price minus
+    cost). The median is over products with at least `min_orders` orders."""
+    orders, products = rd.table('orders'), rd.table('products')
+    if not isinstance(orders, list) or not orders:
+        return {'unavailable': True, 'reason': 'the orders table is not connected', 'fix': 'shopify'}
+    lp = {p['sku']: p for p in (products or []) if p.get('sku')}
+    start = (rd.ends_on - timedelta(days=days - 1)).isoformat()
+    end = rd.ends_on.isoformat()
+    n, att, pair = {}, {}, {}
+    total = 0
+    for o in orders:
+        day = str(o.get('created_at'))[:10]
+        if not (start <= day <= end) or o.get('cancelled_at'):
+            continue
+        total += 1
+        skus = sorted({li.get('sku') for li in o.get('line_items') or [] if li.get('sku')})
+        for s_ in skus:
+            n[s_] = n.get(s_, 0) + 1
+            if len(skus) > 1:
+                att[s_] = att.get(s_, 0) + 1
+                for t_ in skus:
+                    if t_ != s_:
+                        pair[(s_, t_)] = pair.get((s_, t_), 0) + 1
+    rows = []
+    for s_, k in n.items():
+        if k < min_orders:
+            continue
+        mates = sorted(((c, t_) for (a_, t_), c in pair.items() if a_ == s_), reverse=True)
+        mate = mates[0][1] if mates else None
+        mp = lp.get(mate) or {}
+        rows.append({'sku': s_, 'title': (lp.get(s_) or {}).get('title') or s_, 'orders': k, 'attach': round(att.get(s_, 0) / k, 4),
+                     'partner': mate, 'partner_title': mp.get('title'), 'partner_orders': mates[0][0] if mates else 0,
+                     'partner_price': mp.get('price'),
+                     'partner_margin': round(mp['price'] - mp['cost'], 2) if mp.get('price') is not None and mp.get('cost') is not None else None})
+    if not rows:
+        return {'unavailable': True, 'reason': f'no product with {min_orders} orders in {days} days', 'fix': None}
+    rows.sort(key=lambda r: -r['orders'])
+    att_sorted = sorted(r['attach'] for r in rows)
+    mid = len(att_sorted) // 2
+    median = att_sorted[mid] if len(att_sorted) % 2 else (att_sorted[mid - 1] + att_sorted[mid]) / 2
+    return {'unavailable': False, 'rows': rows, 'median': round(median, 4), 'orders': total, 'days': days, 'start': start, 'end': end,
+            'basis': f'orders {start} to {end}; attach is orders with the product that carry another product; partner is the product most often in the same order'}

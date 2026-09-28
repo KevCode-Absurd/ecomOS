@@ -1790,5 +1790,34 @@ class PaidPriceTest(unittest.TestCase):
                 pb.CODE_DEPENDENT = orig
 
 
+class AttachTest(unittest.TestCase):
+    """Round 7 feature 2: room job LIFE-C41, which top products rarely get a second item. OFFER-R37."""
+
+    def test_rates_and_partner(self):
+        import datetime as dtm
+        products = [{'sku': s_, 'title': s_, 'price': 10, 'cost': 4} for s_ in 'ABC']
+        mk = lambda skus: {'created_at': '2026-09-01T10:00:00Z', 'line_items': [{'sku': x} for x in skus]}
+        orders = [mk('A')] * 3 + [mk('AB')] + [mk('BC')] * 2 + [mk('C')]
+        class R:
+            brand = None
+            ends_on = dtm.date(2026, 9, 24)
+            def table(self, name):
+                return {'orders': orders, 'products': products}.get(name)
+        ar = api.model.attach_rates(R(), 90, 1)
+        by = {r['sku']: r for r in ar['rows']}
+        self.assertEqual((by['A']['orders'], by['A']['attach'], by['A']['partner']), (4, 0.25, 'B'))
+        self.assertEqual((by['B']['attach'], by['B']['partner'], by['B']['partner_margin']), (1.0, 'C', 6))
+        self.assertEqual(ar['median'], 0.6667)
+
+    def test_sample_fires(self):
+        sys.path.insert(0, str(ROOT / 'app'))
+        import server
+        r = api.actions.rank(None, None, server.Data())
+        a = next(x for x in r['actions'] if x['rule_id'] == 'OFFER-R37')
+        self.assertEqual(a['artefact']['kind'], 'page_section')
+        self.assertIn('profit per visitor', a['artefact']['draft'])
+        self.assertIn('No discount', a['artefact']['draft'])
+
+
 if __name__ == '__main__':
     unittest.main()
