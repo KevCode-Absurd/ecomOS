@@ -466,7 +466,7 @@ def _build_overview(brain: Brain) -> dict:
             "price": builds.price_doubts(avatars, all_rungs, brain.records("offers"), brain.records("products")),
             "rechecks": builds.rechecks(avatars, brain.records("objection_ladders"), brain.today.isoformat()),
             "marketplace": builds.marketplace(avatars, all_rungs, brain.records("language_bank"), audit.source_name),
-            "macros": builds.macros(lad["rows"], all_rungs, {r["id"]: r.get("text") for r in brain.records("policies") if r.get("text")}), "returns": _returns(brain, avatars, all_rungs), "ad_voice": builds.ad_voice(avatars, brain.records("learnings")), "split": _split(brain, avatars, all_rungs),
+            "macros": builds.macros(lad["rows"], all_rungs, {r["id"]: r.get("text") for r in brain.records("policies") if r.get("text")}), "returns": _returns(brain, avatars, all_rungs), "ad_voice": builds.ad_voice(avatars, brain.records("learnings")), "split": _split(brain, avatars, all_rungs), "sales_share": audit.load_sales_share(brain, avatars, all_rungs),
             "naming": builds.naming(avatars, all_rungs, builds.hooks(brain.records("language_bank"), all_rungs, avatars, _brand_tokens(brain), audit.source_name)["rows"]),
             "timing": builds.doubt_timing(all_rungs, brain.records("language_bank"), ends_on, audit.source_name), "health": _health(brain.brand, avatars), "hierarchy": _hierarchy(brain, avatars, all_rungs, lad),
             "offer_map": builds.offer_map(avatars, all_rungs, brain.records("offers"), brain.records("policies") + brain.records("claims")),

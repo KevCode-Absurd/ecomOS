@@ -600,6 +600,36 @@ def load_health(brand: str, avatars: list[dict]) -> dict:
     return builds.health(monthly, load_cohorts(brand, avatars).get("rows", []), as_of)
 
 
+FIXTURES = Path(__file__).resolve().parent / "fixtures"
+
+
+def load_line_sales(brain: Brain, lines: set[str]) -> dict:
+    """Net sales by product line over the last 12 full months, from products_monthly and the SKU to line map
+    (a local fixture until the data layer carries one). Unmapped sales are counted, never spread."""
+    import json
+    try:
+        codes = json.loads((FIXTURES / "sku_lines" / f"{brain.brand}.json").read_text(encoding="utf-8")).get("codes") or {}
+    except (OSError, ValueError):
+        return {"available": False, "reason": "no SKU to product-line map for this brand yet"}
+    try:
+        from tables import brand_data
+        data = brand_data(brain.brand)
+        rows, as_of = data.table("products_monthly"), data.brand.get("as_of")
+    except (ImportError, ValueError, KeyError, FileNotFoundError) as exc:
+        return {"available": False, "reason": f"no products table ({exc})"}
+    return builds.line_sales(rows, codes, lines, as_of)
+
+
+def load_sales_share(brain: Brain, avatars: list[dict], all_rungs: list[dict]) -> dict:
+    """Share of sales per avatar through the lines it buys, next to its share from reviews."""
+    mis = builds.misreads(brain.records("avatars"), avatars, all_rungs, brain.records("language_bank"), brain.records("products"))
+    if not mis.get("available"):
+        return {"available": False, "reason": "no review summary by product line in the brain", "rows": []}
+    lines = {l["line"] for l in mis["lines"]}
+    buys = builds.avatar_lines(brain.records("avatars"), all_rungs, brain.records("language_bank"), lines)
+    return builds.sales_share(avatars, buys, load_line_sales(brain, lines))
+
+
 def load_returns(brain: Brain, avatars: list[dict], all_rungs: list[dict]) -> dict:
     mis = builds.misreads(brain.records("avatars"), avatars, all_rungs, brain.records("language_bank"), brain.records("products"))
     if not mis.get("available"):

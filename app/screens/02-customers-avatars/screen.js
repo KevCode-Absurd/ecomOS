@@ -597,6 +597,20 @@
     }));
   }
 
+  // ---------- desk: do reviews and sales agree on who buys ----------
+  function renderSalesShare(x) {
+    document.getElementById('salesshare-sub').textContent = 'Each line\'s store sales over 12 full months, split across avatars by their share of that line\'s linked reviews, against each avatar\'s share from reviews. Differ: 1.5x either way. ' + (x.line || x.reason || '');
+    if (!x.available) { mount('#salesshare', el('p', { class: 'muted', text: 'Unavailable: ' + x.reason + '.' })); return; }
+    const V = { agree: ['keep', 'Agree'], sales_higher: ['watch', 'Sales higher'], reviews_higher: ['fix', 'Reviews higher'], sales_only: ['watch', 'Sales only'], unavailable: ['wait', 'Unavailable'] };
+    const pct = (v) => v == null ? 'unavailable' : Math.round(v * 1000) / 10 + ' percent';
+    mount('#salesshare', UI.verdictTable({
+      columns: [{ key: 'name', label: 'Avatar' }, { key: 'rev_t', label: 'From reviews' }, { key: 'sales_t', label: 'Of sales' }, { key: 'usd_t', label: 'Sales, 12 months' }],
+      rows: x.rows.map((r) => Object.assign({}, r, { rev_t: pct(r.review_share), sales_t: pct(r.sales_share), usd_t: r.sales_usd == null ? 'unavailable' : fmt.money(r.sales_usd),
+        actions: r.action ? [{ label: 'Settle it', onClick: () => briefPanel(r.action) }] : [{ label: 'Keep', cls: 'quiet', onClick: () => {} }] })),
+      verdict: { at: 1, kind: (r) => V[r.verdict][0], text: (r) => V[r.verdict][1] }, actions: { label: 'Do' }, sort: false,
+    }));
+  }
+
   // ---------- desk: evidence gate ----------
   function renderGate(g) {
     document.getElementById('gate-sub').textContent = 'Each avatar against the checks a researcher runs before a launch. Core checks (bold) must all pass to leave provisional. Every red cell is a task. ' + g.line;
@@ -1061,7 +1075,7 @@
 
   // ---------- the desk, grouped into tabs by job ----------
   const DESK = [
-    { key: 'avatars', label: 'Avatars', ids: ['focus-wrap', 'avatars-wrap', 'compare-wrap', 'voiceads-wrap', 'split-wrap', 'gate-wrap', 'recheck-wrap', 'forces-wrap', 'survey-wrap', 'served-wrap', 'market-wrap', 'returns-wrap', 'misread-wrap'] },
+    { key: 'avatars', label: 'Avatars', ids: ['focus-wrap', 'avatars-wrap', 'compare-wrap', 'salesshare-wrap', 'voiceads-wrap', 'split-wrap', 'gate-wrap', 'recheck-wrap', 'forces-wrap', 'survey-wrap', 'served-wrap', 'market-wrap', 'returns-wrap', 'misread-wrap'] },
     { key: 'doubts', label: 'Doubts and words', ids: ['ladders-wrap', 'cover-wrap', 'themes-wrap', 'words-wrap', 'hooks-wrap', 'gap-wrap', 'macros-wrap'] },
     { key: 'offers', label: 'Offers and claims', ids: ['offers-wrap', 'price-wrap', 'claims-wrap', 'timing-wrap'] },
     { key: 'retention', label: 'Retention', ids: ['paths-wrap', 'cohort-wrap', 'mix-wrap', 'moments-wrap', 'health-wrap'] },
@@ -1117,6 +1131,7 @@
     renderFocus(d.focus);
     renderCompare(d.compare);
     renderAdVoice(d.ad_voice);
+    renderSalesShare(d.sales_share);
     renderSplit(d.split);
     renderGate(d.gate);
     renderStrength(d.strength);

@@ -2615,6 +2615,7 @@ BLOCKS = {
     "compare-wrap": ("brain", "Avatar cards", "Rows reuse the blocks above, so a thin read there is thin here."),
     "voiceads-wrap": ("ads", "Who our ads speak to", "Hooks are matched to avatars by words in the hook; an ad can speak to more than one."),
     "split-wrap": ("brain", "Where avatars speak", "Lines come from linked reviews, not from orders by avatar."),
+    "salesshare-wrap": ("store", None, "A line's sales are split by review share; a buyer of 2 lines counts in both."),
     "gate-wrap": ("brain", "Avatar cards", "A pass means the record exists, not that a buyer confirmed it."),
     "recheck-wrap": ("brain", None, "Expiry dates are set on each record; a record past its date is not trusted."),
     "forces-wrap": ("brain", "Four forces", "Lines are coded by word patterns, so irony and negation can slip through."),
@@ -2702,6 +2703,10 @@ def block_gaps(d: dict) -> dict:
     if sp.get("rows"):
         n = sum(1 for r in sp["rows"] if r.get("verdict") in ("split", "broad"))
         g["split-wrap"] = ("cross_source", f"Lines bought against doubts raised: {n} of {len(sp['rows'])} avatars may be more than one buyer.")
+    ss = d.get("sales_share") or {}
+    if ok(ss) and ss.get("rows"):
+        off = sum(1 for r in ss["rows"] if r["verdict"] in ("sales_higher", "reviews_higher"))
+        g["salesshare-wrap"] = ("cross_source", f"Store sales by line against review shares: {off} avatars differ by 1.5x or more.")
     rc = d.get("rechecks") or {}
     if "rows" in rc:
         nd = cnt(rc.get("no_date"))
@@ -2807,7 +2812,7 @@ def block_gaps(d: dict) -> dict:
         if sid in g:
             kind, text = g[sid]
         else:
-            src = {"paths-wrap": "paths", "cohort-wrap": "cohorts", "mix-wrap": "mix", "health-wrap": "health", "gap-wrap": "copy_gap",
+            src = {"salesshare-wrap": "sales_share", "paths-wrap": "paths", "cohort-wrap": "cohorts", "mix-wrap": "mix", "health-wrap": "health", "gap-wrap": "copy_gap",
                    "perc-wrap": "perception", "hier-wrap": "hierarchy", "misread-wrap": "misreads", "themes-wrap": "themes"}.get(sid)
             reason = (d.get(src) or {}).get("reason") if src else None
             kind, text = "unavailable", (str(reason).rstrip(".").capitalize() + "." if reason else "No input for this block yet.")
@@ -2863,3 +2868,78 @@ def avatar_page(a: dict, d: dict, forbidden: list[str], actions: list[dict], nam
     title = f"{name}: {a['name']}"
     text = "\n\n".join(s["title"].upper() + "\n" + "\n".join(s["lines"]) for s in S) + "\n\nSimulated sales data; customer words are public reviews."
     return {"key": key, "name": a["name"], "title": title, "sections": S, "text": text}
+
+
+# ---------------------------------------------------------------- do reviews and sales agree on who buys
+
+SALES_GAP = 1.5   # sales share 1.5x the review share, or under 1 / 1.5, is a disagreement worth a look
+
+
+def line_sales(rows: list[dict], codes: dict, lines: set[str], as_of: str) -> dict:
+    """Net sales by line over the 12 full months before as_of. A SKU maps to a line when one of its codes is in `codes`
+    and the line is one the brain reviews. Unmapped sales stay in the total, so coverage is honest."""
+    months = sorted({r["month"] for r in rows if _add(r["month"], 1) <= (as_of or "")[:7]})[-12:]
+    if len(months) < 12:
+        return {"available": False, "reason": f"only {len(months)} full months of product sales; 12 needed"}
+    keep = set(months)
+    by, total = {}, 0.0
+    for r in rows:
+        v = r.get("net_sales")
+        if r["month"] not in keep or not isinstance(v, (int, float)):
+            continue
+        total += v
+        line = next((codes[c] for c in str(r.get("sku", "")).split("-") if c in codes and codes[c] in lines), None)
+        if line:
+            by[line] = by.get(line, 0.0) + v
+    if not total:
+        return {"available": False, "reason": "no product sales in the window"}
+    mapped = sum(by.values())
+    return {"available": True, "by_line": {k: round(v, 2) for k, v in by.items()}, "total": round(total, 2), "mapped": round(mapped, 2),
+            "coverage": round(mapped / total, 4), "window": f"{months[0]} to {months[-1]}"}
+
+
+def sales_share(avatars: list[dict], buys: dict[str, dict[str, int]], ls: dict) -> dict:
+    """Each line's sales split across avatars by their share of that line's linked reviews, summed per avatar, over the
+    mapped sales. Set next to the share from reviews: a gap of 1.5x either way says one of the two reads is off."""
+    if not ls.get("available"):
+        return {"available": False, "reason": ls.get("reason"), "rows": []}
+    weight = {}
+    for a in avatars:
+        for line, n in (buys.get(a["id"]) or {}).items():
+            if line in ls["by_line"]:
+                weight.setdefault(line, {})[a["key"]] = n
+    sales = {}
+    for line, w in weight.items():
+        tot = sum(w.values())
+        for k, n in w.items():
+            sales[k] = sales.get(k, 0.0) + ls["by_line"][line] * n / tot
+    covered = sum(ls["by_line"][l] for l in weight)
+    rows = []
+    for a in avatars:
+        s = sales.get(a["key"])
+        share = round(s / covered, 4) if s and covered else None
+        rev = a.get("share_estimate")
+        ratio = round(share / rev, 2) if share is not None and rev else None
+        verdict = ("unavailable" if ratio is None else "sales_higher" if ratio >= SALES_GAP else "reviews_higher" if ratio <= 1 / SALES_GAP else "agree")
+        act = None
+        if verdict in ("sales_higher", "reviews_higher") or (share is not None and rev is None):
+            why = (f"Reviews put it at {round(rev * 100)} percent of buyers; its lines carry {round(share * 100, 1)} percent of sales." if rev
+                   else f"Reviews give no share; its lines carry {round(share * 100, 1)} percent of sales.")
+            act = {"id": f"02-customers-avatars.salesshare.{a['key']}", "kind": "research_note", "owner": "person",
+                   "title": f"Settle the share of {a['name']}: ask buyers after the order",
+                   "capability": {"id": "LIFE-C29", "autonomy": "human_assist"},
+                   "draft": f"DRAFT survey check\nAvatar: {a['name']}\n{why}\nAsk: which of these fits you best, one line per avatar situation\n"
+                            "Read: 385 answers, then set the avatar share from answers and retire the estimate.",
+                   "steps": [{"n": 1, "who": "agent", "text": "Add the avatar's situation line to the post-purchase survey."},
+                             {"n": 2, "who": "person", "text": "Turn the question on in the survey tool."},
+                             {"n": 3, "who": "agent", "text": "At 385 answers, write the share to the avatar record with its source."}]}
+        rows.append({"key": a["key"], "name": a["name"], "review_share": rev, "sales_share": share, "sales_usd": round(s) if s else None,
+                     "ratio": ratio, "verdict": verdict if not (share is not None and rev is None) else "sales_only", "action": act})
+    rows.sort(key=lambda r: -(r["sales_share"] or -1))
+    off = [r for r in rows if r["verdict"] in ("sales_higher", "reviews_higher")]
+    cov = round(covered / ls["total"] * 100)
+    only = sum(1 for r in rows if r["verdict"] == "sales_only")
+    line = (f"{len(off)} of {sum(1 for r in rows if r['ratio'] is not None)} avatars differ by 1.5x or more between sales and reviews; "
+            f"{only} have a share from sales only. Lines cover {cov} percent of sales, {ls['window']}, simulated.")
+    return {"available": True, "rows": rows, "coverage": round(covered / ls["total"], 4), "window": ls["window"], "line": line,
+            "unmapped_share": round(1 - ls["coverage"], 4)}

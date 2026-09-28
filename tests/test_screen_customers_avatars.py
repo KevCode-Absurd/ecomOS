@@ -1812,3 +1812,33 @@ class Keyboard(unittest.TestCase):
         self.assertIn(".panel-backdrop", block)
         html = (ROOT / 'app' / 'screens' / '02-customers-avatars' / 'index.html').read_text(encoding='utf-8')
         self.assertIn('Keys: j and k move', html)
+
+
+class SalesShare(TempBrain):
+    """Feature 7.8: share of sales per avatar through the lines it buys, against its share from reviews."""
+
+    def test_shares_sum_and_coverage_is_honest(self):
+        x = api.handle(Req(['overview']))['sales_share']
+        self.assertTrue(x['available'])
+        tot = sum(r['sales_share'] or 0 for r in x['rows'])
+        self.assertAlmostEqual(tot, 1.0, places=2)
+        self.assertTrue(0 < x['coverage'] < 1)
+        for r in x['rows']:
+            if r['ratio'] is not None:
+                self.assertAlmostEqual(r['ratio'], round(r['sales_share'] / r['review_share'], 2))
+            if r['verdict'] in ('sales_higher', 'reviews_higher', 'sales_only'):
+                self.assertEqual(rank_engine.validate_action(dict(r['action'], rubric={'total': 0}, artefact={'kind': r['action']['kind']},
+                                                                 why='x', severity='low', finding_ids=[])), [])
+
+    def test_line_sales_counts_unmapped(self):
+        rows = [{'month': f'2025-{m:02d}', 'sku': s, 'net_sales': 100.0} for m in range(1, 13) for s in ('X-ANK-1', 'X-ZZZ-1')]
+        ls = api.builds.line_sales(rows, {'ANK': 'ankle'}, {'ankle'}, '2026-01-05')
+        self.assertEqual(ls['coverage'], 0.5)
+        self.assertEqual(ls['by_line'], {'ankle': 1200.0})
+        self.assertFalse(api.builds.line_sales(rows[:4], {'ANK': 'ankle'}, {'ankle'}, '2026-01-05')['available'])
+
+    def test_second_brand_unavailable_with_reason(self):
+        api.BRAIN_ROOT = None
+        x = api.handle(Req(['overview'], query={'brand': ['example']}))['sales_share']
+        self.assertFalse(x['available'])
+        self.assertTrue(x['reason'])
