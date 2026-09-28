@@ -22,6 +22,7 @@ Routes
                                       filters that metric takes (device, channel, by, page, variant)
   GET  /api/decisions?screen=<slug>   the decisions log
   POST /api/decisions                 append one decision {screen, capability, choice, reason}
+  GET  /api/<slug>/rank?window=28d    rubric-scored actions from the screen's audit (app/rank.py), unless api.py sets HANDLES_RANK
   ANY  /api/<slug>/...                handed to screens/<slug>/api.py: handle(req)
 
 A screen's api.py exposes `handle(req)`. `req` has method, path (list of parts
@@ -290,6 +291,9 @@ class Decisions:
         if choice not in CHOICES:
             raise ValueError('choice must be one of ' + ', '.join(CHOICES))
         row = {'screen': screen, 'capability': capability, 'choice': choice, 'reason': reason, 'time': now_iso()}
+        finding_id = body.get('finding_id')
+        if isinstance(finding_id, str) and 0 < len(finding_id) <= 200 and re.fullmatch(r'[A-Za-z0-9_.:\- /]+', finding_id):
+            row['finding_id'] = finding_id
         autonomy = body.get('autonomy')
         if autonomy in ('agent', 'founder_gate', 'human_assist'):
             row['autonomy'] = autonomy
@@ -307,6 +311,24 @@ class Decisions:
             tmp.write_text(json.dumps(rows, indent=1), encoding='utf-8')
             tmp.replace(self.path)
         return row
+
+
+# ---------------------------------------------------------------- rank (depth contract)
+_rank = None
+
+
+def rank_mod():
+    global _rank
+    if _rank is None:
+        _rank = load_module('ecomos_rank', APP / 'rank.py')
+    return _rank
+
+
+def rank_window(qs):
+    w = qs.get('window', ['28d'])[0]
+    days = int(w[:-1]) if re.fullmatch(r'\d+d', w) else 28
+    end = qs.get('end', [''])[0]
+    return rank_mod().default_window(days, end if re.fullmatch(r'\d{4}-\d{2}-\d{2}', end) else None)
 
 
 # ---------------------------------------------------------------- screen apis
@@ -423,6 +445,15 @@ def make_handler(data, decisions, apis):
                 return self.send_json({'decisions': rows, 'total': len(rows)})
             if parts and SAFE_SLUG.match(parts[0]):
                 module = apis.get(parts[0])
+                # every screen gets /api/<slug>/rank from app/rank.py unless its api.py handles it (depth.md section 5)
+                if method == 'GET' and parts[1:] == ['rank'] and (module is None or not getattr(module, 'HANDLES_RANK', False)):
+                    if not (apis.root / parts[0] / 'audit.py').is_file():
+                        return self.send_json({'error': 'this screen has no audit.py yet', 'screen': parts[0]}, 404)
+                    try:
+                        w = rank_window(qs)
+                        return self.send_json(rank_mod().rank(parts[0], qs.get('brand', ['bombas'])[0], w, apis.root))
+                    except Exception as exc:  # noqa: BLE001
+                        return self.send_json({'error': 'rank failed: ' + str(exc), 'screen': parts[0]}, 500)
                 if module is None or not hasattr(module, 'handle'):
                     return self.send_json({'error': 'this screen has no api.py yet', 'screen': parts[0]}, 404)
                 result = module.handle(Request(method, parts[0], parts[1:], qs, body, data))

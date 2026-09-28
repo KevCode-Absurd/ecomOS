@@ -100,7 +100,7 @@ Owner values: `agent` (agent does it, reports back), `agent_drafts` (agent draft
 
 Artefact kinds: `ad_brief`, `creative`, `copy`, `page_section`, `landing_page`, `offer`, `price_change`, `email`, `flow`, `test_brief`, `listing_fix`, `feed_fix`, `budget_move`, `bid_change`, `connector_setup`, `brain_record`, `policy`, `research_note`, `ticket`, `report`. A screen that needs another kind adds it here in a contract commit.
 
-The master list merges by `id`, keeps one action per finding, applies snoozes from `decisions`, ranks by section 4, and returns the top 10 plus the bottleneck groups (stage, count, stake) so the brain screen can show "bottlenecks ranked, unlocks under each, the 10 to approve".
+The master list merges by `id`, keeps one action per finding, applies snoozes from `decisions`, ranks by section 4, and returns `top` (the 10 open actions to approve), `connect` (the unavailable findings as connect actions, ranked the same way, shown as their own strip so a missing connector never crowds out work that can start today), and `bottlenecks` (one group per screen: open, unavailable, critical, stake, score, the top action) so the brain screen can show "bottlenecks ranked, unlocks under each, the 10 to approve". A screen's own plan board follows the same split.
 
 ## 6. Visual vocabulary and when each form is right
 
