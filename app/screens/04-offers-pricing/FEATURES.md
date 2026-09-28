@@ -37,6 +37,16 @@ Known gaps from round 0:
 | 1.7 | Promo calendar: 8 US retail windows by date rule (`playbook.PROMO_WINDOWS`, a brand in another market swaps the list), next dates, the approval date (start minus the window's lead), last year's net sales per day against the 28 days before and the discount depth, and whether a brain `plans` record covers it. Timeline plus a verdict table. New rule OFFER-R11: a window due in 30 days with no plan becomes a dated offer spec (approve, briefs, site loaded, report dates), a margin check at last year's depth and a depth cap; money is last year's sales above baseline | done |
 | 1.8 | Gifting and the holiday offer: a holiday index per line (its November and December share over the store's), the gift card and bulk gifting records, order-by dates for December 24 per shipping option from the brain (business days), the gift card ledger as unavailable. New rules OFFER-R12 (no line sells as a gift while a gift program runs; rides on the holiday window's action, whose artefact becomes the landing page spec: hero, gift boxes from packs of 6 or more, gift card, bulk gifting link, order-by bar, proof) and OFFER-R13 (gift card liability, a connect action) | done |
 | 1.9 | Guarantee as an offer: its terms from the brain with the page type each was found on (url path rules in `playbook.PAGE_TYPES`), the ladder doubts it answers (rungs whose proof cites it) with one-star counts, and the planned refund and replacement rates from the brain's return model against actual claims (unavailable until returns connect). New rules OFFER-R14 (every term traces to a non-selling page while rungs cite it: a guarantee block for the product page and cart drafted from the brain's own terms, with its claim cost at plan and a stop at 1.5 times plan; first step checks the live page read-only) and OFFER-R15 (claims against plan, a connect action) | done |
+| 1.10 | `rank` complete: every rule has a builder with a real title, owner, steps with who, a drafted artefact (offer, price_change, test_brief, page_section, landing_page, policy, report), win and stop rules and a check date; merged moves (pack verdicts, the code and its red line, the holiday window and gifting, the stale and pull rules into the threshold test) carry every finding id; connect actions merge by source ("Connect shopify, read-only, so 3 rules can run"). Tests: every finding in exactly one action, every action passes `validate_action`, no default titles on open work, a person approves every open move, same order on the same inputs, an older window validates | done |
+
+### Round 1 note for Kevin (28 Sep 2026)
+
+1. What a founder can do now: open the screen and approve 13 offer and price moves, each with its spec or test brief drafted, who does each step, and the win and stop rules.
+2. Top of the plan: build the holiday gifting page and offer by 18 Oct and the Black Friday offer by 13 Oct (last year's lift and depth, dated prep plan, depth cap, order-by dates).
+3. New judgement encoded: the 20 percent code takes the average first basket under the $75 line and loses $1.32 after media; a free item keeps $40.52 and can lose 24 percent of first-order conversion and still win.
+4. Pack ladder: a deeper pack price would give millions to current pack buyers, so 5 lines get the pack preselected instead; 1 line gets a price test; 4 single-only basics lines get a pack.
+5. Honest gaps: order rows and returns are not in this container, so bins and returns show labelled fixtures and 3 rules sit behind one "connect shopify" action.
+6. Next (round 2): discount ladder discipline and creep, price elasticity from experiments, marketplace price parity through the data layer, loyalty and referral offers, the web pass on the best offer tools.
 
 ## Room jobs
 
@@ -154,7 +164,7 @@ Known gaps from round 0:
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.9 | 2026-09-28 | S3.9; screenshot round0.png |
-| 1 | 1.1 plan first, 1.2 objection to offer map, 1.3 free shipping line, 1.4 pack ladder, 1.5 first-order offer, 1.6 margin waterfall, 1.7 promo calendar, 1.8 gifting and holiday, 1.9 guarantee as an offer | 2026-09-28 | manager session; screenshot round1.png (updated as the round lands) |
+| 1 | 1.1 plan first, 1.2 objection to offer map, 1.3 free shipping line, 1.4 pack ladder, 1.5 first-order offer, 1.6 margin waterfall, 1.7 promo calendar, 1.8 gifting and holiday, 1.9 guarantee as an offer, 1.10 rank complete | 2026-09-28 | manager session; screenshot round1.png (updated as the round lands) |
 
 
 ## Round 1 candidates (ranked 28 Sep 2026 by the lead session)

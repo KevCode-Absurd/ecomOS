@@ -406,6 +406,101 @@ def guarantee_action(f, a, ctx):
     return a
 
 
+def stale_action(f, a, ctx):
+    ev = {e['metric']: e for e in f['evidence']}
+    be = ev.get('free_shipping_threshold_breakeven', {})
+    new = math.ceil(be['value'] / 5) * 5 if be.get('value') else None
+    a.update({
+        'title': f'Re-decide the free shipping line against a ${be.get("value", 0):,.2f} break-even',
+        'owner': 'agent_drafts',
+        'artefact': {'kind': 'report', 'label': 'Free shipping line review', 'draft': '\n'.join([
+            f'Break-even moved from ${be.get("baseline", 0):,.2f} to ${be.get("value", 0):,.2f} in a year; the line stayed at ${ctx.threshold:,.0f}.',
+            'Inputs that moved: ' + '; '.join(f'{k.replace("_", " ")} {v["baseline"]} to {v["value"]}' for k, v in ev.items() if v.get('baseline') is not None) + '.',
+            f'Options: keep the line, or test ${new} (break-even rounded up to $5).' if new else 'Options: keep the line.'])},
+        'steps': steps(('agent', 'Recompute break-even with the label and AOV in force today.'),
+                       ('agent', 'Draft the review with the options and what each must achieve.'),
+                       ('person', 'Decide: keep the line or approve a test.')),
+        'win_rule': 'A decision logged with the break-even it was made on.', 'stop_rule': None,
+        'check_on': ctx.check_on(90), 'time_to_ship_hours': 2})
+    return a
+
+
+def pull_action(f, a, ctx):
+    t = ctx.threshold
+    a.update({
+        'title': f'Show shoppers how far they are from free shipping at ${t:,.0f}',
+        'owner': 'agent_drafts',
+        'artefact': {'kind': 'page_section', 'label': 'Free shipping progress bar for the cart and the header', 'draft': '\n'.join([
+            f'Page section: a progress bar in the cart and the header: "You are $X from free shipping" up to ${t:,.0f}.',
+            'Under it, one add-on that closes the gap: the single item priced nearest the gap.',
+            'Win: more orders in the $10 over the line than under it within 28 days.',
+            'Stop: conversion down more than 3 percent relative for 7 days.'])},
+        'steps': steps(('agent', 'Pick the add-on items that close the most common gaps.'),
+                       ('agent', 'Draft the bar copy and the add-on block.'),
+                       ('person', 'Approve. The site team ships the bar.'),
+                       ('agent', f'Read the orders just under and over the line weekly; call it on {ctx.check_on(28)}.')),
+        'win_rule': 'More orders in the $10 over the line than under it within 28 days.',
+        'stop_rule': 'Conversion down more than 3 percent relative for 7 days.', 'check_on': ctx.check_on(28), 'time_to_ship_hours': 6})
+    return a
+
+
+def claims_action(f, a, ctx):
+    a.update({
+        'title': 'Find what is driving guarantee claims over plan',
+        'owner': 'agent_drafts',
+        'artefact': {'kind': 'policy', 'label': 'Guarantee terms review', 'draft': '\n'.join([
+            f['sentence'],
+            'Review: claims by reason and by product line, the lines over plan, and the terms that invite abuse.',
+            'Options: fix the product behind the top reason, tighten the window, or require a photo for replacements.'])},
+        'steps': steps(('agent', 'Split claims by reason and by product line.'),
+                       ('agent', 'Draft the review and the options.'),
+                       ('person', 'Decide the change. CX updates the macros.')),
+        'win_rule': 'Claims back under plan within 56 days.', 'stop_rule': None, 'check_on': ctx.check_on(56), 'time_to_ship_hours': 4})
+    return a
+
+
+def merge_into(actions, child, parent):
+    """A child rule's finding rides on the parent rule's action when both fire (one move fixes both)."""
+    host = next((a for a in actions if a.get('rule_id') == parent and a.get('status') == 'open'), None)
+    if not host:
+        return actions
+    keep = []
+    for a in actions:
+        if a.get('rule_id') == child and a.get('status') == 'open':
+            host['finding_ids'] = host['finding_ids'] + a['finding_ids']
+            host['why'] = host['why'] + ' ' + a['why']
+            continue
+        keep.append(a)
+    return keep
+
+
+def merge_connect(actions):
+    """One connect action per missing connector, listing every rule that waits on it."""
+    keep, groups = [], {}
+    for a in actions:
+        if a.get('status') == 'unavailable':
+            con = ((a.get('artefact') or {}).get('label') or '').split(' connected')[0] or 'the source'
+            groups.setdefault(con, []).append(a)
+        else:
+            keep.append(a)
+    for con, members in groups.items():
+        if len(members) == 1:
+            keep.append(members[0])
+            continue
+        best = max(members, key=lambda m: m['rubric']['total'])
+        a = dict(best)
+        names = [m['entity']['label'] for m in members]
+        a.update({'id': f'{SCREEN}.connect.{con}', 'finding_ids': [fid for m in members for fid in m['finding_ids']],
+                  'title': f'Connect {con}, read-only, so {len(members)} rules can run',
+                  'why': 'Waiting on it: ' + '; '.join(names) + '.',
+                  'entity': {'type': 'connector', 'id': con, 'label': con},
+                  'steps': steps(('person', f'Connect {con} in Setup with a read-only key.'),
+                                 ('agent', 'Pull the last 28 days and 4 windows before.'),
+                                 ('agent', 'Run the ' + str(len(members)) + ' rules and post the findings here.'))})
+        keep.append(a)
+    return keep
+
+
 def returns_block(rd):
     """returns_by_reason for the window, or the labelled fixture when the metric is unavailable."""
     m = rd.m('returns_by_reason', audit.WINDOW)
@@ -563,7 +658,7 @@ def rescore(a, dims):
 
 BUILDERS = {'OFFER-R01': threshold_action, 'OFFER-R04': rung_action, 'OFFER-R08': first_order_action,
             'OFFER-R10': red_line_action, 'OFFER-R11': promo_action, 'OFFER-R12': gifting_action,
-            'OFFER-R14': guarantee_action}
+            'OFFER-R14': guarantee_action, 'OFFER-R05': stale_action, 'OFFER-R06': pull_action, 'OFFER-R15': claims_action}
 
 
 def build(f, rd, ctx, nr):
@@ -594,7 +689,8 @@ def rank(brand='bombas', window=None):
     ctx = Ctx(rd)
     nr = RANK.net_revenue_28d(brand, w)
     actions = [build(f, rd, ctx, nr) for f in findings if f.get('status') in ('open', 'unavailable', None)]
-    actions = merge_gifting(merge_red_line(merge_ladder(actions, ctx)), ctx)
+    actions = merge_connect(merge_gifting(merge_red_line(merge_ladder(actions, ctx)), ctx))
+    actions = merge_into(merge_into(actions, 'OFFER-R05', 'OFFER-R01'), 'OFFER-R06', 'OFFER-R01')
     actions = [a for a in actions if not RANK.validate_action(a)]
     actions.sort(key=RANK.sort_key)
     return {'screen': SCREEN, 'brand': brand, 'window': w, 'simulated': True, 'net_revenue_28d': nr,

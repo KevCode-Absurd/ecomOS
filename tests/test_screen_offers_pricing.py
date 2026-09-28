@@ -547,7 +547,7 @@ class GiftingTest(unittest.TestCase):
         self.assertEqual('04-offers-pricing.OFFER-R12.gifting' in fids, not led)
 
     def test_ledger_is_a_connect_action(self):
-        a = next((a for a in self.out['actions'] if a['rule_id'] == 'OFFER-R13'), None)
+        a = next((a for a in self.out['actions'] if '04-offers-pricing.OFFER-R13.gift_card_liability' in a['finding_ids']), None)
         if self.g['ledger']['unavailable']:
             self.assertEqual(a['owner'], 'person')
             self.assertEqual(a['artefact']['kind'], 'connector_setup')
@@ -585,6 +585,60 @@ class GuaranteeTest(unittest.TestCase):
                     self.assertIn(t['text'], a['artefact']['draft'])
         if self.rd.m('returns_by_reason', audit.WINDOW).get('unavailable'):
             self.assertEqual(fs['OFFER-R15']['status'], 'unavailable')
+
+
+class RankCompleteTest(unittest.TestCase):
+    """Round 1 feature 10: rank covers every rule with real titles, steps and artefacts; connect actions merge by source."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.rank_mod = load('ecomos_rank', ROOT / 'app' / 'rank.py')
+        cls.out = api.actions.rank('bombas')
+        cls.acts = cls.out['actions']
+
+    def test_every_rule_has_a_builder_or_is_connect_only(self):
+        connect_only = {'OFFER-R03', 'OFFER-R13'}
+        for r in audit.RULES:
+            self.assertTrue(r['rule_id'] in api.actions.BUILDERS or r['rule_id'] in connect_only
+                            or r['rule_id'] in ('OFFER-R07', 'OFFER-R09'), r['rule_id'])
+            self.assertIn(r['rule_id'], audit.__doc__)
+
+    def test_open_actions_are_real_work(self):
+        default_titles = set()
+        for f in self.out['findings']:
+            if f['status'] == 'open':
+                default_titles.add(self.rank_mod.action_from_finding(f)['title'])
+        for a in self.acts:
+            self.assertEqual(self.rank_mod.validate_action(a), [])
+            if a['status'] != 'open':
+                continue
+            self.assertNotIn(a['title'], default_titles)
+            self.assertTrue(a['artefact'].get('draft'), a['id'])
+            self.assertTrue(a.get('win_rule') or a.get('stop_rule'), a['id'])
+            self.assertTrue(a.get('check_on'), a['id'])
+            self.assertTrue(any(s['who'] == 'person' for s in a['steps']), a['id'])   # a person approves before anything ships
+            self.assertEqual(a['owner'], 'agent_drafts')
+            self.assertLess(len(a['title'].split()), 20)
+
+    def test_connect_actions_merge_by_source(self):
+        con = [a for a in self.acts if a['status'] == 'unavailable']
+        labels = [a['artefact']['label'] for a in con]
+        self.assertEqual(len(labels), len(set(labels)))
+        unavailable = {f['id'] for f in self.out['findings'] if f['status'] == 'unavailable'}
+        self.assertEqual(unavailable, {fid for a in con for fid in a['finding_ids']})
+
+    def test_finding_ids_are_unique_across_actions(self):
+        ids = [fid for a in self.acts for fid in a['finding_ids']]
+        self.assertEqual(len(ids), len(set(ids)))
+        self.assertEqual(set(ids), {f['id'] for f in self.out['findings'] if f['status'] in ('open', 'unavailable')})
+
+    def test_same_inputs_same_order_and_older_window(self):
+        again = api.actions.rank('bombas')
+        self.assertEqual([a['id'] for a in again['actions']], [a['id'] for a in self.acts])
+        older = api.actions.rank('bombas', {'ends_on': '2026-06-30'})
+        self.assertEqual(older['window']['ends_on'], '2026-06-30')
+        for a in older['actions']:
+            self.assertEqual(self.rank_mod.validate_action(a), [])
 
 
 if __name__ == '__main__':
