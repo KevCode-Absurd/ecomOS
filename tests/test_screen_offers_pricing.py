@@ -1267,5 +1267,42 @@ class ApprovedFirstTest(unittest.TestCase):
         self.assertLessEqual(moved['start'], min(t['start'] for t in again if set(t['surfaces']) & set(moved['surfaces'])))
 
 
+class LaunchedReadTest(unittest.TestCase):
+    """Round 4 feature 6: a launched offer past its check date gets a before and after read."""
+
+    def test_launched_offer_read(self):
+        import shutil, tempfile
+        from datetime import date
+        tmp = Path(tempfile.mkdtemp())
+        shutil.copytree(ROOT / 'app' / 'brain' / 'bombas', tmp / 'bombas')
+        try:
+            acts = api.actions.rank('bombas')['actions']
+            off = next(a for a in acts if a['status'] == 'open' and a['artefact']['kind'] in api.approvals.OFFER_KINDS)
+            off = dict(off, check_on='2026-09-10')
+            orig = api.actions.rank
+            api.actions.rank = lambda brand, window=None, data=None: {'actions': [off]}
+            try:
+                api.approve('bombas', {'id': off['id'], 'mode': 'founder'}, brain_root=tmp, outbox=tmp / 'out', today=date(2026, 8, 20))
+                api.launched('bombas', {'id': off['id']}, brain_root=tmp, today=date(2026, 8, 25))
+            finally:
+                api.actions.rank = orig
+            audit.BRAIN_ROOT = tmp
+            try:
+                rd = audit.Reader(None, 'bombas', audit.last_full_day(None, 'bombas'))
+                lo = audit.launched_offers(rd)
+                self.assertEqual(len(lo), 1)
+                self.assertTrue(lo[0]['due'])
+                self.assertTrue(lo[0]['before'] and lo[0]['after'])
+                f = next(f for f in audit.run('bombas') if f['rule_id'] == 'OFFER-R27')
+                self.assertEqual(f['evidence'][0]['baseline_kind'], '28d_before_launch')
+                a = next(a for a in api.actions.rank('bombas')['actions'] if a['rule_id'] == 'OFFER-R27')
+                self.assertEqual(a['artefact']['kind'], 'report')
+                self.assertIn('store-wide', a['artefact']['draft'])
+            finally:
+                audit.BRAIN_ROOT = None
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)
+
+
 if __name__ == '__main__':
     unittest.main()

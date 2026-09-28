@@ -329,7 +329,7 @@
       actionLine(under.length ? under.map((w) => w.name).join(', ') + ' is under the red line. A proposed offer under it cannot be approved.' : 'Every live offer clears its red line.', a));
   }
 
-  function registryBlock(reg, proposed) {
+  function registryBlock(reg, proposed, launched) {
     const head = { title: 'What is already being tested, and what does it block?', sub: 'The experiment registry, mapped to the surfaces this screen changes. A running test holds its surface until its read point; a finished one can be the proof a doubt needs.' };
     if (!reg || reg.unavailable) return section('desk-registry', head, UI.emptyState({ screen: SLUG, title: 'No experiment registry', text: (reg || {}).reason }));
     const covered = ACTIONS.filter((a) => a.registry && a.registry.relation === 'covered');
@@ -340,7 +340,8 @@
       verdict: { at: 1, kind: (r) => r.status === 'running' ? 'wait' : r.status === 'done' ? 'keep' : 'na', text: (r) => r.status, reason: (r) => r.metric || 'no metric' },
       actions: { label: 'Do' }, sort: false });
     const prop = (proposed || []).length ? el('p', { class: 'small', text: 'Proposed by this screen, waiting for the experiments screen to register: ' + proposed.map((x) => x.id + ' (' + x.hypothesis.split('.')[0] + ')').join('; ') + '.' }) : null;
-    return section('desk-registry', head, el('div', { class: 'card tight' }, table, prop,
+    const live = (launched || []).length ? el('p', { class: 'small', text: 'Live offers launched from this screen: ' + launched.map((o) => (o.label || o.id) + ' since ' + fmt.date(o.valid_from) + (o.due ? ', past its check date' : '')).join('; ') + '.' }) : null;
+    return section('desk-registry', head, el('div', { class: 'card tight' }, table, prop, live,
       el('p', { class: 'micro faint', text: 'Source: ' + reg.source + '. Price elasticity: ' + (reg.elasticity ? reg.elasticity.reads.map((x) => x.id + ' ' + pct(x.lift, 1)).join(', ') : NA + ', ' + reg.elasticity_reason) + '.' })),
       actionLine(covered.length ? covered.length + ' proposed moves are already running as tests: read them before building anything new. ' + (reg.elasticity ? '' : 'The cost pass-through price test would be the first price read.') : 'No proposed move duplicates a running test.', covered[0] || ACTIONS.find((a) => a.rule_id === 'OFFER-R22')));
   }
@@ -609,8 +610,8 @@
     wrong(d);
     actionsList(d);
     const TABS = [
-      { key: 'launch', label: 'Launch next', rules: ['OFFER-R11', 'OFFER-R12', 'OFFER-R21'],
-        blocks: () => [testsBlock(d.tests), registryBlock(d.registry, d.proposed_tests), calendarBlock(d.calendar), depthBlock(d.depth), giftingBlock(d.gifting), secondOrderBlock(d.cohorts)] },
+      { key: 'launch', label: 'Launch next', rules: ['OFFER-R11', 'OFFER-R12', 'OFFER-R21', 'OFFER-R27'],
+        blocks: () => [testsBlock(d.tests), registryBlock(d.registry, d.proposed_tests, d.launched), calendarBlock(d.calendar), depthBlock(d.depth), giftingBlock(d.gifting), secondOrderBlock(d.cohorts)] },
       { key: 'offers', label: 'Offers', rules: ['OFFER-R08', 'OFFER-R10', 'OFFER-R19', 'OFFER-R20', 'OFFER-R23', 'OFFER-R24', 'OFFER-R04', 'OFFER-R14', 'OFFER-R15'],
         blocks: () => [firstOrderBlock(d.first_order), cartBlock(d.cart), buyersBlock(d), objectionBlock(d.objections || [], d.returns), guaranteeBlock(d.guarantee, d.returns), subscriptionBlock(d.subscription), stackBlock(d.stack || [])] },
       { key: 'prices', label: 'Prices and packs', rules: ['OFFER-R22', 'OFFER-R16', 'OFFER-R17', 'OFFER-R07', 'OFFER-R09', 'OFFER-R26'],

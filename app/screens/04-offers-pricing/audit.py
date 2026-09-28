@@ -108,6 +108,10 @@ Rules
              PAIR_MIN_ORDERS orders holding both and PAIR_MIN_LIFT lift over chance (model.bundle_pairs), while no
              brain offers record names a cross-product bundle. One finding for the top pairs. Unavailable without
              order rows (a connect move). Money null: the take rate is what the bundle finds. Capability LIFE-C39.
+  OFFER-R27  Launched offer past its check date: an offers record this screen wrote (value.state live, valid_from)
+             whose plan's check_on has passed. Evidence: net sales per day, AOV and discount share of gross from the
+             daily aggregate since launch against the 28 days before. Store-wide numbers, so the read is a
+             signal, not the test result; the registry holds the result. Capability LIFE-C47.
   OFFER-R03  Margin after discount per SKU. Needs cogs_landed keyed by the store's SKUs. Unavailable while no
              finance_inputs SKU key matches a product SKU. Capability MONEY-C05 (founder gate). Owner: 04.
   OFFER-R04  A deal-breaker rung with no proof: the top rung of an objection ladder whose proof is empty or
@@ -200,6 +204,8 @@ RULES = [
      'inputs': ['daily'], 'capability': 'LIFE-C38', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R26', 'name': 'Products bought together with no bundle', 'entity_type': 'sku',
      'inputs': ['orders', 'brain.offers', 'finance_inputs.cogs_landed'], 'capability': 'LIFE-C39', 'owner_screen': SCREEN},
+    {'rule_id': 'OFFER-R27', 'name': 'Launched offer past its check date', 'entity_type': 'offer',
+     'inputs': ['brain.offers', 'brain.plans', 'daily'], 'capability': 'LIFE-C47', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R03', 'name': 'Margin after discount per SKU', 'entity_type': 'sku',
      'inputs': ['finance_inputs.cogs_landed keyed by product SKU', 'products'], 'capability': 'MONEY-C05',
      'owner_screen': SCREEN},
@@ -230,11 +236,13 @@ CAPABILITY = {'OFFER-R01': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R24': {'id': 'LIFE-C36', 'autonomy': 'founder_gate'},
               'OFFER-R25': {'id': 'LIFE-C38', 'autonomy': 'founder_gate'},
               'OFFER-R26': {'id': 'LIFE-C39', 'autonomy': 'founder_gate'},
+              'OFFER-R27': {'id': 'LIFE-C47', 'autonomy': 'founder_gate'},
               'OFFER-R06': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R04': {'id': 'LIFE-C36', 'autonomy': 'founder_gate'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 _MODS = {}
+BRAIN_ROOT = None   # tests point this at a copy of the brain; the screen always reads app/brain
 
 
 def _load(name, path):
@@ -265,7 +273,7 @@ def brain(brand):
         if path not in sys.path:
             sys.path.insert(0, path)  # store.py imports validate.py by name
         _MODS['store'] = _load('ecomos_brain_store_offers', APP / 'brain' / 'store.py')
-    return _MODS['store'].Brain(brand)
+    return _MODS['store'].Brain(brand, BRAIN_ROOT) if BRAIN_ROOT else _MODS['store'].Brain(brand)
 
 
 def is_proofless(proof):
@@ -1059,6 +1067,54 @@ def rule_bundles(rd):
                      money_reason='the take rate is what the bundle finds')]
 
 
+def launched_offers(rd):
+    """Live offers this screen launched, with their plan and a before and after read from the daily aggregate."""
+    rows = {r['date']: r for r in (rd.table('daily') or [])}
+    plans = {r['id']: r for r in rd.records('plans')}
+    out = []
+    for rec in rd.records('offers'):
+        v = rec.get('value')
+        if not (isinstance(v, dict) and v.get('state') == 'live' and rec.get('valid_from')):
+            continue
+        start = date.fromisoformat(rec['valid_from'])
+        plan = plans.get(v.get('plan')) or {}
+        check = (plan.get('value') or {}).get('check_on')
+
+        def agg(d0, d1):
+            ds = [(d0 + timedelta(days=i)).isoformat() for i in range((d1 - d0).days + 1)]
+            rs = [rows[d] for d in ds if d in rows]
+            if not rs or len(rs) < len(ds):
+                return None
+            net, gross, orders = sum(r['net_sales'] for r in rs), sum(r['gross_sales'] for r in rs), sum(r['orders'] for r in rs)
+            return {'net_per_day': round(net / len(rs), 2), 'aov': round(net / orders, 2) if orders else None,
+                    'discount_share': round(sum(r['discounts'] for r in rs) / gross, 4) if gross else None, 'days': len(rs)}
+        after = agg(start, rd.ends_on) if start <= rd.ends_on else None
+        before = agg(start - timedelta(days=28), start - timedelta(days=1))
+        out.append({'id': rec['id'], 'label': v.get('label'), 'plan': v.get('plan'), 'valid_from': rec['valid_from'],
+                    'check_on': check, 'due': bool(check and check <= rd.ends_on.isoformat()), 'before': before, 'after': after,
+                    'stop_rule': v.get('stop_rule')})
+    return out
+
+
+def rule_launched(rd):
+    end = rd.ends_on
+    out = []
+    for o in launched_offers(rd):
+        if not o['due']:
+            continue
+        ev = []
+        if o['before'] and o['after']:
+            ev = [_ev('net_per_day', o['after']['net_per_day'], 'usd', end, baseline=o['before']['net_per_day'],
+                      baseline_kind='28d_before_launch', window=f'since {o["valid_from"]}', source='daily'),
+                  _ev('discount_share_of_gross', o['after']['discount_share'], 'ratio', end, baseline=o['before']['discount_share'],
+                      baseline_kind='28d_before_launch', window=f'since {o["valid_from"]}', source='daily')]
+        out.append(_finding('OFFER-R27', {'type': 'offer', 'id': 'launched_' + o['id'].split('.')[-1], 'label': o['label'] or o['id']},
+                            'medium', ev, f'{o["label"] or o["id"]} launched {o["valid_from"]} and passed its check date {o["check_on"]}. Read it.',
+                            None, 0.6, [o['id'], o['plan']] if o['plan'] else [o['id']], end,
+                            money_reason='store-wide numbers; the test result lives in the registry'))
+    return out
+
+
 def rule_ladder(rd):
     end = rd.ends_on
     pb = _playbook()
@@ -1230,7 +1286,7 @@ def run(brand, window=None, data=None):
     """Findings for one brand, sorted by severity then money at stake. `window` is {ends_on} or None."""
     ends_on = date.fromisoformat(window['ends_on']) if window and window.get('ends_on') else last_full_day(data, brand)
     rd = Reader(data, brand, ends_on)
-    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_cost(rd) + rule_referral(rd) + rule_loyalty(rd) + rule_window_creep(rd) + rule_bundles(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
+    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_cost(rd) + rule_referral(rd) + rule_loyalty(rd) + rule_window_creep(rd) + rule_bundles(rd) + rule_launched(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
            rule_unanswered(rd))
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f.get('money_at_stake') or {}).get('usd') or -1), f['id']))
     return out

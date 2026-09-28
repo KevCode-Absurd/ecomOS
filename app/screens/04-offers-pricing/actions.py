@@ -87,6 +87,7 @@ class Ctx:
         self.loyalty = audit.loyalty(rd)
         self.depth_history = audit.depth_history(rd)
         self.bundles = audit.bundle_pairs(rd)
+        self.launched = audit.launched_offers(rd)
         self.plans = _load('offers_pricing_approvals', HERE / 'approvals.py').planned(rd) if rd.brand else {}
         self.proposed_rows = (_load('offers_pricing_approvals', HERE / 'approvals.py').outbox_rows(rd.brand) if rd.brand else [])
         self.registry = model.registry(rd, playbook.REGISTRY_SURFACES, playbook.PRICE_TEST_WORDS)
@@ -961,6 +962,29 @@ def pair_window_text(bp):
     return f'{bp["window"]["start"]} to {bp["window"]["end"]}'
 
 
+def launched_action(f, a, ctx):
+    o = next((x for x in ctx.launched if 'launched_' + x['id'].split('.')[-1] == f['entity']['id']), None)
+    if not o:
+        return a
+    b, af = o['before'] or {}, o['after'] or {}
+    lines = [f'Read of a launched offer: {o["label"]}', f'Live since {o["valid_from"]}; check date {o["check_on"]}.',
+             (f'Net sales per day {money(af.get("net_per_day"))} against {money(b.get("net_per_day"))} in the 28 days before; '
+              f'AOV {money(af.get("aov"))} against {money(b.get("aov"))}; discounts {pct(af.get("discount_share"))} of gross against {pct(b.get("discount_share"))}.'
+              if b and af else 'Before and after numbers are unavailable for these dates.'),
+             'These are store-wide numbers. The test result, when there is one, is in the registry.',
+             f'Stop rule from the plan: {o["stop_rule"] or "none written"}.',
+             'Decide: keep it live, change it, or end it. Mark the offer record accordingly on the brand brain screen.']
+    a.update({'title': f'Read the launched offer: {o["label"]}', 'owner': 'agent_drafts',
+              'artefact': {'kind': 'report', 'label': 'Launched offer read', 'draft': '\n'.join(lines)},
+              'steps': steps(('agent', 'Pull the before and after numbers and the registry result, if any.'),
+                             ('agent', 'Draft the read with the stop rule from the plan.'),
+                             ('person', 'Decide: keep, change or end the offer.')),
+              'size': {'text': 'one live offer past its check date', 'usd': None},
+              'win_rule': 'The plan\'s win rule holds.', 'stop_rule': o['stop_rule'] or 'Margin per order down 2 weeks in a row.',
+              'check_on': ctx.check_on(7), 'time_to_ship_hours': 1})
+    return a
+
+
 def returns_block(rd):
     """returns_by_reason for the window, or the labelled fixture when the metric is unavailable."""
     m = rd.m('returns_by_reason', audit.WINDOW)
@@ -1124,7 +1148,8 @@ BUILDERS = {'OFFER-R01': threshold_action, 'OFFER-R04': rung_action, 'OFFER-R08'
             'OFFER-R16': position_action, 'OFFER-R17': parity_action, 'OFFER-R18': discount_action,
             'OFFER-R19': discount_action, 'OFFER-R20': cart_action, 'OFFER-R21': second_order_action,
             'OFFER-R22': cost_action, 'OFFER-R23': referral_action, 'OFFER-R24': loyalty_action,
-            'OFFER-R25': discount_action, 'OFFER-R26': bundle_action}
+            'OFFER-R25': discount_action, 'OFFER-R26': bundle_action,
+            'OFFER-R27': launched_action}
 
 
 def build(f, rd, ctx, nr):
@@ -1167,5 +1192,5 @@ def rank(brand='bombas', window=None, data=None):
     return {'screen': SCREEN, 'brand': brand, 'window': w, 'simulated': True, 'net_revenue_28d': nr,
             'actions': actions, 'findings': findings, 'objections': ctx.objections, 'returns': returns_block(rd),
             'ladder': dict(ctx.ladder, moves=ctx.ladder_rows), 'first_order': ctx.first_order, 'waterfalls': ctx.waterfalls, 'calendar': ctx.calendar, 'gifting': ctx.gifting, 'guarantee': ctx.guarantee, 'position': ctx.position, 'parity': ctx.parity,
-            'discipline': dict(ctx.discipline, policy=discount_policy(ctx), windows=ctx.depth_history, window_creep_points=playbook.WINDOW_CREEP_POINTS), 'cart': ctx.cart, 'tests': calendar, 'depth': ctx.depth, 'cohorts': ctx.cohorts, 'costs': ctx.costs, 'registry': ctx.registry, 'referral': ctx.referral, 'loyalty': ctx.loyalty, 'bundles': ctx.bundles, 'proposed_tests': ctx.proposed_rows,
+            'discipline': dict(ctx.discipline, policy=discount_policy(ctx), windows=ctx.depth_history, window_creep_points=playbook.WINDOW_CREEP_POINTS), 'cart': ctx.cart, 'tests': calendar, 'depth': ctx.depth, 'cohorts': ctx.cohorts, 'costs': ctx.costs, 'registry': ctx.registry, 'referral': ctx.referral, 'loyalty': ctx.loyalty, 'bundles': ctx.bundles, 'proposed_tests': ctx.proposed_rows, 'launched': ctx.launched,
             'subscription': model.subscription_note(rd, ctx.cohorts, (ctx.depth or {}).get('rows'), (ctx.depth or {}).get('target'))}
