@@ -8,6 +8,8 @@ question, and accept or ignore on a proposed record. Nothing external.
                                 judgement rules, the package, where to check (markdown)
   GET  agentfile/endpoints      this route table as JSON, for an agent or an MCP wrapper
   GET  brainmd                  the router BRAIN.md text
+  POST export/diff              {bundle | content_base64}: what changed since that export, record by record
+  POST export/diff/start|part|finish  the same export in 24 KB base64 parts (the server takes 32 KB a request)
   POST review/draft             {text, channel, kind}: every check in one call and the route
   GET  overview                 T0 card, section table, tiles, insights, chart, ladders,
                                 open questions, review queue, conflicts
@@ -114,6 +116,7 @@ from __future__ import annotations
 
 import base64
 import datetime as dt
+import hashlib
 import importlib.util
 import json
 import re
@@ -184,6 +187,9 @@ _pspec.loader.exec_module(parity)
 _sspec = importlib.util.spec_from_file_location("brand_brain_sitediff", HERE / "sitediff.py")
 sitediff = importlib.util.module_from_spec(_sspec)
 _sspec.loader.exec_module(sitediff)
+_bdspec = importlib.util.spec_from_file_location("brand_brain_braindiff", HERE / "braindiff.py")
+braindiff = importlib.util.module_from_spec(_bdspec)
+_bdspec.loader.exec_module(braindiff)
 _afspec = importlib.util.spec_from_file_location("brand_brain_agentfile", HERE / "agentfile.py")
 agentfile = importlib.util.module_from_spec(_afspec)
 _afspec.loader.exec_module(agentfile)
@@ -1729,6 +1735,49 @@ def handle(req):
         return permission_set(brain, parts[1], req.body)
     if req.method == "GET" and parts == ["export"]:
         return health.export_bundle(brain)
+    if req.method == "POST" and parts == ["export", "diff", "start"]:
+        up = brain.dir / "review" / "uploads"
+        up.mkdir(parents=True, exist_ok=True)
+        token = base64.urlsafe_b64encode(hashlib.sha256(f"{brain.brand}{dt.datetime.now(dt.timezone.utc).isoformat()}{len(list(up.iterdir()))}".encode()).digest()[:12]).decode().rstrip("=")
+        (up / f"{token}.b64").write_text("", encoding="utf-8")
+        return 201, {"token": token, "part_max_bytes": 24000, "note": "the server takes 32 KB per request; send the export as base64 parts in order, then finish"}
+    if req.method == "POST" and parts == ["export", "diff", "part"]:
+        body = req.body or {}
+        token, data = str(body.get("token") or ""), str(body.get("data") or "")
+        if not re.fullmatch(r"[A-Za-z0-9_-]{8,24}", token) or not data:
+            return 400, {"error": "token and data are required"}
+        f = brain.dir / "review" / "uploads" / f"{token}.b64"
+        if not f.is_file():
+            return 404, {"error": "no upload with that token; start again"}
+        if f.stat().st_size + len(data) > 8_000_000:
+            f.unlink(missing_ok=True)
+            return 413, {"error": "the upload is over 8 MB; export a smaller brain"}
+        with f.open("a", encoding="utf-8") as fh:
+            fh.write(data)
+        return 201, {"ok": True, "bytes": f.stat().st_size}
+    if req.method == "POST" and parts == ["export", "diff", "finish"]:
+        token = str((req.body or {}).get("token") or "")
+        f = brain.dir / "review" / "uploads" / f"{token}.b64"
+        if not re.fullmatch(r"[A-Za-z0-9_-]{8,24}", token) or not f.is_file():
+            return 404, {"error": "no upload with that token; start again"}
+        try:
+            bundle = json.loads(base64.b64decode(f.read_text(encoding="utf-8"), validate=True).decode("utf-8"))
+        except (ValueError, UnicodeDecodeError):
+            f.unlink(missing_ok=True)
+            return 400, {"error": "the upload is not a JSON export"}
+        f.unlink(missing_ok=True)
+        return braindiff.diff(brain, bundle, SECTIONS)
+    if req.method == "POST" and parts == ["export", "diff"]:
+        body = req.body or {}
+        bundle = body.get("bundle")
+        if bundle is None and body.get("content_base64"):
+            try:
+                bundle = json.loads(base64.b64decode(str(body["content_base64"]), validate=True).decode("utf-8"))
+            except (ValueError, UnicodeDecodeError):
+                return 400, {"error": "the file is not JSON"}
+        if not isinstance(bundle, dict):
+            return 400, {"error": "send bundle (the export JSON) or content_base64"}
+        return braindiff.diff(brain, bundle, SECTIONS)
     if req.method == "GET" and parts == ["battlecards"]:
         bc = battlecards.cards(brain)
         bc.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())
