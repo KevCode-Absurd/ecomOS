@@ -553,5 +553,39 @@ class GiftingTest(unittest.TestCase):
             self.assertEqual(a['artefact']['kind'], 'connector_setup')
 
 
+class GuaranteeTest(unittest.TestCase):
+    """Round 1 feature 9: the guarantee as an offer, where it is stated, the doubts it answers, claims against plan."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.rd = audit.Reader(None, 'bombas', audit.last_full_day(None, 'bombas'))
+        cls.g = audit.guarantee(cls.rd)
+        cls.out = api.actions.rank('bombas')
+
+    def test_page_types(self):
+        m, pb = api.model, audit._playbook()
+        self.assertEqual(m.page_type('https://x.com/', pb.PAGE_TYPES), 'home page')
+        self.assertEqual(m.page_type('https://x.com/products/sock-4', pb.PAGE_TYPES), 'product page')
+        self.assertEqual(m.page_type('https://x.com/policies/refund-policy', pb.PAGE_TYPES), 'policy page')
+        for t in self.g['terms']:
+            self.assertEqual(t['selling'], t['page_type'] in pb.SELLING_PAGES)
+
+    def test_rule_and_action(self):
+        fs = {f['rule_id']: f for f in self.out['findings']}
+        should = bool(self.g['terms']) and not self.g['on_selling_page'] and bool(self.g['answers'])
+        self.assertEqual('OFFER-R14' in fs, should)
+        self.assertEqual(self.g['one_star_answered'], sum(a['one_star'] or 0 for a in self.g['answers']))
+        if should:
+            a = next(a for a in self.out['actions'] if a['rule_id'] == 'OFFER-R14')
+            self.assertEqual(a['artefact']['kind'], 'page_section')
+            self.assertEqual(a['steps'][0]['who'], 'agent')
+            self.assertIn('read-only', a['steps'][0]['text'])
+            for t in self.g['terms']:
+                if t['id'].endswith('offers.guarantee'):
+                    self.assertIn(t['text'], a['artefact']['draft'])
+        if self.rd.m('returns_by_reason', audit.WINDOW).get('unavailable'):
+            self.assertEqual(fs['OFFER-R15']['status'], 'unavailable')
+
+
 if __name__ == '__main__':
     unittest.main()

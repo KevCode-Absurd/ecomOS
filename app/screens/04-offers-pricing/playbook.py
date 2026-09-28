@@ -133,3 +133,12 @@ PROMO_ALERT_DAYS = 30     # a window is due when its approval date is within 30 
 GIFT_LED_RATIO = 1.3
 GIFT_DAY = (12, 24)       # the day a gift must arrive by
 GIFT_PACK_MIN = 6         # packs this size or bigger are the gift box candidates on the holiday page
+
+# Guarantee as an offer (screen 04, OFFER-R14 and OFFER-R15). The brain records that make up the guarantee, and the
+# page types where a doubt is met. A url path is classified by the first rule that matches.
+GUARANTEE_KEYS = ['offers.guarantee', 'policies.happiness_guarantee', 'claims.guarantee_promise', 'policies.exchanges',
+                  'policies.returns_window_days']
+PAGE_TYPES = [('/products/', 'product page'), ('/collections/', 'collection page'), ('/cart', 'cart'),
+              ('/policies/', 'policy page'), ('/pages/', 'content page')]
+SELLING_PAGES = ('product page', 'collection page', 'cart', 'home page')
+CLAIM_OVER_PLAN = 1.5     # claims above 1.5 times the planned rate: the guarantee costs more than it was priced at

@@ -643,3 +643,46 @@ def gifting(rd, ratio, gift_day):
             'gift_day': gday.isoformat(), 'ship_by': ship, 'shipping_id': (opts_rec or {}).get('id'),
             'ledger': {'unavailable': not ledger, 'reason': None if ledger else 'the gift_card_ledger table is not connected',
                        'fix': None if ledger else 'Connect the store gift card export, read-only.'}}
+
+
+# ---------------------------------------------------------------- guarantee
+
+def page_type(url, rules):
+    from urllib.parse import urlparse
+    path = urlparse(url or '').path or '/'
+    if path in ('', '/'):
+        return 'home page'
+    for frag, name in rules:
+        if frag in path:
+            return name
+    return 'other page'
+
+
+def guarantee(rd, keys, page_rules, selling):
+    """The guarantee's terms from the brain, where each term is stated (page type of its source), the doubts it
+    answers (ladder rungs whose proof cites it), and the planned claim rates from the brain's return model."""
+    terms = []
+    for k in keys:
+        rec = rd.record(f'{rd.brand}.{k}') if rd.brand else None
+        if rec:
+            ref = (rec.get('source') or {}).get('ref')
+            terms.append({'id': rec['id'], 'text': rec.get('text'), 'value': rec.get('value'), 'source': ref,
+                          'page_type': page_type(ref, page_rules), 'date': rec.get('date')})
+            terms[-1]['selling'] = terms[-1]['page_type'] in selling
+    ids = {t['id'] for t in terms}
+    answers = []
+    for rec in rd.records('objection_ladders'):
+        v = rec.get('value') or {}
+        for r in v.get('rungs') or []:
+            cited = [p for p in (r.get('proof_ids') or []) if p in ids]
+            if cited:
+                answers.append({'theme': (v.get('theme') or '').replace('_', ' '), 'level': r.get('level'), 'doubt': r.get('doubt'),
+                                'one_star': (r.get('counts') or {}).get('one_star'), 'uses': r.get('uses') or [], 'cites': cited})
+    rm, rm_rec = brain_value(rd, 'economics.return_share_model')
+    rm = rm if isinstance(rm, dict) else {}
+    stated = sorted({t['page_type'] for t in terms})
+    return {'terms': terms, 'stated_on': stated, 'on_selling_page': any(p in selling for p in stated),
+            'answers': answers, 'one_star_answered': sum(a['one_star'] or 0 for a in answers),
+            'planned': {'refund_or_replace': (rm.get('refund_or_replace_share_of_orders_pct') or None) and rm['refund_or_replace_share_of_orders_pct'] / 100,
+                        'replacement': (rm.get('replacement_under_guarantee_pct') or None) and rm['replacement_under_guarantee_pct'] / 100,
+                        'refund': (rm.get('refund_pct') or None) and rm['refund_pct'] / 100, 'source': (rm_rec or {}).get('id')}}

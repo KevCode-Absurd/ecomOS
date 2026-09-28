@@ -312,6 +312,25 @@
       actionLine(led ? led + ' lines sell as gifts. Put them on the holiday page first.' : 'No line sells as a gift yet. Build the holiday page around the big packs, the gift card and the order-by dates.', a));
   }
 
+  function guaranteeBlock(g, returns) {
+    const head = { title: 'Is the guarantee working as an offer?', sub: 'The guarantee\'s terms from the brain, the page each term was found on, the doubts it answers, and claims against the brain\'s planned rates.' };
+    if (!g || !g.terms.length) return section('desk-guarantee', head, UI.emptyState({ screen: SLUG, title: 'No guarantee in the brain', text: 'Add the guarantee to the brain offers section.' }));
+    const a = ACTIONS.find((x) => x.rule_id === 'OFFER-R14');
+    const terms = UI.verdictTable({
+      columns: [{ key: 'text', label: 'Term' }, { key: 'source', label: 'Found on', format: (v) => v ? v.replace(/^https?:\/\//, '') : NA }],
+      rows: g.terms, verdict: { at: 1, kind: (r) => r.selling ? 'keep' : 'fix', text: (r) => r.page_type, reason: (r) => r.id }, sort: false });
+    const answers = UI.table({ columns: [{ key: 'theme', label: 'Objection' }, { key: 'doubt', label: 'Doubt it answers' }, { key: 'one_star', label: 'One-star', unit: 'n' }, { key: 'uses', label: 'Needed on', format: (v) => (v || []).map(pretty).join(', ') }], rows: g.answers, sort: false });
+    const p = g.planned || {};
+    const facts = kv([
+      ['Planned refunds or replacements', p.refund_or_replace == null ? NA : pct(p.refund_or_replace) + ' of orders (' + p.source + ')'],
+      ['Planned replacements', p.replacement == null ? NA : pct(p.replacement) + ' of orders'],
+      ['Actual', returns && !returns.fixture ? 'see returns by reason above' : NA + ': ' + ((returns || {}).reason || 'returns are not connected')],
+    ]);
+    return section('desk-guarantee', head, el('div', { class: 'grid two' }, el('div', { class: 'card tight' }, terms), el('div', { class: 'card' }, facts)),
+      el('div', { class: 'card tight' }, answers),
+      actionLine(g.on_selling_page ? 'The guarantee is on a selling page. Keep it next to the price.' : 'The guarantee answers ' + g.one_star_answered + ' one-star doubts but lives on the ' + g.stated_on.join(', ') + '. Put it next to the price and in the cart.', a));
+  }
+
   function returnsChart(r) {
     if (!r || !r.groups || !r.groups.length) return el('p', { class: 'muted small', text: 'Returns by reason ' + NA + '.' });
     const rows = r.groups.slice().sort((a, b) => b.per_1000 - a.per_1000);
@@ -366,7 +385,7 @@
     wrong(d);
     actionsList(d);
     mount('#desk', el('div', { class: 'desk-kicker' }, el('h3', { text: 'The desk' })), calendarBlock(d.calendar), giftingBlock(d.gifting),
-      stackBlock(d.stack || []), thresholdBlock(d.threshold), firstOrderBlock(d.first_order), waterfallBlock(d.waterfalls), discountBlock(d), ladderBlock(d.ladder), objectionBlock(d.objections || [], d.returns));
+      stackBlock(d.stack || []), thresholdBlock(d.threshold), firstOrderBlock(d.first_order), waterfallBlock(d.waterfalls), discountBlock(d), ladderBlock(d.ladder), objectionBlock(d.objections || [], d.returns), guaranteeBlock(d.guarantee, d.returns));
     auditBlock(d);
   }
 

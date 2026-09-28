@@ -73,6 +73,7 @@ class Ctx:
         self.waterfalls = audit.offer_waterfalls(rd, self.objections)
         self.calendar = audit.promo_calendar(rd)
         self.gifting = audit.gifting(rd)
+        self.guarantee = audit.guarantee(rd)
         self.ship_rate = (model.brain_value(rd, 'offers.standard_shipping_cost')[0] or {}).get('cost_usd') if rd.brand else None
         self.scenarios = (model.threshold_scenarios(rd, self.threshold, self.ship_rate, self.be['value'], (self.po or {}).get('units') or 1)
                           if self.threshold is not None and self.be.get('value') is not None else [])
@@ -370,6 +371,41 @@ def merge_gifting(actions, ctx):
     return keep
 
 
+def guarantee_action(f, a, ctx):
+    g = ctx.guarantee
+    t = {x['id'].split('.', 1)[1]: x for x in g['terms']}
+    repl = model.claim_cost(ctx.rd, 'replacement')
+    plan = g['planned']
+    copy = [x['text'] for k, x in t.items() if k in ('offers.guarantee', 'policies.exchanges') and x.get('text')]
+    per_1000 = (round(repl['value'] * plan['replacement'] * 1000, 2)
+                if repl.get('value') is not None and plan.get('replacement') else None)
+    lines = ['Page section: the guarantee where the doubt is',
+             'Where: the product page under the price and the add to cart button; the cart above checkout; the size selector for the exchange line.',
+             'Copy from the brain\'s own terms (the founder approves the wording):'] + [f'- "{c}"' for c in copy] + [
+             'Doubts it answers: ' + '; '.join(f'"{x["doubt"]}" ({x["one_star"]} one-star)' for x in g['answers']) + '.']
+    if per_1000 is not None:
+        lines.append(f'Cost: saying it louder can raise claims. Planned: {plan["refund_or_replace"] * 100:.1f} percent of orders refunded '
+                     f'or replaced, {plan["replacement"] * 100:.1f} of them replacements. A replacement costs {money(repl["value"])}, '
+                     f'{money(per_1000)} per 1,000 orders at plan.')
+    lines += [f'Stop: claims above {playbook.CLAIM_OVER_PLAN:.1f} times plan for 2 weeks.',
+              'Win: product page add to cart rate up, one-star mentions for these doubts down next quarter.']
+    a.update({
+        'title': 'Put the guarantee on the product page and in the cart',
+        'owner': 'agent_drafts',
+        'artefact': {'kind': 'page_section', 'label': 'Guarantee block for the product page and the cart', 'draft': '\n'.join(lines)},
+        'steps': steps(('agent', 'Check the live product page and cart for a guarantee line, read-only.'),
+                       ('agent', 'Draft the block from the brain\'s approved terms and the doubts it answers.'),
+                       ('person', 'Approve the wording. Legal checks the claim tier.'),
+                       ('person', 'The site team adds the block to the product template and the cart.'),
+                       ('agent', f'Read add to cart rate and claims weekly; call it on {ctx.check_on(42)}.')),
+        'size': {'text': f'{g["one_star_answered"]} one-star mentions cite doubts it answers' +
+                         (f'; {money(per_1000)} per 1,000 orders in claims at plan' if per_1000 is not None else ''), 'usd': None},
+        'win_rule': 'Product page add to cart rate up; one-star mentions for these doubts down next quarter.',
+        'stop_rule': f'Claims above {playbook.CLAIM_OVER_PLAN:.1f} times plan for 2 weeks.',
+        'check_on': ctx.check_on(42), 'time_to_ship_hours': 6})
+    return a
+
+
 def returns_block(rd):
     """returns_by_reason for the window, or the labelled fixture when the metric is unavailable."""
     m = rd.m('returns_by_reason', audit.WINDOW)
@@ -510,7 +546,7 @@ def merge_ladder(actions, ctx):
 
 # Rubric overrides by rule (depth.md section 4 lets a screen raise reputation or satisfaction for a rule; the
 # override is written in audit.py's docstring next to the rule). Weights never change.
-RUBRIC_OVERRIDE = {'OFFER-R04': {'reputation': 4, 'satisfaction': 4}}
+RUBRIC_OVERRIDE = {'OFFER-R04': {'reputation': 4, 'satisfaction': 4}, 'OFFER-R14': {'reputation': 4, 'satisfaction': 4}}
 
 
 def rescore(a, dims):
@@ -526,7 +562,8 @@ def rescore(a, dims):
 
 
 BUILDERS = {'OFFER-R01': threshold_action, 'OFFER-R04': rung_action, 'OFFER-R08': first_order_action,
-            'OFFER-R10': red_line_action, 'OFFER-R11': promo_action, 'OFFER-R12': gifting_action}
+            'OFFER-R10': red_line_action, 'OFFER-R11': promo_action, 'OFFER-R12': gifting_action,
+            'OFFER-R14': guarantee_action}
 
 
 def build(f, rd, ctx, nr):
@@ -562,4 +599,4 @@ def rank(brand='bombas', window=None):
     actions.sort(key=RANK.sort_key)
     return {'screen': SCREEN, 'brand': brand, 'window': w, 'simulated': True, 'net_revenue_28d': nr,
             'actions': actions, 'findings': findings, 'objections': ctx.objections, 'returns': returns_block(rd),
-            'ladder': dict(ctx.ladder, moves=ctx.ladder_rows), 'first_order': ctx.first_order, 'waterfalls': ctx.waterfalls, 'calendar': ctx.calendar, 'gifting': ctx.gifting}
+            'ladder': dict(ctx.ladder, moves=ctx.ladder_rows), 'first_order': ctx.first_order, 'waterfalls': ctx.waterfalls, 'calendar': ctx.calendar, 'gifting': ctx.gifting, 'guarantee': ctx.guarantee}

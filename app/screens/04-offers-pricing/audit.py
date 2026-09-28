@@ -54,6 +54,14 @@ Rules
              landing page (merged into the holiday window's action when that window is due). Capability LIFE-C40.
   OFFER-R13  Gift card liability and redemption (room spec): unavailable until the gift_card_ledger table
              connects. Capability LIFE-C58 (human assist).
+  OFFER-R14  Guarantee not stated where the doubt is: every brain record of the guarantee (playbook.GUARANTEE_KEYS)
+             traces to a source page whose type (playbook.PAGE_TYPES by url path) is not a selling page (product,
+             collection, cart, home), while ladder rungs cite it as their proof. Money null. Action: a guarantee
+             block on the product page and in the cart, drafted from the brain's own terms. Rubric override:
+             reputation 4 (a review theme in the ladder), satisfaction 4 (returns and CX). Capability LIFE-C42.
+  OFFER-R15  Guarantee claims against plan (room spec: guarantee cost above plan): returns per order for the
+             claim reasons against the brain's planned rate, fires above playbook.CLAIM_OVER_PLAN times plan.
+             Unavailable until reversed_orders connects. Capability LIFE-C42.
   OFFER-R03  Margin after discount per SKU. Needs cogs_landed keyed by the store's SKUs. Unavailable while no
              finance_inputs SKU key matches a product SKU. Capability MONEY-C05 (founder gate). Owner: 04.
   OFFER-R04  A deal-breaker rung with no proof: the top rung of an objection ladder whose proof is empty or
@@ -117,6 +125,11 @@ RULES = [
      'capability': 'LIFE-C40', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R13', 'name': 'Gift card liability and redemption', 'entity_type': 'metric',
      'inputs': ['gift_card_ledger'], 'capability': 'LIFE-C58', 'owner_screen': SCREEN},
+    {'rule_id': 'OFFER-R14', 'name': 'Guarantee not stated where the doubt is', 'entity_type': 'offer',
+     'inputs': ['brain.offers.guarantee', 'brain.policies', 'brain.claims', 'brain.objection_ladders'],
+     'capability': 'LIFE-C42', 'owner_screen': SCREEN},
+    {'rule_id': 'OFFER-R15', 'name': 'Guarantee claims against the planned rate', 'entity_type': 'offer',
+     'inputs': ['reversed_orders', 'brain.economics.return_share_model'], 'capability': 'LIFE-C42', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R03', 'name': 'Margin after discount per SKU', 'entity_type': 'sku',
      'inputs': ['finance_inputs.cogs_landed keyed by product SKU', 'products'], 'capability': 'MONEY-C05',
      'owner_screen': SCREEN},
@@ -134,6 +147,8 @@ CAPABILITY = {'OFFER-R01': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R11': {'id': 'LIFE-C38', 'autonomy': 'founder_gate'},
               'OFFER-R12': {'id': 'LIFE-C40', 'autonomy': 'founder_gate'},
               'OFFER-R13': {'id': 'LIFE-C58', 'autonomy': 'human_assist'},
+              'OFFER-R14': {'id': 'LIFE-C42', 'autonomy': 'founder_gate'},
+              'OFFER-R15': {'id': 'LIFE-C42', 'autonomy': 'founder_gate'},
               'OFFER-R06': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R04': {'id': 'LIFE-C36', 'autonomy': 'founder_gate'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
@@ -652,6 +667,51 @@ def rule_gifting(rd):
     return out
 
 
+def guarantee(rd):
+    pb = _playbook()
+    return _model().guarantee(rd, pb.GUARANTEE_KEYS, pb.PAGE_TYPES, pb.SELLING_PAGES)
+
+
+def rule_guarantee(rd):
+    end = rd.ends_on
+    pb = _playbook()
+    g = guarantee(rd)
+    out = []
+    if not g['terms']:
+        return out
+    refs = [t['id'] for t in g['terms']]
+    if not g['on_selling_page'] and g['answers']:
+        evidence = [_ev('guarantee_on_selling_pages', 0, 'count', end, baseline=1, baseline_kind='threshold', window='brain',
+                        source='brain source urls'),
+                    _ev('one_star_mentions_it_answers', g['one_star_answered'], 'count', end, window='ladder',
+                        source='brain.objection_ladders')]
+        sentence = (f'The guarantee answers {len(g["answers"])} ladder doubts with {g["one_star_answered"]} one-star '
+                    f'mentions, but the brain finds it only on the {", ".join(g["stated_on"])}.')
+        out.append(_finding('OFFER-R14', {'type': 'offer', 'id': 'guarantee_placement', 'label': 'The guarantee'}, 'medium',
+                            evidence, sentence, None, 0.6, refs, end,
+                            money_reason='lost orders from an unseen guarantee are not measurable'))
+    m = rd.m('returns_by_reason', WINDOW)
+    if m.get('unavailable'):
+        out.append(_finding('OFFER-R15', {'type': 'offer', 'id': 'guarantee_claims', 'label': 'Guarantee claims'}, 'low', [],
+                            'Guarantee claims against the planned rate are unknown: returns by reason are not connected.',
+                            None, 0.1, refs, end, status='unavailable', money_reason='no returns',
+                            unavailable={'inputs': ['reversed_orders'], 'connector': m.get('fix') or 'shopify',
+                                         'fix': 'Connect store returns, read-only, with the return reason.'}))
+        return out
+    plan = g['planned']['refund_or_replace']
+    orders = m['inputs']['paid_orders']
+    if plan and orders:
+        rate = m['value'] / orders
+        if rate > pb.CLAIM_OVER_PLAN * plan:
+            evidence = [_ev('returns_per_order', round(rate, 6), 'ratio', end, baseline=plan, baseline_kind='plan',
+                            source='reversed_orders')]
+            sentence = (f'Returns and replacements run at {rate * 100:.1f} percent of orders against a planned '
+                        f'{plan * 100:.1f} percent.')
+            out.append(_finding('OFFER-R15', {'type': 'offer', 'id': 'guarantee_claims', 'label': 'Guarantee claims'}, 'high',
+                                evidence, sentence, None, 0.7, refs, end, money_reason='cost per claim is in the action'))
+    return out
+
+
 def rule_ladder(rd):
     end = rd.ends_on
     pb = _playbook()
@@ -823,7 +883,7 @@ def run(brand, window=None, data=None):
     """Findings for one brand, sorted by severity then money at stake. `window` is {ends_on} or None."""
     ends_on = date.fromisoformat(window['ends_on']) if window and window.get('ends_on') else last_full_day(data, brand)
     rd = Reader(data, brand, ends_on)
-    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
+    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
            rule_unanswered(rd))
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f.get('money_at_stake') or {}).get('usd') or -1), f['id']))
     return out
