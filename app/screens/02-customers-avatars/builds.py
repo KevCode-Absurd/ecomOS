@@ -3142,8 +3142,8 @@ def block_rules(d: dict) -> dict:
     pc = lambda v: f"{round(v * 100)} percent"
     w = FOCUS_W
     R = {
-        "focus-wrap": f"Score out of 100: share of buyers {round(w['share'] * 100)}, how poorly we serve them {round(w['unserved'] * 100)}, "
-                      f"how little our ads speak to them {round(w['ad_gap'] * 100)}, open doubts {round(w['open_doubts'] * 100)}. "
+        "focus-wrap": f"Score out of 100: share {round(w['share'] * 100)}, served poorly {round(w['unserved'] * 100)}, "
+                      f"no ads {round(w['ad_gap'] * 100)}, open doubts {round(w['open_doubts'] * 100)}. "
                       f"Share comes from reviews, the survey at {SURVEY_N} answers, or sales by line.",
         "offers-wrap": "Each cell counts the doubts of an avatar that an offer, policy or claim answers, from the proof records.",
         "salesshare-wrap": f"Line sales over 12 full months, split by review share, against the share from reviews. Differ: {SALES_GAP}x either way.",

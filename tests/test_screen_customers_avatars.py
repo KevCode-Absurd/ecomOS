@@ -2429,3 +2429,41 @@ class ChartsDecide(unittest.TestCase):
         self.assertEqual(js.count('+ DECIDES.'), len(charts))
         decides = js[js.index('const DECIDES = {'):js.index('};', js.index('const DECIDES = {'))]
         self.assertEqual(decides.count("'Decides: "), len(charts))
+
+
+class AntiPatterns(TempBrain):
+    """Feature 10.3: depth.md section 7 walked against the page. Each anti-pattern has a check; the ones covered
+    elsewhere are named: charts (ChartsDecide), buttons (NoDeadButtons), brand facts (NoThresholdsInPage, SecondBrand),
+    zero for unknown (EmptyBrand, BrowserSmoke). Checked here: a report, tiles, owners, long prose."""
+
+    def test_not_a_report(self):
+        html = (ROOT / 'app' / 'screens' / '02-customers-avatars' / 'index.html').read_text(encoding='utf-8')
+        first = re.search(r'<section[^>]*id="([a-z-]+)"', html).group(1)
+        self.assertEqual(first, 'plan-wrap')
+        self.assertLess(html.index('id="plan-wrap"'), html.index('id="desk-wrap"'))
+        self.assertLess(html.index('id="desk-wrap"'), html.index('id="audit-wrap"'))
+
+    def test_tiles_are_orientation_only(self):
+        d = api.handle(Req(['overview']))
+        self.assertTrue(3 <= len(d['orientation']) <= 6)
+        js = (ROOT / 'app' / 'screens' / '02-customers-avatars' / 'screen.js').read_text(encoding='utf-8')
+        self.assertNotIn('UI.tiles(', js)
+
+    def test_every_finding_has_an_owner(self):
+        acts = api.rank('bombas', RANK_WINDOW)['actions']
+        owned = {f for a in acts if a['owner'] in ('agent', 'agent_drafts', 'person') for f in a['finding_ids']}
+        for f in api.audit.run('bombas', RANK_WINDOW, api.BRAIN_ROOT):
+            if f['status'] in ('open', 'unavailable'):
+                self.assertIn(f['id'], owned)
+
+    def test_no_long_prose(self):
+        d = api.handle(Req(['overview']))
+        for sid, b in d['blocks'].items():
+            for field in ('rule', 'caveat'):
+                t = b.get(field)
+                if not t:
+                    continue
+                sents = [x for x in re.split(r'(?<=[.!?])\s+', t) if x]
+                self.assertLessEqual(len(sents), 3, (sid, field))
+                for x in sents:
+                    self.assertLess(len(x.split()), 20, (sid, field, x))
