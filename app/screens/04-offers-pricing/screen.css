@@ -42,3 +42,13 @@
 #desk-tests td:first-child { min-width: 260px; }
 #desk-tests td:nth-child(5) { font-size: var(--fs-micro); color: var(--muted); min-width: 200px; }
 #desk-tests td:nth-child(3) { white-space: nowrap; }
+/* phone width: the action card rows wrap instead of running off the card */
+@media (max-width: 720px) {
+  .action .a-head, .action .a-foot, .action .decision, .action .decision .buttons, .plan-item .head, .plan-item .foot { flex-wrap: wrap; min-width: 0; }
+  .action .a-title, .action .a-why, .plan-item .why { overflow-wrap: anywhere; min-width: 0; }
+  .action .a-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 720px) {
+  .action .a-foot .chip { max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
+  #desk .tabs { flex-wrap: wrap; overflow-x: auto; }
+}

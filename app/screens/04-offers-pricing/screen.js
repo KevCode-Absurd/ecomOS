@@ -518,8 +518,23 @@
     plan(d);
     wrong(d);
     actionsList(d);
-    mount('#desk', el('div', { class: 'desk-kicker' }, el('h3', { text: 'The desk' })), testsBlock(d.tests), calendarBlock(d.calendar), depthBlock(d.depth), secondOrderBlock(d.cohorts), giftingBlock(d.gifting),
-      stackBlock(d.stack || []), thresholdBlock(d.threshold), cartBlock(d.cart), firstOrderBlock(d.first_order), positionBlock(d.position, d.brand || {}), costBlock(d.costs), parityBlock(d.parity), waterfallBlock(d.waterfalls), discountBlock(d), ladderBlock(d.ladder), objectionBlock(d.objections || [], d.returns), guaranteeBlock(d.guarantee, d.returns));
+    const TABS = [
+      { key: 'launch', label: 'Launch next', rules: ['OFFER-R11', 'OFFER-R12', 'OFFER-R21'],
+        blocks: () => [testsBlock(d.tests), calendarBlock(d.calendar), depthBlock(d.depth), giftingBlock(d.gifting), secondOrderBlock(d.cohorts)] },
+      { key: 'offers', label: 'Offers', rules: ['OFFER-R08', 'OFFER-R10', 'OFFER-R19', 'OFFER-R20', 'OFFER-R04', 'OFFER-R14', 'OFFER-R15'],
+        blocks: () => [firstOrderBlock(d.first_order), cartBlock(d.cart), objectionBlock(d.objections || [], d.returns), guaranteeBlock(d.guarantee, d.returns), stackBlock(d.stack || [])] },
+      { key: 'prices', label: 'Prices and packs', rules: ['OFFER-R22', 'OFFER-R16', 'OFFER-R17', 'OFFER-R07', 'OFFER-R09'],
+        blocks: () => [costBlock(d.costs), positionBlock(d.position, d.brand || {}), parityBlock(d.parity), ladderBlock(d.ladder), waterfallBlock(d.waterfalls)] },
+      { key: 'shipping', label: 'Shipping and discounts', rules: ['OFFER-R01', 'OFFER-R05', 'OFFER-R06', 'OFFER-R18'],
+        blocks: () => [thresholdBlock(d.threshold), discountBlock(d)] },
+    ];
+    const openIn = (t) => ACTIONS.filter((a) => a.status === 'open' && (a.finding_ids || []).some((id) => t.rules.some((r) => id.indexOf('.' + r + '.') >= 0))).length;
+    let saved = null;
+    try { saved = localStorage.getItem('offers-desk-tab'); } catch (e) { saved = null; }
+    mount('#desk', el('div', { class: 'desk-kicker' }, UI.sectionHead({ title: 'The desk', sub: 'The offer strategist\'s working tables, by job. Every block ends in the move it supports.' })),
+      UI.tabs({ items: TABS.map((t) => ({ key: t.key, label: t.label, n: openIn(t), panel: () => el('div', null, ...t.blocks()) })),
+        current: TABS.some((t) => t.key === saved) ? saved : 'launch',
+        onChange: (k) => { try { localStorage.setItem('offers-desk-tab', k); } catch (e) { /* per-viewer convenience only */ } } }));
     auditBlock(d);
   }
 

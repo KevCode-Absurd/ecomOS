@@ -895,5 +895,21 @@ class CostPriceTest(unittest.TestCase):
             self.assertEqual(a['artefact']['kind'], 'price_change')
 
 
+class DeskTabsTest(unittest.TestCase):
+    """Round 2 feature 10: the desk is 4 job tabs, every rule with an action sits in one, and CSS keeps phone width."""
+
+    def test_tabs_cover_the_rules(self):
+        import re
+        js = (SCREEN / 'screen.js').read_text(encoding='utf-8')
+        self.assertIn('UI.tabs', js)
+        in_tabs = set(re.findall(r"'(OFFER-R\d+)'", js[js.index('const TABS'):js.index('const openIn')]))
+        connect_only = {'OFFER-R03', 'OFFER-R13'}
+        for r in audit.RULES:
+            if r['rule_id'] not in connect_only:
+                self.assertIn(r['rule_id'], in_tabs)
+        css = (SCREEN / 'screen.css').read_text(encoding='utf-8')
+        self.assertIn('max-width: 720px', css)
+
+
 if __name__ == '__main__':
     unittest.main()
