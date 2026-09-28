@@ -207,6 +207,7 @@ velmod = _local("velocity")
 nichemod = _local("niche")
 premmod = _local("premium")
 searchmod = _local("search")
+inpmod = _local("inputs")
 
 SCREEN = "03-competitors"
 SEVERITY_ORDER = {"critical": 0, "high": 1, "medium": 2, "low": 3}
@@ -608,7 +609,7 @@ def market_full(brand: str, today: dt.date, root: Path | None = None) -> dict:
     m["season"] = seasonmod.build(m, m["brain"], today)
     m["price_moves"] = {"moves": capmod.price_moves(cprev, ccur, parse_band), "captures": len(capmod.captures(brand)),
                         "since": cprev["captured_at"] if cprev else None, "threshold": capmod.PRICE_MOVE}
-    m["losses"] = lossmod.build(m, m["brain"])
+    m["losses"] = lossmod.build(m, m["brain"], inpmod.read(brand, "interview"), inpmod.win_loss)
     m["category"] = catmod.build(m, m["brain"])
     m["velocity"] = velmod.build(m, m["brain"])
     m["niche"] = nichemod.build(m, m["brain"])
@@ -1121,11 +1122,13 @@ def rule_frames(m, ends_on):
 def rule_winloss(m, ends_on):
     ls = m.get("losses") or {}
     fired = [x for x in ls.get("rows", []) if x["fires"]]
-    if not fired or ls.get("interviews"):
+    n = ls.get("interviews") or 0
+    if not fired or n >= lossmod.MIN_INTERVIEWS:
         return []
     ev = [_row("names_we_lose_to", len(fired), "n", "reddit capture", ends_on, None, 1, "threshold", "reddit"),
-          _row("winloss_interviews", 0, "n", "on file", ends_on, None, 5, "threshold", "brain")]
-    sentence = f"We lose shoppers to {', '.join(x['name'] for x in fired)} and have no win-loss interviews on why."
+          _row("winloss_interviews", n, "n", "logged on this screen", ends_on, None, lossmod.MIN_INTERVIEWS, "threshold", "team")]
+    sentence = (f"We lose shoppers to {', '.join(x['name'] for x in fired)} and have "
+                + (f"only {n} win-loss interview{'s' if n != 1 else ''} on why." if n else "no win-loss interviews on why."))
     return [_finding("COMP-R29", "low", {"type": "brand", "id": "winloss", "label": "win-loss research"}, ev, sentence,
                      [x["record"] for x in fired], ends_on, 0.5, "no baseline: the win rate is unknown")]
 

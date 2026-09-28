@@ -610,7 +610,7 @@ class TestLosses(TempBrain):
         self.assertIn('Screener', self.ls['kit'])
         self.assertIn('Darn Tough', self.ls['kit'])
         self.assertIn('consent', self.ls['kit'])
-        self.assertIsNone(self.ls['interviews'])
+        self.assertEqual(self.ls['interviews'], 0)
         out = audit.run('bombas', WINDOW, self.tmp)
         f = next(f for f in out if f['rule_id'] == 'COMP-R29')
         acts = api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions']
@@ -1355,6 +1355,65 @@ class TestPage(unittest.TestCase):
         for word in ('Bombas', 'Stance', 'Darn Tough', 'Smartwool', 'Feetures', 'Comrad', 'COMFORT20'):
             self.assertNotIn(word, js)
         self.assertNotIn('GPT', js)
+
+
+class TempInputs(TempBrain):
+    """Round 6: first-party records logged on the page go to a temp inputs folder."""
+    def setUp(self):
+        super().setUp()
+        api.BRAIN_ROOT = self.tmp
+        self._folder = api.audit.inpmod.FOLDER
+        api.audit.inpmod.FOLDER = self.tmp / 'inputs'
+
+    def tearDown(self):
+        api.audit.inpmod.FOLDER = self._folder
+        super().tearDown()
+
+    def post(self, body):
+        r = Req(['inputs'], method='POST')
+        r.body = body
+        return api.handle(r)
+
+    def interview(self, outcome, competitor, reason, date=DAY):
+        return self.post({'kind': 'interview', 'outcome': outcome, 'competitor': competitor, 'reason': reason, 'date': date})
+
+
+class TestWinLoss(TempInputs):
+    """6.1: win-loss interviews logged on the page fill the win rate and hold COMP-R29 until 5 are on file."""
+    def test_validation(self):
+        self.assertEqual(self.interview('maybe', 'Darn Tough', 'durability')[0], 400)
+        self.assertEqual(self.interview('loss', 'Nobody Inc', 'durability')[0], 400)
+        self.assertEqual(self.interview('loss', 'Darn Tough', 'vibes')[0], 400)
+        self.assertEqual(self.interview('loss', 'Darn Tough', 'durability', '2030-01-01')[0], 400)
+        self.assertEqual(self.post({'kind': 'gossip'})[0], 400)
+        code, out = self.interview('loss', 'darn tough', 'durability')
+        self.assertEqual(code, 201)
+        rec = out['record']
+        self.assertEqual(rec['competitor'], 'Darn Tough')
+        self.assertEqual(set(rec) - {'id', 'kind', 'outcome', 'competitor', 'reason', 'date', 'by', 'logged_at'}, set())
+        got = api.handle(Req(['inputs'], query={'kind': ['interview']}))
+        self.assertEqual(len(got['records']), 1)
+
+    def test_win_rate_and_rule(self):
+        d = api.handle(Req(['overview']))
+        self.assertIsNone(d['losses']['win_rate'])
+        m = next(r for r in d['room_metrics'] if r['key'] == 'win_rate_vs_named_competitor')
+        self.assertIsNone(m['value'])
+        self.assertIn('COMP-R29', [f['rule_id'] for f in api.handle(Req(['plan']))['findings']])
+        top = d['losses']['win_rate_name']
+        for o in ('win', 'loss', 'loss', 'loss'):
+            self.assertEqual(self.interview(o, top, 'durability')[0], 201)
+        d = api.handle(Req(['overview']))
+        self.assertEqual(d['losses']['win_rate'], 0.25)
+        f = next(f for f in api.handle(Req(['plan']))['findings'] if f['rule_id'] == 'COMP-R29')
+        self.assertIn('only 4', f['sentence'])
+        self.interview('win', top, 'comfort and feel')
+        self.assertNotIn('COMP-R29', [f['rule_id'] for f in api.handle(Req(['plan']))['findings']])
+        m = next(r for r in api.handle(Req(['overview']))['room_metrics'] if r['key'] == 'win_rate_vs_named_competitor')
+        self.assertEqual(m['value'], 0.4)
+
+    def test_reason_codes_match_the_kit(self):
+        self.assertEqual(api.audit.inpmod.REASON_CODES, api.audit.lossmod.REASON_CODES)
 
 
 if __name__ == '__main__':

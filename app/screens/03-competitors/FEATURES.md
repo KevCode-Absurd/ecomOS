@@ -34,6 +34,12 @@ Round 0 notes (28 Sep 2026): brand price per pair is simulated net sales per uni
 
 Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `app/connectors/apify.py` (12 pages with ids, 1,800 items cap, estimate $2.08, inside the $4 run and $30 week caps). The live run was blocked by the session's permission check on 28 Sep, so round 1 builds on the brain's 28 Sep pulls (page-level formats, hook types, offers, run lengths and 3 quoted ads a page) and the page says so.
 
+## Round 6: the page writes back (first-party records the rules read)
+
+| # | Feature | Status |
+|---|---|---|
+| 6.1 | Win-loss interviews logged on the page (`inputs.py`, `GET/POST inputs`): outcome, the named competitor (from the names on file), one reason code and the date; no names or quotes kept; a local, git-ignored file per brand; win rate by name (wins / (wins + losses)) fills the room metric; COMP-R29 holds until 5 are logged and says how many are on file | done |
+
 ## Round 5: hand-offs, execution lanes and the season
 
 | # | Feature | Status |
@@ -255,3 +261,4 @@ Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permi
 | 3 | 3.1 to 3.10 | 2026-09-28 | Page-summary captures and diffs; price moves; landing page tracking; printable report; battlecards; positioning test; win-loss kit; tunable thresholds; second brand. Screenshot `round3.png` |
 | 2 | 2.1 to 2.10 | 2026-09-28 | Lost by name; category ladder; review themes; Amazon against our site; creative velocity; weekly brief; niche sizing; premium signals; search seeds; desk tabs. Screenshot `round2.png` |
 | 1 | 1.1 to 1.10 | 2026-09-28 | Plan first; rank override; 12 pages side by side; coverage matrix; hook and offer mix; references; price and pack ladder; positioning map with moves; changes timeline; freshness and re-pull; rank for all 14 rules. Screenshot `round1.png` |
+| 6 | 6.1 | 2026-09-28 | Win-loss log |

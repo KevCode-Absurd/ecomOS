@@ -12,11 +12,14 @@ Reason rule for a named alternative, first match wins:
   unknown     none of the above
 Rule COMP-R15: an alternative recommended instead of us MIN_TIMES (2) or more times. The answer is a
 "how we compare" page section and support macro from verified brain facts (BRAND-C57). The win rate
-against a named competitor needs win-loss interviews (BRAND-C58) and reads unavailable until then.
+against a named competitor needs win-loss interviews (BRAND-C58) and reads unavailable until then. Interviews are
+logged on the page (inputs.py): win rate = wins / (wins + losses) per name; COMP-R29 holds until MIN_INTERVIEWS (5)
+are logged.
 """
 from __future__ import annotations
 
 MIN_TIMES = 2
+MIN_INTERVIEWS = 5    # COMP-R29 stays on the plan until this many interviews are logged
 THEME_LADDER = {"durability": "durability", "value": "price_and_value", "style": None, "unknown": None}
 THEME_LABEL = {"durability": "last longer", "value": "cost less", "style": "look better", "unknown": "win for a reason we cannot read"}
 
@@ -26,7 +29,7 @@ def _same(a: str, b: str) -> bool:
     return bool(x and y) and (x.startswith(y) or y.startswith(x))
 
 
-def build(m: dict, brain) -> dict:
+def build(m: dict, brain, interviews: list[dict] | None = None, win_loss=None) -> dict:
     ladders = {}
     for r in brain.records("objection_ladders"):
         v = r.get("value") if isinstance(r.get("value"), dict) else {}
@@ -63,9 +66,17 @@ def build(m: dict, brain) -> dict:
     rows.sort(key=lambda x: (-x["times"], -(x["upvotes"] or 0), x["name"]))
     for x in rows:
         x["answer"] = answer(x, m["brand"].capitalize())
-    return {"rows": rows, "frames": frames, "win_rate": None, "kit": interview_kit(rows, m["brand"].capitalize(), term=(m.get("term") or {}).get("plural", "products")),
-            "reason_codes": REASON_CODES, "interviews": None,
-            "win_rate_reason": "no win-loss interviews on file; run 5 against the top name (BRAND-C58)",
+    names = [x["name"] for x in rows] + [p["name"] for p in m["pages"] if p["role"] != "self" and not any(_same(p["name"], x["name"]) for x in rows)]
+    wl = win_loss(interviews or [], names) if win_loss else {"rows": [], "n": 0, "win_rate": None}
+    top = next((x for x in rows if x["fires"]), rows[0] if rows else None)
+    top_wl = next((w for w in wl["rows"] if top and w["name"] == top["name"]), None)
+    for x in rows:
+        x["win_loss"] = next((w for w in wl["rows"] if w["name"] == x["name"]), None)
+    return {"rows": rows, "frames": frames, "win_rate": top_wl["win_rate"] if top_wl else None, "win_rate_name": top["name"] if top else None,
+            "win_loss": wl, "names": names, "min_interviews": MIN_INTERVIEWS, "kit": interview_kit(rows, m["brand"].capitalize(), term=(m.get("term") or {}).get("plural", "products")),
+            "reason_codes": REASON_CODES, "interviews": wl["n"],
+            "win_rate_reason": (f"no win-loss interviews against {top['name']} on file; run {MIN_INTERVIEWS} (BRAND-C58)" if top else
+                                "no named alternative on file") if not (top_wl and top_wl["n"]) else None,
             "rule": f"On the plan when recommended instead of us {MIN_TIMES} or more times. The reason is a rule over their "
                     "ad angles and whether they are a tracked, priced page. Reddit counts only; never quoted, no usernames."}
 

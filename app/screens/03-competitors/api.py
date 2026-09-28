@@ -377,7 +377,9 @@ def room_metrics(m: dict, pos: dict, cards: dict) -> list[dict]:
         row("category_ladder_coverage", cat["coverage"], "n", "rungs with at least one member, of 5"),
         row("market_size_estimate", (n.get("bar") or {}).get("buyers"), "n", "buyers a year for 1 percent of revenue", "AOV, repeat rate or revenue missing"),
         row("addressable_niche_size", None, "n", "search demand for the niche x capture rate", "needs a keyword source"),
-        row("win_rate_vs_named_competitor", None, "%", "wins / (wins + losses) in win-loss interviews", "no interviews on file"),
+        row("win_rate_vs_named_competitor", (m.get("losses") or {}).get("win_rate"), "%",
+            f"wins / (wins + losses) in win-loss interviews against {(m.get('losses') or {}).get('win_rate_name') or 'the top name'}",
+            (m.get("losses") or {}).get("win_rate_reason") or "no interviews on file"),
         row("battlecard_freshness_days", max(ages) if ages else None, "days", "days since the oldest card's facts were checked", "no cards"),
         row("competitor_activity_share", us_share, "%", "our active ads / all active ads on direct pages plus ours", "our active ads unknown"),
         row("premium_signal_score", pr.get("our_score"), "%", "premium signals present / signals known", "no signals read"),
@@ -509,6 +511,13 @@ def handle(req):
             if req.method == "POST":
                 return add_note(brand, req.body)
             return {"notes": read_notes(brand, req.arg("entity"))}
+        if req.path == ["inputs"]:
+            if req.method == "POST":
+                body = req.body if isinstance(req.body, dict) else {}
+                ls = audit.market_full(brand, today, BRAIN_ROOT)["losses"]
+                return audit.inpmod.add(brand, str(body.get("kind") or ""), body, {"competitors": ls["names"]}, today)
+            return {"records": audit.inpmod.read(brand, req.arg("kind")), "reason_codes": audit.inpmod.REASON_CODES,
+                    "note": "Logged by the team on this screen. Local file, never sent anywhere. No names or quotes kept."}
         if req.method == "GET" and req.path == ["briefs"]:
             return brief_pack(brand, today)
         if req.method == "GET" and req.path == ["competitor_snapshot"]:

@@ -392,6 +392,40 @@
       el('div', { class: 'micro faint', text: 'Win-loss interviews tell the real reason. A person books them; the agent writes the guide.' }),
       UI.decisionRow({ capability: 'BRAND-C58', autonomy: 'human_assist', screen: SCREEN, finding_id: SCREEN + '.winloss.' + r.key })) });
   }
+  // a small form that logs one first-party record (inputs.py); the page reloads so every rule reads it
+  function inputForm(kind, fields, label) {
+    const ctl = {};
+    const status = el('span', { class: 'micro muted' });
+    const row = el('div', { class: 'row wrap input-form' });
+    for (const f of fields) {
+      const c = f.options ? el('select', { class: 'text sm', 'aria-label': f.label }, ...f.options.map((o) => el('option', { value: o, text: o })))
+        : el('input', { class: 'text sm', type: f.type || 'text', 'aria-label': f.label, placeholder: f.label, value: f.value || '', step: f.step || null });
+      ctl[f.key] = c;
+      row.append(el('label', { class: 'micro' }, el('span', { class: 'faint', text: f.label }), c));
+    }
+    const b = el('button', { class: 'btn sm', type: 'button', text: label });
+    b.addEventListener('click', async () => {
+      const body = { kind };
+      for (const [k, c] of Object.entries(ctl)) body[k] = c.type === 'number' ? (c.value === '' ? null : Number(c.value)) : c.value;
+      try { await api(BASE + 'inputs', { method: 'POST', body }); status.textContent = 'Saved. Reloading.'; setTimeout(() => location.reload(), 300); }
+      catch (e) { status.textContent = 'Not saved: ' + e.message; }
+    });
+    row.append(b, status);
+    return row;
+  }
+  function winLossBlock(ls) {
+    const wl = ls.win_loss || { rows: [], n: 0 };
+    const rows = wl.rows.filter((r) => r.n);
+    const rate = ls.win_rate == null ? NA + ', ' + ls.win_rate_reason : fmt.pct(ls.win_rate) + ' against ' + ls.win_rate_name;
+    return el('div', { class: 'stack card flat' },
+      el('h4', { text: 'Win-loss interviews logged: ' + wl.n }),
+      el('p', { class: 'small' }, el('b', { text: 'Win rate against a named brand: ' }), rate + '.'),
+      rows.length ? UI.table({ columns: [{ key: 'name', label: 'Against' }, { key: 'wins', label: 'Wins', unit: 'n' }, { key: 'losses', label: 'Losses', unit: 'n' },
+        { key: 'win_rate', label: 'Win rate', format: (v) => v == null ? NA : fmt.pct(v) }], rows, sort: false }) : null,
+      inputForm('interview', [{ key: 'outcome', label: 'Outcome', options: ['loss', 'win'] }, { key: 'competitor', label: 'Against', options: ls.names || [] },
+        { key: 'reason', label: 'Reason code', options: ls.reason_codes || [] }, { key: 'date', label: 'Date', type: 'date', value: new Date().toISOString().slice(0, 10) }], 'Log the interview'),
+      el('p', { class: 'micro faint', text: 'Kept in a local file for this brand, never sent anywhere. No names, no quotes: the outcome, the name, one reason and the date.' }));
+  }
   function lossSection(ls) {
     const t = UI.verdictTable({
       columns: [{ key: 'name', label: 'Picked instead', format: (v, r) => v + (r.tracked ? '' : ' (not tracked)') },
@@ -404,7 +438,7 @@
     const kit = el('pre', { class: 'card sunken bc', hidden: true, text: ls.kit });
     const kb = el('button', { class: 'btn sm', type: 'button', text: 'Show the win-loss kit' });
     kb.addEventListener('click', () => { kit.hidden = !kit.hidden; kb.textContent = kit.hidden ? 'Show the win-loss kit' : 'Hide the kit'; });
-    mount('#losses', t, el('p', { class: 'small' }, el('b', { text: 'Win rate against a named brand: ' }), 'unavailable, ' + ls.win_rate_reason + '.'),
+    mount('#losses', t, winLossBlock(ls),
       el('div', { class: 'row' }, kb, UI.copyButton({ label: 'Copy the kit', text: () => ls.kit }), UI.decisionRow({ capability: 'BRAND-C58', autonomy: 'human_assist', screen: SCREEN, compact: true, finding_id: SCREEN + '.COMP-R29.winloss' })), kit,
       fr ? el('p', { class: 'small muted', text: 'How Reddit frames the category (mentions): ' + fr + '.' }) : null,
       el('p', { class: 'micro faint', text: ls.rule }));
