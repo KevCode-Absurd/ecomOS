@@ -227,6 +227,7 @@ Known gaps from round 0:
 | 10.6 | The brief pack carries the files: "Export all briefs" now prints each move's build file (price file, bundles, exclusions) as CSV lines under its draft, from the same helper the hand-off uses, so the forwarded file and the hand-off never differ | done |
 | 10.7 | Promo window dates in a calendar: each promo window move carries its 4 dates (approve the offer, creative and email briefs a week later, the window's start and end) and exports them as an .ics file of all-day events from the action card. Bombas: holiday gifting and Black Friday to Cyber Monday | done |
 | 10.8 | Offer tests ship their settings: the first-order test exports the discount settings per arm (A today's code; B a free item with the order, the gift SKU with its value and cost, customers with no prior order, one use each, combines with shipping discounts only, the split), and the welcome code holdout exports the pop-up tool settings per arm. Rows a person types in; nothing is changed from here | done |
+| 10.9 | Your week counts what is ready to hand over: the week line now says how many of the first moves carry a file (price file, build list, settings or dates). Bombas: 2 of the 7 moves that start 4 Oct | done |
 
 ## Contract asks
 

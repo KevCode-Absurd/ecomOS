@@ -2030,6 +2030,7 @@ class WeekTest(unittest.TestCase):
         ids = {a['id']: a for a in d['plan']}
         self.assertEqual(wk['hours'], sum(ids[i].get('time_to_ship_hours') or 0 for i in wk['moves']))
         self.assertIsNone(wk['team_hours'])
+        self.assertEqual(wk['with_files'], sum(1 for i in wk['moves'] if ids[i].get('price_file') or ids[i].get('calendar_file')))
         self.assertTrue(wk['team_reason'])
 
 

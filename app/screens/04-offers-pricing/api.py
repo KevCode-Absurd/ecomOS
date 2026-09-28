@@ -395,6 +395,7 @@ def week(ranked, rd=None):
     now = [acts[t['id']] for t in ready if t['start'] == first and t['id'] in acts]
     hours = sum(a.get('time_to_ship_hours') or 0 for a in now)
     person = sum(1 for a in now for st in a.get('steps') or [] if st.get('who') == 'person')
+    ready = sum(1 for a in now if a.get('price_file') or a.get('calendar_file'))
     team = None
     if rd is not None and rd.brand:
         for r in rd.records('team'):
@@ -402,6 +403,7 @@ def week(ranked, rd=None):
             if isinstance(v, dict) and isinstance(v.get('weekly_hours'), (int, float)):
                 team = (team or 0) + v['weekly_hours']
     return {'start': first, 'moves': [a['id'] for a in now], 'approvals': len(now), 'hours': hours, 'person_steps': person,
+            'with_files': ready,
             'team_hours': team, 'team_reason': None if team is not None else 'the brain holds no weekly hours for the team'}
 
 
