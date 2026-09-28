@@ -1932,3 +1932,29 @@ class DeskMovesSized(TempBrain):
         self.assertTrue(hit)
         for m in hit:
             self.assertEqual(m['size'], acts[m['id']]['size'])
+
+
+class SalesInScores(TempBrain):
+    """Feature 8.3: the focus score and the compare view use the share of sales where reviews give none, labelled."""
+
+    def test_focus_scores_sales_only_avatars_and_labels_them(self):
+        d = api.handle(Req(['overview']))
+        rows = {r['key']: r for r in d['focus']['rows']}
+        sales = {r['key']: r for r in d['sales_share']['rows']}
+        for a in d['avatars']:
+            if a['share_estimate'] is None and sales.get(a['key'], {}).get('sales_share') is not None and a['key'] in rows:
+                self.assertEqual(rows[a['key']]['share_source'], 'sales')
+                self.assertEqual(rows[a['key']]['share'], sales[a['key']]['sales_share'])
+            if a['share_estimate'] is not None and a['key'] in rows:
+                self.assertEqual(rows[a['key']]['share_source'], 'reviews')
+        self.assertGreaterEqual(sum(1 for r in rows.values() if r['share_source'] == 'sales'), 3)
+
+    def test_compare_has_the_sales_row(self):
+        d = api.handle(Req(['overview']))
+        self.assertIn('sales_share', [f['key'] for f in d['compare']['fields']])
+        self.assertEqual(d['compare']['rows']['daily_compression_wearer']['sales_share'],
+                         next(r['sales_share'] for r in d['sales_share']['rows'] if r['key'] == 'daily_compression_wearer'))
+
+    def test_no_sales_table_keeps_the_old_score(self):
+        f = api.builds.focus([], {'points': []}, {'rows': []}, [], None)
+        self.assertEqual(f['rows'], [])

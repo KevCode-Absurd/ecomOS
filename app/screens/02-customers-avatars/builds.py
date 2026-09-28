@@ -2167,24 +2167,37 @@ def ad_voice(avatars: list[dict], learnings: list[dict]) -> dict:
 FOCUS_W = {"share": 0.4, "unserved": 0.3, "ad_gap": 0.2, "open_doubts": 0.1}
 
 
-def focus(avatars: list[dict], served_x: dict, ad_voice_x: dict, ladders_rows: list[dict]) -> dict:
+def focus(avatars: list[dict], served_x: dict, ad_voice_x: dict, ladders_rows: list[dict], sales_x: dict | None = None) -> dict:
     """One score per avatar: share of buyers, how poorly we serve them, how little our ads speak to them, open doubts.
-    Weights are fixed and shown; inputs come from the page's own builders. Avatars with no share are not scored."""
+    Weights are fixed and shown; inputs come from the page's own builders. The share is the review estimate; when
+    reviews give none, the share of sales by line (8.3), labelled, with served read from the ladders the same way.
+    Avatars with neither are not scored."""
     served = {p["key"]: p["y"] for p in served_x.get("points", [])}
     ads = {r["key"]: r for r in ad_voice_x.get("rows", [])}
-    max_share = max((a["share_estimate"] or 0 for a in avatars), default=0) or 1
+    by_sales = {r["key"]: r["sales_share"] for r in (sales_x or {}).get("rows", []) if r.get("sales_share") is not None}
+    share_of, source = {}, {}
+    for a in avatars:
+        if a["share_estimate"] is not None:
+            share_of[a["key"]], source[a["key"]] = a["share_estimate"], "reviews"
+        elif a["key"] in by_sales:
+            share_of[a["key"]], source[a["key"]] = by_sales[a["key"]], "sales"
+            mine = [r for r in ladders_rows if a["key"] in r["avatars"]]
+            one, five = sum(r["one_star"] or 0 for r in mine), sum(r["five_star"] or 0 for r in mine)
+            if one + five and a["key"] not in served:
+                served[a["key"]] = round(five / (one + five), 4)
+    max_share = max(share_of.values(), default=0) or 1
     rows = []
     for a in avatars:
-        if a["share_estimate"] is None or a["key"] not in served:
+        if a["key"] not in share_of or a["key"] not in served:
             continue
         open_d = sum(1 for r in ladders_rows if a["key"] in r["avatars"] and r["verdict"] in ("answer", "not_landing"))
         all_d = sum(1 for r in ladders_rows if a["key"] in r["avatars"]) or 1
         ad = ads.get(a["key"])
         ad_gap = 1.0 if not ad or ad["ratio"] is None else max(0.0, 1 - min(ad["ratio"], 1.0))
-        parts = {"share": a["share_estimate"] / max_share, "unserved": 1 - served[a["key"]], "ad_gap": ad_gap, "open_doubts": open_d / all_d}
+        parts = {"share": share_of[a["key"]] / max_share, "unserved": 1 - served[a["key"]], "ad_gap": ad_gap, "open_doubts": open_d / all_d}
         score = round(100 * sum(FOCUS_W[k] * v for k, v in parts.items()), 1)
         rows.append({"key": a["key"], "name": a["name"], "score": score, "parts": {k: round(v, 3) for k, v in parts.items()},
-                     "share": a["share_estimate"], "served": served[a["key"]], "open_doubts": open_d, "next": a["next"]})
+                     "share": share_of[a["key"]], "share_source": source[a["key"]], "served": served[a["key"]], "open_doubts": open_d, "next": a["next"]})
     rows.sort(key=lambda r: (-r["score"], r["name"]))
     top = rows[0] if rows else None
     return {"rows": rows, "weights": FOCUS_W,
@@ -2513,7 +2526,7 @@ def agenda(d: dict, actions: list[dict], tests_rows: list[dict], today: str) -> 
 
 # ---------------------------------------------------------------- compare two avatars
 
-COMPARE_FIELDS = [("share", "Share of buyers", "%"), ("served", "Served well", "%"), ("build_rank", "Build rank", "n"),
+COMPARE_FIELDS = [("share", "Share of buyers", "%"), ("sales_share", "Share of sales, by line", "%"), ("served", "Served well", "%"), ("build_rank", "Build rank", "n"),
                   ("top_doubt", "Top doubt", ""), ("proof", "Proof on it", ""), ("open_doubts", "Doubts without an answer", "n"),
                   ("ads", "Our ads", ""), ("returns", "Return risk, x median", "x"), ("speaks", "Speaks on", ""),
                   ("price_share", "Price share of one-star", "%"), ("lines", "Lines it buys", ""), ("win_words", "Their win words", ""),
@@ -2525,11 +2538,13 @@ def compare_rows(d: dict) -> dict:
     idx = lambda rows: {r["key"]: r for r in rows}
     served = {p["key"]: p["y"] for p in d["served"].get("points", [])}
     price, ret, mkt = idx(d["price"]["rows"]), idx(d["returns"].get("rows", [])), idx(d["marketplace"]["rows"])
+    sales = {r["key"]: r["sales_share"] for r in (d.get("sales_share") or {}).get("rows", [])}
+    served.update({r["key"]: r["served"] for r in d["focus"]["rows"] if r["key"] not in served})
     out = {}
     for a in d["avatars"]:
         k, m, t = a["key"], a.get("meta") or {}, a.get("top_objection")
         words = [w["text"] for r in d["words"]["rows"] if k in r["avatars"] for w in r["win_words"] if not w["language_only"]][:3]
-        out[k] = {"name": a["name"], "share": a["share_estimate"], "served": served.get(k), "build_rank": m.get("focus_rank"),
+        out[k] = {"name": a["name"], "share": a["share_estimate"], "sales_share": sales.get(k), "served": served.get(k), "build_rank": m.get("focus_rank"),
                   "top_doubt": t["doubt"] if t else None, "proof": ("yes" if t["proof"] else "no") if t else None,
                   "open_doubts": sum(1 for r in d["ladders"]["rows"] if k in r["avatars"] and r["verdict"] in ("answer", "not_landing")),
                   "ads": m.get("ads"), "returns": ret[k]["ratio"] if k in ret else None,
