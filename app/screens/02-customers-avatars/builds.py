@@ -563,3 +563,85 @@ def cohort_grid(cohorts: list[dict], monthly: list[dict], as_of: str, avatars: l
             "peak_month": peak_k, "age_break": {"month": age_k, "drop": age_drop} if age_k else None,
             "calendar_break": {"month": cliffs[0][0], "share": round(cliffs[0][1], 4), "cohorts": cliffs[0][2]} if cliffs else None,
             "weak": [r["cohort"] for r in weak], "repeat_median": rep_med, "moves": moves, "as_of": as_of, "simulated": True}
+
+
+# ---------------------------------------------------------------- new against returning, and what drives it
+
+SHARE_FALL_PTS = 0.02       # returning share down 2 points or more against the same month last year
+PAID_RETURNING = 0.25       # a quarter or more of returning orders arrive through paid ads
+OWNED = ("email", "sms")
+PAID = ("paid_social", "paid_search")
+OWNED_LAG_PTS = 0.05        # owned channels grow returning orders 5 points slower than the rest, year on year
+CHANNEL_LABEL = {"paid_social": "paid social", "paid_search": "paid search", "organic_search": "organic search",
+                 "direct": "direct", "email": "email", "sms": "SMS", "other": "other", "pos": "stores"}
+
+
+def mix(monthly: list[dict], channels: list[dict], as_of: str) -> dict:
+    """Returning share of orders by month, this year against last, and the channels behind the change."""
+    full = [r for r in monthly if r.get("orders") and _add(r["month"], 1) <= as_of[:7]]
+    if len(full) < 13:
+        return {"available": False, "reason": f"only {len(full)} full months; year on year needs 13", "moves": []}
+    share = {r["month"]: r["returning_customer_orders"] / r["orders"] for r in full}
+    last = full[-1]["month"]
+    ly = _add(last, -12)
+    months = [r["month"] for r in full[-12:]]
+    series = {"this_year": [round(share[m], 4) for m in months],
+              "last_year": [round(share[_add(m, -12)], 4) if _add(m, -12) in share else None for m in months]}
+    now, before = share[last], share.get(ly)
+    delta = round(now - before, 4) if before is not None else None
+    ret = lambda m: {r["channel"]: r["orders"] - r["new_customer_orders"] for r in channels if r["month"] == m}
+    a, b = ret(ly), ret(last)
+    steps = [{"label": ly, "value": round(sum(a.values())), "kind": "total"}]
+    contrib = []
+    for ch in sorted(set(a) | set(b), key=lambda k: -abs(b.get(k, 0) - a.get(k, 0))):
+        d = b.get(ch, 0) - a.get(ch, 0)
+        contrib.append({"channel": ch, "label": CHANNEL_LABEL.get(ch, ch), "last_year": a.get(ch), "now": b.get(ch), "change": round(d),
+                        "new_channel": ch not in a})
+        steps.append({"label": CHANNEL_LABEL.get(ch, ch), "value": round(d), "kind": "up" if d >= 0 else "down"})
+    steps.append({"label": last, "value": round(sum(b.values())), "kind": "total"})
+    tot_b = sum(b.values())
+    paid_share = round(sum(b.get(c, 0) for c in PAID) / tot_b, 4) if tot_b else None
+    like = [c for c in b if c in a]
+    growth = lambda chs: (sum(b[c] for c in chs) / sum(a[c] for c in chs) - 1) if chs and sum(a[c] for c in chs) else None
+    owned_g = growth([c for c in like if c in OWNED])
+    rest_g = growth([c for c in like if c not in OWNED])
+    moves = []
+    if delta is not None and delta <= -SHARE_FALL_PTS:
+        worst = min(contrib, key=lambda x: x["change"])
+        moves.append(_move(
+            "share_fall", f"Win back returning orders lost in {worst['label']}",
+            f"Returning share fell from {round(before * 100, 1)} to {round(now * 100, 1)} percent against {ly}. {worst['label'].capitalize()} lost the most: {abs(worst['change']):,} orders.",
+            "flow", "a win-back plan for that channel", ("LIFE-C08", "founder_gate"), "agent_drafts",
+            [{"n": 1, "who": "agent", "text": f"List what changed in {worst['label']} since {ly}: sends, audiences, offers."},
+             {"n": 2, "who": "agent", "text": "Draft the fix: the flow or audience to restore, with its send or spend plan."},
+             {"n": 3, "who": "person", "text": "Approve and ship the fix."},
+             {"n": 4, "who": "agent", "text": "Read returning share next month against this month."}],
+            f"DRAFT win-back plan\nChannel: {worst['label']}\nLost: {abs(worst['change']):,} returning orders against {ly}\n"
+            "Fix: restore the flow or audience that carried these buyers. A person sets any offer.", as_of=as_of))
+    if paid_share is not None and paid_share >= PAID_RETURNING:
+        n_paid = round(sum(b.get(c, 0) for c in PAID))
+        moves.append(_move(
+            "paid_returning", "Move returning buyers from paid ads to email and SMS",
+            f"{round(paid_share * 100, 1)} percent of returning orders came through paid ads in {last}: {n_paid:,} orders. We pay again to reach buyers we already have.",
+            "budget_move", "an exclusion list and an owned-channel capture plan", ("MEDIA-C12", "human_assist"), "agent_drafts",
+            [{"n": 1, "who": "agent", "text": "Build the past-buyer exclusion list for prospecting campaigns."},
+             {"n": 2, "who": "agent", "text": "Draft an SMS and email opt-in step for the order page and first email."},
+             {"n": 3, "who": "person", "text": "Approve the list and apply it in the ad account. The agent never writes there."},
+             {"n": 4, "who": "agent", "text": "Read paid share of returning orders after 28 days."}],
+            f"DRAFT\nExclude: buyers from the last 180 days from prospecting ad sets\nKeep: one retargeting ad set for past buyers, capped\n"
+            f"Capture: SMS opt-in on the order page\nTarget: paid share of returning orders under {int(PAID_RETURNING * 100)} percent",
+            stop="Stop if returning orders fall 5 percent for 2 weeks", as_of=as_of))
+    if owned_g is not None and rest_g is not None and owned_g < rest_g - OWNED_LAG_PTS:
+        moves.append(_move(
+            "owned_lag", "Find why email and SMS bring back fewer buyers than other channels",
+            f"Returning orders from email and SMS grew {round(owned_g * 100, 1)} percent against {ly}. Other channels grew {round(rest_g * 100, 1)} percent.",
+            "report", "a flow health review", ("LIFE-C20", "agent_does"), "agent",
+            [{"n": 1, "who": "agent", "text": "Pull flow and campaign orders by month for both years."},
+             {"n": 2, "who": "agent", "text": "Name the flow or list that slowed, with its numbers."},
+             {"n": 3, "who": "agent", "text": "Post the review here with the fix to approve."}],
+            "DRAFT review outline\nFlows by orders, this year against last\nList size and send volume\nThe flow that slowed and the fix", as_of=as_of))
+    return {"available": True, "months": months, "series": series, "latest": last, "last_year_month": ly,
+            "share_now": round(now, 4), "share_last_year": round(before, 4) if before is not None else None, "delta": delta,
+            "waterfall": steps, "contrib": contrib, "paid_share_returning": paid_share,
+            "owned_growth": round(owned_g, 4) if owned_g is not None else None, "rest_growth": round(rest_g, 4) if rest_g is not None else None,
+            "moves": moves, "simulated": True}

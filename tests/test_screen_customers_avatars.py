@@ -426,5 +426,50 @@ class Cohorts(unittest.TestCase):
         self.assertFalse(self.grid(rows=[])['available'])
 
 
+class Mix(unittest.TestCase):
+    """Feature 1.7: returning share this year against last, the channel waterfall, and the moves."""
+
+    def tables(self):
+        from tables import brand_data
+        data = brand_data('bombas')
+        return data.table('monthly'), data.table('channels_monthly')
+
+    def test_share_and_waterfall_add_up(self):
+        monthly, channels = self.tables()
+        x = api.builds.mix(monthly, channels, '2026-09-27')
+        self.assertTrue(x['available'])
+        self.assertEqual(x['latest'], '2026-08')
+        m = {r['month']: r for r in monthly}['2026-08']
+        self.assertAlmostEqual(x['share_now'], round(m['returning_customer_orders'] / m['orders'], 4))
+        wf = x['waterfall']
+        self.assertEqual(wf[0]['value'] + sum(s['value'] for s in wf[1:-1]), wf[-1]['value'])
+        self.assertEqual(len(x['series']['this_year']), 12)
+
+    def test_paid_returning_move_fires_and_is_valid(self):
+        x = api.builds.mix(*self.tables(), '2026-09-27')
+        self.assertGreaterEqual(x['paid_share_returning'], 0.25)
+        mv = {m['id']: m for m in x['moves']}['02-customers-avatars.retention.paid_returning']
+        self.assertEqual(rank_engine.validate_action(dict(mv, rubric={'total': 0})), [])
+        self.assertIn('never writes', ' '.join(s['text'] for s in mv['steps']))
+
+    def test_share_fall_names_worst_channel(self):
+        monthly, channels = self.tables()
+        monthly = [dict(r) for r in monthly]
+        for r in monthly:
+            if r['month'] == '2026-08':
+                r['returning_customer_orders'] = r['orders'] * 0.30
+        channels = [dict(r) for r in channels]
+        for r in channels:
+            if r['month'] == '2026-08' and r['channel'] == 'email':
+                r['new_customer_orders'] = r['orders']
+        x = api.builds.mix(monthly, channels, '2026-09-27')
+        fall = {m['id']: m for m in x['moves']}['02-customers-avatars.retention.share_fall']
+        self.assertIn('email', fall['title'])
+
+    def test_short_history_unavailable(self):
+        monthly, channels = self.tables()
+        self.assertFalse(api.builds.mix(monthly[-5:], channels, '2026-09-27')['available'])
+
+
 if __name__ == '__main__':
     unittest.main()

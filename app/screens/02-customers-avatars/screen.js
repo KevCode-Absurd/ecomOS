@@ -193,6 +193,24 @@
       ...c.moves.map((m) => UI.actionCard(m, { compact: true, screen: SLUG })));
   }
 
+  // ---------- desk: new against returning ----------
+  function renderMix(x) {
+    if (!x.available) { mount('#mix-line', UI.emptyState({ screen: SLUG, title: 'Mix unavailable', text: x.reason })); return; }
+    document.getElementById('mix-sub').textContent = 'Returning share of orders by month, this year against last, and the channels behind the change in returning orders. ' +
+      'Rules: share down 2 points or more against last year; a quarter or more of returning orders through paid ads; email and SMS growing 5 points slower than the rest.';
+    mount('#mix-orient', UI.orientation([
+      { label: 'returning share, ' + x.latest, value: x.share_now, unit: '%', delta: x.share_last_year ? x.share_now / x.share_last_year - 1 : null, higher_is_better: true },
+      { label: 'returning via paid ads', value: x.paid_share_returning, unit: '%', tone: x.paid_share_returning >= 0.25 ? 'bad' : null },
+      { label: 'email and SMS growth', value: x.owned_growth, unit: '%' },
+    ]));
+    mount('#mix-line', Charts.line({ labels: x.months, series: [{ name: 'this year', values: x.series.this_year }, { name: 'last year', values: x.series.last_year }], unit: '%',
+      title: 'Returning share of orders', note: 'Simulated. Full months only, to ' + x.latest + '. Holiday months dip because new buyers flood in.' }));
+    mount('#mix-wf', Charts.waterfall({ steps: x.waterfall, unit: 'n', title: 'Returning orders, ' + x.last_year_month + ' to ' + x.latest + ', by channel',
+      note: 'Simulated. Returning orders are orders minus new-customer orders per channel. A channel absent last year counts in full.' }));
+    mount('#mix-moves', el('span', { class: 'kicker', text: 'Moves from the mix' }),
+      ...(x.moves.length ? x.moves.map((m) => UI.actionCard(m, { compact: true, screen: SLUG })) : [el('p', { class: 'muted small', text: 'No mix rule fired. Returning share is steady and owned channels keep pace.' })]));
+  }
+
   function objectionTable(rows) {
     return UI.table({
       columns: [
@@ -389,6 +407,7 @@
     renderLadders(d.ladders, d.avatars);
     renderWords(d.words, d.avatars);
     renderCohorts(d.cohorts);
+    renderMix(d.mix);
     mount('#avatars', ...(d.avatars.length ? d.avatars.map(avatarCard) : [el('p', { class: 'muted', text: 'No avatar records yet.' })]));
     document.getElementById('obj-note').textContent = 'Avatars come from the objection ladders. Ad coverage: ' +
       (d.angles.available ? 'counted from the ad table.' : d.angles.reason + '.') + ' Page coverage needs a live page scan.';
