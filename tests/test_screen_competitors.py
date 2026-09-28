@@ -1113,6 +1113,54 @@ class TestReview(TempBrain):
         self.assertIn('Decisions for the founder', rv['text'])
 
 
+PW = Path('/opt/node22/lib/node_modules/playwright')
+CHROME = Path('/opt/pw-browsers/chromium')
+
+
+@unittest.skipUnless(PW.exists() and CHROME.exists(), 'playwright or chromium not installed')
+class TestBrowserSmoke(unittest.TestCase):
+    """5.6: the page loads in a real browser with no script error, the desk tabs render, the report view renders."""
+    def test_page_loads(self):
+        import socket, subprocess, time
+        with socket.socket() as sk:
+            sk.bind(('127.0.0.1', 0))
+            port = sk.getsockname()[1]
+        srv = subprocess.Popen([sys.executable, str(ROOT / 'app' / 'server.py'), '--port', str(port)], cwd=ROOT,
+                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        try:
+            for _ in range(50):
+                try:
+                    socket.create_connection(('127.0.0.1', port), timeout=0.2).close()
+                    break
+                except OSError:
+                    time.sleep(0.1)
+            js = f"""
+const {{ chromium }} = require('{PW}');
+(async () => {{
+  const b = await chromium.launch({{ executablePath: '{CHROME}', args: ['--no-sandbox'] }});
+  const out = {{}};
+  for (const [k, url] of [['main', 'http://127.0.0.1:{port}/screens/03-competitors/'], ['report', 'http://127.0.0.1:{port}/screens/03-competitors/?view=report']]) {{
+    const p = await b.newPage({{ viewport: {{ width: 1280, height: 800 }} }});
+    const errs = []; p.on('pageerror', (e) => errs.push(String(e)));
+    await p.goto(url, {{ waitUntil: 'networkidle' }});
+    await p.waitForTimeout(1500);
+    out[k] = {{ errs, tabs: await p.$$eval('#desk .tab', (t) => t.length), plan: await p.$$eval('.plan-item', (t) => t.length),
+               moves: await p.$$eval('#r-moves tbody tr', (t) => t.length) }};
+  }}
+  console.log(JSON.stringify(out)); await b.close();
+}})();"""
+            res = subprocess.run(['node', '-e', js], capture_output=True, text=True, timeout=120)
+            out = json.loads(res.stdout.strip().splitlines()[-1])
+            self.assertEqual(out['main']['errs'], [])
+            self.assertEqual(out['main']['tabs'], 4)
+            self.assertGreaterEqual(out['main']['plan'], 5)
+            self.assertEqual(out['report']['errs'], [])
+            self.assertGreaterEqual(out['report']['moves'], 5)
+        finally:
+            srv.terminate()
+            srv.wait(timeout=10)
+
+
 class TestRank(TempBrain):
     """Depth contract rules 2, 3 and 13: owner, steps and artefact on every action; every finding ends in one."""
     W = {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4}
