@@ -79,6 +79,10 @@ Rules
             months carry 25 percent or more of 12-month units, or the name says gift) and whose cash_plan is empty.
             Trending reads from market growth of 8 percent a year or 3 launches in 24 months; else evergreen.
             Capability PROD-C07 (classify demand pattern and plan cash, agent does). Owner: 01-market-research.
+  PROD-R19  Growing but full: a lane whose trend score ((market growth - 4) / 6 clamped, plus 0.1 per launch by
+            another brand in 24 months, up to 0.3) is 0.3 or more and whose sellers (competitor pages pushing it
+            plus those launches) number 5 or more, the red rung of the bank's PRD-052 ladder. Severity low.
+            Capability PROD-C05. Owner: 01-market-research.
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -141,6 +145,8 @@ RULES = [
      'inputs': ['orders', 'order_lines', 'finance_inputs'], 'capability': 'PROD-C08', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R18', 'name': 'Seasonal candidate (top 2 months carry 25 percent of the category, or a gift by name) with no cash plan attached', 'entity_type': 'sku',
      'inputs': ['fixtures.pipeline', 'products_monthly', 'fixtures.market_trends'], 'capability': 'PROD-C07', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R19', 'name': 'Lane growing (trend score 0.3 or more) with 5 or more sellers: growing, but full', 'entity_type': 'metric',
+     'inputs': ['fixtures.market_trends', 'brain.competitors'], 'capability': 'PROD-C05', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -159,7 +165,8 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R15': {'id': 'PROD-C01', 'autonomy': 'agent_does'},
               'PROD-R16': {'id': 'PROD-C08', 'autonomy': 'agent_does'},
               'PROD-R17': {'id': 'PROD-C08', 'autonomy': 'agent_does'},
-              'PROD-R18': {'id': 'PROD-C07', 'autonomy': 'agent_does'}}
+              'PROD-R18': {'id': 'PROD-C07', 'autonomy': 'agent_does'},
+              'PROD-R19': {'id': 'PROD-C05', 'autonomy': 'agent_does'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -629,6 +636,7 @@ def run(brand, window=None, data=None):
     out += pipeline_findings(brand, ends_on)
     out += margin_findings(brand, data, br, rd, ends_on)
     out += pattern_findings(brand, data, rd, ends_on)
+    out += lane_map_findings(br, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -1785,4 +1793,66 @@ def pattern_findings(brand, data, rd, ends_on):
             f['entity'] = {'type': 'sku', 'id': cid, 'label': cand['name'], 'candidate': True, 'peak_months': p['peak_months'], 'cash_timing': p['cash_timing']}
             f['id'] = f'{SCREEN}.PROD-R18.{cid}'
             out.append(f)
+    return out
+
+
+# ---------------------------------------------------------------- trend against saturation, per lane
+
+LANE_MARKET = {'compression': ['compression_socks'], 'merino': ['merino_wool_socks'], 'performance': ['athletic_socks'], 'gifting': ['gifting_socks'],
+               'underwear': ['mens_underwear_us', 'womens_underwear_us'], 'footwear': ['footwear_casual', 'slippers_us'], 'apparel': ['basics_tshirts'],
+               'guarantee': ['socks_us'], 'creator': ['socks_us'], 'style': ['socks_us']}
+TREND_ZERO_CAGR = 4.0      # a market growing 4 percent a year scores 0; 10 scores 1; minus 2 scores minus 1
+TREND_SPAN_CAGR = 6.0
+LAUNCH_BONUS = 0.1         # each launch by another brand in 24 months adds 0.1, up to 0.3
+SATURATION_LADDER = [(1, 'green'), (4, 'amber')]   # idea PRD-052: 0 to 1 sellers green, 2 to 4 amber, 5 or more red
+SATURATION_FULL = 5
+TREND_UP = 0.3
+
+
+def saturation_grade(n):
+    for cap, grade in SATURATION_LADDER:
+        if n <= cap:
+            return grade
+    return 'red'
+
+
+def lane_map(br, ends_on):
+    """Each lane as a point: x sellers (competitor pages pushing it plus launches by others), y trend score from the
+    web pass growth plus launches. Named quadrants; the rule constants above are the grid lines."""
+    fx = market_trends() or {}
+    markets = {m.get('key'): m for m in fx.get('markets') or []}
+    pts = []
+    for row in subcategory_table(br, ends_on):
+        keys = LANE_MARKET.get(row['key'], [])
+        cagrs = [markets[k]['cagr_pct'] for k in keys if k in markets and isinstance(markets[k].get('cagr_pct'), (int, float))]
+        cagr = round(sum(cagrs) / len(cagrs), 2) if cagrs else None
+        base = max(-1.0, min(1.0, (cagr - TREND_ZERO_CAGR) / TREND_SPAN_CAGR)) if cagr is not None else None
+        bonus = min(0.3, LAUNCH_BONUS * row['launches_theirs'])
+        trend = round(min(1.0, base + bonus), 3) if base is not None else (round(bonus, 3) if row['launches_theirs'] else None)
+        sellers = row['competitors_n'] + row['launches_theirs']
+        pts.append({'key': row['key'], 'label': row['label'], 'x': sellers, 'y': trend, 'size': row['ads_sum'], 'sold': row['sold'], 'advertised': row['advertised'],
+                    'competitors_n': row['competitors_n'], 'launches_theirs': row['launches_theirs'], 'market_cagr': cagr, 'market_keys': keys,
+                    'grade': saturation_grade(sellers), 'verdict': row['verdict'], 'finding_id': f'{SCREEN}.PROD-R19.{row["key"]}',
+                    'quadrant': (('growing' if (trend or 0) >= TREND_UP else 'flat') + (', full' if sellers >= SATURATION_FULL else ', room left')) if trend is not None else 'trend unavailable'})
+    return {'points': pts, 'mid_x': SATURATION_FULL - 0.5, 'mid_y': TREND_UP, 'quadrants': {'tl': 'growing, room left', 'tr': 'growing, full', 'bl': 'flat, open', 'br': 'flat, crowded'},
+            'rule': f'trend score: (market growth a year - {TREND_ZERO_CAGR:g}) / {TREND_SPAN_CAGR:g}, clamped to minus 1 to 1, plus {LAUNCH_BONUS:g} per launch by another brand in 24 months (up to 0.3); sellers: competitor pages pushing the lane plus those launches; bank ladder PRD-052: 0 to 1 green, 2 to 4 amber, 5 or more red'}
+
+
+def lane_map_findings(br, ends_on):
+    """PROD-R19: a lane growing (trend score 0.3 or more) with 5 or more sellers: growing, but full."""
+    out = []
+    if br is None:
+        return out
+    for p in lane_map(br, ends_on)['points']:
+        if p['key'] in PROOF_LANES or p['y'] is None or p['y'] < TREND_UP or p['x'] < SATURATION_FULL:
+            continue
+        ev = [_ev('trend_direction_score', p['y'], 'score', ends_on.isoformat(), 'web pass', TREND_UP, 'threshold', source='fixtures.market_trends', simulated=False, freshness_days=0, market_cagr=p['market_cagr']),
+              _ev('competitive_saturation_count', p['x'], 'count', ends_on.isoformat(), 'active ads and 24 months of launches', SATURATION_FULL, 'threshold', source='brain.competitors', simulated=False, freshness_days=0,
+                  pages=p['competitors_n'], launches=p['launches_theirs'])]
+        sentence = (f'{p["label"]} is growing (trend score {p["y"]:g}' + (f', market {p["market_cagr"]:g} percent a year' if p['market_cagr'] is not None else '') +
+                    f'), but {p["x"]} sellers already compete in it ({p["competitors_n"]} pages advertising, {p["launches_theirs"]} launches in 24 months). Room left is smaller than the trend line suggests.')
+        f = _finding('PROD-R19', p['key'], ends_on, 'low', ev, sentence, None, 0.5, [f'{br.brand}.competitors.competitor_set'], money_reason='a saturation read has no order count')
+        f['entity'] = {'type': 'metric', 'id': p['key'], 'label': p['label'], 'sellers': p['x'], 'trend': p['y'], 'sold': p['sold']}
+        f['id'] = f'{SCREEN}.PROD-R19.{p["key"]}'
+        out.append(f)
     return out

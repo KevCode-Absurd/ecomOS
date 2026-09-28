@@ -98,7 +98,7 @@ class MetricTest(unittest.TestCase):
         self.assertTrue(metrics.compute('units', d, window='92d', end='2026-08-31')['unavailable'])
 
 
-class RulesTest(unittest.TestCase):
+class ShapeMixin:
     def check_shape(self, f):
         self.assertEqual(list(f)[:len(AUDIT_KEYS)], AUDIT_KEYS)
         self.assertIn(f['severity'], ('critical', 'high', 'medium', 'low'))
@@ -111,6 +111,8 @@ class RulesTest(unittest.TestCase):
             self.assertGreaterEqual(f['money_at_stake']['usd'], 0)
             self.assertTrue(f['money_at_stake']['formula'])
 
+
+class RulesTest(ShapeMixin, unittest.TestCase):
     def test_declining_line_fires_with_money(self):
         fs = [f for f in audit.run(None, data=FakeData(tee_growth=0.05)) if f['rule_id'] == 'PROD-R01']
         self.assertEqual(len(fs), 1)
@@ -533,7 +535,7 @@ class RankTest(unittest.TestCase):
         self.assertEqual(a, b)
 
 
-class PipelineTest(unittest.TestCase):
+class PipelineTest(ShapeMixin, unittest.TestCase):
     """The one thing this screen writes: candidates. Rules R14 and R15 read them."""
 
     def setUp(self):
@@ -596,6 +598,25 @@ class PipelineTest(unittest.TestCase):
         self.assertTrue(g3['unavailable'])
         g4 = audit.margin_gate(dict(cand, pack_units=4), fin, None, '2026-09-27', 2.0, 25.0)
         self.assertEqual(g4['cogs']['value'], 16.0)
+
+    def test_saturation_ladder_and_lane_map(self):
+        self.assertEqual([audit.saturation_grade(n) for n in (0, 1, 2, 4, 5, 9)], ['green', 'green', 'amber', 'amber', 'red', 'red'])
+        br = audit.brain('bombas')
+        if br is None:
+            self.skipTest('no bombas brain')
+        m = audit.lane_map(br, date(2026, 9, 27))
+        by = {p['key']: p for p in m['points']}
+        for p in m['points']:
+            self.assertEqual(p['x'], p['competitors_n'] + p['launches_theirs'])
+            if p['y'] is not None:
+                self.assertTrue(-1 <= p['y'] <= 1)
+        fs = audit.lane_map_findings(br, date(2026, 9, 27))
+        for f in fs:
+            self.check_shape(f)
+            self.assertEqual(f['severity'], 'low')
+            self.assertNotIn(f['entity']['id'], audit.PROOF_LANES)
+            self.assertGreaterEqual(by[f['entity']['id']]['x'], audit.SATURATION_FULL)
+            self.assertGreaterEqual(by[f['entity']['id']]['y'], audit.TREND_UP)
 
     def test_demand_pattern_tags(self):
         even = {'rows': [{'category': 'socks', 'series': [100] * 12}], 'months': [f'2026-{m:02d}' for m in range(1, 13)], 'last': '2026-12'}

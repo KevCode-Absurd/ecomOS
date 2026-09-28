@@ -589,6 +589,22 @@ def recipe(f):
             'stop_rule': 'no shortlist without a cash plan', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 2,
             'win_rule': 'a cash plan attached to the candidate',
         }
+    if rid == 'PROD-R19':
+        ent = f.get('entity') or {}
+        label = (ent.get('label') or '').lower()
+        return {
+            'title': f'Find the room in {label}: {ent.get("sellers")} sellers, so only a named angle gets in',
+            'owner': 'agent',
+            'artefact': {'kind': 'research_note', 'label': f'a room read on {label}: the {ent.get("sellers")} sellers by price and claim, the angle none of them owns, and go or no-go on a candidate'},
+            'steps': [
+                {'n': 1, 'who': 'agent', 'text': f'List the {ent.get("sellers")} sellers (pages advertising plus launches) with their price band and lead claim, from the brain and the web pass.'},
+                {'n': 2, 'who': 'agent', 'text': 'Name the angle none of them owns, from the review complaints and Reddit language on the lane.'},
+                {'n': 3, 'who': 'agent', 'text': 'Write go (screen a candidate with that angle) or no-go (crowded, no owned angle) with the numbers.'},
+                {'n': 4, 'who': 'person', 'text': 'Decide. A go screens the candidate in from the desk.'}],
+            'size': {'text': f'trend score {ent.get("trend")}, {ent.get("sellers")} sellers', 'usd': None},
+            'stop_rule': 'no candidate on the lane without an angle no seller owns', 'check_on': _check_on(f, 14), 'time_to_ship_hours': 3,
+            'win_rule': 'a logged go with an angle, or a logged no-go',
+        }
     return None
 
 
@@ -783,7 +799,7 @@ def overview(data, brand):
                      'demand_unavailable': {'reason': tr.get('reason'), 'fix': tr.get('fix')} if tr.get('unavailable') else None,
                      'price_bands': bands, 'reviews': review_mining(reviews, lads),
                      'pipeline': pipeline_block(brand, ends_on, findings, floor), 'margin': margin_block(brand, data, br, rd, ends_on, findings),
-                     'pattern': pattern_block(brand, data, rd, findings)},
+                     'pattern': pattern_block(brand, data, rd, findings), 'lane_map': audit.lane_map(br, ends_on)},
             'audit': {'findings': findings, 'rules': audit.RULES}}
 
 

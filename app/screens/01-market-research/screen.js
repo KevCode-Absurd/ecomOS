@@ -180,7 +180,7 @@
     const box = el('input', { class: 'text sm', placeholder: 'time box, days', type: 'number', value: '10', style: { maxWidth: '130px' } });
     const angle = el('input', { class: 'text sm', placeholder: 'angle in one line (optional)', style: { flex: '1 1 260px' } });
     const add = el('button', { class: 'btn primary sm', type: 'button', text: 'Screen it in', onclick: () => { if (!name.value.trim()) { alert('Give the candidate a name.'); return; } candidatePost('candidates', { name: name.value, category: cat.value || 'socks', planned_price: price.value || null, time_box_days: box.value || 10, angle_text: angle.value || null, who: 'person' }); } });
-    const orient = UI.orientation([{ label: 'open', value: p.open, unit: 'n' }, { label: 'over the box', value: p.over_box, unit: 'n', tone: p.over_box ? 'bad' : 'good' }, { label: 'hours logged', value: p.hours, unit: 'n' }, { label: 'margin floor', value: p.floor_pct, unit: '%' }]);
+    const orient = UI.orientation([{ label: 'open', value: p.open, unit: 'n' }, { label: 'over the box', value: p.over_box, unit: 'n', tone: p.over_box ? 'bad' : 'good' }, { label: 'hours logged', value: p.hours, unit: 'n' }, { label: 'margin floor', value: p.floor_pct == null ? null : p.floor_pct / 100, unit: '%' }]);
     return el('div', { class: 'stack' }, orient,
       el('div', { class: 'grid two' }, el('div', { class: 'card' }, funnel), el('div', { class: 'card flat' }, el('h4', { text: 'Screen a candidate in' }), el('div', { class: 'row', style: { gap: '6px', flexWrap: 'wrap' } }, name, cat, price, box), el('div', { class: 'row', style: { gap: '6px', marginTop: '6px' } }, angle, add),
         el('p', { class: 'micro faint', text: 'It lands at screened with a time box. The 3 fast checks run when the agent screens it; you can set them from the card. Margin gate: ' + p.gate_rule + ' ' + floor }))),
@@ -494,6 +494,32 @@
         missing.length && actionFor(missing[0].finding_id) ? { label: 'Draft the first', onClick: () => openAction(actionFor(missing[0].finding_id)) } : null));
   }
 
+  function laneMapBlock(m) {
+    if (!m || !m.points || !m.points.length) return UI.emptyState({ screen: SLUG, title: 'No lanes to map', text: 'The map needs the competitor pages in the brain and the web pass.', missing: ['ad_library', 'web_pass'] });
+    const q = m.quadrants || {};
+    const chart = Charts.positioningMap({
+      title: 'Trend against saturation, one point per lane, sized by competitor active ads',
+      x: { label: 'sellers: competitor pages pushing it plus launches by others, 24 months', lo: 'open', hi: 'crowded', unit: 'n', min: 0, max: Math.max(10, Math.max.apply(null, m.points.map((p) => p.x || 0)) + 1) },
+      y: { label: 'trend score from market growth and launches', lo: 'flat', hi: 'growing', unit: 'n', min: -1, max: 1 },
+      points: m.points.filter((p) => p.y != null).map((p) => ({ label: p.label, x: p.x, y: p.y, us: !!p.sold && !!p.advertised, size: p.size, note: p.quadrant + '; ladder ' + p.grade })),
+      midX: m.mid_x, midY: m.mid_y, quadrants: [q.tl, q.tr, q.bl, q.br], usLabel: 'we sell and advertise it', themLabel: 'lane',
+      note: m.rule + '. Lanes with no market growth on file are listed below, not plotted.' });
+    const vrows = m.points.map((p) => { const a = actionFor(p.finding_id); return Object.assign({}, p, {
+      trendText: p.y == null ? NA : p.y.toFixed(2), cagr: p.market_cagr, sellers: p.x, sold: p.sold == null ? NA : p.sold ? 'yes' : 'no',
+      actions: [a ? { label: 'Find the room', onClick: () => openAction(a) } : { label: p.quadrant, cls: 'quiet', onClick: () => {} }] }); });
+    const t = UI.verdictTable({
+      columns: [{ key: 'label', label: 'Lane' }, { key: 'trendText', label: 'Trend score', align: 'right' }, { key: 'cagr', label: 'Market growth a year', align: 'right', format: (v) => v == null ? NA : v + ' percent' },
+        { key: 'sellers', label: 'Sellers', unit: 'n' }, { key: 'competitors_n', label: 'Pages advertising', unit: 'n' }, { key: 'launches_theirs', label: 'Launches by others', unit: 'n' }, { key: 'sold', label: 'We sell it' }],
+      rows: vrows,
+      verdict: { at: 1, kind: (r) => r.grade === 'green' ? 'keep' : r.grade === 'amber' ? 'watch' : 'stop', text: (r) => r.grade === 'green' ? 'Green, 0 to 1' : r.grade === 'amber' ? 'Amber, 2 to 4' : 'Red, 5 or more', reason: (r) => 'bank ladder PRD-052 on sellers: ' + r.x },
+      actions: { label: 'Do', onClick: () => {} }, sort: false });
+    const full = m.points.filter((p) => p.y != null && p.y >= m.mid_y && p.x >= m.mid_x + 0.5);
+    const room = m.points.filter((p) => p.y != null && p.y >= m.mid_y && p.x < m.mid_x + 0.5);
+    return el('div', { class: 'stack' }, el('div', { class: 'card' }, chart), el('div', { class: 'card scroll' }, t),
+      gapLine((room.length ? 'Growing with room left: ' + room.map((p) => p.label.toLowerCase()).join(', ') + '. ' : '') + (full.length ? 'Growing but full: ' + full.map((p) => p.label.toLowerCase()).join(', ') + '. Only a named angle gets in.' : 'No growing lane is full.'),
+        full.length && actionFor(full[0].finding_id) ? { label: 'Find the room', onClick: () => openAction(actionFor(full[0].finding_id)) } : null));
+  }
+
   function loadDesk(o) {
     const d = o.desk || {};
     const w = (o.window || {}).trend;
@@ -510,6 +536,7 @@
     parts.push(section('desk-price', 'Where do our prices sit against the competitor band?', 'Per-pair list price by line against the band of competitor median prices from the brain. Socks only; other categories have no competitor price on file.', priceBlock(d.price_bands || {})));
     parts.push(section('desk-reviews', 'What do reviews praise and fail, line by line?', 'Public site review totals per line, with the objection ladder rungs built from them.', reviewBlock(d.reviews || [])));
     parts.push(section('desk-margin', 'Does each candidate make money after real costs?', 'The margin gate per candidate: planned price stepping down through landed cost, the donated item, fulfilment and payment fees to contribution, every term from the finance inputs or the brain.', marginBlock(d.margin)));
+    parts.push(section('desk-lane-map', 'Which lanes are growing with room left, and which are growing and already full?', 'Trend direction against competitive saturation per lane, read together as one go or no-go signal: market growth and launches from the web pass, sellers from the competitor pages in the brain.', laneMapBlock(d.lane_map)));
     parts.push(section('desk-pattern', 'Is each candidate evergreen, seasonal or a trend, and when does cash move?', 'The demand pattern from our own 12-month series by category and the web pass, with the cash timing it implies and the cash plan attached to each candidate.', patternBlock(d.pattern)));
     parts.push(section('desk-pipeline', 'What is in the next-SKU pipeline, and what is past its time box?', 'Candidates screened in from the gaps above or by hand, their stage, fast checks, time box and hours. Advance, log hours or kill from the card; every write lands in the pipeline log.', pipelineBlock(d.pipeline || { rows: [] })));
     mount('#desk', ...parts);
