@@ -1,0 +1,133 @@
+{
+ "version": "2026-09-28",
+ "note": "What the Apify connector pulls for this brand. Caps keep each run inside a few dollars. Token comes from the APIFY_TOKEN environment variable, never from this file.",
+ "budget": {
+  "max_usd_per_run": 4.0,
+  "max_usd_per_week": 15.0,
+  "ledger": "intelligence/budget.py"
+ },
+ "amazon_reviews": {
+  "actor": "axesso_data~amazon-reviews-scraper",
+  "listing_actor": "junglee~amazon-crawler",
+  "domain_code": "com",
+  "asins": [
+   "B07MTXGV9R",
+   "B0CVLKH8M2",
+   "B086BPVJ2T",
+   "B087JLQF85",
+   "B07S9T9824",
+   "B0GQLTVSNF",
+   "B0GSQPT83J",
+   "B0GRRMNL3X"
+  ],
+  "stars_first": [
+   5,
+   1
+  ],
+  "then_stars": [
+   2,
+   3,
+   4
+  ],
+  "max_reviews_per_asin_per_star": 100,
+  "max_pages": 10,
+  "fills_sections": [
+   "language_bank",
+   "objections",
+   "objection_ladders",
+   "avatars",
+   "products",
+   "marketplaces"
+  ],
+  "notes": "pull 5-star and 1-star first, then the middle; listing actor gives title, bullets, stars and review count per ASIN"
+ },
+ "meta_ad_library": {
+  "actor": "curious_coder~facebook-ads-library-scraper",
+  "alt_actor": "apify~facebook-ads-scraper",
+  "country": "US",
+  "pages": [
+   {
+    "name": "Bombas",
+    "role": "self"
+   },
+   {
+    "name": "Stance",
+    "role": "competitor"
+   },
+   {
+    "name": "Darn Tough Vermont",
+    "role": "competitor"
+   },
+   {
+    "name": "Smartwool",
+    "role": "competitor"
+   },
+   {
+    "name": "Feetures",
+    "role": "competitor"
+   },
+   {
+    "name": "Comrad Socks",
+    "role": "competitor"
+   }
+  ],
+  "search_terms": [
+   "socks",
+   "no show socks",
+   "merino socks",
+   "compression socks"
+  ],
+  "active_status": "active",
+  "limit_per_source": 200,
+  "scrape_ad_details": true,
+  "fills_sections": [
+   "competitors",
+   "offers",
+   "learnings",
+   "story_bank",
+   "content"
+  ],
+  "notes": "signals only: format, hook type, start date, run length, platforms, a short quote as evidence; never copy text, logos, products or faces; skip the lookalike page spelled with a zero"
+ },
+ "reddit": {
+  "actor": "trudax~reddit-scraper-lite",
+  "searches": [
+   "Bombas socks",
+   "Bombas review",
+   "best socks",
+   "socks that don't slip",
+   "no show socks stay up",
+   "merino socks worth it",
+   "socks holes in heel",
+   "compression socks nurses",
+   "buy it for life socks"
+  ],
+  "subreddits": [
+   "BuyItForLife",
+   "malefashionadvice",
+   "femalefashionadvice",
+   "frugalmalefashion",
+   "running",
+   "hiking",
+   "onebag",
+   "socks",
+   "Frugal"
+  ],
+  "max_items": 600,
+  "max_comments_per_post": 40,
+  "sort": "top",
+  "time": "year",
+  "fills_sections": [
+   "language_bank",
+   "objections",
+   "objection_ladders",
+   "avatars",
+   "competitors",
+   "positioning",
+   "seo_facts",
+   "content",
+   "learnings"
+  ],
+  "notes": "never store usernames; upvotes weight the phrase; a Reddit user is never quoted as a testimonial in an ad"
+ }
+}

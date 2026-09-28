@@ -1522,6 +1522,71 @@
    "read_only": true,
    "mock": true,
    "note": "two lanes: brand mentions (search the brand name across subreddits) and category conversations (best X, X that does not Y, is X worth it). Public threads via the JSON endpoints or web reads at low rate with a named user agent; the official API needs an app registration and, for commercial volume, Reddit's data agreement. Keep permalink, subreddit, upvotes, date; never store usernames; never quote a Reddit user as a testimonial in an ad"
+  },
+  {
+   "id": "apify_amazon_reviews",
+   "name": "Amazon reviews and listings via Apify (licensed, paid)",
+   "category": "reviews",
+   "fills_sections": [
+    "language_bank",
+    "objections",
+    "objection_ladders",
+    "avatars",
+    "products",
+    "marketplaces"
+   ],
+   "fills_tables": [
+    "reviews_raw",
+    "marketplace_listings"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "actors axesso_data/amazon-reviews-scraper (about $0.90 per 1,000 reviews) and junglee/amazon-crawler (about $3 per 1,000 listings). Needs APIFY_TOKEN. Replaces the public sample lane at volume."
+  },
+  {
+   "id": "apify_meta_ad_library",
+   "name": "Meta Ad Library via Apify (licensed, paid)",
+   "category": "public",
+   "fills_sections": [
+    "competitors",
+    "offers",
+    "learnings",
+    "story_bank",
+    "content"
+   ],
+   "fills_tables": [
+    "ad_library_captures",
+    "competitor_ad_capture"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "actor curious_coder/facebook-ads-library-scraper (about $0.75 per 1,000 ads), alt apify/facebook-ads-scraper with spend and reach enrichment (about $3.40 per 1,000). Needs APIFY_TOKEN. Signals only, never copied."
+  },
+  {
+   "id": "apify_reddit",
+   "name": "Reddit via Apify (licensed, paid)",
+   "category": "public",
+   "fills_sections": [
+    "language_bank",
+    "objections",
+    "objection_ladders",
+    "avatars",
+    "competitors",
+    "positioning",
+    "seo_facts",
+    "content",
+    "learnings"
+   ],
+   "fills_tables": [
+    "reviews_raw",
+    "community_mentions"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "actor trudax/reddit-scraper-lite (about $3.40 per 1,000 items). Needs APIFY_TOKEN. Gets past Reddit's datacenter block. No usernames stored; never quoted as testimonials."
   }
  ]
 }

@@ -92,6 +92,7 @@ The store module is the only thing that knows whether it is reading files or a d
 | S1.3m | Bombas merge and first publish | opus | 30,000 | S1.3a, S1.3b, S1.3c, S1.3d, S1.3e |
 | S1.4 | Brain review with Kevin | fable | 20,000 | S1.3m |
 | S1.5 | Keeper: gaps, the ask, the weekly audit | opus | 25,000 | S1.2a |
+| S1.6 | Apify connector: Amazon reviews, Meta Ad Library, Reddit adapters | opus | 25,000 | S1.2a |
 
 Order: S1.2a first (everything reads the store). Then S1.2b and S1.5 in parallel with the S1.3 group. S1.3m after the group. S1.3f and S1.3g add the review lanes and the objection ladders (default for every new brand from now on). S1.4 with Kevin.
 

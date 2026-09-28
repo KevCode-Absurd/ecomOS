@@ -310,6 +310,33 @@
    ]
   },
   {
+   "id": "S1.6",
+   "title": "Apify connector: Amazon reviews, Meta Ad Library, Reddit adapters",
+   "stage": 1,
+   "model": "opus",
+   "reads": [
+    "app/contracts/brand-brain.md#3,6.2",
+    "app/brain/schema.json",
+    "app/brain/bombas/sources.config.json",
+    "app/connectors/README.md",
+    "app/contracts/connectors/apify.md"
+   ],
+   "writes": [
+    "app/connectors/apify.py",
+    "app/connectors/apify_adapters.py",
+    "app/connectors/fixtures/apify/",
+    "app/brain/extract/apify_*.py",
+    "tests/test_connector_apify.py"
+   ],
+   "done_when": "mock mode turns fixture items into valid brain records for all three lanes; live mode runs an actor with run-sync-get-dataset-items, respects the per-run and weekly USD caps through the budget ledger, and writes raw/<lane>/ for a brand; validator passes; no token in code or logs",
+   "first_line": "Work in app/connectors. Session S1.6 per sessions/SESSIONS.md: build the Apify connector and the three adapters (Amazon reviews, Meta Ad Library, Reddit) per app/contracts/connectors/apify.md, mock mode first.",
+   "budget_tokens": 25000,
+   "parallel_group": null,
+   "needs": [
+    "S1.2a"
+   ]
+  },
+  {
    "id": "S2.1a",
    "title": "Field census: Meta Marketing API insights and creatives",
    "stage": 2,
