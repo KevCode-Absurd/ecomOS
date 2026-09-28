@@ -39,6 +39,7 @@ Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `a
 | # | Feature | Status |
 |---|---|---|
 | 3.1 | Dated page-summary captures (`capture.py`, brain only, no spend) and their diff: active ads up or down 25 percent, a new format, a new or dropped offer, a new angle, a new flight; the alerts flow into the changes timeline (follow, watch, ignore) and rule COMP-R24 puts a direct competitor's new offer or angle on the plan as a counter brief; first capture on file for 28 Sep, so alerts light with the next brain refresh | done |
+| 3.2 | Price moves from the dated captures (each capture holds every page's price band): median price per pair up or down 15 percent between the latest two, shown above the price ladder; rule COMP-R25 (high for a direct page) puts a sharp cut on the plan with a value answer and a watch rule, never a reflex match (CREA-C31) | done |
 
 ## Round 2: who we lose to, the market around us, and counted signals
 
@@ -180,6 +181,6 @@ Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permi
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
-| 3 | 3.1 | 2026-09-28 | Page-summary captures and diffs |
+| 3 | 3.1 to 3.2 | 2026-09-28 | Page-summary captures and diffs; price moves |
 | 2 | 2.1 to 2.10 | 2026-09-28 | Lost by name; category ladder; review themes; Amazon against our site; creative velocity; weekly brief; niche sizing; premium signals; search seeds; desk tabs. Screenshot `round2.png` |
 | 1 | 1.1 to 1.10 | 2026-09-28 | Plan first; rank override; 12 pages side by side; coverage matrix; hook and offer mix; references; price and pack ladder; positioning map with moves; changes timeline; freshness and re-pull; rank for all 14 rules. Screenshot `round1.png` |

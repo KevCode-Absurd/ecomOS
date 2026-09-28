@@ -94,7 +94,10 @@
     const b = lad.bundle;
     const amz = lad.amazon.length ? el('div', { class: 'small' }, el('b', { text: 'Cross-check, our Amazon listings (public list prices): ' }),
       lad.amazon.length + ' listings state a pack size; ' + usd(lad.amazon[0].per_pair) + ' to ' + usd(lad.amazon[lad.amazon.length - 1].per_pair) + ' a pair, median ' + usd(lad.amazon[Math.floor(lad.amazon.length / 2)].per_pair) + '. Site prices above are simulated net, so the gap is a check, not a finding.') : null;
-    mount('#prices', bandChart(lad), el('p', { class: 'micro faint', text: 'Our dots grow with pack size; hover for price per pack. Our prices are simulated net sales per unit for ' + lad.month + '. Hollow dots are rough public reads.' }),
+    const pm = window.__priceMoves || { moves: [], captures: 0 };
+    const moves = el('div', { class: 'small' }, el('b', { text: 'Price moves: ' }), pm.moves.length ? pm.moves.map((x) => x.page + ' ' + (x.kind === 'cut' ? 'cut' : 'raised') + ' ' + Math.round(Math.abs(x.change) * 100) + ' percent, ' + usd(x.from) + ' to ' + usd(x.to) + ' since ' + fmt.date(x.since)).join('; ') + '.'
+      : (pm.captures < 2 ? 'start with the second dated capture (' + pm.captures + ' on file); a move of ' + Math.round((pm.threshold || 0.15) * 100) + ' percent or more is flagged.' : 'none of ' + Math.round((pm.threshold || 0.15) * 100) + ' percent or more since ' + fmt.date(pm.since) + '.'));
+    mount('#prices', moves, bandChart(lad), el('p', { class: 'micro faint', text: 'Our dots grow with pack size; hover for price per pack. Our prices are simulated net sales per unit for ' + lad.month + '. Hollow dots are rough public reads.' }),
       table, el('p', { class: 'small' }, el('b', { text: 'Pack ladder: ' }), 'our packs save a median ' + (lad.median_saving == null ? NA : Math.round(lad.median_saving * 100) + ' percent') + ' a pair against a single' + (b ? '. ' + b.page + ' advertises ' + b.pct + ' percent off bundles.' : '.') + (lad.shallow ? ' The ladder offer is on the plan.' : '')), amz,
       el('ul', { class: 'small muted' }, ...lad.bands.map((x) => el('li', null, x.name + ': ' + x.text + '. ', x.ref ? el('a', { href: x.ref, target: '_blank', rel: 'noopener', text: 'source' }) : null))));
   }
@@ -511,6 +514,7 @@
     mount('#actions', ...(p.actions.length ? p.actions.map((a) => UI.actionCard(a, { screen: SCREEN })) : [el('p', { class: 'muted', text: 'No open action.' })]));
     document.getElementById('map-sub').textContent = 'Split at the tracked median price (' + usd(d.positioning.split_x) + ') and the middle of the claim scale. Each corner ends in a move: hold, contest, claim or skip.';
     mount('#map', ...mapCard(d.positioning));
+    window.__priceMoves = d.price_moves;
     ladderSection(d.ladder);
     pagesSection(d.pages);
     coverageSection(d.coverage);

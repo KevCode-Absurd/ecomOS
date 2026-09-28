@@ -824,6 +824,32 @@ class TestCaptures(TempBrain):
         self.assertEqual(api.actions.ranker.validate_action(a), [])
 
 
+class TestPriceMoves(TempBrain):
+    """3.2: price moves between dated captures; a sharp cut goes on the plan with a value answer."""
+    def test_moves_and_rule(self):
+        m = audit.market_full('bombas', dt.date(2026, 9, 28), self.tmp)
+        prev = {'captured_at': '2026-09-14', 'pages': audit.capmod.summary(m['pages'])}
+        cur = json.loads(json.dumps(prev))
+        cur['captured_at'] = '2026-09-28'
+        cur['pages']['stance']['price_text'] = '10 to 20 per pair, median about 14'
+        moves = audit.capmod.price_moves(prev, cur, audit.parse_band)
+        self.assertEqual(len(moves), 1)
+        self.assertEqual((moves[0]['kind'], moves[0]['from'], moves[0]['to']), ('cut', 18.0, 14.0))
+        m['price_moves'] = {'moves': moves}
+        f = audit.rule_price_cut(m, '2026-09-27')[0]
+        self.assertEqual(f['severity'], 'high')
+        a = api.actions.action(f, m, None)
+        self.assertEqual(a['artefact']['kind'], 'copy')
+        self.assertIn('reflex', a['artefact']['draft'])
+        self.assertEqual(api.actions.ranker.validate_action(a), [])
+
+    def test_no_moves_with_one_capture(self):
+        api.BRAIN_ROOT = self.tmp
+        pm = api.handle(Req(['overview']))['price_moves']
+        self.assertEqual(pm['moves'], [])
+        self.assertGreaterEqual(pm['captures'], 1)
+
+
 class TestRank(TempBrain):
     """Depth contract rules 2, 3 and 13: owner, steps and artefact on every action; every finding ends in one."""
     W = {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4}

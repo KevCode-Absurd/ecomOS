@@ -514,6 +514,24 @@ def act_new_move(f: dict, m: dict) -> dict:
             "check_on": _plus(f["last_seen"], 14), "time_to_ship_hours": 4}
 
 
+def act_price_cut(f: dict, m: dict) -> dict:
+    """COMP-R25: a competitor cut its price. Answer with value, not a reflex match; the founder decides any price change."""
+    page = f["entity"]["label"].replace(" price cut", "")
+    draft = "\n".join([f"Answer to {page}'s price cut: {f['sentence']}",
+                       "Do not match by reflex. First: watch our add to cart and conversion on the overlapping packs for 7 days.",
+                       "Now: add price per pair and the guarantee line to the overlapping pack cards; 1 ad on price per wear.",
+                       "If conversion drops 10 percent: the founder decides on a pack step, not a code."])
+    return {"title": f"Answer {page}'s price cut with value; no reflex match", "owner": "agent_drafts",
+            "artefact": {"kind": "copy", "label": "value framing for the overlapping packs, and a watch rule", "draft": draft},
+            "steps": _steps(("agent", "Find our packs within 20 percent of their new price per pair."),
+                            ("agent", "Draft price per pair and guarantee lines for those cards and 1 price per wear ad."),
+                            ("person", "Approve the copy. The founder owns any price change."),
+                            ("agent", f"Watch add to cart on those packs for 7 days; report on {_plus(f['last_seen'], 7)}.")),
+            "size": None, "win_rule": "Conversion on the overlapping packs holds within 5 percent",
+            "stop_rule": "Conversion down 10 percent for 5 days: escalate to the founder", "check_on": _plus(f["last_seen"], 7),
+            "time_to_ship_hours": 3}
+
+
 def act_connect(f: dict, m: dict) -> dict:
     un = f.get("unavailable") or {}
     con = un.get("connector") or "the missing source"
@@ -534,7 +552,7 @@ BUILDERS = {"COMP-R01": act_angle, "COMP-R02": act_price, "COMP-R03": act_offer_
             "COMP-R17": act_attack, "COMP-R18": act_undercut,
             "COMP-R19": act_velocity, "COMP-R20": act_niche,
             "COMP-R21": act_premium, "COMP-R22": act_search, "COMP-R23": act_connect,
-            "COMP-R24": act_new_move}   # R16 has no data source yet: always a connect action
+            "COMP-R24": act_new_move, "COMP-R25": act_price_cut}   # R16 has no data source yet: always a connect action
 
 
 def action(f: dict, m: dict, net_revenue: float | None) -> dict:

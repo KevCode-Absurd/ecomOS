@@ -27,6 +27,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 FOLDER = HERE / "fixtures" / "captures"
 SURGE, MIN_ADS, MIN_FORMAT_SHARE = 0.25, 10, 0.05
+PRICE_MOVE = 0.15       # the room rule: a median price per pair moves 15 percent or more between captures
 
 
 def summary(pages: list[dict]) -> dict:
@@ -92,6 +93,23 @@ def diff(prev: dict | None, cur: dict | None) -> list[dict]:
         if b.get("longest_start") and b["longest_start"] > prev["captured_at"]:
             ev("new_flight", f"every ad is new since {prev['captured_at']}", b["longest_start"])
     return out
+
+
+def price_moves(prev: dict | None, cur: dict | None, parse) -> list[dict]:
+    """Median price per pair per page between the latest two captures; a move of PRICE_MOVE or more is a price move."""
+    if not prev or not cur:
+        return []
+    out = []
+    for key, b in cur["pages"].items():
+        a = prev["pages"].get(key)
+        if not a or b.get("role") == "self":
+            continue
+        x, y = parse(a.get("price_text"))["median"], parse(b.get("price_text"))["median"]
+        if x and y and abs(y - x) / x >= PRICE_MOVE:
+            ch = (y - x) / x
+            out.append({"page": b["name"], "frame": b.get("frame"), "from": x, "to": y, "change": round(ch, 3),
+                        "kind": "cut" if ch < 0 else "raise", "since": prev["captured_at"], "when": cur["captured_at"]})
+    return sorted(out, key=lambda r: r["change"])
 
 
 if __name__ == "__main__":

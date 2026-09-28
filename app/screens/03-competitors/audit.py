@@ -119,6 +119,11 @@ COMP-R24 a direct competitor started a new offer or angle. Between the latest
     two page-summary captures (capture.py), a direct page shows an offer or an
     angle it did not show before. Severity medium. Capability CREA-C06 (brief
     our counter). Owner: 03-competitors.
+COMP-R25 a competitor cut its price sharply. A tracked page's median price per
+    pair fell 15 percent or more between the latest two captures (capture.py),
+    the room's price-cut rule. Severity high for a direct page, medium else.
+    Capability CREA-C31 (answer with value framing, never a reflex match).
+    Owner: 03-competitors.
 
 Rubric overrides (depth.md section 4 allows reputation and satisfaction per rule):
 COMP-R01 reputation 5: an unclaimed angle is a competitor position gap named in
@@ -260,6 +265,8 @@ RULES = [
      "inputs": ["keyword rankings and bids"], "capability": "BRAND-C07", "owner_screen": SCREEN},
     {"rule_id": "COMP-R24", "name": "a direct competitor started a new offer or angle", "entity_type": "page",
      "inputs": ["page-summary captures", "Ad Library snapshot"], "capability": "CREA-C06", "owner_screen": SCREEN},
+    {"rule_id": "COMP-R25", "name": "a competitor cut its price per pair 15 percent or more", "entity_type": "page",
+     "inputs": ["page-summary captures (price band)"], "capability": "CREA-C31", "owner_screen": SCREEN},
     {"rule_id": "COMP-R08", "name": "discount on most ads while direct peers run none", "entity_type": "offer",
      "inputs": ["brain offers.promo_share_active_ads", "brain competitors offers_seen"], "capability": "LIFE-C38",
      "owner_screen": SCREEN},
@@ -267,7 +274,7 @@ RULES = [
 # what a strategist groups the findings by on the page (depth.md section 2: grouped by bottleneck)
 RULE_GROUP = {"COMP-R01": "creative", "COMP-R05": "creative", "COMP-R06": "creative", "COMP-R03": "offer", "COMP-R07": "offer",
               "COMP-R08": "offer", "COMP-R09": "offer", "COMP-R02": "price", "COMP-R10": "price", "COMP-R11": "position",
-              "COMP-R04": "watch", "COMP-R12": "watch", "COMP-R13": "watch", "COMP-R14": "watch", "COMP-R15": "lost", "COMP-R16": "lost", "COMP-R17": "lost", "COMP-R18": "price", "COMP-R19": "creative", "COMP-R20": "position", "COMP-R21": "offer", "COMP-R22": "position", "COMP-R23": "position", "COMP-R24": "watch"}
+              "COMP-R04": "watch", "COMP-R12": "watch", "COMP-R13": "watch", "COMP-R14": "watch", "COMP-R15": "lost", "COMP-R16": "lost", "COMP-R17": "lost", "COMP-R18": "price", "COMP-R19": "creative", "COMP-R20": "position", "COMP-R21": "offer", "COMP-R22": "position", "COMP-R23": "position", "COMP-R24": "watch", "COMP-R25": "price"}
 GROUP_LABEL = {"lost": "Shoppers we lose, by name", "creative": "Ads they run that we do not", "offer": "Offers they say that we do not",
                "price": "Price against theirs", "position": "Corners of the map", "watch": "Watch and protect"}
 RUBRIC_OVERRIDES = {"COMP-R01": {"reputation": 5}, "COMP-R02": {"reputation": 3}, "COMP-R04": {"reputation": 5, "satisfaction": 4},
@@ -506,6 +513,8 @@ def market_full(brand: str, today: dt.date, root: Path | None = None) -> dict:
     prev = snap.load(brand, before=cur["captured_at"]) if cur else None
     cprev, ccur = capmod.latest_two(brand)
     m["changes"] = changemod.build(m, m["brain"], prev, cur, today, capmod.diff(cprev, ccur), len(capmod.captures(brand)))
+    m["price_moves"] = {"moves": capmod.price_moves(cprev, ccur, parse_band), "captures": len(capmod.captures(brand)),
+                        "since": cprev["captured_at"] if cprev else None, "threshold": capmod.PRICE_MOVE}
     m["losses"] = lossmod.build(m, m["brain"])
     m["category"] = catmod.build(m, m["brain"])
     m["velocity"] = velmod.build(m, m["brain"])
@@ -961,6 +970,20 @@ def rule_new_move(m, ends_on):
     return out
 
 
+def rule_price_cut(m, ends_on):
+    out = []
+    for mv in (m.get("price_moves") or {}).get("moves", []):
+        if mv["kind"] != "cut":
+            continue
+        ev = [_row("median_price_per_pair", mv["to"], "usd", f"since {mv['since']}", ends_on, None, mv["from"], "threshold", "captures"),
+              _row("price_change", mv["change"], "%", f"since {mv['since']}", ends_on, None, -capmod.PRICE_MOVE, "threshold", "captures")]
+        sentence = f"{mv['page']} cut its median price per pair {round(-mv['change'] * 100)} percent, ${mv['from']:.2f} to ${mv['to']:.2f}."
+        ent = {"type": "page", "id": f"price_cut_{pagemod.slug(mv['page'])}", "label": f"{mv['page']} price cut"}
+        out.append(_finding("COMP-R25", "high" if mv["frame"] == "direct" else "medium", ent, ev, sentence, [], ends_on, 0.5,
+                            "no baseline: orders lost to their new price are not measured"))
+    return out
+
+
 def packs_month_end(packs):
     if not packs.get("available"):
         return None
@@ -987,7 +1010,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
         out += [_unavailable("COMP-R16", "low", {"type": "ladder_rung", "id": "lower_rungs", "label": "lower rungs of the ladder"},
                              ["search trends by rung"], "a search trends source (read only)",
                              "Connect a search trends source for the category and each lower rung.", ends_on)]
-        out += rule_ladder(m, ends_on) + rule_corners(m, ends_on) + rule_refresh(m, ends_on) + rule_freshness(m, ends_on) + rule_losses(m, ends_on) + rule_attack(m, ends_on) + rule_presence(m, ends_on) + rule_velocity(m, ends_on) + rule_niche(m, ends_on) + rule_premium(m, ends_on) + rule_search(m, ends_on) + rule_new_move(m, ends_on)
+        out += rule_ladder(m, ends_on) + rule_corners(m, ends_on) + rule_refresh(m, ends_on) + rule_freshness(m, ends_on) + rule_losses(m, ends_on) + rule_attack(m, ends_on) + rule_presence(m, ends_on) + rule_velocity(m, ends_on) + rule_niche(m, ends_on) + rule_premium(m, ends_on) + rule_search(m, ends_on) + rule_new_move(m, ends_on) + rule_price_cut(m, ends_on)
     out += rule_price(m, ends_on) + rule_lookalike(m, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f["severity"]], f["id"]))
     return out
