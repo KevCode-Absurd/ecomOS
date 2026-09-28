@@ -6,9 +6,30 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | # | Feature | Status |
 |---|---|---|
-| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | todo |
-| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | todo |
-| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | todo |
+| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | done |
+| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | done |
+| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | done |
+| 0.4 | `audit.py`: 15 rules (5 round 0 audits, WILD-R06 bet claim check, 9 spec rules) in the audit contract shape | done |
+| 0.5 | Simulated wild bet queue (5 bets) and US moment calendar in `fixtures/` | done |
+
+## Jobs to be done (room spec)
+
+| Job | Question | Capabilities | Rules in audit.py |
+|---|---|---|---|
+| keep a dated backlog of wild bet candidates | what unconventional moves are worth considering | BRAND-C44 | WILD-R03 |
+| bound and stage-gate a bet before it launches | what is the downside, and when do we call it | BRAND-C45 | WILD-R05, R06, R07 |
+| turn an approved bet into a sized execution brief | how do we actually run this at a size we can handle | BRAND-C46 | none yet |
+| read a bet at its read point against a real control | did this bet actually work | REG-C02 | WILD-R08, R09 (unavailable) |
+| design and run an exclusive cohort or ambassador program | who counts as 'us', and how do we run them day to day | BRAND-C39, BRAND-C55 | WILD-R14 (unavailable) |
+| design referral and word-of-mouth mechanics | why would someone actually tell a friend about us | LIFE-C45 | none yet |
+| source and screen partnership candidates for fit | who should we team up with, and who approached us | BRAND-C41, BRAND-C70 | none yet |
+| check reputational risk before signing a partner | could this person or brand embarrass us later | BRAND-C71 | WILD-R13 (unavailable) |
+| develop PR angles and press narratives | what is the story here that a journalist would actually run | BRAND-C40 | WILD-R01, R02, R04 |
+| build a targeted media list for a launch or story | who exactly should get this pitch | BRAND-C53 | WILD-R11 (unavailable) |
+| monitor for reputation risk and prepare a holding statement | is a problem building that we need to get ahead of | BRAND-C54 | WILD-R10 (unavailable) |
+| build the founder's public credibility pipeline | where should the founder show up, and what are we eligible to win | BRAND-C60, BRAND-C61 | WILD-R15 (unavailable) |
+| build the brand's US holiday and cultural moment calendar | what dates matter for PR, events and community this quarter | LOOP-C05 | WILD-R12 |
+| design an event or pop-up sized to what the team can run | where does our exact customer already gather | BRAND-C42 | none yet |
 
 ## Candidates from the room spec (pick 10 per round)
 
@@ -94,3 +115,13 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
+| 0 | 0.1 to 0.5 | 2026-09-28 | skeleton, audit, fixtures, tests, round0.png |
+
+## Round 0 status
+
+1. Shell, api.py, 3 tiles (bets, direct plus referral visits, press placements unavailable), 2 insight rules, 1 weekly line chart; all labelled simulated.
+2. audit.py has 15 rules: 7 fire on Bombas (R01 14 undated stories, R02 200 million milestone unused, R03 buy it for life frame, R04 4 launches, R05, R07, R12 2 moments); 7 read unavailable with the table and connector named.
+3. Money is computed in code for R04 (earned share drop x sessions x GA4 conversion x AOV), R05 and R07 (bet budget cap); null with a reason elsewhere.
+4. PR proxy is the direct plus referral share of all visits, not the count, so the fall ramp does not read as press. No press log exists yet.
+5. The 5 simulated bets each name a brain record, approved or site_backed claims and a room metric; a test enforces the claim tiers.
+6. Next: a contract session for pr_coverage, bet_read_points and a real brief store; orders and sessions come from different scales in this build, so session value uses GA4 conversion.
