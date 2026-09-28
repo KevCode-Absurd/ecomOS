@@ -23,6 +23,17 @@ One module per source type, same shape: `run(brand, config) -> list[record]` wri
 | connectors | Shopify, Meta, Google, GA4, Klaviyo, Gorgias, GSC, Amazon and the rest of the registry | channels, stack, products (hero flags), marketplaces, learnings with metric pointers | numbers stay in the data layer |
 | stack detector (`stack.py`) | the store's own HTML: saved pages or one polite live fetch, signatures in `stack.signatures.json` | stack | free replacement for BuiltWith and Wappalyzer, both registered in `sources.registry.json` as optional paid enrichers and never called here; `python3 -m app.brain.extract.stack --brand <slug> --url <store> [--pages <dir>] [--out app/brain]` |
 
+## Onboarding runner: `app/brain/onboard.py` (S6.0f)
+
+`python3 -m app.brain.onboard --brand <slug> --url <store url> --name "<brand name>" [--mode mock|live] [--max-usd 10] [--fixtures] [--free-only] [--compare]` chains the extractors above for one brand, in this order: site crawl, stack detector, Ad Library page discovery, the Ad Library pull (confirmed pages only), Amazon discovery, the Amazon review lane, the Reddit plan, the Reddit pull (confirmed subreddits only), press, jobs. Then `merge.py`, `ladders.py`, `router.py` (BRAIN.md), the brand's `calibrate.py` if it exists, and `keeper.ask` for at most 5 questions, written to `<brand>/open_questions.json` as `keeper_` records and printed.
+
+- Every step writes its raw folder and one line to `<brand>/onboard.log.jsonl`: step, kind, started, finished, records, cost_usd, estimate_usd, status (ok, mock, waiting, refused, skipped, error), note. A failed or refused step is logged and the run goes on.
+- Paid lanes print the `estimate_usd` of the Apify connector and the budget left before they start, and are refused when the estimate would pass `--max-usd`. The estimate counts against the cap in mock mode too, so a cap test in mock behaves like live. Amazon discovery's search is capped at $1 and is skipped when refused; the free site and store-page steps still run.
+- Mock runs (paid lanes mock) write under `app/connectors/.mock/onboard/`, never into a real brain. Lanes the runner does not own (founder answers, documents, hand research) are copied from the real brain first, and records an owned lane held before and the fresh run did not find go to `raw/<lane>-kept/`, so a re-onboard never drops a record.
+- `--fixtures` reads every free lane from `fixtures/<kind>/<brand>/` (the site fixture keeps its saved host) and makes no network call; for a brand with a saved paid pull in `app/brain/<brand>/raw/<lane>-apify/`, mock mode replays it. A brand with no fixture shows its lanes as skipped.
+- `--compare` (on by default with `--fixtures`) matches records by id against `app/brain/<brand>/`: a section the run's lanes wrote passes when at most 5 percent of today's records are missing; records the run adds are reported with the plain count difference.
+- The setup screen runs it: `POST /api/setup/onboard/start {url, name, fixtures}` starts a background thread in mock mode, `GET /api/setup/onboard/status?brand=` returns progress per lane, records, estimates, cost and the questions.
+
 ## Default extractors for any new brand
 
 Run in this order on day one, before any question is asked: site crawl, own-site reviews, Amazon listings and reviews (when the brand has ASINs), retailer reviews, Reddit, Meta Ad Library, press and interviews, job postings and stack, then the objection ladders. The list lives in `app/brain/extract/defaults.json` so onboarding and the keeper read the same thing.

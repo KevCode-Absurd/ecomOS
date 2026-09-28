@@ -14,7 +14,9 @@
   };
   const CHOICE_LABEL = { connect: 'Connected (mock)', skip: 'Skipped for now', declined: 'Not comfortable' };
   const CHOICE_TONE = { connect: 'good', skip: '', declined: 'warn' };
-  let S = null, auditResult = null;
+  let S = null, auditResult = null, onb = null, onbTimer = null;
+  const STATUS_TONE = { ok: 'good', mock: 'accent', waiting: 'warn', refused: 'bad', error: 'bad', skipped: '', pending: '' };
+  const usd = (v) => (v === null || v === undefined) ? 'none' : '$' + Number(v).toFixed(2);
 
   const words = (s) => String(s || '').replace(/_/g, ' ');
   const chip = (text, tone) => el('span', { class: 'chip' + (tone ? ' ' + tone : ''), text });
@@ -64,7 +66,7 @@
     const done = [!!S.website, S.documents.length > 0, st.answered > 0, st.fin > 0, !!auditResult];
     UI.mount('#steps', ['Website', 'Documents', 'Sources', 'Brand numbers', 'First audit'].map((t, i) =>
       el('a', { href: '#step-' + (i + 1), class: 'chip' + (done[i] ? ' good' : ''), text: (i + 1) + '. ' + t })));
-    renderWebsite(done[0]); renderDocs(done[1]); renderSources(done[2]); renderFinance(done[3]); renderAudit(done[4]);
+    renderWebsite(done[0]); renderOnboard(); renderDocs(done[1]); renderSources(done[2]); renderFinance(done[3]); renderAudit(done[4]);
   }
 
   // ---------- 1. website
@@ -92,6 +94,65 @@
       }) : null,
       S.website && S.sections.empty.length ? el('div', { class: 'chips' }, el('span', { class: 'muted small', text: 'Nothing found yet for:' }),
         S.sections.empty.map((s) => chip(words(s), 'warn'))) : null);
+  }
+
+  // ---------- 1b. onboarding run: every public lane, paid lanes in mock mode, then the 5 questions
+  async function loadOnboard() {
+    try { onb = await UI.api(q('onboard/status')); } catch (e) { onb = { error: e.message }; }
+    renderOnboard();
+    clearTimeout(onbTimer);
+    if (onb && (onb.running || onb.thread_alive)) onbTimer = setTimeout(loadOnboard, 1500);
+  }
+  function renderOnboard() {
+    if (!S) return;
+    const url = el('input', { class: 'text', type: 'text', value: (S.website && S.website.url) || 'bombas.com', 'aria-label': 'Store url' });
+    const name = el('input', { class: 'text', type: 'text', value: BRAND === 'bombas' ? 'Bombas' : '', 'aria-label': 'Brand name' });
+    const fx = el('input', { type: 'checkbox', checked: BRAND === 'bombas' ? true : null });
+    const out = msg();
+    const running = onb && (onb.running || onb.thread_alive);
+    const btn = el('button', { class: 'btn primary', type: 'button', text: running ? 'Running' : 'Run onboarding' });
+    btn.disabled = !!running;
+    btn.addEventListener('click', async () => {
+      btn.disabled = true;
+      try {
+        await UI.api(q('onboard/start'), { method: 'POST', body: { url: url.value, name: name.value, fixtures: fx.checked } });
+        say(out, 'Started. Paid lanes run in mock mode and cost nothing.', true);
+        setTimeout(loadOnboard, 300);
+      } catch (e) { say(out, e.message); btn.disabled = false; }
+    });
+    const body = [];
+    if (onb && onb.error) body.push(el('div', { class: 'msg err', text: onb.error }));
+    else if (onb && onb.started) {
+      const p = onb.progress;
+      body.push(el('div', { class: 'lanes' }, el('div', { class: 'small muted', text: p.finished + ' of ' + p.total + ' steps' + (onb.done ? ', done' : ', running') }),
+        el('div', { class: 'bar' }, el('span', { style: 'width:' + Math.round(100 * p.finished / p.total) + '%' }))));
+      body.push(el('div', { class: 'grid tiles' },
+        UI.tile({ name: 'Records found', plain: 'across the lanes', value: onb.records, unit: 'n' }),
+        UI.tile({ name: 'Paid lane estimates', plain: 'shown before each paid step', value: onb.estimate_usd, unit: 'usd' }),
+        UI.tile({ name: 'Spent', plain: 'mock mode spends nothing', value: onb.cost_usd, unit: 'usd' })));
+      body.push(UI.table({
+        columns: [{ key: 'step', label: 'Lane' }, { key: 'kind', label: 'Kind' }, { key: 'status', label: 'Status' },
+          { key: 'records', label: 'Records', unit: 'n', align: 'right' }, { key: 'estimate', label: 'Estimate', align: 'right' },
+          { key: 'note', label: 'What happened' }],
+        rows: onb.lanes.map((l) => ({ step: words(l.step), kind: l.kind, status: l.status, records: l.records,
+          estimate: l.estimate_usd === null ? '' : usd(l.estimate_usd), note: l.note || '' })),
+        sort: false, maxRows: 20
+      }));
+      if (onb.done) {
+        body.push(el('h4', { text: onb.questions.length ? 'The ' + onb.questions.length + ' questions no source answered' : 'Nothing left to ask' }));
+        body.push(el('div', { class: 'grid' }, onb.questions.map((a, i) => el('div', { class: 'card q' },
+          el('div', { class: 'step-head' }, el('b', { text: (i + 1) + '. ' + a.asks }), el('span', { class: 'imp', text: 'importance ' + a.importance })),
+          el('div', { class: 'small muted', text: 'Why: ' + a.why + '.' }),
+          a.connect.length ? el('div', { class: 'chips' }, el('span', { class: 'muted small', text: 'Or connect:' }), a.connect.map((s) => chip(words(s), 'accent'))) : null,
+          el('div', { class: 'chips' }, el('span', { class: 'muted small', text: 'Fills:' }), a.fills.map((f) => chip(words(f))))))));
+        body.push(el('p', { class: 'small muted', text: 'Answer them in step 5. Paid lanes wait for you to confirm pages and subreddits; until then they show as waiting.' }));
+      }
+    }
+    UI.mount('#onboard', el('div', { class: 'step-head' }, el('span', { class: 'n', text: 'Step 1b' }), el('h3', { text: 'Fill the brain from public sources' }),
+      onb && onb.done ? chip('done', 'good') : chip(running ? 'running' : 'to do')),
+      el('p', { class: 'muted', text: 'Reads your site, tech stack, Ad Library pages, Amazon, Reddit, press and job posts, then builds the brain and asks at most 5 questions. Each paid lane shows its cost first. Here they run in mock mode.' }),
+      el('div', { class: 'form' }, field('Website', url), field('Brand name', name),
+        el('label', { class: 'check' }, fx, 'Use saved pages (offline)'), el('div', null, btn)), out, ...body);
   }
 
   // ---------- 2. documents
@@ -250,5 +311,5 @@
       el('div', null, btn), ...body);
   }
 
-  load();
+  load().then(loadOnboard);
 })();

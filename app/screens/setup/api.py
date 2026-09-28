@@ -14,10 +14,16 @@ Five steps, all local, all mock. No network, no paid calls, no external writes.
   GET  /api/setup/audit                     keeper gaps plus the top 5 questions
   POST /api/setup/answer     {question_id, answer}
                                             the answer becomes a founder record via store.py
+  GET  /api/setup/onboard/status?brand=     the onboarding run log: progress per lane, records,
+                                            cost and estimates, and the 5 questions
+  POST /api/setup/onboard/start {url, name, fixtures}
+                                            runs app/brain/onboard.py in a background thread:
+                                            free lanes, paid lanes in mock mode, under ONBOARD_ROOT
 
 The brand comes from `?brand=` (default bombas) and must have a brain folder.
-BRAIN_ROOT, DATA_ROOT and CONTRACTS are module constants so tests can point
-them at a temporary copy.
+BRAIN_ROOT, DATA_ROOT, CONTRACTS and ONBOARD_ROOT are module constants so tests
+can point them at a temporary copy. The onboard routes accept any safe slug: a new
+brand has no brain folder until its first run.
 """
 from __future__ import annotations
 
@@ -38,7 +44,12 @@ DEFAULT_BRAND = 'bombas'
 if str(APP / 'brain') not in sys.path:
     sys.path.insert(0, str(APP / 'brain'))
 import keeper  # noqa: E402
+import onboard  # noqa: E402
 import store  # noqa: E402
+
+ONBOARD_ROOT = onboard.MOCK_ROOT
+ONBOARD_MAX_USD = 10.0
+_runs: dict[str, threading.Thread] = {}
 
 SAFE_BRAND = re.compile(r'^[a-z0-9_-]{2,40}$')
 SAFE_DOC = re.compile(r'^[A-Za-z0-9 _.()-]{1,120}$')
@@ -386,6 +397,44 @@ def answer(brand: str, body: dict) -> dict:
     return {'record': rec, 'fills': q['fills']}
 
 
+# ---------------------------------------------------------------- onboarding run
+
+def onboard_status(brand: str) -> dict:
+    out = onboard.status(brand, ONBOARD_ROOT)
+    t = _runs.get(brand)
+    out['thread_alive'] = bool(t and t.is_alive())
+    out['mode'] = 'mock'
+    return out
+
+
+def onboard_start(brand: str, body: dict) -> dict:
+    url = str(body.get('url') or '').strip()
+    host = urlparse(url if '://' in url else 'https://' + url).hostname or ''
+    if not host or '.' not in host:
+        raise ValueError('enter a website like bombas.com')
+    name = str(body.get('name') or '').strip()[:80] or brand.replace('-', ' ').title()
+    with _lock:
+        t = _runs.get(brand)
+        if t and t.is_alive():
+            raise ValueError('an onboarding run for this brand is still going')
+        runner = onboard.Runner(brand, url, name, mode='mock', max_usd=ONBOARD_MAX_USD,
+                                fixtures=bool(body.get('fixtures')), out=ONBOARD_ROOT, echo=None)
+        runner.dir.mkdir(parents=True, exist_ok=True)
+        (runner.dir / onboard.LOG_NAME).write_text('', encoding='utf-8')
+        t = threading.Thread(target=runner.run, name='onboard-' + brand, daemon=True)
+        _runs[brand] = t
+        t.start()
+    return {'started': True, 'brand': brand, 'url': runner.url, 'name': name, 'mode': 'mock',
+            'fixtures': runner.fixtures, 'max_usd': ONBOARD_MAX_USD}
+
+
+def onboard_brand(req) -> str:
+    brand = (req.arg('brand') if hasattr(req, 'arg') else None) or DEFAULT_BRAND
+    if not SAFE_BRAND.match(brand):
+        raise ValueError('brand must be a lowercase slug')
+    return brand
+
+
 # ---------------------------------------------------------------- router
 
 def state(brand: str) -> dict:
@@ -405,10 +454,23 @@ ROUTES = {
     ('POST', 'finance'): add_finance_row,
     ('POST', 'answer'): answer,
 }
+ONBOARD_ROUTES = {
+    ('GET', 'status'): lambda b, body: onboard_status(b),
+    ('POST', 'start'): onboard_start,
+}
 
 
 def handle(req):
     name = req.path[0] if req.path else 'state'
+    if name == 'onboard':
+        route = ONBOARD_ROUTES.get((req.method, req.path[1] if len(req.path) > 1 else 'status'))
+        if route is None:
+            return 404, {'error': 'not found', 'path': '/'.join(req.path)}
+        try:
+            body = req.body if isinstance(req.body, dict) else {}
+            return route(onboard_brand(req), body)
+        except ValueError as exc:
+            return 400, {'error': str(exc)}
     route = ROUTES.get((req.method, name))
     if route is None:
         return 404, {'error': 'not found', 'path': '/'.join(req.path)}
