@@ -6,9 +6,29 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | # | Feature | Status |
 |---|---|---|
-| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | todo |
-| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | todo |
-| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | todo |
+| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | done |
+| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | done |
+| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | done |
+| 0.4 | `audit.py`: 17 rules in the audit contract shape (13 room rules plus 4 on what Bombas has) | done |
+
+## Jobs to be done (room spec) and the rules that answer them
+
+| Job | Question | Capability | Audit rules |
+|---|---|---|---|
+| audit catalogue data quality and image or video spec | which listings are broken, missing attributes or out of spec right now | PROD-C63, PROD-C64 | MKT-R01, MKT-R16 |
+| track Buy Box ownership and reseller or MAP violations | who holds the Buy Box, and is anyone underselling my price | PROD-C46 | MKT-R02, MKT-R03 |
+| manage reviews and account health | is my account health at risk of a suspension | PROD-C38 | MKT-R04, MKT-R14 |
+| build and hand off one clean catalogue feed | is the feed the ad teams pull from current and clean | PROD-C47 | MKT-R13 |
+| recompute true rapid-delivery ROAS | what is this platform's ad spend really returning | PROD-C49 | MKT-R05 |
+| reconcile settlement payouts against order value | did each platform actually pay me what my orders say I'm owed | ORCH-C03 | MKT-R06 |
+| monitor dark-store fill rate | which dark stores are about to go out of stock | PROD-C51 | MKT-R07 |
+| manage rapid-delivery ad credits and the promo calendar | am I using platform ad credits before they expire | PROD-C50 | MKT-R08 |
+| onboard onto Instacart, DoorDash or Gopuff | where is this onboarding stuck | PROD-C48 | none yet (no insight in the spec) |
+| confirm US labelling compliance before go-live | is this listing legally clear to publish | PROD-C45 | MKT-R12 |
+| build and optimise the Amazon listing | is my listing structured so the target keywords rank | PROD-C34 | MKT-R15 |
+| manage Amazon replenishment and IPI limits | am I about to breach a storage limit or run out of FBA stock | PROD-C39 | MKT-R09 |
+| diagnose an Amazon sales change | did sales drop because of traffic or conversion | PROD-C40 | MKT-R10, MKT-R17 |
+| keep Walmart, Target Plus, eBay and TikTok Shop listings current | which other marketplace listings have gone stale | PROD-C44 | MKT-R11 |
 
 ## Candidates from the room spec (pick 10 per round)
 
@@ -101,3 +121,14 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
+| 0 | shell, api, 3 tiles, rules as insights, 1 chart, audit | 2026-09-28 | S3.22 |
+
+## Round 0 status
+
+1. Built: index.html, screen.js, api.py, audit.py; tiles are marketplace sales (last full month), marketplace share of revenue (12 months, 8.0 percent) and Amazon stars (public sample).
+2. Chart: marketplace net sales by month, Amazon and TikTok Shop stacked, 12 months, last month flagged partial; Walmart, Target Plus and eBay named as not connected.
+3. Audit: 17 rules. The 13 room rules read unavailable with the connector that fills them; MKT-R14 (4 ASINs rated under the others), R15 (trust rung with no proof) and R16 (7 of 32 ASINs not buyable) fire on Bombas.
+4. Money: MKT-R17 computes (median share minus share) x month revenue in code; it does not fire now. Brain-based findings carry money null with a reason, since Amazon sales by ASIN are not connected.
+5. Data gaps: the simulated reviews table has 0 Amazon rows and marketplace_listings is empty, so ratings come from the brain's public sample, never simulated.
+6. Tests: tests/test_screen_marketplaces.py, 18 passing; screenshot round0.png at 1280 wide. Next round: Buy Box and settlement tables in a contract session.
+
