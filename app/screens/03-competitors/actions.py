@@ -326,6 +326,25 @@ def act_above(f: dict, m: dict) -> dict:
     }
 
 
+def act_corner(f: dict, m: dict) -> dict:
+    """COMP-R11: an open strong-claim corner. Test a positioning line that takes it before any ad spend."""
+    corner = f["entity"]["label"]
+    frame = (m["brain"].get(f"{m['brand']}.positioning.frame") or {}).get("value") or "the current frame"
+    draft = "\n".join([f"Positioning test: take the {corner} corner.",
+                       f"Frame now: {frame}.",
+                       "Write 2 lines: the current frame and a frame that claims the corner with our proof.",
+                       "Test both on a 5 second preference poll with 200 shoppers, then as 2 ad first lines.",
+                       "Keep the frame that wins both. Write it to the brain as an approved record."])
+    return {"title": f"Test a positioning line that takes the open {corner} corner", "owner": "agent_drafts",
+            "artefact": {"kind": "test_brief", "label": "a positioning test: 2 frames", "draft": draft},
+            "steps": _steps(("agent", "Draft 2 frames from the brain's proof points."),
+                            ("person", "Approve the frames."),
+                            ("agent", "Run the poll and the 2 first lines; report the winner."),
+                            ("person", "Approve the winning frame as a brain record.")),
+            "size": None, "win_rule": "Preference share 10 points above the current frame", "stop_rule": "No frame beats the current by 5 points",
+            "check_on": _plus(f["last_seen"], 21), "time_to_ship_hours": 6}
+
+
 def act_connect(f: dict, m: dict) -> dict:
     un = f.get("unavailable") or {}
     con = un.get("connector") or "the missing source"
@@ -340,7 +359,7 @@ def act_connect(f: dict, m: dict) -> dict:
 
 BUILDERS = {"COMP-R01": act_angle, "COMP-R02": act_price, "COMP-R03": act_offer_run, "COMP-R04": act_lookalike,
             "COMP-R05": act_coverage, "COMP-R06": act_first_line, "COMP-R07": act_offer_gap, "COMP-R08": act_discount,
-            "COMP-R09": act_ladder, "COMP-R10": act_above}
+            "COMP-R09": act_ladder, "COMP-R10": act_above, "COMP-R11": act_corner}
 
 
 def action(f: dict, m: dict, net_revenue: float | None) -> dict:

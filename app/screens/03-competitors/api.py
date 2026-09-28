@@ -96,7 +96,52 @@ def positioning(m: dict) -> dict:
         quads[axis] = {"split_y": split_y, "quadrants": q,
                        "openness": (f"{sum(1 for x in q if not x['competitors'])} of 4"
                                     if split_x is not None and len(comps) >= 3 else None)}
-    return {"points": pts, "split_x": split_x, "axes": AXES, "quadrants": quads}
+    kit = {axis: map_kit(m, pts, axis, quads[axis], split_x) for axis in AXES}
+    return {"points": pts, "split_x": split_x, "axes": AXES, "quadrants": quads, "kit": kit,
+            "not_placed": [p["name"] for p in m["pages"] if p["role"] != "self" and not any(
+                audit.pagemod._same(p["name"], q["name"]) for q in pts if q["x"] is not None)]}
+
+
+QUAD_ORDER = [(False, True), (True, True), (False, False), (True, False)]   # kit order: tl, tr, bl, br
+
+
+def map_kit(m: dict, pts: list[dict], axis: str, q: dict, split_x) -> dict:
+    """Props for Charts.positioningMap plus one move per quadrant: hold, contest, claim or skip."""
+    spec = AXES[axis]
+    size = {p["name"]: p["active_ads"] for p in m["pages"]}
+    points = []
+    for p in pts:
+        if p["x"] is None:
+            continue
+        n = next((v for k, v in size.items() if audit.pagemod._same(k, p["name"])), None)
+        points.append({"label": p["name"], "x": p["x"], "y": p[axis], "us": p["brand"], "size": n,
+                       "note": ("simulated net price" if p["brand"] else ("rough price read" if p["rough"] else "public price band"))})
+    us = next((p for p in pts if p["brand"]), None)
+    moves = []
+    texts = m["profile"]["_texts"]
+    missing = [x["part"] for x in audit.score_parts(texts, axis) if not x["has"]]
+    for hi_x, hi_y in QUAD_ORDER:
+        quad = next(x for x in q["quadrants"] if x["x_high"] == hi_x and x["y_high"] == hi_y)
+        ours = us is not None and us["x"] is not None and split_x is not None and (us["x"] >= split_x) == hi_x and (us[axis] >= q["split_y"]) == hi_y
+        same_side = us is not None and us["x"] is not None and split_x is not None and (us["x"] >= split_x) == hi_x
+        if ours:
+            kind, text = "hold", (f"Ours. Shared with {', '.join(quad['competitors'])}. Defend it with proof in every ad."
+                                  if quad["competitors"] else "Ours alone. Say it in every ad and on every page.")
+        elif hi_y and not quad["competitors"]:
+            kind, text = "claim", "Open. No tracked brand claims it. Test a positioning line that takes it."
+        elif hi_y and same_side:
+            kind, text = "contest", (f"{', '.join(quad['competitors'])} hold it. We move in with " +
+                                     (" and ".join(missing[:2]) if missing else "a stronger proof") + ".")
+        else:
+            kind, text = "skip", "Not a target for us on this capture."
+        moves.append({"label": quad["label"], "competitors": quad["competitors"], "kind": kind, "text": text,
+                      "open": not quad["competitors"]})
+    labels = [mv["label"] + (" (open)" if mv["open"] else "") for mv in moves]
+    return {"x": {"label": "Median price per pair, US dollars", "unit": "$", "min": 0,
+                  "max": max([p["x"] for p in points] + [10]) * 1.15},
+            "y": {"label": f"{spec['label']}, 0 to {spec['max']}", "min": -0.3, "max": spec["max"] + 0.3},
+            "points": points, "quadrants": labels, "midX": split_x, "midY": q["split_y"], "moves": moves,
+            "missing": missing, "plain": spec["plain"]}
 
 
 def board(m: dict) -> list[dict]:

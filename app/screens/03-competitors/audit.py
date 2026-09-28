@@ -60,6 +60,11 @@ COMP-R10 priced above with no proof. A style's single pair sits above the
     median of the direct peers' medians and the brain has no proof point for
     that style. Severity medium. Capability CREA-C31 (price framing on the
     page). Owner: 03-competitors.
+COMP-R11 open strong-claim corner. On the positioning map (price per pair
+    split at the tracked median, claim score split at the middle of its scale),
+    a strong-claim quadrant with no tracked brand in it, with 3 or more brands
+    placed. Severity medium. Capability BRAND-C20 (test the positioning line
+    that takes it). Owner: 03-competitors.
 
 Rubric overrides (depth.md section 4 allows reputation and satisfaction per rule):
 COMP-R01 reputation 5: an unclaimed angle is a competitor position gap named in
@@ -158,12 +163,15 @@ RULES = [
     {"rule_id": "COMP-R10", "name": "priced above the direct median with no proof", "entity_type": "sku",
      "inputs": ["products_monthly", "brain competitors price_band_usd", "brain positioning.proof_points"],
      "capability": "CREA-C31", "owner_screen": SCREEN},
+    {"rule_id": "COMP-R11", "name": "open strong-claim corner on the positioning map", "entity_type": "brand",
+     "inputs": ["brain competitors price_band_usd, hook_types, positioning"], "capability": "BRAND-C20",
+     "owner_screen": SCREEN},
     {"rule_id": "COMP-R08", "name": "discount on most ads while direct peers run none", "entity_type": "offer",
      "inputs": ["brain offers.promo_share_active_ads", "brain competitors offers_seen"], "capability": "LIFE-C38",
      "owner_screen": SCREEN},
 ]
 RUBRIC_OVERRIDES = {"COMP-R01": {"reputation": 5}, "COMP-R02": {"reputation": 3}, "COMP-R04": {"reputation": 5, "satisfaction": 4}}
-AUTONOMY = {"LIFE-C39": "founder_gate", "CREA-C31": "agent_does", "CREA-C06": "agent_does", "CREA-C04": "agent_does", "LIFE-C47": "agent_does", "LIFE-C38": "founder_gate", "BRAND-C21": "founder_gate", "BRAND-C24": "founder_gate", "MONEY-C48": "human_assist"}
+AUTONOMY = {"BRAND-C20": "agent_does", "LIFE-C39": "founder_gate", "CREA-C31": "agent_does", "CREA-C06": "agent_does", "CREA-C04": "agent_does", "LIFE-C47": "agent_does", "LIFE-C38": "founder_gate", "BRAND-C21": "founder_gate", "BRAND-C24": "founder_gate", "MONEY-C48": "human_assist"}
 
 
 # ---------------------------------------------------------------- reading
@@ -199,6 +207,18 @@ def _raw_competitors(brain: Brain) -> list[dict]:
 def _hits(text: str, keys: list[str]) -> bool:
     t = text.lower()
     return any(k in t for k in keys)
+
+
+DURABILITY_PARTS = [("a guarantee", ["guarantee"]), ("a lifetime promise", ["lifetime"]), ("durability named", ["durab"])]
+COMFORT_PARTS = [("comfort named", ["comfort"]), ("a relief hook", ["relief"]),
+                 ("a proof hook (lab, doctor, athlete or creator)", ["lab tested", "doctor", "athlete testimonial", "creator testimonial"])]
+
+
+def score_parts(texts: list[str], axis: str) -> list[dict]:
+    """Which claim points a page has and which it misses, for the positioning moves."""
+    t = " ".join(texts).lower()
+    parts = DURABILITY_PARTS if axis == "durability" else COMFORT_PARTS
+    return [{"part": name, "has": any(k in t for k in keys)} for name, keys in parts]
 
 
 def durability_score(texts: list[str]) -> int:
@@ -620,6 +640,39 @@ def rule_ladder(m, ends_on):
     return out
 
 
+AXIS_MAX = {"durability": DURABILITY_MAX, "comfort": COMFORT_MAX}
+
+
+def open_corners(m) -> list[dict]:
+    placed = [c for c in m["competitors"] if c["price"]["median"] is not None]
+    split = m["category_median"]
+    if split is None or len(placed) < 3:
+        return []
+    out = []
+    for axis, mx in AXIS_MAX.items():
+        for hi_x in (False, True):
+            names = [c["name"] for c in placed if (c["price"]["median"] >= split) == hi_x and c[axis] >= mx / 2]
+            if not names:
+                out.append({"axis": axis, "hi_x": hi_x, "label": f"{'higher' if hi_x else 'lower'} price, strong {axis} claim",
+                            "placed": len(placed), "split": split})
+    return out
+
+
+def rule_corners(m, ends_on):
+    out = []
+    for c in open_corners(m):
+        ev = [_row("brands_in_corner", 0, "n", "latest capture", ends_on, _fresh(m["competitors"]), 0, "threshold", "competitors"),
+              _row("brands_placed", c["placed"], "n", "latest capture", ends_on, _fresh(m["competitors"]), 3, "threshold",
+                   "competitors"),
+              _row("price_split", c["split"], "usd", "latest capture", ends_on, _fresh(m["competitors"]), None, "peer_band",
+                   "competitors.price_band_usd")]
+        sentence = f"No tracked brand claims the {c['label']} corner. {c['placed']} brands are placed on the map."
+        ent = {"type": "brand", "id": f"corner_{c['axis']}_{'high' if c['hi_x'] else 'low'}", "label": c["label"]}
+        out.append(_finding("COMP-R11", "medium", ent, ev, sentence, [f"{m['brand']}.positioning.frame"], ends_on, 0.3,
+                            "no baseline: demand for the corner is not measured yet"))
+    return out
+
+
 def packs_month_end(packs):
     if not packs.get("available"):
         return None
@@ -643,7 +696,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
                for rid in ("COMP-R01", "COMP-R03")]
     else:
         out = rule_angles(m, ends_on) + rule_offer_runs(m, ends_on) + rule_coverage(m, ends_on) + rule_mix(m, ends_on)
-        out += rule_ladder(m, ends_on)
+        out += rule_ladder(m, ends_on) + rule_corners(m, ends_on)
     out += rule_price(m, ends_on) + rule_lookalike(m, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f["severity"]], f["id"]))
     return out

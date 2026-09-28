@@ -453,6 +453,44 @@ class TestLadder(TempBrain):
         self.assertEqual(api.actions.ranker.validate_action(a), [])
 
 
+class TestMap(TempBrain):
+    """1.7: positioning map on the kit chart, sized by active ads, each corner ends in a move."""
+    def setUp(self):
+        super().setUp()
+        api.BRAIN_ROOT = self.tmp
+        self.pos = api.handle(Req(['overview']))['positioning']
+
+    def test_kit_props(self):
+        for axis, k in self.pos['kit'].items():
+            self.assertEqual(len(k['quadrants']), 4)
+            self.assertEqual(len(k['moves']), 4)
+            us = [p for p in k['points'] if p['us']]
+            self.assertEqual(len(us), 1)
+            self.assertEqual(us[0]['size'], 23)
+            self.assertEqual(k['midX'], 25.0)
+            kinds = [mv['kind'] for mv in k['moves']]
+            self.assertEqual(kinds.count('hold'), 1)
+        self.assertIn('Allbirds', self.pos['not_placed'])
+        dur = self.pos['kit']['durability']
+        contest = next(mv for mv in dur['moves'] if mv['kind'] == 'contest')
+        self.assertIn('Feetures', contest['text'])
+        self.assertIn('lifetime', contest['text'])
+
+    def test_open_corner_rule(self):
+        out = audit.run('bombas', WINDOW, self.tmp)
+        self.assertFalse([f for f in out if f['rule_id'] == 'COMP-R11'])
+        def drop(rows):
+            return [r for r in rows if r['field'] not in ('feetures', 'darn_tough')]
+        self.edit('competitors', drop)
+        shutil.rmtree(self.tmp / 'bombas' / 'raw' / 'b-adlibrary')
+        out = audit.run('bombas', WINDOW, self.tmp)
+        r11 = [f for f in out if f['rule_id'] == 'COMP-R11']
+        self.assertTrue(r11)
+        acts = api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions']
+        a = next(a for a in acts if a['rule_id'] == 'COMP-R11')
+        self.assertEqual(a['artefact']['kind'], 'test_brief')
+
+
 class TestRank(TempBrain):
     """Depth contract rules 2, 3 and 13: owner, steps and artefact on every action; every finding ends in one."""
     W = {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4}

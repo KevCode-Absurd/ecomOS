@@ -19,78 +19,25 @@
     return n;
   }
 
-  function drawMap(pos, axis) {
-    const spec = pos.axes[axis];
-    const q = pos.quadrants[axis];
-    const W = 640, H = 380, pad = { l: 52, r: 20, t: 18, b: 44 };
-    const iw = W - pad.l - pad.r, ih = H - pad.t - pad.b;
-    const xs = pos.points.flatMap((p) => [p.x, p.high, p.low]).filter((v) => v != null);
-    const xmax = Math.ceil(Math.max(...xs, 1) * 1.1 / 5) * 5;
-    const ylo = -0.4, yhi = spec.max + 0.4;
-    const X = (v) => pad.l + (v / xmax) * iw;
-    const Y = (v) => pad.t + ih - ((v - ylo) / (yhi - ylo)) * ih;
-    const s = svg('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'aria-label': 'Positioning map: price per pair against ' + spec.label.toLowerCase() });
-    if (pos.split_x != null) {
-      const sx = X(pos.split_x), sy = Y(q.split_y);
-      const rects = { 'false,true': [pad.l, pad.t, sx - pad.l, sy - pad.t], 'false,false': [pad.l, sy, sx - pad.l, pad.t + ih - sy],
-        'true,true': [sx, pad.t, pad.l + iw - sx, sy - pad.t], 'true,false': [sx, sy, pad.l + iw - sx, pad.t + ih - sy] };
-      for (const quad of q.quadrants) {
-        const r = rects[quad.x_high + ',' + quad.y_high];
-        if (!quad.competitors.length) s.append(svg('rect', { x: r[0], y: r[1], width: r[2], height: r[3], class: 'open' }));
-        s.append(svg('text', { x: r[0] + 6, y: quad.y_high ? r[1] + 13 : r[1] + r[3] - 6, class: 'ql' }, quad.label + (quad.competitors.length ? '' : ' (open)')));
-      }
-    }
-    for (let v = 0; v <= xmax; v += 5) {
-      s.append(svg('line', { x1: X(v), x2: X(v), y1: pad.t, y2: pad.t + ih, class: 'grid-l' }));
-      s.append(svg('text', { x: X(v), y: pad.t + ih + 16, 'text-anchor': 'middle' }, '$' + v));
-    }
-    for (let v = 0; v <= spec.max; v++) {
-      s.append(svg('line', { x1: pad.l, x2: pad.l + iw, y1: Y(v), y2: Y(v), class: 'grid-l' }));
-      s.append(svg('text', { x: pad.l - 8, y: Y(v) + 4, 'text-anchor': 'end' }, String(v)));
-    }
-    s.append(svg('line', { x1: pad.l, x2: pad.l + iw, y1: pad.t + ih, y2: pad.t + ih, class: 'axis' }));
-    s.append(svg('line', { x1: pad.l, x2: pad.l, y1: pad.t, y2: pad.t + ih, class: 'axis' }));
-    if (pos.split_x != null) {
-      s.append(svg('line', { x1: X(pos.split_x), x2: X(pos.split_x), y1: pad.t, y2: pad.t + ih, class: 'split' }));
-      s.append(svg('line', { x1: pad.l, x2: pad.l + iw, y1: Y(q.split_y), y2: Y(q.split_y), class: 'split' }));
-    }
-    s.append(svg('text', { x: pad.l + iw / 2, y: H - 6, 'text-anchor': 'middle' }, 'Median price per pair, US dollars (line: public price band)'));
-    s.append(svg('text', { x: 14, y: pad.t + ih / 2, 'text-anchor': 'middle', transform: 'rotate(-90 14 ' + (pad.t + ih / 2) + ')' }, spec.label + ', 0 to ' + spec.max));
-    const seen = {};
-    for (const p of pos.points) {
-      if (p.x == null) continue;
-      const y = p[axis];
-      const key = p.x + ',' + y;
-      const nth = seen[key] = (seen[key] || 0) + 1;
-      const cls = p.brand ? ' brand' : '';
-      if (p.low != null && p.high != null) s.append(svg('line', { x1: X(p.low), x2: X(p.high), y1: Y(y), y2: Y(y), class: 'band' + cls }));
-      const dot = svg('circle', { cx: X(p.x), cy: Y(y), r: p.brand ? 7 : 6, class: 'dot' + cls + (p.rough && !p.brand ? ' rough' : '') });
-      dot.append(svg('title', null, p.name + ': ' + usd(p.x) + ' a pair, ' + spec.label.toLowerCase() + ' ' + y + (p.simulated ? ' (simulated price)' : '') + (p.rough ? ' (rough price)' : '')));
-      s.append(dot);
-      const ly = p.brand ? Y(y) + 22 : Y(y) - 8 - (nth - 1) * 14;
-      s.append(svg('text', { x: p.brand ? X(p.x) - 8 : X(p.x) + 10, y: ly, class: 'pt' }, p.name + (p.brand ? ' (simulated price)' : '')));
-    }
-    return s;
-  }
-
+  // ---------- 5f. positioning map ----------
+  const MOVE = { hold: ['keep', 'Hold'], claim: ['new', 'Claim'], contest: ['watch', 'Contest'], skip: ['na', 'Skip'] };
   function mapCard(pos) {
-    let axis = 'durability';
-    const box = el('div', { class: 'map-wrap' });
-    const note = el('p', { class: 'muted small' });
-    const tabs = el('div', { class: 'map-tabs', role: 'tablist' });
+    let axis = Object.keys(pos.kit)[0];
+    const box = el('div');
     const render = () => {
-      box.replaceChildren(drawMap(pos, axis));
-      const q = pos.quadrants[axis];
-      note.textContent = pos.axes[axis].plain + '. Split lines: the tracked median price (' + usd(pos.split_x) + ') and the middle of the claim scale. Open quadrants: ' + (q.openness || NA) + '. Hollow dots are rough price reads.';
-      for (const b of tabs.children) b.classList.toggle('sel', b.dataset.axis === axis);
+      const k = pos.kit[axis];
+      const chart = Charts.positioningMap({ x: k.x, y: k.y, points: k.points, quadrants: k.quadrants, midX: k.midX, midY: k.midY,
+        usLabel: 'us (simulated price)', themLabel: 'tracked brands', sizeUnit: 'n', title: 'Price against ' + pos.axes[axis].label.toLowerCase() + ', sized by active ads',
+        note: k.plain + '. Split lines: the tracked median price and the middle of the claim scale.' + (pos.not_placed.length ? ' Not placed, no price band in the brain: ' + pos.not_placed.join(', ') + '.' : '') });
+      const moves = el('div', { class: 'grid two moves' }, ...k.moves.map((mv) => el('div', { class: 'card flat move' },
+        el('div', { class: 'row' }, UI.verdict(MOVE[mv.kind][0], MOVE[mv.kind][1]), el('b', { text: mv.label })),
+        el('div', { class: 'small', text: mv.text }),
+        mv.kind === 'claim' || mv.kind === 'contest' ? UI.decisionRow({ capability: 'BRAND-C20', autonomy: 'agent_does', screen: SCREEN, compact: true, finding_id: SCREEN + '.map.' + axis + '.' + mv.label.replace(/[^a-z]+/gi, '_') }) : null)));
+      box.replaceChildren(chart, moves);
     };
-    for (const k of Object.keys(pos.axes)) {
-      const b = el('button', { class: 'btn sm', type: 'button', text: 'Price vs ' + pos.axes[k].label.toLowerCase(), dataset: { axis: k } });
-      b.addEventListener('click', () => { axis = k; render(); });
-      tabs.append(b);
-    }
+    const tabs = UI.pills({ items: Object.keys(pos.kit).map((key) => ({ key, label: 'Price vs ' + pos.axes[key].label.toLowerCase() })), current: axis, onChange: (key) => { axis = key; render(); } });
     render();
-    return [tabs, box, note];
+    return [tabs, box];
   }
 
   // ---------- 5e. price ladder and pack ladder ----------
@@ -384,6 +331,7 @@
     mount('#wrong', ...wrongList(p.findings, byId));
     mount('#actions', ...(p.actions.length ? p.actions.map((a) => UI.actionCard(a, { screen: SCREEN })) : [el('p', { class: 'muted', text: 'No open action.' })]));
     document.getElementById('signal-note').textContent = d.signal_note;
+    document.getElementById('map-sub').textContent = 'Split at the tracked median price (' + usd(d.positioning.split_x) + ') and the middle of the claim scale. Each corner ends in a move: hold, contest, claim or skip.';
     mount('#map', ...mapCard(d.positioning));
     ladderSection(d.ladder);
     mount('#board', ...d.board.map(boardCard));
