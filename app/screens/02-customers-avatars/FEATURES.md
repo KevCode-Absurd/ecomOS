@@ -2,13 +2,45 @@
 
 Status: todo | doing | done | parked. One feature per commit. The first round is the skeleton; after that, features come in rounds of 10, stack-ranked by revenue impact, usefulness and how easy they are to build on dummy data.
 
-## Round 0: skeleton
+## Round 0: skeleton (done 28 Sep 2026, S3.7, Bombas)
 
 | # | Feature | Status |
 |---|---|---|
-| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | todo |
-| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | todo |
-| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | todo |
+| 0.1 | Page shell in the shared UI kit: simulated badge, tiles, insights, chart, avatars, objection map, language bank, voice sheet, decision row, audit table | done |
+| 0.2 | `api.py`: `overview`, `audit`, `POST voice/examples`. Brand facts through `app/brain/store.py`; cohorts through `app/data/tables.py` | done |
+| 0.3 | 3 tiles (grounded avatars, objection coverage, repeat within 3 months), 2 insight rules, 1 chart (repeat within 3 months by first-order month) | done |
+| 0.4 | Avatar cards: share estimate, intensity, job, up to 3 quotes with source links, top doubt with proof or no proof, badge grounded / one source / inferred | done |
+| 0.5 | Objection map: objection, avatars (from ladder rungs), proof or open question, quotes, coverage in ads and on pages | done; ads and pages show unavailable (no angle field in `ad_rows`, no live page scan) |
+| 0.6 | Language bank by theme: phrases with counts, mentions by source, one quote per phrase with link | done |
+| 0.7 | Voice sheet: do, do not, tone by context from voice records; liked and disliked examples box writes founder records (`<brand>.voice.<kind>_example_<sha8>`) through `Brain.put`; marking the other way retires the old record | done |
+| 0.8 | `audit.py`: CUST-R01 ungrounded avatar, CUST-R02 uncovered top objection, CUST-R03 objection coverage in ads (unavailable until ads name an angle) | done |
+
+Round 0 notes:
+- Repeat within 3 months is computed from `cohorts.json` `active_by_month` (months 1 to 3 summed, over cohort size). A buyer active in 2 of those months counts twice, so it is an upper bound. `repeat_rate_90d` in `metrics.py` needs order rows, which read as unreadable for Bombas, so the chart does not use it. A contract session could add a cohort-level repeat metric from the aggregates.
+- The audit entity for an avatar is type `brand` with the avatar key as id: `audit.md` has no `avatar` type yet. Propose one in a contract session.
+- Ad coverage needs an angle per ad. The simulated `ad_rows` has placeholder text and no angle; the generator or an ad naming rule would fill it.
+- "Ungrounded" means no quotes, or quotes from fewer than 2 independent sources. On Bombas 7 of 11 avatars rest on 1 source.
+
+## Room jobs (room "Brand and customers", agent BRAND)
+
+| Job | Question | Capabilities |
+|---|---|---|
+| know who really buys and why, with evidence | who is my customer and what job did they hire us for | BRAND-C01, BRAND-C02, BRAND-C03, BRAND-C04, BRAND-C08, BRAND-C09, BRAND-C10, BRAND-C11 |
+| reuse customers' own words in copy and creative instead of guessing | what exact words do our customers use for this | BRAND-C14, CREA-C03 |
+| split one avatar into separate records when the job changes | is this really one customer or three | BRAND-C12 |
+| pair every named objection with the real thing that removed it | what actually gets someone past this objection | BRAND-C13 |
+| confirm what research found at wider scale | does this hold up outside the sample we already read | BRAND-C05, BRAND-C06 |
+| find an untapped avatar when the category feels saturated | is there a customer nobody else is claiming | BRAND-C16 |
+| keep the voice sheet current and check assets against it before they ship | does this sound like us, and is every claim in it safe | BRAND-C32, LOOP-C12, BRN-C03 |
+| walk the live site, ads and email against the guidelines on a cadence | where has the brand drifted since last quarter | BRAND-C37 |
+| track the brand's health line separate from any one campaign | is the brand getting stronger or weaker | BRAND-C48 |
+| keep the founder-facing brand brain current | what does the brand stand for right now, in one place | BRAND-C15, LOOP-C11 |
+| check what we say we are against what customers actually say | do customers describe us the way we describe ourselves | BRAND-C59 |
+| run automated checks on the brand's own journey and messaging before spending | would a real shopper get stuck, and does this message land | BRAND-C67, BRAND-C66 |
+| watch for trademark, domain and handle risk | is anyone about to take something that is ours | MONEY-C48 |
+| keep every page and channel leading with the same one idea | what is the one message this page or email should lead with | BRAND-C33 |
+
+The job to be done for each avatar is brand data: it lives in `app/brain/<brand>/avatars.json` (`value.job`) and shows on the avatar cards, not here.
 
 ## Candidates from the room spec (pick 10 per round)
 
@@ -105,3 +137,4 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
+| 0 | skeleton, 0.1 to 0.8 | 28 Sep 2026 | Bombas brain plus simulated cohorts; screenshot `round0.png` |
