@@ -6,9 +6,36 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | # | Feature | Status |
 |---|---|---|
-| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | todo |
-| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | todo |
-| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | todo |
+| 0.1 | Page shell in the shared UI kit: header, week or month toggle, tiles, insight list, action buttons | done |
+| 0.2 | `api.py` serving the report from `app/metrics.py`, other screens' audits and the brain, with unavailable states | done |
+| 0.3 | 3 tiles (net revenue, MER, top 10 money at stake), 2 insights (moved most, out of band 2 periods), 1 chart (net revenue by period) on Bombas | done |
+| 0.4 | Report sections: what changed, top 10 findings by money with decision status, what shipped, what the brain learned, open questions, T0 card | done |
+| 0.5 | `audit.py` with REPORT-R01 to R05 in the audit contract shape | done |
+
+## Room jobs (JTBD table)
+
+| Job | Question it answers | Capabilities | Round 0 |
+|---|---|---|---|
+| read the whole week's state of the business in under 5 minutes | what happened this week and what needs my call | LOOP-C01 | yes: the weekly report |
+| check whether this quarter's goals are on track, not just at quarter end | are we actually going to hit what I said mattered this quarter | LOOP-C07 | no: needs okr_records |
+| send a brand's monthly report when an agency runs it | what do I show this client this month | ORCH-C07 | partly: the monthly view (last closed month) |
+| see every brand an agency runs on one portfolio view, not tab by tab | across every client, where is the agency's time actually going, and is that right | LOOP-C21 | no: one brand only |
+| check an agency or platform's own report against the brand's real numbers before trusting it | does this agency's report match what we actually measure | LOOP-C41 | partly: REPORT-R02 checks the summary sheet against the contract |
+| check a vendor or freelancer invoice against what was actually delivered | did we actually get what this invoice is charging for | LOOP-C26 | no: needs vendor_invoices |
+| draft a board or investor update from the quarter's real numbers | what do I tell my board or investors this quarter | LOOP-C11 | no |
+| see whether the standing meeting cadence still fits the business as it grows | are we having the right meetings, not too many or too few | LOOP-C20 | no: needs operating_cadence |
+| see if any agency staff member or team member is overloaded across brands | is anyone about to drop something because they have too much on | LOOP-C21 | no: needs person_hours |
+| decide next month's channel budget split before any specialist spends their own slice | where should the next dollar of budget go, across channels | LOOP-C03 | partly: paid channel mix, no headroom yet |
+
+## Audit rules (audit.py)
+
+| Rule | Room rule | Fires on Bombas |
+|---|---|---|
+| REPORT-R01 | report claims that cite no metric | yes: new versus repeat share is read from the daily aggregate, not a contract metric |
+| REPORT-R02 | numbers that differ from the metric contract | yes today: Meta and Google spend in the daily aggregate (scale 1.0, committed) are about 10x the contract spend (from data.sqlite, rebuilt at scale 0.1) |
+| REPORT-R03 | a report period with no decisions | month only: no decision logged for August 2026 |
+| REPORT-R04 | unavailable metrics shown as numbers | no: every unavailable line and finding carries no number |
+| REPORT-R05 | a screen audit that raises (report keeps going) | no: 25 of 25 screens read |
 
 ## Candidates from the room spec (pick 10 per round)
 
@@ -85,3 +112,13 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
+| 0 | 0.1 to 0.5 | 2026-09-28 | S3.28: weekly and monthly report on Bombas, audit R01 to R05 |
+
+## Round 0 status
+
+1. Built: shell with a week or month toggle, api.py, report.py (builder), audit.py, 3 tiles, 2 rule insights, 1 bar chart, all labelled simulated; screenshot in round0.png.
+2. Numbers: every contract number via app/metrics.py (aov, spend, mer, period_roas, contribution_margin); new versus repeat is the one number read from the daily aggregate, and R01 names it.
+3. Findings: each other screen's audit.run is imported by folder and ranked by money at stake; an audit that raises shows as unavailable for that screen (R05), never a crash.
+4. Brain: Brain('bombas') with today set to the run day for decisions, brain changes, open questions and the T0 card; no wall clock in run.
+5. Data caveat: the committed aggregates are scale 1.0 and data.sqlite is scale 0.1, so MER reads about 49x and R02 fires on spend; a consistent build clears both.
+6. Next: okr_records for LOOP-C07, agency report fixture for LOOP-C41 window and vocabulary rules, channel headroom for LOOP-C03, and caching the screen audits (about 20 seconds per report).
