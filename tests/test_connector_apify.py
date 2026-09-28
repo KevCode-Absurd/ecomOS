@@ -84,7 +84,11 @@ class MockLanes(Base):
         for lane, mod in EXTRACTORS.items():
             mod.run("bombas", CONFIG, client=self.client(), root=self.dir, captured_at="2026-09-28")
             got = {p.stem for p in (self.dir / "bombas" / "raw" / f"{lane}-apify").glob("*.json")} - {"sources"}
-            self.assertEqual(got, want[lane], lane)
+            if lane == "amazon":
+                # marketplaces only when a listing actor is configured; the crawler was retired for search on 28 Sep
+                self.assertTrue({"language_bank", "objections", "products"} <= got <= want[lane], lane)
+            else:
+                self.assertEqual(got, want[lane], lane)
 
     def test_no_usernames_anywhere(self):
         names = usernames()

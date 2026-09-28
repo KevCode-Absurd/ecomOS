@@ -137,7 +137,7 @@ class BombasBrain(unittest.TestCase):
         fields = {a["field"]: a for a in json.loads((self.DIR / "assumptions.json").read_text())}
         for f in ("revenue_band", "aov_usd", "repeat_rate_12m", "channel_mix", "seasonality", "giving_units", "retail_partners"):
             self.assertIn(f, fields)
-            self.assertIn(fields[f]["status"], ("sourced", "derived", "assumed"))
+            self.assertIn(fields[f]["status"], ("sourced", "derived", "assumed", "founder", "modelled"))
             self.assertTrue(fields[f]["reasoning"])
         open_q = {q["field"] for q in json.loads((self.DIR / "open_questions.json").read_text())}
         for f, a in fields.items():
