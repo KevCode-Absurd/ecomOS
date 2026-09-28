@@ -83,6 +83,7 @@ class Ctx:
         self.depth = model.depth_by_line(rd, playbook.DEPTH_TIERS)
         self.cohorts = audit.cohort_curve(rd)
         self.costs = audit.cost_moves(rd)
+        self.registry = model.registry(rd, playbook.REGISTRY_SURFACES, playbook.PRICE_TEST_WORDS)
         self.ship_rate = (model.brain_value(rd, 'offers.standard_shipping_cost')[0] or {}).get('cost_usd') if rd.brand else None
         self.scenarios = (model.threshold_scenarios(rd, self.threshold, self.ship_rate, self.be['value'], (self.po or {}).get('units') or 1)
                           if self.threshold is not None and self.be.get('value') is not None else [])
@@ -212,6 +213,25 @@ def rung_action(f, a, ctx):
     if not row:
         return a
     kind = row['kind']
+    done = next((e for e in (ctx.registry.get('entries') or []) if e['status'] == 'done' and row['ladder'] in e['brain_refs']
+                 and (e.get('result') or {}).get('lift') is not None), None)
+    if done:
+        res = done['result']
+        proof = (f'{done["id"]} found: {res.get("note") or done["hypothesis"]}. That is the proof for this doubt.')
+        a.update({
+            'title': f'Roll out the {done["id"]} result and say it where "{doubt}" is asked',
+            'why': f['sentence'] + ' ' + proof,
+            'owner': 'agent_drafts',
+            'artefact': {'kind': 'page_section', 'label': f'Proof line from {done["id"]} for the product page',
+                         'draft': proof + f'\nTreatment that won: {done["variant"].get("treatment")}.\n\n' + row['spec']},
+            'steps': steps(('agent', f'Confirm {done["id"]} was rolled out to every page in its audience.'),
+                           ('agent', 'Draft the proof line from the result, in plain words, with the number.'),
+                           ('person', 'Approve the line and the claim tier.'),
+                           ('agent', 'Add it next to the size selector and to the ads that meet this doubt.')),
+            'win_rule': 'Returns for this doubt stay at the tested level; add to cart rate up.',
+            'stop_rule': 'Returns for this doubt back above the control level for 4 weeks.',
+            'check_on': ctx.check_on(28), 'time_to_ship_hours': 3, 'brain_refs': (a.get('brain_refs') or []) + [done['id']]})
+        return a
     who_ships = {'offer': 'Add the promise line to the product page, the cart and the ads that meet this doubt.',
                  'page_section': 'Add the section to the product page price block.',
                  'listing_fix': 'Update the marketplace title, first image and first bullet.'}[kind]
@@ -513,6 +533,10 @@ def test_calendar(actions, ctx):
     promo window. Returns rows in plan order with start, end and what each waits for."""
     freeze = [(date.fromisoformat(w['start']), date.fromisoformat(w['end']), w['name']) for w in ctx.calendar if w['days_to_start'] < 120]
     busy = []   # (surface, start, end, title)
+    for e in (ctx.registry.get('entries') or []):
+        if e['status'] == 'running' and e['surface'] and e['until'] and e['until'] >= ctx.end.isoformat():
+            busy.append((e['surface'], date.fromisoformat(e['start'] or ctx.end.isoformat()), date.fromisoformat(e['until']),
+                         f'{e["id"]} (running)'))
     rows = []
     for a in actions:
         sf_list, days = surfaces(a) if a.get('status') == 'open' else (None, None)
@@ -544,6 +568,35 @@ def test_calendar(actions, ctx):
                      'status': 'waits' if waits and not freeze_hit else 'after_freeze' if freeze_hit else 'ready',
                      'end': end.isoformat(), 'waits_for': list(dict.fromkeys(waits)), 'owner': a['owner']})
     return rows
+
+
+def covered_by_registry(actions, ctx):
+    """A move whose surface and brain records match a running registry test is already being tested: it becomes
+    'read the test, then roll out'. A move that only shares the surface waits in the calendar."""
+    running = [e for e in (ctx.registry.get('entries') or []) if e['status'] == 'running' and e['surface']]
+    for a in actions:
+        if a.get('status') != 'open':
+            continue
+        sf, _ = surfaces(a)
+        refs = set(a.get('brain_refs') or [])
+        for e in running:
+            if sf and e['surface'] in sf and refs & set(e['brain_refs']):
+                res = e.get('result') or {}
+                early = (f' Early read on {res["read_on"]}: {res["direction"]} {abs(res["lift"]) * 100:.0f} percent ({res.get("note") or "no note"}).'
+                         if res.get('lift') is not None else '')
+                a['registry'] = {'id': e['id'], 'relation': 'covered', 'until': e['until']}
+                a['title'] = f'Read {e["id"]} on {e["until"]}, then roll out: {a["title"][0].lower()}{a["title"][1:]}'
+                a['why'] = a['why'] + f' {e["id"]} already tests this: "{e["hypothesis"]}"' + early
+                a['artefact'] = dict(a['artefact'], draft=f'Already running as {e["id"]} until {e["until"]}. Roll out this spec only if it holds.\n\n'
+                                     + (a['artefact'].get('draft') or ''))
+                a['steps'] = steps(('agent', f'Read {e["id"]} at its read point, {e["until"]}, against its metric ({e["metric"]}).'),
+                                   ('person', 'Decide: roll out, keep testing or stop. The experiments screen logs it.'),
+                                   ('agent', 'If it rolls out, apply the spec below to every page it names.'),
+                                   ('agent', 'Recheck the metric 28 days after roll-out.'))
+                a['check_on'] = e['until']
+                a['time_to_ship_hours'] = 1
+                break
+    return actions
 
 
 def merge_into(actions, child, parent):
@@ -963,10 +1016,11 @@ def rank(brand='bombas', window=None):
     actions = merge_connect(merge_gifting(merge_red_line(merge_ladder(actions, ctx)), ctx))
     actions = merge_into(merge_into(actions, 'OFFER-R05', 'OFFER-R01'), 'OFFER-R06', 'OFFER-R01')
     actions = merge_into(actions, 'OFFER-R19', 'OFFER-R08')
+    actions = covered_by_registry(actions, ctx)
     actions = [a for a in actions if not RANK.validate_action(a)]
     actions.sort(key=RANK.sort_key)
     calendar = test_calendar(actions, ctx)
     return {'screen': SCREEN, 'brand': brand, 'window': w, 'simulated': True, 'net_revenue_28d': nr,
             'actions': actions, 'findings': findings, 'objections': ctx.objections, 'returns': returns_block(rd),
             'ladder': dict(ctx.ladder, moves=ctx.ladder_rows), 'first_order': ctx.first_order, 'waterfalls': ctx.waterfalls, 'calendar': ctx.calendar, 'gifting': ctx.gifting, 'guarantee': ctx.guarantee, 'position': ctx.position, 'parity': ctx.parity,
-            'discipline': dict(ctx.discipline, policy=discount_policy(ctx)), 'cart': ctx.cart, 'tests': calendar, 'depth': ctx.depth, 'cohorts': ctx.cohorts, 'costs': ctx.costs}
+            'discipline': dict(ctx.discipline, policy=discount_policy(ctx)), 'cart': ctx.cart, 'tests': calendar, 'depth': ctx.depth, 'cohorts': ctx.cohorts, 'costs': ctx.costs, 'registry': ctx.registry}

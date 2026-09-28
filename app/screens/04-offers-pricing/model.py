@@ -6,6 +6,8 @@ finance_inputs and brain records. A missing input makes the step unavailable (No
 nothing is filled with a default or an industry average.
 """
 import calendar
+import json
+from pathlib import Path
 import math
 import re
 from datetime import date, timedelta
@@ -982,3 +984,38 @@ def cost_moves(rd, cost_move, step, end=None):
     return {'unavailable': False, 'rows': rows, 'months': {'recent': f'{recent[0]} to {recent[-1]}', 'year_ago': f'{year_ago[0]} to {year_ago[-1]}'},
             'leak_12m': round(sum(r['leak_12m'] for r in rows if r['fires']), 2),
             'basis': 'cogs_landed in force today and a year ago; paid price per pack from products_monthly'}
+
+
+# ---------------------------------------------------------------- experiment registry
+
+REGISTRY_SEED = Path(__file__).resolve().parents[1] / '25-experiments' / 'fixtures' / 'registry.json'
+
+
+def registry(rd, surface_rules, price_words):
+    """The brand's experiment registry: the shared `registry` table when it exists, else the seed file that
+    app/contracts/events.md names (data only, read-only). Each entry gets this screen's surface, its busy window,
+    and whether it is a price test; price elasticity is read from finished price tests with a result."""
+    rows, source = None, None
+    t = rd.table('registry')
+    if isinstance(t, list) and t:
+        rows, source = t, 'registry table'
+    elif REGISTRY_SEED.is_file():
+        doc = json.loads(REGISTRY_SEED.read_text(encoding='utf-8'))
+        rows = [e for e in doc.get('entries') or [] if e.get('brand') == rd.brand]
+        source = 'registry seed named in app/contracts/events.md (simulated)'
+    if not rows:
+        return {'unavailable': True, 'reason': 'no experiment registry for this brand', 'entries': [], 'elasticity': None}
+    out = []
+    for e in rows:
+        text = ' '.join([str(e.get('hypothesis') or ''), json.dumps(e.get('variant') or {}), ' '.join(e.get('audience') or [])]).lower()
+        surface = next((sf for words, sf in surface_rules if all(w in text for w in words)), None)
+        until = e.get('end') or e.get('read_point')
+        out.append({'id': e.get('id'), 'hypothesis': e.get('hypothesis'), 'status': e.get('status'), 'surface': surface,
+                    'start': e.get('start'), 'until': until, 'metric': (e.get('metric') or {}).get('name'),
+                    'result': e.get('result'), 'brain_refs': e.get('brain_refs') or [], 'variant': e.get('variant'),
+                    'price_test': any(w in text for w in price_words) or bool(re.search(r'\$\d', json.dumps(e.get('variant') or {})))})
+    price = [e for e in out if e['price_test'] and e['status'] == 'done' and (e['result'] or {}).get('lift') is not None]
+    elasticity = ({'tests': [e['id'] for e in price], 'reads': [{'id': e['id'], 'lift': e['result']['lift'], 'metric': e['metric']} for e in price]}
+                  if price else None)
+    return {'unavailable': False, 'source': source, 'entries': out, 'elasticity': elasticity,
+            'elasticity_reason': None if price else 'no finished price test in the registry, so price elasticity is unknown'}

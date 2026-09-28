@@ -172,3 +172,17 @@ CURVE_MONTHS = 6          # read the cohort curve over months 1 to 6 after the f
 # item moved less than the cost did: margin dollars are leaking. The test restores them, rounded up to PRICE_STEP.
 COST_MOVE = 0.03
 PRICE_STEP = 1.0
+
+# Experiment registry (screen 04, round 3). Registry entries are mapped to this screen's surfaces by words in their
+# audience tags, hypothesis and variants: every word in a rule must appear. First match wins.
+REGISTRY_SURFACES = [
+    (('first_order',), 'first order offer'),
+    (('guarantee', 'pdp'), 'product page guarantee block'),
+    (('fit finder',), 'product page promise: fit and sizing'),
+    (('amazon',), 'marketplace listing'),
+    (('meta_prospecting',), 'ad angle'),
+    (('threshold',), 'cart rewards'),
+    (('price rise',), 'list price'),
+    (('price point',), 'list price'),
+]
+PRICE_TEST_WORDS = ('price rise', 'price point', 'new price', 'price test', 'price cut')   # plus a dollar amount in a variant

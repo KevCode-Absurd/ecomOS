@@ -63,6 +63,16 @@ Known gaps from round 0:
 | 2.9 | Cost against price: landed cost in force today against a year ago per SKU (finance history), paid price per pack over the last 3 full months against the same 3 a year before, margin leaked per pack and over 12 months, and a test price that restores margin dollars (rounded up to $1) with the conversion it can lose and still earn more. New rule OFFER-R22 (cost up more than 3 percent, price did not follow; money is the leak scaled to 28 days) with a price test brief that also cites our price against the set median. Web pass: Intelligems profit per visitor | done |
 | 2.10 | The desk as 4 job tabs (Launch next, Offers, Prices and packs, Shipping and discounts) with the count of open moves in each, the last tab remembered per viewer; phone width fixed (action card rows wrap, tabs wrap, no content past 390 px); round 2 screenshot | done |
 
+## Round 3: tests, loyalty and discipline over time (from 28 Sep 2026)
+
+| # | Feature | Status |
+|---|---|---|
+| 3.1 | Experiment registry: read from the shared `registry` table when it exists, else the seed file events.md names (data only). Each test is mapped to this screen's surfaces (`playbook.REGISTRY_SURFACES`). Running tests hold their surface in the test calendar until their read point; a move whose surface and brain records match a running test becomes "read EXP-xxx, then roll out"; a finished test that cites a ladder rung becomes its proof (EXP-003's fit finder for the fit doubt). Price elasticity reads from finished price tests, unavailable until one exists. Desk block in Launch next | done |
+
+## Contract asks
+
+- Move the experiment registry seed into the data layer as the shared `registry` table (events.md). Local fallback: 04 reads `screens/25-experiments/fixtures/registry.json` as data, read-only, and prefers the table once it exists.
+
 ### Web pass (28 Sep 2026, public pages only)
 
 Intelligems (threshold and price tests scored by profit per visitor), Rebuy (tiered cart progress bar), Kaching and Fast Bundle (quantity breaks), Prisync (SmartPrice floor and ceiling, MAP monitoring), Klaviyo (welcome depth by segment, no discount for past buyers), Yotpo (loyalty earn rate), Eightx (threshold math), Common Thread (BFCM depth by margin and stock, gifts with high perceived value), Metricuno (blended discount rate). Taken into rules: 2.2, 2.3, 2.4, 2.5, 2.7, 2.8, 2.9. Left for later: bundle pairs and upsell take rate (need order lines), loyalty earn rate against margin (no loyalty data), stock in promo depth (inventory rows). Idea bank ids used: OFF-044, OFF-045, SET-081, MULTI-154, BRD-036.
@@ -192,6 +202,7 @@ Intelligems (threshold and price tests scored by profit per visitor), Rebuy (tie
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.9 | 2026-09-28 | S3.9; screenshot round0.png |
+| 3 | 3.1 registry | 2026-09-28 | in progress |
 | 2 | 2.1 to 2.10: position, parity, discipline, gift pick, cart ladder, test calendar, depth by line, second order, cost against price, desk tabs | 2026-09-28 | screenshot round2.png |
 | 1 | 1.1 plan first, 1.2 objection to offer map, 1.3 free shipping line, 1.4 pack ladder, 1.5 first-order offer, 1.6 margin waterfall, 1.7 promo calendar, 1.8 gifting and holiday, 1.9 guarantee as an offer, 1.10 rank complete | 2026-09-28 | manager session; screenshot round1.png (updated as the round lands) |
 

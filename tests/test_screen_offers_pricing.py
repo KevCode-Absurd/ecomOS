@@ -255,7 +255,7 @@ class ObjectionOfferTest(unittest.TestCase):
                 continue
             a = acts[r['theme_key'] + '.deal_breaker']
             self.assertIn(a['artefact']['kind'], ('offer', 'page_section', 'listing_fix'))
-            self.assertEqual(a['artefact']['draft'], r['spec'])
+            self.assertTrue(a['artefact']['draft'].endswith(r['spec']))   # a finished test may add its proof line first
             self.assertIn(r['doubt'], r['spec'])
             self.assertTrue(a['win_rule'] and a['stop_rule'] and a['check_on'])
             if r['claim'] != 'none' and r['cost_per_claim'] is not None:
@@ -579,7 +579,8 @@ class GuaranteeTest(unittest.TestCase):
             a = next(a for a in self.out['actions'] if a['rule_id'] == 'OFFER-R14')
             self.assertEqual(a['artefact']['kind'], 'page_section')
             self.assertEqual(a['steps'][0]['who'], 'agent')
-            self.assertIn('read-only', a['steps'][0]['text'])
+            if not a.get('registry'):   # a move covered by a running test reads the test first
+                self.assertIn('read-only', a['steps'][0]['text'])
             for t in self.g['terms']:
                 if t['id'].endswith('offers.guarantee'):
                     self.assertIn(t['text'], a['artefact']['draft'])
@@ -909,6 +910,41 @@ class DeskTabsTest(unittest.TestCase):
                 self.assertIn(r['rule_id'], in_tabs)
         css = (SCREEN / 'screen.css').read_text(encoding='utf-8')
         self.assertIn('max-width: 720px', css)
+
+
+class RegistryTest(unittest.TestCase):
+    """Round 3 feature 1: the experiment registry blocks surfaces, covers duplicate moves, proves doubts; elasticity."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.out = api.actions.rank('bombas')
+        cls.reg = cls.out['registry']
+
+    def test_running_tests_hold_their_surface(self):
+        from datetime import date
+        if self.reg['unavailable']:
+            return
+        end = self.out['window']['ends_on']
+        for e in self.reg['entries']:
+            if e['status'] != 'running' or not e['surface'] or not e['until'] or e['until'] < end:
+                continue
+            for t in self.out['tests']:
+                if e['surface'] in t['surfaces']:
+                    self.assertGreater(t['start'], e['until'], (e['id'], t['title']))
+
+    def test_covered_moves_read_the_test_first(self):
+        for a in self.out['actions']:
+            if a.get('registry'):
+                self.assertIn(a['registry']['id'], a['title'])
+                self.assertIn(a['registry']['id'], a['steps'][0]['text'])
+                self.assertEqual(a['check_on'], a['registry']['until'])
+
+    def test_elasticity_is_unavailable_without_price_tests(self):
+        if self.reg['unavailable']:
+            return
+        if not any(e['price_test'] and e['status'] == 'done' for e in self.reg['entries']):
+            self.assertIsNone(self.reg['elasticity'])
+            self.assertTrue(self.reg['elasticity_reason'])
 
 
 if __name__ == '__main__':

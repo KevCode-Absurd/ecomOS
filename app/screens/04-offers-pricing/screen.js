@@ -297,6 +297,21 @@
       actionLine(under.length ? under.map((w) => w.name).join(', ') + ' is under the red line. A proposed offer under it cannot be approved.' : 'Every live offer clears its red line.', a));
   }
 
+  function registryBlock(reg) {
+    const head = { title: 'What is already being tested, and what does it block?', sub: 'The experiment registry, mapped to the surfaces this screen changes. A running test holds its surface until its read point; a finished one can be the proof a doubt needs.' };
+    if (!reg || reg.unavailable) return section('desk-registry', head, UI.emptyState({ screen: SLUG, title: 'No experiment registry', text: (reg || {}).reason }));
+    const covered = ACTIONS.filter((a) => a.registry && a.registry.relation === 'covered');
+    const table = UI.verdictTable({
+      columns: [{ key: 'id', label: 'Test' }, { key: 'hypothesis', label: 'Hypothesis' }, { key: 'surface', label: 'Holds', format: (v) => v || 'not an offer surface' },
+        { key: 'until', label: 'Until', format: (v) => v ? fmt.date(v) : NA }, { key: 'result', label: 'Result', format: (v) => v && v.lift != null ? v.direction + ' ' + pct(Math.abs(v.lift), 0) + ' (' + fmt.date(v.read_on) + ')' : 'no read yet' }],
+      rows: withActs(reg.entries, (e) => { const a = ACTIONS.find((x) => (x.registry && x.registry.id === e.id) || (x.brain_refs || []).indexOf(e.id) >= 0); return a ? [{ label: 'Open action', onClick: () => openAction(a) }] : []; }),
+      verdict: { at: 1, kind: (r) => r.status === 'running' ? 'wait' : r.status === 'done' ? 'keep' : 'na', text: (r) => r.status, reason: (r) => r.metric || 'no metric' },
+      actions: { label: 'Do' }, sort: false });
+    return section('desk-registry', head, el('div', { class: 'card tight' }, table,
+      el('p', { class: 'micro faint', text: 'Source: ' + reg.source + '. Price elasticity: ' + (reg.elasticity ? reg.elasticity.reads.map((x) => x.id + ' ' + pct(x.lift, 1)).join(', ') : NA + ', ' + reg.elasticity_reason) + '.' })),
+      actionLine(covered.length ? covered.length + ' proposed moves are already running as tests: read them before building anything new. ' + (reg.elasticity ? '' : 'The cost pass-through price test would be the first price read.') : 'No proposed move duplicates a running test.', covered[0] || ACTIONS.find((a) => a.rule_id === 'OFFER-R22')));
+  }
+
   function calendarBlock(cal) {
     const head = { title: 'Which promo windows need an offer, and by when?', sub: 'US retail windows by date rule. Each must be approved a set number of days before it starts. Last year is net sales per day in the window against the 28 days before it.' };
     if (!cal || !cal.length) return section('desk-calendar', head, UI.emptyState({ screen: SLUG, title: 'Calendar unavailable', text: 'No windows for this market.' }));
@@ -520,7 +535,7 @@
     actionsList(d);
     const TABS = [
       { key: 'launch', label: 'Launch next', rules: ['OFFER-R11', 'OFFER-R12', 'OFFER-R21'],
-        blocks: () => [testsBlock(d.tests), calendarBlock(d.calendar), depthBlock(d.depth), giftingBlock(d.gifting), secondOrderBlock(d.cohorts)] },
+        blocks: () => [testsBlock(d.tests), registryBlock(d.registry), calendarBlock(d.calendar), depthBlock(d.depth), giftingBlock(d.gifting), secondOrderBlock(d.cohorts)] },
       { key: 'offers', label: 'Offers', rules: ['OFFER-R08', 'OFFER-R10', 'OFFER-R19', 'OFFER-R20', 'OFFER-R04', 'OFFER-R14', 'OFFER-R15'],
         blocks: () => [firstOrderBlock(d.first_order), cartBlock(d.cart), objectionBlock(d.objections || [], d.returns), guaranteeBlock(d.guarantee, d.returns), stackBlock(d.stack || [])] },
       { key: 'prices', label: 'Prices and packs', rules: ['OFFER-R22', 'OFFER-R16', 'OFFER-R17', 'OFFER-R07', 'OFFER-R09'],
