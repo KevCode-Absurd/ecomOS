@@ -274,7 +274,7 @@ Picked from the round 8 note and the idea pass (PRD-101 re-quote thresholds, PRD
 | 9.6 | Launch items in the week plan and the desk report, and the hand-off statuses in the desk report: the week plan gains LAUNCH STEPS THIS WEEK and HAND-OFFS OUT (with how many wait on a team); the desk report gains Launch plans (target, open, overdue, next step per candidate) and Hand-offs sent (by status), plus 9 block-by-block lines for the round 8 and 9 blocks | done |
 | 9.7 | Candidate report (route `candidates/<id>/report`, markdown): the brief, the checklist (hard stops and soft items with their state), the launch plan and the hand-offs sent with the status each team set on one page, downloadable from the brief panel | done |
 | 9.8 | A screen-in from a lane keeps the lane: the candidate carries `lane` (validated against the brand's lanes, a select on the screen-in form and a column on the pipeline), the opportunity read and the lane cards list it as an open candidate without a word match, the research log and the product_candidates hand-off carry it | done |
-| 9.9 | Second brand pass; every new block and route on Tallgrass Goods | todo |
+| 9.9 | Second brand pass: every route (15, including the launch plan and the candidate report) answers on Tallgrass Goods and Bombas, the floors, re-quote and launch blocks render their honest empty states on the sample brand (no brain, so every floor is the default and the set action says so), no page errors | done |
 | 9.10 | Recipes, tests, round9.png, founder note | todo |
 
 ## Round 8 note for the founder (28 Sep 2026)
