@@ -39,6 +39,7 @@ Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `a
 | # | Feature | Status |
 |---|---|---|
 | 8.1 | Outcomes: on the check due lane each move has a form to log what happened (won, lost, flat, not shipped, a short reading and the date); a logged outcome shows on the card, takes the move off the check due lane, and fills the experiment registry draft (status read, result, end date); outcomes show in the team log with a remove | done |
+| 8.2 | A move that lost is held: its logged outcome keeps it off the plan (and off the master list through `rank`) for 90 days even while its rule still fires, listed under the plan with the date it lost and the date it comes back; removing the outcome in the team log brings it back; a won or flat move stays on the plan | done |
 
 ## Round 7: first-party reasons, price watch cadence and the hand-offs
 
@@ -306,7 +307,7 @@ Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permi
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
-| 8 | 8.1 | 2026-09-28 | Outcomes |
+| 8 | 8.1 to 8.2 | 2026-09-28 | Outcomes; lost moves held |
 | 7 | 7.1 to 7.10 | 2026-09-28 | Interview reasons; coverage by name; prices seen on the band chart; price re-check cadence; logged work in the brief; queue and log in the report; briefs as rows; second brand check; form access; round close. Screenshot `round7.png` |
 | 6 | 6.1 to 6.10 | 2026-09-28 | Win-loss log; repeated loss reason; rival prices seen; battlecard checks; positioning polls; thresholds on the page; capture from the page; the team log; waiting on you; round close (and the hand-off fix). Screenshot `round6.png` |
 | 5 | 5.1 to 5.10 | 2026-09-28 | Hand-offs; action lanes; season plan; quarterly review; exports (and the 5.4 load fix); browser smoke test; team notes; brief pack; check due lane; round close |

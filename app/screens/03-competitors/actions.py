@@ -20,6 +20,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 APP = HERE.parents[1]
 NEVER_COPY = "Never copy their text, logos, products or faces. Borrow layout and mood only."
+HOLD_LOST_DAYS = 90   # a move whose logged outcome is lost stays off the plan this long, even if its rule still fires
 
 
 def _load(name: str, path: Path):
@@ -744,8 +745,14 @@ def build(brand: str, window: dict | None = None, root: Path | None = None) -> d
     acts = [action(f, m, nr) for f in findings if f.get("status") in ("open", "unavailable")]
     acts = [a for a in acts if not ranker.validate_action(a)]
     outs = audit.inpmod.outcomes(audit.inpmod.read(brand, "outcome"))
+    held = []
     for a in acts:
         a["outcome"] = outs.get(a["id"])
+        o = a["outcome"]
+        if o and o["result"] == "lost" and (today - dt.date.fromisoformat(o["date"])).days < HOLD_LOST_DAYS:
+            held.append({"id": a["id"], "title": a["title"], "lost_on": o["date"], "reading": o.get("reading"),
+                         "back_on": (dt.date.fromisoformat(o["date"]) + dt.timedelta(days=HOLD_LOST_DAYS)).isoformat()})
+    acts = [a for a in acts if a["id"] not in {h["id"] for h in held}]
     acts.sort(key=ranker.sort_key)
     return {"screen": audit.SCREEN, "brand": brand, "window": window, "simulated": True,
-            "brain_version": m["brain"].version(), "net_revenue_28d": nr, "findings": findings, "actions": acts}
+            "brain_version": m["brain"].version(), "net_revenue_28d": nr, "findings": findings, "actions": acts, "held": held}

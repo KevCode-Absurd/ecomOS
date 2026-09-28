@@ -216,7 +216,7 @@ def plan(brand: str, today: dt.date) -> dict:
             "connect": [a for a in acts if a.get("status") == "unavailable"],
             "snoozed": len(out["actions"]) - len(acts), "findings": out["findings"], "rules": audit.RULES,
             "groups": [{"key": k, "label": v} for k, v in audit.GROUP_LABEL.items()], "rule_group": audit.RULE_GROUP,
-            "thresholds": m["thresholds"], "queue": founder_queue(acts),
+            "thresholds": m["thresholds"], "queue": founder_queue(acts), "held": out.get("held") or [], "hold_days": actions.HOLD_LOST_DAYS,
             "snapshot_age_days": max(ages) if (ages := [p["age_days"] for p in m["pages"] if p["age_days"] is not None]) else None}
 
 

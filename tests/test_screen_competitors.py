@@ -1878,5 +1878,28 @@ class TestOutcomes(TempInputs):
         self.assertIn("inputForm('outcome'", js)
 
 
+class TestHoldLost(TempInputs):
+    """8.2: a move that lost stays off the plan for 90 days; removing the outcome brings it back."""
+    def test_hold(self):
+        a = api.handle(Req(['plan']))['actions'][0]
+        code, out = self.post({'kind': 'outcome', 'action_id': a['id'], 'result': 'lost', 'date': '2026-09-20'})
+        self.assertEqual(code, 201)
+        p = api.handle(Req(['plan']))
+        self.assertNotIn(a['id'], [x['id'] for x in p['actions']])
+        self.assertEqual((p['held'][0]['id'], p['held'][0]['back_on']), (a['id'], '2026-12-19'))
+        self.assertNotIn(a['id'], [x['id'] for x in api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions']])
+        later = api.rank('bombas', {'ends_on': '2026-12-19', 'days': 28, 'trailing': 4})
+        self.assertFalse([h for h in later['held'] if h['id'] == a['id']])
+        r = Req(['inputs', 'remove'], method='POST')
+        r.body = {'id': out['record']['id']}
+        api.handle(r)
+        self.assertIn(a['id'], [x['id'] for x in api.handle(Req(['plan']))['actions']])
+
+    def test_won_stays(self):
+        a = api.handle(Req(['plan']))['actions'][0]
+        self.post({'kind': 'outcome', 'action_id': a['id'], 'result': 'won'})
+        self.assertIn(a['id'], [x['id'] for x in api.handle(Req(['plan']))['actions']])
+
+
 if __name__ == '__main__':
     unittest.main()
