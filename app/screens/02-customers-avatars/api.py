@@ -66,7 +66,7 @@ def _brain(req) -> Brain:
         raise ValueError("bad brand")
     t = req.arg("today")
     today = dt.date.fromisoformat(t) if t else dt.date.today()
-    return Brain(brand, BRAIN_ROOT, today)
+    return audit.ReadBrain(brand, BRAIN_ROOT, today)
 
 
 # ---------------------------------------------------------------- repeat by cohort
@@ -563,10 +563,10 @@ EASE = {"agent": 5, "agent_drafts": 4, "person_draft": 3, "person": 2}
 def _plans(brand: str, window: dict) -> dict:
     """The drafted work behind each finding, keyed by the finding's entity id, from the same builders the page uses."""
     ends = window["ends_on"]
-    brain = Brain(brand, BRAIN_ROOT, dt.date.fromisoformat(ends) + dt.timedelta(days=1))
+    brain = audit.ReadBrain(brand, BRAIN_ROOT, dt.date.fromisoformat(ends) + dt.timedelta(days=1))
     avatars = audit.with_tops(audit.avatar_rows(brain), audit.rungs(brain))
     all_rungs = audit.rungs(brain)
-    d = audit.desk(brain, avatars, all_rungs)
+    d = audit.desk_for(brain, avatars, all_rungs)
     plans = {}
     for a in avatars:
         plans[("CUST-R01", a["key"])] = builds.next_build(dict(a, quotes=[]), None) if a["grounding"] != "grounded" else None

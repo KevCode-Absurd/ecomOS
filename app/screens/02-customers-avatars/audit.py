@@ -1061,14 +1061,53 @@ def r32(d, ends_on):
     return out
 
 
+class ReadBrain(Brain):
+    """The brain store with each section parsed once per instance (9.5). A build reads the same sections about 200
+    times; parsing JSON each time was a third of a cold load. Any write through this instance drops the memo."""
+
+    def raw(self, section: str) -> list[dict]:
+        memo = self.__dict__.setdefault("_raw_memo", {})
+        if section not in memo:
+            memo[section] = super().raw(section)
+        return memo[section]
+
+    def put(self, *a, **k):
+        self.__dict__.pop("_raw_memo", None)
+        return super().put(*a, **k)
+
+    def retire(self, *a, **k):
+        self.__dict__.pop("_raw_memo", None)
+        return super().retire(*a, **k)
+
+
+_DESK_CACHE: dict = {}
+
+
+def desk_for(brain: Brain, avatars: list[dict], all_rungs: list[dict]) -> dict:
+    """desk() once per brand, brain root, day, brain version and aggregates timestamp: the audit and the plans behind
+    rank both need it (9.5).
+    Callers get a shallow copy, so a key they add does not leak."""
+    folder = APP / "data" / "brands" / brain.brand / "aggregates"
+    try:
+        stamp = str(max((f.stat().st_mtime for f in folder.glob("*.json")), default=0))
+    except OSError:
+        stamp = "0"
+    key = (brain.brand, str(brain.root), brain.today.isoformat(), brain.version(), stamp)
+    if key not in _DESK_CACHE:
+        if len(_DESK_CACHE) >= 8:
+            _DESK_CACHE.pop(next(iter(_DESK_CACHE)))
+        _DESK_CACHE[key] = desk(brain, avatars, all_rungs)
+    return dict(_DESK_CACHE[key])
+
+
 def run(brand: str, window: dict, brain_root: Path | None = None) -> list[dict]:
     ends_on = window["ends_on"]
     today = dt.date.fromisoformat(ends_on) + dt.timedelta(days=1)
-    brain = Brain(brand, brain_root, today)
+    brain = ReadBrain(brand, brain_root, today)
     avatars = avatar_rows(brain)
     all_rungs = rungs(brain)
     angles = ad_angles(brand, ends_on)
-    d = desk(brain, with_tops(avatars, all_rungs), all_rungs)
+    d = desk_for(brain, with_tops(avatars, all_rungs), all_rungs)
     d["brand"] = brand
     findings = (r01(brain, avatars, ends_on) + r02(brain, avatars, all_rungs, ends_on) + r03(brain, all_rungs, angles, ends_on)
                 + r04(d, all_rungs, ends_on) + r05(d, ends_on) + r06(d, ends_on) + r07(d, ends_on) + r08_r09(d, ends_on) + r10(d, ends_on)
