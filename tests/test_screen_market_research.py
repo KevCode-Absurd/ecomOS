@@ -1439,6 +1439,17 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
                 f1[0]['sentence'] = 'changed by the caller'
                 f2 = audit.run(None, {'ends_on': D.isoformat()}, data=api.sample_data())
                 self.assertNotEqual(f2[0]['sentence'], 'changed by the caller')
+            # two reader objects for the same brand and window keep their own state: they never evict each other
+            class Other:
+                def __init__(self, inner): self.inner = inner
+                def __getattr__(self, k): return getattr(self.inner, k)
+            other = Other(api.sample_data())
+            audit.run(None, {'ends_on': D.isoformat()}, data=api.sample_data())
+            audit.run(None, {'ends_on': D.isoformat()}, data=other)
+            n2 = audit.memo_stats()['runs']
+            audit.run(None, {'ends_on': D.isoformat()}, data=api.sample_data())
+            audit.run(None, {'ends_on': D.isoformat()}, data=other)
+            self.assertEqual(audit.memo_stats()['runs'], n2)
             audit.MEMO_ON = False
             r = audit.memo_stats()['runs']
             audit.run(None, {'ends_on': D.isoformat()}, data=api.sample_data())

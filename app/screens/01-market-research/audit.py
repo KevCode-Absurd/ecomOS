@@ -887,7 +887,7 @@ def run(brand, window=None, data=None):
     if not MEMO_ON:
         _MEMO['runs'] += 1
         return _run_audit(brand, ends_on, data)
-    slot = (str(brand), ends_on.isoformat())
+    slot = (str(brand), ends_on.isoformat(), id(data) if data is not None else 0)   # the data object is part of the slot: the server's reader and the api's own sample reader each keep a state instead of evicting each other
     try:
         ref = weakref.ref(data) if data is not None else None
     except TypeError:
