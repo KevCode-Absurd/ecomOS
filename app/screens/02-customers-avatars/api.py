@@ -482,7 +482,7 @@ RULE_JOB = {"CUST-R01": "avatars", "CUST-R05": "avatars", "CUST-R06": "avatars",
             "CUST-R02": "doubts", "CUST-R03": "doubts", "CUST-R04": "doubts", "CUST-R11": "doubts", "CUST-R12": "doubts",
             "CUST-R10": "offers", "CUST-R18": "offers", "CUST-R20": "offers", "CUST-R21": "offers",
             "CUST-R07": "retention", "CUST-R08": "retention", "CUST-R09": "retention", "CUST-R15": "retention", "CUST-R16": "retention",
-            "CUST-R23": "retention", "CUST-R17": "brand", "CUST-R19": "brand", "CUST-R22": "brand"}
+            "CUST-R23": "retention", "CUST-R24": "avatars", "CUST-R25": "avatars", "CUST-R17": "brand", "CUST-R19": "brand", "CUST-R22": "brand"}
 EASE = {"agent": 5, "agent_drafts": 4, "person_draft": 3, "person": 2}
 
 
@@ -554,6 +554,12 @@ def _plans(brand: str, window: dict) -> dict:
                   {"n": 3, "who": "agent", "text": "Check pages and emails against the lead line on the next audit."}]}
     for m in d["health"].get("moves", []):
         plans[("CUST-R23", "health_" + m["key"])] = m
+    for r in d["split"]["rows"]:
+        if r["verdict"] == "split" and r["action"]:
+            plans[("CUST-R24", "split_" + r["key"])] = r["action"]
+    for r in d["ad_voice"].get("rows", []):
+        if r["action"]:
+            plans[("CUST-R25", "silent_" + r["key"])] = dict(r["action"], title=f"Give {r['name']} an ad: {r['action']['title'][0].lower()}{r['action']['title'][1:]}")
     for m in d["mix"].get("moves", []):
         if m["id"].endswith(".paid_returning"):
             plans[("CUST-R07", "returning_via_paid")] = m

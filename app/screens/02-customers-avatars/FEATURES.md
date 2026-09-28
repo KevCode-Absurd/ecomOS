@@ -83,7 +83,16 @@ Web pass: Peel, Triple Whale, Lifetimely, Klaviyo predictive, Daasity RFM, Thema
 | 4.7 | Who our live ads speak to (replaces the brain drift timeline, parked: the brain holds one capture date, so there is no drift to show yet): our live ads by hook from the Ad Library read in the brain, matched to the avatar whose name the hook names, against each avatar's share of buyers. Silent (no ad), under (less than half its share), fair, heavy (over 2x). Silent and under avatars get an ad brief. Bombas: 10 of 23 ads speak to the Everyday Comfort Seeker (13 percent of buyers); none speak to 6 avatars holding 80 percent of buyers; 13 ads name no avatar | done |
 | 4.8 | What we decided here: a timeline from the shared `GET /api/decisions?screen=` route, newest first, with the action title (matched by finding id), who owns it, and the check date, or the date a "Not now" comes back on the plan (14 days). Counts by choice in the line. Empty until the founder decides something; nothing is written by this feature | done |
 | 4.9 | Which avatar we build for next (replaces avatar value by product revenue, which needs a SKU to product-line map; see Contract asks): one score out of 100 per avatar with a share, from fixed weights shown on the page (share of buyers 40, how poorly we serve them 30, how little our ads speak to them 20, share of doubts still open 10), top of the Avatars tab, each row opening its next build. Bombas: build for the Durability Disappointed Repeat Customer next (89), then the Guarantee Reassured Loyalist (85) | done |
-| 4.10 | Audit rules and `rank` for round 4, screenshot `round4.png` | todo |
+| 4.10 | Two more audit rules (CUST-R24 avatar may be two buyers, CUST-R25 an avatar with 12 percent or more of buyers that no live ad speaks to), with their drafted split and ad briefs in `rank` and a job for the plan filter; the audit's avatars now carry their next build. 25 rules, 24 firing on Bombas (brand health is steady). Screenshot `round4.png` (the desk tabs, focus score, avatar cards) | done |
+
+### Round 4 founder note (28 Sep 2026)
+
+1. You can now read the screen in one pass: the plan, then the actions, tests and hand-offs, then a desk in 5 tabs by job; the plan filters by job too.
+2. The Avatars tab opens on one call: build for the Durability Disappointed Repeat Customer next (score 89), then the Guarantee Reassured Loyalist (85).
+3. Our live ads mostly speak to comfort: 10 of 23 ads, for 13 percent of buyers; 6 avatars holding 80 percent of buyers hear none. Each gets an ad brief.
+4. Parent Buying For Kids is two buyers, calf socks and slippers, with different complaints; the split is drafted.
+5. Five tests are proposed in the experiment registry shape, and each reading screen (creative, copy, landing pages, email) has a ready pack. An ad naming convention lets the ads column fill once ads are tagged.
+6. Next, round 5: whatever Kevin or the lead flags from rounds 1 to 4; otherwise the Contract asks as they land and deeper checks on returns and tickets by avatar.
 
 ### Round 3 founder note (28 Sep 2026)
 
@@ -242,3 +251,4 @@ The job to be done for each avatar is brand data: it lives in `app/brain/<brand>
 | 1 | 1.1 to 1.10, no picks (depth brief) | 28 Sep 2026 | done; screenshot `round1.png` |
 | 2 | 2.1 to 2.10, from the web pass | 28 Sep 2026 | done; screenshot `round2.png` |
 | 3 | 3.1 to 3.10, the brand side of the room | 28 Sep 2026 | done; screenshot `round3.png` |
+| 4 | 4.1 to 4.10, one desk, hand-offs, remaining jobs | 28 Sep 2026 | done; screenshot `round4.png` |

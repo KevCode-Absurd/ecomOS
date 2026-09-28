@@ -80,6 +80,11 @@ CUST-R23 brand health line falling. Repeat in months 1 to 3 down 3 points over t
     or tickets per 1,000 orders up 20 percent over 3 months (builds.health). Severity medium.
     Capability LIFE-C20.
 
+CUST-R24 avatar may be two buyers. Two product lines each hold 30 percent or more of the avatar's
+    linked reviews and draw different complaints (builds.split_check). Severity medium. Capability BRAND-C12.
+CUST-R25 avatar our ads never speak to. An avatar with 12 percent or more of buyers matches no live
+    ad hook (builds.ad_voice). Severity medium. Capability CREA-C06.
+
 Money at stake is null for every rule: an evidence or proof gap has no revenue formula
 yet (`money_reason` says so). Confidence: one brain snapshot is one window (0.5), minus
 0.2 when an input record is past `expires_at`.
@@ -156,12 +161,18 @@ RULES = [
      "inputs": ["brain positioning"], "capability": "BRAND-C33", "owner_screen": SCREEN},
     {"rule_id": "CUST-R23", "name": "brand health line falling", "entity_type": "metric",
      "inputs": ["monthly", "cohorts"], "capability": "LIFE-C20", "owner_screen": SCREEN},
+    {"rule_id": "CUST-R24", "name": "avatar may be two buyers", "entity_type": "brand",
+     "inputs": ["brain avatars", "brain products review_summary", "brain language_bank"], "capability": "BRAND-C12", "owner_screen": SCREEN},
+    {"rule_id": "CUST-R25", "name": "avatar our ads never speak to", "entity_type": "brand",
+     "inputs": ["brain avatars", "brain learnings hook_types"], "capability": "CREA-C06", "owner_screen": SCREEN},
 ]
 AUTONOMY = {"BRAND-C11": "founder_gate", "BRAND-C13": "agent_does", "CREA-C03": "agent_does", "SITE-C38": "human_assist",
             "PROD-C73": "human_assist", "CREA-C24": "agent_does", "LIFE-C27": "human_assist", "BRAND-C16": "founder_gate",
             "MEDIA-C12": "human_assist", "LIFE-C20": "agent_does", "LIFE-C08": "founder_gate", "BRAND-C14": "agent_does",
             "LIFE-C50": "founder_gate", "BRAND-C05": "human_assist", "LIFE-C12": "founder_gate", "BRAND-C59": "agent_does",
-            "BRN-C03": "founder_gate", "MONEY-C48": "human_assist", "LIFE-C42": "founder_gate", "BRAND-C33": "founder_gate"}
+            "BRN-C03": "founder_gate", "MONEY-C48": "human_assist", "LIFE-C42": "founder_gate", "BRAND-C33": "founder_gate",
+            "BRAND-C12": "agent_does", "CREA-C06": "agent_does"}
+SILENT_MIN_SHARE = 0.12
 MOMENT_WARN_DAYS = 45
 NO_DATA = "no revenue formula for this rule yet"
 
@@ -524,12 +535,24 @@ def load_health(brand: str, avatars: list[dict]) -> dict:
     return builds.health(monthly, load_cohorts(brand, avatars).get("rows", []), as_of)
 
 
+def split_rows(brain: Brain, avatars: list[dict], all_rungs: list[dict]) -> dict:
+    issues = {}
+    for r in brain.records("products"):
+        v = r.get("value")
+        if r.get("field") == "review_summary" and isinstance(v, dict) and v.get("product_line"):
+            issues[v["product_line"]] = v.get("issues") or []
+    buys = builds.avatar_lines(brain.records("avatars"), all_rungs, brain.records("language_bank"), set(issues))
+    return builds.split_check(avatars, all_rungs, buys, issues)
+
+
 def with_tops(avatars, all_rungs):
     for a in avatars:
         top = top_objection(a["id"], all_rungs)
         a["top_objection"] = None if top is None else {"id": top["id"], "doubt": top["doubt"], "one_star": top["one_star"],
                                                         "five_star": top["five_star"], "proof": bool(top["proof_ids"]),
                                                         "proof_text": top["proof"] if top["proof_ids"] else None}
+        if "next" not in a:
+            a["next"] = builds.next_build(a, top)
     return avatars
 
 
@@ -554,7 +577,9 @@ def desk(brain: Brain, avatars: list[dict], all_rungs: list[dict]) -> dict:
             "offer_map": builds.offer_map(avatars, all_rungs, brain.records("offers"), brain.records("policies") + brain.records("claims")),
             "timing": builds.doubt_timing(all_rungs, brain.records("language_bank"), (brain.today - dt.timedelta(days=1)).isoformat(), source_name),
             "hierarchy_approved": any(r.get("field") == "messaging_hierarchy" for r in brain.raw("positioning")),
-            "health": load_health(brain.brand, avatars)}
+            "health": load_health(brain.brand, avatars),
+            "split": split_rows(brain, avatars, all_rungs),
+            "ad_voice": builds.ad_voice(avatars, brain.records("learnings"))}
 
 
 def r04(d, all_rungs, ends_on):
@@ -769,6 +794,26 @@ def r17_r23(d, ends_on):
     return out
 
 
+def r24_r25(d, ends_on):
+    out = []
+    for r in d["split"]["rows"]:
+        if r["verdict"] != "split":
+            continue
+        ev = [_ev("lines_over_30_percent", len(r["big_lines"]), "n", ends_on, "brain.language_bank", baseline=2)]
+        s = f"{r['name']} buys {r['big_lines'][0].replace('_', ' ')} and {r['big_lines'][1].replace('_', ' ')} with different complaints. It may be two buyers."
+        out.append(_finding("CUST-R24", "medium", {"type": "brand", "id": "split_" + r["key"], "label": r["name"]}, ev, s, "BRAND-C12", 0.5,
+                            [f"{d['brand']}.avatars.{r['key']}"], ends_on))
+    for r in d["ad_voice"].get("rows", []):
+        if r["verdict"] != "silent" or (r["buyer_share"] or 0) < SILENT_MIN_SHARE:
+            continue
+        ev = [_ev("buyer_share", r["buyer_share"], "%", ends_on, "brain.avatars"),
+              _ev("live_ads_matched", 0, "n", ends_on, "brain.learnings", baseline=1)]
+        s = f"{r['name']} is about {round(r['buyer_share'] * 100)} percent of buyers, and none of our live ads speaks to them."
+        out.append(_finding("CUST-R25", "medium", {"type": "brand", "id": "silent_" + r["key"], "label": r["name"]}, ev, s, "CREA-C06", 0.5,
+                            [f"{d['brand']}.avatars.{r['key']}"], ends_on))
+    return out
+
+
 def run(brand: str, window: dict, brain_root: Path | None = None) -> list[dict]:
     ends_on = window["ends_on"]
     today = dt.date.fromisoformat(ends_on) + dt.timedelta(days=1)
@@ -780,6 +825,6 @@ def run(brand: str, window: dict, brain_root: Path | None = None) -> list[dict]:
     d["brand"] = brand
     findings = (r01(brain, avatars, ends_on) + r02(brain, avatars, all_rungs, ends_on) + r03(brain, all_rungs, angles, ends_on)
                 + r04(d, all_rungs, ends_on) + r05(d, ends_on) + r06(d, ends_on) + r07(d, ends_on) + r08_r09(d, ends_on) + r10(d, ends_on)
-                + r11_r12(d, ends_on) + r13_r14(d, ends_on) + r15_r16(d, ends_on) + r17_r23(d, ends_on))
+                + r11_r12(d, ends_on) + r13_r14(d, ends_on) + r15_r16(d, ends_on) + r17_r23(d, ends_on) + r24_r25(d, ends_on))
     findings.sort(key=lambda f: (SEVERITY_ORDER[f["severity"]], f["rule_id"], f["id"]))
     return findings

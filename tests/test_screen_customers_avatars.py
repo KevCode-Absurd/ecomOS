@@ -94,7 +94,7 @@ class AuditShape(unittest.TestCase):
         self.assertEqual(r03['status'], 'unavailable')
         self.assertEqual(r03['evidence'], [])
         self.assertEqual(set(r03['unavailable']), {'inputs', 'connector', 'fix'})
-        self.assertEqual({r['rule_id'] for r in audit.RULES}, {f'CUST-R{n:02d}' for n in range(1, 24)})
+        self.assertEqual({r['rule_id'] for r in audit.RULES}, {f'CUST-R{n:02d}' for n in range(1, 26)})
 
 
 class AuditRules(TempBrain):
@@ -548,7 +548,7 @@ class RankRound1(TempBrain):
 
     def test_every_rule_fires_on_bombas(self):
         rules = {f['rule_id'] for f in audit.run('bombas', RANK_WINDOW, self.tmp)}
-        self.assertEqual(rules, {f'CUST-R{n:02d}' for n in range(1, 24) if n != 23})
+        self.assertEqual(rules, {f'CUST-R{n:02d}' for n in range(1, 26) if n != 23})
 
     def test_open_actions_carry_drafts(self):
         acts = api.rank('bombas', RANK_WINDOW)['actions']
@@ -1165,6 +1165,21 @@ class Focus(TempBrain):
                 self.assertTrue(0 <= v <= 1)
         self.assertEqual(x['rows'][0]['key'], 'durability_disappointed_repeat_customer')
         self.assertEqual([r['score'] for r in x['rows']], sorted((r['score'] for r in x['rows']), reverse=True))
+
+
+class Round4Rules(TempBrain):
+    """Feature 4.10: split and silent-avatar rules carry their drafted work and a job."""
+
+    def test_round4(self):
+        acts = {a['id']: a for a in api.rank('bombas', RANK_WINDOW)['actions']}
+        split = acts['02-customers-avatars.CUST-R24.split_parent_buying_for_kids']
+        self.assertEqual(split['job'], 'avatars')
+        self.assertTrue(split['artefact']['draft'].startswith('DRAFT avatar split'))
+        silent = [a for a in acts.values() if a['rule_id'] == 'CUST-R25']
+        self.assertEqual(len(silent), 4)
+        for a in silent:
+            self.assertTrue(a['title'].startswith('Give '))
+            self.assertEqual(rank_engine.validate_action(a), [])
 
 
 if __name__ == '__main__':
