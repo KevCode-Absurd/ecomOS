@@ -1025,7 +1025,7 @@ class OnePager(TempBrain):
     def test_one_pager(self):
         r = api.handle(Req(['avatar', 'daily_compression_wearer', 'brief']))
         t = r['text']
-        for part in ('JOB:', 'DOUBTS, TOP FIRST:', 'NO PROOF YET', 'NEXT BUILD:', 'DO NOT SAY:'):
+        for part in ('AT A GLANCE', 'WHAT STOPS THEM, TOP FIRST', 'NO PROOF YET', 'WHAT TO BUILD, IN ORDER', 'WHAT WE DO NOT KNOW YET', 'DO NOT SAY'):
             self.assertIn(part, t)
         self.assertNotIn('\u2014', t)
         self.assertEqual(api.handle(Req(['avatar', 'nobody', 'brief']))[0], 404)
@@ -1770,3 +1770,31 @@ class RetentionStake(unittest.TestCase):
 
     def test_short_history_has_no_baseline(self):
         self.assertEqual(api.builds._age_stake([], [0.1] * 12, [(0.3, 2), (0.1, 3)], 2, 0.3, {'2026-08': 70})['usd'], None)
+
+
+class AvatarPage(TempBrain):
+    """Feature 7.6: one page per avatar to take away, in sections, with its open actions sized and dated."""
+
+    def test_sections_and_actions(self):
+        r = api.handle(Req(['avatar', 'daily_compression_wearer', 'brief']))
+        titles = [s['title'] for s in r['sections']]
+        self.assertEqual(titles[0], 'At a glance')
+        self.assertEqual(len(titles), 8)
+        glance = ' '.join(r['sections'][0]['lines'])
+        self.assertIn('Return risk, x median: 1.68x', glance)
+        build = ' '.join(next(s for s in r['sections'] if s['title'] == 'What to build, in order')['lines'])
+        self.assertIn('Daily Compression Wearer', build)
+        self.assertIn('Stop if', build)
+        self.assertIn('Check on', build)
+        self.assertNotRegex(r['text'], r'\b(should|consider|leverage)\b|\u2014')
+        self.assertNotRegex(r['text'], r'\.\.|\."\.')
+        d = api.handle(Req(['avatar', 'durability_disappointed_repeat_customer', 'brief']))
+        self.assertIn('hole or seam', ' '.join(next(s for s in d['sections'] if s['title'] == 'What to build, in order')['lines']))
+
+    def test_second_brand(self):
+        api.BRAIN_ROOT = None
+        d = api.handle(Req(['overview'], query={'brand': ['example']}))
+        key = d['avatars'][0]['key']
+        r = api.handle(Req(['avatar', key, 'brief'], query={'brand': ['example']}))
+        self.assertNotIn('bombas', json.dumps(r).lower())
+        self.assertTrue(r['title'].startswith('Example'))

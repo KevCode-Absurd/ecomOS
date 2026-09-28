@@ -354,7 +354,9 @@ def avatar_brief(brain: Brain, key: str):
     if a is None:
         return 404, {"error": "no such avatar", "key": key}
     forbidden = [c["text"] for c in d["voice"]["claims"] if c["tier"] == "forbidden" and c["text"]]
-    return {"key": key, "name": a["name"], "text": builds.one_pager(a, d, forbidden)}
+    w = {"ends_on": d["ends_on"], "days": 28, "trailing": 4}
+    acts = sorted(rank(brain.brand, w)["actions"], key=_engine().sort_key)
+    return builds.avatar_page(a, d, forbidden, acts, _brand_name(brain))
 
 
 def check_line(brain: Brain, body: dict):

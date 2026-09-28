@@ -73,16 +73,22 @@
     const quotes = a.quotes.filter((q) => q.source !== 'Reddit').slice(0, 2);
     for (const q of quotes) card.append(el('blockquote', null, '"' + q.quote + '" ', link(q.ref, q.source || undefined)));
     if (!a.quotes.length) card.append(el('p', { class: 'muted small', text: 'No customer quotes. This avatar is a guess until customers say it.' }));
-    const op = el('button', { class: 'btn quiet xs', type: 'button', text: 'One-pager for a creator' });
-    op.addEventListener('click', async () => {
-      try {
-        const r = await api(BASE + 'avatar/' + encodeURIComponent(a.key) + '/brief');
-        UI.panel({ title: r.name + ': one-pager', tools: [UI.copyButton({ label: 'Copy', text: () => r.text }), el('button', { class: 'btn sm', type: 'button', text: 'Print', onclick: () => window.print() })],
-          body: el('pre', { class: 'draft', text: r.text }) });
-      } catch (e) { op.textContent = 'Could not load: ' + e.message; }
-    });
+    const op = el('button', { class: 'btn quiet xs', type: 'button', text: 'One page to take away' });
+    op.addEventListener('click', () => openAvatarPage(a.key, op));
     card.append(op, nextBuild(a.next));
     return card;
+  }
+
+  // one avatar, one page: Copy gives plain text, Print prints only the page
+  async function openAvatarPage(key, btn) {
+    let r;
+    try { r = await api(BASE + 'avatar/' + encodeURIComponent(key) + '/brief'); } catch (e) { if (btn) btn.textContent = 'Could not load: ' + e.message; return; }
+    const body = el('div', { class: 'report' }, ...r.sections.map((s) => el('section', null, el('h3', { text: s.title }), el('ul', null, ...s.lines.map((l) => el('li', { text: l }))))),
+      el('p', { class: 'small muted', text: 'Simulated sales data; customer words are public reviews.' }));
+    UI.panel({ title: r.title, body,
+      tools: [UI.copyButton({ label: 'Copy', text: () => r.title + '\n\n' + r.text }),
+        el('button', { class: 'btn sm', type: 'button', text: 'Print', onclick: () => { document.body.classList.add('print-report'); window.print(); document.body.classList.remove('print-report'); } })],
+      onClose: () => document.body.classList.remove('print-report') });
   }
 
   // ---------- desk: avatar by channel ----------
