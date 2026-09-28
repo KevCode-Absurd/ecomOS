@@ -159,6 +159,18 @@ def build(f: dict, nr: float | None) -> dict:
                         {"n": 3, "who": "person", "text": "Pick the record as proof, or approve the drafted fact as an approved record."},
                         {"n": 4, "who": "agent", "text": f"Attach it to the rung. The surfaces that use the rung ({surfaces or 'copy, page, listing, macro'}) read the proof on their next brief."}],
                  check_on=_check_on(f, 7), time_to_ship_hours=1)
+    elif rid == "BRN-R27":
+        vz = f.get("visual") or {}
+        steps = []
+        if not vz.get("colours"):
+            steps.append({"n": 1, "who": "agent", "text": "Read the colour and font tokens from the site's stylesheet (read-only crawl) into the visual section."})
+        if not vz.get("logo"):
+            steps.append({"n": len(steps) + 1, "who": "person", "text": "Set the logo rules: minimum size, clear space, what never happens to it, which backgrounds."})
+        if vz.get("fails"):
+            steps.append({"n": len(steps) + 1, "who": "person", "text": "Pick a darker text or lighter background for: " + "; ".join(vz["fails"]) + "."})
+        steps.append({"n": len(steps) + 1, "who": "agent", "text": "Every generated creative and email is checked against the palette, the fonts and the logo rules before review."})
+        a.update(title="Complete the visual identity: " + ", ".join(vz.get("gaps") or [label]), owner="agent_drafts" if not vz.get("colours") else "person",
+                 artefact={"kind": "brain_record", "label": "colour tokens, fonts and logo rules the creative checks read", "draft": None}, steps=steps, check_on=_check_on(f, 14), time_to_ship_hours=1)
     elif rid == "BRN-R26":
         pk = f.get("peak") or {}
         gaps = pk.get("gaps") or []

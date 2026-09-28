@@ -134,6 +134,10 @@ BRN-R26 peak not ready. A peak inside the next 90 days (US retail peaks
     Unavailable checks never count. Severity high at 30 days or less, medium
     at 60 or less, else low. Capability BRN-C07 (founder round; the agent
     drafts the briefs, the founder decides the offer). Owner: 05-brand-brain.
+BRN-R27 visual identity gaps. No colour token in the visual section, no
+    logo rules record, or a text-on-background pair under the 4.5 WCAG
+    contrast ratio (visual.py). One low finding naming the gaps. Capability
+    CREA-C12 (image accuracy; the palette is the brain's). Owner: 05-brand-brain.
 BRN-R07 competitor snapshot stale. A configured Ad Library page was captured
     more than SNAPSHOT_STALE_DAYS (7) ago, or never. Severity low. Capability
     BRN-C11 (competitor snapshot, signals only). Owner: 05-brand-brain.
@@ -218,10 +222,12 @@ RULES = [
      "inputs": ["every section"], "capability": "BRN-C12", "owner_screen": SCREEN},
     {"rule_id": "BRN-R26", "name": "peak not ready", "entity_type": "brand",
      "inputs": ["calendar", "offers", "policies", "products", "identity", "claims", "learnings", "assumptions.json"], "capability": "BRN-C07", "owner_screen": SCREEN},
+    {"rule_id": "BRN-R27", "name": "visual identity gaps", "entity_type": "brand",
+     "inputs": ["visual"], "capability": "CREA-C12", "owner_screen": SCREEN},
 ]
 AUTONOMY = {"BRN-C12": "agent_does", "BRN-C07": "founder_gate", "BRN-C03": "agent_does",
             "CREA-C19": "agent_does", "CREA-C04": "agent_does", "BRN-C11": "agent_does", "CREA-C06": "agent_does",
-            "BRAND-C57": "agent_does", "CREA-C03": "agent_does", "BRN-C05": "founder_gate", "BRN-C01": "agent_does", "PROD-C46": "agent_does", "LOOP-C28": "agent_does", "LOOP-C27": "agent_does", "LOOP-C29": "agent_does", "PROP-C06": "agent_does"}
+            "BRAND-C57": "agent_does", "CREA-C03": "agent_does", "BRN-C05": "founder_gate", "BRN-C01": "agent_does", "PROD-C46": "agent_does", "LOOP-C28": "agent_does", "LOOP-C27": "agent_does", "LOOP-C29": "agent_does", "PROP-C06": "agent_does", "CREA-C12": "agent_does"}
 
 _uspec = importlib.util.spec_from_file_location("brand_brain_assumptions", Path(__file__).resolve().parent / "assumptions.py")
 assumptions = importlib.util.module_from_spec(_uspec)
@@ -235,6 +241,9 @@ _lspec.loader.exec_module(legal)
 _pspec = importlib.util.spec_from_file_location("brand_brain_parity", Path(__file__).resolve().parent / "parity.py")
 parity = importlib.util.module_from_spec(_pspec)
 _pspec.loader.exec_module(parity)
+_vispec = importlib.util.spec_from_file_location("brand_brain_visual", Path(__file__).resolve().parent / "visual.py")
+visual = importlib.util.module_from_spec(_vispec)
+_vispec.loader.exec_module(visual)
 _qspec = importlib.util.spec_from_file_location("brand_brain_peaks", Path(__file__).resolve().parent / "peaks.py")
 peaks = importlib.util.module_from_spec(_qspec)
 _qspec.loader.exec_module(peaks)
@@ -682,6 +691,25 @@ def rule_ladder_proof(brain: Brain, ends_on: str) -> list[dict]:
     return out
 
 
+def rule_visual(brain: Brain, ends_on: str) -> list[dict]:
+    pal = visual.palette(brain)
+    gaps = []
+    if not pal["available"]:
+        gaps.append("no colour token on file")
+    if not pal["logo_rules"]["available"]:
+        gaps.append("no logo rules on file")
+    fails = [p for p in pal["pairs"] if not p["aa"] and not p.get("accent")]
+    if fails:
+        gaps.append(f"{len(fails)} text and background pair{'s' if len(fails) != 1 else ''} under the 4.5 contrast ratio")
+    if not gaps:
+        return []
+    ev = [_row("colour_tokens", pal["counts"]["colours"], "n", ends_on, None, 1, "visual"), _row("logo_rules", 1 if pal["logo_rules"]["available"] else 0, "flag", ends_on, None, 1, "visual"),
+          _row("contrast_pairs_failing", len(fails), "n", ends_on, None, 0, "visual")]
+    f = _finding("BRN-R27", "low", {"type": "brand", "id": "visual_identity", "label": "visual identity"}, ev, "The visual identity has gaps: " + ", ".join(gaps) + ".", [c["record"] for c in pal["colours"][:3]], ends_on, 0.9)
+    f["visual"] = {"gaps": gaps, "colours": pal["counts"]["colours"], "logo": pal["logo_rules"]["available"], "fails": [f"{p['text']} on {p['background']} ({p['ratio']})" for p in fails[:4]]}
+    return [f]
+
+
 def rule_peaks(brain: Brain, ends_on: str) -> list[dict]:
     out = []
     r = peaks.readiness(brain, market.angles_of, legal, assumptions)
@@ -764,7 +792,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
         bank = keeper.load_bank()
     except (OSError, ValueError, KeyError):
         bank = None
-    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_untiered_claims(brain, ends_on) + rule_site_changes(brain, ends_on) + rule_parity(brain, ends_on) + rule_contracts(brain, ends_on) + rule_legal(brain, ends_on) + rule_picked_ideas(brain, ends_on) + rule_ladder_proof(brain, ends_on) + rule_self_audit(brain, ends_on) + rule_peaks(brain, ends_on) + rule_permissions(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
+    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_untiered_claims(brain, ends_on) + rule_site_changes(brain, ends_on) + rule_parity(brain, ends_on) + rule_contracts(brain, ends_on) + rule_legal(brain, ends_on) + rule_picked_ideas(brain, ends_on) + rule_ladder_proof(brain, ends_on) + rule_self_audit(brain, ends_on) + rule_peaks(brain, ends_on) + rule_visual(brain, ends_on) + rule_permissions(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
     if bank is None:
         for rid, sev in (("BRN-R02", "medium"), ("BRN-R03", "medium")):
             f = _finding(rid, sev, {"type": "brand", "id": "question_bank", "label": "question bank"},

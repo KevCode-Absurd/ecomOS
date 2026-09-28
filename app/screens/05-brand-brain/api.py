@@ -179,6 +179,9 @@ _pspec.loader.exec_module(parity)
 _sspec = importlib.util.spec_from_file_location("brand_brain_sitediff", HERE / "sitediff.py")
 sitediff = importlib.util.module_from_spec(_sspec)
 _sspec.loader.exec_module(sitediff)
+_vispec = importlib.util.spec_from_file_location("brand_brain_visual", HERE / "visual.py")
+visual = importlib.util.module_from_spec(_vispec)
+_vispec.loader.exec_module(visual)
 _yspec = importlib.util.spec_from_file_location("brand_brain_history", HERE / "history.py")
 history = importlib.util.module_from_spec(_yspec)
 _yspec.loader.exec_module(history)
@@ -1310,6 +1313,30 @@ def handle(req):
         ends = (brain.today - dt.timedelta(days=1)).isoformat()
         findings = audit.run(brain.brand, {"ends_on": ends, "days": 1, "trailing": 0}, BRAIN_ROOT)
         return {"findings": findings, "rules": audit.RULES, "brain_version": brain.version()}
+    if req.method == "GET" and parts == ["visual"]:
+        pal = visual.palette(brain)
+        pal["capability"] = {"id": "CREA-C12", "autonomy": "agent_does"}
+        return pal
+    if req.method == "POST" and parts == ["visual", "check"]:
+        body = req.body or {}
+        if body.get("content_base64"):
+            res = visual.check_png(brain, body["content_base64"])
+            if isinstance(res, tuple):
+                return res
+            return dict(res, kind="png", name=str(body.get("name") or "")[:80])
+        text = str(body.get("text") or "")
+        if not text.strip():
+            return 400, {"error": "send text (CSS, HTML or hex codes) or a PNG as content_base64"}
+        return dict(visual.check_text(brain, text), kind="text")
+    if req.method == "POST" and parts == ["visual", "logo"]:
+        body = req.body or {}
+        if not any(body.get(k) for k in ("min_size_px", "clear_space", "never", "backgrounds")):
+            return 400, {"error": "set at least one of min_size_px, clear_space, never, backgrounds"}
+        rec = visual.logo_record(brain, body)
+        errs = founder_put(brain, rec, "logo", rec["text"][:160])
+        if errs:
+            return 400, {"error": "; ".join(errs)}
+        return 201, {"ok": True, "record": rec["id"], "text": rec["text"], "version": brain.version()}
     if req.method == "GET" and parts == ["history"]:
         rid = req.arg("record", "") or ""
         if not re.fullmatch(r"[a-z0-9_-]+\.[a-z_]+\.[A-Za-z0-9_.-]{1,120}", rid):

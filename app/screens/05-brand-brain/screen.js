@@ -62,6 +62,7 @@
     loadLadderProof(m.actions || []);
     loadSelfAudit(m.actions || []);
     loadPeaks(m.actions || []);
+    loadVisual(m.actions || []);
     const con = m.connect || [];
     const cw = document.getElementById('connect-wrap');
     if (con.length) {
@@ -166,6 +167,62 @@
     const st = el('span', { class: 'micro muted' });
     exp.addEventListener('click', async () => { exp.disabled = true; try { const b = await api(BASE + 'export'); const blob = new Blob([JSON.stringify(b, null, 1)], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = b.brand + '-brain-' + b.exported_at + '.json'; a.click(); st.textContent = b.counts.records + ' records, ' + b.counts.documents + ' documents, ' + b.counts.conflicts + ' conflicts. ' + b.note; } catch (e) { st.textContent = 'Could not export: ' + e.message; } exp.disabled = false; });
     mount('#perm', matrix, el('div', { class: 'row', style: { marginTop: '10px' } }, exp, UI.decisionRow({ capability: 'LOOP-C22', autonomy: 'founder_gate', owner: 'agent_drafts', screen: SCREEN, compact: true, stub: 'Offboarding: export the brain and the registry as a handoff package, list every connector to revoke in Setup, and confirm no external write access stays open. You approve each revoke.' }), st));
+  }
+
+  // ---------- 5b0. does it look like us ----------
+  function swatch(c) {
+    return el('div', { class: 'swatch', title: c.record + ', ' + pretty(c.tier) }, el('i', { style: { background: c.hex } }), el('div', null, el('b', { text: c.name }), ' ', el('span', { class: 'micro faint', text: pretty(c.role) }), el('small', { text: c.hex })));
+  }
+  function foundChip(r) {
+    return el('span', { class: 'chip ' + (r.on_palette ? 'good' : 'bad'), title: r.nearest ? 'nearest ' + pretty(r.nearest) + ' ' + r.nearest_hex + ', distance ' + r.distance : 'no palette' }, el('i', { style: { background: r.hex } }), r.hex + (r.share != null ? ' ' + Math.round(r.share * 100) + '%' : (r.times > 1 ? ' x' + r.times : '')) + (r.on_palette ? '' : ' (nearest ' + pretty(r.nearest || 'none') + ')'));
+  }
+  async function loadVisual(actions) {
+    let v;
+    try { v = await api(BASE + 'visual'); } catch (e) { mount('#visual', el('p', { class: 'muted', text: 'Visual unavailable: ' + e.message })); return; }
+    const act = (actions || []).find((a) => a.rule_id === 'BRN-R27');
+    mount('#visual-tools', UI.orientation([{ label: 'colours', value: v.counts.colours, unit: 'n' }, { label: 'fonts', value: v.counts.fonts, unit: 'n' }, { label: 'contrast pairs failing', value: v.counts.aa_fail, unit: 'n', tone: v.counts.aa_fail ? 'bad' : 'good' }, { label: 'logo rules', value: v.logo_rules.available ? 1 : null, unit: 'n', unavailable_label: 'not set' }]));
+    const status = el('span', { class: 'micro muted' });
+    const out = el('div', { class: 'stack' });
+    // the palette
+    const paletteBody = el('div', { class: 'stack' });
+    if (!v.available) paletteBody.append(el('p', { class: 'muted', text: 'Palette unavailable: ' + v.reason + '.' }));
+    else {
+      paletteBody.append(el('div', { class: 'swatches' }, ...v.colours.map(swatch)));
+      paletteBody.append(el('div', { class: 'small' }, el('b', { text: 'Fonts: ' }), v.fonts.length ? v.fonts.map((f) => f.name + ' (' + f.role + ')').join(', ') : NA));
+      paletteBody.append(UI.verdictTable({ columns: [{ key: 'text', label: 'Text' }, { key: 'background', label: 'On' }, { key: 'ratio', label: 'Ratio', num: true, format: (x) => (x == null ? NA : x.toFixed(1) + ':1') }, { key: 'use', label: 'Use' }],
+        verdict: { at: 1, kind: (r) => r.aa ? 'keep' : (r.aa_large ? 'watch' : 'stop'), text: (r) => r.aa ? 'AA' : (r.aa_large ? 'Large only' : 'Fails'), reason: (r) => '4.5 passes for body text, 3 for large text and accents' },
+        rows: v.pairs.map((p) => ({ text: pretty(p.text.replace('color_', '')), background: pretty(p.background.replace('color_', '')), ratio: p.ratio, aa: p.aa, aa_large: p.aa_large, use: p.accent ? 'accent, large text or buttons' : 'body text' })), sort: false, empty: 'No text and background pair to check.' }));
+    }
+    // logo rules
+    const logoBody = el('div', { class: 'stack' });
+    const lr = v.logo_rules;
+    if (lr.available) logoBody.append(el('div', { class: 'small' }, el('b', { text: 'On file: ' }), (lr.value.min_size_px ? 'minimum ' + lr.value.min_size_px + ' px wide. ' : '') + (lr.value.clear_space ? 'Clear space ' + lr.value.clear_space + '. ' : '') + (lr.value.never.length ? 'Never ' + lr.value.never.join('; ') + '. ' : '') + (lr.value.backgrounds.length ? 'On ' + lr.value.backgrounds.join(', ') + '.' : '')));
+    else logoBody.append(el('div', { class: 'small muted', text: 'Unavailable: ' + lr.reason + '.' }));
+    const minPx = el('input', { class: 'text sm', type: 'number', placeholder: 'min width px', style: { maxWidth: '130px' }, value: lr.value && lr.value.min_size_px ? lr.value.min_size_px : '' });
+    const clear = el('input', { class: 'text sm', placeholder: 'clear space, like: the height of the mark on every side', style: { flex: '1 1 260px' }, value: lr.value && lr.value.clear_space ? lr.value.clear_space : '' });
+    const never = el('input', { class: 'text sm', placeholder: 'never, separated by ; like: stretch it; recolour it; put it on a busy photo', style: { flex: '1 1 300px' }, value: lr.value && lr.value.never ? lr.value.never.join('; ') : '' });
+    const bgs = el('input', { class: 'text sm', placeholder: 'allowed backgrounds, like: white, offwhite, black', style: { flex: '1 1 220px' }, value: lr.value && lr.value.backgrounds ? lr.value.backgrounds.join(', ') : '' });
+    const save = el('button', { class: 'btn primary sm', type: 'button', text: lr.available ? 'Update the logo rules' : 'Set the logo rules' });
+    save.addEventListener('click', async () => { save.disabled = true; try { const r = await api(BASE + 'visual/logo', { method: 'POST', body: { min_size_px: minPx.value, clear_space: clear.value, never: never.value, backgrounds: bgs.value } }); status.textContent = r.text; loadVisual(actions); loadPlan(); } catch (e) { save.disabled = false; status.textContent = 'Could not save: ' + e.message; } });
+    logoBody.append(el('div', { class: 'row' }, minPx, clear), el('div', { class: 'row' }, never, bgs, save));
+    // the checker
+    const checkBody = el('div', { class: 'stack' });
+    const ta = el('textarea', { class: 'text', placeholder: 'Paste CSS, HTML, an email template or a list of hex codes. Every colour and font-family is matched to the palette.' });
+    const go = el('button', { class: 'btn primary sm', type: 'button', text: 'Check it' });
+    function renderCheck(r) {
+      const kids = [el('div', { class: 'row' }, UI.verdict(r.verdict === 'pass' ? 'keep' : r.verdict === 'warn' ? 'watch' : r.verdict === 'fail' ? 'stop' : 'na', r.verdict === 'unavailable' ? 'Unavailable' : r.verdict.toUpperCase()), el('span', { class: 'small', text: r.summary + (r.name ? ' (' + r.name + ')' : '') + (r.width ? ', ' + r.width + 'x' + r.height : '') }))];
+      if (r.colours.length) kids.push(el('div', { class: 'found' }, ...r.colours.map(foundChip)));
+      if (r.fonts && r.fonts.length) kids.push(el('div', { class: 'found' }, ...r.fonts.map((f) => el('span', { class: 'chip ' + (f.brand ? 'good' : 'bad'), text: f.name + (f.brand ? '' : ' (not a brand font)') }))));
+      if (r.note) kids.push(el('div', { class: 'micro faint', text: r.note }));
+      mount(out, ...kids);
+    }
+    go.addEventListener('click', async () => { if (!ta.value.trim()) return; go.disabled = true; try { renderCheck(await api(BASE + 'visual/check', { method: 'POST', body: { text: ta.value } })); } catch (e) { mount(out, el('p', { class: 'muted', text: 'Could not check: ' + e.message })); } go.disabled = false; });
+    const zone = UI.dropZone({ accept: 'image/png', hint: 'A PNG of a generated creative, a banner or an email screenshot. Its dominant colours are matched to the palette. JPEG cannot be read here; export a PNG.',
+      onFiles: async (files) => { for (const f of files) { mount(out, el('p', { class: 'muted small', text: 'Reading ' + f.name })); try { renderCheck(await api(BASE + 'visual/check', { method: 'POST', body: { name: f.name, content_base64: await readAsBase64(f) } })); } catch (e) { mount(out, el('p', { class: 'muted', text: 'Could not read ' + f.name + ': ' + e.message })); } } } });
+    checkBody.append(ta, el('div', { class: 'row' }, go, el('span', { class: 'micro faint', text: 'Tolerance: a colour within ' + (v.available ? '40' : '40') + ' RGB units of a token counts as on the palette.' })), zone, out);
+    mount('#visual', el('div', { class: 'row' }, act ? UI.decisionRow({ capability: 'CREA-C12', autonomy: 'agent_does', owner: act.owner, screen: SCREEN, compact: true, finding_id: act.id, current: act.decision, stub: act.title + '. ' + act.artefact.label + '.' }) : null, status),
+      UI.tabs({ items: [{ key: 'palette', label: 'Palette and contrast', n: v.counts.colours, panel: paletteBody }, { key: 'check', label: 'Check a draft or a PNG', panel: checkBody }, { key: 'logo', label: 'Logo rules', panel: logoBody }] }),
+      el('p', { class: 'micro faint', text: v.note }));
   }
 
   // ---------- 5b1. peak readiness ----------

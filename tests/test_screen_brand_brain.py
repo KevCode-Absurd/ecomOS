@@ -1,5 +1,6 @@
 """Tests for screen 05-brand-brain on the Bombas brain: audit.py in the contract shape and the api
 (overview, records, answer box, review queue). Writes go to a temp copy of app/brain, never the repo."""
+import base64
 import datetime as dt
 import importlib.util
 import json
@@ -1674,10 +1675,77 @@ class Round4History(TempBrain):
         self.assertEqual(api.handle(Req(['history', 'restore'], 'POST', body={'record': 'bombas.offers.free_shipping_threshold_usd', 'index': same[0]['index']}))[0], 400)
 
 
+def _png(w, h, color, filt=0):
+    import struct
+    import zlib
+    raw = b''.join(bytes([filt]) + bytes(color) * w for _ in range(h))
+
+    def chunk(t, d):
+        return struct.pack('>I', len(d)) + t + d + struct.pack('>I', zlib.crc32(t + d) & 0xffffffff)
+    return b'\x89PNG\r\n\x1a\n' + chunk(b'IHDR', struct.pack('>IIBBBBB', w, h, 8, 2, 0, 0, 0)) + chunk(b'IDAT', zlib.compress(raw)) + chunk(b'IEND', b'')
+
+
+class Round4Visual(TempBrain):
+    """Round 4 feature 7: the palette, contrast pairs, the draft and PNG checks, logo rules; rule BRN-R27."""
+
+    def test_palette_and_contrast(self):
+        v = api.handle(Req(['visual']))
+        self.assertTrue(v['available'])
+        self.assertEqual(v['counts']['colours'], 12)
+        blue = next(c for c in v['colours'] if c['key'] == 'color_blue_60')
+        self.assertEqual((blue['hex'], blue['role'], blue['tier']), ('#223859', 'accent', 'site_backed'))
+        pair = next(p for p in v['pairs'] if p['text'] == 'color_black' and p['background'] == 'color_white')
+        self.assertEqual((pair['ratio'], pair['aa']), (20.63, True))
+        self.assertEqual(v['counts']['aa_fail'], 0)
+        self.assertIn('Conforto', [f['name'] for f in v['fonts']])
+        self.assertFalse(v['logo_rules']['available'])
+
+    def test_check_text_and_png(self):
+        r = api.handle(Req(['visual', 'check'], 'POST', body={'text': '.h{color:#223859;background:#f8f8f4;font-family: Conforto, Arial} .x{color:#ff00aa} .y{color: rgb(9,135,80)}'}))
+        self.assertEqual((r['kind'], r['verdict'], r['counts']), ('text', 'fail', {'colours': 4, 'off': 1, 'fonts': 2, 'off_fonts': 1}))
+        self.assertEqual(r['off_palette'][0]['hex'], '#ff00aa')
+        self.assertEqual(next(c['nearest'] for c in r['colours'] if c['hex'] == '#098750'), 'color_green_50')
+        self.assertEqual([f['name'] for f in r['off_fonts']], ['Arial'])
+        ok = api.handle(Req(['visual', 'check'], 'POST', body={'text': 'colours: #223859 #ffffff'}))
+        self.assertEqual(ok['verdict'], 'pass')
+        img = base64.b64encode(_png(40, 20, (0x22, 0x38, 0x59))).decode()
+        r = api.handle(Req(['visual', 'check'], 'POST', body={'content_base64': img, 'name': 'a.png'}))
+        self.assertEqual((r['kind'], r['verdict'], r['width'], r['height'], r['on_palette_share']), ('png', 'pass', 40, 20, 1.0))
+        self.assertEqual(r['colours'][0]['nearest'], 'color_blue_60')
+        r = api.handle(Req(['visual', 'check'], 'POST', body={'content_base64': base64.b64encode(_png(40, 20, (0xff, 0x00, 0xaa), filt=2)).decode()}))
+        self.assertEqual((r['verdict'], r['colours'][0]['on_palette']), ('fail', False))
+        self.assertEqual(api.handle(Req(['visual', 'check'], 'POST', body={'content_base64': base64.b64encode(b'\xff\xd8\xff\xe0').decode()}))[0], 400)
+        self.assertEqual(api.handle(Req(['visual', 'check'], 'POST', body={}))[0], 400)
+        shot = (SCREEN / 'round3.png').read_bytes()
+        r = api.handle(Req(['visual', 'check'], 'POST', body={'content_base64': base64.b64encode(shot).decode()}))
+        self.assertIn(r['verdict'], ('pass', 'warn', 'fail'))
+        self.assertTrue(r['colours'])
+
+    def test_logo_rules_and_rule(self):
+        self.assertTrue([f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R27'])
+        a = next(a for a in api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions'] if a['rule_id'] == 'BRN-R27')
+        self.assertTrue(a['title'].startswith('Complete the visual identity'))
+        self.assertEqual(api.rank_mod.validate_action(a), [])
+        status, res = api.handle(Req(['visual', 'logo'], 'POST', body={'min_size_px': '120', 'clear_space': 'the height of the mark', 'never': 'stretch it; recolour it', 'backgrounds': 'white, black'}))
+        self.assertEqual((status, res['record']), (201, 'bombas.visual.logo_rules'))
+        v = api.handle(Req(['visual']))
+        self.assertEqual((v['logo_rules']['available'], v['logo_rules']['value']['min_size_px'], v['logo_rules']['value']['never']), (True, 120, ['stretch it', 'recolour it']))
+        self.assertFalse([f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R27'])
+        self.assertEqual(api.handle(Req(['visual', 'logo'], 'POST', body={}))[0], 400)
+        self.assertIn('logo', [c['kind'] for c in api.handle(Req(['changes']))['changes']])
+
+    def test_example_brand_unavailable(self):
+        shutil.copytree(BRAIN / 'example', self.tmp / 'example')
+        v = api.handle(Req(['visual'], query={'brand': ['example']}))
+        self.assertFalse(v['available'])
+        r = api.handle(Req(['visual', 'check'], 'POST', query={'brand': ['example']}, body={'text': '#123456'}))
+        self.assertEqual(r['verdict'], 'unavailable')
+
+
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
-    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'],
+    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'],
               ['decisions'], ['flows'], ['claims'], ['site', 'diff'], ['parity'], ['contracts'], ['legal'], ['voice'], ['battlecards'], ['permissions'],
               ['export'], ['assumptions'], ['facts'], ['summaries'], ['changes'], ['learn'], ['report'], ['digest'], ['review'], ['bottlenecks'], ['audit']]
 
