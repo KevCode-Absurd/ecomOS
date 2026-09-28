@@ -105,6 +105,7 @@ One section per topic. Fields are typed. The rooms column comes from `agents/roo
 | `claims` | claim text, tier, evidence ref, category (material, benefit, comparison, guarantee), regions allowed, expiry | site, founder, legal | copy, creative, QA gate, marketplaces, answer engines | 30 d |
 | `avatars` | name, share estimate, intensity, jobs, triggers, pains, emotional driver, channels, evidence quotes with refs, inferred flag | reviews, tickets, interviews, founder | creative, copy, paid, email, CX, research | 30 d |
 | `objections` | objection text, avatar ids, proof that removes it, proof asset ref, coverage in ads and pages | reviews, tickets, founder | copy, CRO, creative, email | 30 d |
+| `objection_ladders` | one ladder per theme: rungs from mild doubt to deal-breaker, 1-star complaint language and 5-star praise language per rung, counts by star and source, proof that resolves each rung, avatar ids, uses (offer, copy, PDP, Amazon listing, CX) | derived from own-site, Amazon and retailer reviews, tickets | copy, offers, creative, marketplaces, CX, brand | 30 d |
 | `language_bank` | verbatim phrases by theme (problem, result, surprise, complaint), source, count | reviews, tickets, social | copy, creative, SEO, CRO | 30 d |
 | `competitors` | competitor set, positioning, price band, what they do well, gap, ad library snapshot ref, price capture ref, launches | ad library, sites, search | competitors, creative, offers, research, Google | 14 d |
 | `positioning` | category ladder, positioning statement, differentiators ranked, whitespace, messaging hierarchy, battlecards | keeper, founder | brand, copy, creative, competitors | 60 d |
@@ -182,7 +183,10 @@ Extractors, each a small task agent or a script with the same output shape:
 |---|---|---|
 | site crawl and diff | sitemap, `products.json`, legal pages, CSS | products, offers, policies, claims, voice, visual, site_map, stack, changes |
 | ad library | brand's own page and competitor pages | competitors, offers, learnings (public), story_bank |
-| reviews and tickets | reviews app, marketplace reviews, support desk | avatars, objections, language_bank, products (issues) |
+| own-site reviews | the brand's review widget pages or JSON | avatars, objections, language_bank, products (issues). Default for every brand. |
+| Amazon listings and reviews | listing pages for the brand's ASINs (public, small sample), the brand's Seller Central reviews export (document), a licensed provider (paid, optional) | marketplaces (listing content, rating split, review count), products, objections, language_bank. Default for every brand on Amazon. No review API exists and bulk scraping is against Amazon's terms, so the public lane stays a sample. |
+| retailer reviews and tickets | retailer product pages, Reddit, Trustpilot, support desk | avatars, objections, language_bank, products (issues) |
+| objection ladders | every review and ticket record in the brain | `objection_ladders`, derived; rebuilt when reviews change |
 | connectors | Shopify, Meta, Google, GA4, Klaviyo, Gorgias, GSC, Amazon | channels, stack, products (hero flags, status), marketplaces, learnings (winners with metric pointers). Numbers themselves stay in the data layer. |
 | documents | uploads, Drive folder, Notion, brand book, decks, research PDFs | any section, `source.type` document, page ref |
 | interviews and press | transcripts, podcasts, articles, filings | story_bank, identity, channels, economics (public band) |
@@ -203,6 +207,29 @@ Rules:
 - Adding a source is one registry entry plus one adapter with `pull(table, window)` and `status()` and a mock. Nothing else changes: the sections and tables it fills already exist.
 - Public sources run for every brand on day one. Private sources run only after the founder connects them.
 - The setup screen shows the categories, what each would unlock (sections and rooms), and lets the founder connect, skip, or mark "not comfortable connecting".
+
+### 6.2 Objection ladders: what 5-star and 1-star reviews become
+
+Reviews are read at both ends first. 5-star reviews say what the product does well in the buyer's words. 1-star reviews say what breaks, what disappointed, and what the buyer expected. The ladder builder groups both by theme and writes one record per theme into `objection_ladders`:
+
+```json
+{"id": "bombas.objection_ladders.durability", "brand": "bombas", "section": "objection_ladders", "field": "ladder",
+ "value": {"theme": "durability",
+   "rungs": [
+     {"level": 1, "doubt": "will they pill or thin out", "one_star": ["worn out after 3 months"], "five_star": ["two years and still no holes"],
+      "counts": {"one_star": 14, "five_star": 22, "sources": {"amazon": 20, "own_site": 9, "trustpilot": 7}},
+      "proof": "Happiness Guarantee replaces any pair that fails; state it next to the price", "avatars": ["durability_disappointed_repeat"],
+      "uses": ["pdp", "amazon_listing", "copy", "cx_macro"]},
+     {"level": 3, "doubt": "hole in the heel within weeks", "one_star": ["hole in the heel after 2 wears"], "five_star": [],
+      "counts": {"one_star": 31, "five_star": 0}, "proof": "no public proof; open question for the founder", "uses": ["offer", "product"]}
+   ],
+   "what_works": ["cushioning", "stay-up", "gift reaction"], "what_fails": ["heel holes", "no-show slipping", "size chart"]},
+ "text": "Durability is the top objection: 31 one-star reviews name heel holes; the guarantee answers the mild rung but not the deal-breaker.",
+ "source": {"type": "agent", "ref": "ladder builder", "captured_at": "2026-09-28", "derived_from": ["bombas.objections.hole_recourse", "..."]},
+ "tier": "inferred", "confidence": 0.7, "visibility": "public"}
+```
+
+Rules: rungs run from mild doubt to deal-breaker; every rung cites the record ids its quotes come from; counts are by star and by source so a Trustpilot skew is visible; a rung with no proof becomes an open question; every ladder names its uses so the offers, copy, marketplaces and CX rooms pick it up by section, not by reading reviews again. Ladders feed three rooms directly: avatars (each rung names its avatar), offers (a deal-breaker with no proof is an offer or guarantee problem), and copy and the Amazon listing (5-star language is the copy bank, 1-star language is what the listing must answer in the first 3 bullets). They are rebuilt whenever a review source changes.
 
 ## 7. Keeping it fresh: the mechanism Kevin asked for
 
@@ -257,6 +284,7 @@ Made by Kevin on 28 Sep 2026:
 - One small `BRAIN.md` per brand routes to sections, skills, agent files and the data layer. It does not hold everything.
 - Founders and teams can add context at any time, from anywhere, and it refines the brain.
 - A weekly job audits the brain and the skills it links to, and proposes improvements, alongside at most 5 questions.
+- Reviews are read from the brand's own site, Amazon and retailers on day one for every new brand, 5-star and 1-star first, and turned into objection ladders that feed avatars, offers, copy and the Amazon listing. Amazon is a public sample plus the brand's export, never bulk scraping.
 - Sources are a registry of many, not 3 integrations. Pull everything connected first, then ask only what no connected source can answer, ranked by how much it helps the customer.
 
 Still open:

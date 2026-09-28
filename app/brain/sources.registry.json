@@ -1400,6 +1400,104 @@
    "read_only": true,
    "mock": true,
    "note": "fixed prompt set against AI assistants"
+  },
+  {
+   "id": "own_site_reviews",
+   "name": "Brand site reviews (public widget)",
+   "category": "public",
+   "fills_sections": [
+    "avatars",
+    "objections",
+    "objection_ladders",
+    "language_bank",
+    "products"
+   ],
+   "fills_tables": [
+    "reviews_raw"
+   ],
+   "access": "public",
+   "read_only": true,
+   "mock": true,
+   "note": "review app widgets (Judge.me, Yotpo, Okendo, Stamped, Loox) expose public review pages or JSON per product; read 5-star and 1-star first, then the middle; default for every brand"
+  },
+  {
+   "id": "amazon_listings_public",
+   "name": "Amazon listing pages (public, small sample)",
+   "category": "public",
+   "fills_sections": [
+    "marketplaces",
+    "products",
+    "objections",
+    "objection_ladders",
+    "language_bank",
+    "avatars"
+   ],
+   "fills_tables": [
+    "marketplace_listings",
+    "reviews_raw"
+   ],
+   "access": "public",
+   "read_only": true,
+   "mock": true,
+   "note": "title, bullets, A+ content, rating split, review count and the visible top reviews per ASIN, read at low volume through a sub-agent. No review API exists and Amazon forbids bulk scraping, so this lane stays a sample; volume comes from the brand's export or a licensed provider"
+  },
+  {
+   "id": "retailer_reviews",
+   "name": "Retailer product reviews (Nordstrom, Dick's, Target, Walmart pages)",
+   "category": "public",
+   "fills_sections": [
+    "avatars",
+    "objections",
+    "objection_ladders",
+    "language_bank",
+    "products"
+   ],
+   "fills_tables": [
+    "reviews_raw"
+   ],
+   "access": "public",
+   "read_only": true,
+   "mock": true,
+   "note": "public product pages; small samples, quotes as evidence"
+  },
+  {
+   "id": "amazon_reviews_export",
+   "name": "Amazon reviews export (brand-authorized)",
+   "category": "documents",
+   "fills_sections": [
+    "objections",
+    "objection_ladders",
+    "avatars",
+    "language_bank",
+    "marketplaces"
+   ],
+   "fills_tables": [
+    "reviews_raw"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "the brand downloads its reviews from Seller Central (Brands, Customer Reviews) or a review tool and uploads the file; runs through the reviews extractor at full volume"
+  },
+  {
+   "id": "review_data_provider",
+   "name": "Licensed review data provider (paid, optional)",
+   "category": "reviews",
+   "fills_sections": [
+    "objections",
+    "objection_ladders",
+    "avatars",
+    "language_bank",
+    "competitors"
+   ],
+   "fills_tables": [
+    "reviews_raw",
+    "competitor_reviews"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "a licensed API for Amazon and retailer reviews at volume, for the brand and its competitors; paid, needs Kevin's sign-off per brand; later"
   }
  ]
 }

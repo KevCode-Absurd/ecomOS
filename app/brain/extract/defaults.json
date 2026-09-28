@@ -1,0 +1,70 @@
+{
+ "version": "2026-09-28",
+ "note": "Extractors every new brand runs on day one, in order, before any question is asked. Private ones run only after the source is connected.",
+ "default": [
+  {
+   "id": "site",
+   "public": true
+  },
+  {
+   "id": "own_site_reviews",
+   "public": true
+  },
+  {
+   "id": "amazon_listings_public",
+   "public": true,
+   "when": "brand has ASINs or an Amazon store page"
+  },
+  {
+   "id": "retailer_reviews",
+   "public": true
+  },
+  {
+   "id": "meta_ad_library",
+   "public": true
+  },
+  {
+   "id": "press",
+   "public": true
+  },
+  {
+   "id": "job_postings",
+   "public": true
+  },
+  {
+   "id": "objection_ladders",
+   "derived": true,
+   "after": [
+    "own_site_reviews",
+    "amazon_listings_public",
+    "retailer_reviews"
+   ]
+  }
+ ],
+ "on_connect": [
+  {
+   "id": "amazon_reviews_export",
+   "then": "objection_ladders"
+  },
+  {
+   "id": "review_data_provider",
+   "then": "objection_ladders"
+  },
+  {
+   "id": "judgeme",
+   "then": "objection_ladders"
+  },
+  {
+   "id": "yotpo",
+   "then": "objection_ladders"
+  },
+  {
+   "id": "okendo",
+   "then": "objection_ladders"
+  },
+  {
+   "id": "gorgias",
+   "then": "objection_ladders"
+  }
+ ]
+}

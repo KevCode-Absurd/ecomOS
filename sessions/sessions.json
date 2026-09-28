@@ -159,6 +159,54 @@
    ]
   },
   {
+   "id": "S1.3f",
+   "title": "Bombas extractor: own-site, Amazon and retailer reviews, 5-star and 1-star",
+   "stage": 1,
+   "model": "opus",
+   "reads": [
+    "app/contracts/brand-brain.md#3,4",
+    "app/brain/schema.json",
+    "app/brain/extract/README.md (the three review rows)"
+   ],
+   "writes": [
+    "app/brain/bombas/raw/f-reviews/<section>.json",
+    "app/brain/bombas/raw/f-reviews/sources.json"
+   ],
+   "done_when": "validator passes; every review record has star, product, source url and date; 5-star and 1-star both represented per product line; Amazon listing content captured per ASIN found; no bulk scraping, samples only",
+   "first_line": "Work in app/brain/bombas/raw. Session S1.3f per sessions/SESSIONS.md: run the review extractors for Bombas (own-site widget, Amazon listing pages as a small public sample, retailer pages), 5-star and 1-star first. Public sources only, through a sub-agent that returns records, not pages.",
+   "budget_tokens": 20000,
+   "parallel_group": null,
+   "needs": [
+    "S1.2a"
+   ]
+  },
+  {
+   "id": "S1.3g",
+   "title": "Objection ladders and re-merge",
+   "stage": 1,
+   "model": "opus",
+   "reads": [
+    "app/contracts/brand-brain.md#6.2",
+    "app/brain/merge.py (docstring)",
+    "app/brain/bombas/raw/f-reviews/",
+    "app/brain/bombas/{objections,avatars,language_bank}.json"
+   ],
+   "writes": [
+    "app/brain/ladders.py",
+    "app/brain/bombas/objection_ladders.json",
+    "app/brain/bombas/BRAIN.md",
+    "tests/test_brain_ladders.py"
+   ],
+   "done_when": "ladders.py builds one ladder per theme from every review record with rungs, counts by star and source, proof or open question, avatar ids and uses; merge re-run so the new reviews land in objections, avatars and language_bank; BRAIN.md republished; tests pass",
+   "first_line": "Work in app/brain. Session S1.3g per sessions/SESSIONS.md: build ladders.py per contract section 6.2, run it on Bombas, re-merge raw/ and republish BRAIN.md.",
+   "budget_tokens": 30000,
+   "parallel_group": null,
+   "needs": [
+    "S1.3f",
+    "S1.3m"
+   ]
+  },
+  {
    "id": "S1.3m",
    "title": "Bombas merge and first publish",
    "stage": 1,
