@@ -164,7 +164,7 @@ The candidate side of the desk: the pipeline with its gates, boxes and scorecard
 | 2.5 | Sustained ad spend per lane: competitor pages by the longest run of their active ads (under 14, 14 to 29, 30 to 89, 90 days or more) as a stacked bar per lane, the advertisers at 90 days or more, verdict funded test, live test or noise (bank ideas PRD-023 and PRD-024), and the open candidates on each lane; rule PROD-R20 (funded product lane with no candidate) with a screen recipe, merged with the lane brief when both fire | done |
 | 2.6 | Review price signal: per-pair price mentions mined from review quotes (Amazon, the brand site, Trustpilot, retailers; Reddit left out; packs left out) as a median with the range, by source and star, the quotes in their words, against the competitor band, our own pair and each candidate's planned price per unit; rule PROD-R21 (a sock candidate planned more than 15 percent above the review median) with a price-or-proof recipe | done |
 | 2.7 | Complaint bars per listing: the brand's Amazon listings with complaint themes as a share of the reviews mined (stacked bars with the 15 percent rule line), praise share, the listing's public stars, ratings and price; rule PROD-R22 (one complaint over 15 percent of 20 or more mined reviews) with a build-the-angle recipe that proposes a brain record | done |
-| 2.8 | Differentiation angle and the 5 go-live gates | todo |
+| 2.8 | Differentiation angle and the 5 go-live gates: angle confidence 0 to 3 (filled, names a source, not a competitor's claim by shared words against every competitor pitch in the brain), the gates per candidate as a heatmap (provable claim, owned difference, brand threshold, contribution margin, ad-cost ceiling against target CAC) with the reason on every cell, plus the compliance check; rules PROD-R23 (angle missing past screening) and PROD-R24 (2 or more gates passed, compliance not run) with write-the-angle and compliance-checklist recipes | done |
 | 2.9 | Shortlist scorecard and the go or no-go memo | todo |
 | 2.10 | Recipes for every new rule, tests, round2.png, founder note | todo |
 
@@ -188,4 +188,4 @@ The candidate side of the desk: the pipeline with its gates, boxes and scorecard
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.11 | 28 Sep 2026 | S3.6, Bombas simulated set at scale 0.1 |
 | 1 | 1.1 to 1.10 | 28 Sep 2026 | plan first, 13 rules (PROD-R01 to R13), rank with a recipe per rule, web pass and social pull fixtures, round1.png and round1b.png |
-| 2 | 2.1 to 2.7 | 28 Sep 2026 | pipeline writes, margin gate, demand pattern, lane map, spend signal, price signal, complaint bars, PROD-R14 to R22; in progress |
+| 2 | 2.1 to 2.8 | 28 Sep 2026 | pipeline writes, margin gate, demand pattern, lane map, spend signal, price signal, complaint bars, angle and gates, PROD-R14 to R24; in progress |

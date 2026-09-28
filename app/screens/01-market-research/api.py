@@ -654,6 +654,34 @@ def recipe(f):
             'stop_rule': 'stop if the complaint share falls under 15 percent in the next review pull', 'check_on': _check_on(f, 30), 'time_to_ship_hours': 3,
             'win_rule': 'an accepted angle record in the brain and the complaint share under 15 percent on the next pull',
         }
+    if rid == 'PROD-R23':
+        ent = f.get('entity') or {}
+        return {
+            'title': f'Write the point of difference for {ent.get("label")} before it goes further',
+            'owner': 'agent',
+            'artefact': {'kind': 'research_note', 'label': f'an angle for {ent.get("label")}: the difference in the buyer\'s words, the source it rests on (a review gap, a teardown, field research), and the check that it is not a competitor\'s claim'},
+            'steps': [
+                {'n': 1, 'who': 'agent', 'text': 'Read the review complaints and Reddit language on the candidate\'s lane for the unmet ask.'},
+                {'n': 2, 'who': 'agent', 'text': 'Draft the angle in one line with its source named, and check its words against every competitor pitch in the brain.'},
+                {'n': 3, 'who': 'person', 'text': 'Approve the angle from the card. It is written to the candidate and the gates re-run.'}],
+            'size': {'text': f'angle confidence 0 of 3 at {ent.get("stage")}', 'usd': None},
+            'stop_rule': 'no funding gate without an angle', 'check_on': _check_on(f, 5), 'time_to_ship_hours': 2,
+            'win_rule': 'angle confidence 2 or more',
+        }
+    if rid == 'PROD-R24':
+        ent = f.get('entity') or {}
+        return {
+            'title': f'Run the compliance check on {ent.get("label")}: {ent.get("passed")} of {ent.get("of")} gates passed',
+            'owner': 'agent_drafts',
+            'artefact': {'kind': 'ticket', 'label': f'a compliance checklist for {ent.get("label")}: labelling (fibre content, country of origin, care), category certification if any, with pass or fail per line and the source'},
+            'steps': [
+                {'n': 1, 'who': 'agent', 'text': 'Fill the checklist from the candidate\'s spec: fibre content and country of origin labels, care labels, any category certification.'},
+                {'n': 2, 'who': 'agent', 'text': 'Mark each line pass, fail or needs a document, with the rule it rests on.'},
+                {'n': 3, 'who': 'person', 'text': 'Confirm the lines and set compliance on the candidate from the card.'}],
+            'size': {'text': f'{ent.get("passed")} of {ent.get("of")} gates passed, compliance not run', 'usd': None},
+            'stop_rule': 'not fundable until both compliance lines pass', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 2,
+            'win_rule': 'labelling and category certification both pass',
+        }
     return None
 
 
@@ -852,7 +880,8 @@ def overview(data, brand):
                      'price_bands': bands, 'reviews': review_mining(reviews, lads),
                      'pipeline': pipeline_block(brand, ends_on, findings, floor), 'margin': margin_block(brand, data, br, rd, ends_on, findings),
                      'pattern': pattern_block(brand, data, rd, findings), 'lane_map': audit.lane_map(br, ends_on), 'spend': audit.spend_signal(br, brand, ends_on),
-                     'price_signal': price_signal_block(br, brand, data, findings), 'complaints': audit.listing_complaints(br)},
+                     'price_signal': price_signal_block(br, brand, data, findings), 'complaints': audit.listing_complaints(br),
+                     'gates': gates_block(brand, data, br, rd, ends_on, findings)},
             'audit': {'findings': findings, 'rules': audit.RULES}}
 
 
@@ -1005,6 +1034,18 @@ def price_signal_block(br, brand, data, findings):
         cands.append({'candidate_id': c.get('candidate_id'), 'name': c.get('name'), 'category': c.get('category'), 'closed': c.get('stage') in audit.CLOSED_STAGES, 'per_pair': round(per, 2) if per else None,
                       'gap': round(per / sig['median_per_pair'] - 1, 4) if per and sig.get('median_per_pair') else None, 'finding_id': by_entity.get(c.get('candidate_id'))})
     return dict(sig, competitor_band=[min(meds), max(meds)] if meds else None, ours=ours, candidates=cands, gap_rule=audit.REVIEW_PRICE_GAP)
+
+
+def gates_block(brand, data, br, rd, ends_on, findings):
+    rows = audit.candidate_gates(brand, data, br, rd, ends_on)
+    by_entity = {}
+    for f in findings:
+        if f['rule_id'] in ('PROD-R23', 'PROD-R24'):
+            by_entity.setdefault(f['entity']['id'], []).append(f['id'])
+    for r in rows:
+        r['finding_ids'] = by_entity.get(r['candidate_id'], [])
+    return {'rows': rows, 'gates': audit.GATES, 'labels': audit.GATE_LABEL,
+            'rule': 'angle confidence: filled, names a source, not a competitor claim (3 shared words); gates: provable claim, owned difference, brand threshold (category in the lines and store fit), contribution margin (the gate above), ad-cost ceiling (contribution an order against target CAC)'}
 
 
 def pipeline_block(brand, ends_on, findings, floor):

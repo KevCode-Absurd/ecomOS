@@ -92,6 +92,12 @@ Rules
   PROD-R22  Unresolved listing complaint: an Amazon listing of the brand with 20 or more mined reviews whose top
             complaint theme (general left out) is over 15 percent of the mined reviews. The complaint is the gap to
             build the next angle on. Capability PROD-C31 (mine reviews for opportunity, agent does). Owner: 01-market-research.
+  PROD-R23  Angle missing: a candidate at researched or later with an empty angle. Angle confidence is 0 to 3: filled,
+            names a source (review, Reddit, web pass, finding, teardown, field), and not a competitor's own claim (3 or
+            more distinctive words shared with one competitor's pitch reads as theirs). Capability PROD-C06.
+  PROD-R24  Compliance gate incomplete: a candidate that passed 2 or more of the 5 go-live gates (provable claim, owned
+            difference, brand threshold, contribution margin, ad-cost ceiling: contribution an order against
+            target_cac) while labelling and category certification have not run. Capability PROD-C10.
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -162,6 +168,9 @@ RULES = [
      'inputs': ['brain.language_bank', 'fixtures.pipeline'], 'capability': 'PROD-C04', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R22', 'name': 'Listing with 20 or more mined reviews whose top complaint is over 15 percent of them', 'entity_type': 'sku',
      'inputs': ['brain.products.amazon_*_issues', 'brain.products.amazon_*_praise', 'brain.marketplaces'], 'capability': 'PROD-C31', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R23', 'name': 'Candidate past screening with no stated point of difference', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline', 'brain.competitors'], 'capability': 'PROD-C06', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R24', 'name': 'Candidate with 2 or more go-live gates passed and the compliance check not run', 'entity_type': 'sku',
+     'inputs': ['fixtures.pipeline', 'finance_inputs', 'brain.products'], 'capability': 'PROD-C10', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -184,7 +193,9 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R19': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R20': {'id': 'PROD-C03', 'autonomy': 'agent_does'},
               'PROD-R21': {'id': 'PROD-C04', 'autonomy': 'agent_does'},
-              'PROD-R22': {'id': 'PROD-C31', 'autonomy': 'agent_does'}}
+              'PROD-R22': {'id': 'PROD-C31', 'autonomy': 'agent_does'},
+              'PROD-R23': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
+              'PROD-R24': {'id': 'PROD-C10', 'autonomy': 'agent_does'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -658,6 +669,7 @@ def run(brand, window=None, data=None):
     out += spend_findings(br, brand, ends_on)
     out += review_price_findings(br, brand, ends_on)
     out += complaint_findings(br, ends_on)
+    out += gate_findings(brand, data, br, rd, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -2080,4 +2092,112 @@ def complaint_findings(br, ends_on):
         f['entity'] = {'type': 'sku', 'id': r['asin'].lower(), 'label': r['title'], 'asin': r['asin'], 'complaint': r['top_complaint'], 'rate': r['top_rate']}
         f['id'] = f'{SCREEN}.PROD-R22.{r["asin"].lower()}'
         out.append(f)
+    return out
+
+
+# ---------------------------------------------------------------- differentiation angle and the 5 go-live gates
+
+ANGLE_COPY_WORDS = 3     # an angle sharing 3 or more distinctive words with one competitor's pitch reads as their claim, not ours
+GATES = ['provable_claim', 'owned_difference', 'brand_threshold', 'contribution_margin', 'ad_cost_ceiling']
+GATE_LABEL = {'provable_claim': 'Provable claim', 'owned_difference': 'Owned difference', 'brand_threshold': 'Brand threshold', 'contribution_margin': 'Contribution margin', 'ad_cost_ceiling': 'Ad-cost ceiling'}
+SOURCE_WORDS = ['review', 'reddit', 'web pass', 'finding', 'teardown', 'field', 'ladder', 'survey', 'circana', 'prod-r']
+
+
+def angle_confidence(cand, comps):
+    """0 to 3: the angle is filled, it names a source, and it is not a copy of a competitor's own claim."""
+    text = str(cand.get('angle_text') or '').strip()
+    src = str(cand.get('angle_source') or '').strip().lower()
+    filled = bool(text)
+    sourced = filled and any(w in src for w in SOURCE_WORDS)
+    words = {w.strip('.,;:()"\'') for w in re.split(r'[\s/]+', text.lower())}
+    words = {w for w in words if len(w) >= 5 and w not in STOP and w.isalpha()}
+    copied = None
+    if filled and comps:
+        for c in comps:
+            hits = [w for w in words if w in c['text']]
+            if len(hits) >= ANGLE_COPY_WORDS:
+                copied = {'competitor': c['name'], 'words': sorted(hits)[:5]}
+                break
+    owned = filled and copied is None
+    score = int(filled) + int(sourced) + int(owned)
+    return {'score': score, 'label': ['none', 'weak', 'fair', 'solid'][score], 'filled': filled, 'sourced': sourced, 'owned': owned, 'copied': copied}
+
+
+def go_live_gates(cand, angle, gate, lines, fin, day, upo):
+    """The 5 gates as pass, fail or unavailable, each with its reason."""
+    out = {}
+    out['provable_claim'] = {'status': 'pass' if angle['sourced'] else ('fail' if angle['filled'] else 'unavailable'),
+                             'why': 'the angle names its source' if angle['sourced'] else ('the angle has no named source' if angle['filled'] else 'no angle yet')}
+    out['owned_difference'] = {'status': 'pass' if angle['owned'] else ('fail' if angle['filled'] else 'unavailable'),
+                               'why': ('not a competitor claim' if angle['owned'] else (f'reads like {angle["copied"]["competitor"]}: ' + ', '.join(angle['copied']['words']) if angle['copied'] else 'no angle yet'))}
+    cat = str(cand.get('category') or '').lower()
+    in_lines = any(cat.rstrip('s') in str(l).lower() for l in lines) if lines else None
+    fit = (cand.get('screen_result') or {}).get('store_fit')
+    out['brand_threshold'] = {'status': 'pass' if in_lines and fit == 'pass' else ('fail' if fit == 'fail' or in_lines is False else 'unavailable'),
+                              'why': ('category in the brand\'s lines and store fit passed' if in_lines and fit == 'pass' else 'store fit failed' if fit == 'fail' else 'category not in the brand\'s lines' if in_lines is False else 'store fit not run')}
+    if gate.get('unavailable'):
+        out['contribution_margin'] = {'status': 'unavailable', 'why': gate.get('reason') or 'inputs missing'}
+    else:
+        out['contribution_margin'] = {'status': 'pass' if gate.get('passes_floor') else ('fail' if gate.get('passes_floor') is False else 'unavailable'),
+                                      'why': f'{gate["margin_pct"]:g} percent against a {gate["floor_pct"]:g} percent floor' if gate.get('floor_pct') is not None else 'no floor on file'}
+    cac = fin.value('target_cac', day) if fin else None
+    if cac is None or gate.get('unavailable'):
+        out['ad_cost_ceiling'] = {'status': 'unavailable', 'why': 'no target_cac in the finance inputs' if cac is None else 'no contribution model'}
+    else:
+        per_order = gate['contribution_usd'] * (upo or 1)
+        out['ad_cost_ceiling'] = {'status': 'pass' if per_order >= cac else 'fail', 'why': f'contribution an order ${per_order:,.2f} against a target CAC of ${cac:,.2f}'}
+    passed = sum(1 for g in out.values() if g['status'] == 'pass')
+    return {'gates': out, 'passed': passed, 'of': len(GATES)}
+
+
+def compliance_status(cand):
+    c = cand.get('compliance') or {}
+    vals = [c.get('labelling'), c.get('category_certification')]
+    if any(v == 'fail' for v in vals):
+        return 'fail'
+    if all(v == 'pass' for v in vals):
+        return 'pass'
+    return 'unavailable'
+
+
+def candidate_gates(brand, data, br, rd, ends_on):
+    fin_rows = finance_rows(data, brand)
+    fin = metrics().finance.Finance(fin_rows) if fin_rows else None
+    floor = fin.value('target_contribution_margin', ends_on.isoformat()) if fin else None
+    upo = units_per_order(data, brand, rd)
+    comps = competitor_signals(br)
+    lines = brain_value_lines(br) or []
+    out = []
+    for cand in pipeline(brand):
+        angle = angle_confidence(cand, comps)
+        gate = margin_gate(cand, fin, br, ends_on.isoformat(), upo, floor)
+        gl = go_live_gates(cand, angle, gate, lines, fin, ends_on.isoformat(), upo)
+        out.append({'candidate_id': cand.get('candidate_id'), 'name': cand.get('name'), 'stage': cand.get('stage'), 'closed': cand.get('stage') in CLOSED_STAGES,
+                    'stage_index': STAGES.index(cand['stage']) if cand.get('stage') in STAGES else None, 'angle': angle, 'gates': gl['gates'], 'passed': gl['passed'], 'of': gl['of'],
+                    'compliance': compliance_status(cand), 'angle_text': cand.get('angle_text'), 'angle_source': cand.get('angle_source')})
+    return out
+
+
+def gate_findings(brand, data, br, rd, ends_on):
+    """PROD-R23: a candidate past screening with no stated angle. PROD-R24: 2 or more gates passed and the compliance check not run."""
+    out = []
+    for r in candidate_gates(brand, data, br, rd, ends_on):
+        if r['closed']:
+            continue
+        cid = r['candidate_id'] or slug(r['name'])
+        if (r['stage_index'] or 0) >= 1 and not r['angle']['filled']:
+            ev = [_ev('differentiation_angle_confidence', 0, 'score', ends_on.isoformat(), 'candidate now', 1, 'threshold', source='fixtures.pipeline', simulated=False, freshness_days=0, stage=r['stage'])]
+            sentence = f'{r["name"]} has no stated point of difference at {r["stage"]}. It cannot reach a funding gate without one.'
+            f = _finding('PROD-R23', cid, ends_on, 'medium', ev, sentence, None, 0.9, [], money_reason='an angle gap has no order count')
+            f['entity'] = {'type': 'sku', 'id': cid, 'label': r['name'], 'candidate': True, 'stage': r['stage']}
+            f['id'] = f'{SCREEN}.PROD-R23.{cid}'
+            out.append(f)
+        if r['passed'] >= 2 and r['compliance'] == 'unavailable':
+            ev = [_ev('go_live_gate_pass_count', r['passed'], 'count', ends_on.isoformat(), 'candidate now', 2, 'threshold', source='fixtures.pipeline', simulated=False, freshness_days=0, of=r['of']),
+                  _ev('compliance_gate_status', None, 'flag', ends_on.isoformat(), 'candidate now', source='fixtures.pipeline', simulated=False, freshness_days=0, note='labelling and category certification not run')]
+            sentence = f'{r["name"]} has cleared {r["passed"]} of {r["of"]} gates but the compliance check has not run. It is not fundable yet.'
+            f = _finding('PROD-R24', cid, ends_on, 'medium', ev, sentence, None, 0.9, [], money_reason='a compliance gap blocks funding; it has no order count')
+            f['entity'] = {'type': 'sku', 'id': cid, 'label': r['name'], 'candidate': True, 'passed': r['passed'], 'of': r['of']}
+            f['id'] = f'{SCREEN}.PROD-R24.{cid}'
+            out.append(f)
     return out

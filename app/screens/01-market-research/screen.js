@@ -588,6 +588,29 @@
         gaps.length && actionFor(gaps[0].finding_id) ? { label: 'Build the first angle', onClick: () => openAction(actionFor(gaps[0].finding_id)) } : null));
   }
 
+  function gatesBlock(g) {
+    const rows = (g && g.rows) || [];
+    if (!rows.length) return el('p', { class: 'muted', text: 'No candidate to gate.' });
+    const cols = (g.gates || []).map((k) => ({ key: k, label: g.labels[k] }));
+    const cells = {};
+    rows.forEach((r) => { cells[r.candidate_id] = {}; (g.gates || []).forEach((k) => { const s = r.gates[k]; cells[r.candidate_id][k] = { us: s.status === 'pass' ? 1 : s.status === 'fail' ? 0 : null, unit: 'n', label: s.why }; }); });
+    const matrix = UI.coverageMatrix({ rows: rows.map((r) => ({ key: r.candidate_id, label: r.name, sub: r.passed + ' of ' + r.of + ' passed, angle ' + r.angle.label + ', compliance ' + r.compliance })), cols, cells, single: true, max: 1, unit: 'n', corner: 'candidate x gate',
+      note: '1 is pass, 0 is fail, n/a is not run. Hover a cell for the reason. ' + (g.rule || ''),
+      onCell: (cell, row, col) => { const r = rows.find((x) => x.candidate_id === row.key); if (!r) return; const s = r.gates[col.key]; UI.panel({ title: r.name + ': ' + g.labels[col.key], body: el('div', { class: 'stack' }, el('p', null, el('b', { text: s.status + '. ' }), s.why), el('div', { class: 'small muted', text: 'Angle: ' + (r.angle_text || 'none') + (r.angle_source ? ' (source: ' + r.angle_source + ')' : '') }), r.angle.copied ? el('div', { class: 'small', text: 'Reads like ' + r.angle.copied.competitor + ': ' + r.angle.copied.words.join(', ') }) : null, (r.finding_ids || []).map(actionFor).filter(Boolean).map((a) => UI.actionCard(a, { expanded: true, screen: SLUG }))) }); } });
+    const vrows = rows.map((r) => { const acts = (r.finding_ids || []).map(actionFor).filter(Boolean); return Object.assign({}, r, {
+      angleText: r.angle.label + ' (' + r.angle.score + ' of 3)' + (r.angle.copied ? ', reads like ' + r.angle.copied.competitor : ''), gatesText: r.passed + ' of ' + r.of, comp: r.compliance,
+      actions: [acts.length ? { label: acts[0].rule_id === 'PROD-R23' ? 'Write the angle' : 'Run compliance', onClick: () => openAction(acts[0]) } : { label: r.closed ? 'Closed' : r.passed === r.of && r.compliance === 'pass' ? 'Fundable' : 'Gates open', cls: 'quiet', onClick: () => {} }] }); });
+    const t = UI.verdictTable({
+      columns: [{ key: 'name', label: 'Candidate' }, { key: 'stage', label: 'Stage' }, { key: 'angleText', label: 'Angle confidence' }, { key: 'gatesText', label: 'Gates passed' }, { key: 'comp', label: 'Compliance' }],
+      rows: vrows,
+      verdict: { at: 1, kind: (r) => r.closed ? 'na' : (r.passed === r.of && r.compliance === 'pass') ? 'scale' : (r.finding_ids || []).length ? 'fix' : 'watch', text: (r) => r.closed ? 'Closed' : (r.passed === r.of && r.compliance === 'pass') ? 'Fundable' : (r.finding_ids || []).length ? 'Blocked' : 'In progress', reason: (r) => r.passed + ' of ' + r.of + ' gates, compliance ' + r.compliance },
+      actions: { label: 'Do', onClick: () => {} }, sort: false });
+    const blocked = rows.filter((r) => !r.closed && (r.finding_ids || []).length);
+    return el('div', { class: 'stack' }, el('div', { class: 'card' }, matrix), el('div', { class: 'card scroll' }, t),
+      gapLine(blocked.length ? blocked.length + ' candidate' + (blocked.length === 1 ? ' is' : 's are') + ' blocked on an angle or a compliance check: ' + blocked.map((r) => r.name).join(', ') + '.' : 'No candidate is blocked on an angle or compliance.',
+        blocked.length ? { label: 'Unblock the first', onClick: () => { const a = actionFor(blocked[0].finding_ids[0]); if (a) openAction(a); } } : null));
+  }
+
   function loadDesk(o) {
     const d = o.desk || {};
     const w = (o.window || {}).trend;
@@ -608,6 +631,7 @@
     parts.push(section('desk-spend', 'Who is actually funding which lane, not just posting about it?', 'Competitor pages by the longest run of their active ads per lane. Three or more advertisers at 90 days is a funded test; one at 14 days is a live test; the rest is noise.', spendBlock(d.spend)));
     parts.push(section('desk-price-signal', 'What would buyers actually pay for a pair?', 'Price mentions mined from review quotes across Amazon, the brand site, Trustpilot and retailers, as a median per pair, against the competitor band, our own pair and each candidate\'s planned price.', priceSignalBlock(d.price_signal)));
     parts.push(section('desk-complaints', 'What do buyers hate about what exists, listing by listing?', 'Complaint themes mined from the brand\'s own Amazon listings as a share of reviews mined, against praise, with the listing\'s public stars, ratings and price. One complaint over 15 percent is the angle to build on.', complaintBlock(d.complaints)));
+    parts.push(section('desk-gates', 'Is each candidate ready to fund: an owned angle and the 5 go-live gates?', 'Angle confidence (filled, sourced, not a competitor claim) and the gates per candidate: provable claim, owned difference, brand threshold, contribution margin, ad-cost ceiling, plus the compliance check.', gatesBlock(d.gates)));
     parts.push(section('desk-pattern', 'Is each candidate evergreen, seasonal or a trend, and when does cash move?', 'The demand pattern from our own 12-month series by category and the web pass, with the cash timing it implies and the cash plan attached to each candidate.', patternBlock(d.pattern)));
     parts.push(section('desk-pipeline', 'What is in the next-SKU pipeline, and what is past its time box?', 'Candidates screened in from the gaps above or by hand, their stage, fast checks, time box and hours. Advance, log hours or kill from the card; every write lands in the pipeline log.', pipelineBlock(d.pipeline || { rows: [] })));
     mount('#desk', ...parts);

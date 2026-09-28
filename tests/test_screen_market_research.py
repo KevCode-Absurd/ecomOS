@@ -702,6 +702,29 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
         self.assertIn('price and worth', fs[0]['sentence'])
         self.check_shape(fs[0])
 
+    def test_angle_confidence_and_gates(self):
+        comps = [{'name': 'Rival', 'text': 'vermont-made merino socks with a lifetime guarantee, durability first'}]
+        none = audit.angle_confidence({'angle_text': None, 'angle_source': None}, comps)
+        self.assertEqual((none['score'], none['label']), (0, 'none'))
+        copy = audit.angle_confidence({'angle_text': 'Vermont-made merino socks with a lifetime guarantee and durability', 'angle_source': 'review gap PROD-R06'}, comps)
+        self.assertEqual(copy['copied']['competitor'], 'Rival')
+        self.assertEqual(copy['score'], 2)      # filled and sourced, not owned
+        own = audit.angle_confidence({'angle_text': 'A wide soft cuff that pulls on without a fight for long shifts', 'angle_source': 'review gap: hard to pull on (finding PROD-R02)'}, comps)
+        self.assertEqual((own['score'], own['label']), (3, 'solid'))
+        gate = {'unavailable': False, 'passes_floor': True, 'margin_pct': 40.0, 'floor_pct': 22.0, 'contribution_usd': 10.0}
+        rows = [{'field': 'target_cac', 'scope': 'global', 'scope_key': '', 'value': 12.0, 'unit': 'usd', 'effective_from': '2025-01-01', 'effective_to': None}]
+        fin = metrics.finance.Finance(rows)
+        gl = audit.go_live_gates({'category': 'socks', 'screen_result': {'store_fit': 'pass'}}, own, gate, ['SOCKS'], fin, '2026-09-27', 1.5)
+        self.assertEqual(gl['passed'], 5)
+        self.assertEqual(gl['gates']['ad_cost_ceiling']['status'], 'pass')   # 10 x 1.5 = 15 against 12
+        gl2 = audit.go_live_gates({'category': 'hats', 'screen_result': {}}, none, {'unavailable': True, 'reason': 'no price'}, ['SOCKS'], None, '2026-09-27', None)
+        self.assertEqual(gl2['passed'], 0)
+        self.assertEqual(gl2['gates']['brand_threshold']['status'], 'fail')
+        self.assertEqual(gl2['gates']['ad_cost_ceiling']['status'], 'unavailable')
+        self.assertEqual(audit.compliance_status({'compliance': {'labelling': 'pass', 'category_certification': 'pass'}}), 'pass')
+        self.assertEqual(audit.compliance_status({'compliance': {'labelling': 'pass'}}), 'unavailable')
+        self.assertEqual(audit.compliance_status({'compliance': {'labelling': 'fail'}}), 'fail')
+
     def test_demand_pattern_tags(self):
         even = {'rows': [{'category': 'socks', 'series': [100] * 12}], 'months': [f'2026-{m:02d}' for m in range(1, 13)], 'last': '2026-12'}
         peaked = {'rows': [{'category': 'socks', 'series': [50] * 10 + [300, 400]}], 'months': even['months'], 'last': '2026-12'}
