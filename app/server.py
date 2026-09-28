@@ -20,6 +20,8 @@ Routes
   GET  /api/metrics/pipeline?window=28d the pipeline group, 4 trailing windows (optional device=)
   GET  /api/metrics/<name>?window=28d one metric via metrics.py: window=Nd, end=YYYY-MM-DD, plus the
                                       filters that metric takes (device, channel, by, page, variant)
+  GET  /api/handoffs?from_screen=&to=&status=&kind=  briefs handed between screens and teams (events.md)
+  POST /api/handoffs                  append one hand-off {from_screen, to, kind, title, why, draft, win_rule, stop_rule, check_on, capability, owner, finding_id}
   GET  /api/decisions?screen=<slug>   the decisions log
   POST /api/decisions                 append one decision {screen, capability, choice, reason}
   GET  /api/<slug>/rank?window=28d    rubric-scored actions from the screen's audit (app/rank.py), unless api.py sets HANDLES_RANK
@@ -33,6 +35,7 @@ It returns a JSON-able object for 200, or a (status, object) pair.
 import argparse
 import csv
 import importlib.util
+import hashlib
 import json
 import mimetypes
 import re
@@ -58,7 +61,7 @@ SAFE_NAME = re.compile(r'^[a-z0-9_]{1,40}$')
 WEB_FILES = ('index.html', 'shell.js', 'ui-kit.css', 'ui-kit.js', 'charts.js', 'kit.html')
 SCREEN_FILES = ('index.html', 'screen.js', 'screen.css')
 CHOICES = ('agent', 'person', 'not_now', 'undo')   # undo: the latest decision on a finding is withdrawn
-MAX_BODY = 32_000
+MAX_BODY = 8_000_000   # POST bodies: a dropped brain export is about 1 MB; screens must not chunk uploads
 MAX_DECISIONS = 20_000
 
 
@@ -331,6 +334,45 @@ def rank_window(qs):
     return rank_mod().default_window(days, end if re.fullmatch(r'\d{4}-\d{2}-\d{2}', end) else None)
 
 
+class Handoffs(Decisions):
+    """Append-only log at data/handoffs.json: a brief one screen hands to a team or another screen
+    (events.md). Fields: from_screen, to, kind, title, why, draft, win_rule, stop_rule, check_on,
+    capability, owner, status, finding_id, time."""
+
+    KINDS = ('ad_brief', 'creative', 'copy', 'page_section', 'landing_page', 'offer', 'price_change', 'email', 'flow',
+             'test_brief', 'listing_fix', 'feed_fix', 'budget_move', 'bid_change', 'connector_setup', 'brain_record',
+             'policy', 'research_note', 'ticket', 'report')
+    OWNERS = ('agent', 'agent_drafts', 'person')
+    STATUSES = ('proposed', 'decided', 'done', 'dropped')
+
+    @staticmethod
+    def validate(body):
+        if not isinstance(body, dict):
+            raise ValueError('body must be an object')
+        src = str(body.get('from_screen') or '')
+        to = str(body.get('to') or '').strip()
+        kind = str(body.get('kind') or '')
+        title = str(body.get('title') or '').strip()[:200]
+        if not SAFE_SLUG.match(src):
+            raise ValueError('from_screen must be a screen folder name like 04-offers-pricing')
+        if not to or len(to) > 60 or not re.fullmatch(r'[A-Za-z0-9 _.:-]+', to):
+            raise ValueError('to must name a team or a screen')
+        if kind not in Handoffs.KINDS:
+            raise ValueError('kind must be one of ' + ', '.join(Handoffs.KINDS))
+        if not title:
+            raise ValueError('title is required')
+        row = {'from_screen': src, 'to': to, 'kind': kind, 'title': title, 'time': now_iso(),
+               'status': body.get('status') if body.get('status') in Handoffs.STATUSES else 'proposed'}
+        for k, n in (('why', 600), ('draft', 20000), ('win_rule', 300), ('stop_rule', 300), ('check_on', 10), ('capability', 80), ('finding_id', 200)):
+            v = body.get(k)
+            if v is not None:
+                row[k] = str(v)[:n]
+        if body.get('owner') in Handoffs.OWNERS:
+            row['owner'] = body['owner']
+        row['id'] = 'HO-' + hashlib.sha1((src + '|' + to + '|' + title + '|' + row['time']).encode()).hexdigest()[:10]
+        return row
+
+
 # ---------------------------------------------------------------- screen apis
 
 class Request:
@@ -432,6 +474,19 @@ def make_handler(data, decisions, apis):
                     return self.send_json({'error': 'metric not in contract', 'metric': parts[1]}, 404)
                 except ValueError as exc:
                     return self.send_json({'error': str(exc), 'metric': parts[1]}, 400)
+            if parts == ['handoffs']:
+                handoffs = Handoffs(decisions.path.parent / 'handoffs.json')
+                if method == 'POST':
+                    try:
+                        return self.send_json({'ok': True, 'handoff': handoffs.append(body)}, 201)
+                    except ValueError as exc:
+                        return self.send_json({'error': str(exc)}, 400)
+                rows = handoffs.read()
+                for key in ('from_screen', 'to', 'status', 'kind'):
+                    val = qs.get(key, [''])[0]
+                    if val:
+                        rows = [r for r in rows if r.get(key) == val]
+                return self.send_json({'handoffs': rows, 'total': len(rows)})
             if parts == ['decisions']:
                 if method == 'POST':
                     try:
