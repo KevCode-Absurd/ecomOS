@@ -724,6 +724,34 @@ def merge_lanes(actions):
     return keep
 
 
+CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25')
+
+
+def merge_candidates(actions):
+    """One action per candidate: the highest-scored finding on a candidate hosts the others (its steps stay; the
+    other findings' sentences join the why and their ids the finding_ids), so a founder sees one card per idea."""
+    by_cand = {}
+    for a in actions:
+        ent = a.get('entity') or {}
+        if a.get('rule_id') in CANDIDATE_RULES and ent.get('candidate'):
+            by_cand.setdefault(ent.get('id'), []).append(a)
+    drop = set()
+    for cid, group in by_cand.items():
+        if len(group) < 2:
+            continue
+        group.sort(key=rank_mod.sort_key)
+        host = group[0]
+        extra = []
+        for a in group[1:]:
+            host['finding_ids'] = sorted(set(host['finding_ids']) | set(a['finding_ids']))
+            extra.append(a['why'])
+            drop.add(a['id'])
+        host['why'] = host['why'] + ' Also: ' + ' '.join(extra)
+        host['title'] = host['title'] + f' (+{len(group) - 1} more on this candidate)'
+        host['size'] = {'text': f'{len(group)} open items on the candidate', 'usd': (host.get('size') or {}).get('usd')}
+    return [a for a in actions if a['id'] not in drop]
+
+
 def rank_mod_money(m):
     usd = (m or {}).get('usd')
     return f'${usd:,.0f}' if isinstance(usd, (int, float)) else 'stake unavailable'
@@ -771,7 +799,7 @@ def rank(brand, window=None):
         a['screen'] = SCREEN
         if not rank_mod.validate_action(a):
             actions.append(a)
-    actions = merge_lanes(actions)
+    actions = merge_candidates(merge_lanes(actions))
     actions.sort(key=rank_mod.sort_key)
     return {'screen': SCREEN, 'brand': brand, 'window': window, 'actions': actions, 'net_revenue_28d': nr}
 

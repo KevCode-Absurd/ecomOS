@@ -255,7 +255,10 @@ class RulesTest(ShapeMixin, unittest.TestCase):
         merged = [a for a in acts if len(a['finding_ids']) > 1]
         for a in merged:
             rules = {fid.split('.')[1] for fid in a['finding_ids']}
-            self.assertEqual(rules, {'PROD-R05', 'PROD-R06'})
+            if (a.get('entity') or {}).get('candidate'):
+                self.assertTrue(rules <= set(api.CANDIDATE_RULES), rules)     # one card per candidate
+            else:
+                self.assertTrue(rules <= {'PROD-R05', 'PROD-R06', 'PROD-R20'}, rules)   # one brief per lane
         covered = [fid for a in acts for fid in a['finding_ids']]
         self.assertEqual(len(covered), len(set(covered)))   # one action per finding
 
@@ -499,6 +502,17 @@ class RankTest(unittest.TestCase):
             self.assertNotIn('Read the evidence rows', a['steps'][0]['text'], a['id'])   # not the engine default
             self.assertTrue(a.get('stop_rule') or a.get('win_rule'), a['id'])
             self.assertTrue(a['artefact']['label'])
+
+    def test_one_action_per_candidate(self):
+        acts = self.actions()
+        seen = {}
+        for a in acts:
+            ent = a.get('entity') or {}
+            if ent.get('candidate'):
+                self.assertNotIn(ent['id'], seen, 'two actions on one candidate')
+                seen[ent['id']] = a
+        covered = [fid for a in acts for fid in a['finding_ids']]
+        self.assertEqual(len(covered), len(set(covered)))
 
     def test_rubric_overrides_from_the_audit_docstring(self):
         acts = {a['rule_id']: a for a in self.actions()}
