@@ -2553,10 +2553,58 @@ class Round6Owners(TempBrain):
         self.assertIn('owner', [c['kind'] for c in api.handle(Req(['changes']))['changes']])
 
 
+class Round6OnePage(TempBrain):
+    """Round 6 feature 9: the brain in one page for a new team member, built from the records."""
+
+    def test_one_page_carries_every_section(self):
+        api.handle(Req(['claims'], 'POST', body={'text': 'waterproof', 'tier': 'forbidden'}))
+        api.handle(Req(['owners', 'policies'], 'POST', body={'owner': 'in-house ops', 'cadence_days': 14}))
+        o = api.handle(Req(['onepage']))
+        self.assertTrue(o['text'].startswith('# Bombas: the brain in one page'))
+        for sec in ('What the brand is', 'Positioning', 'Who we speak to', 'How we speak', 'What we never do', 'Lines and numbers no one rewrites', 'Who keeps what', 'What is connected', 'Who we are measured against', 'What is still open', 'The last decisions', 'Where things live'):
+            self.assertTrue(any(x.startswith(sec) for x in o['sections']), sec)
+        self.assertIn('Never say: waterproof', o['text'])
+        self.assertIn('policies: in-house ops, every 14 days', o['text'])
+        self.assertIn('free shipping threshold: 75', o['text'])
+        self.assertIn('Darn Tough', o['text'])
+        self.assertGreater(o['tokens'], 300)
+        self.assertTrue(api.handle(Req(['trail']))['available'])  # the read is logged
+
+    def test_example_brand_one_page_is_honest(self):
+        shutil.copytree(BRAIN / 'example', self.tmp / 'example')
+        o = api.handle(Req(['onepage'], query={'brand': ['example']}))
+        self.assertIn('no positioning frame on file', o['text'])
+        self.assertIn('- documents: 1', o['text'])  # the one file is the only connected source
+        self.assertIn('no competitor page on file', o['text'])
+
+
+class Round6FounderNotes(TempBrain):
+    """Round 6 feature 10: the founder notes block in BRAIN.md, read and set from the screen, kept across regeneration."""
+
+    def test_notes_round_trip_and_regeneration(self):
+        n = api.handle(Req(['brainmd', 'notes']))
+        self.assertTrue(n['exists'])
+        status, res = api.handle(Req(['brainmd', 'notes'], 'POST', body={'notes': 'House rule: no discount deeper than 25 percent without Kevin. The CX lead is Priya.'}))
+        self.assertEqual(status, 201)
+        self.assertLessEqual(res['tokens'], 1500)
+        self.assertIn('The CX lead is Priya', (self.tmp / 'bombas' / 'BRAIN.md').read_text(encoding='utf-8'))
+        self.assertEqual(api.handle(Req(['brainmd', 'notes']))['notes'], 'House rule: no discount deeper than 25 percent without Kevin. The CX lead is Priya.')
+        # a regeneration from the self audit keeps the notes word for word
+        api.handle(Req(['profile', 'offers', 'free_shipping_threshold_usd'], 'POST', body={'text': '80'}))
+        self.assertEqual(api.handle(Req(['selfaudit', 'regenerate'], 'POST'))[0], 201)
+        self.assertIn('The CX lead is Priya', api.handle(Req(['brainmd']))['text'])
+        self.assertFalse(any(p['kind'] == 'drifted' for p in api.handle(Req(['selfaudit']))['proposals']))
+        self.assertEqual(api.handle(Req(['brainmd', 'notes'], 'POST', body={'notes': 'a note \u2014 with a dash'}))[0], 400)
+        self.assertEqual(api.handle(Req(['brainmd', 'notes'], 'POST', body={'notes': 'x' * 5000}))[0], 413)
+        status, res = api.handle(Req(['brainmd', 'notes'], 'POST', body={'notes': ''}))
+        self.assertEqual((status, api.handle(Req(['brainmd', 'notes']))['default']), (201, True))
+        self.assertIn('router', [c['kind'] for c in api.handle(Req(['changes']))['changes']])
+
+
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
-    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'],
+    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'], ['onepage'], ['brainmd', 'notes'],
               ['decisions'], ['flows'], ['claims'], ['site', 'diff'], ['parity'], ['contracts'], ['legal'], ['voice'], ['battlecards'], ['permissions'],
               ['export'], ['assumptions'], ['facts'], ['summaries'], ['changes'], ['learn'], ['report'], ['digest'], ['review'], ['bottlenecks'], ['audit']]
 

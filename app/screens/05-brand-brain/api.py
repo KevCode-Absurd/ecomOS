@@ -8,6 +8,8 @@ question, and accept or ignore on a proposed record. Nothing external.
                                 judgement rules, the package, where to check (markdown)
   GET  agentfile/endpoints      this route table as JSON, for an agent or an MCP wrapper
   GET  brainmd                  the router BRAIN.md text
+  GET|POST brainmd/notes        the founder notes block in BRAIN.md, read and set; kept across regeneration
+  GET  onepage                  the brain in one page for a new team member (markdown)
   GET  owners                   section owners and review cadence; overdue reviews first
   POST owners/<section>         {owner, cadence_days, reviewed}: set the owner or cadence, or mark reviewed today
   GET  redlines                 the red lines register: never say, required lines, blocking rules, logo, rejected ideas, decisions, with reasons
@@ -210,6 +212,9 @@ _pspec.loader.exec_module(parity)
 _sspec = importlib.util.spec_from_file_location("brand_brain_sitediff", HERE / "sitediff.py")
 sitediff = importlib.util.module_from_spec(_sspec)
 _sspec.loader.exec_module(sitediff)
+_opspec = importlib.util.spec_from_file_location("brand_brain_onepage", HERE / "onepage.py")
+onepage = importlib.util.module_from_spec(_opspec)
+_opspec.loader.exec_module(onepage)
 _owspec = importlib.util.spec_from_file_location("brand_brain_owners", HERE / "owners.py")
 owners = importlib.util.module_from_spec(_owspec)
 _owspec.loader.exec_module(owners)
@@ -1925,6 +1930,30 @@ def handle(req):
         return cd
     if req.method == "POST" and parts == ["claims"]:
         return claim_add(brain, req.body)
+    if req.method == "GET" and parts == ["onepage"]:
+        frame = next((r for r in brain.records("positioning") if r["id"].endswith(".positioning.frame")), None)
+        proof = next((r for r in brain.records("positioning") if r.get("field") == "proof_points"), None)
+        try:
+            qs = questions_ranked(brain).get("questions") or []
+        except Exception:  # noqa: BLE001
+            qs = []
+        try:
+            dl = decisions_log(brain, _decisions_path(req))
+            dec = [it for it in dl["items"] if it["kind"] == "brain"] + [dict(it, text=(it.get("finding_id") or it.get("capability") or "") + ": " + (it.get("choice") or "")) for it in dl["items"] if it["kind"] == "action" and it.get("current")]
+        except Exception:  # noqa: BLE001
+            dec = []
+        try:
+            comp = [p["name"] for p in market.pages(brain)["pages"] if p.get("role") == "competitor"]
+        except Exception:  # noqa: BLE001
+            comp = []
+        parts_ = {"t0": t0_card(brain), "frame": {"tier": frame["tier"], "text": frame.get("text") or str(frame.get("value"))} if frame else None,
+                  "proof_points": ", ".join(str(x) for x in proof["value"]) if proof and isinstance(proof.get("value"), list) else (proof.get("text") if proof else None),
+                  "audiences": audiences.profiles(brain, ladderproof), "voice": voice.sheet(brain), "redlines": redlines.register(brain), "locks": locks.zones(brain, voice),
+                  "owners": owners.owners(brain, health.SHELF_DAYS, health.META_SECTIONS, brain.section_stats()), "connectors": health.connectors(brain), "competitors": comp,
+                  "questions": [q for q in qs if not q.get("answered_on")], "decisions": dec[:5], "tokens": package_mod.tokens}
+        res = onepage.build(brain, parts_)
+        _log_read(brain, ["identity", "positioning", "avatars", "voice", "claims", "team"], req.arg("reader") or "onepage")
+        return res
     if req.method == "GET" and parts == ["owners"]:
         ow = owners.owners(brain, health.SHELF_DAYS, health.META_SECTIONS, brain.section_stats())
         ow.update(brand=brain.brand, today=brain.today.isoformat(), roles=health.ROLES, capability={"id": "BRN-C12", "autonomy": "founder_gate"})
@@ -2134,6 +2163,38 @@ def handle(req):
             trail.log_records(brain, req.arg("reader") or cap, pv["record_ids"], pv.get("public_facing"))
         res["name"] = pv.get("name")
         return res
+    if req.method == "GET" and parts == ["brainmd", "notes"]:
+        p = brain.dir / "BRAIN.md"
+        notes = selfaudit.router.read_notes(p) if p.is_file() else selfaudit.router.DEFAULT_NOTES
+        return {"notes": notes, "default": notes == selfaudit.router.DEFAULT_NOTES, "exists": p.is_file(), "note": "The founder notes block in BRAIN.md is kept word for word across every regeneration. Write what an agent should know that no record holds: house rules, people, the story behind a decision."}
+    if req.method == "POST" and parts == ["brainmd", "notes"]:
+        text = str((req.body or {}).get("notes") or "").strip()
+        if len(text) > 4000:
+            return 413, {"error": "notes are over 4,000 characters; the router stays under 1,500 tokens"}
+        if "\u2014" in text:
+            return 400, {"error": "no em dashes in the notes; use a full stop or a comma"}
+        p = brain.dir / "BRAIN.md"
+        rt = selfaudit.router
+        current = p.read_text(encoding="utf-8") if p.is_file() else rt.render(brain, rt.DEFAULT_NOTES)
+        block = rt.NOTES_START + "\n" + (text or rt.DEFAULT_NOTES) + "\n" + rt.NOTES_END
+        if rt.NOTES_START in current and rt.NOTES_END in current:
+            head, rest = current.split(rt.NOTES_START, 1)
+            _, tail = rest.split(rt.NOTES_END, 1)
+            new = head + block + tail
+        else:
+            new = current.rstrip() + "\n\n## Founder notes\n\n" + block + "\n"
+        try:
+            p.write_text(new, encoding="utf-8")
+            before_v = brain.version()
+            changes.log(brain, "router", None, None, f"founder notes in BRAIN.md set ({len(text)} characters)")
+            path = rt.write(brain.brand, brain.root, brain.today)
+            changes.version_step(brain, before_v, "founder notes set")
+        except ValueError as e:
+            p.write_text(current, encoding="utf-8")
+            return 400, {"error": str(e)}
+        except OSError as e:
+            return 500, {"error": f"could not write BRAIN.md: {e}"}
+        return 201, {"ok": True, "file": str(path.relative_to(brain.root)), "tokens": rt.tokens(path.read_text(encoding="utf-8")), "notes": text or rt.DEFAULT_NOTES, "version": brain.version(), "next": "Kept word for word on every regeneration; every agent that reads BRAIN.md reads it."}
     if req.method == "GET" and parts == ["brainmd"]:
         p = brain.dir / "BRAIN.md"
         try:
