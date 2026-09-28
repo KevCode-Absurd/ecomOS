@@ -47,6 +47,16 @@ Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `a
 | 8.7 | Results in the brief and the report: the weekly brief says how many moves were read, the win share, how many are held after a lost result and how many reads are overdue; the printable report's numbers table adds the same line | done |
 | 8.8 | Learnings for the brain: one learnings record per read move (won, lost or flat) in the brand-brain contract's minimal shape (id, brand, section, field, text with the move, result, reading and date, and its source), offered as a copy for the brain's review queue under the scoreboard; never written to the brain from here; the propose endpoint is a Contract ask | done |
 | 8.9 | Second brand check for round 8: on the minimal hat brand an outcome holds a lost move, a site change counts as a launch, the scoreboard and the brain drafts use that brand's ids, and no Bombas word or "sock" appears in the plan, overview or brief | done |
+| 8.10 | Round close: every move now ends in a read. Outcomes close moves and fill the registry drafts, lost moves are held 90 days, overdue reads lead the queue, snoozed moves come back on demand, site changes feed the timeline and the launch count, a scoreboard shows what worked, and each read becomes a brain learnings draft; browser pass logs and removes a site change; no script errors on the page or the report; 360 px clean with every form open; screen tests green; screenshot `round8.png` | done |
+
+### Round 8 status for Kevin (28 Sep 2026)
+
+1. Every move now ends in a result. When its check date comes, your team logs won, lost, flat or not shipped, and the move closes.
+2. A move that lost stays off the plan for 90 days. A read a week late goes to the top of your queue. Snoozed moves can be brought back with one click.
+3. Changes your team sees on a rival's site (a new product, bundle, offer or price) join the timeline. A new product on a direct rival goes on the plan as a counter brief.
+4. A scoreboard shows which kinds of moves win against rivals. The weekly brief and the report now carry the results.
+5. Each result becomes a draft learning for the brand brain, ready to paste into its review queue. A direct way to send them is under Contract asks.
+6. Next, round 9: the ad-level pull once you run it, then counted angle and offer shares in place of estimates, and alerts on new rival ads within a day.
 
 ## Round 7: first-party reasons, price watch cadence and the hand-offs
 
@@ -316,7 +326,7 @@ Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permi
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
-| 8 | 8.1 to 8.9 | 2026-09-28 | Outcomes; lost moves held; overdue reads; scoreboard; site changes; bring back snoozed; results in the brief and report; learnings for the brain; second brand check |
+| 8 | 8.1 to 8.10 | 2026-09-28 | Outcomes; lost moves held; overdue reads; scoreboard; site changes; bring back snoozed; results in the brief and report; learnings for the brain; second brand check; round close. Screenshot `round8.png` |
 | 7 | 7.1 to 7.10 | 2026-09-28 | Interview reasons; coverage by name; prices seen on the band chart; price re-check cadence; logged work in the brief; queue and log in the report; briefs as rows; second brand check; form access; round close. Screenshot `round7.png` |
 | 6 | 6.1 to 6.10 | 2026-09-28 | Win-loss log; repeated loss reason; rival prices seen; battlecard checks; positioning polls; thresholds on the page; capture from the page; the team log; waiting on you; round close (and the hand-off fix). Screenshot `round6.png` |
 | 5 | 5.1 to 5.10 | 2026-09-28 | Hand-offs; action lanes; season plan; quarterly review; exports (and the 5.4 load fix); browser smoke test; team notes; brief pack; check due lane; round close |
