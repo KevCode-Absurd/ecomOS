@@ -268,6 +268,18 @@ def freshness(m: dict, brand: str) -> dict:
             "rule": f"Fresh up to {FRESH_DAYS} days, ageing to {AGEING_DAYS}, stale after. A page with no capture reads no capture, never 0."}
 
 
+def logged_week(brand: str, today: dt.date, days: int = 7) -> dict:
+    """What the team logged on this screen in the last `days` days (by the record's own date, else when it was logged)."""
+    start = (today - dt.timedelta(days=days - 1)).isoformat()
+    recs = [r for r in audit.inpmod.read(brand) if start <= (r.get("date") or r.get("logged_at", "")[:10]) <= today.isoformat()]
+    recs.sort(key=lambda r: (r.get("date") or r.get("logged_at", ""), r["id"]))
+    counts: dict[str, int] = {}
+    for r in recs:
+        counts[r["kind"]] = counts.get(r["kind"], 0) + 1
+    return {"from": start, "to": today.isoformat(), "n": len(recs), "counts": counts,
+            "lines": [audit.inpmod.summary(r) for r in recs]}
+
+
 def digest(brand: str, today: dt.date) -> dict:
     """The weekly competitor brief: what changed, the top moves, the one number to watch. Built from the plan in code."""
     m = audit.market_full(brand, today, BRAIN_ROOT)
@@ -281,13 +293,18 @@ def digest(brand: str, today: dt.date) -> dict:
     lines += [f"- {e['page']}: {e['text']} ({e['verdict_text'].lower()})" for e in changed] or ["- nothing that crosses a rule"]
     lines += ["", "Top moves this week:"]
     lines += [f"{i + 1}. {a['title']} ({UI_OWNER.get(a['owner'], a['owner'])})" for i, a in enumerate(acts)] or ["none open"]
+    lw = logged_week(brand, today)
+    lines += ["", f"What the team logged this week ({lw['n']}):"]
+    lines += [f"- {x}" for x in lw["lines"][:6]] or ["- nothing yet: interviews, prices seen and card checks go on the screen"]
+    if lw["n"] > 6:
+        lines.append(f"- and {lw['n'] - 6} more on the screen")
     threats = [r["name"] for r in m["pages"] if (r.get("verdict") or {}).get("text") == "Threat"]
     v = m["velocity"]
     lines += ["", f"Threats: {', '.join(threats) if threats else 'none'}.",
               f"Pace: we ship about {audit.velmod.now_rate(v)} new ads a week; direct pages about {v['direct_median_rate']} (estimate).",
               f"Price index: {m['price_position_index'] if m['price_position_index'] is not None else 'unavailable'} (100 is the tracked median).",
               "", "Signals only. Never copy their text, logos, products or faces."]
-    return {"text": "\n".join(lines), "actions": len(p["actions"]), "changes": len(changed), "week_of": today.isoformat()}
+    return {"text": "\n".join(lines), "actions": len(p["actions"]), "changes": len(changed), "week_of": today.isoformat(), "logged": lw}
 
 
 UI_OWNER = {"agent": "agent does it", "agent_drafts": "agent drafts, you approve", "person": "a person does it"}

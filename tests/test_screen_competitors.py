@@ -1771,5 +1771,18 @@ class TestPriceRecheck(TempInputs):
         self.assertNotIn('COMP-R34', [f['rule_id'] for f in api.handle(Req(['plan']))['findings']])
 
 
+class TestDigestLogged(TempInputs):
+    """7.5: the weekly brief says what the team logged this week."""
+    def test_logged_in_brief(self):
+        g = api.handle(Req(['digest']))
+        self.assertEqual(g['logged']['n'], 0)
+        self.assertIn('nothing yet', g['text'])
+        self.interview('loss', 'Stance', 'style')
+        self.interview('win', 'Stance', 'style', date='2026-09-10')   # older than the week
+        g = api.handle(Req(['digest']))
+        self.assertEqual((g['logged']['n'], g['logged']['counts']), (1, {'interview': 1}))
+        self.assertIn('- loss against Stance: style', g['text'])
+
+
 if __name__ == '__main__':
     unittest.main()
