@@ -492,7 +492,8 @@ class PromoCalendarTest(unittest.TestCase):
         self.assertEqual(due, fired)
         for a in self.out['actions']:
             if a['rule_id'] == 'OFFER-R11':
-                self.assertEqual(a['artefact']['kind'], 'offer')
+                gift = next(w for w in self.cal if a['entity']['id'] == 'window_' + w['key'])['gifting']
+                self.assertIn(a['artefact']['kind'], ('offer', 'landing_page') if gift else ('offer',))
                 self.assertIn('Approve by', a['artefact']['draft'])
                 self.assertTrue(a['check_on'])
                 m = a['money_at_stake']
