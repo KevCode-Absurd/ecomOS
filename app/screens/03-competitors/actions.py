@@ -454,6 +454,20 @@ def act_velocity(f: dict, m: dict) -> dict:
             "check_on": _plus(f["last_seen"], 28), "time_to_ship_hours": 6}
 
 
+def act_niche(f: dict, m: dict) -> dict:
+    """COMP-R20: size the biggest niche they serve and we barely do, against our own bar."""
+    key = f["entity"]["id"].removeprefix("niche_")
+    c = next((x for x in m["niche"]["candidates"] if x["angle"] == key), None) or {"label": key, "their_share": 0, "our_share": 0, "pages": []}
+    return {"title": f"Size the {c['label'].lower()} niche against our bar before making ads for it", "owner": "agent",
+            "artefact": {"kind": "research_note", "label": f"a sizing note on {c['label'].lower()}",
+                         "draft": audit.nichemod.draft(c, m["niche"]["bar"], m["brand"].capitalize())},
+            "steps": _steps(("agent", "Pull search demand, review mentions and Reddit threads for the niche's terms."),
+                            ("agent", "Compare the evidence to the bar in buyers."),
+                            ("agent", "Write the 3-line note; raise a test brief only if it clears the bar.")),
+            "size": {"text": f"bar {m['niche']['bar']['buyers']:,} buyers a year" if m["niche"].get("bar") else None},
+            "win_rule": None, "stop_rule": None, "check_on": _plus(f["last_seen"], 14), "time_to_ship_hours": 2}
+
+
 def act_connect(f: dict, m: dict) -> dict:
     un = f.get("unavailable") or {}
     con = un.get("connector") or "the missing source"
@@ -472,7 +486,7 @@ BUILDERS = {"COMP-R01": act_angle, "COMP-R02": act_price, "COMP-R03": act_offer_
             "COMP-R12": act_refresh, "COMP-R13": act_no_id, "COMP-R14": act_stale,
             "COMP-R15": act_lost, "COMP-R16": act_connect,
             "COMP-R17": act_attack, "COMP-R18": act_undercut,
-            "COMP-R19": act_velocity}   # R16 has no data source yet: always a connect action
+            "COMP-R19": act_velocity, "COMP-R20": act_niche}   # R16 has no data source yet: always a connect action
 
 
 def action(f: dict, m: dict, net_revenue: float | None) -> dict:

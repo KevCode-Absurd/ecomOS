@@ -266,7 +266,7 @@ def overview(brand: str, today: dt.date) -> dict:
             "competitors": [_public(c) for c in m["competitors"]], "angles": m["angles"],
             "positioning": positioning(m),
             "lookalike": m["lookalike"], "gap": gaps(m), "pages": page_rows(m),
-            "coverage": {"all": m["coverage"], "direct": m["coverage_direct"]}, "mix": m["mix"], "references": m["references"], "ladder": m["ladder"], "changes": m["changes"], "freshness": freshness(m, brand), "losses": m["losses"], "category": m["category"], "reviews": m["reviews"], "presence": m["presence"], "velocity": m["velocity"],
+            "coverage": {"all": m["coverage"], "direct": m["coverage_direct"]}, "mix": m["mix"], "references": m["references"], "ladder": m["ladder"], "changes": m["changes"], "freshness": freshness(m, brand), "losses": m["losses"], "category": m["category"], "reviews": m["reviews"], "presence": m["presence"], "velocity": m["velocity"], "niche": m["niche"],
             "category_median": m["category_median"], "price_position_index": m["price_position_index"]}
 
 

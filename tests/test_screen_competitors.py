@@ -720,6 +720,28 @@ class TestDigest(TempBrain):
         self.assertEqual(api.handle(Req(['digest']))['text'], d['text'])
 
 
+class TestNiche(TempBrain):
+    """2.7: the bar in buyers from our own economics; candidate niches from the coverage matrix."""
+    def setUp(self):
+        super().setUp()
+        api.BRAIN_ROOT = self.tmp
+        self.n = api.handle(Req(['overview']))['niche']
+
+    def test_bar(self):
+        b = self.n['bar']
+        self.assertEqual(b['buyers'], round(b['revenue_12m'] * 0.01 / (73 * 1.35)))
+        self.assertEqual(b['contribution'], round(b['revenue'] * 27.5 / 100))
+        for c in self.n['candidates']:
+            self.assertGreaterEqual(c['their_share'], audit.nichemod.CANDIDATE_MIN)
+            self.assertLess(c['our_share'], c['their_share'] / 3)
+            self.assertIsNone(c['demand'])
+
+    def test_bar_unavailable_without_inputs(self):
+        self.edit('economics', lambda rows: [r for r in rows if r['field'] != 'aov_usd'])
+        n = api.handle(Req(['overview']))['niche']
+        self.assertIsNone(n['bar'])
+
+
 class TestRank(TempBrain):
     """Depth contract rules 2, 3 and 13: owner, steps and artefact on every action; every finding ends in one."""
     W = {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4}
