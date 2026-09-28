@@ -2554,3 +2554,14 @@ class HandOff(unittest.TestCase):
             self.assertIn(rid, t)
         self.assertNotIn('—', t)
         self.assertNotRegex(t, r'\b(should|consider|leverage)\b')
+
+
+class NothingLeftOpen(unittest.TestCase):
+    """Feature 10.10: after 10 rounds no feature row is left as todo or doing, and every round has a founder note."""
+
+    def test_features_file_is_closed(self):
+        t = (SCREEN / 'FEATURES.md').read_text(encoding='utf-8')
+        self.assertNotRegex(t, r'\| (todo|doing) \|$', )
+        self.assertEqual([l for l in t.splitlines() if l.rstrip().endswith('| todo |') or l.rstrip().endswith('| doing |')], [])
+        for n in range(1, 11):
+            self.assertIn(f'### Round {n} founder note', t)

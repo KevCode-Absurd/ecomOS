@@ -175,7 +175,16 @@ Lead's review: rounds 1 to 4 passed. Focus: returns and tickets by avatar, depth
 | 10.7 | Thresholds a brand can tune (depth.md section 8): a brain `learnings` record with field `threshold_<name>` and a number sets one of 12 thresholds (price-led, sales gap, high return risk, marketplace share, split share, ads under, season lift, claim hits, paid returning, weak cohort, focus soon, re-check days), each inside fixed bounds; anything else is ignored. The build runs with the brand's values under a lock and puts the defaults back, so a threaded server never mixes two brands. The rules, the findings and the rule lines follow (tested: price-led at 60 percent drops avatars from CUST-R28 and the line says 60 percent) | done |
 | 10.8 | The plan's connect strip (depth.md section 5): already built, now under the browser test. Unavailable actions never enter the plan; they sit in their own "Connect first" strip, one card each. Bombas: 2 (the store's channel orders for paid returning, and the customer paths table), 0 connect items in the plan | done |
 | 10.9 | Charts: each of the 5 charts sits beside the moves it drives, so none goes; each now names the decision it changes in its note (the cohort grid: the day of the second-order email, the day win-back starts and the month to plan for; brand health: whether a line needs a move; the returning-share line: whether win-back is due; the channel waterfall: which channel to fix first; the served map: which avatar to fix first and which to park). Tested: every chart has its line | done |
-| 10.10 | Round 10 close, `round10.png`, report to the lead | todo |
+| 10.10 | Round 10 close: 32 rules, 67 actions, every depth.md rule and anti-pattern tied to a test, about 210 tests on this screen, the browser test for 2 brands at desktop and phone width. No row in this file is left as todo (tested). Screenshot `round10.png` (the price block with its rule line from the api and its gap). The 10 rounds are done and reported to the lead | done |
+
+### Round 10 founder note (28 Sep 2026)
+
+1. The 10 rounds are done. This screen tells you who buys, what stops them, and what to build next, and every move says who does it.
+2. Every rule you see is written from one list of numbers in code. You can change 12 of them from the brand brain, like when an avatar counts as price-led.
+3. It works for any brand. A brand with nothing gets its first move: find the first avatars, 5 quotes each from 2 sources.
+4. Every chart says which decision it changes, and every button does something.
+5. `HANDOFF.md` says how each number is made, and what to change when the survey, order paths, returns and pack price data land.
+6. Still open: brand drift over time, mystery shopper runs, and trademark watch. Each needs data that does not exist yet.
 
 ### Round 9 founder note (28 Sep 2026)
 
@@ -417,3 +426,4 @@ The job to be done for each avatar is brand data: it lives in `app/brain/<brand>
 | 7 | 7.1 to 7.10, depth rules 5, 9, 10 and 14 on this screen, money on retention, sales against reviews, avatar pages, keys, print | 28 Sep 2026 | done; screenshot `round7.png` |
 | 8 | 8.1 to 8.10, desk moves sized, January against last year, sales in the scores, survey settles, browser smoke test, weak cohorts, any brand on the page, money tile | 28 Sep 2026 | done; screenshot `round8.png` |
 | 9 | 9.1 to 9.10, first screen, writing rules everywhere, decisions per avatar, survey answers back, faster overview, depth rules 4, 6 and 13 as tests, phone width | 28 Sep 2026 | done; screenshot `round9.png` |
+| 10 | 10.1 to 10.10, no thresholds in page code, a brand with nothing, anti-patterns and depth sections under test, tunable thresholds, connect strip, charts that decide, loose ends, hand-off | 28 Sep 2026 | done; screenshot `round10.png` |
