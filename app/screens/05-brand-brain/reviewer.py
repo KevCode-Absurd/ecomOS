@@ -40,7 +40,7 @@ def locked_lines_check(text: str, snippets: dict) -> list[dict]:
     return hits
 
 
-def quotes_check(text: str) -> list[dict]:
+def quotes_check(text: str, brain=None, ugc_mod=None) -> list[dict]:
     hits = []
     for m in QUOTE.finditer(text or ""):
         q = m.group(1).strip()
@@ -49,12 +49,18 @@ def quotes_check(text: str) -> list[dict]:
         near = (text or "")[max(0, m.start() - 80): m.end() + 80]
         if REVIEW_SITES.search(near):
             hits.append({"kind": "quote", "severity": "fail", "match": q[:80], "record": None, "tier": "consent", "fix": "A review site line is never quoted as a testimonial. Use the doubt it names in your own words."})
+            continue
+        consent = ugc_mod.match(brain, q) if (ugc_mod is not None and brain is not None) else None
+        if consent and consent.get("state", "active") != "expired" and (consent.get("expires_on") is None or consent["expires_on"] >= brain.today.isoformat()):
+            hits.append({"kind": "quote", "severity": "info", "match": q[:80], "record": consent["record"], "tier": "consent", "fix": f"Consent on file from {consent.get('name')} ({consent.get('channel')}, {consent.get('granted_on')})" + (f", until {consent['expires_on']}" if consent.get("expires_on") else "") + "."})
+        elif consent:
+            hits.append({"kind": "quote", "severity": "fail", "match": q[:80], "record": consent["record"], "tier": "consent", "fix": f"The consent from {consent.get('name')} expired on {consent.get('expires_on')}. Renew it or drop the quote."})
         else:
-            hits.append({"kind": "quote", "severity": "warn", "match": q[:80], "record": None, "tier": "consent", "fix": "A quoted line reads as a testimonial: consent must be on file (name, channel, date, term) before it runs."})
+            hits.append({"kind": "quote", "severity": "warn", "match": q[:80], "record": None, "tier": "consent", "fix": "A quoted line reads as a testimonial: consent must be on file (name, channel, date, term) before it runs. Draft the request in UGC permission."})
     return hits
 
 
-def review(brain, text: str, channel: str | None, kind: str | None, claims_mod, legal_mod, voice_mod, visual_mod) -> dict:
+def review(brain, text: str, channel: str | None, kind: str | None, claims_mod, legal_mod, voice_mod, visual_mod, ugc_mod=None) -> dict:
     text = text or ""
     checks = []
     hits: list[dict] = []
@@ -91,8 +97,9 @@ def review(brain, text: str, channel: str | None, kind: str | None, claims_mod, 
         hits += v_hits
     else:
         checks.append({"key": "visual", "label": "Colours and fonts", "status": "skipped", "hits": 0, "reason": "no colour code in the draft"})
-    q_hits = quotes_check(text)
-    checks.append({"key": "quotes", "label": "Quotes and testimonials", "status": "fail" if any(h["severity"] == "fail" for h in q_hits) else ("warn" if q_hits else "pass"), "hits": len(q_hits)})
+    q_hits = quotes_check(text, brain, ugc_mod)
+    consented = sum(1 for h in q_hits if h["severity"] == "info")
+    checks.append({"key": "quotes", "label": "Quotes and testimonials", "status": "fail" if any(h["severity"] == "fail" for h in q_hits) else ("warn" if any(h["severity"] == "warn" for h in q_hits) else "pass"), "hits": len(q_hits) - consented, "consented": consented})
     hits += q_hits
     fails = [h for h in hits if h["severity"] == "fail"]
     warns = [h for h in hits if h["severity"] == "warn"]

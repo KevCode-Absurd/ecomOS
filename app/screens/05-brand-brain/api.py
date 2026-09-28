@@ -8,6 +8,10 @@ question, and accept or ignore on a proposed record. Nothing external.
                                 judgement rules, the package, where to check (markdown)
   GET  agentfile/endpoints      this route table as JSON, for an agent or an MCP wrapper
   GET  brainmd                  the router BRAIN.md text
+  GET  ugc                      UGC permission on file: consents with channel, scope, term and state
+  POST ugc                      {name, handle, channel, what, scope, granted_on, term_months, evidence}: a consent on file
+  POST ugc/request              {name, what, scope, term_months}: the permission ask drafted, not sent
+  POST ugc/<key>/retire         withdraw or remove a consent (retired, never deleted)
   GET  assets                   asset rights and expiry: the register with windows and the renewal or takedown
   POST assets                   {name, kind, rights_holder, licence, where, expires_on, live}: an asset on file
   POST assets/<key>/retire|offline  retire an asset record, or mark it not live
@@ -191,6 +195,9 @@ _pspec.loader.exec_module(parity)
 _sspec = importlib.util.spec_from_file_location("brand_brain_sitediff", HERE / "sitediff.py")
 sitediff = importlib.util.module_from_spec(_sspec)
 _sspec.loader.exec_module(sitediff)
+_ugspec = importlib.util.spec_from_file_location("brand_brain_ugc", HERE / "ugc.py")
+ugc = importlib.util.module_from_spec(_ugspec)
+_ugspec.loader.exec_module(ugc)
 _asspec = importlib.util.spec_from_file_location("brand_brain_assets", HERE / "assets.py")
 assets = importlib.util.module_from_spec(_asspec)
 _asspec.loader.exec_module(assets)
@@ -1861,6 +1868,38 @@ def handle(req):
         return cd
     if req.method == "POST" and parts == ["claims"]:
         return claim_add(brain, req.body)
+    if req.method == "GET" and parts == ["ugc"]:
+        reg = ugc.register(brain)
+        reg.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "LOOP-C27", "autonomy": "founder_gate"})
+        return reg
+    if req.method == "POST" and parts == ["ugc", "request"]:
+        body = req.body or {}
+        scope = body.get("scope") if isinstance(body.get("scope"), list) else [x.strip() for x in str(body.get("scope") or "").split(",") if x.strip()]
+        try:
+            term = int(body.get("term_months")) if body.get("term_months") not in (None, "") else None
+        except (TypeError, ValueError):
+            term = None
+        name_rec = next((r for r in brain.records("identity") if r.get("field") == "name"), None)
+        text = ugc.request_draft(brain, str(body.get("name") or ""), str(body.get("what") or ""), scope, term, (name_rec or {}).get("value") if isinstance((name_rec or {}).get("value"), str) else None)
+        return {"text": text, "note": "Send it yourself on the channel you reached them on; nothing is sent from here. Put the reply on file with the date."}
+    if req.method == "POST" and parts == ["ugc"]:
+        rec = ugc.record(brain, req.body or {})
+        if isinstance(rec, tuple):
+            return rec
+        errs = founder_put(brain, rec, "consent", rec["text"][:160])
+        if errs:
+            return 400, {"error": "; ".join(errs)}
+        return 201, {"ok": True, "record": rec["id"], "expires_on": rec["value"]["expires_on"], "version": brain.version(), "next": "On file. The review route passes a quoted line that matches it; the rule asks for a renewal before the term ends."}
+    if req.method == "POST" and len(parts) == 3 and parts[0] == "ugc" and parts[2] == "retire":
+        key = re.sub(r"[^a-z0-9_]+", "", parts[1])
+        raw = next((r for r in brain.raw("content") if r.get("field") == f"consent_{key}" and r.get("status", "active") != "retired"), None)
+        if raw is None:
+            return 404, {"error": "no consent with that key", "key": key}
+        before_v = brain.version()
+        brain.retire(raw["id"])
+        changes.log(brain, "consent", "content", raw["id"], f"consent {key} withdrawn or removed (retired)")
+        changes.version_step(brain, before_v, f"consent {key} retired")
+        return 201, {"ok": True, "retired": raw["id"], "version": brain.version()}
     if req.method == "GET" and parts == ["assets"]:
         reg = assets.register(brain)
         reg.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "LOOP-C29", "autonomy": "founder_gate"})
@@ -1929,7 +1968,7 @@ def handle(req):
             return 413, {"error": "text is over 20,000 characters"}
         channel = (req.body or {}).get("channel") or None
         kind = (req.body or {}).get("kind") or None
-        return reviewer.review(brain, text, channel, kind, claims_mod, legal, voice, visual)
+        return reviewer.review(brain, text, channel, kind, claims_mod, legal, voice, visual, ugc)
     if req.method == "POST" and parts == ["scan"]:
         text = str((req.body or {}).get("text") or "")
         if not text.strip():

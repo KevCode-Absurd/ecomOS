@@ -159,6 +159,13 @@ def build(f: dict, nr: float | None) -> dict:
                         {"n": 3, "who": "person", "text": "Pick the record as proof, or approve the drafted fact as an approved record."},
                         {"n": 4, "who": "agent", "text": f"Attach it to the rung. The surfaces that use the rung ({surfaces or 'copy, page, listing, macro'}) read the proof on their next brief."}],
                  check_on=_check_on(f, 7), time_to_ship_hours=1)
+    elif rid == "BRN-R31":
+        cz = f.get("consent") or {}
+        expired = cz.get("state") == "expired"
+        a.update(title=(f"Renew or drop {cz.get('name')}'s quote: the consent expired" if expired else f"Renew {cz.get('name')}'s consent before {cz.get('expires_on')} ({cz.get('days_left')} days)"), owner="person" if expired else "agent_drafts",
+                 artefact={"kind": "email", "label": "a renewal ask to the person, or the placements to take the quote off", "draft": f"Hi {cz.get('name')}, our permission to use your words (\"{str(cz.get('what'))[:120]}\") on {', '.join(cz.get('scope') or []) or 'our site'} {'ended on' if expired else 'ends on'} {cz.get('expires_on')}. May we keep using it for another 12 months on the same terms? Reply yes and we keep your reply on file. You can withdraw any time."},
+                 steps=[{"n": 1, "who": "agent", "text": "Send the drafted ask on the channel the consent came on (" + str(cz.get("channel") or "the same channel") + ")."}, {"n": 2, "who": "person", "text": "On a yes, put the reply on file with the date; on no answer, take the quote off " + (", ".join(cz.get("scope") or []) or "the site") + "."}, {"n": 3, "who": "agent", "text": "Update the consent record; the review route reads it."}],
+                 check_on=_check_on(f, 7), time_to_ship_hours=0.5)
     elif rid == "BRN-R30":
         az = f.get("asset") or {}
         act = az.get("action") or {}

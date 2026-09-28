@@ -63,6 +63,7 @@
     loadMoves();
     loadLadderProof(m.actions || []);
     loadAssets(m.actions || []);
+    loadUgc(m.actions || []);
     loadSelfAudit(m.actions || []);
     loadPeaks(m.actions || []);
     loadVisual(m.actions || []);
@@ -1379,6 +1380,41 @@
     const add = el('button', { class: 'btn primary sm', type: 'button', text: 'Put it on file' });
     add.addEventListener('click', async () => { if (!name.value.trim()) { status.textContent = 'Name the asset first.'; return; } add.disabled = true; try { const r = await api(BASE + 'assets', { method: 'POST', body: { name: name.value.trim(), kind: kind.value, rights_holder: holder.value.trim(), licence: licence.value.trim(), where: where.value, expires_on: exp.value || null, live: true } }); status.textContent = r.next; loadAssets(actions); loadPlan(); } catch (e) { add.disabled = false; status.textContent = 'Could not save: ' + e.message; } });
     mount('#assets', table, el('div', { class: 'row', style: { marginTop: '8px' } }, name, kind, holder), el('div', { class: 'row' }, licence, where, exp, add, status), el('p', { class: 'micro faint', text: ar.note }));
+  }
+  async function loadUgc(actions) {
+    let ug;
+    try { ug = await api(BASE + 'ugc'); } catch (e) { mount('#ugc', el('p', { class: 'muted', text: 'Consents unavailable: ' + e.message })); return; }
+    const byAct = {}; for (const a of actions || []) if (a.rule_id === 'BRN-R31' && a.entity) byAct[a.entity.id] = a;
+    const c = ug.counts;
+    mount('#ugc-tools', UI.orientation([{ label: 'on file', value: c.on_file, unit: 'n' }, { label: 'active', value: c.active, unit: 'n' }, { label: 'expiring', value: c.expiring, unit: 'n', tone: c.expiring ? 'warn' : null }, { label: 'expired', value: c.expired, unit: 'n', tone: c.expired ? 'bad' : 'good' }, { label: 'no term', value: c.no_term, unit: 'n' }]));
+    const status = el('span', { class: 'micro muted' });
+    const open = (r) => {
+      const act = byAct['consent_' + r.key];
+      const body = el('div', { class: 'stack' }, el('div', { class: 'row' }, UI.verdict(r.verdict.kind, r.verdict.text), el('span', { class: 'chip', text: r.channel }), ...(r.scope || []).map((w) => el('span', { class: 'chip', text: w }))),
+        el('div', { class: 'small' }, el('b', { text: (r.name || '') + (r.handle ? ' (' + r.handle + ')' : '') + ': ' }), '"' + (r.what || '') + '"'),
+        el('div', { class: 'small muted', text: 'Granted ' + (r.granted_on ? fmt.date(r.granted_on) : NA) + (r.expires_on ? ', until ' + fmt.date(r.expires_on) : ', no term') + (r.evidence ? '. Evidence: ' + r.evidence : '') }));
+      if (act) body.append(el('div', { class: 'small' }, el('b', { text: act.title })), act.artefact.draft ? el('pre', { class: 'card sunken brief', text: act.artefact.draft }) : null, el('div', { class: 'row' }, act.artefact.draft ? UI.copyButton({ label: 'Copy the ask', text: () => act.artefact.draft }) : null, UI.decisionRow({ capability: 'LOOP-C27', autonomy: 'founder_gate', owner: act.owner, screen: SCREEN, compact: true, finding_id: act.id, current: act.decision, stub: act.title + '. ' + act.artefact.label + '.' })));
+      const ret = el('button', { class: 'btn sm soft', type: 'button', text: 'Withdrawn or remove' });
+      ret.addEventListener('click', async () => { ret.disabled = true; try { await api(BASE + 'ugc/' + r.key + '/retire', { method: 'POST' }); panel.close(); loadUgc(actions); loadPlan(); } catch (e) { ret.disabled = false; status.textContent = 'Could not: ' + e.message; } });
+      body.append(el('div', { class: 'row' }, ret, status));
+      const panel = UI.panel({ title: 'Consent from ' + (r.name || r.key), body });
+    };
+    const table = UI.verdictTable({ columns: [{ key: 'name', label: 'Who' }, { key: 'channel', label: 'On' }, { key: 'what', label: 'What', format: (v) => (v || '').slice(0, 90) }, { key: 'scope', label: 'Scope', format: (v) => (v || []).join(', ') || NA }, { key: 'expires_on', label: 'Until', format: (v) => v ? fmt.date(v) : NA }],
+      verdict: { at: 1, kind: (r) => r.verdict.kind, text: (r) => r.verdict.text, reason: (r) => 'granted ' + (r.granted_on || NA) }, rows: ug.consents, sort: false, empty: 'No consent on file. Draft the first ask below, send it, and put the yes on file.', onRow: open, actions: { label: 'Open', onClick: open } });
+    const name = el('input', { class: 'text sm', placeholder: 'name', style: { flex: '1 1 140px' } });
+    const handle = el('input', { class: 'text sm', placeholder: 'handle (optional)', style: { flex: '1 1 120px' } });
+    const channel = el('select', { class: 'text sm' }, ...ug.channels.map((k) => el('option', { value: k, text: k })));
+    const what = el('input', { class: 'text sm', placeholder: 'what they granted: the quote or the asset', style: { flex: '2 1 300px' } });
+    const scope = el('input', { class: 'text sm', placeholder: 'scope: ads, site, email, social, amazon', style: { flex: '1 1 200px' } });
+    const term = el('input', { class: 'text sm', type: 'number', placeholder: 'term, months', style: { maxWidth: '120px' } });
+    const granted = el('input', { class: 'text sm', type: 'date', title: 'granted on' });
+    const evidence = el('input', { class: 'text sm', placeholder: 'evidence, like: DM on 12 Sep', style: { flex: '1 1 160px' } });
+    const draft = el('button', { class: 'btn sm', type: 'button', text: 'Draft the ask' });
+    const out = el('div', { class: 'stack' });
+    draft.addEventListener('click', async () => { draft.disabled = true; try { const r = await api(BASE + 'ugc/request', { method: 'POST', body: { name: name.value.trim(), what: what.value.trim(), scope: scope.value, term_months: term.value || null } }); mount(out, el('div', { class: 'row' }, UI.copyButton({ label: 'Copy the ask', text: () => r.text }), el('span', { class: 'micro faint', text: r.note })), el('pre', { class: 'card sunken brief', text: r.text })); } catch (e) { mount(out, el('p', { class: 'muted', text: 'Could not draft: ' + e.message })); } draft.disabled = false; });
+    const add = el('button', { class: 'btn primary sm', type: 'button', text: 'Put the yes on file' });
+    add.addEventListener('click', async () => { add.disabled = true; try { const r = await api(BASE + 'ugc', { method: 'POST', body: { name: name.value.trim(), handle: handle.value.trim(), channel: channel.value, what: what.value.trim(), scope: scope.value, term_months: term.value || null, granted_on: granted.value || null, evidence: evidence.value.trim() } }); status.textContent = r.next; loadUgc(actions); loadPlan(); } catch (e) { add.disabled = false; status.textContent = 'Could not save: ' + e.message; } });
+    mount('#ugc', table, el('div', { class: 'row', style: { marginTop: '8px' } }, name, handle, channel, what), el('div', { class: 'row' }, scope, term, granted, evidence, draft, add, status), out, el('p', { class: 'micro faint', text: ug.note }));
   }
   async function loadContracts() {
     let cr, actions = [];

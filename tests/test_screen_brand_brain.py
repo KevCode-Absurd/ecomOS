@@ -2178,10 +2178,52 @@ class Round5Assets(TempBrain):
         self.assertGreaterEqual(sum(1 for c in api.handle(Req(['changes']))['changes'] if c['kind'] == 'asset'), 5)
 
 
+class Round5Ugc(TempBrain):
+    """Round 5 feature 9: UGC permission on file; the ask drafted; the review route reads consents; rule BRN-R31."""
+
+    def test_consent_lifecycle_and_review_route(self):
+        quote = 'These are the softest socks I have ever owned, and I own a lot of socks'
+        r = api.handle(Req(['ugc', 'request'], 'POST', body={'name': 'Maya', 'what': quote, 'scope': 'ads, site', 'term_months': 12}))
+        self.assertIn('Hi Maya', r['text'])
+        self.assertIn('for 12 months', r['text'])
+        self.assertIn('ads, site', r['text'])
+        status, res = api.handle(Req(['ugc'], 'POST', body={'name': 'Maya', 'handle': '@maya', 'channel': 'instagram', 'what': quote, 'scope': ['ads', 'site'], 'granted_on': '2026-09-20', 'term_months': 12, 'evidence': 'DM 20 Sep'}))
+        self.assertEqual((status, res['expires_on']), (201, '2027-09-20'))
+        reg = api.handle(Req(['ugc']))
+        self.assertEqual((reg['counts']['on_file'], reg['consents'][0]['state']), (1, 'active'))
+        rv = api.handle(Req(['review', 'draft'], 'POST', body={'text': 'Maya says: "' + quote + '". Soft socks for every day.'}))
+        q = next(c for c in rv['checks'] if c['key'] == 'quotes')
+        self.assertEqual((q['status'], q['consented'], q['hits']), ('pass', 1, 0))
+        self.assertTrue(any(h['kind'] == 'quote' and h['severity'] == 'info' for h in rv['hits']))
+        self.assertFalse([h for h in rv['hits'] if h['kind'] == 'quote' and h['severity'] in ('warn', 'fail')])  # the superlative warning is the claims scan's, not the quote's
+        rv = api.handle(Req(['review', 'draft'], 'POST', body={'text': '"I wore these socks every single day for a whole year and they still look brand new" says Tom.'}))
+        self.assertEqual(next(c['status'] for c in rv['checks'] if c['key'] == 'quotes'), 'warn')
+        # an expired consent: the quote fails, the rule fires medium
+        status, res = api.handle(Req(['ugc'], 'POST', body={'name': 'Tom', 'channel': 'email', 'what': 'I wore these socks every single day for a whole year and they still look brand new', 'scope': 'site', 'granted_on': '2025-06-01', 'term_months': 12}))
+        self.assertEqual(res['expires_on'], '2026-06-01')
+        rv = api.handle(Req(['review', 'draft'], 'POST', body={'text': '"I wore these socks every single day for a whole year and they still look brand new" says Tom.'}))
+        self.assertEqual(next(c['status'] for c in rv['checks'] if c['key'] == 'quotes'), 'fail')
+        fs = {f['entity']['id']: f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R31'}
+        self.assertEqual(len(fs), 1)
+        f = next(iter(fs.values()))
+        self.assertEqual(f['severity'], 'medium')
+        self.assertIn('expired on 2026-06-01', f['sentence'])
+        a = next(a for a in api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions'] if a['rule_id'] == 'BRN-R31')
+        self.assertTrue(a['title'].startswith("Renew or drop Tom's quote"))
+        self.assertEqual((a['owner'], a['artefact']['kind'], api.rank_mod.validate_action(a)), ('person', 'email', []))
+        key = next(c['key'] for c in api.handle(Req(['ugc']))['consents'] if c['name'] == 'Tom')
+        self.assertEqual(api.handle(Req(['ugc', key, 'retire'], 'POST'))[0], 201)
+        self.assertEqual(api.handle(Req(['ugc']))['counts']['on_file'], 1)
+        self.assertEqual(api.handle(Req(['ugc'], 'POST', body={'name': 'x', 'what': 'y', 'channel': 'reddit'}))[0], 400)
+        self.assertEqual(api.handle(Req(['ugc'], 'POST', body={'name': 'x'}))[0], 400)
+        self.assertEqual(api.handle(Req(['ugc'], 'POST', body={'name': 'x', 'what': 'a quote here', 'term_months': 'many'}))[0], 400)
+        self.assertGreaterEqual(sum(1 for c in api.handle(Req(['changes']))['changes'] if c['kind'] == 'consent'), 3)
+
+
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
-    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'],
+    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'],
               ['decisions'], ['flows'], ['claims'], ['site', 'diff'], ['parity'], ['contracts'], ['legal'], ['voice'], ['battlecards'], ['permissions'],
               ['export'], ['assumptions'], ['facts'], ['summaries'], ['changes'], ['learn'], ['report'], ['digest'], ['review'], ['bottlenecks'], ['audit']]
 
