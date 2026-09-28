@@ -168,6 +168,21 @@ The candidate side of the desk: the pipeline with its gates, boxes and scorecard
 | 2.9 | Shortlist scorecard: demand, margin, differentiation, compliance and cash timing scored 0 to 5 in code from the checks, the spend signal, the margin gate, the angle, the compliance check and the demand pattern, weighted once per brand (learnings.shortlist_weights, else 30, 30, 20, 10, 10), ranked as a heatmap and a table with go, hold or no-go; the go or no-go memo drafted from the numbers with shortlist, go and kill from the panel; rule PROD-R25 (review date arrived) with the memo as the artefact draft | done |
 | 2.10 | `rank` recipes for PROD-R14 to R25 (every rule has a recipe or a connect action), one card per candidate (the highest-scored finding hosts the others, every finding still mapped), tests for the merge and the recipes, `round2.png`, `round2b.png` and `round2c.png` (the page is 31,822 px tall; each under 1 MB), the round 2 founder note | done |
 
+## Round 3: the rest of the room spec and the research-tool jobs (from 28 Sep 2026)
+
+| # | Feature | Status |
+|---|---|---|
+| 3.1 | Readability: what is wrong shows 2 findings per rule with show-more and a severity filter (pills), the actions beyond the top 10 fold into a table with an Open button, and the desk opens with a jump strip to its blocks; the page drops from 31,822 to about 27,300 px with nothing hidden | done |
+| 3.2 | Video-commerce demand signals (PROD-C02) | todo |
+| 3.3 | Tech pack and spec versions per candidate (PROD-C13) | todo |
+| 3.4 | Research hours budget per stage (PROD-C04) | todo |
+| 3.5 | 12-month against multi-year trend checks per lane (bank PRD-044, PRD-045) | todo |
+| 3.6 | Audience surfaces: where buyers talk and where we have no presence (SparkToro-style) | todo |
+| 3.7 | Marketplace seller read: who sells the brand's listings on Amazon (Jungle Scout-style) | todo |
+| 3.8 | Competitor launch cadence per brand and lane (Particl-style) | todo |
+| 3.9 | A second brand folder in the tests: the desk is not Bombas-shaped | todo |
+| 3.10 | Recipes, tests, round3.png, founder note | todo |
+
 ## Round 2 note for the founder (28 Sep 2026)
 
 1. A founder can now run the candidate side of the desk end to end: screen an idea in (or take one from a gap above), watch it move through the fast checks, the margin gate, the demand pattern and cash plan, the angle and the 5 go-live gates, the compliance check and the scorecard, and decide go, hold or kill from the memo. Every write lands in the pipeline log; nothing is bought or listed.
@@ -197,4 +212,5 @@ The candidate side of the desk: the pipeline with its gates, boxes and scorecard
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.11 | 28 Sep 2026 | S3.6, Bombas simulated set at scale 0.1 |
 | 1 | 1.1 to 1.10 | 28 Sep 2026 | plan first, 13 rules (PROD-R01 to R13), rank with a recipe per rule, web pass and social pull fixtures, round1.png and round1b.png |
+| 3 | 3.1 | 28 Sep 2026 | readability pass; in progress |
 | 2 | 2.1 to 2.10 | 28 Sep 2026 | the candidate side of the desk: pipeline writes, margin gate, demand pattern, lane map, spend signal, price signal, complaint bars, angle and gates, scorecard; 25 rules (PROD-R01 to R25), one card per candidate; round2.png, round2b.png and round2c.png |

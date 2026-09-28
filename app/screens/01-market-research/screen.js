@@ -73,21 +73,51 @@
     card.append(el('div', { class: 'row' }, a ? el('button', { class: 'btn soft xs', type: 'button', text: 'Fix: ' + a.title, onclick: () => openAction(a) }) : el('span', { class: 'micro na', text: 'no action mapped yet' })));
     return card;
   }
+  const SHOW_PER_GROUP = 2;
   function loadWrong(o) {
     const groups = o.wrong || [];
     const n = groups.reduce((s, g) => s + g.findings.length, 0);
-    document.getElementById('wrong-title').textContent = n ? 'What is wrong, ranked: ' + n + ' finding' + (n === 1 ? '' : 's') : 'Nothing is wrong on this desk today';
+    document.getElementById('wrong-title').textContent = n ? 'What is wrong, ranked: ' + n + ' finding' + (n === 1 ? '' : 's') + ' across ' + groups.length + ' rules' : 'Nothing is wrong on this desk today';
     if (!groups.length) { mount('#wrong', el('p', { class: 'muted', text: 'No rule fired for the window. The desk below still shows where the gaps are.' })); return; }
-    mount('#wrong', ...groups.map((g) => el('div', { class: 'card flat wrong-group' },
-      el('div', { class: 'g-head' }, el('h4', { text: g.name }), chip(g.rule_id, 'mono'), chip(g.severity, SEV_TONE[g.severity]), el('span', { class: 'micro muted', text: g.findings.length + ' finding' + (g.findings.length === 1 ? '' : 's') })),
-      ...g.findings.map(findingCard))));
+    const counts = {};
+    groups.forEach((g) => g.findings.forEach((f) => { const k = f.status === 'unavailable' ? 'unavailable' : f.severity; counts[k] = (counts[k] || 0) + 1; }));
+    const list = el('div', { class: 'stack' });
+    const render = (sev) => {
+      mount(list, ...groups.map((g) => {
+        const fs = g.findings.filter((f) => sev === 'all' || (sev === 'unavailable' ? f.status === 'unavailable' : f.severity === sev && f.status !== 'unavailable'));
+        if (!fs.length) return null;
+        const card = el('div', { class: 'card flat wrong-group' });
+        card.append(el('div', { class: 'g-head' }, el('h4', { text: g.name }), chip(g.rule_id, 'mono'), chip(g.severity, SEV_TONE[g.severity]), el('span', { class: 'micro muted', text: fs.length + ' finding' + (fs.length === 1 ? '' : 's') })));
+        fs.slice(0, SHOW_PER_GROUP).forEach((f) => card.append(findingCard(f)));
+        if (fs.length > SHOW_PER_GROUP) {
+          const more = el('div', { class: 'stack', hidden: true }, fs.slice(SHOW_PER_GROUP).map(findingCard));
+          const btn = el('button', { class: 'btn quiet xs', type: 'button', text: 'Show ' + (fs.length - SHOW_PER_GROUP) + ' more' });
+          btn.addEventListener('click', () => { more.hidden = !more.hidden; btn.textContent = more.hidden ? 'Show ' + (fs.length - SHOW_PER_GROUP) + ' more' : 'Show fewer'; });
+          card.append(more, btn);
+        }
+        return card;
+      }).filter(Boolean));
+    };
+    const pills = UI.pills({ items: [{ key: 'all', label: 'All', n }].concat(['critical', 'high', 'medium', 'low', 'unavailable'].filter((k) => counts[k]).map((k) => ({ key: k, label: k === 'unavailable' ? 'Needs a source' : k[0].toUpperCase() + k.slice(1), n: counts[k] }))), current: 'all', onChange: render });
+    mount('#wrong', pills, list);
+    render('all');
   }
 
   // ---------- 3 and 4. actions ----------
+  const TOP_CARDS = 10;
   function loadActions() {
     const list = state.actions.filter((a) => a.status !== 'unavailable');
     if (!list.length) { mount('#actions', el('p', { class: 'muted', text: 'No open action.' })); return; }
-    mount('#actions', ...list.map((a, i) => UI.actionCard(a, { expanded: i === 0, screen: SLUG })));
+    const top = list.slice(0, TOP_CARDS), rest = list.slice(TOP_CARDS);
+    const parts = top.map((a, i) => UI.actionCard(a, { expanded: i === 0, screen: SLUG }));
+    if (rest.length) {
+      parts.push(el('div', { class: 'card scroll' }, el('h4', { text: rest.length + ' more, below the top ' + TOP_CARDS }), UI.verdictTable({
+        columns: [{ key: 'rank', label: '#', unit: 'n' }, { key: 'title', label: 'Action' }, { key: 'ownerText', label: 'Owner' }, { key: 'kind', label: 'Artefact' }, { key: 'total', label: 'Score', align: 'right', format: (v) => v == null ? NA : Math.round(v) + ' /100' }, { key: 'stake', label: 'Stake', align: 'right', format: (v) => v == null ? NA : fmt.money(v) }],
+        rows: rest.map((a, i) => ({ rank: TOP_CARDS + i + 1, title: a.title, ownerText: { agent: 'agent does it', agent_drafts: 'agent drafts, you approve', person: 'a person does it' }[a.owner] || a.owner, kind: pretty((a.artefact || {}).kind), total: (a.rubric || {}).total, stake: (a.money_at_stake || {}).usd, severity: a.severity, rule_id: a.rule_id, actions: [{ label: 'Open', onClick: () => openAction(a) }] })),
+        verdict: { at: 1, kind: (r) => r.severity === 'high' || r.severity === 'critical' ? 'fix' : r.severity === 'low' ? 'na' : 'watch', text: (r) => r.severity, reason: (r) => r.rule_id },
+        actions: { label: 'Do', onClick: () => {} }, sort: false })));
+    }
+    mount('#actions', ...parts);
   }
 
   // ---------- 5. the desk ----------
@@ -660,7 +690,8 @@
     parts.push(section('desk-scorecard', 'Which candidates does the founder decide on this week?', 'The fixed scorecard with the brand\'s weights: demand, margin, differentiation, compliance and cash timing, each scored in code, ranked, with the go or no-go memo drafted from the numbers and the review date.', scorecardBlock(d.scorecard)));
     parts.push(section('desk-pattern', 'Is each candidate evergreen, seasonal or a trend, and when does cash move?', 'The demand pattern from our own 12-month series by category and the web pass, with the cash timing it implies and the cash plan attached to each candidate.', patternBlock(d.pattern)));
     parts.push(section('desk-pipeline', 'What is in the next-SKU pipeline, and what is past its time box?', 'Candidates screened in from the gaps above or by hand, their stage, fast checks, time box and hours. Advance, log hours or kill from the card; every write lands in the pipeline log.', pipelineBlock(d.pipeline || { rows: [] })));
-    mount('#desk', ...parts);
+    const jumps = UI.pills({ items: parts.map((p) => ({ key: p.id, label: p.querySelector('h2').textContent.replace(/\?.*$/, '?').split(',')[0].slice(0, 42) })), onChange: (key) => { const t = document.getElementById(key); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); } });
+    mount('#desk', el('section', { class: 'section' }, el('div', { class: 'sec-head' }, el('h2', { text: 'The desk: ' + parts.length + ' blocks' }), el('span', { class: 'sub', text: 'Each block ends in a gap line and an action. Jump to one:' })), jumps), ...parts);
   }
 
   // ---------- 6. the audit ----------
