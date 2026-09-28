@@ -18,7 +18,7 @@ import re
 
 TRACE_SECTIONS = {"offers", "policies", "products", "voice", "claims", "identity", "positioning", "learnings", "diagnosis", "calendar", "operations", "channels", "content", "story_bank"}
 KIND_PLURAL = {"record": "records", "ads": "ad records", "rung": "ladder rungs", "question": "questions", "snippet": "snippets"}
-KINDS = ["founder_edit", "answer", "approve", "forbid", "document", "proposed", "accepted", "ignored", "conflict", "site", "snapshot", "contract", "permission", "page_id", "snippet", "example", "proof", "retired", "router", "peak", "restore", "logo", "decision", "brand", "visibility", "rule", "asset", "consent", "lock"]
+KINDS = ["founder_edit", "answer", "approve", "forbid", "document", "proposed", "accepted", "ignored", "conflict", "site", "snapshot", "contract", "permission", "page_id", "snippet", "example", "proof", "retired", "router", "peak", "restore", "logo", "decision", "brand", "visibility", "rule", "asset", "consent", "lock", "remember"]
 KIND_LABEL = {"founder_edit": "you edited", "answer": "you answered", "approve": "you approved", "forbid": "you forbade", "document": "file in",
               "proposed": "records proposed", "accepted": "proposal accepted", "ignored": "proposal ignored", "conflict": "conflict settled",
               "site": "site changed", "snapshot": "site snapshot", "contract": "contract on file", "permission": "permission set", "page_id": "page id added",

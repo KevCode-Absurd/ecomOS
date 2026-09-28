@@ -571,6 +571,38 @@
     mount('#moves', UI.tabs({ items: [{ key: 'counter', label: 'Counter-proposals', n: c.against_bottleneck, panel: rows(m.counter_proposals) }, { key: 'watch', label: 'Watch', n: c.watch, panel: rows(m.watch) }] }), el('p', { class: 'micro faint', text: m.scoring + '. ' + m.note }));
   }
 
+  // ---------- 1d. remember this ----------
+  function mountRemember() {
+    const ta = el('textarea', { class: 'text', rows: 4, placeholder: 'Paste a chat, a call note or a message. Sentences like "from now on we ship free over $75", "never say waterproof", "we tried a 10 percent code and it did nothing" become records you tick.' });
+    const go = el('button', { class: 'btn primary sm', type: 'button', text: 'Propose what to remember' });
+    const out = el('div', { class: 'stack' });
+    const status = el('span', { class: 'micro muted' });
+    go.addEventListener('click', async () => {
+      if (!ta.value.trim()) return;
+      go.disabled = true;
+      try {
+        const p = await api(BASE + 'remember', { method: 'POST', body: { text: ta.value } });
+        if (!p.items.length) { mount(out, el('p', { class: 'muted small', text: 'Nothing to remember in that text: no decision, red line, learning or fact pattern matched. ' + p.note })); go.disabled = false; return; }
+        const rows = p.items.map((it) => {
+          const tick = el('input', { type: 'checkbox', checked: !!it.tick });
+          const sec = el('input', { class: 'text sm', value: it.section, style: { maxWidth: '130px' } });
+          const field = el('input', { class: 'text sm', value: it.field, style: { maxWidth: '180px' } });
+          return { it, tick, sec, field, node: el('div', { class: 'row card flat small' }, tick, el('span', { class: 'chip ' + (it.kind === 'red_line' ? 'bad' : it.kind === 'decision' ? 'accent' : it.kind === 'learning' ? 'warn' : ''), text: pretty(it.kind) }), sec, field, el('span', { text: it.text + (it.value != null && it.kind === 'fact' ? ' (value: ' + (typeof it.value === 'object' ? JSON.stringify(it.value) : it.value) + ')' : '') + (it.why ? ' Reason: ' + it.why : '') })) };
+        });
+        const confirm = el('button', { class: 'btn primary sm', type: 'button', text: 'Confirm the ticked ones' });
+        confirm.addEventListener('click', async () => {
+          const items = rows.filter((r) => r.tick.checked).map((r) => Object.assign({}, r.it, { section: r.sec.value.trim(), field: r.field.value.trim() }));
+          if (!items.length) { status.textContent = 'Tick at least one.'; return; }
+          confirm.disabled = true;
+          try { const r = await api(BASE + 'remember/confirm', { method: 'POST', body: { items } }); status.textContent = r.next + (r.failed.length ? ' Not written: ' + r.failed.map((f) => f.error).join('; ') : ''); mount(out); ta.value = ''; loadDesk(); loadProfile(); loadChanges(); loadPlan(); } catch (e) { confirm.disabled = false; status.textContent = 'Could not write: ' + e.message; }
+        });
+        mount(out, el('div', { class: 'row' }, el('b', { text: p.counts.total + ' to remember: ' }), el('span', { class: 'small', text: p.counts.decision + ' decisions, ' + p.counts.red_line + ' red lines, ' + p.counts.learning + ' learnings, ' + p.counts.fact + ' facts' })), ...rows.map((r) => r.node), el('div', { class: 'row' }, confirm, status), el('p', { class: 'micro faint', text: p.note }));
+      } catch (e) { mount(out, el('p', { class: 'muted', text: 'Could not propose: ' + e.message })); }
+      go.disabled = false;
+    });
+    mount('#remember', el('div', { class: 'card flat' }, el('div', { class: 'row' }, el('b', { text: 'Remember this' }), el('span', { class: 'small muted', text: 'a chat or a note in, records you tick out' })), ta, el('div', { class: 'row' }, go), out));
+  }
+
   // ---------- 1a. bottlenecks and unlocks ----------
   function ideaRow(i, b, reload) {
     return Object.assign({}, i, { title: i.title + (i.was_rejected ? ' (rejected ' + (i.was_rejected.on ? fmt.date(i.was_rejected.on) : 'earlier') + (i.was_rejected.reason ? ': ' + i.was_rejected.reason : '') + '; review date passed)' : ''), effect: (i.metric || '') + ' ' + (i.direction || '') + (i.size ? ', ' + i.size : ''), ecr: (i.effort || '') + ' / ' + (i.cost || '') + ' / ' + (i.risk || ''), actions: [{ label: 'Pick it', cls: 'primary', onClick: async () => {
@@ -1887,6 +1919,7 @@
 
   async function load() {
     mountAsk();
+    mountRemember();
     mountDrop();
     loadDocs();
     loadFlows();

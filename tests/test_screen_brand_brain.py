@@ -2294,6 +2294,41 @@ class Round6Locks(TempBrain):
         self.assertIn('lock', [c['kind'] for c in api.handle(Req(['changes']))['changes']])
 
 
+class Round6Remember(TempBrain):
+    """Round 6 feature 2: remember this: decisions, red lines, learnings and facts proposed from a pasted note, ticked into approved records."""
+
+    def test_propose_and_confirm(self):
+        note = ('Kevin: from now on we ship free over $75 because the margin holds. We decided to keep the 20 percent first order code for Q4.\n'
+                'Never say waterproof, the socks are not. We tried a 10 percent code in July and it did nothing. Our 3PL is ShipBob. Remember that returns are 30 days.')
+        p = api.handle(Req(['remember'], 'POST', body={'text': note}))
+        kinds = {it['kind'] for it in p['items']}
+        self.assertTrue({'decision', 'red_line', 'learning', 'fact'} <= kinds, kinds)
+        dec = [it for it in p['items'] if it['kind'] == 'decision']
+        self.assertTrue(any('margin holds' in (it['why'] or '') for it in dec))
+        red = next(it for it in p['items'] if it['kind'] == 'red_line')
+        self.assertIn('waterproof', str(red['value']))
+        fact = next(it for it in p['items'] if it['kind'] == 'fact' and '3pl' in it['field'])
+        self.assertEqual(fact['value'], 'ShipBob')
+        self.assertGreaterEqual(p['counts']['total'], 5)
+        items = [dec[0], red, fact]
+        status, res = api.handle(Req(['remember', 'confirm'], 'POST', body={'items': items}))
+        self.assertEqual((status, res['ok'], len(res['done'])), (201, True, 3))
+        d = next(r for r in self.section('decisions') if r['id'] == res['done'][0]['id'])
+        self.assertEqual((d['tier'], d['source']['type'], d['value']['decided_on']), ('approved', 'founder', '2026-09-28'))
+        self.assertTrue(d['evidence'][0]['quote'])
+        self.assertTrue(any(r['tier'] == 'forbidden' and 'waterproof' in str(r.get('value')) for r in self.section('claims')))
+        sc = api.handle(Req(['scan'], 'POST', body={'text': 'Our waterproof socks keep you dry.'}))
+        self.assertEqual(sc['verdict'], 'fail')
+        self.assertTrue(any(r['id'] == res['done'][2]['id'] and r['value'] == 'ShipBob' for r in self.section(fact['section'])))
+        self.assertIn('remember', [c['kind'] for c in api.handle(Req(['changes']))['changes']])
+        self.assertTrue(any(it['kind'] == 'brain' for it in api.handle(Req(['decisions']))['items']))
+        self.assertEqual(api.handle(Req(['remember'], 'POST', body={'text': '  '}))[0], 400)
+        self.assertEqual(api.handle(Req(['remember', 'confirm'], 'POST', body={'items': []}))[0], 400)
+        self.assertEqual(api.handle(Req(['remember', 'confirm'], 'POST', body={'items': [{'kind': 'fact', 'section': 'nope', 'field': 'x', 'text': 'a fact here'}]}))[0], 400)
+        empty = api.handle(Req(['remember'], 'POST', body={'text': 'Nice weather today. See you tomorrow.'}))
+        self.assertEqual(empty['counts']['total'], 0)
+
+
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 

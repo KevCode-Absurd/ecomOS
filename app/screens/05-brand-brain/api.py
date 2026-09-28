@@ -8,6 +8,8 @@ question, and accept or ignore on a proposed record. Nothing external.
                                 judgement rules, the package, where to check (markdown)
   GET  agentfile/endpoints      this route table as JSON, for an agent or an MCP wrapper
   GET  brainmd                  the router BRAIN.md text
+  POST remember                 {text}: decisions, red lines, learnings and facts proposed from a pasted note
+  POST remember/confirm         {items}: the ticked proposals written as approved founder records
   GET  locks                    locked zones: locked lines, locked facts, logo rules; the review route enforces them
   POST locks                    {label, text, scope, required}: a line an agent never rewrites, word for word
   POST locks/<key>/retire       unlock a founder line (retired, never deleted)
@@ -199,6 +201,9 @@ _pspec.loader.exec_module(parity)
 _sspec = importlib.util.spec_from_file_location("brand_brain_sitediff", HERE / "sitediff.py")
 sitediff = importlib.util.module_from_spec(_sspec)
 _sspec.loader.exec_module(sitediff)
+_rmspec = importlib.util.spec_from_file_location("brand_brain_remember", HERE / "remember.py")
+remember = importlib.util.module_from_spec(_rmspec)
+_rmspec.loader.exec_module(remember)
 _lkspec = importlib.util.spec_from_file_location("brand_brain_locks", HERE / "locks.py")
 locks = importlib.util.module_from_spec(_lkspec)
 _lkspec.loader.exec_module(locks)
@@ -1878,6 +1883,29 @@ def handle(req):
         return cd
     if req.method == "POST" and parts == ["claims"]:
         return claim_add(brain, req.body)
+    if req.method == "POST" and parts == ["remember"]:
+        text = str((req.body or {}).get("text") or "")
+        if not text.strip():
+            return 400, {"error": "text is empty"}
+        if len(text) > 20000:
+            return 413, {"error": "text is over 20,000 characters"}
+        return remember.propose(brain, text)
+    if req.method == "POST" and parts == ["remember", "confirm"]:
+        items = (req.body or {}).get("items")
+        if not isinstance(items, list) or not items:
+            return 400, {"error": "send items: the ticked proposals"}
+        for it in items:
+            if it.get("section") and it["section"] not in SECTIONS:
+                return 400, {"error": f"unknown section {it['section']}"}
+        recs, bad = remember.records(brain, [it for it in items if isinstance(it, dict)])
+        done, failed = [], list(bad)
+        for rec in recs:
+            errs = founder_put(brain, rec, "remember", f"remembered: {str(rec.get('text'))[:120]}")
+            if errs:
+                failed.append({"id": rec["id"], "error": "; ".join(errs)})
+            else:
+                done.append({"id": rec["id"], "section": rec["section"], "tier": rec["tier"]})
+        return 201, {"ok": not failed, "done": done, "failed": failed, "version": brain.version(), "next": f"{len(done)} record{'s' if len(done) != 1 else ''} written as yours. Red lines block in the scanner from now on; decisions and learnings are in the log; facts are in the profile."}
     if req.method == "GET" and parts == ["locks"]:
         z = locks.zones(brain, voice)
         z.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "BRN-C03", "autonomy": "founder_gate"})
