@@ -6,9 +6,26 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | # | Feature | Status |
 |---|---|---|
-| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | todo |
-| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | todo |
-| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | todo |
+| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | done |
+| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | done |
+| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | done |
+| 0.4 | `audit.py`: 14 rules (AEO-R01 to R14) in the contract shape; readiness rules fire on Bombas | done |
+
+## Jobs to be done (room spec) and the audit rules behind them
+
+| Job | Question | Capability | Rules |
+|---|---|---|---|
+| Run a fixed prompt set, see how each engine describes and recommends us | what does each engine say about us today | ORG-C37 | AEO-R07, AEO-R09, AEO-R14 |
+| Know whether an answer is a real gap and how bad | which of the 6 gap types are we in per engine | ORG-C37 | AEO-R09 (gap types need the prompt log) |
+| Publish one facts page that closes every gap | what facts are missing that a buyer prompt needs | ORG-C35 | AEO-R11, AEO-R12 |
+| Keep facts identical everywhere an engine reads | do price, returns, warranty, payment match on site, schema, feed, directories | ORG-C35 | AEO-R03 |
+| Make a high-value page easy to lift an answer from | which pages are citable, which bury the answer | ORG-C34 | AEO-R02, AEO-R05, AEO-R10, AEO-R13 |
+| Fix a wrong AI-stated fact at the source | what is an engine getting wrong, where did it learn it | ORG-C36 | AEO-R01 |
+| Know if a correction landed | did the answer change after the fix, how long did it take | ORG-C36 | AEO-R04 |
+| Check what a shopping agent tells a buyer | would an agent get price, stock and delivery right | PROD-C47 | AEO-R06 |
+| Short weekly read on us and named competitors | did an engine change how it describes a competitor | BRN-C11 | AEO-R08 |
+
+Rules R01 to R11 are the room spec's insights in order. R12 to R14 are round 0 readiness reads from the brain and sessions.
 
 ## Candidates from the room spec (pick 10 per round)
 
@@ -88,3 +105,14 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
+| 0 | Shell, api, 3 tiles, 2 insights, 1 chart, audit | 2026-09-28 | S3.20 |
+
+## Round 0 status
+
+1. Built: index.html, screen.js, api.py (overview, findings), audit.py (14 rules), fixtures/prompts.json (14 sample buyer prompts), round0.png.
+2. Tiles: buyer prompts the brain can answer (8 of 14), core facts on a facts page (0 of 6), AI referral sessions (unavailable: no AI engine source in sessions).
+3. Insights: 6 sample prompts need a fact the brain lacks (ORG-C35); agent shopping endpoint published but never checked (PROD-C47). Chart: one-star mentions by buyer doubt, answered or not.
+4. Firing on Bombas: R03 ankle sock price on verified Amazon listings 33 percent below the catalog, R09 prompt set never run, R12 four missing facts, R13 refund and shipping facts only on /policies/ pages.
+5. Unavailable with connector named: R01, R02, R04 to R08, R10, R11 (prompt log, corrections, feed, agentic checks), R14 (AI referrers). No finding has money yet; R14 carries the formula for when GA4 has AI sources.
+6. Next: propose `ai_referral_sessions` for the metric contract, a prompt-run log table in data-sources, and a facts registry so R03 covers schema, feed and directories.
+
