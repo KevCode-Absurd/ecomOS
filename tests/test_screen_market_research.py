@@ -2204,6 +2204,15 @@ class HandoffCreativeTest(unittest.TestCase):
         finally:
             audit.SHARED_HANDOFFS_PATH, audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH, api.HANDOFFS_DIR, api.HANDOFFS_PATH = saved
 
+    def test_candidate_report_has_every_section(self):
+        rp = api.handle(Req(['candidates', 'cand-003', 'report']))
+        self.assertEqual(rp['sections'], ['brief', 'checklist', 'launch_plan', 'handoffs'])
+        for head in ('# Holiday gift box', '## The brief', '## The launch checklist', '## The launch plan', '## Hand-offs sent'):
+            self.assertIn(head, rp['text'])
+        self.assertIn('Not at the checklist yet', rp['text'])          # gated, no first run: honest
+        self.assertNotIn('—', rp['text'])
+        self.assertEqual(api.handle(Req(['candidates', 'nope', 'report']))[0], 404)
+
     def test_avatar_handoff_names_the_buyer(self):
         fid = next(f['id'] for f in audit.run('bombas', {'ends_on': '2026-09-27'}) if f['rule_id'] == 'PROD-R11')
         h = api.creative_handoff('bombas', fid)

@@ -2163,7 +2163,8 @@ def launch_plan(data, brand, cid):
     elif pat.get('tag') == 'seasonal' and pat.get('peak_months'):
         ob, peak = audit.order_by_date(pat['peak_months'], ends_on, lead if lead is not None else 0)
         if peak:
-            target, target_src = peak - dt.timedelta(days=audit.ORDER_SAFETY_DAYS), f'{audit.ORDER_SAFETY_DAYS} days before the {str(peak)[:7]} peak (seasonal)'
+            peak_d = peak if isinstance(peak, dt.date) else dt.date.fromisoformat(str(peak)[:10])
+            target, target_src = peak_d - dt.timedelta(days=audit.ORDER_SAFETY_DAYS), f'{audit.ORDER_SAFETY_DAYS} days before the {str(peak)[:7]} peak (seasonal)'
     order_due = (target - dt.timedelta(days=(lead or 0) + audit.ORDER_SAFETY_DAYS)) if target and lead is not None else None
     creative = audit.team_status(cid, 'creative')
     sv = audit.sample_verdict(cand.get('sample'))
@@ -2210,6 +2211,38 @@ def launch_candidates(brand):
             continue
         out.append(c)
     return out
+
+
+
+# ---------------------------------------------------------------- the candidate report: one markdown page per candidate
+
+def candidate_report(data, brand, cid):
+    """One markdown page for a candidate: the brief, the launch checklist (hard stops and soft items with their state), the
+    launch plan and the hand-offs sent for it with the status each team set. Every line comes from the desk's own reads."""
+    b = candidate_brief(data, brand, cid)
+    ends_on = audit.last_full_day(data, brand)
+    br = audit.brain(brand, today=ends_on) if brand else None
+    rd = audit.Reader(data, brand, ends_on)
+    ready = next((r for r in audit.launch_readiness(brand or 'sample', data, br, rd, ends_on)['rows'] if r['candidate_id'] == cid), None)
+    try:
+        lp = launch_plan(data, brand, cid)
+    except ValueError:
+        lp = None
+    sent = [h for h in handoffs_sent(brand)['rows'] if h.get('candidate_id') == cid]
+    L = [f'# {b["name"]}: candidate report', f'{brand or "sample"}, {ends_on.isoformat()}. Simulated data until a real store connects.', '', '## The brief', b['text'], '', '## The launch checklist']
+    if ready:
+        L.append(f'{ready["passed"]} of {ready["of"]} items passed; {"launch-ready" if ready.get("launch_ready") else ready["verdict"].replace("_", " ")}.')
+        L += [f'- [{"x" if i["status"] == "pass" else " "}] {i["label"]}{" (hard stop)" if i["hard"] else ""}: {i["status"]}, {i["why"]}' for i in ready['checklist']]
+    else:
+        L.append('Not at the checklist yet: it starts at shortlisted, or once a first run is decided.')
+    L += ['', '## The launch plan']
+    if lp:
+        L.append(f'Target {lp["target"] or "not set"} ({lp["target_source"] or "set launch_target on the candidate"}); lead time {lp["lead_time_days"] if lp["lead_time_days"] is not None else "unknown"} days; {lp["open"]} steps open, {lp["overdue"]} overdue.')
+        L += [f'- {x["due"] or "no date"}: {x["label"]} ({x["owner"]}), {x["state"].replace("_", " ")}' + ('' if x['state'] == 'done' else f'; done when {x["done_when"]}') for x in lp['steps']]
+    else:
+        L.append('No launch plan yet.')
+    L += ['', '## Hand-offs sent'] + ([f'- {h.get("sent_on")}: {h.get("title")} to {h.get("to")}, {h.get("shared_status")} (file {h.get("artefact")})' for h in sent] or ['- none yet; Send to copy, landing pages or creative from the brief panel'])
+    return {'candidate_id': cid, 'name': b['name'], 'ends_on': ends_on.isoformat(), 'text': '\n'.join(L), 'sections': ['brief', 'checklist', 'launch_plan', 'handoffs']}
 
 
 # ---------------------------------------------------------------- the hand-off (events contract: product_candidates, and a proposed test on go)
@@ -2860,6 +2893,11 @@ def handle(req):
             return {'findings': audit.run(brand, None, data=data), 'rules': audit.RULES}
         if len(req.path) == 3 and req.path[0] == 'candidates' and req.path[2] == 'brief':
             return candidate_brief(data, brand, req.path[1])
+        if len(req.path) == 3 and req.path[0] == 'candidates' and req.path[2] == 'report':
+            try:
+                return candidate_report(data, brand, req.path[1])
+            except ValueError as e:
+                return 404, {'error': str(e)}
         if len(req.path) == 3 and req.path[0] == 'candidates' and req.path[2] == 'launch':
             try:
                 return launch_plan(data, brand, req.path[1])
@@ -2897,4 +2935,4 @@ def handle(req):
             return {'parked': r['parked'], 'decided': r['decided'], 'snooze_days': rank_mod.SNOOZE_DAYS, 'window': r['window']}
     except ValueError as exc:
         return 400, {'error': str(exc)}
-    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank', 'parked', 'decisions', 'calendar', 'week', 'report', 'reports', 'changes', 'log', 'candidates/<id>/brief', 'candidates/<id>/launch', 'floors (POST)', 'candidates/<id>/handoff/<team> (POST)', 'handoff/<finding_id>', 'handoffs', 'product_candidates', 'tests']}
+    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank', 'parked', 'decisions', 'calendar', 'week', 'report', 'reports', 'changes', 'log', 'candidates/<id>/brief', 'candidates/<id>/launch', 'candidates/<id>/report', 'floors (POST)', 'candidates/<id>/handoff/<team> (POST)', 'handoff/<finding_id>', 'handoffs', 'product_candidates', 'tests']}
