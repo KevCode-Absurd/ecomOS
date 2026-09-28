@@ -1492,5 +1492,15 @@ class SinceLastVisit(unittest.TestCase):
         self.assertEqual(block.count('try {'), 2)
 
 
+class PhoneWidth(unittest.TestCase):
+    """Feature 6.7: phone rules present (checked in a 360 px browser for all 5 tabs: page width 360, nothing past the edge)."""
+
+    def test_css(self):
+        css = (SCREEN / 'screen.css').read_text(encoding='utf-8')
+        self.assertIn('.screen .grid > * { min-width: 0; }', css)
+        self.assertIn('@media (max-width: 720px)', css)
+        self.assertIn('#desk .tabs { flex-wrap: wrap;', css)
+
+
 if __name__ == '__main__':
     unittest.main()

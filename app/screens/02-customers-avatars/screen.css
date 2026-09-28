@@ -129,3 +129,11 @@ blockquote.q { margin: 0; padding: 4px 10px; border-left: 3px solid var(--line-s
 blockquote.q.bad { border-color: var(--bad); }
 blockquote.q.good { border-color: var(--good); }
 .since { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 8px 12px; border: 1px solid var(--accent-line); background: var(--accent-soft); border-radius: var(--r-sm); font-size: 13px; }
+/* phone width: grid children may shrink below their content, and wide tables scroll inside their card */
+.screen .grid > * { min-width: 0; }
+@media (max-width: 720px) {
+  .screen .grid.two, .screen .grid.side-wide, .screen .grid.three-mix { grid-template-columns: 1fr; }
+  .screen .card { overflow-x: auto; }
+  .av .facts { grid-template-columns: 64px 1fr; }
+  #desk .tabs { flex-wrap: wrap; overflow: visible; }
+}

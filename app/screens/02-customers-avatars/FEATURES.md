@@ -112,7 +112,7 @@ Lead's review: rounds 1 to 4 passed. Focus: returns and tickets by avatar, depth
 | 6.4 | How two avatars differ: pick any two and read 14 rows side by side (share, served well, build rank, top doubt and its proof, open doubts, our ads, return risk, where they speak, price share, lines they buy, their win words, evidence status, next build), rows that differ tinted. Built in `builds.compare_rows` from the same builders | done |
 | 6.5 | Each ladder rung opens its evidence: click a rung for a side panel with its counts, mentions by source (Reddit marked language only), the proof, the avatars it names and up to 8 one-star and 8 five-star lines, with Brief it. Also: a test runs `node --check` on `screen.js`, so a syntax slip can no longer reach the page | done |
 | 6.6 | Since your last visit: a strip under the head names the new moves (up to 3) and how many were resolved or merged since this browser last loaded the screen, and whether the brain changed. Per-viewer only, in browser storage wrapped so a blocked store just hides the strip; the shared record of decisions stays in the decisions log | done |
-| 6.7 | The page at phone width: 360 px with no horizontal scroll | todo |
+| 6.7 | The page at phone width: checked in a 360 px browser on all 5 desk tabs; the served map grid pushed the Avatars tab to 580 px. Fixed in `screen.css`: grid children may shrink, two-column desk grids stack under 720 px, wide tables scroll inside their card, the desk tabs wrap. Page width is 360 on every tab, nothing past the edge | done |
 | 6.8 | A printable monthly customer report for the founder | todo |
 | 6.9 | Faster loads: the overview built once per brain version and window | todo |
 | 6.10 | Audit rules and `rank` for round 6, screenshot `round6.png` | todo |
