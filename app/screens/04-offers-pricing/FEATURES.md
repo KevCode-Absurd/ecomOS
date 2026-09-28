@@ -58,6 +58,7 @@ Known gaps from round 0:
 | 2.4 | Which item to give: single items ranked by paid price over landed cost (bar 4x, from the web pass; flagged when no item clears it). The first-order test, its money and the free-item waterfall now use the named item instead of a median item cost. Web pass: Common Thread (high perceived value, low cost gifts) | done |
 | 2.5 | Cart reward ladder: tier 1 free shipping at the line, tier 2 the named gift one item past it (rounded to $5), its cost with the pick fee, the added value after which it pays (gift cost over the contribution share before media), how many times the climb covers it, and the leak of orders already past tier 2 (unavailable without order rows). New rule OFFER-R20 (the brain names a cart app but the offers have one reward) with the two-tier bar spec. Test and page steps now name the brand's own tools from the brain stack (A/B testing, upsell app). Web pass: Rebuy tiered progress bar | done |
 | 2.6 | Test calendar (room spec: overlapping offer tests, offer test backlog): every open move declares the surface it changes (cart rewards, first order offer, ad angle, a theme's product page promise, the guarantee block, the pack selector, pack price, new packs, marketplace listing) and its length; the scheduler starts each 7 days out for approval, queues moves that share a surface, and keeps every move out of the promo windows. Verdict per move (starts first, waits, after the peak), what it waits for, CSV export | done |
+| 2.7 | Promo depth by line: for each line's best-selling pack, the deepest tier (30, 25, 20, 15, 10 percent) that keeps the target contribution margin after its share of fulfilment and paid media, or a gift when no tier clears. The Black Friday offer spec now carries the tiers by line. Web pass: Common Thread (depth by margin and stock; stock waits on inventory rows) | done |
 
 ## Room jobs
 
@@ -175,7 +176,7 @@ Known gaps from round 0:
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.9 | 2026-09-28 | S3.9; screenshot round0.png |
-| 2 | 2.1 price and offer position, 2.2 marketplace parity, 2.3 discount discipline, 2.4 gift pick, 2.5 cart reward ladder, 2.6 test calendar | 2026-09-28 | in progress |
+| 2 | 2.1 price and offer position, 2.2 marketplace parity, 2.3 discount discipline, 2.4 gift pick, 2.5 cart reward ladder, 2.6 test calendar, 2.7 depth by line | 2026-09-28 | in progress |
 | 1 | 1.1 plan first, 1.2 objection to offer map, 1.3 free shipping line, 1.4 pack ladder, 1.5 first-order offer, 1.6 margin waterfall, 1.7 promo calendar, 1.8 gifting and holiday, 1.9 guarantee as an offer, 1.10 rank complete | 2026-09-28 | manager session; screenshot round1.png (updated as the round lands) |
 
 

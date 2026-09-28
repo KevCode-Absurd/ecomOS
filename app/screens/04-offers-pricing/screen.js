@@ -319,6 +319,22 @@
       actionLine(due.length ? due.length + ' windows need an approved offer in the next 30 days: ' + due.map((w) => w.name + ' by ' + fmt.date(w.approve_by)).join(', ') + '.' : 'No window is due in the next 30 days.', due.length ? act(due[0]) : null));
   }
 
+  function depthBlock(dl) {
+    const head = { title: 'How deep can each line go in a promo?', sub: 'The deepest tier each line\'s best-selling pack can take and still keep the target contribution margin after its share of paid media. Lines that clear no tier get a gift instead.' };
+    if (!dl || dl.unavailable) return section('desk-depth', head, UI.emptyState({ screen: SLUG, title: 'Depth by line unavailable', text: (dl || {}).reason }));
+    const a = ACTIONS.find((x) => x.entity && x.entity.id === 'window_bfcm');
+    const table = UI.verdictTable({
+      columns: [{ key: 'sku', label: 'Pack' }, { key: 'price', label: 'Paid price', unit: '$' }, { key: 'cogs', label: 'Landed cost', unit: '$' },
+        { key: 'contribution_at_depth', label: 'Kept at that depth', format: (v) => v == null ? 'no tier clears' : fmt.money(v) },
+        { key: 'share_at_depth', label: 'Share of price', format: (v) => v == null ? 'no tier clears' : pct(v) }],
+      rows: dl.rows, maxRows: 30,
+      verdict: { at: 1, kind: (r) => r.max_depth == null ? 'watch' : r.max_depth >= 0.2 ? 'scale' : 'keep', text: (r) => r.tier, reason: (r) => 'red line ' + pct(dl.target, 0) },
+      sort: false });
+    const gifts = dl.rows.filter((r) => r.max_depth == null).length;
+    return section('desk-depth', head, el('div', { class: 'card tight' }, table, el('p', { class: 'micro faint', text: dl.basis + '. Paid media is ' + pct(dl.media_share, 0) + ' of net sales over 28 days.' })),
+      actionLine('Build the promo as tiers by line, not one sitewide percent. ' + gifts + ' lines get a gift instead of a discount.', a));
+  }
+
   function giftingBlock(g) {
     const head = { title: 'Do we sell gifts at the holidays?', sub: 'Holiday index = a line\'s November and December share of its 12 months over the store\'s own share. Gift-led lines sit at or above the bar.' };
     if (!g) return section('desk-gifting', head, UI.emptyState({ screen: SLUG, title: 'Gifting unavailable', text: 'No brand folder.' }));
@@ -477,7 +493,7 @@
     plan(d);
     wrong(d);
     actionsList(d);
-    mount('#desk', el('div', { class: 'desk-kicker' }, el('h3', { text: 'The desk' })), testsBlock(d.tests), calendarBlock(d.calendar), giftingBlock(d.gifting),
+    mount('#desk', el('div', { class: 'desk-kicker' }, el('h3', { text: 'The desk' })), testsBlock(d.tests), calendarBlock(d.calendar), depthBlock(d.depth), giftingBlock(d.gifting),
       stackBlock(d.stack || []), thresholdBlock(d.threshold), cartBlock(d.cart), firstOrderBlock(d.first_order), positionBlock(d.position, d.brand || {}), parityBlock(d.parity), waterfallBlock(d.waterfalls), discountBlock(d), ladderBlock(d.ladder), objectionBlock(d.objections || [], d.returns), guaranteeBlock(d.guarantee, d.returns));
     auditBlock(d);
   }

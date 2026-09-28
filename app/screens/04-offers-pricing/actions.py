@@ -80,6 +80,7 @@ class Ctx:
         self.parity = audit.marketplace_parity(rd)
         self.discipline = audit.discipline(rd)
         self.cart = audit.cart_ladder(rd)
+        self.depth = model.depth_by_line(rd, playbook.DEPTH_TIERS)
         self.ship_rate = (model.brain_value(rd, 'offers.standard_shipping_cost')[0] or {}).get('cost_usd') if rd.brand else None
         self.scenarios = (model.threshold_scenarios(rd, self.threshold, self.ship_rate, self.be['value'], (self.po or {}).get('units') or 1)
                           if self.threshold is not None and self.be.get('value') is not None else [])
@@ -294,6 +295,13 @@ def promo_action(f, a, ctx):
             if at_last['before_media'] is not None and at_base['before_media'] is not None:
                 lines.append(f'Margin check: at last year\'s depth the average order keeps {money(at_last["before_media"])} before media, '
                              f'against {money(at_base["before_media"])} at the last 28 days\' depth. Cap the depth at last year\'s.')
+    dl = ctx.depth
+    if w['key'] == 'bfcm' and not dl.get('unavailable'):
+        tiers = {}
+        for r in dl['rows']:
+            tiers.setdefault(r['tier'], []).append(r['sku'])
+        lines.append(f'Depth by line (keeps the {dl["target"] * 100:.0f} percent red line after media): ' +
+                     '; '.join(f'{t}: {", ".join(v)}' for t, v in tiers.items()) + '.')
     lines += ['Win: net sales in the window at or above last year with discount depth at or below last year.',
               'Stop: pull the offer early if margin per order before media falls under the red line for 2 days.']
     a.update({
@@ -897,4 +905,4 @@ def rank(brand='bombas', window=None):
     return {'screen': SCREEN, 'brand': brand, 'window': w, 'simulated': True, 'net_revenue_28d': nr,
             'actions': actions, 'findings': findings, 'objections': ctx.objections, 'returns': returns_block(rd),
             'ladder': dict(ctx.ladder, moves=ctx.ladder_rows), 'first_order': ctx.first_order, 'waterfalls': ctx.waterfalls, 'calendar': ctx.calendar, 'gifting': ctx.gifting, 'guarantee': ctx.guarantee, 'position': ctx.position, 'parity': ctx.parity,
-            'discipline': dict(ctx.discipline, policy=discount_policy(ctx)), 'cart': ctx.cart, 'tests': calendar}
+            'discipline': dict(ctx.discipline, policy=discount_policy(ctx)), 'cart': ctx.cart, 'tests': calendar, 'depth': ctx.depth}

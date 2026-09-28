@@ -872,3 +872,47 @@ def cart_ladder(rd, threshold, gift, cm_share, step=5, groups=None):
             'tier2': t2, 'gift_cost': round(cost, 2), 'climb': round(t2 - threshold, 2), 'pays_after': need,
             'cover': round((t2 - threshold) / need, 2) if need else None, 'leak_share': leak,
             'leak_reason': None if groups else 'the share of orders already past tier 2 needs order value bins'}
+
+
+# ---------------------------------------------------------------- promo depth by line
+
+def depth_by_line(rd, tiers, end=None):
+    """For each product line's best-selling pack: the deepest promo tier that keeps contribution after an average
+    order's share of paid media at or over the target contribution margin. Fulfilment and media are shared out by
+    the pack's price over the average order. Lines that clear no tier get a gift instead of a discount."""
+    end = end or rd.ends_on
+    lad = ladder(rd)
+    po = per_order(window_totals(rd, end))
+    target = fin_value(rd, 'target_contribution_margin', end)
+    label = label_average(rd, end)
+    pick = fin_value(rd, 'threepl_pick_pack', end, unit='usd_per_order')
+    pack = fin_value(rd, 'packaging', end)
+    fee_pct = fin_value(rd, 'payment_fee_percent', end, 'online_store')
+    fee_fix = fin_value(rd, 'payment_fee_fixed', end, 'online_store')
+    if lad.get('unavailable') or not po or None in (target, label, pick, pack, fee_pct, fee_fix):
+        return {'unavailable': True, 'reason': 'needs the ladder, the daily aggregate and finance inputs'}
+    per_order_cost = label + pick + pack
+    media_share = po['spend'] / po['net']
+    rows = []
+    for ln in lad['lines']:
+        sku = ln['pack_sku'] or ln['single_sku']
+        r = next((x for x in lad['rows'] if x['sku'] == sku), None)
+        if not r or r['cogs_per_pack'] is None or not r['price_per_pack']:
+            continue
+        p, c = r['price_per_pack'], r['cogs_per_pack']
+        alloc = p / po['net']
+        best = None
+        for d in tiers:
+            price = p * (1 - d)
+            contrib = price - c - per_order_cost * alloc - (price * fee_pct / 100 + fee_fix * alloc) - price * media_share
+            if contrib / price >= target / 100:
+                best = (d, round(contrib, 2), round(contrib / price, 4))
+                break
+        rows.append({'line': ln['line'], 'sku': sku, 'category': ln['category'], 'price': p, 'cogs': c,
+                     'revenue_12m': ln['revenue'], 'max_depth': best[0] if best else None,
+                     'contribution_at_depth': best[1] if best else None, 'share_at_depth': best[2] if best else None,
+                     'tier': (f'{int(best[0] * 100)} percent off' if best else 'gift, no discount')})
+    rows.sort(key=lambda x: -x['revenue_12m'])
+    return {'unavailable': False, 'rows': rows, 'target': target / 100, 'media_share': round(media_share, 4),
+            'basis': ('Best-selling pack per line at its paid price; fulfilment and paid media shared out by the pack price '
+                      'over the average order; red line is the target contribution margin')}

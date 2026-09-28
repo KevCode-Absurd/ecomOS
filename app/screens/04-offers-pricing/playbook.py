@@ -160,3 +160,6 @@ ALWAYS_ON = 0.75          # more than 75 percent of discount dollars spent on or
 # Gift with purchase pick (screen 04, feature 2.4): a single item whose paid price is at least GWP_RATIO times its
 # landed cost reads as worth a lot and costs little to give.
 GWP_RATIO = 4.0
+
+# Promo depth by line (screen 04, feature 2.7). Tiers a line can take in a promo window, deepest first.
+DEPTH_TIERS = (0.30, 0.25, 0.20, 0.15, 0.10)

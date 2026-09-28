@@ -830,5 +830,27 @@ class TestCalendarTest(unittest.TestCase):
                 self.assertIn(a['id'], ids)
 
 
+class DepthTest(unittest.TestCase):
+    """Round 2 feature 7: promo depth by line against the red line, carried into the Black Friday spec."""
+
+    def test_depth_keeps_the_red_line(self):
+        rd = audit.Reader(None, 'bombas', audit.last_full_day(None, 'bombas'))
+        pb = audit._playbook()
+        dl = api.model.depth_by_line(rd, pb.DEPTH_TIERS)
+        self.assertFalse(dl['unavailable'])
+        for r in dl['rows']:
+            if r['max_depth'] is not None:
+                self.assertIn(r['max_depth'], pb.DEPTH_TIERS)
+                self.assertGreaterEqual(r['share_at_depth'], dl['target'])
+                deeper = [d for d in pb.DEPTH_TIERS if d > r['max_depth']]
+                self.assertTrue(all(d > r['max_depth'] for d in deeper))
+            else:
+                self.assertEqual(r['tier'], 'gift, no discount')
+        out = api.actions.rank('bombas')
+        bf = next((a for a in out['actions'] if a['entity']['id'] == 'window_bfcm'), None)
+        if bf:
+            self.assertIn('Depth by line', bf['artefact']['draft'])
+
+
 if __name__ == '__main__':
     unittest.main()
