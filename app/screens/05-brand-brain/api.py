@@ -84,6 +84,8 @@ question, and accept or ignore on a proposed record. Nothing external.
   GET  facts/export             FAQPage JSON-LD and plain text of the approved pairs
   GET  summaries                what an agent reads first: the T1 summary per section with its token count
   GET  package?capability=<id>  the package a capability gets (T0, T1, T2) with tokens against its budget
+  GET  learn                    words the founder cut or added across their edits, proposed for the voice sheet
+  POST learn/apply              {kind: avoided | used, words: [...]}: append to voice.words_avoided or words_used
   GET  records?section=<name>   one section's records with tier, date, source and evidence
   GET  audit                    findings from audit.py (app/contracts/audit.md shape)
   POST questions/<field>        {answer}: writes a founder record, marks the question answered
@@ -126,6 +128,9 @@ _spec.loader.exec_module(audit)
 _hspec = importlib.util.spec_from_file_location("brand_brain_health", HERE / "health.py")
 health = importlib.util.module_from_spec(_hspec)
 _hspec.loader.exec_module(health)
+_nspec = importlib.util.spec_from_file_location("brand_brain_learn", HERE / "learn.py")
+learn = importlib.util.module_from_spec(_nspec)
+_nspec.loader.exec_module(learn)
 _fspec = importlib.util.spec_from_file_location("brand_brain_facts", HERE / "facts.py")
 facts = importlib.util.module_from_spec(_fspec)
 _fspec.loader.exec_module(facts)
@@ -823,6 +828,32 @@ def claim_add(brain: Brain, body: dict):
     return 201, {"ok": True, "record": rid, "tier": tier, "flows_to": FLOWS_TO.get("claims", ""), "version": brain.version()}
 
 
+def learn_view(brain: Brain) -> dict:
+    return learn.proposals(brain, voice.words_avoided(brain), [w.strip().lower() for w in re.split(r"[,;\n]+", voice._text(voice._rec(brain, "voice", "words_used")) or "") if w.strip()])
+
+
+def learn_apply(brain: Brain, body: dict):
+    body = body or {}
+    kind = body.get("kind")
+    words = [str(w).strip().lower() for w in (body.get("words") or []) if str(w).strip()]
+    if kind not in ("avoided", "used"):
+        return 400, {"error": "kind must be avoided or used"}
+    if not words:
+        return 400, {"error": "words is empty"}
+    field = "words_avoided" if kind == "avoided" else "words_used"
+    cur = voice._rec(brain, "voice", field)
+    have = [w.strip() for w in re.split(r"[,;\n]+", voice._text(cur) or "") if w.strip()]
+    merged = have + [w for w in words if w not in {h.lower() for h in have}]
+    text = ", ".join(merged)
+    rec = {"id": f"{brain.brand}.voice.{field}", "brand": brain.brand, "section": "voice", "field": field, "value": merged, "text": text,
+           "tier": "approved", "confidence": 1.0, "visibility": "private",
+           "source": {"type": "founder", "ref": "05-brand-brain learned from edits", "captured_at": brain.today.isoformat()}}
+    errs = founder_put(brain, rec, what=f"{field.replace('_', ' ')} learned from edits: {', '.join(words)[:100]}")
+    if errs:
+        return 400, {"error": "record not valid", "details": errs}
+    return 201, {"ok": True, "record": rec["id"], "words": merged, "version": brain.version()}
+
+
 def summaries(brain: Brain) -> dict:
     rows = []
     for sec in SECTIONS:
@@ -1114,6 +1145,12 @@ def handle(req):
         ends = (brain.today - dt.timedelta(days=1)).isoformat()
         findings = audit.run(brain.brand, {"ends_on": ends, "days": 1, "trailing": 0}, BRAIN_ROOT)
         return {"findings": findings, "rules": audit.RULES, "brain_version": brain.version()}
+    if req.method == "GET" and parts == ["learn"]:
+        lv = learn_view(brain)
+        lv.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())
+        return lv
+    if req.method == "POST" and parts == ["learn", "apply"]:
+        return learn_apply(brain, req.body)
     if req.method == "GET" and parts == ["summaries"]:
         sm = summaries(brain)
         sm.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())

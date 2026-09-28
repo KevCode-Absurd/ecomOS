@@ -1082,6 +1082,24 @@
       actions: { label: 'Do' }, sort: false, maxRows: 10,
     });
   }
+  function learnBox(reload) {
+    const out = el('div', { class: 'stack' }, el('p', { class: 'muted small', text: 'Loading.' }));
+    api(BASE + 'learn').then((lv) => {
+      const items = [el('div', { class: 'small muted', text: lv.counts.edits + ' edits with a value before. Avoid: ' + lv.rules.avoid + '. Use: ' + lv.rules.use + '.' })];
+      const list = (kind, rows) => {
+        if (!rows.length) return el('p', { class: 'muted small', text: 'No ' + (kind === 'avoided' ? 'word to avoid' : 'word to use') + ' learned yet. Edit a few fields and come back.' });
+        const boxes = rows.map((p) => el('label', { class: 'chip', style: { cursor: 'pointer' } }, el('input', { type: 'checkbox', value: p.word, checked: true }), ' ' + p.word + ' (' + p.times + ')' + (p.hype ? ' hype' : '')));
+        const st = el('span', { class: 'micro muted' });
+        const btn = el('button', { class: 'btn sm primary', type: 'button', text: kind === 'avoided' ? 'Add to words we avoid' : 'Add to words we use' });
+        btn.addEventListener('click', async () => { const words = boxes.map((b) => b.querySelector('input')).filter((i) => i.checked).map((i) => i.value); if (!words.length) { st.textContent = 'Tick a word first.'; return; } btn.disabled = true; try { const r = await api(BASE + 'learn/apply', { method: 'POST', body: { kind, words } }); st.textContent = 'Saved ' + r.record + ': ' + r.words.join(', '); reload(); } catch (e) { btn.disabled = false; st.textContent = 'Could not save: ' + e.message; } });
+        const ev = el('div', { class: 'micro faint', text: rows.slice(0, 3).map((p) => p.word + ': "' + (p.evidence[0] || {}).before + '" became "' + (p.evidence[0] || {}).after + '"').join(' | ') });
+        return el('div', { class: 'stack' }, el('div', { class: 'row' }, ...boxes), el('div', { class: 'row' }, btn, st), ev);
+      };
+      items.push(el('h4', { text: 'Words you cut' }), list('avoided', lv.avoid), el('h4', { text: 'Words you added' }), list('used', lv.use), el('div', { class: 'micro faint', text: lv.note }));
+      mount(out, ...items);
+    }).catch((e) => mount(out, el('p', { class: 'muted', text: 'Could not learn: ' + e.message })));
+    return out;
+  }
   async function loadVoice() {
     let vs;
     try { vs = await api(BASE + 'voice'); } catch (e) { mount('#voice', el('p', { class: 'muted', text: 'Voice unavailable: ' + e.message })); return; }
@@ -1093,6 +1111,7 @@
         el('div', { class: 'row' }, UI.copyButton({ label: 'Copy the sheet for an agent', text: () => vs.sheet_text }), el('span', { class: 'micro faint', text: 'Read by ' + vs.readers.join(', ') + '. ' + vs.note })), el('pre', { class: 'card sunken brief', text: vs.sheet_text })) },
       { key: 'examples', label: 'Examples', n: vs.examples.liked.length + vs.examples.disliked.length, panel: () => el('div', { class: 'grid two' }, exampleBox('liked', vs, loadVoice), exampleBox('disliked', vs, loadVoice)) },
       { key: 'snippets', label: 'Snippets', n: sn.snippets.length, panel: () => el('div', { class: 'stack' }, snippetsTable(sn, loadVoice), el('div', { class: 'row' }, UI.copyButton({ label: 'Copy all snippets', text: () => sn.all_text }), el('span', { class: 'micro faint', text: sn.note }))) },
+      { key: 'learn', label: 'Learned from your edits', panel: () => learnBox(loadVoice) },
     ] }));
   }
 

@@ -1275,3 +1275,31 @@ class Round3Package(TempBrain):
         self.assertTrue(any(x['tier'] == 'T1' for x in p['parts']))
         self.assertEqual(api.handle(Req(['package'], query={'capability': ['nope']}))[0], 400)
         self.assertEqual(api.handle(Req(['package'], query={'capability': ['ZZZ-C99']}))[0], 404)
+
+
+class Round3Learn(TempBrain):
+    """Round 3 feature 7: words the founder cuts and adds across edits, proposed to the voice sheet."""
+
+    def test_edits_become_proposals_and_apply(self):
+        self.assertEqual(api.handle(Req(['learn']))['counts'], {'edits': 0, 'avoid': 0, 'use': 0})
+        api.handle(Req(['profile', 'positioning', 'frame'], 'POST', body={'text': 'Premium everyday comfort you can feel on the first wear.'}))
+        api.handle(Req(['profile', 'positioning', 'frame'], 'POST', body={'text': 'Everyday comfort you can feel on the first wear, and a pair given for every pair.'}))
+        api.handle(Req(['profile', 'identity', 'one_line_pitch'], 'POST', body={'text': 'Premium socks engineered to elevate comfort.'}))
+        api.handle(Req(['profile', 'identity', 'one_line_pitch'], 'POST', body={'text': 'Socks made for comfort you feel, and a pair given for every pair.'}))
+        lv = api.handle(Req(['learn']))
+        self.assertGreaterEqual(lv['counts']['edits'], 2)
+        avoid = {p['word']: p for p in lv['avoid']}
+        self.assertIn('premium', avoid)
+        self.assertEqual(avoid['premium']['times'], 2)
+        self.assertIn('elevate', avoid)      # hype word, cut once
+        use = {p['word'] for p in lv['use']}
+        self.assertIn('given', use)
+        self.assertTrue(avoid['premium']['evidence'][0]['before'])
+        status, res = api.handle(Req(['learn', 'apply'], 'POST', body={'kind': 'avoided', 'words': ['premium', 'elevate']}))
+        self.assertEqual((status, res['words']), (201, ['premium', 'elevate']))
+        vs = api.handle(Req(['voice']))
+        self.assertEqual(next(f for f in vs['fields'] if f['key'] == 'words_avoided')['text'], 'premium, elevate')
+        self.assertNotIn('premium', {p['word'] for p in api.handle(Req(['learn']))['avoid']})
+        r = api.handle(Req(['scan'], 'POST', body={'text': 'Premium comfort.'}))
+        self.assertTrue(any(h['kind'] == 'avoided_word' for h in r['hits']))
+        self.assertEqual(api.handle(Req(['learn', 'apply'], 'POST', body={'kind': 'x', 'words': ['a']}))[0], 400)
