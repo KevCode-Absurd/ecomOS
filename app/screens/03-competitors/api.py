@@ -296,7 +296,7 @@ def placements(m: dict) -> dict:
 
 
 # Every desk block ends in a line that names the gap and offers the action (depth.md section 2, row 5).
-SECTION_RULES = {"season": ["COMP-R30"], "history": [], "handoff": [], "macros": ["COMP-R15"], "pages": ["COMP-R15"], "cards": ["COMP-R27"], "landing": ["COMP-R26"], "losses": ["COMP-R15", "COMP-R29"],
+SECTION_RULES = {"review": ["COMP-R28", "COMP-R11"], "season": ["COMP-R30"], "history": [], "handoff": [], "macros": ["COMP-R15"], "pages": ["COMP-R15"], "cards": ["COMP-R27"], "landing": ["COMP-R26"], "losses": ["COMP-R15", "COMP-R29"],
                  "category": ["COMP-R16"], "reviews": ["COMP-R17"], "coverage": ["COMP-R05", "COMP-R01"], "velocity": ["COMP-R19"],
                  "mix": ["COMP-R06", "COMP-R07", "COMP-R08"], "placements": [], "refs": ["COMP-R03"], "changes": ["COMP-R24", "COMP-R12"],
                  "niche": ["COMP-R20"], "map": ["COMP-R11"], "frames": ["COMP-R28"], "premium": ["COMP-R21"],
@@ -384,6 +384,33 @@ def room_metrics(m: dict, pos: dict, cards: dict) -> list[dict]:
     ]
 
 
+def review(m: dict, pos: dict, fr: dict, today: dt.date) -> dict:
+    """The quarterly positioning review: where we sit, who moved, how shoppers frame us, and 3 decisions for the founder."""
+    name = m["brand"].capitalize()
+    q = (today.month - 1) // 3 + 1
+    dur = next((mv for mv in pos["kit"]["durability"]["moves"] if mv["kind"] == "hold"), None)
+    com = next((mv for mv in pos["kit"]["comfort"]["moves"] if mv["kind"] == "hold"), None)
+    threats = [p["name"] for p in m["pages"] if (p.get("verdict") or {}).get("text") == "Threat"]
+    top = fr.get("top") or {}
+    lad = m.get("ladder") or {}
+    decisions = []
+    if top and not top.get("in_our_frame"):
+        decisions.append(f"Test a line for the {top['label']} frame ({top['mentions']} mentions), or keep ours: {fr.get('our_frame')}.")
+    contest = next((mv for mv in pos["kit"]["durability"]["moves"] + pos["kit"]["comfort"]["moves"] if mv["kind"] == "contest"), None)
+    if contest:
+        decisions.append(f"Contest the {contest['label']} corner, or hold our own. {contest['text']}")
+    if m["price_position_index"] is not None:
+        decisions.append(f"Hold our price index at {m['price_position_index']} (100 is the tracked median), or move toward the band "
+                         f"{audit.PRICE_BAND[0]} to {audit.PRICE_BAND[1]}.")
+    lines = [f"Positioning review, Q{q} {today.year}, {name}. Simulated sales, public signals.", "",
+             "Where we sit: " + "; ".join(x["label"] for x in (dur, com) if x) + ".",
+             f"Threats: {', '.join(threats) or 'none'}.",
+             f"How shoppers frame the category: {top.get('label', 'unavailable')} first; our line says it: {'yes' if top.get('in_our_frame') else 'no'}.",
+             f"Pack ladder saves {round(lad['median_saving'] * 100)} percent a unit; price index {m['price_position_index']}." if lad.get("median_saving") is not None else "Price: unavailable.",
+             "", "Decisions for the founder:"] + [f"{i + 1}. {d}" for i, d in enumerate(decisions)] + ["", "Next review in 90 days, or sooner if a threat's points rise."]
+    return {"quarter": f"Q{q} {today.year}", "text": "\n".join(lines), "decisions": decisions}
+
+
 def overview(brand: str, today: dt.date) -> dict:
     m = audit.market_full(brand, today, BRAIN_ROOT)
     brain = m.pop("brain")
@@ -398,7 +425,8 @@ def overview(brand: str, today: dt.date) -> dict:
             "positioning": pos,
             "lookalike": m["lookalike"], "gap": gaps(m), "pages": (pr := page_rows(m)), "battlecards": (bc := battlecards(m, pr)),
             "room_metrics": room_metrics(m, pos, bc),
-            "coverage": {"all": m["coverage"], "direct": m["coverage_direct"]}, "mix": m["mix"], "references": m["references"], "ladder": m["ladder"], "changes": m["changes"], "freshness": freshness(m, brand), "losses": m["losses"], "category": m["category"], "reviews": m["reviews"], "presence": m["presence"], "velocity": m["velocity"], "niche": m["niche"], "premium": m["premium"], "search": m["search"], "price_moves": m["price_moves"], "landing": m["landing"], "placements": placements(m), "season": m["season"], "macros": macros(m), "history": audit.capmod.history(brand), "gap_lines": gap_lines(ranked),
+            "coverage": {"all": m["coverage"], "direct": m["coverage_direct"]}, "mix": m["mix"], "references": m["references"], "ladder": m["ladder"], "changes": m["changes"], "freshness": freshness(m, brand), "losses": m["losses"], "category": m["category"], "reviews": m["reviews"], "presence": m["presence"], "velocity": m["velocity"], "niche": m["niche"], "premium": m["premium"], "search": m["search"], "price_moves": m["price_moves"], "landing": m["landing"], "placements": placements(m), "season": m["season"],
+            "review": review(m, pos, audit.framemod.build(m, brain, moves), today), "macros": macros(m), "history": audit.capmod.history(brand), "gap_lines": gap_lines(ranked),
             "frames": audit.framemod.build(m, brain, moves),
             "category_median": m["category_median"], "price_position_index": m["price_position_index"]}
 

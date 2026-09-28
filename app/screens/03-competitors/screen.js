@@ -583,11 +583,19 @@
       el('p', { class: 'micro faint', text: sn.rule }));
   }
 
+  // ---------- 5aa. the quarterly positioning review ----------
+  function reviewSection(rv) {
+    mount('#review', el('pre', { class: 'card sunken bc', text: rv.text }),
+      el('div', { class: 'row' }, UI.copyButton({ label: 'Copy the review', text: () => rv.text }),
+        UI.decisionRow({ capability: 'BRAND-C19', autonomy: 'agent_does', screen: SCREEN, compact: true, finding_id: SCREEN + '.review.' + rv.quarter.replace(' ', '_') })),
+      el('p', { class: 'micro faint', text: 'Built in code from the map, the threats, the shopper frames and the price model. The founder decides; the agent logs each decision to the brain.' }));
+  }
+
   // ---------- 5z. desk tabs: each job holds its sections ----------
   const DESK = [
     { key: 'rivals', label: 'Rivals', ids: ['pages', 'history', 'cards', 'macros', 'landing', 'losses', 'category', 'reviews'] },
     { key: 'creative', label: 'Ads', ids: ['season', 'coverage', 'velocity', 'mix', 'placements', 'refs', 'changes'] },
-    { key: 'price', label: 'Price and position', ids: ['map', 'frames', 'premium', 'prices', 'presence'] },
+    { key: 'price', label: 'Price and position', ids: ['review', 'map', 'frames', 'premium', 'prices', 'presence'] },
     { key: 'market', label: 'Market and data', ids: ['niche', 'search', 'fresh', 'handoff'] },
   ];
   function gapLines(lines) {
@@ -706,6 +714,7 @@
     placementSection(d.placements);
     historySection(d.history);
     seasonSection(d.season);
+    reviewSection(d.review);
     macrosSection(d.macros);
     handoffSection();
     document.getElementById('audit-sub').textContent = p.findings.length + ' findings from ' + p.rules.length + ' rules. Public signals, one capture.';

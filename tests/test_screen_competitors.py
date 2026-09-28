@@ -1102,6 +1102,17 @@ class TestSeason(TempBrain):
         self.assertFalse([f for f in summer if f['rule_id'] == 'COMP-R30'])
 
 
+class TestReview(TempBrain):
+    """5.4: the quarterly positioning review with decisions for the founder."""
+    def test_review(self):
+        api.BRAIN_ROOT = self.tmp
+        rv = api.handle(Req(['overview']))['review']
+        self.assertEqual(rv['quarter'], 'Q3 2026')
+        self.assertEqual(len(rv['decisions']), 3)
+        self.assertIn('buy it for life', rv['text'])
+        self.assertIn('Decisions for the founder', rv['text'])
+
+
 class TestRank(TempBrain):
     """Depth contract rules 2, 3 and 13: owner, steps and artefact on every action; every finding ends in one."""
     W = {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4}
@@ -1216,7 +1227,7 @@ class TestPage(unittest.TestCase):
         html = (SCREEN / 'index.html').read_text(encoding='utf-8')
         desk = html.split('id="desk-src"', 1)[1].split('<!-- 6. The audit -->', 1)[0]
         for sec_id in ('pages', 'history', 'cards', 'macros', 'landing', 'losses', 'category', 'reviews', 'coverage', 'velocity', 'mix', 'placements', 'refs', 'changes',
-                       'map', 'frames', 'premium', 'prices', 'presence', 'niche', 'search', 'fresh', 'handoff'):
+                       'review', 'map', 'frames', 'premium', 'prices', 'presence', 'niche', 'search', 'fresh', 'handoff'):
             self.assertIn(f'id="{sec_id}"', desk)
             self.assertIn(f"'{sec_id}'", js)
 
