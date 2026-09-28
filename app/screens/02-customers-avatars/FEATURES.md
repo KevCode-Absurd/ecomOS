@@ -145,7 +145,16 @@ Lead's review: rounds 1 to 4 passed. Focus: returns and tickets by avatar, depth
 | 8.7 | Money on weak cohorts, as rule CUST-R32: one medium finding per first-order month that repeats in months 1 to 3 under 0.8x the grid's median, priced as (median repeat minus the cohort's) x cohort size x that month's AOV, with a note on whether the same month last year was weak too (the season, which the post-purchase branch fixes). Maps to the weak-cohort branch in `rank`. Bombas: no weak cohort (December 2025 repeats at 17.94 percent against a line of 17.92), so it stays silent; tested on a cut fixture both ways. Also checked: paid returning share by channel (social, search, email, SMS) sits on its own 12-month median, so no money there either | done |
 | 8.8 | Depth rules 7 and 11 on the real page: the screen now passes `?brand=<slug>` from its address to every call, so the same page renders another brain (the example brand shows its own badge and 6 plan items). The smoke test runs both brands and fails on any "undefined", "NaN", "null" or "[object Object]" on any tab, in the report or on an avatar page. Both clean. The rubric side of rule 7 already holds: every dimension has an input or a written fallback (revenue by severity with no money, ease 1 with a connector missing) | done |
 | 8.9 | Money on the page head: a "money at stake" number beside the plan, summed from open moves with a stake against the brand's own history, with how many carry it; unavailable with the reason, never 0, when none does. Its title names the seasonal drop left out. Bombas: $63,664 on 1 of 65 moves (the month-7 fall); the $5,842,578 January season is named, not added. To stay within the contract's 3 to 6 numbers, "avatars with proof" folds into the title of "rungs without proof" | done |
-| 8.10 | Audit rules and `rank` for round 8, screenshot `round8.png` | todo |
+| 8.10 | Audit and `rank` for round 8: 32 rules (R32 weak cohort from 8.7, silent here), 31 firing on Bombas; 67 actions. Money now sits only where the brand's own history shows a gap: the month-7 fall ($63,664); January and paid returning are flat against their own past, so none of ours makes the master top 10 (best 62, cut-off 63). Full screen suite: only the known site speed failures. Screenshot `round8.png` (the plan head with money at stake, the focus table with sales-share avatars) | done |
+
+### Round 8 founder note (28 Sep 2026)
+
+1. January is the season, not a new problem. Returning orders fell 42.5 percent into January, against 44.2 percent the year before. The $5.8 million from round 7 is no longer claimed as money at stake.
+2. So this screen prices one move: $63,664 per cohort, for the fall after month 6. None of our moves is in your top 10 now, because nothing else is off against its own past.
+3. 4 more avatars are now ranked, using their share of sales. The In-Store Single Pair Trier comes in third, at 18.2 percent of sales.
+4. One survey question now settles 8 avatars where reviews and sales disagree. The survey closes 23 gaps in all.
+5. Every move on the page has a stop rule and a check date, and 99 of 108 have a size. The page works for any brand, and a browser test checks both brands on every run.
+6. Next, round 9: order, ticket and return data as the data layer lands, so more moves can be priced.
 
 ### Round 7 founder note (28 Sep 2026)
 
@@ -349,3 +358,4 @@ The job to be done for each avatar is brand data: it lives in `app/brain/<brand>
 | 5 | 5.1 to 5.10, returns, support and depth per cell | 28 Sep 2026 | done; screenshot `round5.png` |
 | 6 | 6.1 to 6.10, any brand, one action per draft, agenda, compare, report, speed, phone width | 28 Sep 2026 | done; screenshot `round6.png` |
 | 7 | 7.1 to 7.10, depth rules 5, 9, 10 and 14 on this screen, money on retention, sales against reviews, avatar pages, keys, print | 28 Sep 2026 | done; screenshot `round7.png` |
+| 8 | 8.1 to 8.10, desk moves sized, January against last year, sales in the scores, survey settles, browser smoke test, weak cohorts, any brand on the page, money tile | 28 Sep 2026 | done; screenshot `round8.png` |
