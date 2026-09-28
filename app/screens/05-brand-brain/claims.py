@@ -112,6 +112,15 @@ def desk(brain) -> dict:
             "note": "A claim is usable in customer-facing copy only when it is approved by you or quoted from a live page. Forbidden phrases block a draft in the scanner."}
 
 
+def _words_avoided(brain) -> list[str]:
+    r = next((x for x in brain.records("voice") if x.get("field") == "words_avoided"), None)
+    if not r:
+        return []
+    v = r.get("value")
+    t = ", ".join(v) if isinstance(v, list) else (v if isinstance(v, str) else (r.get("text") or ""))
+    return [w.strip().lower() for w in re.split(r"[,;\n]+", t) if len(w.strip()) > 1]
+
+
 def _brain_facts(brain) -> list[dict]:
     """Numbers the scanner can check a draft against, by keyword. Generic keywords, the numbers come from the brain."""
     facts = []
@@ -171,6 +180,10 @@ def scan(brain, text: str) -> dict:
                 hits.append({"kind": "unapproved", "severity": "warn", "match": s[:120], "record": r["id"], "tier": r["tier"],
                              "fix": "Approve the claim in the claims desk, or drop the sentence."})
                 break
+    for w in _words_avoided(brain):
+        if re.search(r"\b" + re.escape(w) + r"\b", low):
+            hits.append({"kind": "avoided_word", "severity": "warn", "match": w, "record": f"{brain.brand}.voice.words_avoided", "tier": "voice",
+                         "fix": "A word on the voice sheet's avoid list. Swap it for a plain one."})
     grade = reading_grade(text)
     if grade is not None and grade > GRADE_MAX:
         hits.append({"kind": "reading_level", "severity": "warn", "match": f"grade {grade}", "record": None, "tier": None,

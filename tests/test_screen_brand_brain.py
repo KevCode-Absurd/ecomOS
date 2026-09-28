@@ -1007,3 +1007,49 @@ class Round2Legal(TempBrain):
         self.assertEqual(r['verdict'], 'fail')     # a stale brain number from the claims scanner also blocks
         self.assertTrue(any(h['kind'] == 'stale_fact' for h in r['claims']['hits']))
         self.assertEqual(api.handle(Req(['legal', 'gate'], 'POST', body={'kind': 'email', 'text': ' '}))[0], 400)
+
+
+class Round2Voice(TempBrain):
+    """Round 2 features 6 and 7: the voice sheet with examples, and the approved snippets with a stale check."""
+
+    def test_sheet_fields_examples_and_text(self):
+        vs = api.handle(Req(['voice']))
+        self.assertEqual((vs['filled'], vs['of'], vs['ready']), (0, 8, False))
+        self.assertEqual(len(vs['site_lines']), 3)
+        self.assertIn('unavailable (founder to add)', vs['sheet_text'])
+        api.handle(Req(['profile', 'voice', 'words_avoided'], 'POST', body={'text': 'premium, elevate, leverage'}))
+        status, res = api.handle(Req(['voice', 'example'], 'POST', body={'kind': 'liked', 'text': 'Socks so comfortable you forget you have them on.', 'why': 'plain, one benefit'}))
+        self.assertEqual((status, res['count']), (201, 1))
+        api.handle(Req(['voice', 'example'], 'POST', body={'kind': 'disliked', 'text': 'Elevate your sock game with premium comfort technology.'}))
+        vs = api.handle(Req(['voice']))
+        self.assertEqual((vs['filled'], len(vs['examples']['liked']), len(vs['examples']['disliked'])), (1, 1, 1))
+        self.assertIn('Copy we like:', vs['sheet_text'])
+        self.assertIn('Words we avoid: premium, elevate, leverage', vs['sheet_text'])
+        prof = api.handle(Req(['profile']))
+        keys = [f['key'] for sec in prof['sections'] if sec['section'] == 'voice' for f in sec['fields']]
+        self.assertEqual(keys[:3], ['adjectives', 'writes_like', 'do_list'])
+        # the scanner reads the avoid list
+        r = api.handle(Req(['scan'], 'POST', body={'text': 'Elevate your everyday with our premium socks.'}))
+        self.assertEqual(sorted(h['match'] for h in r['hits'] if h['kind'] == 'avoided_word'), ['elevate', 'premium'])
+        self.assertEqual(api.handle(Req(['voice', 'example'], 'POST', body={'kind': 'meh', 'text': 'x'}))[0], 400)
+
+    def test_snippets_built_locked_and_stale(self):
+        sn = api.handle(Req(['voice']))['snippets']
+        by = {r['key']: r for r in sn['snippets']}
+        self.assertEqual(by['free_shipping']['use'], 'Free shipping on orders over $75.')
+        self.assertEqual(by['returns']['use'], 'Returns within 30 days, refunded to the original payment method.')
+        self.assertEqual(by['first_order']['status'], 'proposed')
+        self.assertEqual(sn['counts']['stale'], 0)
+        status, res = api.handle(Req(['voice', 'snippet', 'free_shipping'], 'POST', body={'text': 'Free shipping on every order over $75, no code needed.'}))
+        self.assertEqual((status, res['status']), (201, 'locked'))
+        # the threshold moves on the site: the locked line is stale and ends in a re-approve action
+        rows = self.section('offers')
+        for r in rows:
+            if r['id'] == 'bombas.offers.free_shipping_threshold_usd':
+                r['value'] = 80
+        self.write('offers', rows)
+        by = {r['key']: r for r in api.handle(Req(['voice']))['snippets']['snippets']}
+        self.assertEqual(by['free_shipping']['status'], 'stale')
+        self.assertEqual(by['free_shipping']['use'], 'Free shipping on orders over $80.')   # the stale lock is not pasted
+        self.assertEqual(by['free_shipping']['action']['owner'], 'person')
+        self.assertEqual(api.handle(Req(['voice', 'snippet', 'nope'], 'POST', body={'text': 'x y z w'}))[0], 404)

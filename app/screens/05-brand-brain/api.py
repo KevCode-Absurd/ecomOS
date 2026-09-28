@@ -61,6 +61,10 @@ question, and accept or ignore on a proposed record. Nothing external.
                                 operations.contract_<vendor>
   GET  legal                    the US disclosure checks read from the brain: pass, fail, unavailable, n/a
   POST legal/gate               {kind: email | ad | pdp | policy | subscription, text}: gate a pasted draft
+  GET  voice                    the voice sheet: fields, liked and disliked examples, lines from our own pages, the
+                                copy-ready sheet text; and the approved snippets with a stale check
+  POST voice/example            {kind: liked | disliked, text, why}: a founder example record
+  POST voice/snippet/<key>      {text}: lock the exact wording of a snippet as an approved record
   GET  records?section=<name>   one section's records with tier, date, source and evidence
   GET  audit                    findings from audit.py (app/contracts/audit.md shape)
   POST questions/<field>        {answer}: writes a founder record, marks the question answered
@@ -102,6 +106,9 @@ _spec.loader.exec_module(audit)
 _hspec = importlib.util.spec_from_file_location("brand_brain_health", HERE / "health.py")
 health = importlib.util.module_from_spec(_hspec)
 _hspec.loader.exec_module(health)
+_vspec = importlib.util.spec_from_file_location("brand_brain_voice", HERE / "voice.py")
+voice = importlib.util.module_from_spec(_vspec)
+_vspec.loader.exec_module(voice)
 _tspec = importlib.util.spec_from_file_location("brand_brain_contracts", HERE / "contracts.py")
 contracts = importlib.util.module_from_spec(_tspec)
 _tspec.loader.exec_module(contracts)
@@ -134,7 +141,7 @@ _rspec.loader.exec_module(rank_mod)
 PROFILE_SECTIONS = [
     ("identity", "Identity", ["category", "one_line_pitch", "giving_model", "founded", "headquarters", "certification_bcorp"]),
     ("positioning", "Positioning", ["frame", "category_frame", "price_frame", "competitive_frame", "proof_points"]),
-    ("voice", "Voice", []),
+    ("voice", "Voice", ["adjectives", "writes_like", "do_list", "do_not_list", "tone_by_context", "reading_level", "words_used", "words_avoided"]),
     ("visual", "Visual", []),
     ("products", "Products", ["lines", "price_ladder_socks", "pack_sizes", "materials"]),
     ("offers", "Offers", ["free_shipping_threshold_usd", "standard_shipping_cost", "guarantee", "first_order_code", "bundles_pack_ladder"]),
@@ -772,6 +779,43 @@ def claim_add(brain: Brain, body: dict):
     return 201, {"ok": True, "record": rid, "tier": tier, "flows_to": FLOWS_TO.get("claims", ""), "version": brain.version()}
 
 
+def voice_example(brain: Brain, body: dict):
+    body = body or {}
+    kind = body.get("kind")
+    text = str(body.get("text") or "").strip()
+    why = str(body.get("why") or "").strip()[:200]
+    if kind not in ("liked", "disliked"):
+        return 400, {"error": "kind must be liked or disliked"}
+    if len(text) < 4:
+        return 400, {"error": "text is empty"}
+    n = sum(1 for r in brain.records("voice", include_retired=True) if (r.get("field") or "").startswith(f"{kind}_example")) + 1
+    field = f"{kind}_example_{n}"
+    rec = {"id": f"{brain.brand}.voice.{field}", "brand": brain.brand, "section": "voice", "field": field, "value": {"text": text, "why": why or None},
+           "text": text, "tier": "approved", "confidence": 1.0, "visibility": "private",
+           "source": {"type": "founder", "ref": "05-brand-brain voice sheet", "captured_at": brain.today.isoformat()}}
+    errs = founder_put(brain, rec)
+    if errs:
+        return 400, {"error": "record not valid", "details": errs}
+    return 201, {"ok": True, "record": rec["id"], "kind": kind, "count": n, "version": brain.version()}
+
+
+def snippet_lock(brain: Brain, key: str, body: dict):
+    text = str((body or {}).get("text") or "").strip()
+    if key not in voice.SNIPPET_KEYS:
+        return 404, {"error": "no such snippet", "key": key}
+    if len(text) < 4:
+        return 400, {"error": "text is empty"}
+    field = f"snippet_{key}"
+    rec = {"id": f"{brain.brand}.voice.{field}", "brand": brain.brand, "section": "voice", "field": field, "value": text, "text": text,
+           "tier": "approved", "confidence": 1.0, "visibility": "private",
+           "source": {"type": "founder", "ref": "05-brand-brain snippets", "captured_at": brain.today.isoformat()}}
+    errs = founder_put(brain, rec)
+    if errs:
+        return 400, {"error": "record not valid", "details": errs}
+    row = next((r for r in voice.snippets(brain)["snippets"] if r["key"] == key), None)
+    return 201, {"ok": True, "record": rec["id"], "status": row["status"] if row else None, "version": brain.version()}
+
+
 def contract_add(brain: Brain, body: dict):
     body = body or {}
     vendor = str(body.get("vendor") or "").strip()
@@ -932,6 +976,15 @@ def handle(req):
         ends = (brain.today - dt.timedelta(days=1)).isoformat()
         findings = audit.run(brain.brand, {"ends_on": ends, "days": 1, "trailing": 0}, BRAIN_ROOT)
         return {"findings": findings, "rules": audit.RULES, "brain_version": brain.version()}
+    if req.method == "GET" and parts == ["voice"]:
+        vs = voice.sheet(brain)
+        vs["snippets"] = voice.snippets(brain)
+        vs.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())
+        return vs
+    if req.method == "POST" and parts == ["voice", "example"]:
+        return voice_example(brain, req.body)
+    if req.method == "POST" and len(parts) == 3 and parts[:2] == ["voice", "snippet"]:
+        return snippet_lock(brain, parts[2], req.body)
     if req.method == "GET" and parts == ["contracts"]:
         cr = contracts.register(brain)
         cr.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())

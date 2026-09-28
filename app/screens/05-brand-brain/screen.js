@@ -852,6 +852,57 @@
     mount('#site', ...items);
   }
 
+  // ---------- 5c3. how we write: voice sheet and snippets ----------
+  function voiceFields(vs, reload) {
+    const wrap = el('div', { class: 'profile-sec' });
+    for (const f of vs.fields) {
+      wrap.append(UI.field({ key: f.key, name: f.label, sub: f.text ? null : 'for example: ' + f.example, text: f.text, tier: f.tier, source: f.record ? f.record : null, date: f.date, multiline: f.key.endsWith('_list') || f.key === 'tone_by_context',
+        placeholder: 'unavailable. Add it and every writing agent reads it.',
+        onSave: async (text) => api(BASE + 'profile/voice/' + encodeURIComponent(f.key), { method: 'POST', body: { text } }), onSaved: reload }));
+    }
+    return wrap;
+  }
+  function exampleBox(kind, vs, reload) {
+    const list = el('div', { class: 'grid' }, ...vs.examples[kind].map((e) => el('div', { class: 'card flat rec' }, el('div', { text: e.text }), el('div', { class: 'meta' }, e.why ? el('span', { text: 'why: ' + e.why }) : null, el('span', { class: 'chip mono', text: e.id }), e.date ? el('span', { text: fmt.date(e.date) }) : null))));
+    const ta = el('textarea', { class: 'text', rows: 2, placeholder: kind === 'liked' ? 'Paste copy you love' : 'Paste copy you would never run' });
+    const why = el('input', { class: 'text sm', placeholder: 'Why, in a few words', style: { flex: '1 1 200px' } });
+    const btn = el('button', { class: 'btn sm ' + (kind === 'liked' ? 'primary' : 'danger'), type: 'button', text: kind === 'liked' ? 'Add as liked' : 'Add as disliked' });
+    const status = el('span', { class: 'micro muted' });
+    btn.addEventListener('click', async () => { if (!ta.value.trim()) { status.textContent = 'Paste it first.'; return; } btn.disabled = true; try { const r = await api(BASE + 'voice/example', { method: 'POST', body: { kind, text: ta.value.trim(), why: why.value.trim() } }); status.textContent = 'Saved ' + r.record + '.'; reload(); } catch (e) { btn.disabled = false; status.textContent = 'Could not save: ' + e.message; } });
+    return el('div', { class: 'stack' }, el('h4', { text: (kind === 'liked' ? 'Copy we like' : 'Copy we do not like') + ' (' + vs.examples[kind].length + (kind === 'liked' ? ' of ' + vs.examples_needed + ' needed' : '') + ')' }), list, ta, el('div', { class: 'row' }, why, btn, status));
+  }
+  function snippetsTable(sn, reload) {
+    const S = { locked: 'keep', proposed: 'watch', stale: 'stop', unavailable: 'na' };
+    const T = { locked: 'Locked', proposed: 'Proposed', stale: 'Stale', unavailable: 'Unavailable' };
+    return UI.verdictTable({
+      columns: [{ key: 'label', label: 'Snippet' }, { key: 'use', label: 'Paste this, word for word', format: (v) => v || NA }, { key: 'generated', label: 'Built from the records', format: (v) => v || '' }, { key: 'records', label: 'Depends on', format: (v) => (v || []).join(', ') }],
+      verdict: { at: 1, kind: (r) => S[r.status], text: (r) => T[r.status], reason: (r) => r.reason },
+      rows: sn.snippets.map((r) => Object.assign({}, r, { actions: r.status === 'unavailable' ? [] : [{ label: r.status === 'locked' ? 'Edit' : 'Lock wording', cls: r.status === 'stale' ? 'primary' : 'soft', onClick: () => {
+        const ta = el('textarea', { class: 'text', rows: 3 }); ta.value = r.locked || r.generated || '';
+        const status = el('span', { class: 'micro muted' });
+        const go = el('button', { class: 'btn primary sm', type: 'button', text: 'Lock this wording' });
+        const body = el('div', { class: 'stack' }, r.status === 'stale' ? el('div', { class: 'card sunken small' }, el('b', { text: 'Stale: ' }), r.reason + '. Built from the records now: ' + r.generated) : null, ta, el('div', { class: 'row' }, go, UI.copyButton({ label: 'Copy', text: () => ta.value }), status),
+          r.action ? el('div', { class: 'small' }, el('b', { text: r.action.title + '. ' }), r.action.steps.map((st) => st.n + '. ' + st.text).join(' ')) : null);
+        const panel = UI.panel({ title: r.label, body });
+        go.addEventListener('click', async () => { go.disabled = true; try { await api(BASE + 'voice/snippet/' + r.key, { method: 'POST', body: { text: ta.value.trim() } }); panel.close(); reload(); } catch (e) { go.disabled = false; status.textContent = 'Could not save: ' + e.message; } });
+      } }] })),
+      actions: { label: 'Do' }, sort: false, maxRows: 10,
+    });
+  }
+  async function loadVoice() {
+    let vs;
+    try { vs = await api(BASE + 'voice'); } catch (e) { mount('#voice', el('p', { class: 'muted', text: 'Voice unavailable: ' + e.message })); return; }
+    const sn = vs.snippets;
+    mount('#voice-tools', UI.orientation([{ label: 'fields filled', value: vs.filled, unit: 'n', title: 'of ' + vs.of }, { label: 'liked examples', value: vs.examples.liked.length, unit: 'n', tone: vs.examples.liked.length >= vs.examples_needed ? 'good' : 'bad' }, { label: 'disliked', value: vs.examples.disliked.length, unit: 'n' },
+      { label: 'sheet ready', value: null, unit: 'n', unavailable_label: vs.ready ? 'yes' : 'not yet' }, { label: 'snippets locked', value: sn.counts.locked, unit: 'n', title: 'of ' + sn.snippets.length }, { label: 'stale', value: sn.counts.stale, unit: 'n', tone: sn.counts.stale ? 'bad' : null }]));
+    mount('#voice', UI.tabs({ items: [
+      { key: 'sheet', label: 'Voice sheet', n: vs.filled, panel: () => el('div', { class: 'stack' }, voiceFields(vs, loadVoice), vs.site_lines.length ? el('div', { class: 'small' }, el('b', { text: 'Lines from our own pages: ' }), vs.site_lines.map((l) => '"' + l.quote + '"').join(' ')) : null,
+        el('div', { class: 'row' }, UI.copyButton({ label: 'Copy the sheet for an agent', text: () => vs.sheet_text }), el('span', { class: 'micro faint', text: 'Read by ' + vs.readers.join(', ') + '. ' + vs.note })), el('pre', { class: 'card sunken brief', text: vs.sheet_text })) },
+      { key: 'examples', label: 'Examples', n: vs.examples.liked.length + vs.examples.disliked.length, panel: () => el('div', { class: 'grid two' }, exampleBox('liked', vs, loadVoice), exampleBox('disliked', vs, loadVoice)) },
+      { key: 'snippets', label: 'Snippets', n: sn.snippets.length, panel: () => el('div', { class: 'stack' }, snippetsTable(sn, loadVoice), el('div', { class: 'row' }, UI.copyButton({ label: 'Copy all snippets', text: () => sn.all_text }), el('span', { class: 'micro faint', text: sn.note }))) },
+    ] }));
+  }
+
   // ---------- 5c2. claims desk and the draft scanner ----------
   function claimsTable(cd, reload) {
     const rows = cd.claims.map((c) => Object.assign({}, c, { src: c.source.ref ? c.source.ref.replace(/^https?:\/\//, '').slice(0, 40) : (c.source.type || 'none'), used: c.used_by.length ? c.used_by.map((u) => pretty(u.theme) + ' ' + u.level).join(', ') : 'nothing yet', surf: c.surfaces.map(pretty).join(', ') || '' }));
@@ -1018,6 +1069,7 @@
     loadParity();
     loadContracts();
     loadLegal();
+    loadVoice();
     const [prof] = await Promise.all([loadProfile(), loadDesk()]);
     await loadPlan(prof);
   }
