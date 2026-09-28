@@ -1075,6 +1075,40 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
         finally:
             p.unlink(missing_ok=True)
 
+    def test_brain_launches_join_the_cadence(self):
+        D = date(2026, 9, 27)
+
+        class FakeBrain:
+            brand = 'fake'
+
+            def records(self, sec):
+                if sec == 'calendar':
+                    return [{'id': 'fake.calendar.launch_merino_2025', 'field': 'launch_merino_2025', 'value': {'year': 2025, 'category': 'merino socks'}, 'text': 'Fake launched merino socks in 2025.', 'source': {'type': 'press', 'ref': 'https://p', 'captured_at': '2026-09-28'}},
+                            {'id': 'fake.calendar.launch_slippers_2026', 'field': 'launch_slippers_2026', 'value': {'date': '2026-08-01', 'categories': ['slippers']}, 'text': 'Fake launched slippers.', 'source': {}},
+                            {'id': 'fake.calendar.store_2025', 'field': 'store_2025', 'value': {'month': '2025-10'}, 'text': 'A store opened.', 'source': {}}]
+                if sec == 'products':
+                    return [{'text': 'We sell merino socks and slippers.', 'value': {}}]
+                return []
+
+        lanes = [('merino', 'Merino', ['merino', 'wool']), ('footwear', 'Slippers', ['slipper'])]
+        bl = audit.brain_launches(FakeBrain(), lanes)
+        self.assertEqual([(l['date'], l['lanes']) for l in bl], [('2025', ['merino']), ('2026-08-01', ['footwear'])])   # stores are not launches
+        fx = {'captured_at': '2026-09-28', 'markets': [], 'preferences': [], 'lanes': [{'key': k, 'label': l, 'terms': t, 'kind': 'product'} for k, l, t in lanes], 'launches': [
+            {'brand': 'Rival', 'what': 'merino crew', 'sub_category': 'merino', 'date': '2026-08', 'price_usd': 25, 'channel': 'dtc', 'sources': []},
+            {'brand': 'Rival B', 'what': 'merino hiker', 'sub_category': 'merino', 'date': '2026-02', 'price_usd': 30, 'channel': 'dtc', 'sources': []},
+            {'brand': 'fake', 'what': 'our slipper (press)', 'sub_category': 'footwear', 'date': '2026-07-20', 'price_usd': 40, 'channel': 'dtc', 'sources': []}]}
+        saved = audit.market_trends
+        audit.market_trends = lambda: fx
+        try:
+            c = audit.launch_cadence(FakeBrain(), D)
+            me = next(b for b in c['brands'] if b['self'])
+            self.assertEqual((me['n_24m'], me['from_brain']), (2, 1))              # the press slipper and the brain slipper 12 days apart count once; merino 2025 joins from the brain
+            lanes_v = {r['key']: r for r in c['lanes']}
+            self.assertEqual(lanes_v['merino']['verdict'], 'matched')            # our 2025 merino launch is inside 24 months
+            self.assertEqual(lanes_v['merino']['our_last']['date'], '2025')
+        finally:
+            audit.market_trends = saved
+
     def test_demand_pattern_tags(self):
         even = {'rows': [{'category': 'socks', 'series': [100] * 12}], 'months': [f'2026-{m:02d}' for m in range(1, 13)], 'last': '2026-12'}
         peaked = {'rows': [{'category': 'socks', 'series': [50] * 10 + [300, 400]}], 'months': even['months'], 'last': '2026-12'}

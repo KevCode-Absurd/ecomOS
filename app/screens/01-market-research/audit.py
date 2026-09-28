@@ -3099,6 +3099,31 @@ def months_between(a, b):
     return (b.year - a.year) * 12 + (b.month - a.month) + (b.day - a.day) / 30.0
 
 
+def brain_launches(br, lane_defs=None):
+    """Our own launches from the brain calendar (records whose field starts with launch_): what launched, when, and the lanes
+    its category words name, in the web pass launch shape, so the cadence read sees more than what the press covered."""
+    out = []
+    if br is None:
+        return out
+    lane_defs = lane_defs if lane_defs is not None else lanes_for(br)
+    for rec in br.records('calendar'):
+        if not str(rec.get('field') or '').startswith('launch_'):
+            continue
+        v = rec.get('value') or {}
+        when = v.get('date') or v.get('month') or (str(v.get('year')) if v.get('year') else None)
+        cats = [c for c in ([v.get('category')] if v.get('category') else []) + list(v.get('categories') or [])]
+        cat_text = ' ' + ' '.join(cats).lower().replace('-', ' ').replace('_', ' ') + ' '
+        lanes = [k for k, _, terms in lane_defs if any(t.replace('-', ' ') in cat_text for t in terms)]
+        if not lanes:   # no category words: fall back to the record's sentence
+            text = str(rec.get('text') or '').lower().replace('-', ' ')
+            lanes = [k for k, _, terms in lane_defs if any(t.replace('-', ' ') in text for t in terms)]
+        out.append({'brand': br.brand, 'self': True, 'what': str(rec.get('text') or '')[:160], 'sub_category': lanes[0] if lanes else (cats[0] if cats else 'other'),
+                    'lanes': lanes or [cats[0] if cats else 'other'], 'date': when, 'price_usd': v.get('price_usd'), 'channel': 'dtc',
+                    'sources': [{'url': (rec.get('source') or {}).get('ref'), 'publisher': (rec.get('source') or {}).get('type'), 'date': str((rec.get('source') or {}).get('captured_at') or '')}],
+                    'from': 'brain.calendar', 'record': rec.get('id')})
+    return out
+
+
 def launch_cadence(br, ends_on):
     """Who launches, how often, and in which lanes, from the web pass launches (a url and a date on each). Per brand: launches
     in the last 12 and 24 months, months since the last, the lanes and channels, median price. Per lane: competitor launches
@@ -3117,7 +3142,16 @@ def launch_cadence(br, ends_on):
         lanes = [k for k, _, terms in lane_defs if l.get('sub_category') == k or any(t in (l.get('what') or '').lower() for t in terms)]
         rows.append({'brand': l.get('brand'), 'self': (l.get('brand') or '').lower() == brand_name, 'what': l.get('what'), 'date': d, 'date_text': l.get('date'),
                      'months_ago': months_between(d, ends_on), 'lanes': lanes or [l.get('sub_category') or 'other'], 'price_usd': l.get('price_usd'),
-                     'channel': l.get('channel'), 'url': (l.get('sources') or [{}])[0].get('url')})
+                     'channel': l.get('channel'), 'url': (l.get('sources') or [{}])[0].get('url'), 'from': 'web_pass'})
+    ours_seen = [(r['date'], set(r['lanes'])) for r in rows if r['self']]
+    for l in brain_launches(br, lane_defs):   # the brand's own launch history from the brain calendar, unless the web pass already has it
+        d = launch_date(l.get('date'))
+        if d is None or d > ends_on:
+            continue
+        if any(abs((d - od).days) <= 60 and (set(l['lanes']) & olanes) for od, olanes in ours_seen):
+            continue
+        rows.append({'brand': l['brand'], 'self': True, 'what': l['what'], 'date': d, 'date_text': l['date'], 'months_ago': months_between(d, ends_on), 'lanes': l['lanes'],
+                     'price_usd': l.get('price_usd'), 'channel': l['channel'], 'url': (l.get('sources') or [{}])[0].get('url'), 'from': 'brain.calendar'})
     brands = {}
     for r in rows:
         b = brands.setdefault(r['brand'], {'brand': r['brand'], 'self': r['self'], 'n_12m': 0, 'n_24m': 0, 'last': None, 'lanes': set(), 'channels': set(), 'prices': [], 'launches': []})
@@ -3132,12 +3166,14 @@ def launch_cadence(br, ends_on):
             b['channels'].add(r['channel'])
         if r['price_usd']:
             b['prices'].append(float(r['price_usd']))
-        b['launches'].append({'what': r['what'], 'date': r['date_text'], 'lanes': r['lanes'], 'price_usd': r['price_usd'], 'url': r['url']})
+        b['launches'].append({'what': r['what'], 'date': r['date_text'], 'lanes': r['lanes'], 'price_usd': r['price_usd'], 'url': r['url'], 'from': r.get('from')})
     brand_rows = []
     for b in brands.values():
         brand_rows.append({'brand': b['brand'], 'self': b['self'], 'n_12m': b['n_12m'], 'n_24m': b['n_24m'], 'last': b['last'].isoformat(),
                            'months_since_last': round(months_between(b['last'], ends_on), 1), 'lanes': sorted(b['lanes']), 'channels': sorted(b['channels']),
                            'median_price': round(statistics.median(b['prices']), 2) if b['prices'] else None, 'launches': sorted(b['launches'], key=lambda x: x['date'] or '', reverse=True)})
+    for b in brand_rows:
+        b['from_brain'] = sum(1 for r in rows if r['brand'] == b['brand'] and r.get('from') == 'brain.calendar')
     brand_rows.sort(key=lambda b: (-b['n_12m'], -b['n_24m'], b['months_since_last']))
     comp_n12 = [b['n_12m'] for b in brand_rows if not b['self']]
     ours = next((b for b in brand_rows if b['self']), None)
