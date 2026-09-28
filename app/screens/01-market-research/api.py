@@ -2287,6 +2287,41 @@ def decisions_on_desk(data, brand, limit=50):
     return {'rows': out, 'counts': counts, 'total_on_screen': len(rows), 'log': str(Path(path).name)}
 
 
+# ---------------------------------------------------------------- send to creative (round 7.5)
+
+HANDOFFS_DIR = HERE / 'fixtures' / 'handoffs'
+HANDOFFS_PATH = HERE / 'fixtures' / 'creative_handoffs.json'
+
+
+def send_handoff(brand, finding_id, body, today):
+    """Write the creative hand-off as a file and a row in the hand-off table (events contract shape: from this screen to
+    09-creative, the finding, the artefact path, who sent it, when). A second send on the same finding refreshes the row."""
+    h = creative_handoff(brand, finding_id)
+    who = str((body or {}).get('who') or 'person').strip()[:40] or 'person'
+    d = HANDOFFS_DIR / (brand or 'sample')
+    d.mkdir(parents=True, exist_ok=True)
+    safe = re.sub(r'[^A-Za-z0-9_.-]+', '_', finding_id)
+    p = d / f'{safe}.md'
+    p.write_text(h['text'] + '\n', encoding='utf-8')
+    doc = json.loads(HANDOFFS_PATH.read_text(encoding='utf-8')) if HANDOFFS_PATH.is_file() else {'table': 'creative_handoffs', 'rows': []}
+    rows = [r for r in doc.get('rows') or [] if not (r.get('brand') == (brand or 'sample') and r.get('finding_id') == finding_id)]
+    row = {'id': f'HO-{safe}', 'brand': brand or 'sample', 'from': SCREEN, 'to': '09-creative', 'finding_id': finding_id, 'rule_id': h.get('rule_id'), 'title': h.get('title'), 'theme': h.get('theme'),
+           'avatars': h.get('avatars'), 'quotes': h.get('quotes'), 'artefact': str(p.relative_to(HERE)) if str(p).startswith(str(HERE)) else str(Path('fixtures') / 'handoffs' / (brand or 'sample') / p.name),
+           'sent_on': today.isoformat(), 'by': who, 'status': 'sent', 'simulated': True}
+    rows.append(row)
+    doc['rows'] = rows
+    doc['note'] = 'Creative hand-offs from 01-market-research (events contract): the file is the brief, the row is the pointer. 09-creative reads these once a shared table exists.'
+    HANDOFFS_PATH.write_text(json.dumps(doc, indent=1), encoding='utf-8')
+    return 201, {'ok': True, 'handoff': row}
+
+
+def handoffs_sent(brand):
+    doc = json.loads(HANDOFFS_PATH.read_text(encoding='utf-8')) if HANDOFFS_PATH.is_file() else {'rows': []}
+    rows = [r for r in doc.get('rows') or [] if r.get('brand') == (brand or 'sample')]
+    rows.sort(key=lambda r: str(r.get('sent_on') or ''), reverse=True)
+    return {'rows': rows, 'file': str(HANDOFFS_PATH.relative_to(APP.parent)) if str(HANDOFFS_PATH).startswith(str(APP.parent)) else str(HANDOFFS_PATH)}
+
+
 def _brand(req):
     brand = req.arg('brand', DEFAULT_BRAND)
     if brand in ('', 'sample'):
@@ -2308,11 +2343,13 @@ def handle(req):
                 return 201, take_snapshot(data, brand, today)
             if req.path == ['answers']:
                 return answer_question(brand, req.body, today)
+            if len(req.path) == 3 and req.path[0] == 'handoff' and req.path[2] == 'send':
+                return send_handoff(brand, req.path[1], req.body, today)
             if req.path == ['candidates']:
                 return candidate_add(brand or 'sample', req.body, today)
             if len(req.path) == 2 and req.path[0] == 'candidates':
                 return candidate_update(brand or 'sample', req.path[1], req.body, today)
-            return 405, {'error': 'read only, except the candidate pipeline, the seen snapshot and a founder answer'}
+            return 405, {'error': 'read only, except the candidate pipeline, the seen snapshot, a founder answer and a hand-off send'}
         if req.path == ['overview']:
             return overview(data, brand)
         if req.path == ['findings']:
@@ -2329,6 +2366,8 @@ def handle(req):
             return changes_since(data, brand)
         if req.path == ['report']:
             return desk_report(data, brand)
+        if req.path == ['handoffs']:
+            return handoffs_sent(brand)
         if req.path == ['decisions']:
             return decisions_on_desk(data, brand)
         if req.path == ['reports']:
@@ -2349,4 +2388,4 @@ def handle(req):
             return {'parked': r['parked'], 'decided': r['decided'], 'snooze_days': rank_mod.SNOOZE_DAYS, 'window': r['window']}
     except ValueError as exc:
         return 400, {'error': str(exc)}
-    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank', 'parked', 'decisions', 'calendar', 'week', 'report', 'reports', 'changes', 'log', 'candidates/<id>/brief', 'handoff/<finding_id>', 'product_candidates', 'tests']}
+    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank', 'parked', 'decisions', 'calendar', 'week', 'report', 'reports', 'changes', 'log', 'candidates/<id>/brief', 'handoff/<finding_id>', 'handoffs', 'product_candidates', 'tests']}

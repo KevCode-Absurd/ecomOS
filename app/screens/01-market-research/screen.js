@@ -41,7 +41,8 @@
     const fid = (a.finding_ids || [])[0];
     let h;
     try { h = await api(BASE + 'handoff/' + encodeURIComponent(fid) + Q); } catch (e) { alert('Hand-off unavailable: ' + e.message); return; }
-    UI.panel({ title: 'Creative hand-off: ' + (h.title || a.title), tools: [UI.copyButton({ label: 'Copy hand-off', text: () => h.text })],
+    const send = el('button', { class: 'btn sm primary', type: 'button', text: 'Send to creative', onclick: async () => { try { const res = await api(BASE + 'handoff/' + encodeURIComponent(fid) + '/send' + Q, { method: 'POST', body: { who: 'person' } }); send.textContent = 'Sent ' + fmt.date(res.handoff.sent_on); send.disabled = true; } catch (e) { alert('Not sent: ' + e.message); } } });
+    UI.panel({ title: 'Creative hand-off: ' + (h.title || a.title), tools: [UI.copyButton({ label: 'Copy hand-off', text: () => h.text }), send],
       body: el('div', { class: 'stack' }, el('p', { class: 'micro muted', text: 'The angle, the buyer, the doubt, the proof on file, what buyers say (reviews only, never Reddit), the words to use and the do-not list. Every line comes from the brain and this desk.' }),
         el('pre', { class: 'small', style: { whiteSpace: 'pre-wrap', margin: 0 }, text: h.text })) });
   }
@@ -1216,6 +1217,9 @@
     mount('#exports',
       el('button', { class: 'btn sm', type: 'button', text: 'Findings CSV', onclick: () => UI.csv(a.findings.map((f) => ({ id: f.id, severity: f.severity, status: f.status, sentence: f.sentence, stake_usd: f.money_at_stake ? f.money_at_stake.usd : null, confidence: f.confidence })), null, 'research-findings.csv') }),
       el('button', { class: 'btn sm', type: 'button', text: 'Print', onclick: () => window.print() }),
+      el('button', { class: 'btn sm', type: 'button', text: 'Hand-offs sent', onclick: async () => { let hs; try { hs = await api(BASE + 'handoffs' + Q); } catch (e) { alert('Unavailable: ' + e.message); return; }
+        UI.panel({ title: 'Creative hand-offs sent: ' + hs.rows.length, body: el('div', { class: 'stack' }, el('p', { class: 'micro muted', text: 'Each row points at a brief file; 09-creative reads them once the shared table exists (a contract ask). ' + hs.file }),
+          hs.rows.length ? UI.table({ columns: [{ key: 'sent_on', label: 'Sent' }, { key: 'title', label: 'Brief' }, { key: 'by', label: 'By' }, { key: 'link', label: 'File' }], rows: hs.rows.map((r) => ({ sent_on: r.sent_on, title: r.title, by: r.by, link: '/screens/' + SLUG + '/' + r.artefact })) }) : el('p', { class: 'muted small', text: 'Nothing sent yet. Open a buyer or theme card, then Creative hand-off, then Send to creative.' })) }); } }),
       el('button', { class: 'btn sm', type: 'button', text: 'Past weekly notes', onclick: async () => { let rp; try { rp = await api(BASE + 'reports' + Q); } catch (e) { alert('Unavailable: ' + e.message); return; }
         UI.panel({ title: 'Weekly notes on file: ' + rp.reports.length, body: el('div', { class: 'stack' }, el('p', { class: 'micro muted', text: rp.note + ' Command: ' + rp.command }),
           rp.reports.length ? UI.table({ columns: [{ key: 'date', label: 'Date' }, { key: 'link', label: 'Note' }, { key: 'bytes', label: 'Bytes', unit: 'n' }], rows: rp.reports.map((r) => ({ date: r.date, link: '/screens/' + SLUG + '/' + r.path, bytes: r.bytes })) }) : el('p', { class: 'muted small', text: 'No note yet. Run the command; the note lands here.' }),

@@ -1412,8 +1412,8 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
 
 
 class Req:
-    def __init__(self, path, brand='bombas', method='GET'):
-        self.method, self.path, self.query, self.data = method, path, {'brand': [brand]}, None
+    def __init__(self, path, brand='bombas', method='GET', body=None):
+        self.method, self.path, self.query, self.data, self.body = method, path, {'brand': [brand]}, None, body or {}
 
     def arg(self, name, default=None):
         v = self.query.get(name)
@@ -1691,6 +1691,25 @@ class HandoffCreativeTest(unittest.TestCase):
             self.assertNotIn('reddit', q)
             self.assertFalse(any(rp and rp in q for rp in reddit), q)
         self.assertNotIn('—', t)
+
+    def test_send_to_creative(self):
+        import tempfile
+        saved = (api.HANDOFFS_DIR, api.HANDOFFS_PATH)
+        tmp = Path(tempfile.mkdtemp())
+        api.HANDOFFS_DIR, api.HANDOFFS_PATH = tmp / 'handoffs', tmp / 'creative_handoffs.json'
+        try:
+            fid = f'{audit.SCREEN}.PROD-R07.durability'
+            code, out = api.handle(Req(['handoff', fid, 'send'], method='POST'))
+            self.assertEqual(code, 201)
+            row = out['handoff']
+            self.assertEqual((row['from'], row['to'], row['finding_id'], row['status']), ('01-market-research', '09-creative', fid, 'sent'))
+            self.assertTrue((api.HANDOFFS_DIR / 'bombas' / (row['id'][3:] + '.md')).is_file())
+            api.handle(Req(['handoff', fid, 'send'], method='POST'))
+            self.assertEqual(len(api.handoffs_sent('bombas')['rows']), 1)      # a second send refreshes, never duplicates
+            self.assertEqual(api.handoffs_sent('other')['rows'], [])
+            self.assertEqual(api.handle(Req(['handoff', 'nope', 'send'], method='POST'))[0], 400)
+        finally:
+            api.HANDOFFS_DIR, api.HANDOFFS_PATH = saved
 
     def test_avatar_handoff_names_the_buyer(self):
         fid = next(f['id'] for f in audit.run('bombas', {'ends_on': '2026-09-27'}) if f['rule_id'] == 'PROD-R11')
