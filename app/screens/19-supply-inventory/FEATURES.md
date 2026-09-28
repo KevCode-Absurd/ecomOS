@@ -6,9 +6,37 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | # | Feature | Status |
 |---|---|---|
-| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | todo |
-| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | todo |
-| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | todo |
+| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | done |
+| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | done |
+| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | done (Bombas, simulated) |
+| 0.4 | `audit.py`: 14 rules in the contract shape, one per room job | done |
+
+## Jobs to be done (room "Supply and inventory", agent PROD)
+
+| # | Job | Question | Capability | Audit rule | Round 0 |
+|---|---|---|---|---|---|
+| 1 | see stock cover across DTC and marketplace stock per SKU | which SKUs run out first | PROD-C22 | SUPPLY-R01 | fires (DTC stock; marketplace stock not in the data) |
+| 2 | see the reorder point and recommended PO quantity per SKU | what do I order, and how much, right now | PROD-C22 | SUPPLY-R02 | fires; reorder table on screen |
+| 3 | see landed cost per SKU refreshed for the latest FX, duty and freight | what does this SKU actually cost me to land today | PROD-C23 | SUPPLY-R03 | fires (finance_inputs cogs_landed; no FX or freight feed) |
+| 4 | see supplier and country concentration risk | how exposed am I to one supplier or one country failing | PROD-C23 | SUPPLY-R04 | unavailable: supplier_master |
+| 5 | see a running scorecard on every active supplier | which suppliers are slipping on time, defects or price | PROD-C69 | SUPPLY-R05 | unavailable: supplier_scorecard |
+| 6 | see fulfilment SLA performance from the 3PL | is my warehouse hitting the pick-pack-dispatch times it promised | PROD-C53, PROD-C52 | SUPPLY-R06 | unavailable: fulfilment_sla |
+| 7 | see a courier scorecard by zone | which courier should carry which zone right now | PROD-C59 | SUPPLY-R07 | unavailable: courier_scorecard |
+| 8 | work today's carrier-exception queue before the attempt window closes | which failed-delivery orders need action today | PROD-C56 | SUPPLY-R08 | unavailable: carrier_exception_queue |
+| 9 | see carrier billing reconciled against orders (COD remittance where it applies, IN only) | did the carrier pay or bill me correctly | MONEY-C52 | SUPPLY-R09 | unavailable: carrier_billing; COD null for US |
+| 10 | see slow-moving and dead stock with a clearance plan | what stock is turning into dead weight | PROD-C27 | SUPPLY-R10 | runs; nothing aged past 180 days on Bombas |
+| 11 | track supplier contract price locks and renewal dates | which supplier deals need renegotiating soon | LOOP-C28 | SUPPLY-R11 | unavailable: supplier_contracts |
+| 12 | see three-way PO-invoice-goods receipt match exceptions | did I get billed for what I actually received | MONEY-C53 | SUPPLY-R12 | unavailable: three_way_match |
+| 13 | track commodity input cost trend behind key SKUs | is a cost-down still worth asking for | PROD-C18 | SUPPLY-R13 | unavailable: commodity_index |
+| 14 | see peak-season readiness across stock, staffing and systems | am I ready for the Q4/BFCM spike | PROD-C72 | SUPPLY-R14 | unavailable: peak_season_plan; stock part is insight 2 |
+
+Chargeback, dispute and return to sender rules from the room's insight list are owned by 06-store-health (STORE-R01) and are not repeated here.
+
+## Contract proposals (for an app-level session)
+
+- Lift `stock_cover_days`, `reorder_point_units`, `safety_stock_units` and `landed_cost_per_unit` into `app/metrics.py` with `by=sku`. Round 0 computes them in `audit.supply()` with GROUP BY on data.sqlite because the contract has no SKU stock metric yet.
+- `inbound_pos` has no received date, supplier or unit cost. Lead time uses eta as the receipt date. A `received_on`, `supplier_id` and `unit_cost` column would open rules R04, R05 and a real landed cost per PO.
+- `inventory` has no lot or receipt date per unit, so dead stock ages units first in, first out against PO receipts.
 
 ## Candidates from the room spec (pick 10 per round)
 
@@ -114,3 +142,13 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
+| 0 | shell, api, 3 tiles, 2 insights, 1 chart, audit (14 rules) | 2026-09-28 | Bombas simulated, scale 0.1 sample scaled to order totals |
+
+## Round 0 status
+
+1. Built: index.html, screen.js, api.py (overview, findings), audit.py with 14 rules, one per room job; round0.png at 1280 wide.
+2. Tiles: stock cover all SKUs (40 days vs a 112-day target), SKUs that sell out before stock lands (12 of 25), stock at landed cost.
+3. Insights as rules: which SKU runs out first (PROD-C22) and stock plus open POs against last Nov and Dec (PROD-C72). Chart: days of stock vs days until stock lands, 12 SKUs.
+4. Firing on Bombas: R01 stock-out before the next PO (2 critical hero SKUs), R02 under reorder point with no PO (moccasin slipper), R03 landed cost up 8 percent on 23 SKUs with no margin check.
+5. Unavailable, never 0: R04 to R09 and R11 to R14 name the table and connector each needs. R10 dead stock runs and finds nothing.
+6. Next: lift SKU stock metrics into the metric contract, add received date and supplier to inbound_pos, then courier and 3PL feeds.
