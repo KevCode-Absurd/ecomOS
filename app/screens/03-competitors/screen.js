@@ -388,7 +388,18 @@
       UI.decisionRow({ capability: 'BRN-C11', owner: 'person', screen: SCREEN, compact: true, finding_id: SCREEN + '.repull' }));
     const btn = el('button', { class: 'btn primary sm', type: 'button', text: 'Re-pull: show the estimate first' });
     btn.addEventListener('click', () => { planBox.hidden = !planBox.hidden; btn.textContent = planBox.hidden ? 'Re-pull: show the estimate first' : 'Hide the plan'; });
-    mount('#fresh', el('div', { class: 'row' }, btn, el('span', { class: 'small muted', text: fr.snapshot ? 'Latest ad-level snapshot: ' + fmt.date(fr.snapshot.captured_at) + '.' : 'No ad-level snapshot yet. The screen reads the brain\'s page summaries.' })),
+    const cp = fr.captures || { n: 0 };
+    const capStatus = el('span', { class: 'micro muted' });
+    const capBtn = el('button', { class: 'btn sm', type: 'button', text: 'Capture today from the brain (free)' });
+    capBtn.addEventListener('click', async () => {
+      capBtn.disabled = true;
+      try { const r = await api(BASE + 'capture', { method: 'POST', body: {} });
+        capStatus.textContent = r.already ? 'Already captured today.' : 'Captured ' + r.pages + ' pages; ' + (r.since ? r.changes + ' changes since ' + fmt.date(r.since) + '.' : 'the first capture, diffs start with the next.') + ' Reloading.';
+        if (!r.already) setTimeout(() => location.reload(), 600); }
+      catch (e) { capStatus.textContent = 'Not captured: ' + e.message; capBtn.disabled = false; }
+    });
+    const capRow = el('div', { class: 'row wrap' }, capBtn, el('span', { class: 'small muted', text: cp.n + ' dated captures, last ' + (cp.last ? fmt.date(cp.last) : NA) + '. The agent runs it weekly after each brain refresh; it reads only the brain and spends nothing.' }), capStatus);
+    mount('#fresh', capRow, el('div', { class: 'row' }, btn, el('span', { class: 'small muted', text: fr.snapshot ? 'Latest ad-level snapshot: ' + fmt.date(fr.snapshot.captured_at) + '.' : 'No ad-level snapshot yet. The screen reads the brain\'s page summaries.' })),
       planBox, table, el('p', { class: 'micro faint', text: fr.rule }));
   }
 

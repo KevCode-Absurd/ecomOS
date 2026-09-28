@@ -46,8 +46,8 @@ def snapshot_rows(m: dict, parse_band) -> list[dict]:
     return rows
 
 
-def write_snapshot(m: dict, parse_band, folder: Path = OUT) -> Path:
-    path = folder / f"competitor_snapshot_{m['brand']}.json"
+def write_snapshot(m: dict, parse_band, folder: Path | None = None) -> Path:
+    path = (folder or OUT) / f"competitor_snapshot_{m['brand']}.json"
     path.write_text(json.dumps({"table": "competitor_snapshot", "brand": m["brand"], "fields": FIELDS,
                                 "note": "Public signals only. Never ad text. Read-only hand-off; see app/contracts/events.md.",
                                 "rows": snapshot_rows(m, parse_band)}, indent=1, sort_keys=True), encoding="utf-8")

@@ -1598,5 +1598,43 @@ class TestThresholdTuning(TempInputs):
         self.assertEqual((v['value'], v['source']), (10, 'screen'))
 
 
+class TestRunCapture(TempInputs):
+    """6.7: the weekly capture runs from the page, from the brain only, once a day; history and diffs follow."""
+    def setUp(self):
+        super().setUp()
+        self._cap, self._out = api.audit.capmod.FOLDER, api.audit.handmod.OUT
+        api.audit.capmod.FOLDER = self.tmp / 'captures'
+        api.audit.handmod.OUT = self.tmp
+        shutil.copytree(SCREEN / 'fixtures' / 'captures' / 'bombas', self.tmp / 'captures' / 'bombas')
+
+    def tearDown(self):
+        api.audit.capmod.FOLDER, api.audit.handmod.OUT = self._cap, self._out
+        super().tearDown()
+
+    def capture(self, day):
+        r = Req(['capture'], method='POST', query={'today': [day]})
+        r.body = {}
+        return api.handle(r)
+
+    def test_capture_once_a_day(self):
+        real = sorted((SCREEN / 'fixtures' / 'captures' / 'bombas').glob('*.json'))
+        code, out = self.capture('2026-10-05')
+        self.assertEqual(code, 201)
+        self.assertEqual((out['captures'], out['since']), (2, '2026-09-28'))
+        self.assertIsInstance(out['changes'], int)
+        self.assertTrue((self.tmp / 'captures' / 'bombas' / '2026-10-05.json').exists())
+        self.assertTrue((self.tmp / 'competitor_snapshot_bombas.json').exists())
+        self.assertEqual(sorted((SCREEN / 'fixtures' / 'captures' / 'bombas').glob('*.json')), real)
+        code, out = self.capture('2026-10-05')
+        self.assertEqual((code, out['already']), (200, True))
+        d = api.handle(Req(['overview'], query={'today': ['2026-10-05']}))
+        self.assertEqual(d['history']['dates'], ['2026-09-28', '2026-10-05'])
+        self.assertEqual(d['freshness']['captures'], {'n': 2, 'last': '2026-10-05'})
+
+    def test_button_on_page(self):
+        js = (SCREEN / 'screen.js').read_text(encoding='utf-8')
+        self.assertIn("api(BASE + 'capture', { method: 'POST'", js)
+
+
 if __name__ == '__main__':
     unittest.main()

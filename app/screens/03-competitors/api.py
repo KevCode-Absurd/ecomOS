@@ -238,7 +238,9 @@ def freshness(m: dict, brand: str) -> dict:
         plan_ = audit.snap.plan(brand, BRAIN_ROOT or audit.snap.BRAIN)
     except (OSError, ValueError, KeyError) as exc:
         plan_ = {"error": f"no pull config: {exc}"}
+    caps = audit.capmod.captures(brand)
     return {"rows": rows, "plan": plan_, "snapshot": m["snapshot"], "fresh_days": FRESH_DAYS, "ageing_days": AGEING_DAYS,
+            "captures": {"n": len(caps), "last": caps[-1].stem if caps else None},
             "command": f"python3 app/screens/03-competitors/snapshot.py --brand {brand} --live",
             "rule": f"Fresh up to {FRESH_DAYS} days, ageing to {AGEING_DAYS}, stale after. A page with no capture reads no capture, never 0."}
 
@@ -474,6 +476,21 @@ def add_note(brand: str, body) -> tuple[int, dict]:
     return 201, {"ok": True, "note": row}
 
 
+def run_capture(brand: str, today: dt.date) -> tuple[int, dict]:
+    """The weekly watch, run by the agent from the page: today's page-summary capture from the brain and the
+    competitor_snapshot hand-off. Reads only the brain; nothing external, nothing paid. Once a day."""
+    cap = audit.capmod
+    if (cap.FOLDER / brand / f"{today.isoformat()}.json").exists():
+        return 200, {"ok": True, "already": True, "captured_at": today.isoformat(), "captures": len(cap.captures(brand))}
+    m = audit.market_full(brand, today, BRAIN_ROOT)
+    cap.write(brand, m["pages"], today)
+    audit.handmod.write_snapshot(m, audit.parse_band)
+    prev, cur = cap.latest_two(brand)
+    return 201, {"ok": True, "already": False, "captured_at": today.isoformat(), "captures": len(cap.captures(brand)),
+                 "pages": len(cur["pages"]) if cur else 0, "changes": len(cap.diff(prev, cur)),
+                 "since": prev["captured_at"] if prev else None}
+
+
 KIND_TEAM = {"ad_brief": "creative", "copy": "copy", "test_brief": "growth", "offer": "offers", "page_section": "site",
              "listing_fix": "marketplaces", "ticket": "support", "research_note": "research", "brain_record": "brand brain",
              "connector_setup": "setup", "report": "founder"}
@@ -525,6 +542,8 @@ def handle(req):
                                         "direct": [p["name"] for p in m["pages"] if p["role"] != "self" and p["frame"] == "direct" and p["source"] != "none"]}, today)
             return {"records": audit.inpmod.read(brand, req.arg("kind")), "reason_codes": audit.inpmod.REASON_CODES,
                     "note": "Logged by the team on this screen. Local file, never sent anywhere. No names or quotes kept."}
+        if req.method == "POST" and req.path == ["capture"]:
+            return run_capture(brand, today)
         if req.method == "GET" and req.path == ["briefs"]:
             return brief_pack(brand, today)
         if req.method == "GET" and req.path == ["competitor_snapshot"]:

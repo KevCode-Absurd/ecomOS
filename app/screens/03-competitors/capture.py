@@ -45,20 +45,20 @@ def summary(pages: list[dict]) -> dict:
     return out
 
 
-def write(brand: str, pages: list[dict], day: dt.date, folder: Path = FOLDER) -> Path:
-    path = folder / brand / f"{day.isoformat()}.json"
+def write(brand: str, pages: list[dict], day: dt.date, folder: Path | None = None) -> Path:
+    path = (folder or FOLDER) / brand / f"{day.isoformat()}.json"
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps({"brand": brand, "captured_at": day.isoformat(), "source": "brain page summaries",
                                 "pages": summary(pages)}, indent=1, sort_keys=True), encoding="utf-8")
     return path
 
 
-def captures(brand: str, folder: Path = FOLDER) -> list[Path]:
-    d = folder / brand
+def captures(brand: str, folder: Path | None = None) -> list[Path]:
+    d = (folder or FOLDER) / brand
     return sorted(d.glob("????-??-??.json")) if d.is_dir() else []
 
 
-def latest_two(brand: str, folder: Path = FOLDER) -> tuple[dict | None, dict | None]:
+def latest_two(brand: str, folder: Path | None = None) -> tuple[dict | None, dict | None]:
     ps = captures(brand, folder)
     load = lambda p: json.loads(p.read_text(encoding="utf-8"))  # noqa: E731
     return (load(ps[-2]) if len(ps) >= 2 else None), (load(ps[-1]) if ps else None)
@@ -101,7 +101,7 @@ def diff(prev: dict | None, cur: dict | None) -> list[dict]:
     return out
 
 
-def history(brand: str, folder: Path = FOLDER, last: int = 12) -> dict:
+def history(brand: str, folder: Path | None = None, last: int = 12) -> dict:
     """Threat points and active ads per page across the dated captures, oldest first. A page missing from a capture reads None."""
     caps = [json.loads(p.read_text(encoding="utf-8")) for p in captures(brand, folder)[-last:]]
     dates = [c["captured_at"] for c in caps]
