@@ -63,7 +63,9 @@
       foot: el('div', { class: 'row' }, UI.rubricLegend(), el('span', { class: 'micro faint', text: 'Ranking: critical first by stake, then rubric total, severity, stake. "Not now" snoozes 14 days.' })),
       empty: 'No open offer or price move for this window.',
     }));
-    if ((d.planned || []).length) document.getElementById('plan').append(el('p', { class: 'micro faint', text: 'In the brain as plans: ' + d.planned.map((x) => x.title + ' (' + x.status + ')').join('; ') + '.' }));
+    if ((d.planned || []).length) document.getElementById('plan').append(el('div', { class: 'card flat tight planned' }, el('span', { class: 'kicker', text: 'In the brain as plans' }),
+      ...d.planned.map((x) => { const st = el('span', { class: 'micro muted' }); return el('div', { class: 'row' }, el('span', { class: 'small', text: x.title + ' (' + x.status + ')' }),
+        x.can_launch ? el('button', { class: 'btn xs', type: 'button', text: 'Mark launched', onclick: async () => { try { const r = await UI.api('/api/' + SLUG + '/launched?brand=' + encodeURIComponent(brand), { method: 'POST', body: { id: x.id } }); st.textContent = 'Live from today: ' + r.record; } catch (e) { st.textContent = 'Could not mark: ' + e.message; } } }) : null, st); })));
     if ((d.snoozed || []).length) document.getElementById('plan').append(el('p', { class: 'micro faint', text: 'Not now: ' + d.snoozed.map((x) => x.title + (x.back_on ? ' (back ' + fmt.date(x.back_on) + ')' : '')).join('; ') + '.' }));
     const cw = document.getElementById('connect-wrap');
     cw.hidden = !con.length;
@@ -103,7 +105,7 @@
       status.textContent = 'Saving.';
       try {
         const r = await UI.api('/api/' + SLUG + '/approve?brand=' + encodeURIComponent(brand), { method: 'POST', body: { id: a.id, mode } });
-        status.textContent = 'Saved as ' + r.record + ' (' + r.status + ')' + (r.registry ? ', test proposed as ' + r.registry : '') + '.';
+        status.textContent = 'Saved as ' + r.record + ' (' + r.status + ')' + (r.offer ? ', offer ' + r.offer + ' planned' : '') + (r.registry ? ', test proposed as ' + r.registry : '') + '.';
       } catch (e) { status.textContent = 'Could not save: ' + e.message; }
     };
     return el('div', { class: 'row save-row' }, el('span', { class: 'kicker', text: 'Brand brain' }),

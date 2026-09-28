@@ -336,7 +336,9 @@ def overview(data, brand):
     th = threshold(rd)
     return {'brand': head, 'window': {'ends_on': ends_on.isoformat(), 'days': audit.WINDOW},
             'orientation': orientation(rd, th), 'plan': plan, 'snoozed': snoozed,
-            'planned': [{'id': a['id'], 'title': a['title'], **a['plan_record']} for a in planned],
+            'planned': [{'id': a['id'], 'title': a['title'], 'kind': a['artefact']['kind'],
+                         'can_launch': a['plan_record']['status'] == 'active' and a['artefact']['kind'] in approvals.OFFER_KINDS,
+                         **a['plan_record']} for a in planned],
             'stack': offer_stack(rd), 'threshold': th, 'bfcm': bfcm(rd), **desk,
             'creep': creep_rule(months), 'chart': chart(months), 'findings': ranked['findings'], 'rules': audit.RULES}
 
@@ -378,7 +380,26 @@ def approve(brand, body, brain_root=None, outbox=None, today=None):
     return approvals.save(brand, act, mode, sf, **kw)
 
 
+def launched(brand, body, brain_root=None, today=None):
+    """POST launched {id}: the approved offer is live; its offers record turns active from today."""
+    body = body if isinstance(body, dict) else {}
+    ranked = actions.rank(brand)
+    act = next((a for a in ranked['actions'] if a['id'] == body.get('id')), None)
+    if not act:
+        raise ValueError('no move with that id')
+    return approvals.launch(brand, act, brain_root=brain_root, today=today)
+
+
 def handle(req):
+    if req.method == 'POST' and req.path == ['launched']:
+        try:
+            brand = _brand(req)
+            if not brand:
+                return 400, {'error': 'launches need a brand folder'}
+            out = launched(brand, req.body)
+            return (400, out) if out['errors'] else out
+        except ValueError as exc:
+            return 400, {'error': str(exc)}
     if req.method == 'POST' and req.path == ['approve']:
         try:
             brand = _brand(req)
@@ -403,4 +424,4 @@ def handle(req):
             return {'findings': audit.run(brand, None, data=data), 'rules': audit.RULES}
     except ValueError as exc:
         return 400, {'error': str(exc)}
-    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank', 'POST approve']}
+    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank', 'POST approve', 'POST launched']}

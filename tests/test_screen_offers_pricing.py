@@ -1156,6 +1156,24 @@ class ApprovalsTest(unittest.TestCase):
         self.assertEqual(len(ids), len(set(ids)))
         self.assertEqual(len(api.approvals.outbox_rows('bombas', self.tmp / 'out')), 2)
 
+    def test_offer_record_planned_then_live(self):
+        from datetime import date
+        sys.path.insert(0, str(ROOT / 'app' / 'brain'))
+        import store
+        off = next(a for a in self.acts if a['status'] == 'open' and a['artefact']['kind'] in api.approvals.OFFER_KINDS)
+        early = api.launched('bombas', {'id': off['id']}, brain_root=self.tmp, today=date(2026, 9, 28))
+        self.assertTrue(early['errors'])   # cannot launch before the founder approves
+        r = api.approve('bombas', {'id': off['id'], 'mode': 'founder'}, brain_root=self.tmp, outbox=self.tmp / 'out', today=date(2026, 9, 28))
+        b = store.Brain('bombas', self.tmp, date(2026, 9, 28))
+        rec = next(x for x in b.raw('offers') if x['id'] == r['offer'])
+        self.assertEqual((rec['status'], rec['value']['state']), ('proposed', 'planned'))
+        self.assertNotIn(r['offer'], [x['id'] for x in b.records('offers')])   # not read as live by other screens
+        lv = api.launched('bombas', {'id': off['id']}, brain_root=self.tmp, today=date(2026, 10, 5))
+        self.assertEqual(lv['errors'], [])
+        b = store.Brain('bombas', self.tmp, date(2026, 10, 5))
+        live = next(x for x in b.records('offers') if x['id'] == r['offer'])
+        self.assertEqual((live['value']['state'], live['valid_from']), ('live', '2026-10-05'))
+
     def test_rejects(self):
         with self.assertRaises(ValueError):
             api.approve('bombas', {'id': 'nope'}, brain_root=self.tmp, outbox=self.tmp / 'out')

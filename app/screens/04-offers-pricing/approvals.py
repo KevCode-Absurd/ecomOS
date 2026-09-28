@@ -21,6 +21,7 @@ APP = HERE.parents[1]
 SCREEN = '04-offers-pricing'
 OUTBOX = HERE / 'outbox'
 MODES = ('proposed', 'founder')
+OFFER_KINDS = ('offer', 'price_change', 'landing_page')   # an approved move of these kinds is a new offer in the brain
 TEST_KINDS = ('test_brief', 'price_change', 'ad_brief', 'page_section', 'offer', 'landing_page', 'flow', 'listing_fix')
 
 
@@ -84,6 +85,38 @@ def registry_row(brand, action, rec, surfaces):
             'brain_refs': [rec['id']] + list(action.get('brain_refs') or [])[:6], 'proposed_by': SCREEN}
 
 
+def offer_record(brand, action, plan_id, today, launched=False):
+    """The offer as the brain's offers section will hold it. Proposed while planned, so no screen reads it as
+    live; active from the day it launches (valid_from). The terms are the first lines of the drafted spec."""
+    field = field_for(action).replace('offer_', 'planned_', 1)
+    draft = (action.get('artefact') or {}).get('draft') or ''
+    terms = ' '.join(draft.splitlines()[:3])[:400]
+    rec = {'id': f'{brand}.offers.{field}', 'brand': brand, 'section': 'offers', 'field': field,
+           'value': {'state': 'live' if launched else 'planned', 'plan': plan_id, 'kind': (action.get('artefact') or {}).get('kind'),
+                     'label': (action.get('artefact') or {}).get('label'), 'terms': terms, 'stop_rule': action.get('stop_rule')},
+           'text': ('Live offer: ' if launched else 'Planned offer: ') + (action.get('artefact') or {}).get('label', action['title']),
+           'added_by': SCREEN, 'tier': 'approved',
+           'source': {'type': 'founder', 'ref': f'approved on {SCREEN}', 'captured_at': today.isoformat()},
+           'status': 'active' if launched else 'proposed'}
+    if launched:
+        rec['valid_from'] = today.isoformat()
+    return rec
+
+
+def launch(brand, action, brain_root=None, today=None):
+    """Mark an approved offer live: the offers record turns active with valid_from today. Needs the founder plan."""
+    today = today or dt.date.today()
+    store = _store()
+    brain = store.Brain(brand, brain_root, today) if brain_root else store.Brain(brand, today=today)
+    plan_id = f'{brand}.plans.{field_for(action)}'
+    plan = next((r for r in brain.raw('plans') if r['id'] == plan_id), None)
+    if not plan or plan.get('status') != 'active':
+        return {'record': None, 'errors': ['approve the move as the founder before it can launch']}
+    rec = offer_record(brand, action, plan_id, today, launched=True)
+    errs = brain.put(rec)
+    return {'record': rec['id'], 'status': rec['status'], 'errors': errs}
+
+
 def outbox_rows(brand, outbox=OUTBOX):
     path = Path(outbox) / f'registry.{brand}.json'
     if not path.is_file():
@@ -104,13 +137,20 @@ def save(brand, action, mode='proposed', surfaces=None, brain_root=None, outbox=
     errs = brain.put(rec)
     if errs:
         return {'record': rec['id'], 'errors': errs, 'registry': None}
+    offer_id = None
+    if mode == 'founder' and (action.get('artefact') or {}).get('kind') in OFFER_KINDS:
+        orec = offer_record(brand, action, rec['id'], today)
+        oerrs = brain.put(orec)
+        if oerrs:
+            return {'record': rec['id'], 'errors': oerrs, 'registry': None}
+        offer_id = orec['id']
     row = None
     if (action.get('artefact') or {}).get('kind') in TEST_KINDS:
         row = registry_row(brand, action, rec, surfaces)
         rows = [r for r in outbox_rows(brand, outbox) if r.get('id') != row['id']] + [row]
         Path(outbox).mkdir(parents=True, exist_ok=True)
         (Path(outbox) / f'registry.{brand}.json').write_text(json.dumps(rows, indent=1), encoding='utf-8')
-    return {'record': rec['id'], 'status': rec['status'], 'errors': [], 'registry': row['id'] if row else None}
+    return {'record': rec['id'], 'status': rec['status'], 'errors': [], 'registry': row['id'] if row else None, 'offer': offer_id}
 
 
 def planned(rd):
