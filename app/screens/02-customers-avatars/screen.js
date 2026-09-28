@@ -367,6 +367,20 @@
       artefact: { kind: r.action.kind, label: 'a dated plan: ad briefs and 2 emails', draft: r.action.draft } }, { compact: true, screen: SLUG })));
   }
 
+  // ---------- desk: marketplace voice ----------
+  function renderMarket(x) {
+    document.getElementById('market-sub').textContent = 'Where each avatar\'s reviews come from: its quotes plus the rated reviews behind its doubts, Reddit left out. Marketplace-led: half or more on Amazon; those get a listing fix for 20-marketplaces. The review pull samples Amazon heavily, so read shares as direction. ' + x.line;
+    mount('#market', UI.verdictTable({
+      columns: [{ key: 'name', label: 'Avatar' }, { key: 'amazon_share', label: 'On Amazon', unit: '%' }, { key: 'reviews', label: 'Reviews', unit: 'n' },
+        { key: 'src_t', label: 'Sources' }, { key: 'doubt_t', label: 'Top Amazon doubts' }],
+      rows: x.rows.map((r) => Object.assign({}, r, { src_t: Object.entries(r.sources).slice(0, 4).map(([k, n]) => k + ' ' + n).join(', '),
+        doubt_t: r.amazon_doubts.map((d) => d.doubt + ' (' + d.n + ')').join('; ') || 'none',
+        actions: r.action ? [{ label: 'Fix the listing', onClick: () => briefPanel(r.action) }] : [{ label: 'Site-led', cls: 'quiet', onClick: () => {} }] })),
+      verdict: { at: 1, kind: (r) => r.verdict === 'marketplace' ? 'watch' : 'keep', text: (r) => r.verdict === 'marketplace' ? 'Marketplace' : 'Site' },
+      actions: { label: 'Do' }, sort: false,
+    }));
+  }
+
   // ---------- desk: support replies ----------
   function renderMacros(x) {
     document.getElementById('macros-sub').textContent = 'A reply for every doubt the ladders send to support, from the proof on file, or from a policy a person checks. It never promises what is not on file. ' + x.line;
@@ -874,7 +888,7 @@
 
   // ---------- the desk, grouped into tabs by job ----------
   const DESK = [
-    { key: 'avatars', label: 'Avatars', ids: ['focus-wrap', 'avatars-wrap', 'voiceads-wrap', 'split-wrap', 'gate-wrap', 'forces-wrap', 'survey-wrap', 'served-wrap', 'returns-wrap', 'misread-wrap'] },
+    { key: 'avatars', label: 'Avatars', ids: ['focus-wrap', 'avatars-wrap', 'voiceads-wrap', 'split-wrap', 'gate-wrap', 'forces-wrap', 'survey-wrap', 'served-wrap', 'market-wrap', 'returns-wrap', 'misread-wrap'] },
     { key: 'doubts', label: 'Doubts and words', ids: ['ladders-wrap', 'cover-wrap', 'themes-wrap', 'words-wrap', 'hooks-wrap', 'gap-wrap', 'macros-wrap'] },
     { key: 'offers', label: 'Offers and claims', ids: ['offers-wrap', 'claims-wrap', 'timing-wrap'] },
     { key: 'retention', label: 'Retention', ids: ['paths-wrap', 'cohort-wrap', 'mix-wrap', 'moments-wrap', 'health-wrap'] },
@@ -928,6 +942,7 @@
     renderDrafts(d.drafts);
     renderMisreads(d.misreads);
     renderReturns(d.returns);
+    renderMarket(d.marketplace);
     renderMacros(d.macros);
     renderClaims(d.claims_fire);
     renderLookalikes(d.lookalikes);

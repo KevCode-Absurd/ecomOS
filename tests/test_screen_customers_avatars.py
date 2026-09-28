@@ -1279,5 +1279,18 @@ class CellDepth(TempBrain):
         self.assertIn('onCell: (cell, row, col) => cellPanel(cell, row, col)', (SCREEN / 'screen.js').read_text(encoding='utf-8'))
 
 
+class MarketVoice(TempBrain):
+    """Feature 5.5: avatars whose voice is mostly Amazon get listing work."""
+
+    def test_market(self):
+        x = api.handle(Req(['overview']))['marketplace']
+        for r in x['rows']:
+            self.assertEqual(r['verdict'] == 'marketplace', r['amazon_share'] >= 0.5)
+            self.assertNotIn('Reddit', r['sources'])
+            if r['action']:
+                self.assertEqual(r['action']['kind'], 'listing_fix')
+        self.assertEqual(x['rows'][0]['key'], 'in_store_single_pair_trier')
+
+
 if __name__ == '__main__':
     unittest.main()

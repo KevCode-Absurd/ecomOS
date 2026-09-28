@@ -2176,3 +2176,54 @@ def macros(ladders_rows: list[dict], all_rungs: list[dict], policy_texts: dict[s
     c = {k: sum(1 for x in rows if x["status"] == k) for k in ("ready", "check", "person")}
     return {"rows": rows, "counts": c,
             "line": f"{len(rows)} doubts support answers: {c['ready']} ready from proof, {c['check']} lean on a policy a person checks, {c['person']} need a person to write."}
+
+
+# ---------------------------------------------------------------- marketplace voice by avatar
+
+MARKET_SHARE = 0.5        # half or more of an avatar's linked reviews come from a marketplace
+
+
+def marketplace(avatars: list[dict], all_rungs: list[dict], lang_records: list[dict], source_name) -> dict:
+    """Where each avatar's voice comes from: our site, marketplaces, retailers. Marketplace-led avatars get listing work."""
+    by_id = {r["id"]: r for r in lang_records}
+    rows = []
+    for a in avatars:
+        src: dict[str, int] = {}
+        doubts: dict[str, int] = {}
+        for q in a["quotes"]:
+            src[q["source"] or "unknown"] = src.get(q["source"] or "unknown", 0) + 1
+        for r in all_rungs:
+            if a["id"] not in r["avatars"]:
+                continue
+            for pid in r["derived_from"]:
+                v = (by_id.get(pid) or {}).get("value") or {}
+                for rv in v.get("reviews") or []:
+                    s_ = source_name(rv.get("source") or "")
+                    if s_ == "Reddit" or not rv.get("source"):
+                        continue
+                    src[s_] = src.get(s_, 0) + 1
+                    if s_ == "Amazon" and isinstance(rv.get("star"), int) and rv["star"] <= 2:
+                        doubts[r["doubt"]] = doubts.get(r["doubt"], 0) + 1
+        tot = sum(src.values())
+        if not tot:
+            continue
+        amz = src.get("Amazon", 0) / tot
+        top = sorted(doubts.items(), key=lambda kv: -kv[1])[:3]
+        verdict = "marketplace" if amz >= MARKET_SHARE else "site"
+        action = None
+        if verdict == "marketplace" and top:
+            action = {"id": f"{SCREEN}.market.{a['key']}", "kind": "listing_fix", "owner": "agent_drafts",
+                      "title": f"Answer {a['name']}'s top doubts in the first 3 Amazon bullets",
+                      "capability": {"id": "PROD-C34", "autonomy": "human_assist"},
+                      "draft": "\n".join([f"DRAFT listing fix for {a['name']}", f"{round(amz * 100)} percent of their linked reviews are on Amazon.",
+                                          "First 3 bullets answer, in order:", *[f"- {d} ({n} one and two star Amazon reviews)" for d, n in top],
+                                          "Use only proof on file. Hand to 20-marketplaces."]),
+                      "steps": [{"n": 1, "who": "agent", "text": "Pull the listing's current bullets and the proof for each doubt."},
+                                {"n": 2, "who": "agent", "text": "Draft 3 bullets that answer the doubts in order."},
+                                {"n": 3, "who": "person", "text": "Approve and update the listing in Seller Central."}]}
+        rows.append({"key": a["key"], "name": a["name"], "sources": dict(sorted(src.items(), key=lambda kv: -kv[1])), "amazon_share": round(amz, 4),
+                     "reviews": tot, "amazon_doubts": [{"doubt": d, "n": n} for d, n in top], "verdict": verdict, "action": action})
+    rows.sort(key=lambda r: -r["amazon_share"])
+    m = [r["name"] for r in rows if r["verdict"] == "marketplace"]
+    return {"rows": rows, "line": (f"{len(m)} avatars speak mostly on Amazon: {', '.join(m[:3])}{' and more' if len(m) > 3 else ''}." if m
+                                   else "Every avatar speaks mostly on our site or at retailers.")}
