@@ -577,9 +577,12 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
         self.tmp = Path(tempfile.mkdtemp()) / 'pipeline.json'
         self.real = audit.PIPELINE_PATH
         audit.PIPELINE_PATH = self.tmp
+        self._handoff_paths = (api.HANDOFF_PATH, api.TESTS_PATH)      # every candidate write also rewrites the hand-off files: keep them in the temp folder
+        api.HANDOFF_PATH, api.TESTS_PATH = self.tmp.parent / 'handoff.json', self.tmp.parent / 'tests.json'
 
     def tearDown(self):
         audit.PIPELINE_PATH = self.real
+        api.HANDOFF_PATH, api.TESTS_PATH = self._handoff_paths
 
     def test_add_advance_hours_kill_round_trip(self):
         today = date(2026, 9, 28)
