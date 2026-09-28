@@ -1580,18 +1580,23 @@
    "id": "S4.2a",
    "title": "Inspiration puller: Meta Ad Library puller and tagger",
    "stage": 4,
-   "model": "sonnet",
+   "model": "opus",
    "reads": [
+    "app/brain/extract/apify_adlibrary.py",
+    "app/connectors/apify.py",
+    "app/contracts/connectors/apify.md",
     "app/contracts/inspiration.md",
     "app/inspiration/registry.json"
    ],
    "writes": [
-    "app/inspiration/pull_a.py",
     "app/inspiration/fixtures/a/",
+    "app/inspiration/media.py",
+    "app/inspiration/media/.gitignore",
+    "app/inspiration/pull_a.py",
     "tests/test_inspiration.py"
    ],
-   "done_when": "fixture mode returns tagged references with the reason they are relevant to Bombas, computed from brain fields; live call left as a TODO with the endpoint named",
-   "first_line": "Work in app/inspiration. Session S4.2a per sessions/SESSIONS.md: build the Meta Ad Library puller and tagger with fixtures.",
+   "done_when": "live mode reuses the Apify Ad Library connector (same actor, same caps, same ledger) and, per app/contracts/connectors/apify.md, downloads media at pull time into a git-ignored media folder: own-brand ads in full, competitor ads as image plus video thumbnail plus video url; every reference tagged by format, hook, layout and mood with the reason it is relevant to Bombas, computed from brain fields; the generation boundary never receives a competitor file (a test proves it); fixture mode covers the same path without network",
+   "first_line": "Work in app/inspiration. Session S4.2a per sessions/SESSIONS.md: build the Meta Ad Library puller, media downloader and tagger on the existing Apify connector.",
    "budget_tokens": 15000,
    "parallel_group": "S4.2",
    "needs": [
