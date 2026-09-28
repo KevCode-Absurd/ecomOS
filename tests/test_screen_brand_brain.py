@@ -1632,6 +1632,48 @@ class Round4Peaks(TempBrain):
         self.assertEqual(next(f['severity'] for f in api.handle(Req(['audit']))['findings'] if f['entity']['id'] == 'peak_launch_slippers_2026'), 'medium')
 
 
+class Round4History(TempBrain):
+    """Round 4 feature 6: one record's history, and restoring an earlier value as a founder edit that can itself be undone."""
+
+    def test_timeline_merges_values_and_changes(self):
+        h = api.handle(Req(['history'], query={'record': ['bombas.identity.giving_model']}))
+        self.assertEqual(h['section'], 'identity')
+        self.assertGreaterEqual(h['counts']['values'], 1)
+        self.assertTrue(all(it['kind'] in ('value', 'change') for it in h['items']))
+        self.assertEqual(h['current']['value_text'], h['current']['value_text'])
+        api.handle(Req(['profile', 'offers', 'free_shipping_threshold_usd'], 'POST', body={'text': '80'}))
+        h = api.handle(Req(['history'], query={'record': ['bombas.offers.free_shipping_threshold_usd']}))
+        vals = [it for it in h['items'] if it['kind'] == 'value']
+        self.assertEqual(vals[-1]['value'], 75)
+        self.assertTrue(vals[-1]['restorable'])
+        self.assertTrue([it for it in h['items'] if it['kind'] == 'change' and it['change_kind'] == 'founder_edit'])
+        self.assertEqual(api.handle(Req(['history'], query={'record': ['bombas.offers.nope']}))[0], 404)
+        self.assertEqual(api.handle(Req(['history'], query={'record': ['bad id']}))[0], 400)
+
+    def test_restore_and_undo(self):
+        api.handle(Req(['profile', 'offers', 'free_shipping_threshold_usd'], 'POST', body={'text': '80'}))
+        h = api.handle(Req(['history'], query={'record': ['bombas.offers.free_shipping_threshold_usd']}))
+        idx = next(it['index'] for it in h['items'] if it['kind'] == 'value' and it['value'] == 75)
+        status, res = api.handle(Req(['history', 'restore'], 'POST', body={'record': 'bombas.offers.free_shipping_threshold_usd', 'index': idx}))
+        self.assertEqual((status, res['before'], res['after']), (201, 80, 75))
+        rec = next(r for r in self.section('offers') if r['id'] == 'bombas.offers.free_shipping_threshold_usd')
+        self.assertEqual((rec['value'], rec['tier'], rec['source']['type'], rec['source']['restored_from']['index']), (75, 'approved', 'founder', idx))
+        self.assertEqual(rec['history'][-1]['value'], 80)  # the replaced value joins the history
+        self.assertEqual(next(f['text'] for s in api.handle(Req(['profile']))['sections'] for f in s['fields'] if f['key'] == 'free_shipping_threshold_usd').strip('$ '), '75')
+        self.assertIn('restore', [c['kind'] for c in api.handle(Req(['changes']))['changes']])
+        # undo the restore: the 80 is restorable again
+        h = api.handle(Req(['history'], query={'record': ['bombas.offers.free_shipping_threshold_usd']}))
+        idx80 = next(it['index'] for it in h['items'] if it['kind'] == 'value' and it['value'] == 80)
+        self.assertEqual(api.handle(Req(['history', 'restore'], 'POST', body={'record': 'bombas.offers.free_shipping_threshold_usd', 'index': idx80}))[0], 201)
+        self.assertEqual(next(r['value'] for r in self.section('offers') if r['id'] == 'bombas.offers.free_shipping_threshold_usd'), 80)
+        self.assertEqual(api.handle(Req(['history', 'restore'], 'POST', body={'record': 'bombas.offers.free_shipping_threshold_usd', 'index': 99}))[0], 404)
+        self.assertEqual(api.handle(Req(['history', 'restore'], 'POST', body={'record': 'bombas.offers.free_shipping_threshold_usd', 'index': 'x'}))[0], 400)
+        h = api.handle(Req(['history'], query={'record': ['bombas.offers.free_shipping_threshold_usd']}))
+        same = [it for it in h['items'] if it['kind'] == 'value' and it['same_as_current']]
+        self.assertTrue(same)
+        self.assertEqual(api.handle(Req(['history', 'restore'], 'POST', body={'record': 'bombas.offers.free_shipping_threshold_usd', 'index': same[0]['index']}))[0], 400)
+
+
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 

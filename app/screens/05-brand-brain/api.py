@@ -179,6 +179,9 @@ _pspec.loader.exec_module(parity)
 _sspec = importlib.util.spec_from_file_location("brand_brain_sitediff", HERE / "sitediff.py")
 sitediff = importlib.util.module_from_spec(_sspec)
 _sspec.loader.exec_module(sitediff)
+_yspec = importlib.util.spec_from_file_location("brand_brain_history", HERE / "history.py")
+history = importlib.util.module_from_spec(_yspec)
+_yspec.loader.exec_module(history)
 _qspec = importlib.util.spec_from_file_location("brand_brain_peaks", HERE / "peaks.py")
 peaks = importlib.util.module_from_spec(_qspec)
 _qspec.loader.exec_module(peaks)
@@ -1307,6 +1310,26 @@ def handle(req):
         ends = (brain.today - dt.timedelta(days=1)).isoformat()
         findings = audit.run(brain.brand, {"ends_on": ends, "days": 1, "trailing": 0}, BRAIN_ROOT)
         return {"findings": findings, "rules": audit.RULES, "brain_version": brain.version()}
+    if req.method == "GET" and parts == ["history"]:
+        rid = req.arg("record", "") or ""
+        if not re.fullmatch(r"[a-z0-9_-]+\.[a-z_]+\.[A-Za-z0-9_.-]{1,120}", rid):
+            return 400, {"error": "record must be a record id"}
+        t = history.timeline(brain, rid)
+        if t is None:
+            return 404, {"error": "no such record", "id": rid}
+        return t
+    if req.method == "POST" and parts == ["history", "restore"]:
+        body = req.body or {}
+        rid = str(body.get("record") or "")
+        if not re.fullmatch(r"[a-z0-9_-]+\.[a-z_]+\.[A-Za-z0-9_.-]{1,120}", rid):
+            return 400, {"error": "record must be a record id"}
+        res = history.restore(brain, rid, body.get("index"))
+        if isinstance(res, tuple):
+            return res
+        errs = founder_put(brain, res["record"], "restore", f"{rid}: restored the value from {res['record']['source']['restored_from'].get('changed_at') or 'an earlier version'}")
+        if errs:
+            return 400, {"error": "; ".join(errs)}
+        return 201, {"ok": True, "record": rid, "before": res["before"], "after": res["after"], "version": brain.version(), "next": "Restored as your approved record. The value it replaced is in the history; every screen reads the restored one."}
     if req.method == "GET" and parts == ["peaks"]:
         r = peaks.readiness(brain, market.angles_of, legal, assumptions)
         r["capability"] = {"id": "BRN-C07", "autonomy": "founder_gate"}

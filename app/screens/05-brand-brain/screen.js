@@ -423,6 +423,27 @@
     return panel;
   }
 
+  function historyPanel(rid, reload) {
+    const body = el('div', { class: 'stack' }, el('p', { class: 'muted small', text: 'Loading.' }));
+    const panel = UI.panel({ title: 'History of ' + rid, body });
+    api(BASE + 'history?record=' + encodeURIComponent(rid)).then((h) => {
+      const status = el('span', { class: 'micro muted' });
+      const cur = h.current;
+      const rows = h.items.map((it) => {
+        if (it.kind === 'value') {
+          const b = el('button', { class: 'btn xs' + (it.restorable ? ' primary' : ''), type: 'button', text: it.restorable ? 'Restore this' : 'Same as now', disabled: !it.restorable });
+          b.addEventListener('click', async () => { b.disabled = true; try { const r = await api(BASE + 'history/restore', { method: 'POST', body: { record: rid, index: it.index } }); status.textContent = r.next; panel.close(); if (reload) reload(); loadProfile(); loadChanges(); } catch (e) { b.disabled = false; status.textContent = 'Could not restore: ' + e.message; } });
+          return el('div', { class: 'tl' }, el('span', { class: 'dot' }), el('div', null, el('div', { class: 'when', text: (it.when ? fmt.date(it.when) : 'undated') + (it.source_type || it.source_ref ? ', from ' + (it.source_type ? pretty(it.source_type) + ' ' : '') + (it.source_ref || '') : '') + (it.tier ? ', ' + pretty(it.tier) : '') }), el('div', { class: 'row' }, el('span', { class: 'mono small', text: it.value_text }), b), it.reason ? el('div', { class: 'micro faint', text: it.reason }) : null));
+        }
+        return el('div', { class: 'tl' }, el('span', { class: 'dot', style: { background: 'var(--info)' } }), el('div', null, el('div', { class: 'when', text: (it.when ? fmt.date(it.when) : '') + ', ' + pretty(it.change_kind || 'change') + (it.source ? ' by ' + it.source : '') }), el('div', { class: 'small', text: it.what || '' })));
+      });
+      rows.push(el('div', { class: 'tl' }, el('span', { class: 'dot', style: { background: 'var(--good)' } }), el('div', null, el('div', { class: 'when', text: 'Now' + (cur.when ? ', ' + fmt.date(cur.when) : '') + ', ' + pretty(cur.tier) + (cur.source_type ? ', from ' + pretty(cur.source_type) : '') + (cur.restored_from ? ', restored from ' + (cur.restored_from.changed_at || 'an earlier value') : '') }), el('div', { class: 'mono small', text: cur.value_text }))));
+      mount(body, el('div', { class: 'row' }, el('span', { class: 'chip', text: h.counts.values + ' earlier value' + (h.counts.values === 1 ? '' : 's') }), el('span', { class: 'chip', text: h.counts.changes + ' logged change' + (h.counts.changes === 1 ? '' : 's') }), status),
+        el('div', { class: 'timeline' }, ...rows), el('div', { class: 'micro faint', text: h.note }));
+    }).catch((e) => mount(body, el('p', { class: 'muted', text: 'Could not load the history: ' + e.message })));
+    return panel;
+  }
+
   // ---------- 2. the profile, editable ----------
   function profileSection(sec) {
     const wrap = el('div', { class: 'profile-sec' });
@@ -438,6 +459,7 @@
     }
     const withRecord = sec.fields.filter((f) => f.record_id);
     if (withRecord.length) wrap.append(el('div', { class: 'row trace' }, el('span', { class: 'micro faint', text: 'Where is it used?' }), ...withRecord.map((f) => el('button', { class: 'btn xs soft', type: 'button', text: pretty(f.key), onclick: () => tracePanel(f.record_id) }))));
+    if (withRecord.length) wrap.append(el('div', { class: 'row trace' }, el('span', { class: 'micro faint', text: 'History and restore:' }), ...withRecord.map((f) => el('button', { class: 'btn xs soft', type: 'button', text: pretty(f.key), onclick: () => historyPanel(f.record_id) }))));
     const addKey = el('input', { class: 'text sm', placeholder: 'new field, like target_customer', style: { maxWidth: '240px' } });
     const addVal = el('input', { class: 'text sm', placeholder: 'value', style: { flex: '1 1 200px' } });
     const addBtn = el('button', { class: 'btn sm', type: 'button', text: 'Add field' });
@@ -898,7 +920,7 @@
       el('span', { text: 'confidence ' + (r.confidence == null ? NA : r.confidence) }),
       r.status !== 'active' ? el('span', { class: 'chip warn', text: r.status }) : null));
     card.append(el('div', { text: r.text || '' }));
-    card.append(el('div', { class: 'meta' }, sourceLink(r.source)));
+    card.append(el('div', { class: 'meta' }, sourceLink(r.source), el('button', { class: 'btn xs soft', type: 'button', text: 'History', onclick: () => historyPanel(r.id, () => openSection(r.id.split('.')[1])) }), el('button', { class: 'btn xs soft', type: 'button', text: 'Where used', onclick: () => tracePanel(r.id) })));
     for (const e of (r.evidence || []).slice(0, 3)) card.append(el('blockquote', { text: '"' + e.quote + '"' }));
     return card;
   }
