@@ -1,0 +1,41 @@
+{
+ "version": "2026-09-28",
+ "contract": "app/contracts/inspiration.md",
+ "domains": ["creative", "email", "landing", "organic", "offers", "research"],
+ "relevance_rules": [
+  {"id": "same_category", "weight": 0.30, "brain_fields": ["identity.category", "products.lines"], "domains": ["creative", "email", "landing", "organic", "offers", "research"]},
+  {"id": "same_avatar", "weight": 0.20, "brain_fields": ["avatars"], "domains": ["creative", "organic", "landing"]},
+  {"id": "same_offer_type", "weight": 0.20, "brain_fields": ["offers"], "domains": ["creative", "email", "offers", "landing"]},
+  {"id": "same_price_band", "weight": 0.15, "brain_fields": ["products.price_ladder_socks", "products.price_ladder_underwear"], "domains": ["email", "offers", "landing"]},
+  {"id": "same_calendar", "weight": 0.10, "brain_fields": ["calendar"], "domains": ["email", "creative", "offers"]},
+  {"id": "same_margin_band", "weight": 0.15, "brain_fields": ["economics.gross_margin_model", "economics.red_line"], "domains": ["offers"]},
+  {"id": "answers_objection", "weight": 0.20, "brain_fields": ["objection_ladders"], "domains": ["creative", "landing", "email", "research"]},
+  {"id": "competitor_in_frame", "weight": 0.10, "brain_fields": ["competitors.competitor_frame", "competitors.reddit_recommended_*"], "domains": ["creative", "email", "landing", "organic", "offers", "research"]},
+  {"id": "own_brand", "weight": 1.0, "brain_fields": [], "domains": ["creative", "email", "landing", "organic", "offers", "research"]}
+ ],
+ "show_threshold": 0.3,
+ "sources": [
+  {"id": "meta_ad_library_pages", "domain": "creative", "kind": "apify_actor", "access": "paid", "actor": "curious_coder~facebook-ads-library-scraper", "yields": ["format", "hook_type", "run_days", "platforms", "promo", "media"], "puller": "app/inspiration/pull_a.py", "connector": "app/connectors/apify.py (same caps and ledger)", "cost_note": "about 0.75 USD per 1,000 ads, per page id, never by keyword", "fixture": "app/inspiration/fixtures/meta_ad_library_pages/", "media": "download at pull time; own in full, competitor image plus video thumbnail plus url", "refresh": "weekly"},
+  {"id": "tiktok_creative_center", "domain": "creative", "kind": "scrape", "access": "public", "yields": ["format", "hook_type", "engagement_band", "run_days"], "puller": "app/inspiration/pull_a.py (later)", "cost_note": "free public pages, 1 request per second", "fixture": "app/inspiration/fixtures/tiktok_creative_center/", "refresh": "weekly", "status": "planned"},
+  {"id": "own_ad_account", "domain": "creative", "kind": "api", "access": "key", "yields": ["format", "hook_type", "run_days", "spend", "results", "media"], "puller": "app/connectors (Meta read-only)", "cost_note": "none; read-only", "fixture": "app/data/brands/bombas ad_rows", "media": "own_brand, full", "refresh": "daily"},
+  {"id": "milled_archive", "domain": "email", "kind": "scrape", "access": "public", "yields": ["cadence_days", "subject_pattern", "structure", "offer_type", "send_day"], "puller": "app/inspiration/pull_b.py", "cost_note": "free public archive pages, polite crawl", "fixture": "app/inspiration/fixtures/milled_archive/", "refresh": "monthly", "status": "planned"},
+  {"id": "reallygoodemails", "domain": "email", "kind": "scrape", "access": "public", "yields": ["structure", "offer_type", "section_order"], "puller": "app/inspiration/pull_b.py", "cost_note": "free public gallery", "fixture": "app/inspiration/fixtures/reallygoodemails/", "refresh": "monthly", "status": "planned"},
+  {"id": "competitor_signup_inbox", "domain": "email", "kind": "manual", "access": "key", "yields": ["cadence_days", "subject_pattern", "offer_type", "send_day"], "puller": "app/inspiration/pull_b.py (mailbox export)", "cost_note": "a dedicated mailbox the operator subscribes with; export is manual", "fixture": "app/inspiration/fixtures/competitor_signup_inbox/", "refresh": "weekly", "status": "planned"},
+  {"id": "own_klaviyo", "domain": "email", "kind": "api", "access": "key", "yields": ["cadence_days", "structure", "offer_type", "results"], "puller": "app/connectors (Klaviyo, stage 6)", "cost_note": "none", "fixture": "app/data/brands/bombas flows and campaign_sends", "media": "own_brand", "refresh": "daily"},
+  {"id": "competitor_landers", "domain": "landing", "kind": "scrape", "access": "public", "yields": ["section_order", "proof_types", "offer_placement", "above_fold"], "puller": "app/inspiration/pull_c.py", "cost_note": "polite crawl of public PDPs and landers from the competitor frame; screenshot kept as reference_only", "fixture": "app/inspiration/fixtures/competitor_landers/", "refresh": "monthly", "status": "planned"},
+  {"id": "own_site_pages", "domain": "landing", "kind": "scrape", "access": "public", "yields": ["section_order", "proof_types", "offer_placement"], "puller": "app/brain/extract/site.py (re-read as references)", "cost_note": "none", "fixture": "app/brain/extract/fixtures/site/bombas/", "media": "own_brand", "refresh": "weekly"},
+  {"id": "creator_posts_public", "domain": "organic", "kind": "scrape", "access": "public", "yields": ["format", "hook", "series", "cadence_days", "engagement_band"], "puller": "app/inspiration/pull_d.py", "cost_note": "public post pages only; an Apify actor when volume needs it, same caps", "fixture": "app/inspiration/fixtures/creator_posts_public/", "refresh": "weekly", "status": "planned"},
+  {"id": "reddit_threads", "domain": "organic", "kind": "apify_actor", "access": "paid", "actor": "trudax~reddit-scraper-lite", "yields": ["questions", "language", "recommended_instead"], "puller": "app/brain/extract/apify_reddit.py (existing lane, re-read as references)", "cost_note": "about 0.40 USD per run of 100 items; never quoted as testimonial; usernames never stored", "fixture": "app/connectors/fixtures/apify/trudax~reddit-scraper-lite.json", "refresh": "weekly"},
+  {"id": "competitor_promos", "domain": "offers", "kind": "derived", "access": "public", "yields": ["offer_type", "discount_depth", "threshold", "bundle_math", "guarantee_wording", "calendar_window"], "puller": "app/inspiration/pull_a.py (from Ad Library promos) plus app/brain/extract/site.py on competitor policy pages", "cost_note": "no extra pull; derived from creative and landing pulls", "fixture": "app/brain/bombas/raw/adlibrary-apify/offers.json", "refresh": "weekly"},
+  {"id": "amazon_listing_prices", "domain": "offers", "kind": "derived", "access": "paid", "yields": ["price", "pack_size", "rating", "seller"], "puller": "app/brain/extract/amazon_discover.py (existing)", "cost_note": "already pulled for the brain; re-read", "fixture": "app/brain/bombas/marketplaces.json", "refresh": "weekly"},
+  {"id": "review_language", "domain": "research", "kind": "derived", "access": "public", "yields": ["unmet_needs", "language", "questions"], "puller": "app/brain/ladders.py output re-read as references", "cost_note": "none", "fixture": "app/brain/bombas/objection_ladders.json", "refresh": "with the brain"},
+  {"id": "search_demand_public", "domain": "research", "kind": "scrape", "access": "public", "yields": ["questions", "modifiers", "seasonality"], "puller": "app/inspiration/pull_d.py (later)", "cost_note": "public autocomplete and trends pages, polite", "fixture": "app/inspiration/fixtures/search_demand_public/", "refresh": "monthly", "status": "planned"}
+ ],
+ "rights": {
+  "own_brand": "stored in full, may feed generation",
+  "reference_only": "image, video thumbnail and remote url kept; shown to people; never passed to generation, copy or a brief as an asset; the generation boundary refuses it",
+  "quote_max_chars": 140,
+  "media_dir": "app/inspiration/media/ (git-ignored)",
+  "purge": "one call removes every reference about an origin brand"
+ }
+}
