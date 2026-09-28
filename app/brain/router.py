@@ -54,8 +54,8 @@ def render(brain: Brain, notes: str) -> str:
             empty.append(sec)
             continue
         gist = _fact(order(brain.records(sec))[0])
-        if len(gist) > 70:
-            gist = gist[:67].rsplit(" ", 1)[0] + "..."
+        if len(gist) > 60:
+            gist = gist[:57].rsplit(" ", 1)[0] + "..."
         stale = f", {s['stale']} stale" if s["stale"] else ""
         out.append(f"| [{sec}]({sec}.json) | {s['count']}{stale} | {s['last_update'] or 'undated'} | {gist} |")
     if empty:
