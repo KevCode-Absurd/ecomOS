@@ -2220,10 +2220,43 @@ class Round5Ugc(TempBrain):
         self.assertGreaterEqual(sum(1 for c in api.handle(Req(['changes']))['changes'] if c['kind'] == 'consent'), 3)
 
 
+class Round5Drift(TempBrain):
+    """Round 5 feature 10: positioning drift from the language bank; word counts, the brief, rule BRN-R32."""
+
+    def test_drift_counts_and_rule(self):
+        d = api.handle(Req(['drift']))
+        self.assertTrue(d['available'])
+        self.assertGreater(d['counts']['praise_quotes'], 100)
+        by = {r['word']: r for r in d['positioning']}
+        self.assertEqual(by['comfort']['verdict'], 'echoed')
+        self.assertGreater(by['comfort']['praise'], 50)
+        self.assertEqual(by['durable']['verdict'], 'contradicted')  # more complaints than praise carry durability
+        self.assertTrue(all(len(r['word']) >= 4 for r in d['positioning']))
+        self.assertNotIn('proof', by)
+        cw = {w['word']: w for w in d['customer_words']}
+        self.assertTrue(cw['great']['generic'])
+        self.assertNotIn('great', d['missing'])
+        self.assertIn('price', d['missing'])
+        self.assertTrue(d['drift'])
+        self.assertIn('Contradicted in complaints: durable', d['brief'])
+        self.assertIsNotNone(d['echo_share'])
+        f = next(f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R32')
+        self.assertIn('complaints contradict durable', f['sentence'])
+        a = next(a for a in api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions'] if a['rule_id'] == 'BRN-R32')
+        self.assertEqual((a['owner'], a['artefact']['kind'], api.rank_mod.validate_action(a)), ('agent_drafts', 'brain_record', []))
+        self.assertTrue(a['artefact']['draft'].startswith('Positioning drift check for bombas'))
+
+    def test_example_brand_unavailable(self):
+        shutil.copytree(BRAIN / 'example', self.tmp / 'example')
+        d = api.handle(Req(['drift'], query={'brand': ['example']}))
+        self.assertFalse(d['available'])
+        self.assertFalse([f for f in api.handle(Req(['audit'], query={'brand': ['example']}))['findings'] if f['rule_id'] == 'BRN-R32'])
+
+
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
-    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'],
+    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'],
               ['decisions'], ['flows'], ['claims'], ['site', 'diff'], ['parity'], ['contracts'], ['legal'], ['voice'], ['battlecards'], ['permissions'],
               ['export'], ['assumptions'], ['facts'], ['summaries'], ['changes'], ['learn'], ['report'], ['digest'], ['review'], ['bottlenecks'], ['audit']]
 

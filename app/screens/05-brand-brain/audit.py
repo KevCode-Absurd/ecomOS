@@ -158,6 +158,11 @@ BRN-R31 consent expiring or expired. A content record `consent_<slug>` (ugc.py)
     whose term ended (medium: the quote or asset may be live in its scope) or
     ends inside 30 days (low). Capability LOOP-C27 (disclosures and
     endorsements). Owner: 05-brand-brain.
+BRN-R32 positioning drift. The positioning's top words are echoed by fewer
+    than 20 percent of praise quotes in the language bank, or a positioning
+    word appears in more complaints than praise (drift.py). One low finding
+    with the drift brief. Capability BRAND-C57 (positioning). Owner:
+    05-brand-brain.
 BRN-R07 competitor snapshot stale. A configured Ad Library page was captured
     more than SNAPSHOT_STALE_DAYS (7) ago, or never. Severity low. Capability
     BRN-C11 (competitor snapshot, signals only). Owner: 05-brand-brain.
@@ -252,6 +257,8 @@ RULES = [
      "inputs": ["content.asset_*"], "capability": "LOOP-C29", "owner_screen": SCREEN},
     {"rule_id": "BRN-R31", "name": "consent expiring or expired", "entity_type": "brand",
      "inputs": ["content.consent_*"], "capability": "LOOP-C27", "owner_screen": SCREEN},
+    {"rule_id": "BRN-R32", "name": "positioning drift", "entity_type": "brand",
+     "inputs": ["positioning", "identity", "voice", "language_bank"], "capability": "BRAND-C57", "owner_screen": SCREEN},
 ]
 AUTONOMY = {"BRN-C12": "agent_does", "BRN-C07": "founder_gate", "BRN-C03": "agent_does",
             "CREA-C19": "agent_does", "CREA-C04": "agent_does", "BRN-C11": "agent_does", "CREA-C06": "agent_does",
@@ -269,6 +276,9 @@ _lspec.loader.exec_module(legal)
 _pspec = importlib.util.spec_from_file_location("brand_brain_parity", Path(__file__).resolve().parent / "parity.py")
 parity = importlib.util.module_from_spec(_pspec)
 _pspec.loader.exec_module(parity)
+_drspec = importlib.util.spec_from_file_location("brand_brain_drift", Path(__file__).resolve().parent / "drift.py")
+drift = importlib.util.module_from_spec(_drspec)
+_drspec.loader.exec_module(drift)
 _ugspec = importlib.util.spec_from_file_location("brand_brain_ugc", Path(__file__).resolve().parent / "ugc.py")
 ugc = importlib.util.module_from_spec(_ugspec)
 _ugspec.loader.exec_module(ugc)
@@ -810,6 +820,21 @@ def rule_self_audit(brain: Brain, ends_on: str) -> list[dict]:
     return out
 
 
+def rule_drift(brain: Brain, ends_on: str) -> list[dict]:
+    d = drift.analysis(brain)
+    if not d.get("available") or not d.get("drift"):
+        return []
+    ev = [_row("praise_echo_share", d["echo_share"], "share", ends_on, None, d["echo_floor"], "language_bank"), _row("contradicted_words", len(d["contradicted"]), "n", ends_on, None, 0, "language_bank")]
+    parts = []
+    if d["echo_share"] is not None and d["echo_share"] < d["echo_floor"]:
+        parts.append(f"only {round(d['echo_share'] * 100)} percent of {d['counts']['praise_quotes']} praise quotes echo the positioning's words")
+    if d["contradicted"]:
+        parts.append("complaints contradict " + ", ".join(d["contradicted"]))
+    f = _finding("BRN-R32", "low", {"type": "brand", "id": "positioning_drift", "label": "positioning frame"}, ev, "Positioning drift: " + "; ".join(parts) + ".", [x["record"] for x in d["sources"]][:4], ends_on, 0.7)
+    f["drift"] = {"brief": d["brief"], "missing": d["missing"], "contradicted": d["contradicted"], "echo_share": d["echo_share"]}
+    return [f]
+
+
 def rule_consents(brain: Brain, ends_on: str) -> list[dict]:
     out = []
     for c in ugc.register(brain)["consents"]:
@@ -890,7 +915,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
         bank = keeper.load_bank()
     except (OSError, ValueError, KeyError):
         bank = None
-    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_untiered_claims(brain, ends_on) + rule_site_changes(brain, ends_on) + rule_parity(brain, ends_on) + rule_contracts(brain, ends_on) + rule_legal(brain, ends_on) + rule_picked_ideas(brain, ends_on) + rule_ladder_proof(brain, ends_on) + rule_self_audit(brain, ends_on) + rule_peaks(brain, ends_on) + rule_visual(brain, ends_on) + rule_visibility(brain, ends_on) + rule_rejected_due(brain, ends_on) + rule_assets(brain, ends_on) + rule_consents(brain, ends_on) + rule_permissions(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
+    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_untiered_claims(brain, ends_on) + rule_site_changes(brain, ends_on) + rule_parity(brain, ends_on) + rule_contracts(brain, ends_on) + rule_legal(brain, ends_on) + rule_picked_ideas(brain, ends_on) + rule_ladder_proof(brain, ends_on) + rule_self_audit(brain, ends_on) + rule_peaks(brain, ends_on) + rule_visual(brain, ends_on) + rule_visibility(brain, ends_on) + rule_rejected_due(brain, ends_on) + rule_assets(brain, ends_on) + rule_consents(brain, ends_on) + rule_drift(brain, ends_on) + rule_permissions(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
     if bank is None:
         for rid, sev in (("BRN-R02", "medium"), ("BRN-R03", "medium")):
             f = _finding(rid, sev, {"type": "brand", "id": "question_bank", "label": "question bank"},

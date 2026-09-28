@@ -64,6 +64,7 @@
     loadLadderProof(m.actions || []);
     loadAssets(m.actions || []);
     loadUgc(m.actions || []);
+    loadDrift(m.actions || []);
     loadSelfAudit(m.actions || []);
     loadPeaks(m.actions || []);
     loadVisual(m.actions || []);
@@ -1415,6 +1416,19 @@
     const add = el('button', { class: 'btn primary sm', type: 'button', text: 'Put the yes on file' });
     add.addEventListener('click', async () => { add.disabled = true; try { const r = await api(BASE + 'ugc', { method: 'POST', body: { name: name.value.trim(), handle: handle.value.trim(), channel: channel.value, what: what.value.trim(), scope: scope.value, term_months: term.value || null, granted_on: granted.value || null, evidence: evidence.value.trim() } }); status.textContent = r.next; loadUgc(actions); loadPlan(); } catch (e) { add.disabled = false; status.textContent = 'Could not save: ' + e.message; } });
     mount('#ugc', table, el('div', { class: 'row', style: { marginTop: '8px' } }, name, handle, channel, what), el('div', { class: 'row' }, scope, term, granted, evidence, draft, add, status), out, el('p', { class: 'micro faint', text: ug.note }));
+  }
+  async function loadDrift(actions) {
+    let d;
+    try { d = await api(BASE + 'drift'); } catch (e) { mount('#drift', el('p', { class: 'muted', text: 'Drift unavailable: ' + e.message })); return; }
+    const act = (actions || []).find((a) => a.rule_id === 'BRN-R32');
+    mount('#drift-tools', UI.orientation([{ label: 'praise quotes', value: d.counts.praise_quotes, unit: 'n' }, { label: 'complaint quotes', value: d.counts.complaint_quotes, unit: 'n' }, { label: 'echo share', value: d.available ? d.echo_share : null, unit: '%', tone: d.available ? (d.echo_share < d.echo_floor ? 'bad' : 'good') : null, title: 'praise quotes that echo one of our top 8 words' }, { label: 'contradicted', value: d.available ? d.counts.contradicted : null, unit: 'n', tone: d.available && d.counts.contradicted ? 'bad' : null }]));
+    if (!d.available) { mount('#drift', el('p', { class: 'muted small', text: 'Unavailable: ' + d.reason + '.' })); return; }
+    const ours = UI.verdictTable({ columns: [{ key: 'word', label: 'We say' }, { key: 'praise', label: 'In praise', num: true }, { key: 'praise_share', label: 'Share of praise', num: true, unit: '%' }, { key: 'complaint', label: 'In complaints', num: true }],
+      verdict: { at: 1, kind: (r) => r.verdict === 'echoed' ? 'keep' : r.verdict === 'contradicted' ? 'stop' : 'watch', text: (r) => r.verdict === 'echoed' ? 'Echoed' : r.verdict === 'contradicted' ? 'Contradicted' : 'Not echoed', reason: (r) => r.verdict === 'contradicted' ? 'more complaints than praise carry it' : r.verdict === 'echoed' ? 'at least 5 percent of praise quotes carry it' : 'under 5 percent of praise quotes' }, rows: d.positioning, sort: false, empty: 'No positioning words.' });
+    const theirs = UI.table({ columns: [{ key: 'word', label: 'Customers say' }, { key: 'praise', label: 'Praise quotes', num: true }, { key: 'praise_share', label: 'Share', num: true, unit: '%' }, { key: 'in_positioning', label: 'In our frame', format: (v) => v ? 'yes' : 'no' }], rows: d.customer_words, sort: false });
+    mount('#drift', el('div', { class: 'row' }, UI.verdict(d.drift ? 'fix' : 'keep', d.drift ? 'Drift' : 'Aligned'), el('span', { class: 'small', text: d.missing.length ? 'Customers use, we do not: ' + d.missing.join(', ') + '.' : 'Every top customer word is in the frame.' }), UI.copyButton({ label: 'Copy the drift brief', text: () => d.brief }), act ? UI.decisionRow({ capability: 'BRAND-C57', autonomy: 'agent_does', owner: act.owner, screen: SCREEN, compact: true, finding_id: act.id, current: act.decision, stub: act.title + '. ' + act.artefact.label + '.' }) : null),
+      UI.tabs({ items: [{ key: 'ours', label: 'Our words in their mouths', n: d.positioning.length, panel: ours }, { key: 'theirs', label: 'Their words', n: d.customer_words.length, panel: theirs }, { key: 'brief', label: 'Drift brief', panel: el('pre', { class: 'card sunken brief', text: d.brief }) }] }),
+      el('p', { class: 'micro faint', text: d.note + ' Sources: ' + d.sources.map((s) => s.record + ' (' + pretty(s.tier) + ')').join(', ') + '.' }));
   }
   async function loadContracts() {
     let cr, actions = [];

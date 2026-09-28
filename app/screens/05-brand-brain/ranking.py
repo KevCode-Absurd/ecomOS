@@ -159,6 +159,12 @@ def build(f: dict, nr: float | None) -> dict:
                         {"n": 3, "who": "person", "text": "Pick the record as proof, or approve the drafted fact as an approved record."},
                         {"n": 4, "who": "agent", "text": f"Attach it to the rung. The surfaces that use the rung ({surfaces or 'copy, page, listing, macro'}) read the proof on their next brief."}],
                  check_on=_check_on(f, 7), time_to_ship_hours=1)
+    elif rid == "BRN-R32":
+        dz = f.get("drift") or {}
+        a.update(title="Redraft the positioning frame with the words customers use" + (": " + ", ".join(dz.get("missing") or [])[:60] if dz.get("missing") else ""), owner="agent_drafts",
+                 artefact={"kind": "brain_record", "label": "a positioning frame that customers echo, every claim tied to a record", "draft": dz.get("brief")},
+                 steps=[{"n": 1, "who": "agent", "text": "Draft 2 frames from the drift brief: one that adds the customers' words, one that drops the contradicted ones."}, {"n": 2, "who": "person", "text": "Pick one, or edit it in the profile."}, {"n": 3, "who": "agent", "text": "Write it as the approved frame; the brain file and every brief read it. Re-run the drift check next month."}],
+                 check_on=_check_on(f, 30), time_to_ship_hours=1)
     elif rid == "BRN-R31":
         cz = f.get("consent") or {}
         expired = cz.get("state") == "expired"

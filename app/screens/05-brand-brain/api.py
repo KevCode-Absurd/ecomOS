@@ -8,6 +8,7 @@ question, and accept or ignore on a proposed record. Nothing external.
                                 judgement rules, the package, where to check (markdown)
   GET  agentfile/endpoints      this route table as JSON, for an agent or an MCP wrapper
   GET  brainmd                  the router BRAIN.md text
+  GET  drift                    positioning drift: the frame's words against the words customers use, with the brief
   GET  ugc                      UGC permission on file: consents with channel, scope, term and state
   POST ugc                      {name, handle, channel, what, scope, granted_on, term_months, evidence}: a consent on file
   POST ugc/request              {name, what, scope, term_months}: the permission ask drafted, not sent
@@ -195,6 +196,9 @@ _pspec.loader.exec_module(parity)
 _sspec = importlib.util.spec_from_file_location("brand_brain_sitediff", HERE / "sitediff.py")
 sitediff = importlib.util.module_from_spec(_sspec)
 _sspec.loader.exec_module(sitediff)
+_drspec = importlib.util.spec_from_file_location("brand_brain_drift", HERE / "drift.py")
+drift = importlib.util.module_from_spec(_drspec)
+_drspec.loader.exec_module(drift)
 _ugspec = importlib.util.spec_from_file_location("brand_brain_ugc", HERE / "ugc.py")
 ugc = importlib.util.module_from_spec(_ugspec)
 _ugspec.loader.exec_module(ugc)
@@ -1868,6 +1872,10 @@ def handle(req):
         return cd
     if req.method == "POST" and parts == ["claims"]:
         return claim_add(brain, req.body)
+    if req.method == "GET" and parts == ["drift"]:
+        d = drift.analysis(brain)
+        d.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "BRAND-C57", "autonomy": "agent_does"})
+        return d
     if req.method == "GET" and parts == ["ugc"]:
         reg = ugc.register(brain)
         reg.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "LOOP-C27", "autonomy": "founder_gate"})
