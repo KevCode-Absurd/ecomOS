@@ -533,7 +533,8 @@ def act_price_cut(f: dict, m: dict) -> dict:
                             ("agent", "Draft price per pair and guarantee lines for those cards and 1 price per wear ad."),
                             ("person", "Approve the copy. The founder owns any price change."),
                             ("agent", f"Watch add to cart on those packs for 7 days; report on {_plus(f['last_seen'], 7)}.")),
-            "size": None, "win_rule": "Conversion on the overlapping packs holds within 5 percent",
+            "size": {"text": "value lines on the packs within 20 percent of their price, and 1 ad", "count": 1},
+            "win_rule": "Conversion on the overlapping packs holds within 5 percent",
             "stop_rule": "Conversion down 10 percent for 5 days: escalate to the founder", "check_on": _plus(f["last_seen"], 7),
             "time_to_ship_hours": 3}
 

@@ -2151,5 +2151,29 @@ class TestTeamExport(unittest.TestCase):
         self.assertIn("api(BASE + 'inputs')", body)
 
 
+class TestSizedNewRules(TempInputs):
+    """9.8: depth rule 5 on every rule added since round 6: fire each one, and each money or traffic action is sized,
+    has a stop rule and a check date."""
+    MONEY = {'ad_brief', 'offer', 'test_brief', 'page_section', 'copy', 'listing_fix', 'ticket'}
+
+    def test_all_fire_and_are_sized(self):
+        for r in ('fit and sizing',) * 3:
+            self.interview('loss', 'Stance', r)                                        # COMP-R31
+        base = {'kind': 'price_seen', 'page': 'Darn Tough Vermont', 'product': 'Hiker', 'units': 1}
+        self.post(dict(base, price=26, date='2026-09-01'))
+        self.post(dict(base, price=4, date=DAY))                                       # COMP-R25 cut, COMP-R33 out of band
+        self.post({'kind': 'price_seen', 'page': 'Stance', 'product': 'Crew', 'price': 16, 'units': 1, 'date': '2026-09-01'})  # COMP-R34
+        self.post({'kind': 'frame_test', 'line': 'B', 'asked': 200, 'prefer_new': 130, 'prefer_current': 60})               # COMP-R32
+        self.post({'kind': 'site_change', 'page': 'Stance', 'what': 'new_offer'})                                           # COMP-R24
+        acts = api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions']
+        ids = {a['rule_id'] for a in acts}
+        for rid in ('COMP-R24', 'COMP-R25', 'COMP-R31', 'COMP-R32', 'COMP-R33', 'COMP-R34', 'COMP-R35'):
+            self.assertIn(rid, ids)
+        for a in acts:
+            if a.get('status') == 'unavailable' or a['artefact']['kind'] not in self.MONEY:
+                continue
+            self.assertTrue(a.get('size') and a.get('stop_rule') and a.get('check_on'), a['rule_id'])
+
+
 if __name__ == '__main__':
     unittest.main()
