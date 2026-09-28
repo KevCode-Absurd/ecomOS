@@ -751,6 +751,29 @@
         gaps.length && actionFor(gaps[0].finding_id) ? { label: 'Run the first check', onClick: () => openAction(actionFor(gaps[0].finding_id)) } : null));
   }
 
+  function surfacesBlock(sf) {
+    const rows = (sf && sf.rows) || [];
+    if (!rows.length) return UI.emptyState({ screen: SLUG, title: 'No surfaces on file', text: 'The brain holds no Reddit language, review sources or channel records yet.', missing: ['reddit', 'reviews', 'channels'] });
+    const kindText = { forum: 'Forum', reviews: 'Review source', social: 'Social' };
+    const reach = (r) => r.status === 'not_pulled' ? 'not pulled yet' : r.status === 'no_pull' ? 'no pull for this surface' : r.kind === 'forum' ? r.quotes + ' quotes, ' + fmt.int(r.upvotes || 0) + ' upvotes' : r.kind === 'reviews' ? r.quotes + ' review quotes' : (r.posts == null ? NA : r.posts + ' posts' + (r.status === 'mock' ? ' (mock pull)' : ''));
+    const pending = rows.filter((r) => r.verdict === 'not_pulled');
+    const vrows = rows.filter((r) => r.verdict !== 'not_pulled').map((r) => { const a = actionFor(r.finding_id); return Object.assign({}, r, {
+      kindText: kindText[r.kind] || r.kind, reachText: reach(r), theme: r.top_theme_label || (r.verdict === 'not_pulled' ? NA : 'none'),
+      praise: r.praise_share == null ? NA : (r.praise_share * 100).toFixed(0) + ' percent praise', present: r.present == null ? NA : r.present ? 'yes' : 'no',
+      answer: r.answered_on_site == null ? NA : r.answered_on_site ? 'yes' : 'no',
+      actions: [a ? { label: r.kind === 'forum' ? 'Open the listening post' : r.kind === 'reviews' ? 'Claim the profile' : 'Open the account', onClick: () => openAction(a) } : { label: r.verdict === 'present' ? 'Present' : r.verdict === 'not_pulled' ? 'Plan a pull' : 'Watch', cls: 'quiet', onClick: () => {} }] }); });
+    const tbl = UI.verdictTable({
+      columns: [{ key: 'label', label: 'Surface' }, { key: 'kindText', label: 'Kind' }, { key: 'reachText', label: 'Reach on file' }, { key: 'praise', label: 'Tone' }, { key: 'theme', label: 'Loudest theme' }, { key: 'present', label: 'Brand present' }, { key: 'answer', label: 'Site answers the theme' }],
+      rows: vrows,
+      verdict: { at: 1, kind: (r) => r.verdict === 'gap' ? 'fix' : r.verdict === 'present' ? 'keep' : r.verdict === 'not_pulled' ? 'na' : 'watch', text: (r) => ({ gap: 'Reach, no presence', present: 'Present', watch: 'Below the floor', not_pulled: 'Not pulled' })[r.verdict], reason: (r) => sf.rule },
+      actions: { label: 'Do', onClick: () => {} }, sort: false });
+    const gaps = rows.filter((r) => r.verdict === 'gap');
+    return el('div', { class: 'stack' }, el('div', { class: 'card scroll' }, tbl),
+      el('p', { class: 'micro faint', text: 'Rule: ' + sf.rule + '. ' + (sf.note || '') + (pending.length ? ' Configured and not pulled yet (a pull is a paid call a person approves): ' + pending.map((r) => r.label).join(', ') + '.' : '') }),
+      gapLine(gaps.length ? gaps.length + ' surface' + (gaps.length === 1 ? ' carries' : 's carry') + ' the category conversation with no record of the brand on ' + (gaps.length === 1 ? 'it' : 'them') + ': ' + gaps.map((r) => r.label).join(', ') + '.' : 'The brand is present on every surface with reach.',
+        gaps.length && actionFor(gaps[0].finding_id) ? { label: 'Open the first', onClick: () => openAction(actionFor(gaps[0].finding_id)) } : null));
+  }
+
   function loadDesk(o) {
     const d = o.desk || {};
     const w = (o.window || {}).trend;
@@ -758,6 +781,7 @@
     parts.push(section('desk-trends', 'Where is the category going, and which lane is under-advertised?', 'Public market sizes and growth from the web pass, a url and a date on every number, against our category mix over 12 whole months. Sales are simulated; markets are public.', trendsBlock(d.trends || { on_file: false }, d.mix || {})));
     parts.push(section('desk-lanes', 'Which lanes are competitors betting on, and what launched?', 'Competitor pages from the Ad Library pull in the brain, by lane: who pushes it, how long their ads have run, what launched in the last 24 months, and whether we sell and advertise it.', lanesBlock(d.lanes)));
     parts.push(section('desk-conversation', 'What are people talking about, and what goes unanswered?', 'Themes across reviews (site, Amazon, Trustpilot, retailers), Reddit and an Instagram hashtag pull: volume, complaint against praise, the top doubt, and whether the site and the active ads answer it.', conversationBlock(d.conversation)));
+    parts.push(section('desk-surfaces', 'Where do buyers talk, and where are we absent?', 'Each subreddit in the Reddit pull, each review source in the ladders and each social surface the brand names: reach on file, tone, the loudest theme, and whether any brand record shows us there. Counts only; no usernames.', surfacesBlock(d.surfaces)));
     parts.push(section('desk-preferences', 'Which preferences are shifting, and where do we stand on each?', 'Public survey numbers from the web pass against our own claims, our active ads, the competitors\' pitches and the category conversation.', preferencesBlock(d.preferences)));
     parts.push(section('desk-map', 'Where do we sit against the competitors, and which position is open?', 'Price per pair against the share of proof-led hooks, from the brain\'s competitor records and the Ad Library pull. Sized by active ads. The Reddit frames show how the category talks about itself.', mapBlock(d.map)));
     parts.push(section('desk-avatars', 'Which buyers do we serve, and which do competitors pitch to that we do not?', 'The brain\'s avatars by the lines we sell: our evidence against competitor pitches in every cell. Big segments on a complaint-led theme carry the repeat revenue at risk.', avatarBlock(d.avatars)));

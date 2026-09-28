@@ -760,6 +760,50 @@ def recipe(f):
             'stop_rule': 'no funding on a forecast alone', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 2,
             'win_rule': '3 or more years of history on file for the lane',
         }
+    if rid == 'PROD-R30':
+        ent = f.get('entity') or {}
+        label = ent.get('label') or 'the surface'
+        theme = (ent.get('top_theme') or 'the loudest theme').lower()
+        if ent.get('kind') == 'forum':
+            return {
+                'title': f'Open a listening post on {label} and answer {theme} there as the brand',
+                'owner': 'agent_drafts',
+                'artefact': {'kind': 'research_note', 'label': f'a listening brief for {label}: the weekly thread pull under the Reddit cap, the {theme} answer with the brand\'s proof, the disclosure line, and the log of threads that name a competitor'},
+                'steps': [
+                    {'n': 1, 'who': 'agent', 'text': f'Pull the top threads on {label} that name the category each week under the brand\'s Reddit cap; store counts and short quotes, never usernames.'},
+                    {'n': 2, 'who': 'agent', 'text': f'Draft the {theme} answer from the objection ladder proof, with a plain disclosure that the poster works for the brand.'},
+                    {'n': 3, 'who': 'person', 'text': f'Post the answer on {label} as the brand where the subreddit rules allow it; no Reddit user is ever quoted in an ad.'},
+                    {'n': 4, 'who': 'agent', 'text': 'Write a channels record for the surface so this read closes, and log each thread that recommends a competitor into the competitors section.'}],
+                'size': {'text': f'{ent.get("quotes") or 0} quotes, {(ent.get("upvotes") or 0):,} upvotes', 'usd': None},
+                'stop_rule': 'stop when a mod removes a post or the subreddit rules bar brand replies', 'check_on': _check_on(f, 14), 'time_to_ship_hours': 3,
+                'win_rule': 'a channels record names the surface and the loudest theme has a posted answer',
+            }
+        if ent.get('kind') == 'reviews':
+            return {
+                'title': f'Claim the brand profile on {label} and answer the {theme} reviews',
+                'owner': 'person',
+                'artefact': {'kind': 'brain_record', 'label': f'a channels record for {label}: the claimed profile url, who answers reviews, the {theme} reply template, and the review count at claim'},
+                'steps': [
+                    {'n': 1, 'who': 'person', 'text': f'Claim or verify the brand profile on {label} from the brand email.'},
+                    {'n': 2, 'who': 'agent', 'text': f'Draft the reply template for {theme} from the objection ladder proof; one paragraph, no promotion.'},
+                    {'n': 3, 'who': 'person', 'text': 'Answer the open 1 and 2 star reviews first, newest first.'},
+                    {'n': 4, 'who': 'agent', 'text': 'Write the channels record and add the source to the next review pull.'}],
+                'size': {'text': f'{ent.get("quotes") or 0} review quotes on file', 'usd': None},
+                'stop_rule': 'stop if the profile is held by a reseller and cannot be claimed', 'check_on': _check_on(f, 14), 'time_to_ship_hours': 2,
+                'win_rule': f'the profile is claimed and the {theme} reviews have a brand reply',
+            }
+        return {
+            'title': f'Open a brand account on {label} and post the {theme} answer',
+            'owner': 'person',
+            'artefact': {'kind': 'brain_record', 'label': f'a channels record for {label}: the account, who posts, and the first 3 posts on {theme}'},
+            'steps': [
+                {'n': 1, 'who': 'person', 'text': f'Open the brand account on {label}.'},
+                {'n': 2, 'who': 'agent', 'text': f'Draft 3 posts on {theme} from the objection ladder proof and the language bank.'},
+                {'n': 3, 'who': 'person', 'text': 'Post them and write the channels record.'}],
+            'size': {'text': f'{ent.get("posts") or 0} posts in the pull', 'usd': None},
+            'stop_rule': 'stop if the surface bars brand accounts', 'check_on': _check_on(f, 14), 'time_to_ship_hours': 3,
+            'win_rule': 'a channels record names the surface',
+        }
     return None
 
 
@@ -784,6 +828,28 @@ def merge_lanes(actions):
         host['why'] = host['why'] + ' ' + a['why']
         host['brain_refs'] = sorted(set(host.get('brain_refs') or []) | set(a.get('brain_refs') or []))
         host['rubric']['confidence'] = max(host['rubric'].get('confidence') or 0, a['rubric'].get('confidence') or 0)
+    return keep
+
+
+def merge_surfaces(actions):
+    """One action for the forums: the highest-scored PROD-R30 forum finding hosts the other subreddits, so the plan shows one
+    listening post, not one card per subreddit. Review and social surfaces keep their own card."""
+    forums = [a for a in actions if a.get('rule_id') == 'PROD-R30' and (a.get('entity') or {}).get('kind') == 'forum']
+    if len(forums) < 2:
+        return actions
+    forums.sort(key=lambda a: -((a.get('rubric') or {}).get('total') or 0))
+    host = forums[0]
+    keep = []
+    for a in actions:
+        if a is host or a not in forums:
+            keep.append(a)
+            continue
+        host['finding_ids'] = sorted(set(host['finding_ids']) | set(a['finding_ids']))
+        host['why'] = host['why'] + ' ' + a['why']
+        host['rubric']['confidence'] = max(host['rubric'].get('confidence') or 0, a['rubric'].get('confidence') or 0)
+    others = [(a.get('entity') or {}).get('label') for a in forums[1:]]
+    host['title'] = host['title'].replace(' and answer', f' plus {", ".join(o for o in others if o)} and answer', 1)
+    host['size'] = {'text': f'{len(forums)} subreddits: ' + (host.get('size') or {}).get('text', ''), 'usd': None}
     return keep
 
 
@@ -862,7 +928,7 @@ def rank(brand, window=None):
         a['screen'] = SCREEN
         if not rank_mod.validate_action(a):
             actions.append(a)
-    actions = merge_candidates(merge_lanes(actions))
+    actions = merge_surfaces(merge_candidates(merge_lanes(actions)))
     actions.sort(key=rank_mod.sort_key)
     return {'screen': SCREEN, 'brand': brand, 'window': window, 'actions': actions, 'net_revenue_28d': nr}
 
@@ -990,7 +1056,7 @@ def overview(data, brand):
                      'gates': gates_block(brand, data, br, rd, ends_on, findings), 'scorecard': scorecard_block(brand, data, br, rd, ends_on, findings),
                      'video': audit.video_signals(br, brand, ends_on), 'tech_packs': tech_pack_block(brand, findings),
                      'hours': dict(audit.hours_table(brand, br), findings={f['entity']['id']: f['id'] for f in findings if f['rule_id'] == 'PROD-R28'}),
-                     'trend_checks': audit.trend_checks(br, brand, ends_on)},
+                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on)},
             'audit': {'findings': findings, 'rules': audit.RULES}}
 
 

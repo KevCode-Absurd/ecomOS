@@ -115,6 +115,11 @@ Rules
   PROD-R29  Trend without history: a lane with an open candidate whose market series in the web pass holds no 3 years
             of history (forecast only, or none), or whose last-year growth is more than twice its multi-year rate
             (a spike). Bank ideas PRD-044 and PRD-045. Severity low. Capability PROD-C05. Owner: 01-market-research.
+  PROD-R30  Surface with reach and no presence: a place the category conversation runs (a subreddit in the Reddit pull,
+            a review source in the ladders, a social surface) with reach at or over the floor (20 quotes or 1,000 upvotes
+            for a forum, 30 quotes for a review source, 50 posts for a social pull) and no channel, identity, site map,
+            marketplace, offer or policy record naming the brand there. Severity medium; high at 10,000 upvotes. Money
+            null. Capability PROD-C12 (field research discipline, human assist). Owner: 01-market-research.
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -197,6 +202,8 @@ RULES = [
      'inputs': ['fixtures.pipeline', 'brain.learnings'], 'capability': 'PROD-C04', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R29', 'name': 'Candidate lane whose market trend rests on a forecast or one year, with no 3-year history on file, or reads as a spike', 'entity_type': 'metric',
      'inputs': ['fixtures.market_trends', 'fixtures.pipeline'], 'capability': 'PROD-C05', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R30', 'name': 'Surface where the category conversation has reach (forum, review source or social) and no record shows the brand present', 'entity_type': 'metric',
+     'inputs': ['brain.language_bank', 'brain.objection_ladders', 'brain.channels', 'brain.identity', 'brain.site_map', 'fixtures.social_pull'], 'capability': 'PROD-C12', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -226,7 +233,8 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R26': {'id': 'PROD-C02', 'autonomy': 'agent_does'},
               'PROD-R27': {'id': 'PROD-C13', 'autonomy': 'agent_does'},
               'PROD-R28': {'id': 'PROD-C04', 'autonomy': 'agent_does'},
-              'PROD-R29': {'id': 'PROD-C05', 'autonomy': 'agent_does'}}
+              'PROD-R29': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
+              'PROD-R30': {'id': 'PROD-C12', 'autonomy': 'human_assist'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -706,6 +714,7 @@ def run(brand, window=None, data=None):
     out += tech_pack_findings(brand, ends_on)
     out += hours_findings(brand, br, ends_on)
     out += trend_check_findings(br, brand, ends_on)
+    out += audience_findings(br, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -2606,5 +2615,179 @@ def trend_check_findings(br, brand, ends_on):
         f = _finding('PROD-R29', r['key'], ends_on, 'low', ev, sentence, None, 0.7, [], money_reason='a trend check has no order count')
         f['entity'] = {'type': 'metric', 'id': r['key'], 'label': r['label'], 'verdict': r['verdict'], 'candidates': r['candidates'], 'market': r['market']}
         f['id'] = f'{SCREEN}.PROD-R29.{r["key"]}'
+        out.append(f)
+    return out
+
+
+# ---------------------------------------------------------------- audience surfaces (round 3.6)
+
+# reach floors per surface kind: below the floor a surface is a watch, not a gap
+SURFACE_FLOOR = {'forum': {'quotes': 20, 'upvotes': 1000}, 'reviews': {'quotes': 30}, 'social': {'posts': 50}}
+SURFACE_LABEL = {'amazon': 'Amazon reviews', 'own_site': 'Own site reviews', 'trustpilot': 'Trustpilot', 'retailer': 'Retailer reviews',
+                 'other': 'Other review sites', 'amazon_customers_say': 'Amazon reviews'}
+# social surfaces the brand can own an account on, and the words that show it does in its own records
+SOCIAL_SURFACES = [('instagram', 'Instagram', ['instagram']), ('tiktok', 'TikTok', ['tiktok']), ('youtube', 'YouTube', ['youtube']),
+                   ('pinterest', 'Pinterest', ['pinterest']), ('strava', 'Strava', ['strava']), ('facebook', 'Facebook', ['facebook'])]
+PRESENCE_SECTIONS = ('channels', 'identity', 'site_map', 'marketplaces', 'offers', 'policies')
+
+
+def presence_words(br):
+    """Lower-case text of the records that say where the brand itself is present: channels, identity, site map, marketplaces, offers, policies."""
+    if br is None:
+        return ''
+    parts = []
+    for sec in PRESENCE_SECTIONS:
+        for r in br.records(sec):
+            if (r.get('value') or {}).get('role') == 'competitor' if isinstance(r.get('value'), dict) else False:
+                continue
+            parts.append(str(r.get('text') or ''))
+            parts.append(json.dumps(r.get('value')))
+    return ' '.join(parts).lower()
+
+
+def _surface_row(key, label, kind, url=None):
+    return {'key': key, 'label': label, 'kind': kind, 'url': url, 'quotes': 0, 'upvotes': None, 'posts': None, 'praise': 0, 'complaint': 0,
+            'themes': {}, 'top_theme': None, 'top_theme_label': None, 'present': None, 'present_how': None, 'answered_on_site': None,
+            'status': 'read', 'verdict': 'watch'}
+
+
+def audience_surfaces(br, ends_on):
+    """Where buyers of the category talk, one row per surface: the subreddits in the Reddit pull (quotes, upvotes, praise against
+    complaint, loudest theme), each review source in the objection ladders (quotes, loudest theme), and the social surfaces the
+    brand's own records name (the Instagram pull gives posts; the rest read unavailable). Presence is whether the brand's own
+    records (channels, identity, site map, marketplaces, offers, policies) name the surface. Configured subreddits with no pull
+    yet show as not pulled, never as 0. Usernames are never read; the rows are counts."""
+    if br is None:
+        return {'rows': [], 'rule': None, 'note': None}
+    rows = {}
+    site = brand_words(br)
+    present = presence_words(br)
+    # forums: the Reddit language bank
+    for rec in br.records('language_bank'):
+        v = rec.get('value') or {}
+        sub = v.get('subreddit')
+        if not sub:
+            continue
+        key = 'reddit:' + str(sub).lower()
+        r = rows.setdefault(key, _surface_row(key, 'r/' + str(sub), 'forum', f'https://www.reddit.com/r/{sub}/'))
+        r['quotes'] += 1
+        r['upvotes'] = (r['upvotes'] or 0) + int(v.get('weight') or 0)
+        if v.get('theme') == 'praise':
+            r['praise'] += 1
+        elif v.get('theme') == 'complaint':
+            r['complaint'] += 1
+        for th in v.get('themes') or ['general']:
+            r['themes'][th] = r['themes'].get(th, 0) + 1
+    cfg_path = APP / 'brain' / br.brand / 'config' / 'apify.json'
+    cfg = json.loads(cfg_path.read_text(encoding='utf-8')) if cfg_path.is_file() else {}
+    for sub in (cfg.get('reddit') or {}).get('subreddits') or []:
+        key = 'reddit:' + str(sub).lower()
+        if key not in rows:
+            r = rows.setdefault(key, _surface_row(key, 'r/' + str(sub), 'forum', f'https://www.reddit.com/r/{sub}/'))
+            r['status'] = 'not_pulled'
+            r['upvotes'] = None
+    # review sources: the objection ladders carry counts per source per theme
+    for rec in br.records('objection_ladders'):
+        v = rec.get('value') or {}
+        th = LADDER_THEME.get(v.get('theme') or rec.get('field'))
+        c = v.get('counts') or {}
+        for src, n in (c.get('sources') or v.get('sources') or {}).items():
+            if not n or src == 'reddit':
+                continue
+            src = 'amazon' if src == 'amazon_customers_say' else src
+            key = 'reviews:' + src
+            r = rows.setdefault(key, _surface_row(key, SURFACE_LABEL.get(src, pretty_source(src)), 'reviews'))
+            r['quotes'] += int(n)
+            if th:
+                r['themes'][th] = r['themes'].get(th, 0) + int(n)
+    # social surfaces named in the brand's own records; the Instagram pull gives posts
+    social = social_pull() or {}
+    for key, label, words in SOCIAL_SURFACES:
+        if not any(w in present for w in words) and key != 'instagram':
+            continue
+        r = rows.setdefault('social:' + key, _surface_row('social:' + key, label, 'social'))
+        if key == 'instagram' and social:
+            r['posts'] = social.get('items')
+            r['status'] = 'mock' if social.get('mode') != 'live' else 'read'
+            for th, g in (social.get('themes') or {}).items():
+                r['themes'][th] = r['themes'].get(th, 0) + int(g.get('posts') or 0)
+                r['praise'] += int(g.get('praise') or 0)
+                r['complaint'] += int(g.get('complaint') or 0)
+        elif key == 'instagram':
+            r['status'] = 'not_pulled'
+        else:
+            r['status'] = 'no_pull'
+    # presence, loudest theme, verdict
+    out = []
+    for r in rows.values():
+        kind = r['kind']
+        name = r['label'].lower().replace('r/', '')
+        if kind == 'forum':
+            r['present'] = ('reddit' in present) or ('r/' + name in present)
+            r['present_how'] = 'a record names Reddit' if r['present'] else 'no channel, identity or site record names Reddit'
+        elif kind == 'reviews':
+            src = r['key'].split(':', 1)[1]
+            words = {'amazon': ['amazon'], 'own_site': ['review', 'yotpo', 'okendo', 'stamped'], 'trustpilot': ['trustpilot'], 'retailer': ['nordstrom', 'target', 'dsw', "dick's", 'athleta', 'wholesale'], 'other': []}.get(src, [src])
+            r['present'] = any(w in present for w in words) if words else None
+            r['present_how'] = ('a record names the surface' if r['present'] else 'no record names it') if r['present'] is not None else 'presence not readable'
+        else:
+            r['present'] = any(w in present for w in dict((k, ws) for k, _, ws in SOCIAL_SURFACES)[r['key'].split(':', 1)[1]])
+            r['present_how'] = 'the brand runs an account here' if r['present'] else 'no channel record names it'
+        themes = {k: v for k, v in r['themes'].items() if k != 'general'} or r['themes']
+        if themes:
+            top = max(themes.items(), key=lambda kv: kv[1])
+            r['top_theme'], r['top_theme_label'] = top[0], THEME_LABEL.get(top[0], top[0])
+            words = ANSWER_WORDS.get(top[0], [top[0]])
+            r['answered_on_site'] = any(w in site for w in words) if site else None
+        pc = r['praise'] + r['complaint']
+        r['praise_share'] = round(r['praise'] / pc, 4) if pc else None
+        floor = SURFACE_FLOOR[kind]
+        if r['status'] in ('not_pulled', 'no_pull'):
+            r['verdict'] = 'not_pulled'
+        elif kind == 'forum':
+            r['reach'] = r['quotes'] >= floor['quotes'] or (r['upvotes'] or 0) >= floor['upvotes']
+        elif kind == 'reviews':
+            r['reach'] = r['quotes'] >= floor['quotes']
+        else:
+            r['reach'] = (r['posts'] or 0) >= floor['posts']
+        if r['verdict'] != 'not_pulled':
+            r['verdict'] = 'gap' if r['reach'] and not r['present'] else 'present' if r['present'] else 'watch'
+        r['finding_id'] = f'{SCREEN}.PROD-R30.{r["key"].replace(":", "-")}'
+        out.append(r)
+    order = {'gap': 0, 'present': 1, 'watch': 2, 'not_pulled': 3}
+    out.sort(key=lambda r: (order[r['verdict']], -(r['upvotes'] or 0), -(r['quotes'] or 0), -(r['posts'] or 0), r['label']))
+    return {'rows': out, 'floors': SURFACE_FLOOR,
+            'rule': 'a surface has reach at 20 quotes or 1,000 upvotes (forum), 30 quotes (review source) or 50 posts (social); a gap is reach with no record of the brand on it',
+            'note': 'Reddit rows are counts of public posts and comments in the language bank; usernames are never read and no Reddit user is quoted as a testimonial.'}
+
+
+def pretty_source(src):
+    return str(src).replace('_', ' ').capitalize()
+
+
+def audience_findings(br, ends_on):
+    """PROD-R30: a surface where the category conversation has reach (floor per kind) and no record shows the brand present on it."""
+    out = []
+    if br is None:
+        return out
+    for r in audience_surfaces(br, ends_on)['rows']:
+        if r['verdict'] != 'gap':
+            continue
+        floor = SURFACE_FLOOR[r['kind']]
+        ev = [_ev('quotes', r['quotes'] if r['kind'] != 'social' else r['posts'], 'count', ends_on.isoformat(), 'past year' if r['kind'] == 'forum' else 'all to capture',
+                  floor.get('quotes') or floor.get('posts'), 'threshold', source='brain.language_bank' if r['kind'] == 'forum' else 'brain.objection_ladders' if r['kind'] == 'reviews' else 'fixtures.social_pull',
+                  simulated=False, freshness_days=0, surface=r['label']),
+              _ev('brand_records_naming_surface', 0, 'count', ends_on.isoformat(), 'brain now', 1, 'threshold', source='brain.channels', simulated=False, freshness_days=0)]
+        if r['upvotes'] is not None:
+            ev.insert(1, _ev('upvotes', r['upvotes'], 'count', ends_on.isoformat(), 'past year', floor.get('upvotes'), 'threshold', source='brain.language_bank', simulated=False, freshness_days=0))
+        reach = (f'{r["quotes"]} quotes and {r["upvotes"]:,} upvotes' if r['kind'] == 'forum' else f'{r["quotes"]} review quotes' if r['kind'] == 'reviews' else f'{r["posts"]} posts')
+        theme = f' The loudest theme there is {r["top_theme_label"].lower()}' + (', which the site does not answer.' if r['answered_on_site'] is False else '.') if r['top_theme_label'] else ''
+        sentence = f'{r["label"]} carries {reach} about the category and no record shows the brand present on it.{theme}'
+        sev = 'high' if (r['upvotes'] or 0) >= 10 * SURFACE_FLOOR['forum']['upvotes'] else 'medium'
+        f = _finding('PROD-R30', r['key'].replace(':', '-'), ends_on, sev, ev, sentence, None, 0.6, [f'{br.brand}.content.reddit_topics'] if r['kind'] == 'forum' else [],
+                     money_reason='reach on a surface the brand does not own has no order count until a listening post runs')
+        f['entity'] = {'type': 'metric', 'id': r['key'], 'label': r['label'], 'kind': r['kind'], 'url': r['url'], 'top_theme': r['top_theme_label'],
+                       'answered_on_site': r['answered_on_site'], 'quotes': r['quotes'], 'upvotes': r['upvotes'], 'posts': r['posts']}
+        f['id'] = f'{SCREEN}.PROD-R30.{r["key"].replace(":", "-")}'
         out.append(f)
     return out

@@ -177,7 +177,7 @@ The candidate side of the desk: the pipeline with its gates, boxes and scorecard
 | 3.3 | Tech pack and spec versions per candidate: tolerances, the bill of materials and the packaging cost line saved from the card as versioned packs (the new one supersedes the last), status ready to quote, partial, spec missing or not yet needed; rule PROD-R27 (candidate at gated or later with no current spec) with a write-the-spec recipe; one card per candidate keeps it merged in the plan | done |
 | 3.4 | Research hours budget: hours logged per candidate against the hours allowed through its stage (per-stage budgets summed, a brand sets its own in learnings.research_hours_budget), as bars and a table with in budget, near the cap, over budget; rule PROD-R28 (hours past the budget) with a stop-the-clock recipe, merged into the candidate's card | done |
 | 3.5 | Trend history check per lane: the web pass series split into history and forecast, the last-year rate against the multi-year rate, verdict steady, spike, falling, forecast only or no series (bank ideas PRD-044 and PRD-045); rule PROD-R29 (a candidate lane with no 3-year history, or a spike) with a run-the-multi-year-check recipe that writes the series back into the web pass | done |
-| 3.6 | Audience surfaces: where buyers talk and where we have no presence (SparkToro-style) | todo |
+| 3.6 | Audience surfaces (SparkToro-style): every subreddit in the Reddit pull, every review source in the ladders and every social surface the brand names, with reach on file, tone, the loudest theme and whether any brand record shows us there; configured surfaces with no pull read not pulled, never 0; rule PROD-R30 (reach over the floor, no presence) with a listening-post recipe for forums (one card across the subreddits), a claim-the-profile recipe for review sources and an open-the-account recipe for social | done |
 | 3.7 | Marketplace seller read: who sells the brand's listings on Amazon (Jungle Scout-style) | todo |
 | 3.8 | Competitor launch cadence per brand and lane (Particl-style) | todo |
 | 3.9 | A second brand folder in the tests: the desk is not Bombas-shaped | todo |
@@ -212,5 +212,5 @@ The candidate side of the desk: the pipeline with its gates, boxes and scorecard
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.11 | 28 Sep 2026 | S3.6, Bombas simulated set at scale 0.1 |
 | 1 | 1.1 to 1.10 | 28 Sep 2026 | plan first, 13 rules (PROD-R01 to R13), rank with a recipe per rule, web pass and social pull fixtures, round1.png and round1b.png |
-| 3 | 3.1 to 3.5 | 28 Sep 2026 | readability pass, video signals, tech packs, hours budget, trend checks, PROD-R26 to R29; in progress |
+| 3 | 3.1 to 3.6 | 28 Sep 2026 | readability pass, video signals, tech packs, hours budget, trend checks, audience surfaces, PROD-R26 to R30; in progress |
 | 2 | 2.1 to 2.10 | 28 Sep 2026 | the candidate side of the desk: pipeline writes, margin gate, demand pattern, lane map, spend signal, price signal, complaint bars, angle and gates, scorecard; 25 rules (PROD-R01 to R25), one card per candidate; round2.png, round2b.png and round2c.png |

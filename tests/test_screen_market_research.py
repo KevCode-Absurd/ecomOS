@@ -257,6 +257,8 @@ class RulesTest(ShapeMixin, unittest.TestCase):
             rules = {fid.split('.')[1] for fid in a['finding_ids']}
             if (a.get('entity') or {}).get('candidate'):
                 self.assertTrue(rules <= set(api.CANDIDATE_RULES), rules)     # one card per candidate
+            elif rules == {'PROD-R30'}:
+                self.assertEqual({(f.split('.')[2]).split('-')[0] for f in a['finding_ids']}, {'reddit'})   # one listening post across subreddits
             else:
                 self.assertTrue(rules <= {'PROD-R05', 'PROD-R06', 'PROD-R20'}, rules)   # one brief per lane
         covered = [fid for a in acts for fid in a['finding_ids']]
@@ -801,6 +803,40 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
         self.assertAlmostEqual(audit.trend_history(fc, 2026)['forecast_growth'], 0.0520, places=3)
         self.assertEqual(audit.trend_history({'series': []}, 2026)['verdict'], 'no_series')
         self.assertEqual(audit.trend_history({'series': [{'year': 2021, 'value_usd': 100}, {'year': 2025, 'value_usd': 90}]}, 2026)['verdict'], 'falling')
+
+    def test_audience_surfaces_verdicts(self):
+        D = date(2026, 9, 27)
+        self.assertEqual(audit.audience_surfaces(None, D)['rows'], [])
+        self.assertEqual(audit.audience_findings(None, D), [])
+
+        class FakeBrain:
+            brand = 'fake'
+
+            def records(self, sec):
+                if sec == 'language_bank':
+                    return ([{'value': {'subreddit': 'BigSub', 'weight': 600, 'theme': 'praise', 'themes': ['durability']}}] * 25 +
+                            [{'value': {'subreddit': 'SmallSub', 'weight': 10, 'theme': 'complaint', 'themes': ['fit_sizing']}}] * 3)
+                if sec == 'objection_ladders':
+                    return [{'value': {'theme': 'durability', 'counts': {'sources': {'trustpilot': 40, 'amazon': 5, 'reddit': 9}}}}]
+                if sec == 'channels':
+                    return [{'text': 'The brand sells on Amazon and posts on TikTok.', 'value': {}}]
+                return []
+
+        rows = {r['key']: r for r in audit.audience_surfaces(FakeBrain(), D)['rows']}
+        self.assertEqual(rows['reddit:bigsub']['verdict'], 'gap')
+        self.assertEqual((rows['reddit:bigsub']['quotes'], rows['reddit:bigsub']['upvotes'], rows['reddit:bigsub']['top_theme']), (25, 15000, 'durability'))
+        self.assertEqual(rows['reddit:smallsub']['verdict'], 'watch')
+        self.assertEqual(rows['reviews:trustpilot']['verdict'], 'gap')
+        self.assertEqual(rows['reviews:amazon']['verdict'], 'present')
+        self.assertNotIn('reviews:reddit', rows)
+        self.assertEqual(rows['social:tiktok']['verdict'], 'not_pulled')
+        found = audit.audience_findings(FakeBrain(), D)
+        self.assertEqual(sorted(f['id'] for f in found), [f'{audit.SCREEN}.PROD-R30.reddit-bigsub', f'{audit.SCREEN}.PROD-R30.reviews-trustpilot'])
+        big = next(f for f in found if 'bigsub' in f['id'])
+        self.assertEqual(big['severity'], 'high')
+        self.assertIsNone(big['money_at_stake'])
+        for f in found:
+            self.check_shape(f)
 
     def test_demand_pattern_tags(self):
         even = {'rows': [{'category': 'socks', 'series': [100] * 12}], 'months': [f'2026-{m:02d}' for m in range(1, 13)], 'last': '2026-12'}
