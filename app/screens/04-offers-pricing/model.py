@@ -1614,3 +1614,45 @@ def detectable_lift(base, days, k):
     p = base['conversion']
     n = base['sessions_per_day'] * days / 2
     return round(math.sqrt(k * (1 - p) / (p * n)), 4) if p and n else None
+
+
+# ---------------------------------------------------------------- is any code leaking?
+
+def code_leaks(rd, days, words, spike, spike_min, first_code=None):
+    """Leak signals from order rows over the last `days`: the first-order code on returning customers' orders,
+    code orders from a coupon site, and weekly spikes against the median of the 8 weeks before."""
+    orders = rd.table('orders')
+    if not isinstance(orders, list) or not orders:
+        return {'unavailable': True, 'reason': 'the orders table is not connected', 'fix': 'shopify'}
+    end = rd.ends_on
+    start = end - timedelta(days=days - 1)
+    coded = [o for o in orders if ((o.get('discount') or {}).get('code')) and not o.get('cancelled_at')
+             and start.isoformat() <= str(o.get('created_at'))[:10] <= end.isoformat()]
+    amt = lambda o: float((o.get('discount') or {}).get('amount') or 0)
+    code = lambda o: str(o['discount']['code']).upper()
+    if not first_code:
+        new = {}
+        for o in coded:
+            if o.get('customer_is_new'):
+                new[code(o)] = new.get(code(o), 0) + 1
+        first_code = max(sorted(new), key=lambda c: new[c]) if new else None
+    returning = [o for o in coded if first_code and code(o) == str(first_code).upper() and o.get('customer_is_new') is False]
+    src = lambda o: ' '.join(str(x or '') for x in ((o.get('utm') or {}).get('source'), o.get('referring_site'), o.get('landing_page'))).lower()
+    sites = [o for o in coded if any(w in src(o) for w in words)]
+    spikes = []
+    last_week = end - timedelta(days=6)
+    for c in sorted({code(o) for o in coded}):
+        uses = [date.fromisoformat(str(o['created_at'])[:10]) for o in orders if (o.get('discount') or {}).get('code') and str(o['discount']['code']).upper() == c]
+        now = sum(1 for d in uses if last_week <= d <= end)
+        weeks = sorted(sum(1 for d in uses if last_week - timedelta(days=7 * (i + 1)) <= d < last_week - timedelta(days=7 * i)) for i in range(8))
+        med = (weeks[3] + weeks[4]) / 2
+        if now >= spike_min and now >= spike * max(med, 1):
+            spikes.append({'code': c, 'last_week': now, 'median_week': med})
+    per28 = lambda rows: round(sum(amt(o) for o in rows) * 28 / days, 2)
+    return {'unavailable': False, 'first_code': first_code, 'days': days, 'start': start.isoformat(), 'end': end.isoformat(),
+            'coded_orders': len(coded),
+            'returning': {'orders': len(returning), 'dollars_28d': per28(returning)},
+            'coupon_sites': {'orders': len(sites), 'dollars_28d': per28(sites),
+                             'sources': sorted({(o.get('utm') or {}).get('source') or 'referrer' for o in sites})[:6]},
+            'spikes': spikes,
+            'basis': f'coded orders {start.isoformat()} to {end.isoformat()}; the first-order code is the brain\'s, else the code new customers use most'}

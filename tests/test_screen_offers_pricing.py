@@ -1869,5 +1869,39 @@ class PowerTest(unittest.TestCase):
         self.assertFalse(any(x['rule_id'] == 'OFFER-R39' for x in b['actions']))
 
 
+class CodeLeakTest(unittest.TestCase):
+    """Round 7 feature 5 (web pass 3: KeepCart): the first-order code on returning buyers, coupon sites, spikes."""
+
+    def reader(self, orders):
+        import datetime as dtm
+        class R:
+            ends_on = dtm.date(2026, 9, 24)
+            def table(self, name):
+                return orders if name == 'orders' else None
+        return R()
+
+    def order(self, day, code, new, source='google', amount=10):
+        return {'created_at': day + 'T10:00:00Z', 'discount': {'code': code, 'amount': amount}, 'customer_is_new': new,
+                'utm': {'source': source}}
+
+    def test_signals(self):
+        pb = api.actions.playbook
+        orders = ([self.order('2026-09-01', 'HELLO', True)] * 5 + [self.order('2026-09-02', 'HELLO', False)] * 3
+                  + [self.order('2026-09-03', 'SAVE5', True, source='retailmenot.com')] * 2
+                  + [self.order('2026-09-20', 'FLASH', True)] * 25 + [self.order('2026-08-01', 'FLASH', True)])
+        cl = api.model.code_leaks(self.reader(orders), 90, pb.COUPON_SITE_WORDS, pb.LEAK_SPIKE, pb.LEAK_SPIKE_MIN)
+        self.assertEqual(cl['first_code'], 'FLASH')          # most used by new customers when the brain names none
+        cl = api.model.code_leaks(self.reader(orders), 90, pb.COUPON_SITE_WORDS, pb.LEAK_SPIKE, pb.LEAK_SPIKE_MIN, 'hello')
+        self.assertEqual(cl['returning']['orders'], 3)
+        self.assertEqual(cl['coupon_sites']['orders'], 2)
+        self.assertEqual([x['code'] for x in cl['spikes']], ['FLASH'])
+        self.assertEqual(cl['returning']['dollars_28d'], round(30 * 28 / 90, 2))
+
+    def test_sample_quiet(self):
+        sys.path.insert(0, str(ROOT / 'app'))
+        import server
+        self.assertEqual([f for f in audit.run(None, None, server.Data()) if f['rule_id'] == 'OFFER-R40'], [])
+
+
 if __name__ == '__main__':
     unittest.main()

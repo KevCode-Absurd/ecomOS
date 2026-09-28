@@ -270,3 +270,13 @@ RETURN_MIN = 200
 POWER_LIFT = 0.10
 POWER_K = 15.68
 POWER_MAX_DAYS = 35           # a sitewide test that needs longer than this means traffic is too thin for the usual 28 days
+
+# Code leak watch (screen 04, OFFER-R40; web pass 3: KeepCart). From order rows over LEAK_DAYS: the first-order code
+# on returning customers' orders, code orders arriving from a coupon site (COUPON_SITE_WORDS in the UTM source or
+# referrer), and a code used LEAK_SPIKE times its median week of the 8 before, at least LEAK_SPIKE_MIN uses that week.
+# Fires when leaked code dollars reach LEAK_MIN_USD over 28 days or a spike shows. Our own rule, written down.
+LEAK_DAYS = 90
+COUPON_SITE_WORDS = ('honey', 'retailmenot', 'coupon', 'dealspotr', 'knoji', 'wethrift', 'slickdeals', 'capitalone', 'rakuten', 'promo')
+LEAK_SPIKE = 3.0
+LEAK_SPIKE_MIN = 20
+LEAK_MIN_USD = 100

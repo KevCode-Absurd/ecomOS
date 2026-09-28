@@ -164,6 +164,10 @@ Rules
   OFFER-R39  Traffic too thin for 28-day tests: a sitewide 50/50 test needs more than playbook.POWER_MAX_DAYS days to
              see a POWER_LIFT change in conversion at today's sessions and conversion (model.visitor_baseline). The
              move is a test policy: fewer, bigger tests. Money null. Medium. Capability LIFE-C47.
+  OFFER-R40  A code is leaking (web pass 3: KeepCart): the first-order code on returning customers' orders, code
+             orders from a coupon site, or a weekly spike in a code's use (model.code_leaks). Fires when leaked code
+             dollars reach playbook.LEAK_MIN_USD a 28 days, or on any spike. Money: leaked code dollars per 28 days.
+             Medium. Unavailable without order rows (asked for by OFFER-R31). Capability LIFE-C38.
   OFFER-R03  Margin after discount per SKU. Needs cogs_landed keyed by the store's SKUs. Unavailable while no
              finance_inputs SKU key matches a product SKU. Capability MONEY-C05 (founder gate). Owner: 04.
   OFFER-R04  A deal-breaker rung with no proof: the top rung of an objection ladder whose proof is empty or
@@ -284,6 +288,8 @@ RULES = [
      'inputs': ['orders'], 'capability': 'LIFE-C02', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R39', 'name': 'Traffic too thin for 28-day tests', 'entity_type': 'metric',
      'inputs': ['sessions or daily.sessions', 'orders or daily'], 'capability': 'LIFE-C47', 'owner_screen': SCREEN},
+    {'rule_id': 'OFFER-R40', 'name': 'A code is leaking', 'entity_type': 'offer',
+     'inputs': ['orders', 'brain.offers.first_order_code'], 'capability': 'LIFE-C38', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R03', 'name': 'Margin after discount per SKU', 'entity_type': 'sku',
      'inputs': ['finance_inputs.cogs_landed keyed by product SKU', 'products'], 'capability': 'MONEY-C05',
      'owner_screen': SCREEN},
@@ -327,6 +333,7 @@ CAPABILITY = {'OFFER-R01': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R37': {'id': 'LIFE-C41', 'autonomy': 'founder_gate'},
               'OFFER-R38': {'id': 'LIFE-C02', 'autonomy': 'founder_gate'},
               'OFFER-R39': {'id': 'LIFE-C47', 'autonomy': 'founder_gate'},
+              'OFFER-R40': {'id': 'LIFE-C38', 'autonomy': 'founder_gate'},
               'OFFER-R06': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R04': {'id': 'LIFE-C36', 'autonomy': 'founder_gate'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
@@ -1499,6 +1506,36 @@ def rule_power(rd):
                      money_reason='a test too short to read costs the decision, not a counted dollar')]
 
 
+def code_leaks(rd):
+    pb = _playbook()
+    code, _ = _model().brain_value(rd, 'offers.first_order_code')
+    return _model().code_leaks(rd, pb.LEAK_DAYS, pb.COUPON_SITE_WORDS, pb.LEAK_SPIKE, pb.LEAK_SPIKE_MIN,
+                               code.get('code') if isinstance(code, dict) else None)
+
+
+def rule_leaks(rd):
+    end = rd.ends_on
+    pb = _playbook()
+    cl = code_leaks(rd)
+    if cl['unavailable']:
+        return []
+    usd = round(cl['returning']['dollars_28d'] + cl['coupon_sites']['dollars_28d'], 2)
+    if usd < pb.LEAK_MIN_USD and not cl['spikes']:
+        return []
+    parts = []
+    if cl['returning']['orders']:
+        parts.append(f'{cl["first_code"]} went to {cl["returning"]["orders"]} returning customers')
+    if cl['coupon_sites']['orders']:
+        parts.append(f'{cl["coupon_sites"]["orders"]} code orders came from coupon sites')
+    for sp in cl['spikes'][:2]:
+        parts.append(f'{sp["code"]} was used {sp["last_week"]} times last week against a usual {sp["median_week"]:.0f}')
+    ev = [_ev('leaked_code_dollars_28d', usd, 'usd', end, window=f'{cl["days"]}d'),
+          _ev('returning_orders_with_first_order_code', cl['returning']['orders'], 'count', end, window=f'{cl["days"]}d'),
+          _ev('coupon_site_code_orders', cl['coupon_sites']['orders'], 'count', end, window=f'{cl["days"]}d')]
+    return [_finding('OFFER-R40', {'type': 'offer', 'id': 'code_leaks', 'label': 'Code leaks'}, 'medium', ev,
+                     '. '.join(parts) + '.', {'usd': usd, 'formula': 'leaked code dollars x 28 / 90', 'window': '28d'}, 0.7, [], end)]
+
+
 def rule_ladder(rd):
     end = rd.ends_on
     pb = _playbook()
@@ -1670,7 +1707,7 @@ def run(brand, window=None, data=None):
     """Findings for one brand, sorted by severity then money at stake. `window` is {ends_on} or None."""
     ends_on = date.fromisoformat(window['ends_on']) if window and window.get('ends_on') else last_full_day(data, brand)
     rd = Reader(data, brand, ends_on)
-    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_cost(rd) + rule_referral(rd) + rule_loyalty(rd) + rule_window_creep(rd) + rule_bundles(rd) + rule_launched(rd) + rule_upsell(rd) + rule_bnpl(rd) + rule_threshold_match(rd) + rule_cohorts(rd) + rule_welcome(rd) + rule_test_trust(rd) + rule_price_moves(rd) + rule_claim_stress(rd) + rule_paid(rd) + rule_attach(rd) + rule_code_returns(rd) + rule_power(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
+    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_cost(rd) + rule_referral(rd) + rule_loyalty(rd) + rule_window_creep(rd) + rule_bundles(rd) + rule_launched(rd) + rule_upsell(rd) + rule_bnpl(rd) + rule_threshold_match(rd) + rule_cohorts(rd) + rule_welcome(rd) + rule_test_trust(rd) + rule_price_moves(rd) + rule_claim_stress(rd) + rule_paid(rd) + rule_attach(rd) + rule_code_returns(rd) + rule_power(rd) + rule_leaks(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
            rule_unanswered(rd))
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f.get('money_at_stake') or {}).get('usd') or -1), f['id']))
     return out

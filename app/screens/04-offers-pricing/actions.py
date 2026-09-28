@@ -99,6 +99,7 @@ class Ctx:
         self.attach = audit.attach_rates(rd)
         self.code_returns = audit.returns_by_code(rd)
         self.baseline = audit.visitor_baseline(rd)
+        self.leaks = audit.code_leaks(rd)
         self.ship_rate = (model.brain_value(rd, 'offers.standard_shipping_cost')[0] or {}).get('cost_usd') if rd.brand else None
         self.scenarios = (model.threshold_scenarios(rd, self.threshold, self.ship_rate, self.be['value'], (self.po or {}).get('units') or 1)
                           if self.threshold is not None and self.be.get('value') is not None else [])
@@ -1301,6 +1302,29 @@ def power_action(f, a, ctx):
     return a
 
 
+def leak_action(f, a, ctx):
+    """OFFER-R40: close the leak in the discount settings; a person does it in the store admin."""
+    cl = ctx.leaks
+    lines = ['Code settings to change', f['sentence']]
+    if cl['returning']['orders']:
+        lines.append(f'{cl["first_code"]}: limit to customers with no prior order, one use per customer.')
+    if cl['coupon_sites']['orders']:
+        lines.append('Codes seen on coupon sites: end them and issue new single-use codes by email.')
+    for sp in cl['spikes']:
+        lines.append(f'{sp["code"]}: check where it was posted; cap total uses or end it.')
+    lines.append('Never raise the discount to answer a leak.')
+    a.update({'title': f'Close the code leaks worth {money(f["money_at_stake"]["usd"])} a month', 'owner': 'person',
+              'artefact': {'kind': 'policy', 'label': 'Code settings', 'draft': '\n'.join(lines)},
+              'steps': steps(('agent', 'List each leaking code with its orders.'),
+                             ('person', 'Change the code limits in the store admin.'),
+                             ('agent', f'Read leaked dollars again on {ctx.check_on(28)}.')),
+              'size': {'text': f'{money(f["money_at_stake"]["usd"])} of code dollars per 28 days', 'usd': None},
+              'win_rule': 'Leaked code dollars under the floor within 28 days.',
+              'stop_rule': 'First orders down 20 percent for 7 days after the change; loosen the new-customer limit.',
+              'check_on': ctx.check_on(28), 'time_to_ship_hours': 1})
+    return a
+
+
 def bunches(rd):
     """Order-value bunches and the tiers above them, from real order bins only (never from the fixture)."""
     dist = rd.m('order_value_distribution', audit.WINDOW, step=5)
@@ -1477,7 +1501,7 @@ BUILDERS = {'OFFER-R01': threshold_action, 'OFFER-R04': rung_action, 'OFFER-R08'
             'OFFER-R22': cost_action, 'OFFER-R23': referral_action, 'OFFER-R24': loyalty_action,
             'OFFER-R25': discount_action, 'OFFER-R26': bundle_action,
             'OFFER-R27': launched_action, 'OFFER-R29': bnpl_action,
-            'OFFER-R30': match_action, 'OFFER-R31': cohort_action, 'OFFER-R32': welcome_action, 'OFFER-R33': trust_action, 'OFFER-R34': moves_action, 'OFFER-R35': stress_action, 'OFFER-R36': paid_action, 'OFFER-R37': attach_action, 'OFFER-R38': code_returns_action, 'OFFER-R39': power_action}
+            'OFFER-R30': match_action, 'OFFER-R31': cohort_action, 'OFFER-R32': welcome_action, 'OFFER-R33': trust_action, 'OFFER-R34': moves_action, 'OFFER-R35': stress_action, 'OFFER-R36': paid_action, 'OFFER-R37': attach_action, 'OFFER-R38': code_returns_action, 'OFFER-R39': power_action, 'OFFER-R40': leak_action}
 UNAVAILABLE_BUILDERS = {'OFFER-R34': recapture_action}
 
 
@@ -1525,5 +1549,5 @@ def rank(brand='bombas', window=None, data=None):
     return {'screen': SCREEN, 'brand': brand, 'window': w, 'simulated': True, 'net_revenue_28d': nr,
             'actions': actions, 'findings': findings, 'objections': ctx.objections, 'returns': returns_block(rd),
             'ladder': dict(ctx.ladder, moves=ctx.ladder_rows), 'first_order': ctx.first_order, 'waterfalls': ctx.waterfalls, 'calendar': ctx.calendar, 'gifting': ctx.gifting, 'guarantee': ctx.guarantee, 'position': ctx.position, 'parity': ctx.parity,
-            'discipline': dict(ctx.discipline, policy=discount_policy(ctx), windows=ctx.depth_history, window_creep_points=playbook.WINDOW_CREEP_POINTS), 'cart': ctx.cart, 'tests': calendar, 'depth': ctx.depth, 'cohorts': ctx.cohorts, 'costs': ctx.costs, 'registry': ctx.registry, 'referral': ctx.referral, 'loyalty': ctx.loyalty, 'bundles': ctx.bundles, 'proposed_tests': ctx.proposed_rows, 'launched': ctx.launched, 'discount_cohorts': audit.discount_cohorts(rd), 'welcome': ctx.welcome, 'trust': ctx.trust, 'price_moves': ctx.price_moves, 'stress': ctx.stress, 'paid': ctx.paid, 'attach': ctx.attach, 'code_returns': ctx.code_returns, 'baseline': ctx.baseline, 'bunches': bunches(rd),
+            'discipline': dict(ctx.discipline, policy=discount_policy(ctx), windows=ctx.depth_history, window_creep_points=playbook.WINDOW_CREEP_POINTS), 'cart': ctx.cart, 'tests': calendar, 'depth': ctx.depth, 'cohorts': ctx.cohorts, 'costs': ctx.costs, 'registry': ctx.registry, 'referral': ctx.referral, 'loyalty': ctx.loyalty, 'bundles': ctx.bundles, 'proposed_tests': ctx.proposed_rows, 'launched': ctx.launched, 'discount_cohorts': audit.discount_cohorts(rd), 'welcome': ctx.welcome, 'trust': ctx.trust, 'price_moves': ctx.price_moves, 'stress': ctx.stress, 'paid': ctx.paid, 'attach': ctx.attach, 'code_returns': ctx.code_returns, 'baseline': ctx.baseline, 'leaks': ctx.leaks, 'bunches': bunches(rd),
             'subscription': model.subscription_note(rd, ctx.cohorts, (ctx.depth or {}).get('rows'), (ctx.depth or {}).get('target'))}

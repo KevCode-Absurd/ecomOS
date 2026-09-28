@@ -23,7 +23,7 @@
   }
   /** Rule ids behind each desk block: structure, not brand content. The fallback line opens the move those rules made. */
   const BLOCK_RULES = { 'desk-threshold': ['R01', 'R05', 'R06', 'R30'], 'desk-cart': ['R20', 'R28'], 'desk-discount': ['R18', 'R19', 'R25'],
-    'desk-ladder': ['R07', 'R09', 'R29'], 'desk-first': ['R08', 'R31'], 'desk-welcome': ['R32', 'R38'], 'desk-waterfall': ['R10', 'R03'], 'desk-calendar': ['R11'],
+    'desk-ladder': ['R07', 'R09', 'R29'], 'desk-first': ['R08', 'R31'], 'desk-welcome': ['R32', 'R38'], 'desk-leaks': ['R40', 'R31'], 'desk-waterfall': ['R10', 'R03'], 'desk-calendar': ['R11'],
     'desk-depth': ['R11', 'R03'], 'desk-second': ['R21'], 'desk-cost': ['R22'], 'desk-paid': ['R36', 'R31'], 'desk-attach': ['R37', 'R28', 'R31'], 'desk-gifting': ['R12', 'R13'], 'desk-guarantee': ['R14', 'R35'],
     'desk-position': ['R16'], 'desk-parity': ['R17'], 'desk-moves': ['R34'], 'desk-bundles': ['R26'], 'desk-buyers': ['R23', 'R24'],
     'desk-objections': ['R04', 'R15'], 'desk-tests': ['R27', 'R39'], 'desk-registry': ['R27', 'R33'], 'desk-registry-trust': ['R33'] };
@@ -649,6 +649,18 @@
       actionLine(first ? first.title + '.' : 'Every top product gets a second item near the median. No placement to add.', first || null));
   }
 
+  function leaksBlock(cl) {
+    const head = { title: 'Is any code leaking?', sub: 'Coded orders over the last ' + ((cl && cl.days) || 'n') + ' days: the first-order code on returning buyers, code orders from coupon sites, and a jump in a code\'s weekly use.' };
+    if (!cl || cl.unavailable) return section('desk-leaks', head, UI.emptyState({ screen: SLUG, title: 'Leak watch unavailable', text: (cl || {}).reason, missing: cl && cl.fix ? [cl.fix] : [] }));
+    const a = blockAction('desk-leaks');
+    const facts = kv([['First-order code', cl.first_code || NA], ['Coded orders', fmt.int(cl.coded_orders)],
+      ['First-order code on returning buyers', fmt.int(cl.returning.orders) + ' orders, ' + fmt.money(cl.returning.dollars_28d) + ' per 28 days'],
+      ['From coupon sites', fmt.int(cl.coupon_sites.orders) + ' orders' + (cl.coupon_sites.sources.length ? ' (' + cl.coupon_sites.sources.join(', ') + ')' : '') + ', ' + fmt.money(cl.coupon_sites.dollars_28d) + ' per 28 days'],
+      ['Weekly spikes', cl.spikes.length ? cl.spikes.map((s) => s.code + ' ' + s.last_week + ' against ' + s.median_week).join('; ') : 'none']]);
+    return section('desk-leaks', head, el('div', { class: 'card tight' }, facts, el('p', { class: 'micro faint', text: 'Basis: ' + cl.basis + '.' })),
+      actionLine(a && a.status !== 'unavailable' ? a.title + '.' : 'No leak signal. The watch runs again with the next order pull.', a && a.status !== 'unavailable' ? a : null));
+  }
+
   function buyersBlock(d) {
     const head = { title: 'What do we offer people who already buy?', sub: 'Referral and loyalty, priced in product at landed cost against paid media per new customer and gross margin.' };
     const ro = d.referral, lo = d.loyalty;
@@ -756,8 +768,8 @@
         blocks: () => [firstOrderBlock(d.first_order, d.discount_cohorts), welcomeBlock(d.welcome, d.code_returns), cartBlock(d.cart, d.bunches), attachBlock(d.attach), buyersBlock(d), objectionBlock(d.objections || [], d.returns), guaranteeBlock(d.guarantee, d.returns, d.stress), subscriptionBlock(d.subscription), stackBlock(d.stack || [])] },
       { key: 'prices', label: 'Prices and packs', rules: ['OFFER-R22', 'OFFER-R36', 'OFFER-R16', 'OFFER-R17', 'OFFER-R34', 'OFFER-R07', 'OFFER-R09', 'OFFER-R26', 'OFFER-R29'],
         blocks: () => [costBlock(d.costs), paidBlock(d.paid), positionBlock(d.position, d.brand || {}), parityBlock(d.parity), movesBlock(d.price_moves), ladderBlock(d.ladder), bundlesBlock(d.bundles), waterfallBlock(d.waterfalls)] },
-      { key: 'shipping', label: 'Shipping and discounts', rules: ['OFFER-R01', 'OFFER-R05', 'OFFER-R06', 'OFFER-R18', 'OFFER-R25', 'OFFER-R30'],
-        blocks: () => [thresholdBlock(d.threshold), discountBlock(d)] },
+      { key: 'shipping', label: 'Shipping and discounts', rules: ['OFFER-R01', 'OFFER-R05', 'OFFER-R06', 'OFFER-R18', 'OFFER-R25', 'OFFER-R30', 'OFFER-R40'],
+        blocks: () => [thresholdBlock(d.threshold), discountBlock(d), leaksBlock(d.leaks)] },
     ];
     const openIn = (t) => ACTIONS.filter((a) => a.status === 'open' && (a.finding_ids || []).some((id) => t.rules.some((r) => id.indexOf('.' + r + '.') >= 0))).length;
     let saved = null;
