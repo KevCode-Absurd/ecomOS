@@ -2360,3 +2360,24 @@ class NoRepeatedWords(TempBrain):
             line = next(s for s in r['sections'] if s['title'] == 'Their words')['lines'][0]
             quotes = re.findall(r'"([^"]+)"', line)
             self.assertEqual(len(quotes), len(set(quotes)), a['key'])
+
+
+class NoThresholdsInPage(TempBrain):
+    """Feature 10.1: depth.md anti-pattern "brand facts in code". Every desk rule line comes from the api, written
+    from the builders' constants; the page script carries no percent, multiplier, day count or score cut-off."""
+
+    def test_page_script_has_no_thresholds(self):
+        js = (ROOT / 'app' / 'screens' / '02-customers-avatars' / 'screen.js').read_text(encoding='utf-8')
+        strings = re.findall(r"'([^'\n]*)'", js)
+        bad = [t for t in strings if re.search(r'\d+(\.\d+)? ?(percent|x\b|days?\b)|\b\d+ or more\b', t)]
+        self.assertEqual(bad, [])
+        self.assertNotRegex(js, r'r\.score >= \d|r\.them \* \d')
+
+    def test_rules_come_from_the_api(self):
+        d = api.handle(Req(['overview']))
+        with_rule = [s for s, b in d['blocks'].items() if b.get('rule')]
+        self.assertGreaterEqual(len(with_rule), 31)
+        self.assertIn(f"{round(api.builds.PRICE_LED * 100)} percent", d['blocks']['price-wrap']['rule'])
+        self.assertIn(f"{api.builds.SALES_GAP}x", d['blocks']['salesshare-wrap']['rule'])
+        self.assertEqual({r['tier'] for r in d['focus']['rows'][:1]}, {'next'})
+        self.assertTrue(all(r['verdict'] in ('gap', 'heavy', 'fine') for r in d['formats']['rows']))

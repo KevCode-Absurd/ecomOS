@@ -144,6 +144,8 @@ FORMAT_LABEL = {"dco": "dynamic creative", "dpa": "catalog ads", "video": "video
                 "carousel": "carousel", "catalog": "catalog ads"}
 FORMAT_GAP_SHARE = 0.15   # the category runs a format in 15 percent or more of live ads
 FORMAT_GAP_RATIO = 0.5    # and we run it at under half that share
+FORMAT_HEAVY = 1.5        # we run a format at 1.5x the category or more
+FORMAT_HEAVY_MIN = 0.10   # and in 10 percent or more of our live ads
 
 
 def _cell_brief(avatar: dict, ch: dict, open_rungs: list[dict]) -> dict:
@@ -224,7 +226,9 @@ def format_mix(learnings: list[dict]) -> dict:
         us = own["share"].get(k, 0.0)
         runs = sum(1 for c in comp if c["share"].get(k, 0) > 0)
         gap = med >= FORMAT_GAP_SHARE and us < med * FORMAT_GAP_RATIO
-        rows.append({"format": k, "label": FORMAT_LABEL.get(k, k), "us": round(us, 4), "them": round(med, 4), "pages_running": runs, "gap": gap})
+        verdict = "gap" if gap else "heavy" if us > med * FORMAT_HEAVY and us > FORMAT_HEAVY_MIN else "fine"
+        rows.append({"format": k, "label": FORMAT_LABEL.get(k, k), "us": round(us, 4), "them": round(med, 4), "pages_running": runs, "gap": gap,
+                     "verdict": verdict})
     rows.sort(key=lambda r: -r["them"])
     gaps = [r["label"] for r in rows if r["gap"]]
     return {"available": True, "rows": rows, "own_ads": own["ads"], "pages": len(comp),
@@ -1410,6 +1414,7 @@ US_MOMENTS = [(r"\bchristmas|\bholiday", "Holiday gifting", 12, 1), (r"\bwinter|
               (r"\bback to school|\bschool", "Back to school", 8, 1), (r"\bsummer|\bheat", "Summer", 6, 1),
               (r"\bmarathon|\brace\b", "Fall race season", 9, 15), (r"\bnew year|\bresolution", "New Year", 1, 1)]
 LEAD_DAYS = {"ad": 21, "email": 14}
+MOMENT_EMAILS = 2         # emails drafted per avatar moment
 HORIZON_MONTHS = 6
 
 
@@ -1440,7 +1445,7 @@ def moments(avatars: list[dict], monthly: list[dict], as_of: str) -> dict:
         ad_by, mail_by = start - _dt.timedelta(days=LEAD_DAYS["ad"]), start - _dt.timedelta(days=LEAD_DAYS["email"])
         late = ad_by < today
         rows.append({"label": f["label"], "starts": start.isoformat(), "avatars": f["avatars"], "sales_index_last_year": idx,
-                     "ad_by": ad_by.isoformat(), "email_by": mail_by.isoformat(), "late": late,
+                     "ad_by": ad_by.isoformat(), "email_by": mail_by.isoformat(), "late": late, "emails": MOMENT_EMAILS,
                      "action": {"id": f"{SCREEN}.moment.{f['label'].lower().replace(' ', '_').replace(chr(39), '')}", "kind": "report",
                                 "owner": "agent_drafts", "title": f"{f['label']} plan for {', '.join(f['avatars'][:2])}",
                                 "capability": {"id": "LIFE-C20", "autonomy": "agent_does"},
@@ -1448,9 +1453,9 @@ def moments(avatars: list[dict], monthly: list[dict], as_of: str) -> dict:
                                                     f"Ads live by: {ad_by.isoformat()}. Emails scheduled by: {mail_by.isoformat()}.",
                                                     f"Avatars: {', '.join(f['avatars'])}",
                                                     f"Last year this month sold at {idx}x the monthly average." if idx else "Last year's index: unavailable",
-                                                    "Ships: 1 ad brief per avatar from its next build, 2 emails, the gift or pack offer if the brain has one."]),
+                                                    f"Ships: 1 ad brief per avatar from its next build, {MOMENT_EMAILS} emails, the gift or pack offer if the brain has one."]),
                                 "steps": [{"n": 1, "who": "agent", "text": "Pull each avatar's next build and last year's best sellers that month."},
-                                          {"n": 2, "who": "agent", "text": "Draft the ad briefs and 2 emails with the dates above."},
+                                          {"n": 2, "who": "agent", "text": f"Draft the ad briefs and {MOMENT_EMAILS} emails with the dates above."},
                                           {"n": 3, "who": "person", "text": "Approve the plan and put it on the calendar."},
                                           {"n": 4, "who": "agent", "text": "Check ads are live on the ad date. Flag if not."}],
                                 "check_on": ad_by.isoformat()}})
@@ -2187,6 +2192,7 @@ def ad_voice(avatars: list[dict], learnings: list[dict]) -> dict:
 # ---------------------------------------------------------------- which avatar we build for next
 
 FOCUS_W = {"share": 0.4, "unserved": 0.3, "ad_gap": 0.2, "open_doubts": 0.1}
+FOCUS_SOON = 60           # a score of 60 or more is built soon; under it, later
 
 
 def focus(avatars: list[dict], served_x: dict, ad_voice_x: dict, ladders_rows: list[dict], sales_x: dict | None = None,
@@ -2226,6 +2232,8 @@ def focus(avatars: list[dict], served_x: dict, ad_voice_x: dict, ladders_rows: l
         rows.append({"key": a["key"], "name": a["name"], "score": score, "parts": {k: round(v, 3) for k, v in parts.items()},
                      "share": share_of[a["key"]], "share_source": source[a["key"]], "served": served[a["key"]], "open_doubts": open_d, "next": a["next"]})
     rows.sort(key=lambda r: (-r["score"], r["name"]))
+    for i, r in enumerate(rows):
+        r["tier"] = "next" if i == 0 else "soon" if r["score"] >= FOCUS_SOON else "later"
     top = rows[0] if rows else None
     return {"rows": rows, "weights": FOCUS_W,
             "line": (f"Build for {top['name']} next: score {top['score']} of 100. Next build: {top['next']['title']}." if top else "No avatar has a share to score.")}
@@ -2547,7 +2555,7 @@ def agenda(d: dict, actions: list[dict], tests_rows: list[dict], today: str) -> 
         add(r["start"], f"Test could start. {r['hypothesis']}", "test start", r["proposal_key"], "person")
     items.sort(key=lambda x: (x["date"], x["kind"], x["what"]))
     over = sum(1 for x in items if x["overdue"])
-    return {"items": items, "today": today, "overdue": over,
+    return {"items": items, "today": today, "overdue": over, "days": AGENDA_DAYS,
             "line": f"{len(items)} dated moves in the next {AGENDA_DAYS} days" + (f", {over} overdue." if over else ".")}
 
 
@@ -2740,6 +2748,8 @@ def block_notes(d: dict) -> dict:
         out[sid] = {"window": window, "caveat": caveat}
     for sid, gp in block_gaps(d).items():
         out[sid]["gap"] = gp
+    for sid, r in block_rules(d).items():
+        out[sid].update(r)
     return out
 
 
@@ -3120,3 +3130,61 @@ def survey_shares(avatars: list[dict], answers: dict | None) -> dict:
     rows.sort(key=lambda r: -r["share"])
     return {"available": True, "n": n, "trusted": trusted, "window": answers.get("window"), "rows": rows,
             "line": (f"{n:,} answers" + (", enough to set shares." if trusted else f", under the {SURVEY_N} needed; shown, not used."))}
+
+
+# ---------------------------------------------------------------- the rule line of each block, from the constants above (10.1)
+
+def block_rules(d: dict) -> dict:
+    """One short rule per desk block, written from the same constants the builders use, so no threshold lives in
+    page code (depth.md anti-pattern: brand facts in code). The page shows it under the heading with the block's line."""
+    pc = lambda v: f"{round(v * 100)} percent"
+    w = FOCUS_W
+    R = {
+        "focus-wrap": f"Score out of 100: share of buyers {round(w['share'] * 100)}, how poorly we serve them {round(w['unserved'] * 100)}, "
+                      f"how little our ads speak to them {round(w['ad_gap'] * 100)}, open doubts {round(w['open_doubts'] * 100)}. "
+                      f"Share comes from reviews, the survey at {SURVEY_N} answers, or sales by line.",
+        "offers-wrap": "Each cell counts the doubts of an avatar that an offer, policy or claim answers, from the proof records.",
+        "salesshare-wrap": f"Line sales over 12 full months, split by review share, against the share from reviews. Differ: {SALES_GAP}x either way.",
+        "voiceads-wrap": f"Live ads by hook, matched to the avatar the hook names. Under: less than {pc(AD_UNDER)} of its share of buyers.",
+        "split-wrap": f"Two buyers: 2 lines each hold {pc(SPLIT_SHARE)} or more with different complaints. Broad: {BROAD_THEMES} or more doubt themes.",
+        "gate-wrap": "Each avatar against the checks a researcher runs before a launch. Core checks must all pass.",
+        "recheck-wrap": f"A record stops being trusted on its expiry date. Due: within {RECHECK_DAYS} days.",
+        "forces-wrap": f"Lines coded as push, pull, anxiety or habit. A gap: a force with no line, or anxiety and habit under {pc(TENSION_SHARE)}.",
+        "survey-wrap": f"Every question closes a named gap. Shares are trusted at {SURVEY_N} answers.",
+        "cover-wrap": "Each cell: doubts answered with proof against doubts that channel must answer.",
+        "ladders-wrap": f"Not landing: proof on file, yet one-star mentions are {NOT_LANDING_RATIO:g}x the five-star, with {NOT_LANDING_MIN} or more.",
+        "macros-wrap": "A reply for every doubt support hears, from proof on file or a policy a person checks.",
+        "gap-wrap": f"Words in {GAP_MIN_DOCS} or more praise reviews, checked against our own records. Reddit is left out.",
+        "perc-wrap": f"Our positioning words against the top {PERCEPTION_TOP} words in praise reviews.",
+        "hier-wrap": "The order every page and email leads with, from the stars each theme earns.",
+        "hooks-wrap": f"Phrases of 2 to 4 words in {HOOK_MIN} or more distinct praise reviews. Reddit is left out.",
+        "themes-wrap": f"Impact: share of rated reviews x the star gap. Rising: recent share {RISING_RATIO:g}x the earlier one.",
+        "words-wrap": "Their words for each doubt, from reviews linked to each rung. Reddit lines are language only.",
+        "served-wrap": "Each avatar by share of buyers against five-star share on its doubts. Lines at the medians.",
+        "price-wrap": f"Price-led: price rungs hold {pc(PRICE_LED)} or more of its one-star mentions.",
+        "claims-wrap": f"Under fire: {CLAIM_HITS} or more bad reviews use the claim's own feature words.",
+        "look-wrap": "Pages the Ad Library pull flags as likely impostors: our name, ads, links elsewhere.",
+        "timing-wrap": f"A season: 3 months hold {SEASON_LIFT:g}x the theme's share of all complaints, with {SEASON_WIN_MIN} or more.",
+        "moments-wrap": f"Moments from avatar triggers on US dates, {HORIZON_MONTHS} months ahead. Ads live {LEAD_DAYS['ad']} days before, emails {LEAD_DAYS['email']}.",
+        "market-wrap": f"Marketplace-led: {pc(MARKET_SHARE)} or more of its reviews on Amazon. Reddit is left out.",
+        "returns-wrap": f"Return risk from the lines it buys, their bad-review share and fit or wear complaints. High: {RISK_HIGH:g}x the median.",
+        "misread-wrap": f"A misread: the avatar buys the line ({MIN_LINKS} or more reviews) and its complaints hit the job.",
+        "paths-wrap": "Gateway products, the second-order path and win-back timing. They read the customer paths table.",
+        "cohort-wrap": f"Active share by months since the first order. A cliff: a {pc(CLIFF_DROP)} fall in {pc(CLIFF_SHARE)} of cohorts at once.",
+        "health-wrap": f"Repeat down {round(REPEAT_DROP_PTS * 100)} points over 3 cohorts, or tickets per 1,000 orders up {pc(TICKETS_RISE)} in 3 months.",
+        "mix-wrap": f"Returning share this year against last. Rules: down {round(SHARE_FALL_PTS * 100)} points, or {pc(PAID_RETURNING)} through paid ads.",
+    }
+    lines = {"focus-wrap": "focus", "offers-wrap": "offer_map", "salesshare-wrap": "sales_share", "voiceads-wrap": "ad_voice",
+             "split-wrap": "split", "gate-wrap": "gate", "recheck-wrap": "rechecks", "forces-wrap": "forces", "survey-wrap": "survey",
+             "cover-wrap": "coverage", "ladders-wrap": "ladders", "macros-wrap": "macros", "gap-wrap": "copy_gap", "perc-wrap": "perception",
+             "hier-wrap": "hierarchy", "hooks-wrap": "hooks", "themes-wrap": "themes", "words-wrap": "words", "served-wrap": "served",
+             "price-wrap": "price", "claims-wrap": "claims_fire", "look-wrap": "lookalikes", "timing-wrap": "timing", "moments-wrap": "moments",
+             "market-wrap": "marketplace", "returns-wrap": "returns", "misread-wrap": "misreads", "paths-wrap": "paths", "cohort-wrap": "cohorts",
+             "health-wrap": "health", "mix-wrap": "mix"}
+    out = {}
+    for sid, rule in R.items():
+        x = d.get(lines[sid]) or {}
+        out[sid] = {"rule": rule, "line": x.get("line") or (x.get("reason") and str(x["reason"]).rstrip(".").capitalize() + ".") or ""}
+    sv = d.get("survey_shares") or {}
+    out["salesshare-wrap"]["line"] = ("Survey answers: " + (sv.get("line") or str(sv.get("reason") or "unavailable").rstrip(".")) + ". " + out["salesshare-wrap"]["line"]).strip()
+    return out

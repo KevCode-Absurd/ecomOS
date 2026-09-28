@@ -8,6 +8,7 @@
   const BRAND = (() => { try { return new URLSearchParams(location.search).get('brand') || ''; } catch (e) { return ''; } })();
   const api = (u, o) => UI.api(BRAND && u.startsWith('/api/02-') ? u + (u.includes('?') ? '&' : '?') + 'brand=' + encodeURIComponent(BRAND) : u, o);
   const SLUG = '02-customers-avatars';
+  const SNOOZE = { days: null };   // from the api: the shared snooze days
   const BASE = '/api/' + SLUG + '/';
   const NA = 'unavailable';
   const pretty = (s) => String(s || '').replace(/_/g, ' ');
@@ -158,7 +159,6 @@
           el('div', { class: 'small muted', text: r.proof ? 'Proof: ' + r.proof : 'No proof on file yet.' })))) });
   }
   function renderCoverage(c, f) {
-    document.getElementById('cover-sub').textContent = 'Each cell: doubts answered with proof | doubts that channel must answer, from the objection ladders. ' + c.line;
     mount('#cover', UI.coverageMatrix({
       rows: c.rows, cols: c.cols, cells: c.cells, unit: 'n', corner: 'Avatar',
       gapRule: (cell) => !cell || cell.them == null ? '' : cell.open ? 'gap' : 'lead',
@@ -173,7 +173,7 @@
       UI.verdictTable({
         columns: [{ key: 'label', label: 'Format' }, { key: 'us', label: 'Us', unit: '%' }, { key: 'them', label: 'Category', unit: '%' }, { key: 'pages_running', label: 'Pages', unit: 'n' }],
         rows: f.rows.map((r) => Object.assign({}, r, { actions: r.brief ? [{ label: 'Brief it', onClick: () => briefPanel(r.brief) }] : [keep('No gap', 'Our mix of this format sits close to the category, by the rule above.')] })),
-        verdict: { at: 1, kind: (r) => r.gap ? 'new' : r.us > r.them * 1.5 && r.us > 0.1 ? 'watch' : 'keep', text: (r) => r.gap ? 'Gap' : r.us > r.them * 1.5 && r.us > 0.1 ? 'Heavy' : 'Fine' },
+        verdict: { at: 1, kind: (r) => ({ gap: 'new', heavy: 'watch', fine: 'keep' })[r.verdict], text: (r) => ({ gap: 'Gap', heavy: 'Heavy', fine: 'Fine' })[r.verdict] },
         actions: { label: 'Do' }, sort: false,
       }),
       el('p', { class: 'small', text: f.line }));
@@ -200,8 +200,6 @@
         el('div', { class: 'grid two' }, list('One-star lines', r.one_star_quotes, 'bad'), list('Five-star lines', r.five_star_quotes, 'good'))) });
   }
   function renderLadders(L, avatars) {
-    document.getElementById('ladder-sub').textContent = 'Each rung: one-star against five-star mentions, proof on file, and the move. ' + L.line +
-      ' Not landing means proof is on file and one-star is 2x five-star or more, with 10 or more.';
     const table = el('div');
     const show = (key) => {
       const rows = L.rows.filter((r) => key === 'all' || r.avatars.includes(key));
@@ -254,7 +252,6 @@
     return card;
   }
   function renderWords(W, avatars) {
-    document.getElementById('words-sub').textContent = 'Their words per doubt, from reviews linked to each rung. ' + W.line + ' Reddit lines are language only, never a testimonial.';
     const show = (key) => mount('#words', ...W.rows.filter((r) => key === 'all' || r.avatars.includes(key)).map(wordsCard));
     mount('#words-pills', UI.pills({ items: [{ key: 'all', label: 'All avatars', n: W.rows.length }].concat(avatars.filter((a) => W.rows.some((r) => r.avatars.includes(a.key)))
       .map((a) => ({ key: a.key, label: a.name, n: W.rows.filter((r) => r.avatars.includes(a.key)).length }))), current: 'all', onChange: show }));
@@ -265,8 +262,6 @@
   function renderCohorts(c) {
     if (!c.available) { mount('#cohort', UI.emptyState({ screen: SLUG, title: 'Cohorts unavailable', text: c.reason })); return; }
     const cb = c.calendar_break, ab = c.age_break;
-    document.getElementById('cohort-sub').textContent = 'Share of each first-order month active again, by months since the first order. A cell shows once that month has ended. ' +
-      'Break rules: a month where half or more of cohorts fall 40 percent at once is the calendar; the largest fall after the peak, outside that month, is their age.';
     const full = c.rows.filter((r) => r.value_12m != null);
     mount('#cohort-orient', UI.orientation([
       { label: 'peak return month', value: c.peak_month, unit: 'n', title: 'month 1 to 3 with the highest median active share' },
@@ -284,7 +279,6 @@
 
   // ---------- desk: brand health ----------
   function renderHealth(x) {
-    document.getElementById('health-sub').textContent = 'Monthly lines from our own store data, 12 full months, simulated. Rules: repeat in months 1 to 3 down 3 points over the last 3 cohorts; tickets per 1,000 orders up 20 percent over 3 months. ' + (x.line || x.reason || '');
     if (!x.available) { mount('#health', UI.emptyState({ screen: SLUG, title: 'Health line unavailable', text: x.reason })); }
     else mount('#health', Charts.trendStrip({ rows: x.rows, title: 'Brand health, ' + x.months[0] + ' to ' + x.months[x.months.length - 1] }),
       el('p', { class: 'micro faint', text: 'A gap in a line is a month with no full cohort yet, not a zero.' }));
@@ -299,8 +293,6 @@
   // ---------- desk: new against returning ----------
   function renderMix(x) {
     if (!x.available) { mount('#mix-line', UI.emptyState({ screen: SLUG, title: 'Mix unavailable', text: x.reason })); return; }
-    document.getElementById('mix-sub').textContent = 'Returning share of orders by month, this year against last, and the channels behind the change in returning orders. ' +
-      'Rules: share down 2 points or more against last year; a quarter or more of returning orders through paid ads; email and SMS growing 5 points slower than the rest.';
     mount('#mix-orient', UI.orientation([
       { label: 'returning share, ' + x.latest, value: x.share_now, unit: '%', delta: x.share_last_year ? x.share_now / x.share_last_year - 1 : null, higher_is_better: true },
       { label: 'returning via paid ads', value: x.paid_share_returning, unit: '%', tone: x.paid_share_returning >= 0.25 ? 'bad' : null },
@@ -319,8 +311,6 @@
   const SEG = { gap: ['new', 'Gap'], watch: ['watch', 'Watch'], hold: ['keep', 'Hold'], own: ['scale', 'We own it'] };
   function renderServed(x, avatars) {
     const byKey = {}; for (const a of avatars) byKey[a.key] = a;
-    document.getElementById('served-sub').textContent = 'Left: each avatar by its share of buyers against how well we serve it (five-star share on its doubts). Lines at the median share and the all-doubt five-star share. ' +
-      'Right: buying situations competitors push, against the avatars we hold. ' + x.line;
     mount('#served-map', Charts.positioningMap({
       x: { label: 'share of buyers', lo: 'fewer', hi: 'more', unit: '%', min: 0, max: Math.max(...x.points.map((q) => q.x), 0.01) * 1.4 },
       y: { label: 'served well', lo: 'poorly', hi: 'well', unit: '%', min: 0, max: 1 },
@@ -341,7 +331,7 @@
           actions: sg.action ? [{ label: 'Size it', onClick: () => briefPanel(sg.action) }] : [keep('Nothing new', 'We already have an avatar for this segment.')] })),
         verdict: { at: 1, kind: (r) => SEG[r.verdict][0], text: (r) => SEG[r.verdict][1] }, actions: { label: 'Do' }, sort: false,
       }),
-      el('p', { class: 'micro faint', text: 'Gap: 2 or more competitors push it and we hold no avatar with quotes for it. Watch: 1 competitor or Reddit only. Competitor positioning is a signal, not proof the segment pays.' }));
+      el('p', { class: 'micro faint', text: 'Gap: competitors push it and we hold no avatar with quotes for it. Watch: a weaker signal. Competitor positioning is a signal, not proof the segment pays.' }));
   }
 
   function renderDrafts(drafts) {
@@ -364,7 +354,6 @@
 
   // ---------- desk: order-level paths ----------
   function renderPaths(x) {
-    document.getElementById('paths-sub').textContent = 'Gateway products, the second-order path, win-back timing from order gaps and value cells. Order-level rules; they read the customer_paths aggregate.';
     if (!x.available) {
       mount('#paths', el('div', { class: 'card flat connect' },
         el('b', { text: 'Unavailable: ' + x.reason + '.' }),
@@ -386,8 +375,6 @@
 
   // ---------- desk: claims under fire ----------
   function renderClaims(x) {
-    document.getElementById('claims-sub').textContent = 'Every site-backed or approved claim in the brain against ' + x.complaints +
-      ' one and two star reviews (Reddit left out). Under fire: 3 or more use the claim\'s own feature words, product names left out. ' + x.line;
     const V = { under_fire: ['stop', 'Under fire'], watch: ['watch', 'Watch'], clear: ['keep', 'Clear'] };
     mount('#claims', UI.verdictTable({
       columns: [{ key: 'claim', label: 'Claim' }, { key: 'hits', label: '1 and 2 star', unit: 'n' }, { key: 'words_t', label: 'Words they throw back' }, { key: 'example_t', label: 'Example' }],
@@ -399,7 +386,6 @@
 
   // ---------- desk: lookalike pages ----------
   function renderLookalikes(x) {
-    document.getElementById('look-sub').textContent = 'Pages the Ad Library pull flags as likely impostors: our name, ads, links to another site. ' + x.line;
     if (!x.rows.length) { mount('#look', el('p', { class: 'muted small', text: x.line })); return; }
     mount('#look', ...x.rows.map((r) => UI.actionCard({ id: r.action.id, title: r.action.title, severity: 'high', owner: 'person',
       why: r.ads_seen + ' ads from page ' + r.page_id + ', first seen ' + r.created + ', linking to ' + r.links_to + '. ' + (r.note || ''),
@@ -409,7 +395,6 @@
 
   // ---------- desk: doubt timing ----------
   function renderTiming(x) {
-    document.getElementById('timing-sub').textContent = '1 and 2 star reviews behind each ladder theme, by month of year, Reddit left out. A season: the theme\'s share of all complaints in 3 months is 1.5x its share over the year, with 4 or more. Share of all complaints corrects for months the review pull over-samples. ' + x.line;
     mount('#timing', UI.coverageMatrix({ rows: x.rows, cols: x.cols, cells: x.cells, single: true, max: x.max, unit: 'n', corner: 'Theme',
       note: 'A public review sample: read seasons as direction, and re-check when the reviews app is connected.' }));
     mount('#timing-moves', ...x.moves.map((m) => UI.actionCard({ id: m.id, title: m.title, why: m.why + (m.late ? ' The season has started: ship now.' : ' Live by ' + m.ship_by + '.'),
@@ -419,12 +404,11 @@
 
   // ---------- desk: moments ----------
   function renderMoments(x) {
-    document.getElementById('moments-sub').textContent = 'Moments named in avatar triggers, matched to US dates, 6 months ahead. Ads live 21 days before, emails 14 days before. Index: that month last year against the 12-month average, simulated. ' + x.line;
     if (!x.rows.length) { mount('#moments-tl', el('p', { class: 'muted small', text: x.line })); mount('#moments'); return; }
     const items = [];
     for (const r of x.rows) {
       items.push({ when: fmt.date(r.ad_by), who: 'agent drafts', title: 'Ads live for ' + r.label, text: r.avatars.join(', '), tone: r.late ? 'bad' : 'warn' });
-      items.push({ when: fmt.date(r.email_by), who: 'agent drafts', title: 'Emails scheduled for ' + r.label, text: '2 emails' });
+      items.push({ when: fmt.date(r.email_by), who: 'agent drafts', title: 'Emails scheduled for ' + r.label, text: r.emails + ' emails' });
       items.push({ when: fmt.date(r.starts), who: 'moment', title: r.label + ' starts', text: r.sales_index_last_year ? 'Last year ' + r.sales_index_last_year + 'x the monthly average' : 'index unavailable', tone: 'good' });
     }
     items.sort((a, b) => new Date(a.when) - new Date(b.when));
@@ -452,7 +436,6 @@
   // ---------- desk: price doubts ----------
   function renderPrice(x) {
     const f = x.facts || {};
-    document.getElementById('price-sub').textContent = 'Share of each avatar\'s one-star mentions that sit on price rungs. Price-led: 30 percent or more. Facts from the brain offers and products; per-pair price by pack is unavailable until pack prices are in the brain. ' + x.line;
     mount('#price-tools', UI.orientation([
       { label: 'free shipping from', value: f.free_shipping_at, unit: '$' }, { label: 'lowest single pair', value: f.lowest_single, unit: '$' },
       { label: 'shipping on one pair', value: f.shipping_on_one_pair, unit: '%' }, { label: 'pairs to free shipping', value: f.pairs_to_free_shipping, unit: 'n' }]));
@@ -465,8 +448,6 @@
 
   // ---------- desk: re-check calendar ----------
   function renderRechecks(x) {
-    document.getElementById('recheck-sub').textContent = 'Each avatar and ladder record stops being trusted on its expiry date. Due: within 30 days. ' + x.line +
-      (x.no_date ? ' ' + x.no_date + ' records carry no expiry; they are re-checked on each review pull.' : '');
     const S = { expired: ['bad', 'expired'], due: ['warn', 'due'], ok: ['good', 'ok'], no_date: ['', 'no date'] };
     mount('#recheck', UI.table({ columns: [{ key: 'label', label: 'Record' }, { key: 'kind', label: 'Kind' }, { key: 'expires', label: 'Expires', format: (v) => v ? fmt.date(v) : 'no date' },
       { key: 'days_left', label: 'Days left', unit: 'n' }, { key: 'status', label: 'Status', format: (v) => S[v][1] }], rows: x.rows, sort: false, maxRows: 30 }));
@@ -475,7 +456,6 @@
 
   // ---------- desk: marketplace voice ----------
   function renderMarket(x) {
-    document.getElementById('market-sub').textContent = 'Where each avatar\'s reviews come from: its quotes plus the rated reviews behind its doubts, Reddit left out. Marketplace-led: half or more on Amazon; those get a listing fix for 20-marketplaces. The review pull samples Amazon heavily, so read shares as direction. ' + x.line;
     mount('#market', UI.verdictTable({
       columns: [{ key: 'name', label: 'Avatar' }, { key: 'amazon_share', label: 'On Amazon', unit: '%' }, { key: 'reviews', label: 'Reviews', unit: 'n' },
         { key: 'src_t', label: 'Sources' }, { key: 'doubt_t', label: 'Top Amazon doubts' }],
@@ -489,7 +469,6 @@
 
   // ---------- desk: support replies ----------
   function renderMacros(x) {
-    document.getElementById('macros-sub').textContent = 'A reply for every doubt the ladders send to support, from the proof on file, or from a policy a person checks. It never promises what is not on file. ' + x.line;
     mount('#macros-tools', UI.copyButton({ label: 'Copy all replies', text: () => x.rows.map((m) => m.draft).join('\n\n') }));
     const S = { ready: ['good', 'ready'], check: ['warn', 'check the policy'], person: ['bad', 'a person writes it'] };
     mount('#macros', ...x.rows.map((m) => el('article', { class: 'card flat macro' },
@@ -501,7 +480,6 @@
 
   // ---------- desk: return risk ----------
   function renderReturns(x) {
-    document.getElementById('returns-sub').textContent = 'Return risk per avatar: the lines it buys, weighted by how often, times each line\'s 1 and 2 star share and the share of its top complaints that are fit or wear. High: 1.25x the median avatar. A proxy from public reviews until ticket and return reasons are aggregated. ' + (x.line || '');
     mount('#returns-tools', UI.orientation([{ label: 'refunds, last 3 months', value: x.refund_share_3m, unit: '%', title: 'refunds on orders over net sales, simulated' }]));
     mount('#returns', UI.verdictTable({
       columns: [{ key: 'name', label: 'Avatar' }, { key: 'ratio', label: 'x median', unit: 'x' }, { key: 'driver_t', label: 'Driven by' }, { key: 'lines_t', label: 'Lines it buys' }],
@@ -521,8 +499,6 @@
   const LINE_V = { problem: ['cut', 'Problem'], split: ['watch', 'Split'], fine: ['keep', 'Fine'] };
   function renderMisreads(x) {
     if (!x.available) { mount('#misread-lines', UI.emptyState({ screen: SLUG, title: 'Review themes unavailable', text: x.reason })); return; }
-    document.getElementById('misread-sub').textContent = 'Review themes by product line against what each avatar hires us for. A misread: the avatar buys the line (2 or more linked reviews), ' +
-      'a top complaint hits its own job or pains, and the line is at or above the median 1 and 2 star share (' + Math.round(x.median * 1000) / 10 + ' percent). ' + x.line;
     mount('#misread-lines', el('h4', { text: 'Product lines: complaints against the median' }), UI.verdictTable({
       columns: [{ key: 'line_t', label: 'Line' }, { key: 'neg_share', label: '1 and 2 star', unit: '%' }, { key: 'ratio', label: 'x median', unit: 'x' },
         { key: 'issues_t', label: 'Top complaints' }, { key: 'praise_t', label: 'Praise' }],
@@ -530,7 +506,7 @@
         actions: l.action ? [{ label: 'Brief it', onClick: () => briefPanel(l.action) }] : l.avatars.length ? [{ label: 'See misreads', cls: 'quiet', onClick: () => document.getElementById('misreads').scrollIntoView({ behavior: 'smooth' }) }] : [keep('Nothing to do', 'No avatar buys this line for a job its complaints hit.')] })),
       verdict: { at: 1, kind: (r) => LINE_V[r.verdict][0], text: (r) => LINE_V[r.verdict][1], reason: (r) => r.polar.length ? 'praised and blamed for: ' + r.polar.join(', ') : '' },
       actions: { label: 'Do' }, sort: false,
-    }), el('p', { class: 'micro faint', text: 'Problem: 1.5x the median or more. Split: praise and complaints name the same trait, so set the expectation. From the review summaries in the brain, public reviews.' }));
+    }), el('p', { class: 'micro faint', text: 'Problem: well above the median line, by the rule above. Split: praise and complaints name the same trait, so set the expectation. From public reviews.' }));
     mount('#misreads', ...(x.rows.length ? x.rows.map((r) => el('article', { class: 'card misread' },
         el('div', { class: 'row between' }, el('b', { text: r.avatar }), el('span', { class: 'chip bad', text: pretty(r.line) + ' ' + Math.round(r.neg_share * 1000) / 10 + '%' })),
         el('div', { class: 'small', text: r.why }),
@@ -541,8 +517,6 @@
 
   // ---------- desk: offer map ----------
   function renderOffers(x) {
-    document.getElementById('offers-sub').textContent = 'Each cell: how many of the avatar\'s doubts that offer, policy or claim answers, from the ladder proof records. ' + x.line +
-      (x.bare.length ? ' No offer or policy answers any doubt for: ' + x.bare.join(', ') + '.' : '');
     mount('#offers-tools', x.action ? el('button', { class: 'btn soft sm', type: 'button', text: 'Brief the offer test', onclick: () => briefPanel(x.action) }) : null);
     mount('#offers', UI.coverageMatrix({ rows: x.rows, cols: x.cols, cells: x.cells, unit: 'n', single: true, max: 3, corner: 'Avatar',
       note: 'Blank: this lever answers none of the avatar\'s doubts. Columns after the policies are offers no ladder uses yet.' }));
@@ -576,14 +550,12 @@
   // ---------- desk: focus ----------
   function renderFocus(x) {
     const w = x.weights;
-    document.getElementById('focus-sub').textContent = 'Score out of 100: share of buyers ' + Math.round(w.share * 100) + ', how poorly we serve them ' + Math.round(w.unserved * 100) +
-      ', how little our ads speak to them ' + Math.round(w.ad_gap * 100) + ', share of their doubts still open ' + Math.round(w.open_doubts * 100) + '. Share is from reviews; from the survey once 385 answers are in; marked "sales" where neither gives one and the share of sales by line stands in. ' + x.line;
     mount('#focus', UI.verdictTable({
       columns: [{ key: 'name', label: 'Avatar' }, { key: 'score', label: 'Score', unit: 'n' }, { key: 'share', label: 'Buyers', unit: '%' },
         { key: 'served', label: 'Served', unit: '%' }, { key: 'open_doubts', label: 'Open doubts', unit: 'n' }, { key: 'next_t', label: 'Next build' }],
       rows: x.rows.map((r, i) => Object.assign({}, r, { rank: i, next_t: r.next.title, name: r.share_source === 'reviews' ? r.name : r.name + ' (share from ' + r.share_source + ')',
         actions: [{ label: 'Brief it', onClick: () => briefPanel(r.next) }] })),
-      verdict: { at: 1, kind: (r) => r.rank === 0 ? 'scale' : r.score >= 60 ? 'fix' : 'keep', text: (r) => r.rank === 0 ? 'Next' : r.score >= 60 ? 'Soon' : 'Later' },
+      verdict: { at: 1, kind: (r) => ({ next: 'scale', soon: 'fix', later: 'keep' })[r.tier], text: (r) => ({ next: 'Next', soon: 'Soon', later: 'Later' })[r.tier] },
       actions: { label: 'Do' }, sort: false,
     }));
   }
@@ -591,7 +563,6 @@
   // ---------- desk: who our ads speak to ----------
   function renderAdVoice(x) {
     if (!x.available) { mount('#voiceads', UI.emptyState({ screen: SLUG, title: 'Ad read unavailable', text: x.reason })); return; }
-    document.getElementById('voiceads-sub').textContent = 'Our live ads by hook, from the Ad Library read in the brain, matched to the avatar whose name the hook speaks to, against each avatar\'s share of buyers. Under: less than half its share. ' + x.line;
     const V = { silent: ['stop', 'Silent'], under: ['fix', 'Under'], fair: ['keep', 'Fair'], over: ['watch', 'Heavy'] };
     const rows = x.rows.map((r) => Object.assign({}, r, { bar: '', actions: r.action ? [{ label: 'Brief it', onClick: () => briefPanel(r.action) }] : [keep('Keep', 'Our live ads already speak to this avatar near its share of buyers.')] }));
     const t = UI.verdictTable({
@@ -605,7 +576,6 @@
 
   // ---------- desk: split check ----------
   function renderSplit(x) {
-    document.getElementById('split-sub').textContent = 'Product lines behind each avatar (its own reviews count 3 times a review linked through a doubt) and its doubt themes. Split: 2 lines each hold 30 percent or more and draw different complaints. Broad: 3 or more doubt themes, none at half. ' + x.line;
     const V = { split: ['fix', 'Two buyers'], broad: ['watch', 'Broad'], focused: ['keep', 'One buyer'] };
     mount('#split', UI.verdictTable({
       columns: [{ key: 'name', label: 'Avatar' }, { key: 'lines_t', label: 'Lines behind it' }, { key: 'themes_t', label: 'Doubt themes' }],
@@ -619,7 +589,6 @@
   // ---------- desk: do reviews and sales agree on who buys ----------
   function renderSalesShare(x, survey) {
     const sv = survey || {};
-    document.getElementById('salesshare-sub').textContent = 'Survey answers: ' + (sv.available ? sv.line : sv.reason || 'unavailable') + '. Each line\'s store sales over 12 full months, split across avatars by their share of that line\'s linked reviews, against each avatar\'s share from reviews. Differ: 1.5x either way. ' + (x.line || x.reason || '');
     if (!x.available) { mount('#salesshare', el('p', { class: 'muted', text: 'Unavailable: ' + x.reason + '.' })); return; }
     const V = { agree: ['keep', 'Agree'], sales_higher: ['watch', 'Sales higher'], reviews_higher: ['fix', 'Reviews higher'], sales_only: ['watch', 'Sales only'], unavailable: ['wait', 'Unavailable'] };
     const pct = (v) => v == null ? 'unavailable' : Math.round(v * 1000) / 10 + ' percent';
@@ -633,7 +602,6 @@
 
   // ---------- desk: evidence gate ----------
   function renderGate(g) {
-    document.getElementById('gate-sub').textContent = 'Each avatar against the checks a researcher runs before a launch. Core checks (bold) must all pass to leave provisional. Every red cell is a task. ' + g.line;
     const tbl = el('table', { class: 'gate' });
     tbl.append(el('thead', null, el('tr', null, el('th', { text: 'Avatar' }), el('th', { text: 'Status' }),
       ...g.checks.map((c) => el('th', { class: c.core ? 'core' : '', text: c.label })))));
@@ -655,7 +623,6 @@
 
   // ---------- desk: four forces ----------
   function renderForces(x) {
-    document.getElementById('forces-sub').textContent = 'Every line tied to an avatar (its quotes and the reviews behind its doubts, Reddit left out), coded by word patterns: push (the old way hurts), pull (what draws them), anxiety (what scares them), habit (what keeps them where they are, competitor names included). ' + x.line;
     const f = (k) => (r) => { const v = r.forces[k]; return v.n + (v.example ? '' : ''); };
     mount('#forces', UI.verdictTable({
       columns: [{ key: 'name', label: 'Avatar' }, { key: 'lines', label: 'Lines', unit: 'n' }, { key: 'push', label: 'Push', unit: 'n' }, { key: 'pull', label: 'Pull', unit: 'n' },
@@ -665,13 +632,11 @@
       verdict: { at: 1, kind: (r) => r.under ? 'fix' : 'keep', text: (r) => r.under ? 'Under-researched' : 'Covered',
         reason: (r) => r.missing.length ? 'no lines for: ' + r.missing.join(', ') : '' },
       actions: { label: 'Do' }, sort: false,
-    }), el('p', { class: 'micro faint', text: 'Under-researched: a force with no line, or anxiety plus habit under 15 percent of coded lines. Patterns are word lists, so read counts as direction, not a census.' }));
+    }), el('p', { class: 'micro faint', text: 'Under-researched: the rule above. Patterns are word lists, so read counts as direction, not a census.' }));
   }
 
   // ---------- desk: survey ----------
   function renderSurvey(x) {
-    document.getElementById('survey-sub').textContent = 'A post-purchase survey where every question closes a gap named above. ' + x.line +
-      ' Response rate is an assumption until the survey runs. Orders a day: ' + (x.orders_per_day == null ? NA : fmt.num(x.orders_per_day)) + ', simulated.';
     mount('#survey-tools', el('button', { class: 'btn soft sm', type: 'button', text: 'Open the survey draft', onclick: () => briefPanel(x.action) }));
     mount('#survey', el('ol', { class: 'survey' }, ...x.questions.map((q) => el('li', null, el('b', { text: q.q }), el('span', { class: 'chip', text: q.type }),
       el('div', { class: 'small muted', text: 'Closes: ' + q.closes + (q.gap_ids.length ? ' (' + q.gap_ids.length + ' gaps)' : '') }),
@@ -681,8 +646,6 @@
   // ---------- desk: copy gap ----------
   function renderGap(x) {
     if (!x.available) { mount('#gap', UI.emptyState({ screen: SLUG, title: 'Copy gap unavailable', text: x.reason })); return; }
-    document.getElementById('gap-sub').textContent = 'Words in 3 or more praise reviews (4 and 5 star or praise themes, Reddit left out), checked against ' + x.our_records +
-      ' site and founder records in the brain. Not a live crawl of every page. ' + x.line;
     mount('#gap-tools', x.action ? el('button', { class: 'btn soft sm', type: 'button', text: 'Brief the top ' + Math.min(5, x.missing), onclick: () => briefPanel(x.action) }) : null);
     mount('#gap', UI.verdictTable({
       columns: [{ key: 'word', label: 'Their word' }, { key: 'reviews', label: 'Praise reviews', unit: 'n' }, { key: 'ex', label: 'How they say it' }],
@@ -695,8 +658,6 @@
   // ---------- desk: perception gap ----------
   function renderPerception(x) {
     if (!x.available) { mount('#perc-theirs', UI.emptyState({ screen: SLUG, title: 'Perception gap unavailable', text: x.reason })); return; }
-    document.getElementById('perc-sub').textContent = 'Our positioning records (frame, category, price frame, proof points, pitch) against the words in ' + x.praise_reviews +
-      ' praise reviews (4 and 5 star, Reddit left out). ' + x.line;
     mount('#perc-tools', UI.orientation([{ label: 'buyer words we share', value: x.score, unit: '%', tone: x.score < 0.5 ? 'bad' : null }]),
       el('button', { class: 'btn soft sm', type: 'button', text: 'Brief it', onclick: () => briefPanel(x.action) }));
     mount('#perc-theirs', el('h4', { text: 'Their top words, and whether we use them' }),
@@ -711,7 +672,6 @@
 
   // ---------- desk: messaging hierarchy ----------
   function renderHierarchy(h) {
-    document.getElementById('hier-sub').textContent = h.line + ' Approve it and it becomes a positioning record every screen reads.';
     const status = el('span', { class: 'micro muted', 'aria-live': 'polite' });
     const btn = el('button', { class: 'btn primary sm', type: 'button', text: h.approved ? 'Approved' : !h.available ? 'Nothing to approve yet' : 'Approve as our messaging hierarchy', disabled: h.approved || !h.available });
     btn.addEventListener('click', async () => {
@@ -733,7 +693,6 @@
 
   // ---------- desk: hook bank ----------
   function renderHooks(h) {
-    document.getElementById('hooks-sub').textContent = '2 to 4 word phrases in 3 or more distinct 4 and 5 star reviews, from ' + h.praise_reviews + ' praise reviews, Reddit left out. ' + h.line;
     const picked = new Set(h.rows.slice(0, 5));
     const grid = el('div', { class: 'hooks' }, ...h.rows.map((r) => {
       const cb = el('input', { type: 'checkbox', checked: picked.has(r) });
@@ -755,8 +714,6 @@
   }
   function renderThemes(x) {
     if (!x.available) { mount('#themes', UI.emptyState({ screen: SLUG, title: 'Theme impact unavailable', text: x.reason })); return; }
-    document.getElementById('themes-sub').textContent = 'Impact = share of rated reviews with the theme x (average stars with it minus without it), from ' + x.rated +
-      ' rated public reviews in the brain. Rising: last 90 days share 1.5x the earlier share, with 5 or more reviews. ' + x.line;
     const max = Math.max(...x.rows.map((r) => Math.abs(r.impact)));
     const rows = x.rows.map((r) => Object.assign({}, r, { theme_t: pretty(r.theme), bar: '', gap_t: (r.star_gap > 0 ? '+' : '') + r.star_gap + ' stars',
       actions: r.action ? [{ label: r.impact < 0 ? 'Fix it' : 'Lead with it', onClick: () => briefPanel(r.action) }] : [keep('No ladder', 'No objection ladder covers this theme yet. Add a rung in the brain to brief it.')] }));
@@ -891,7 +848,7 @@
       orient: d.orientation, actions: open, limit: 10, screen: SLUG,
       tools: [pills, openTab, el('button', { class: 'btn sm', type: 'button', text: 'Export CSV', onclick: () => exportCsv(acts) })].filter(Boolean),
       foot: el('div', { class: 'row', style: { gap: '14px' } }, UI.rubricLegend(),
-        el('span', { class: 'micro faint', text: 'Ranked by the shared rubric. "Not now" snoozes 14 days. Approved items go to the master list on the brand brain.' })),
+        el('span', { class: 'micro faint', text: 'Ranked by the shared rubric. "Not now" snoozes ' + d.snooze_days + ' days. Approved items go to the master list on the brand brain.' })),
       empty: planJob === 'all' ? 'No open move. Every avatar is grounded and every top doubt has proof.' : 'No open move in this job.',
     }));
     const con = acts.filter((a) => !isOpen(a));
@@ -966,7 +923,7 @@
     if (!rows.length) { mount(box); box.hidden = true; return; }
     box.hidden = false;
     mount(box, el('details', null,
-      el('summary', { text: rows.length + ' put off with "Not now". Each comes back after 14 days.' }),
+      el('summary', { text: rows.length + ' put off with "Not now". Each comes back after ' + SNOOZE.days + ' days.' }),
       el('ul', { class: 'snoozed-list' }, ...rows.map((a) => el('li', null,
         el('b', { text: a.title }), ' ',
         el('span', { class: 'muted', text: 'Not now on ' + fmt.date(a.decision.time) + '. Back on ' + fmt.date(a.decision.back_on) + '.' + (a.decision.reason ? ' ' + a.decision.reason : '') }))))));
@@ -1039,7 +996,7 @@
       rows: x.items.map((i) => Object.assign({}, i, { days_t: i.overdue ? Math.abs(i.days) + ' days late' : i.days === 0 ? 'today' : 'in ' + i.days + ' days',
         owner_t: i.owner === 'person' ? 'a person' : i.owner === 'agent' ? 'agent' : 'agent drafts, you approve' })),
       verdict: { at: 1, kind: (r) => r.overdue ? 'stop' : r.days <= 7 ? 'fix' : 'wait', text: (r) => r.overdue ? 'Overdue' : r.days <= 7 ? 'This week' : 'Coming' },
-      sort: false, empty: 'Nothing dated in the next 30 days.',
+      sort: false, empty: 'Nothing dated in the next ' + x.days + ' days.',
     }));
   }
 
@@ -1067,7 +1024,7 @@
     const byId = {}; for (const a of actions) byId[a.id] = a;
     rows = rows.filter((d) => d.screen === SLUG).slice().reverse();
     const counts = rows.reduce((o, d) => { o[d.choice] = (o[d.choice] || 0) + 1; return o; }, {});
-    document.getElementById('decided-sub').textContent = rows.length ? rows.length + ' decisions: ' + Object.entries(counts).map(([k, n]) => n + ' ' + (CHOICE[k] ? CHOICE[k][0].toLowerCase() : k)).join(', ') + '. "Not now" comes back after 14 days.'
+    document.getElementById('decided-sub').textContent = rows.length ? rows.length + ' decisions: ' + Object.entries(counts).map(([k, n]) => n + ' ' + (CHOICE[k] ? CHOICE[k][0].toLowerCase() : k)).join(', ') + '. "Not now" comes back after ' + SNOOZE.days + ' days.'
       : 'No decision yet. Approve, send or snooze any move above and it lands here with its check date.';
     if (!rows.length) { mount('#decided', el('p', { class: 'muted small', text: 'Nothing decided on this screen yet.' })); return; }
     mount('#decided', UI.timeline(rows.slice(0, 20).map((d) => {
@@ -1128,6 +1085,8 @@
       const h2 = head && head.querySelector('h2');
       if (h2) h2.after(el('span', { class: 'block-window', text: b.window }));
       if (head && b.gap) head.after(el('p', { class: 'block-gap gap-' + b.gap.kind }, el('b', { text: 'Gap, ' + b.gap.label + ': ' }), b.gap.text));
+      const sub = head && head.querySelector('.sub');
+      if (sub && b.rule) sub.textContent = b.rule + (b.line ? ' ' + b.line : '');
       sec.append(el('p', { class: 'block-caveat', text: 'Caveat: ' + b.caveat }));
     }
   }
@@ -1140,6 +1099,7 @@
       mount('#badge', 'Could not load customers: ' + e.message); return;
     }
     mount('#badge', el('span', null, el('b', { text: 'Simulated data. ' }), d.simulated_note));
+    SNOOZE.days = d.snooze_days;
     r.snoozed = (r.actions || []).filter((x) => x.status === 'snoozed');
     r.actions = (r.actions || []).filter((x) => x.status !== 'snoozed');
     renderPlan(d, r);

@@ -485,6 +485,7 @@ def _build_overview(brain: Brain) -> dict:
     builds.card_meta(out)
     out["compare"] = builds.compare_rows(out)
     out["blocks"] = builds.block_notes(out)
+    out["snooze_days"] = _engine().SNOOZE_DAYS
     w = {"ends_on": out["ends_on"], "days": 28, "trailing": 4}
     acts = rank(brain.brand, w)["actions"]
     builds.size_moves(out, {a["plan_id"]: a for a in acts if a.get("plan_id")})

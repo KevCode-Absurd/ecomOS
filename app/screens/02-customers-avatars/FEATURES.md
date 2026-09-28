@@ -162,6 +162,21 @@ Lead's review: rounds 1 to 4 passed. Focus: returns and tickets by avatar, depth
 | 9.9 | The page at phone width, re-checked with the round 7 and 8 blocks (sales and reviews, gap lines, caveats, compare buttons): 360 px on all 5 tabs, nothing past the edge. The smoke test now checks page width at 360 px on every tab for both brands, so a wide block can no longer slip in | done |
 | 9.10 | Round 9 close: no new rule; the 32 rules now pass depth rules 4, 6, 12 and 13 as tests, and the page passes 7, 11 and the first-screen and phone checks in the browser for both brands. 67 actions; none in the master top 10 (best 62, cut-off 63), as in round 8. Fixed on the way: a buyer line could show twice on an avatar page and in the compare row. Full screen suite: only the known site speed failures. Screenshot `round9.png` (an avatar page with the share of sales and its decisions section) | done |
 
+## Round 10: the last pass (from 28 Sep 2026)
+
+| # | Feature | Status |
+|---|---|---|
+| 10.1 | No thresholds in page code (depth.md anti-pattern "brand facts in code"): the rule line of all 31 desk blocks is now written in `builds.block_rules` from the builders' own constants, shorter, and the page only shows it with the block's line. The format verdict, the focus tier (next, soon, later), the emails per moment, the snooze days and the agenda window come from the api too. Tested: no percent, multiplier, day count or "N or more" left in `screen.js` strings | done |
+| 10.2 | A brand with nothing: every route and the page render for an empty brain and no tables, each block unavailable with its reason | todo |
+| 10.3 | Anti-patterns walked against the page, each with its check: a report, tiles without a next step, findings without an owner, charts for their own sake, long prose, buttons that lead nowhere, zero for unknown | todo |
+| 10.4 | Depth.md sections 1 to 5 last pass: anything still unchecked becomes a test | todo |
+| 10.5 | Hand-off note `HANDOFF.md` in this folder: what the screen does, how each number is made, the contract asks and their fallbacks, what to do when each table lands | todo |
+| 10.6 | Loose ends in this file: every parked or open item closed, moved to the hand-off, or marked | todo |
+| 10.7 | Thresholds a brand can tune read from the brain when a record sets them (depth.md section 8) | todo |
+| 10.8 | The plan's connect strip: unavailable findings shown as their own connect list, never crowding the plan (depth.md section 5) | todo |
+| 10.9 | Charts: each chart on the page names the decision it changes, or goes | todo |
+| 10.10 | Round 10 close, `round10.png`, report to the lead | todo |
+
 ### Round 9 founder note (28 Sep 2026)
 
 1. The screen now checks itself on every run. Every sentence passes the writing rules, and every number in a finding is backed in its evidence.
