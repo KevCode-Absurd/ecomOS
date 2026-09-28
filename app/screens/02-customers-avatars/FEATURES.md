@@ -34,9 +34,15 @@ Judged by `app/contracts/depth.md`. Each feature ends in an action with an owner
 | 1.5 | Their words for each doubt: phrases from the language bank linked to each rung (through `derived_from`), split into how they say the doubt (complaint or 1 to 2 star) and how they say the win (praise, result or 4 to 5 star), up to 6 each, generic lines dropped, Reddit lines marked language only and unticked. Avatar pills. "Use in brief" builds a copy brief from the ticked lines with the proof, owner and steps. All phrases by theme sit under a fold | done |
 | 1.6 | When buyers come back and where they stop: cohort grid of 18 first-order months by months 1 to 12 since the first order (active share, a cell only once its month ended), with the breaks named by rule: peak return month (months 1 to 3), calendar break (half or more of cohorts fall 40 percent or more in the same month: January 2026 for Bombas), age break (largest median fall after the peak, cliff months left out), weak cohorts (repeat months 1 to 3 under 0.8x the median). Each break becomes a retention move card: second-order email day, win-back start day, a plan for the cliff month, a post-purchase branch for weak cohorts, each with a draft, steps and a check date. Orientation: peak month, median repeat, estimated 12-month value | done |
 | 1.7 | Who comes back and through which channel: returning share of orders by month, this year against last (line), and a waterfall of returning orders by channel from the same month last year to the latest full month. Rules: share down 2 points or more against last year (a win-back plan for the channel that lost most), a quarter or more of returning orders through paid ads (exclusion list and owned-channel capture, a person applies it in the ad account), email and SMS growing 5 points slower than other channels (a flow health review). Bombas: 29.9 percent of returning orders came through paid ads in Aug 2026 | done |
-| 1.8 | Avatars served and not served: positioning map | todo |
+| 1.8 | Which avatars we serve and which we leave to others: a positioning map of avatars by share of buyers against how well we serve them (five-star share on their doubts), split at the median share and the all-doubt five-star share into core, fix first, scale and park, with a verdict table that opens each avatar's next build. Beside it, buying situations the category pushes (from competitor positioning and hooks in the brain, and Reddit) against the avatars we hold: gap when 2 or more competitors push it and we hold none, watch for 1 or Reddit only; gaps and watches carry a research note to size the buyer, a person decides. Bombas: hiking and outdoor is the gap (Stance, Darn Tough, Smartwool) | done |
 | 1.9 | Where reviews say the avatar is misread | todo |
 | 1.10 | `rank` with real steps and artefacts for every rule | todo |
+
+## Contract asks
+
+- A `situations` brain record per category (buying situations as word patterns), so 1.8 reads them from the brain instead of the category-level constant in `builds.py`. Fallback: the constant.
+- An `avatar` entity type in `audit.md` (round 0 note). Fallback: type `brand` with the avatar key.
+- An angle and avatar tag per ad in `ad_rows`, so coverage in ads can be counted (CUST-R03). Fallback: unavailable finding.
 
 ## Room jobs (room "Brand and customers", agent BRAND)
 

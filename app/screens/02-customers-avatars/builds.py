@@ -18,6 +18,7 @@ An avatar that rests on 1 source keeps its build and carries a "provisional" fla
 """
 from __future__ import annotations
 
+import re
 from urllib.parse import urlparse
 
 SCREEN = "02-customers-avatars"
@@ -645,3 +646,86 @@ def mix(monthly: list[dict], channels: list[dict], as_of: str) -> dict:
             "waterfall": steps, "contrib": contrib, "paid_share_returning": paid_share,
             "owned_growth": round(owned_g, 4) if owned_g is not None else None, "rest_growth": round(rest_g, 4) if rest_g is not None else None,
             "moves": moves, "simulated": True}
+
+
+# ---------------------------------------------------------------- avatars served and not served
+
+# Buying situations, as word stems. Category-level, not brand facts; see Contract asks in FEATURES.md.
+SITUATIONS = {"hiking and outdoor": r"\b(hik|trail|outdoor)", "running": r"\b(running|runner|marathon)",
+              "work shifts": r"\b(shift|nurse|work day|workday|at work)", "medical relief": r"\b(postpartum|pots|plantar|medical|doctor|relief)",
+              "gifting": r"\b(gift|holiday|christmas)", "kids": r"\b(kid|child|toddler|teen)",
+              "cold weather": r"\b(winter|cold|wool|merino)", "style": r"\b(style|fashion|self expression)",
+              "compression": r"\bcompression"}
+
+
+def _hits(text: str, pattern: str) -> bool:
+    return re.search(pattern, text.lower()) is not None
+
+
+def served(avatars: list[dict], all_rungs: list[dict], competitors: list[dict], positioning: list[dict]) -> dict:
+    """Our avatars by reach and how well we serve them, and the buying situations the category serves that we do not."""
+    pts, unplaced, verdicts = [], [], []
+    tot_one = sum(r["one_star"] or 0 for r in all_rungs)
+    tot_five = sum(r["five_star"] or 0 for r in all_rungs)
+    mid_y = round(tot_five / (tot_one + tot_five), 4) if tot_one + tot_five else None
+    for a in avatars:
+        mine = [r for r in all_rungs if a["id"] in r["avatars"]]
+        one = sum(r["one_star"] or 0 for r in mine)
+        five = sum(r["five_star"] or 0 for r in mine)
+        y = round(five / (one + five), 4) if one + five else None
+        if a["share_estimate"] is None or y is None:
+            unplaced.append({"name": a["name"], "why": "share unavailable" if a["share_estimate"] is None else "no rated doubts"})
+            continue
+        pts.append({"key": a["key"], "label": " ".join([w for w in a["name"].split() if w.lower() not in ("and", "for", "the", "of")][:2]), "name": a["name"], "x": a["share_estimate"], "y": y, "us": True, "size": one + five,
+                    "note": f"{five} five-star, {one} one-star on its doubts"})
+    mid_x = _median([p["x"] for p in pts])
+    for p in pts:
+        big, well = p["x"] >= (mid_x or 0), p["y"] >= (mid_y or 0)
+        p["quadrant"] = ("core" if well else "fix_first") if big else ("scale" if well else "park")
+        verdicts.append({"key": p["key"], "name": p["name"], "quadrant": p["quadrant"], "share": p["x"], "served": p["y"]})
+    # the category conversation: situations competitors push, and situations Reddit names
+    comp = []
+    for r in competitors:
+        v = r.get("value") if isinstance(r.get("value"), dict) else {}
+        if v.get("positioning") and v.get("name"):
+            comp.append({"name": v["name"], "id": r["id"],
+                         "text": " ".join([v["positioning"], str(v.get("what_they_push") or ""), " ".join(v.get("hook_types") or [])])})
+    reddit = {a["name"]: a for a in avatars if not a["quotes"] and a.get("count_by_source", {}).get("reddit")}
+    segs = []
+    for seg, stems in SITUATIONS.items():
+        ours = [a["name"] for a in avatars if a["quotes"] and _hits(" ".join([a["name"], a.get("job") or "", *a.get("triggers", []), *a.get("pains", [])]), stems)]
+        theirs = [c["name"] for c in comp if _hits(c["text"], stems)]
+        talk = [n for n in reddit if _hits(n, stems)]
+        mentions = sum(reddit[n]["count_by_source"].get("reddit", 0) for n in talk)
+        if ours:
+            verdict = "hold" if theirs else "own"
+        elif len(theirs) >= 2:
+            verdict = "gap"
+        elif theirs or talk:
+            verdict = "watch"
+        else:
+            continue
+        action = None
+        if verdict in ("gap", "watch"):
+            action = {"id": f"{SCREEN}.segment.{seg.replace(' ', '_')}", "kind": "research_note", "owner": "agent_drafts",
+                      "title": f"Size the {seg} buyer before we make anything for them",
+                      "capability": {"id": "BRAND-C16", "autonomy": "founder_gate"},
+                      "draft": "\n".join([f"DRAFT research note: {seg}",
+                                          f"Who serves it: {', '.join(theirs) if theirs else 'no competitor in the brain'}",
+                                          f"Reddit talk: {mentions} mentions" if talk else "Reddit talk: none in the brain",
+                                          "Questions: do our buyers already use us for this, which product fits, what proof would they need",
+                                          "Sources: our reviews that mention it, competitor reviews, 5 customer interviews",
+                                          "Output: an avatar record with 5 quotes from 2 or more sources, or a no-go"]),
+                      "steps": [{"n": 1, "who": "agent", "text": f"Search our reviews and tickets for {seg} words."},
+                                {"n": 2, "who": "agent", "text": "Read what competitors promise these buyers and at what price."},
+                                {"n": 3, "who": "agent", "text": "Draft the avatar record or a no-go with the numbers."},
+                                {"n": 4, "who": "person", "text": "Decide: build for them, test one ad, or drop it."}]}
+        segs.append({"segment": seg, "ours": ours, "theirs": theirs, "reddit_mentions": mentions if reddit else None,
+                     "verdict": verdict, "action": action})
+    order = {"gap": 0, "watch": 1, "hold": 2, "own": 3}
+    segs.sort(key=lambda s: (order[s["verdict"]], -len(s["theirs"]), s["segment"]))
+    gaps = [s["segment"] for s in segs if s["verdict"] == "gap"]
+    fix = [v["name"] for v in verdicts if v["quadrant"] == "fix_first"]
+    return {"points": pts, "mid_x": mid_x, "mid_y": mid_y, "unplaced": unplaced, "verdicts": verdicts, "segments": segs,
+            "line": (f"Fix first: {', '.join(fix)}. " if fix else "") +
+                    (f"The category serves {', '.join(gaps)} and we have no avatar for it." if gaps else "No contested situation is left unserved.")}

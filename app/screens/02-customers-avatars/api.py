@@ -280,6 +280,7 @@ def overview(brain: Brain) -> dict:
             "objections": objections, "angles": {k: angles[k] for k in ("available", "reason", "ads")},
             "language": audit.language_rows(brain), "voice": voice_sheet(brain),
             "cohorts": _cohorts(brain.brand, avatars), "mix": _mix(brain.brand),
+            "served": builds.served(avatars, all_rungs, brain.records("competitors"), brain.records("positioning")),
             "coverage": builds.coverage(avatars, all_rungs), "ladders": builds.ladders(all_rungs, avatars),
             "words": builds.words(brain.records("language_bank"), all_rungs, avatars, _brand_tokens(brain), audit.source_name), "formats": _formats(brain, avatars)}
 

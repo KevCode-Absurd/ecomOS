@@ -471,5 +471,41 @@ class Mix(unittest.TestCase):
         self.assertFalse(api.builds.mix(monthly[-5:], channels, '2026-09-27')['available'])
 
 
+class Served(TempBrain):
+    """Feature 1.8: avatars by reach and how well we serve them; situations the category serves and we do not."""
+
+    def served(self):
+        return api.handle(Req(['overview']))['served']
+
+    def test_points_and_quadrants(self):
+        x = self.served()
+        rungs = audit.rungs(api._brain(Req(['overview'])))
+        for p in x['points']:
+            mine = [r for r in rungs if 'bombas.avatars.' + p['key'] in r['avatars']]
+            one, five = sum(r['one_star'] or 0 for r in mine), sum(r['five_star'] or 0 for r in mine)
+            self.assertAlmostEqual(p['y'], round(five / (one + five), 4))
+            big, well = p['x'] >= x['mid_x'], p['y'] >= x['mid_y']
+            self.assertEqual(p['quadrant'], {(True, True): 'core', (True, False): 'fix_first', (False, True): 'scale', (False, False): 'park'}[(big, well)])
+        self.assertIn('Daily Compression Wearer', [u['name'] for u in x['unplaced']])
+        fix = [v['name'] for v in x['verdicts'] if v['quadrant'] == 'fix_first']
+        self.assertIn('Durability Disappointed Repeat Customer', fix)
+
+    def test_situation_gap_has_research_action(self):
+        segs = {s['segment']: s for s in self.served()['segments']}
+        hike = segs['hiking and outdoor']
+        self.assertEqual(hike['verdict'], 'gap')
+        self.assertGreaterEqual(len(hike['theirs']), 2)
+        self.assertEqual(hike['action']['kind'], 'research_note')
+        self.assertEqual(hike['action']['steps'][-1]['who'], 'person')
+        for s in segs.values():
+            self.assertEqual(s['action'] is None, s['verdict'] in ('hold', 'own'))
+        self.assertNotIn('Fit and Sizing Uncertain Buyer', segs['running']['ours'])
+
+    def test_no_competitor_positioning_means_no_gap(self):
+        rows = [r for r in self.section('competitors') if not (isinstance(r.get('value'), dict) and r['value'].get('positioning'))]
+        self.write('competitors', rows)
+        self.assertFalse([s for s in self.served()['segments'] if s['verdict'] == 'gap'])
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -211,6 +211,36 @@
       ...(x.moves.length ? x.moves.map((m) => UI.actionCard(m, { compact: true, screen: SLUG })) : [el('p', { class: 'muted small', text: 'No mix rule fired. Returning share is steady and owned channels keep pace.' })]));
   }
 
+  // ---------- desk: served and not served ----------
+  const QUAD = { core: ['keep', 'Core: grow it'], fix_first: ['fix', 'Fix first'], scale: ['scale', 'Scale it'], park: ['wait', 'Park'] };
+  const SEG = { gap: ['new', 'Gap'], watch: ['watch', 'Watch'], hold: ['keep', 'Hold'], own: ['scale', 'We own it'] };
+  function renderServed(x, avatars) {
+    const byKey = {}; for (const a of avatars) byKey[a.key] = a;
+    document.getElementById('served-sub').textContent = 'Left: each avatar by its share of buyers against how well we serve it (five-star share on its doubts). Lines at the median share and the all-doubt five-star share. ' +
+      'Right: buying situations competitors push, against the avatars we hold. ' + x.line;
+    mount('#served-map', Charts.positioningMap({
+      x: { label: 'share of buyers', lo: 'fewer', hi: 'more', unit: '%', min: 0, max: Math.max(...x.points.map((q) => q.x), 0.01) * 1.4 },
+      y: { label: 'served well', lo: 'poorly', hi: 'well', unit: '%', min: 0, max: 1 },
+      points: x.points, midX: x.mid_x, midY: x.mid_y, width: 560, height: 360, sizeUnit: 'n', usLabel: 'our avatars', themLabel: 'category',
+      quadrants: ['Small, served well: scale', 'Core: grow', 'Small, served poorly: park', 'Big, served poorly: fix first'],
+      title: 'Avatars by reach and how well we serve them',
+      note: 'Share is a rough estimate from public reviews. Not placed: ' + (x.unplaced.map((u) => u.name + ' (' + u.why + ')').join(', ') || 'none') + '.' }),
+      UI.verdictTable({
+        columns: [{ key: 'name', label: 'Avatar' }, { key: 'share', label: 'Share', unit: '%' }, { key: 'served', label: 'Served', unit: '%' }],
+        rows: x.verdicts.map((v) => Object.assign({}, v, { actions: byKey[v.key] ? [{ label: 'Next build', onClick: () => briefPanel(Object.assign({ kind: byKey[v.key].next.kind }, byKey[v.key].next)) }] : [] })),
+        verdict: { at: 1, kind: (r) => QUAD[r.quadrant][0], text: (r) => QUAD[r.quadrant][1] }, actions: { label: 'Do' }, sort: false,
+      }));
+    mount('#served-segs', el('h4', { text: 'Buying situations: us against the category' }),
+      UI.verdictTable({
+        columns: [{ key: 'segment', label: 'Situation' }, { key: 'ours_t', label: 'Our avatars' }, { key: 'theirs_t', label: 'Who pushes it' }],
+        rows: x.segments.map((sg) => Object.assign({}, sg, { ours_t: sg.ours.join(', ') || 'none',
+          theirs_t: (sg.theirs.join(', ') || 'no competitor') + (sg.reddit_mentions == null ? '' : '; Reddit ' + sg.reddit_mentions),
+          actions: sg.action ? [{ label: 'Size it', onClick: () => briefPanel(sg.action) }] : [{ label: 'Nothing new', cls: 'quiet', onClick: () => {} }] })),
+        verdict: { at: 1, kind: (r) => SEG[r.verdict][0], text: (r) => SEG[r.verdict][1] }, actions: { label: 'Do' }, sort: false,
+      }),
+      el('p', { class: 'micro faint', text: 'Gap: 2 or more competitors push it and we hold no avatar with quotes for it. Watch: 1 competitor or Reddit only. Competitor positioning is a signal, not proof the segment pays.' }));
+  }
+
   function objectionTable(rows) {
     return UI.table({
       columns: [
@@ -406,6 +436,7 @@
     renderCoverage(d.coverage, d.formats);
     renderLadders(d.ladders, d.avatars);
     renderWords(d.words, d.avatars);
+    renderServed(d.served, d.avatars);
     renderCohorts(d.cohorts);
     renderMix(d.mix);
     mount('#avatars', ...(d.avatars.length ? d.avatars.map(avatarCard) : [el('p', { class: 'muted', text: 'No avatar records yet.' })]));
