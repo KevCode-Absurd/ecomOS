@@ -566,6 +566,28 @@
         above.length && actionFor(above[0].finding_id) ? { label: 'Recheck the first', onClick: () => openAction(actionFor(above[0].finding_id)) } : null));
   }
 
+  function complaintBlock(rows) {
+    if (!rows || !rows.length) return UI.emptyState({ screen: SLUG, title: 'No mined listing reviews', text: 'The brain holds no Amazon issue and praise counts yet.', missing: ['amazon_reviews'] });
+    const themes = Array.from(new Set(rows.flatMap((r) => Object.keys(r.issues)))).filter((t) => t !== 'general');
+    const chart = Charts.bar({ title: 'Complaint themes per listing, share of mined reviews', labels: rows.map((r) => r.asin), stacked: true, unit: '%',
+      series: themes.map((t) => ({ name: pretty(t), values: rows.map((r) => r.mined ? (r.issues[t] || 0) / r.mined : null) })), benchmark: 0.15, benchmark_label: '15 percent, one complaint',
+      note: 'Each bar is one listing; segments are complaint themes as a share of the reviews mined on it (general is left out). The dashed line is the rule: one complaint over 15 percent is the gap to build on.' });
+    const vrows = rows.map((r) => { const a = actionFor(r.finding_id); return Object.assign({}, r, {
+      top: r.top_complaint ? pretty(r.top_complaint) + ' (' + r.top_count + ')' : 'none', label: r.title.length > 48 ? r.title.slice(0, 46) + '..' : r.title,
+      actions: [a ? { label: 'Build the angle', onClick: () => openAction(a) } : { label: r.mined < 20 ? 'Too few mined' : 'Under 15 percent', cls: 'quiet', onClick: () => {} }] }); });
+    const t = UI.verdictTable({
+      columns: [{ key: 'label', label: 'Listing' }, { key: 'asin', label: 'ASIN' }, { key: 'stars', label: 'Stars', align: 'right', format: (v) => v == null ? NA : v.toFixed(1) }, { key: 'ratings', label: 'Ratings', unit: 'n' },
+        { key: 'price_usd', label: 'Price', unit: '$' }, { key: 'mined', label: 'Reviews mined', unit: 'n' }, { key: 'top', label: 'Top complaint' }, { key: 'top_rate', label: 'Its share', unit: '%' }, { key: 'praise_share', label: 'Praise share', unit: '%' }],
+      rows: vrows,
+      verdict: { at: 1, kind: (r) => r.mined < 20 ? 'na' : (r.top_rate || 0) > 0.15 ? 'fix' : (r.praise_share || 0) >= 0.7 ? 'scale' : 'keep', text: (r) => r.mined < 20 ? 'Thin sample' : (r.top_rate || 0) > 0.15 ? 'Complaint over 15' : (r.praise_share || 0) >= 0.7 ? 'Praise led' : 'Mixed', reason: (r) => r.complaints + ' complaint, ' + r.praises + ' praise quotes mined' },
+      actions: { label: 'Do', onClick: () => {} }, sort: false });
+    const gaps = rows.filter((r) => r.mined >= 20 && (r.top_rate || 0) > 0.15);
+    return el('div', { class: 'stack' }, el('div', { class: 'card' }, chart), el('div', { class: 'card scroll' }, t),
+      el('p', { class: 'micro faint', text: 'Mined counts come from the Amazon review pull in the brain (public), by theme. Ratings and stars are the listing\'s public totals. Listing sales are not connected.' }),
+      gapLine(gaps.length ? gaps.length + ' listing' + (gaps.length === 1 ? ' has' : 's have') + ' one complaint over 15 percent of mined reviews: ' + gaps.map((g) => g.asin + ' (' + pretty(g.top_complaint) + ')').join(', ') + '.' : 'No listing has a single complaint over 15 percent of its mined reviews.',
+        gaps.length && actionFor(gaps[0].finding_id) ? { label: 'Build the first angle', onClick: () => openAction(actionFor(gaps[0].finding_id)) } : null));
+  }
+
   function loadDesk(o) {
     const d = o.desk || {};
     const w = (o.window || {}).trend;
@@ -585,6 +607,7 @@
     parts.push(section('desk-lane-map', 'Which lanes are growing with room left, and which are growing and already full?', 'Trend direction against competitive saturation per lane, read together as one go or no-go signal: market growth and launches from the web pass, sellers from the competitor pages in the brain.', laneMapBlock(d.lane_map)));
     parts.push(section('desk-spend', 'Who is actually funding which lane, not just posting about it?', 'Competitor pages by the longest run of their active ads per lane. Three or more advertisers at 90 days is a funded test; one at 14 days is a live test; the rest is noise.', spendBlock(d.spend)));
     parts.push(section('desk-price-signal', 'What would buyers actually pay for a pair?', 'Price mentions mined from review quotes across Amazon, the brand site, Trustpilot and retailers, as a median per pair, against the competitor band, our own pair and each candidate\'s planned price.', priceSignalBlock(d.price_signal)));
+    parts.push(section('desk-complaints', 'What do buyers hate about what exists, listing by listing?', 'Complaint themes mined from the brand\'s own Amazon listings as a share of reviews mined, against praise, with the listing\'s public stars, ratings and price. One complaint over 15 percent is the angle to build on.', complaintBlock(d.complaints)));
     parts.push(section('desk-pattern', 'Is each candidate evergreen, seasonal or a trend, and when does cash move?', 'The demand pattern from our own 12-month series by category and the web pass, with the cash timing it implies and the cash plan attached to each candidate.', patternBlock(d.pattern)));
     parts.push(section('desk-pipeline', 'What is in the next-SKU pipeline, and what is past its time box?', 'Candidates screened in from the gaps above or by hand, their stage, fast checks, time box and hours. Advance, log hours or kill from the card; every write lands in the pipeline log.', pipelineBlock(d.pipeline || { rows: [] })));
     mount('#desk', ...parts);

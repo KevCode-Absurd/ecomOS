@@ -678,6 +678,30 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
         self.assertIn('around $20', fs[0]['sentence'])
         self.check_shape(fs[0])
 
+    def test_listing_complaints_rate_and_rule(self):
+        class B:
+            brand = 'fake'
+            def records(self, sec):
+                if sec == 'products':
+                    return [{'value': {'asin': 'A1', 'kind': 'issues', 'themes': {'durability': 18, 'general': 46, 'price_value': 31}}},
+                            {'value': {'asin': 'A1', 'kind': 'praise', 'themes': {'comfort': 36, 'general': 45}}},
+                            {'value': {'asin': 'A2', 'kind': 'issues', 'themes': {'fit_sizing': 1}}},
+                            {'value': {'asin': 'A2', 'kind': 'praise', 'themes': {'comfort': 5}}}]
+                if sec == 'marketplaces':
+                    return [{'value': {'asin': 'A1', 'title': 'Ankle sock', 'stars': 4.5, 'reviews_count': 2914, 'price_usd': 23.23}}]
+                return []
+        rows = {r['asin']: r for r in audit.listing_complaints(B())}
+        a1 = rows['A1']
+        self.assertEqual(a1['mined'], 176)
+        self.assertEqual(a1['top_complaint'], 'price_value')       # general is left out
+        self.assertEqual(a1['top_rate'], round(31 / 176, 4))
+        self.assertEqual(a1['title'], 'Ankle sock')
+        self.assertEqual(rows['A2']['mined'], 6)
+        fs = audit.complaint_findings(B(), date(2026, 9, 27))
+        self.assertEqual([f['entity']['id'] for f in fs], ['a1'])    # A2 has too few mined reviews
+        self.assertIn('price and worth', fs[0]['sentence'])
+        self.check_shape(fs[0])
+
     def test_demand_pattern_tags(self):
         even = {'rows': [{'category': 'socks', 'series': [100] * 12}], 'months': [f'2026-{m:02d}' for m in range(1, 13)], 'last': '2026-12'}
         peaked = {'rows': [{'category': 'socks', 'series': [50] * 10 + [300, 400]}], 'months': even['months'], 'last': '2026-12'}

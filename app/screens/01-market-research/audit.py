@@ -89,6 +89,9 @@ Rules
   PROD-R21  Review price gap: the median of per-pair price mentions in review quotes (Amazon, the brand site,
             Trustpilot, retailers; 3 to 60 dollars; never Reddit) against an open sock candidate's planned price per
             unit in its pack; fires when the plan is more than 15 percent above the median. Capability PROD-C04.
+  PROD-R22  Unresolved listing complaint: an Amazon listing of the brand with 20 or more mined reviews whose top
+            complaint theme (general left out) is over 15 percent of the mined reviews. The complaint is the gap to
+            build the next angle on. Capability PROD-C31 (mine reviews for opportunity, agent does). Owner: 01-market-research.
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -157,6 +160,8 @@ RULES = [
      'inputs': ['brain.competitors', 'fixtures.pipeline'], 'capability': 'PROD-C03', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R21', 'name': 'Candidate planned more than 15 percent above the per-pair price reviewers say a pair is worth', 'entity_type': 'sku',
      'inputs': ['brain.language_bank', 'fixtures.pipeline'], 'capability': 'PROD-C04', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R22', 'name': 'Listing with 20 or more mined reviews whose top complaint is over 15 percent of them', 'entity_type': 'sku',
+     'inputs': ['brain.products.amazon_*_issues', 'brain.products.amazon_*_praise', 'brain.marketplaces'], 'capability': 'PROD-C31', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -178,7 +183,8 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R18': {'id': 'PROD-C07', 'autonomy': 'agent_does'},
               'PROD-R19': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R20': {'id': 'PROD-C03', 'autonomy': 'agent_does'},
-              'PROD-R21': {'id': 'PROD-C04', 'autonomy': 'agent_does'}}
+              'PROD-R21': {'id': 'PROD-C04', 'autonomy': 'agent_does'},
+              'PROD-R22': {'id': 'PROD-C31', 'autonomy': 'agent_does'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -651,6 +657,7 @@ def run(brand, window=None, data=None):
     out += lane_map_findings(br, ends_on)
     out += spend_findings(br, brand, ends_on)
     out += review_price_findings(br, brand, ends_on)
+    out += complaint_findings(br, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -2012,5 +2019,65 @@ def review_price_findings(br, brand, ends_on):
         f = _finding('PROD-R21', cid, ends_on, 'medium', ev, sentence, None, 0.5, [], money_reason='a price signal has no order count until a test runs')
         f['entity'] = {'type': 'sku', 'id': cid, 'label': cand['name'], 'candidate': True, 'planned_per_pair': round(per, 2), 'review_median': med, 'gap': round(gap, 4)}
         f['id'] = f'{SCREEN}.PROD-R21.{cid}'
+        out.append(f)
+    return out
+
+
+# ---------------------------------------------------------------- complaint bars per listing (review mining on the brand's own Amazon listings)
+
+COMPLAINT_RATE = 0.15    # room spec: the top recurring complaint over 15 percent of mined reviews is the gap to build the angle on
+UNSORTED_THEME = 'general'
+
+
+def listing_complaints(br):
+    """Per Amazon listing in the brain: mined issue and praise counts by theme, the top complaint and its share of
+    mined reviews, the listing's public stars, ratings count and price."""
+    if br is None:
+        return []
+    issues, praise, listings = {}, {}, {}
+    for r in br.records('products'):
+        v = r.get('value') or {}
+        if isinstance(v, dict) and v.get('asin') and v.get('kind') in ('issues', 'praise'):
+            (issues if v['kind'] == 'issues' else praise)[v['asin']] = {k: int(n or 0) for k, n in (v.get('themes') or {}).items()}
+    for r in br.records('marketplaces'):
+        v = r.get('value') or {}
+        if isinstance(v, dict) and v.get('asin'):
+            l = listings.setdefault(v['asin'], {})
+            for k in ('title', 'stars', 'reviews_count', 'price_usd', 'review_count'):
+                if v.get(k) is not None and l.get(k) is None:
+                    l[k] = v[k]
+    out = []
+    for asin in sorted(set(issues) | set(praise)):
+        iss, pr = issues.get(asin, {}), praise.get(asin, {})
+        mined = sum(iss.values()) + sum(pr.values())
+        sorted_iss = sorted(((k, n) for k, n in iss.items() if k != UNSORTED_THEME), key=lambda kv: -kv[1])
+        top = sorted_iss[0] if sorted_iss else (None, 0)
+        l = listings.get(asin, {})
+        out.append({'asin': asin, 'title': l.get('title') or asin, 'stars': l.get('stars'), 'ratings': l.get('reviews_count') or l.get('review_count'), 'price_usd': l.get('price_usd'),
+                    'mined': mined, 'issues': iss, 'praise': pr, 'complaints': sum(iss.values()), 'praises': sum(pr.values()),
+                    'top_complaint': top[0], 'top_count': top[1], 'top_rate': round(top[1] / mined, 4) if mined and top[0] else None,
+                    'praise_share': round(sum(pr.values()) / mined, 4) if mined else None,
+                    'finding_id': f'{SCREEN}.PROD-R22.{asin.lower()}'})
+    out.sort(key=lambda r: -(r['top_rate'] or 0))
+    return out
+
+
+def complaint_findings(br, ends_on):
+    """PROD-R22: a listing with 20 or more mined reviews whose top complaint is over 15 percent of them."""
+    out = []
+    for r in listing_complaints(br):
+        if r['mined'] < 20 or r['top_rate'] is None or r['top_rate'] <= COMPLAINT_RATE:
+            continue
+        ev = [_ev('review_complaint_rate', r['top_rate'], 'ratio', ends_on.isoformat(), 'reviews mined', COMPLAINT_RATE, 'threshold', source=f'{br.brand}.products.amazon_{r["asin"].lower()}_issues',
+                  simulated=False, freshness_days=0, complaint=r['top_complaint'], mined=r['mined']),
+              _ev('praise_share', r['praise_share'], 'ratio', ends_on.isoformat(), 'reviews mined', source=f'{br.brand}.products.amazon_{r["asin"].lower()}_praise', simulated=False, freshness_days=0),
+              _ev('listing_stars', r['stars'], 'stars', ends_on.isoformat(), 'listing now', source='brain.marketplaces', simulated=False, freshness_days=0, ratings=r['ratings'])]
+        th = THEME_LABEL.get(r['top_complaint'], r['top_complaint']).lower()
+        sentence = (f'{round(r["top_rate"] * 100)} percent of {r["mined"]} mined reviews on {r["title"]} ({r["asin"]}) mention the same complaint: {th}. '
+                    f'That is the gap to build the angle on.')
+        f = _finding('PROD-R22', r['asin'].lower(), ends_on, 'medium', ev, sentence, None, 0.5, [f'{br.brand}.products.amazon_{r["asin"].lower()}_issues'],
+                     money_reason='listing sales are not connected; the rate is a share of mined reviews')
+        f['entity'] = {'type': 'sku', 'id': r['asin'].lower(), 'label': r['title'], 'asin': r['asin'], 'complaint': r['top_complaint'], 'rate': r['top_rate']}
+        f['id'] = f'{SCREEN}.PROD-R22.{r["asin"].lower()}'
         out.append(f)
     return out

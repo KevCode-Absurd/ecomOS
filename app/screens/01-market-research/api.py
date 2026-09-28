@@ -638,6 +638,22 @@ def recipe(f):
             'stop_rule': 'no funding while the plan sits more than 15 percent above the review signal without a named proof', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 2,
             'win_rule': 'planned price within 15 percent of the review median, or a proof the founder approved for the premium',
         }
+    if rid == 'PROD-R22':
+        ent = f.get('entity') or {}
+        th = audit.THEME_LABEL.get(ent.get('complaint'), ent.get('complaint') or 'the complaint').lower()
+        return {
+            'title': f'Build the angle on {th}: {round((ent.get("rate") or 0) * 100)} percent of mined reviews on {ent.get("asin")} say it',
+            'owner': 'agent',
+            'artefact': {'kind': 'brain_record', 'label': f'an angle record for the brain: the complaint in the buyer\'s words, the product change or proof that answers it, and the listing line that says so ({ent.get("asin")})'},
+            'steps': [
+                {'n': 1, 'who': 'agent', 'text': f'Read the mined complaint quotes on {ent.get("asin")} for {th} and sort them: product (spec), listing (wrong expectation), fulfilment (the seller).'},
+                {'n': 2, 'who': 'agent', 'text': 'Write the angle: what the next SKU or the listing must say to remove the complaint, with the proof.'},
+                {'n': 3, 'who': 'agent', 'text': 'Propose the record to the brain (review queue) and, if the fix is the listing, a listing fix for the marketplaces desk.'},
+                {'n': 4, 'who': 'person', 'text': 'Accept the record. Creative, copy and marketplaces read it from the brain.'}],
+            'size': {'text': f'{round((ent.get("rate") or 0) * 100)} percent of mined reviews', 'usd': None},
+            'stop_rule': 'stop if the complaint share falls under 15 percent in the next review pull', 'check_on': _check_on(f, 30), 'time_to_ship_hours': 3,
+            'win_rule': 'an accepted angle record in the brain and the complaint share under 15 percent on the next pull',
+        }
     return None
 
 
@@ -836,7 +852,7 @@ def overview(data, brand):
                      'price_bands': bands, 'reviews': review_mining(reviews, lads),
                      'pipeline': pipeline_block(brand, ends_on, findings, floor), 'margin': margin_block(brand, data, br, rd, ends_on, findings),
                      'pattern': pattern_block(brand, data, rd, findings), 'lane_map': audit.lane_map(br, ends_on), 'spend': audit.spend_signal(br, brand, ends_on),
-                     'price_signal': price_signal_block(br, brand, data, findings)},
+                     'price_signal': price_signal_block(br, brand, data, findings), 'complaints': audit.listing_complaints(br)},
             'audit': {'findings': findings, 'rules': audit.RULES}}
 
 
