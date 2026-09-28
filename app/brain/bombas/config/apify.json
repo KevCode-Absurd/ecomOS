@@ -7,7 +7,7 @@
   "ledger": "intelligence/budget.py"
  },
  "amazon_reviews": {
-  "actor": "axesso_data~amazon-reviews-scraper",
+  "actor": "junglee~amazon-reviews-scraper",
   "listing_actor": "junglee~amazon-crawler",
   "domain_code": "com",
   "asins": [
@@ -29,7 +29,7 @@
    3,
    4
   ],
-  "max_reviews_per_asin_per_star": 100,
+  "max_reviews_per_asin_per_star": 40,
   "max_pages": 10,
   "fills_sections": [
    "language_bank",
@@ -39,7 +39,8 @@
    "products",
    "marketplaces"
   ],
-  "notes": "pull 5-star and 1-star first, then the middle; listing actor gives title, bullets, stars and review count per ASIN"
+  "notes": "pull 5-star and 1-star first, then the middle; listing actor gives title, bullets, stars and review count per ASIN",
+  "alt_actor": "axesso_data~amazon-reviews-scraper (needs a one-time full-permission approval in the Apify console)"
  },
  "meta_ad_library": {
   "actor": "curious_coder~facebook-ads-library-scraper",
@@ -113,8 +114,8 @@
    "socks",
    "Frugal"
   ],
-  "max_items": 600,
-  "max_comments_per_post": 40,
+  "max_items": 500,
+  "max_comments_per_post": 8,
   "sort": "top",
   "time": "year",
   "fills_sections": [
@@ -128,6 +129,9 @@
    "content",
    "learnings"
   ],
-  "notes": "never store usernames; upvotes weight the phrase; a Reddit user is never quoted as a testimonial in an ad"
+  "notes": "never store usernames; upvotes weight the phrase; a Reddit user is never quoted as a testimonial in an ad",
+  "brand_name": "Bombas",
+  "category_term": "socks",
+  "max_posts_per_search": 15
  }
 }

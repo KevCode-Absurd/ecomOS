@@ -10,7 +10,7 @@ Rules from the brain contract still apply: read-only actors only, usernames drop
 
 ## Cost picture per brand
 
-At the caps in `sources.config.json`, a full monthly refresh on the tier 1 lanes below costs about $15 to $40 per brand. The Apify Starter plan at $39 a month covers 1 to 2 brands; scale plans are per usage. The free plan's $5 credit covers a first Bombas pull of reviews and Reddit but not the rest.
+At the caps in `config/apify.json`, a full monthly refresh on the tier 1 lanes below costs about $15 to $40 per brand. The Apify Starter plan at $39 a month covers 1 to 2 brands; scale plans are per usage. The free plan's $5 credit covers a first Bombas pull of reviews and Reddit but not the rest.
 
 ## The map
 

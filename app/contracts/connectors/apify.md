@@ -17,10 +17,10 @@ Three sources the brain needs at volume block datacenter traffic or forbid bulk 
 
 | Lane | Actor | Input keys we send | Output keys we read | Price seen 28 Sep 2026 |
 |---|---|---|---|---|
-| Amazon reviews | `axesso_data~amazon-reviews-scraper` | `asin`, `domainCode`, `sortBy`, `maxPages`, `filterByStar`, `reviewerType` | `rating`, `title`, `text`, `date`, `verified`, `numberOfHelpful`, `reviewId` | about $0.90 per 1,000 reviews |
+| Amazon reviews | `junglee~amazon-reviews-scraper` (default; `axesso_data~amazon-reviews-scraper` needs a one-time full-permission approval in the console) | `productUrls`, `maxReviews`, `filterByRatings` (fiveStar, oneStar), `sort` | `productAsin`, `ratingScore`, `reviewTitle`, `reviewDescription`, `reviewedIn`, `isVerified`, `reviewReaction`, `reviewUrl`, normalised in the extractor | about $3 per 1,000 reviews (axesso about $0.90) |
 | Amazon listing | `junglee~amazon-crawler` | `categoryOrProductUrls`, `maxItemsPerStartUrl`, `scrapeProductDetails`, `countryCode` | `title`, `url`, `asin`, `price`, `stars`, `reviewsCount`, `features` (bullets) | about $3 per 1,000 results |
 | Meta Ad Library | `curious_coder~facebook-ads-library-scraper` (alt `apify~facebook-ads-scraper` for spend and reach enrichment) | `urls` (page or search urls), `scrapeAdDetails`, `limitPerSource`, `scrapePageAds.activeStatus`, `scrapePageAds.countryCode` | ad id, archive id, page name and id, start and end dates, publisher platform, snapshot (copy, cta, media urls), impressions or reach where present | about $0.75 per 1,000 ads (alt about $3.40) |
-| Reddit | `trudax~reddit-scraper-lite` | `startUrls` or `searches`, `maxItems`, `maxComments`, `sort`, `time`, `skipUserPosts` | posts: `id`, `url`, `title`, `upVotes`, `numberOfComments`, `createdAt`; comments: `id`, `url`, `body`, `upVotes`, `createdAt` | about $3.40 per 1,000 items |
+| Reddit | `trudax~reddit-scraper-lite` | `startUrls` as search result pages (global and per subreddit with restrict_sr; a subreddit home page returns one community record and nothing else), `maxItems`, `maxComments`, `sort`, `time`, `skipUserPosts` | posts: `id`, `url`, `title`, `upVotes`, `numberOfComments`, `createdAt`; comments: `id`, `url`, `body`, `upVotes`, `createdAt` | about $3.40 per 1,000 items |
 
 Reviewer names and Reddit usernames are in the items; the adapter drops them before anything is written.
 
@@ -28,7 +28,7 @@ Reviewer names and Reddit usernames are in the items; the adapter drops them bef
 
 `app/connectors/apify.py`
 
-- `ApifyClient(token=None, mode="live"|"mock")`: `run(actor, input, max_items, max_usd) -> list[dict]`. Mock mode reads `app/connectors/fixtures/apify/<actor>.json`. Live mode estimates cost from the actor's price and `max_items`, reserves it in `intelligence/budget.py`, refuses when the per-run or weekly cap in `sources.config.json` would be exceeded, runs, settles the actual usage, and logs run id, item count and cost with no token.
+- `ApifyClient(token=None, mode="live"|"mock")`: `run(actor, input, max_items, max_usd) -> list[dict]`. Mock mode reads `app/connectors/fixtures/apify/<actor>.json`. Live mode estimates cost from the actor's price and `max_items`, reserves it in `intelligence/budget.py`, refuses when the per-run or weekly cap in `config/apify.json` would be exceeded, runs, settles the actual usage, and logs run id, item count and cost with no token.
 - `status()`: token present, plan credit if the API exposes it, last run per lane.
 
 `app/connectors/apify_adapters.py`, one function per lane, `items -> records` in `app/brain/schema.json` shape:
@@ -41,7 +41,7 @@ Reviewer names and Reddit usernames are in the items; the adapter drops them bef
 
 ## Caps and rules
 
-- Per-brand config `app/brain/<brand>/sources.config.json` holds ASINs, pages, searches, subreddits, per-run item caps, `max_usd_per_run` and `max_usd_per_week`.
+- Per-brand config `app/brain/<brand>/config/apify.json` holds ASINs, pages, searches, subreddits, per-run item caps, `max_usd_per_run` and `max_usd_per_week`.
 - A run never starts without a reservation in the budget ledger; the ledger's working stop and ceiling still apply.
 - Read-only. No actor that posts, likes, follows or logs in.
 - Amazon and Reddit items feed language and objections; Meta items feed signals. Copy rules from the brain contract apply: never copy text, logos, products or faces; Reddit users are never testimonials.
@@ -49,4 +49,4 @@ Reviewer names and Reddit usernames are in the items; the adapter drops them bef
 
 ## Maps to
 
-Brain sections per lane as in `sources.config.json`; data tables `reviews_raw`, `marketplace_listings`, `ad_library_captures`, `community_mentions`.
+Brain sections per lane as in `config/apify.json`; data tables `reviews_raw`, `marketplace_listings`, `ad_library_captures`, `community_mentions`.

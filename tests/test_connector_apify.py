@@ -20,7 +20,7 @@ from app.connectors import apify, apify_adapters  # noqa: E402
 from app.brain.extract import apify_adlibrary, apify_amazon, apify_reddit  # noqa: E402
 from intelligence.budget import Budget  # noqa: E402
 
-CONFIG = json.loads((ROOT / "app" / "brain" / "bombas" / "sources.config.json").read_text())
+CONFIG = json.loads((ROOT / "app" / "brain" / "bombas" / "config" / "apify.json").read_text())
 FIXTURES = ROOT / "app" / "connectors" / "fixtures" / "apify"
 TODAY = dt.date(2026, 9, 28)
 EXTRACTORS = {"reddit": apify_reddit, "adlibrary": apify_adlibrary, "amazon": apify_amazon}

@@ -20,14 +20,15 @@ Freshness: all records in date
 | [voice](voice.json) | 3 | 2026-09-28 | Bombas repeats the same donation tagline word for word across its... |
 | [visual](visual.json) | 16 | 2026-09-28 | Bombas main stylesheet defines a black color token named black as... |
 | [products](products.json) | 20 | 2026-09-28 | Bombas sells a digital gift card in denominations from 25 to 300... |
-| [offers](offers.json) | 7 | 2026-09-28 | Bombas offers free standard shipping on US orders of 75 dollars or... |
+| [offers](offers.json) | 9 | 2026-09-28 | Bombas offers free standard shipping on US orders of 75 dollars or... |
 | [policies](policies.json) | 10 | 2026-09-28 | Bombas accepts returns for a refund within 30 days of purchase, or... |
 | [claims](claims.json) | 6 | 2026-09-28 | Bombas ankle socks are described as moisture-wicking with a... |
-| [avatars](avatars.json) | 11 | 2026-09-28 | Cold Weather Wool Sock Loyalist: warm, durable socks for cold... |
-| [objections](objections.json) | 14 | 2026-09-28 | Compression socks are too hard to pull on, sit too high or too... |
-| [objection_ladders](objection_ladders.json) | 7 | 2026-09-28 | Comfort and feel: 18 complaint and 50 praise quotes. Top rung... |
-| [language_bank](language_bank.json) | 36 | 2026-09-28 | Reviewers say 'it is literally just a men's shirt' (complaint). |
-| [competitors](competitors.json) | 7 | 2026-09-28 | Meta competitor set confirmed from the Ad Library: Stance, Darn... |
+| [avatars](avatars.json) | 13 | 2026-09-28 | Cold Weather Wool Sock Loyalist: warm, durable socks for cold... |
+| [objections](objections.json) | 20 | 2026-09-28 | Compression socks are too hard to pull on, sit too high or too... |
+| [objection_ladders](objection_ladders.json) | 7 | 2026-09-28 | Comfort and feel: 23 complaint and 55 praise quotes. Top rung... |
+| [language_bank](language_bank.json) | 129 | 2026-09-28 | Reviewers say 'it is literally just a men's shirt' (complaint). |
+| [competitors](competitors.json) | 508 | 2026-09-28 | 1-VoIP runs 1 active Meta ads; longest has run 171 days. |
+| [positioning](positioning.json) | 4 | 2026-09-28 | Reddit frame 'buy it for life' appears in 9 posts or comments. |
 | [channels](channels.json) | 13 | 2026-09-28 | Bombas announced it would begin selling socks in more than 190... |
 | [calendar](calendar.json) | 8 | 2026-09-28 | Bombas launched ribbed seamless bralettes around March 1, 2023, in... |
 | [economics](economics.json) | 12 | 2026-09-28 | Bombas exceeded 100 million dollars in revenue in 2018 and was... |
@@ -35,12 +36,14 @@ Freshness: all records in date
 | [marketplaces](marketplaces.json) | 9 | 2026-09-28 | Amazon ASIN B07MTXGV9R (Bombas Women's Originals Ankle Socks,... |
 | [stack](stack.json) | 17 | 2026-09-28 | Bombas uses OneTrust for cookie and privacy consent management. |
 | [site_map](site_map.json) | 6 | 2026-09-28 | The live storefront's home page is at https://shop.bombas.com/,... |
+| [content](content.json) | 28 | 2026-09-28 | According to Helen runs 1 creator-style ads (first person, review... |
+| [seo_facts](seo_facts.json) | 2 | 2026-09-28 | Question asked on r/BuyItForLife: What's something you WON'T spend... |
 | [team](team.json) | 8 | 2026-09-28 | Bombas has an open Vice President, Distribution role reporting... |
-| [learnings](learnings.json) | 8 | 2026-09-28 | On 2026-09-28 Bombas runs 23 active US Meta ads: 11 image, 8... |
+| [learnings](learnings.json) | 493 | 2026-09-28 | Signal, not proof: COS ads by format {'dpa': 1}; 1 have run 30... |
 | [open_questions](open_questions.json) | 12 | undated | What is the average order value on the US site? |
-| [freshness](freshness.json) | 22 | 2026-09-28 | avatars: 11 records, last updated 2026-09-28, 0 stale, 0 open... |
+| [freshness](freshness.json) | 25 | 2026-09-28 | avatars: 13 records, last updated 2026-09-28, 0 stale, 0 open... |
 
-No records yet: diagnosis, positioning, content, seo_facts, decisions, changes, plans.
+No records yet: diagnosis, decisions, changes, plans.
 
 ## Routing
 
@@ -59,7 +62,7 @@ No records yet: diagnosis, positioning, content, seo_facts, decisions, changes, 
 
 - Documents: [documents/manifest.json](documents/manifest.json), 0 files
 - Open questions: [open_questions.json](open_questions.json), 12 open
-- Brain version 80e0a411b82c. Generated from records; edit records, not this file.
+- Brain version ab8004b9a825. Generated from records; edit records, not this file.
 
 ## Founder notes
 

@@ -36,12 +36,15 @@ MOCK_OUT = Path(__file__).resolve().parent / ".mock"
 LEDGER = ROOT / "data" / "spend.sqlite"
 API = "https://api.apify.com/v2"
 SYNC_TIMEOUT_S = 300
+MIN_RUN_USD = 0.50      # actors charge start and compute fees; an 8-item listing run cost $0.38
+SYNC_MAX_ITEMS = 150    # above this, run async and poll, the sync endpoint disconnects on long runs
 POLL_S = 10
 POLL_MAX_S = 1800
 
 # USD per 1,000 results, seen on the Apify Store on 28 Sep 2026 (contract table).
 PRICES_PER_1000 = {
     "axesso_data~amazon-reviews-scraper": 0.90,
+    "junglee~amazon-reviews-scraper": 3.00,
     "junglee~amazon-crawler": 3.00,
     "curious_coder~facebook-ads-library-scraper": 0.75,
     "apify~facebook-ads-scraper": 3.40,
@@ -64,7 +67,7 @@ class ApifyCapError(ApifyError):
 def estimate_usd(actor: str, max_items: int) -> float:
     if actor not in PRICES_PER_1000:
         raise ApifyError(f"no price on file for actor {actor}; add it to PRICES_PER_1000 before a live run")
-    raw = PRICES_PER_1000[actor] * max_items / 1000 * MARGIN + FLAT_USD
+    raw = max(PRICES_PER_1000[actor] * max_items / 1000 * MARGIN, MIN_RUN_USD) + FLAT_USD
     return math.ceil(raw * 100) / 100
 
 
@@ -129,7 +132,7 @@ class ApifyClient:
         est = estimate_usd(actor, max_items)
         per_run = max_usd if max_usd is not None else self.budget.get("max_usd_per_run")
         if per_run is None:
-            raise ApifyCapError("no per-run cap given; set budget.max_usd_per_run in sources.config.json")
+            raise ApifyCapError("no per-run cap given; set budget.max_usd_per_run in config/apify.json")
         if est > per_run:
             raise ApifyCapError(f"run refused: estimate ${est:.2f} for {max_items} items on {actor} "
                                 f"is over the per-run cap ${per_run:.2f}")
@@ -183,10 +186,16 @@ class ApifyClient:
             except ValueError as exc:
                 raise ApifyCapError(f"run refused by the budget ledger: {exc}") from None
             # From here an unknown outcome keeps its reservation, as the ledger requires.
-            status, raw = self._call("POST", f"/acts/{actor}/run-sync-get-dataset-items?timeout={SYNC_TIMEOUT_S}"
-                                     f"&maxItems={max_items}&clean=1", input, timeout=SYNC_TIMEOUT_S + 30)
+            if max_items > SYNC_MAX_ITEMS:
+                status, raw = 408, b""
+            else:
+                status, raw = self._call("POST", f"/acts/{actor}/run-sync-get-dataset-items?timeout={SYNC_TIMEOUT_S}"
+                                         f"&maxItems={max_items}&clean=1", input, timeout=SYNC_TIMEOUT_S + 30)
             if status == 408:
                 run_id, usd, items = self._async_run(actor, input, max_items)
+            elif 400 <= status < 500:
+                ledger.settle(request_id, 0.000001)
+                raise ApifyError(f"Apify HTTP {status} on run-sync for {actor} (refused before running; nothing charged)")
             elif status >= 300:
                 raise ApifyError(f"Apify HTTP {status} on run-sync for {actor}")
             else:
@@ -213,7 +222,7 @@ class ApifyClient:
             time.sleep(POLL_S)
             waited += POLL_S
             run = self._json("GET", f"/actor-runs/{run_id}")["data"]
-        if run.get("status") != "SUCCEEDED":
+        if run.get("status") not in ("SUCCEEDED", "TIMED-OUT"):
             raise ApifyError(f"run {run_id} ended {run.get('status')}; reservation kept")
         items = self._json("GET", f"/datasets/{run['defaultDatasetId']}/items?clean=1&limit={max_items}")
         return run_id, run.get("usageTotalUsd"), items
@@ -275,7 +284,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--date", help="capture date YYYY-MM-DD, default today")
     args = ap.parse_args(argv)
     import importlib
-    config_path = ROOT / "app" / "brain" / args.brand / "sources.config.json"
+    config_path = ROOT / "app" / "brain" / args.brand / "config" / "apify.json"
     config = json.loads(config_path.read_text(encoding="utf-8"))
     out = Path(args.out) if args.out else (MOCK_OUT if args.mode == "mock" else ROOT / "app" / "brain")
     if args.mode == "mock" and out.resolve() == (ROOT / "app" / "brain").resolve():

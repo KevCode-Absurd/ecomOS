@@ -1,11 +1,12 @@
 """Amazon reviews and listings through Apify: writes raw/amazon-apify/.
 
-Two runs: axesso_data~amazon-reviews-scraper over every ASIN, 5-star and 1-star first
+Two runs: junglee~amazon-reviews-scraper over every ASIN, 5-star and 1-star first
 (config stars_first), capped at max_reviews_per_asin_per_star; then junglee~amazon-crawler
 for title, bullets, stars, review count, price and seller per ASIN. The adapter runs per ASIN.
 """
 from __future__ import annotations
 
+import re
 import sys
 from pathlib import Path
 
@@ -16,7 +17,25 @@ if str(ROOT) not in sys.path:
 from app.connectors import apify, apify_adapters  # noqa: E402
 
 LANE = "amazon"
-STAR_FILTER = {1: "one_star", 2: "two_star", 3: "three_star", 4: "four_star", 5: "five_star"}
+STAR_FILTER = {1: "oneStar", 2: "twoStar", 3: "threeStar", 4: "fourStar", 5: "fiveStar"}
+JUNGLEE = "junglee~amazon-reviews-scraper"
+
+
+def _normalise(items):
+    """junglee item keys to the adapter's keys (rating, title, text, date, verified, numberOfHelpful, reviewId, asin)."""
+    out = []
+    for it in items:
+        if "ratingScore" in it or "reviewDescription" in it:
+            when = str(it.get("reviewedIn") or it.get("date") or "")
+            m = re.search(r"on (.+)$", when)
+            helpful = re.search(r"(\d[\d,]*)", str(it.get("reviewReaction") or "0"))
+            it = {"asin": it.get("productAsin") or it.get("asin"), "rating": it.get("ratingScore"),
+                  "title": it.get("reviewTitle"), "text": it.get("reviewDescription"), "date": m.group(1) if m else when,
+                  "verified": it.get("isVerified"), "numberOfHelpful": int(helpful.group(1).replace(",", "")) if helpful else 0,
+                  "reviewId": (it.get("reviewUrl") or "").rstrip("/").split("/")[-1] or None, "reviewUrl": it.get("reviewUrl"),
+                  "variant": it.get("variant")}
+        out.append(it)
+    return out
 
 
 def run(brand: str, config: dict, *, client=None, root=None, captured_at=None, stars=None) -> dict:
@@ -26,9 +45,15 @@ def run(brand: str, config: dict, *, client=None, root=None, captured_at=None, s
     asins, domain = cfg["asins"], cfg.get("domain_code", "com")
     stars = stars or cfg.get("stars_first", [5, 1])
     per = cfg.get("max_reviews_per_asin_per_star", 100)
-    review_input = {"input": [{"asin": a, "domainCode": domain, "sortBy": "recent", "maxPages": cfg.get("max_pages", 10),
-                               "filterByStar": STAR_FILTER[s], "reviewerType": "all_reviews"} for a in asins for s in stars]}
-    reviews = client.run(cfg["actor"], review_input, per * len(asins) * len(stars), lane=LANE)
+    if cfg["actor"] == JUNGLEE:
+        review_input = {"productUrls": [{"url": f"https://www.amazon.{domain}/dp/{a}"} for a in asins],
+                        "maxReviews": per, "filterByRatings": [STAR_FILTER[s] for s in stars], "sort": "recent",
+                        "includeGdprSensitive": False, "scrapeProductDetails": False}
+    else:
+        review_input = {"input": [{"asin": a, "domainCode": domain, "sortBy": "recent", "maxPages": cfg.get("max_pages", 10),
+                                   "filterByStar": STAR_FILTER[s].replace("Star", "_star").lower(), "reviewerType": "all_reviews"}
+                                  for a in asins for s in stars]}
+    reviews = _normalise(client.run(cfg["actor"], review_input, per * len(asins) * len(stars), lane=LANE))
     review_run = client.last_run["run_id"]
     listing_actor = cfg.get("listing_actor")
     listings, listing_run = {}, "none"

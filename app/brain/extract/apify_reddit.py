@@ -22,10 +22,18 @@ def run(brand: str, config: dict, *, client=None, root=None, captured_at=None) -
     client = client or apify.ApifyClient(mode="mock", brand=brand, budget=config.get("budget"))
     day = captured_at or client.today.isoformat()
     actor = cfg["actor"]
-    subs = [f"https://www.reddit.com/r/{s}/" for s in cfg.get("subreddits", [])]
-    actor_input = {"searches": cfg.get("searches", []), "startUrls": [{"url": u} for u in subs],
-                   "maxItems": cfg["max_items"], "maxComments": cfg.get("max_comments_per_post", 20),
-                   "sort": cfg.get("sort", "top"), "time": cfg.get("time", "year"), "skipUserPosts": True}
+    import urllib.parse as _u
+    brand_name = cfg.get("brand_name") or brand
+    sort, time_ = cfg.get("sort", "top"), cfg.get("time", "year")
+    urls = [f"https://www.reddit.com/search/?q={_u.quote(q)}&sort={sort}&t={time_}" for q in cfg.get("searches", [])]
+    for sub in cfg.get("subreddits", []):
+        for q in (brand_name, cfg.get("category_term", "socks")):
+            urls.append(f"https://www.reddit.com/r/{sub}/search/?q={_u.quote(q)}&restrict_sr=1&sort={sort}&t={time_}")
+    # Search result pages, not subreddit home pages: the home page yields one community record and nothing else.
+    actor_input = {"startUrls": [{"url": u} for u in urls], "skipCommunity": True, "skipUserPosts": True,
+                   "skipComments": False, "includeMediaLinks": True, "maxItems": cfg["max_items"],
+                   "maxPostCount": cfg.get("max_posts_per_search", 15),
+                   "maxComments": cfg.get("max_comments_per_post", 10)}
     items = client.run(actor, actor_input, cfg["max_items"], lane=LANE)
     run_id = client.last_run["run_id"]
     note = apify_adapters.REDDIT_NOTE + ("; fixture data, not scraped" if client.mode == "mock" else "")
