@@ -2297,3 +2297,14 @@ class NumbersVisible(TempBrain):
                 if n.rstrip('.,') not in vals:
                     bad.append((f['id'], n))
         self.assertEqual(bad, [])
+
+
+class NoDeadButtons(unittest.TestCase):
+    """Feature 9.7: depth rule 6. No row button does nothing: a row with no move opens why, with no threshold in page code."""
+
+    def test_no_empty_handlers(self):
+        js = (ROOT / 'app' / 'screens' / '02-customers-avatars' / 'screen.js').read_text(encoding='utf-8')
+        self.assertNotIn('onClick: () => {}', js)
+        for label, why in re.findall(r"keep\('([^']+)', '([^']+)'\)", js):
+            self.assertNotRegex(why, r'\d', label)
+        self.assertGreaterEqual(len(re.findall(r"keep\('", js)), 14)

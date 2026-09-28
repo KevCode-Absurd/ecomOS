@@ -124,6 +124,12 @@
       onClose: () => document.body.classList.remove('print-report') });
   }
 
+  // a row that needs no move still answers why (depth rule 6): the button opens the reason, never nothing
+  function keep(label, why) {
+    return { label, cls: 'quiet', onClick: () => UI.panel({ title: label, body: el('div', { class: 'stack' }, el('p', { text: why }),
+      el('p', { class: 'small muted', text: 'This row is read again on every load. It becomes a move when its rule fires.' })) }) };
+  }
+
   // ---------- desk: avatar by channel ----------
   function briefPanel(b) {
     const sized = [b.size ? 'Size: ' + b.size.text : null, b.stop_rule ? 'Stop if: ' + b.stop_rule : null, b.check_on ? 'Check on: ' + fmt.date(b.check_on) : null].filter(Boolean);
@@ -166,7 +172,7 @@
       el('p', { class: 'small muted', text: 'Share of live ads. Us from our Ad Library page, them the median of ' + f.pages + ' category pages. Signals only, never proof a format wins.' }),
       UI.verdictTable({
         columns: [{ key: 'label', label: 'Format' }, { key: 'us', label: 'Us', unit: '%' }, { key: 'them', label: 'Category', unit: '%' }, { key: 'pages_running', label: 'Pages', unit: 'n' }],
-        rows: f.rows.map((r) => Object.assign({}, r, { actions: r.brief ? [{ label: 'Brief it', onClick: () => briefPanel(r.brief) }] : [{ label: 'No gap', cls: 'quiet', onClick: () => {} }] })),
+        rows: f.rows.map((r) => Object.assign({}, r, { actions: r.brief ? [{ label: 'Brief it', onClick: () => briefPanel(r.brief) }] : [keep('No gap', 'Our mix of this format sits close to the category, by the rule above.')] })),
         verdict: { at: 1, kind: (r) => r.gap ? 'new' : r.us > r.them * 1.5 && r.us > 0.1 ? 'watch' : 'keep', text: (r) => r.gap ? 'Gap' : r.us > r.them * 1.5 && r.us > 0.1 ? 'Heavy' : 'Fine' },
         actions: { label: 'Do' }, sort: false,
       }),
@@ -203,7 +209,7 @@
         columns: [{ key: 'rung', label: 'Rung' }, { key: 'doubt', label: 'Doubt' }, { key: 'counts', label: 'One-star | five-star' },
           { key: 'proof', label: 'Proof' }, { key: 'who', label: 'Avatars' }],
         rows: rows.map((r) => Object.assign({}, r, { rung: pretty(r.theme) + ', ' + r.level, counts: '', proof: r.proof || 'none on file', who: r.avatar_names.join(', ') || 'none named',
-          actions: r.action ? [{ label: 'Brief it', onClick: () => briefPanel(r.action) }] : [{ label: 'Nothing to do', cls: 'quiet', onClick: () => {} }] })),
+          actions: r.action ? [{ label: 'Brief it', onClick: () => briefPanel(r.action) }] : [keep('Nothing to do', 'This rung needs no new move: its proof is on file and landing, by the rule above.')] })),
         verdict: { at: 1, kind: (r) => VERDICT[r.verdict][0], text: (r) => VERDICT[r.verdict][1] },
         actions: { label: 'Do' }, sort: false, maxRows: 40, empty: 'No rung names this avatar yet.', onRow: (r) => rungPanel(r),
       }));
@@ -332,7 +338,7 @@
         columns: [{ key: 'segment', label: 'Situation' }, { key: 'ours_t', label: 'Our avatars' }, { key: 'theirs_t', label: 'Who pushes it' }],
         rows: x.segments.map((sg) => Object.assign({}, sg, { ours_t: sg.ours.join(', ') || 'none',
           theirs_t: (sg.theirs.join(', ') || 'no competitor') + (sg.reddit_mentions == null ? '' : '; Reddit ' + sg.reddit_mentions),
-          actions: sg.action ? [{ label: 'Size it', onClick: () => briefPanel(sg.action) }] : [{ label: 'Nothing new', cls: 'quiet', onClick: () => {} }] })),
+          actions: sg.action ? [{ label: 'Size it', onClick: () => briefPanel(sg.action) }] : [keep('Nothing new', 'We already have an avatar for this segment.')] })),
         verdict: { at: 1, kind: (r) => SEG[r.verdict][0], text: (r) => SEG[r.verdict][1] }, actions: { label: 'Do' }, sort: false,
       }),
       el('p', { class: 'micro faint', text: 'Gap: 2 or more competitors push it and we hold no avatar with quotes for it. Watch: 1 competitor or Reddit only. Competitor positioning is a signal, not proof the segment pays.' }));
@@ -386,7 +392,7 @@
     mount('#claims', UI.verdictTable({
       columns: [{ key: 'claim', label: 'Claim' }, { key: 'hits', label: '1 and 2 star', unit: 'n' }, { key: 'words_t', label: 'Words they throw back' }, { key: 'example_t', label: 'Example' }],
       rows: x.rows.map((r) => Object.assign({}, r, { words_t: r.words.join(', ') || 'none', example_t: r.example ? '"' + r.example + '"' : '',
-        actions: r.action ? [{ label: 'Fix the claim', onClick: () => briefPanel(r.action) }] : [{ label: 'Keep', cls: 'quiet', onClick: () => {} }] })),
+        actions: r.action ? [{ label: 'Fix the claim', onClick: () => briefPanel(r.action) }] : [keep('Keep', 'Too few bad reviews throw the words of this claim back, by the rule above.')] })),
       verdict: { at: 1, kind: (r) => V[r.verdict][0], text: (r) => V[r.verdict][1] }, actions: { label: 'Do' }, sort: false,
     }), el('p', { class: 'micro faint', text: 'Word matches, not a legal review. A person decides whether a claim changes.' }));
   }
@@ -452,7 +458,7 @@
       { label: 'shipping on one pair', value: f.shipping_on_one_pair, unit: '%' }, { label: 'pairs to free shipping', value: f.pairs_to_free_shipping, unit: 'n' }]));
     mount('#price', UI.verdictTable({
       columns: [{ key: 'name', label: 'Avatar' }, { key: 'price_share', label: 'Price share of one-star', unit: '%' }, { key: 'price_one_star', label: 'Price one-star', unit: 'n' }, { key: 'one_star', label: 'All one-star', unit: 'n' }],
-      rows: x.rows.map((r) => Object.assign({}, r, { actions: r.action ? [{ label: 'Brief it', onClick: () => briefPanel(r.action) }] : [{ label: 'Not price-led', cls: 'quiet', onClick: () => {} }] })),
+      rows: x.rows.map((r) => Object.assign({}, r, { actions: r.action ? [{ label: 'Brief it', onClick: () => briefPanel(r.action) }] : [keep('Not price-led', 'Price is not the main doubt for this avatar, by the rule above.')] })),
       verdict: { at: 1, kind: (r) => r.verdict === 'price_led' ? 'fix' : 'keep', text: (r) => r.verdict === 'price_led' ? 'Price-led' : 'Other' }, actions: { label: 'Do' }, sort: false,
     }));
   }
@@ -475,7 +481,7 @@
         { key: 'src_t', label: 'Sources' }, { key: 'doubt_t', label: 'Top Amazon doubts' }],
       rows: x.rows.map((r) => Object.assign({}, r, { src_t: Object.entries(r.sources).slice(0, 4).map(([k, n]) => k + ' ' + n).join(', '),
         doubt_t: r.amazon_doubts.map((d) => d.doubt + ' (' + d.n + ')').join('; ') || 'none',
-        actions: r.action ? [{ label: 'Fix the listing', onClick: () => briefPanel(r.action) }] : [{ label: 'Site-led', cls: 'quiet', onClick: () => {} }] })),
+        actions: r.action ? [{ label: 'Fix the listing', onClick: () => briefPanel(r.action) }] : [keep('Site-led', 'This avatar speaks mostly on our own site and review sites, not a marketplace.')] })),
       verdict: { at: 1, kind: (r) => r.verdict === 'marketplace' ? 'watch' : 'keep', text: (r) => r.verdict === 'marketplace' ? 'Marketplace' : 'Site' },
       actions: { label: 'Do' }, sort: false,
     }));
@@ -501,7 +507,7 @@
       columns: [{ key: 'name', label: 'Avatar' }, { key: 'ratio', label: 'x median', unit: 'x' }, { key: 'driver_t', label: 'Driven by' }, { key: 'lines_t', label: 'Lines it buys' }],
       rows: (x.rows || []).map((r) => Object.assign({}, r, { driver_t: pretty(r.driver) + (r.driver_issue ? ': ' + r.driver_issue : ''),
         lines_t: Object.entries(r.lines).map(([k, n]) => pretty(k) + ' ' + n).join(', '),
-        actions: r.action ? [{ label: 'Brief it', onClick: () => briefPanel(r.action) }] : [{ label: 'Watch', cls: 'quiet', onClick: () => {} }] })),
+        actions: r.action ? [{ label: 'Brief it', onClick: () => briefPanel(r.action) }] : [keep('Watch', 'Its return risk sits near the median avatar, by the rule above.')] })),
       verdict: { at: 1, kind: (r) => r.verdict === 'high' ? 'fix' : 'keep', text: (r) => r.verdict === 'high' ? 'High' : 'Normal' }, actions: { label: 'Do' }, sort: false,
     }));
     const t = x.tickets || {};
@@ -521,7 +527,7 @@
       columns: [{ key: 'line_t', label: 'Line' }, { key: 'neg_share', label: '1 and 2 star', unit: '%' }, { key: 'ratio', label: 'x median', unit: 'x' },
         { key: 'issues_t', label: 'Top complaints' }, { key: 'praise_t', label: 'Praise' }],
       rows: x.lines.map((l) => Object.assign({}, l, { line_t: pretty(l.line), issues_t: l.issues.join('; '), praise_t: l.praise.join('; '),
-        actions: l.action ? [{ label: 'Brief it', onClick: () => briefPanel(l.action) }] : l.avatars.length ? [{ label: 'See misreads', cls: 'quiet', onClick: () => document.getElementById('misreads').scrollIntoView({ behavior: 'smooth' }) }] : [{ label: 'Nothing to do', cls: 'quiet', onClick: () => {} }] })),
+        actions: l.action ? [{ label: 'Brief it', onClick: () => briefPanel(l.action) }] : l.avatars.length ? [{ label: 'See misreads', cls: 'quiet', onClick: () => document.getElementById('misreads').scrollIntoView({ behavior: 'smooth' }) }] : [keep('Nothing to do', 'No avatar buys this line for a job its complaints hit.')] })),
       verdict: { at: 1, kind: (r) => LINE_V[r.verdict][0], text: (r) => LINE_V[r.verdict][1], reason: (r) => r.polar.length ? 'praised and blamed for: ' + r.polar.join(', ') : '' },
       actions: { label: 'Do' }, sort: false,
     }), el('p', { class: 'micro faint', text: 'Problem: 1.5x the median or more. Split: praise and complaints name the same trait, so set the expectation. From the review summaries in the brain, public reviews.' }));
@@ -587,7 +593,7 @@
     if (!x.available) { mount('#voiceads', UI.emptyState({ screen: SLUG, title: 'Ad read unavailable', text: x.reason })); return; }
     document.getElementById('voiceads-sub').textContent = 'Our live ads by hook, from the Ad Library read in the brain, matched to the avatar whose name the hook speaks to, against each avatar\'s share of buyers. Under: less than half its share. ' + x.line;
     const V = { silent: ['stop', 'Silent'], under: ['fix', 'Under'], fair: ['keep', 'Fair'], over: ['watch', 'Heavy'] };
-    const rows = x.rows.map((r) => Object.assign({}, r, { bar: '', actions: r.action ? [{ label: 'Brief it', onClick: () => briefPanel(r.action) }] : [{ label: 'Keep', cls: 'quiet', onClick: () => {} }] }));
+    const rows = x.rows.map((r) => Object.assign({}, r, { bar: '', actions: r.action ? [{ label: 'Brief it', onClick: () => briefPanel(r.action) }] : [keep('Keep', 'Our live ads already speak to this avatar near its share of buyers.')] }));
     const t = UI.verdictTable({
       columns: [{ key: 'name', label: 'Avatar' }, { key: 'buyer_share', label: 'Buyers', unit: '%' }, { key: 'ad_share', label: 'Live ads', unit: '%' }, { key: 'bar', label: 'Buyers | ads' }],
       rows, verdict: { at: 1, kind: (r) => V[r.verdict][0], text: (r) => V[r.verdict][1] }, actions: { label: 'Do' }, sort: false });
@@ -605,7 +611,7 @@
       columns: [{ key: 'name', label: 'Avatar' }, { key: 'lines_t', label: 'Lines behind it' }, { key: 'themes_t', label: 'Doubt themes' }],
       rows: x.rows.map((r) => Object.assign({}, r, { lines_t: Object.entries(r.lines).slice(0, 4).map(([k, n]) => pretty(k) + ' ' + n).join(', ') || 'none linked',
         themes_t: Object.keys(r.themes).map(pretty).join(', ') || 'none',
-        actions: r.action ? [{ label: r.verdict === 'split' ? 'Split it' : 'Check it', onClick: () => briefPanel(r.action) }] : [{ label: 'Keep', cls: 'quiet', onClick: () => {} }] })),
+        actions: r.action ? [{ label: r.verdict === 'split' ? 'Split it' : 'Check it', onClick: () => briefPanel(r.action) }] : [keep('Keep', 'One line and one doubt theme lead, so it reads as one buyer.')] })),
       verdict: { at: 1, kind: (r) => V[r.verdict][0], text: (r) => V[r.verdict][1] }, actions: { label: 'Do' }, sort: false,
     }));
   }
@@ -620,7 +626,7 @@
     mount('#salesshare', UI.verdictTable({
       columns: [{ key: 'name', label: 'Avatar' }, { key: 'rev_t', label: 'From reviews' }, { key: 'sales_t', label: 'Of sales' }, { key: 'usd_t', label: 'Sales, 12 months' }],
       rows: x.rows.map((r) => Object.assign({}, r, { rev_t: pct(r.review_share), sales_t: pct(r.sales_share), usd_t: r.sales_usd == null ? 'unavailable' : fmt.money(r.sales_usd),
-        actions: r.action ? [{ label: 'Settle it', onClick: () => briefPanel(r.action) }] : [{ label: 'Keep', cls: 'quiet', onClick: () => {} }] })),
+        actions: r.action ? [{ label: 'Settle it', onClick: () => briefPanel(r.action) }] : [keep('Keep', 'Sales and reviews agree on the share of this avatar, by the rule above.')] })),
       verdict: { at: 1, kind: (r) => V[r.verdict][0], text: (r) => V[r.verdict][1] }, actions: { label: 'Do' }, sort: false,
     }));
   }
@@ -655,7 +661,7 @@
       columns: [{ key: 'name', label: 'Avatar' }, { key: 'lines', label: 'Lines', unit: 'n' }, { key: 'push', label: 'Push', unit: 'n' }, { key: 'pull', label: 'Pull', unit: 'n' },
         { key: 'anxiety', label: 'Anxiety', unit: 'n' }, { key: 'habit', label: 'Habit', unit: 'n' }, { key: 'tension', label: 'Anxiety + habit', unit: '%' }],
       rows: x.rows.map((r) => Object.assign({}, r, { push: r.forces.push.n, pull: r.forces.pull.n, anxiety: r.forces.anxiety.n, habit: r.forces.habit.n,
-        actions: r.action ? [{ label: 'Interview', onClick: () => briefPanel(r.action) }] : [{ label: 'Enough lines', cls: 'quiet', onClick: () => {} }] })),
+        actions: r.action ? [{ label: 'Interview', onClick: () => briefPanel(r.action) }] : [keep('Enough lines', 'We have lines on every force for this avatar.')] })),
       verdict: { at: 1, kind: (r) => r.under ? 'fix' : 'keep', text: (r) => r.under ? 'Under-researched' : 'Covered',
         reason: (r) => r.missing.length ? 'no lines for: ' + r.missing.join(', ') : '' },
       actions: { label: 'Do' }, sort: false,
@@ -753,7 +759,7 @@
       ' rated public reviews in the brain. Rising: last 90 days share 1.5x the earlier share, with 5 or more reviews. ' + x.line;
     const max = Math.max(...x.rows.map((r) => Math.abs(r.impact)));
     const rows = x.rows.map((r) => Object.assign({}, r, { theme_t: pretty(r.theme), bar: '', gap_t: (r.star_gap > 0 ? '+' : '') + r.star_gap + ' stars',
-      actions: r.action ? [{ label: r.impact < 0 ? 'Fix it' : 'Lead with it', onClick: () => briefPanel(r.action) }] : [{ label: 'No ladder', cls: 'quiet', onClick: () => {} }] }));
+      actions: r.action ? [{ label: r.impact < 0 ? 'Fix it' : 'Lead with it', onClick: () => briefPanel(r.action) }] : [keep('No ladder', 'No objection ladder covers this theme yet. Add a rung in the brain to brief it.')] }));
     const t = UI.verdictTable({
       columns: [{ key: 'theme_t', label: 'Theme' }, { key: 'bar', label: 'Impact on stars' }, { key: 'share', label: 'Share', unit: '%' },
         { key: 'avg_with', label: 'Avg with', align: 'right', format: (v) => v.toFixed(2) }, { key: 'avg_without', label: 'Avg without', align: 'right', format: (v) => v.toFixed(2) }, { key: 'gap_t', label: 'Gap' }, { key: 'reviews', label: 'Reviews', unit: 'n' }],
@@ -929,7 +935,7 @@
         UI.verdictTable({
           columns: [{ key: 'label', label: 'What' }, { key: 'sentence', label: 'Finding' }, { key: 'confidence', label: 'Confidence', unit: '%' }],
           rows: fs.map((f) => { const act = byFinding[f.id]; return { id: f.id, label: f.entity.label, sentence: f.sentence, evidence: evidenceText(f), confidence: f.confidence, status: f.status, severity: f.severity,
-            actions: act ? [{ label: 'Go to action', onClick: () => jumpTo(act.id) }] : [{ label: 'No action', cls: 'quiet', onClick: () => {} }] }; }),
+            actions: act ? [{ label: 'Go to action', onClick: () => jumpTo(act.id) }] : [keep('No action', 'This finding is answered by another action or is not open.')] }; }),
           verdict: { at: 0, kind: (row) => row.status === 'unavailable' ? 'wait' : 'fix', text: (row) => row.status === 'unavailable' ? 'Connect' : row.severity, reason: (row) => row.evidence },
           reason: { key: 'evidence', label: 'Evidence', text: (row) => row.evidence },
           actions: { label: 'Action' },
