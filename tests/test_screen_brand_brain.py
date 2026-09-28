@@ -245,7 +245,7 @@ class Round1TopSection(TempBrain):
         status, res = api.handle(Req(['documents'], method='POST', body={'name': 'brand book v3.md', 'text': '# Voice\nShort. Warm. Digits.', 'note': 'from the agency'}))
         self.assertEqual(status, 201)
         self.assertEqual(res['document']['name'], DAY + '-brand book v3.md')
-        self.assertEqual(res['records_changed_count'], 0)
+        self.assertEqual(res['records_changed_count'], 1)   # "Short. Warm. Digits." under a Voice heading is one proposed voice record
         status, res2 = api.handle(Req(['documents'], method='POST', body={'url': 'https://example.com/deck'}))
         self.assertEqual(status, 201)
         self.assertEqual(res2['document']['tags'], ['url'])
@@ -255,7 +255,8 @@ class Round1TopSection(TempBrain):
         self.assertTrue((self.tmp / 'bombas' / 'documents' / res['document']['name']).is_file())
         manifest = json.loads((self.tmp / 'bombas' / 'documents' / 'manifest.json').read_text())
         self.assertEqual(len(manifest), 2)
-        self.assertTrue(all(m['file'].startswith('documents/') and not m['extracted'] for m in manifest))
+        self.assertTrue(all(m['file'].startswith('documents/') for m in manifest))
+        self.assertEqual([m['extracted'] for m in manifest], [True, False])   # the text file was read, the url is kept as it is
         # a second file with the same name gets its own name, nothing is overwritten
         status, res3 = api.handle(Req(['documents'], method='POST', body={'name': 'brand book v3.md', 'text': 'v2'}))
         self.assertEqual(status, 201)
@@ -670,3 +671,55 @@ class Round1Decisions(TempBrain):
         self.assertEqual(a['decision']['choice'], 'agent')
         self.assertEqual(a['status'], 'open')
         self.assertIn('id="progress"', (SCREEN / 'index.html').read_text(encoding='utf-8'))
+
+
+class Round1FilesIn(TempBrain):
+    """Round 1 feature 9: a text file is read into proposed records with source and date; what each file changed shows."""
+
+    NOTE = "# Founder notes\n\nWe tried a referral program in 2025. It did not move repeat rate.\n\n## Offers\nFree shipping threshold: $50\n- Bundles: 4 pack saves 10 percent\n\n## Voice\n- Never say the softest socks in the world.\n\nDecision: we decided to keep the giving line in catalog ads.\nGross margin: 58%\n"
+
+    def test_markdown_lands_as_proposed_records(self):
+        status, res = api.handle(Req(['documents'], 'POST', body={'name': 'call-notes.md', 'text': self.NOTE}))
+        self.assertEqual(status, 201)
+        ex = res['extraction']
+        self.assertGreaterEqual(ex['proposed'], 5)
+        self.assertEqual(ex['forbidden'], 1)
+        self.assertIn('offers', ex['sections'])
+        self.assertIn('review queue', res['next'])
+        offers = self.section('offers')
+        rec = next(r for r in offers if r['id'].endswith('_free_shipping_threshold'))
+        self.assertEqual((rec['status'], rec['tier'], rec['value'], rec['source']['type']), ('proposed', 'unverified', 50.0, 'document'))
+        self.assertEqual(rec['source']['captured_at'], DAY)
+        self.assertTrue(rec['evidence'][0]['quote'])
+        forbidden = [r for r in self.section('claims') if r.get('status') == 'proposed']
+        self.assertEqual(forbidden[0]['tier'], 'forbidden')
+        # not in the brain until accepted: the profile and the section counts ignore proposed records
+        self.assertFalse([r for r in api.handle(Req(['records'], query={'section': ['offers']}))['records'] if 'call_notes' in r['id']])
+        queue = api.handle(Req(['overview']))['review']
+        self.assertTrue(any('call_notes' in r['id'] for r in queue))
+        docs = api.handle(Req(['documents']))
+        d = next(x for x in docs['documents'] if x['name'].endswith('call-notes.md'))
+        self.assertTrue(d['extracted'])
+        self.assertEqual(d['proposed'], ex['proposed'])
+        self.assertIn('waiting in the review queue', d['what_changed'])
+        api.handle(Req(['review', rec['id']], 'POST', body={'choice': 'accept'}))
+        d = next(x for x in api.handle(Req(['documents']))['documents'] if x['name'].endswith('call-notes.md'))
+        self.assertEqual(d['accepted'], 1)
+
+    def test_binary_and_url_are_kept_not_read(self):
+        status, res = api.handle(Req(['documents'], 'POST', body={'name': 'deck.pdf', 'content_base64': 'JVBERi0xLjQK'}))
+        self.assertEqual((status, res['records_changed_count'], res['extraction']), (201, 0, None))
+        status, res = api.handle(Req(['documents'], 'POST', body={'url': 'https://example.com/brand-book'}))
+        self.assertEqual((status, res['extraction']), (201, None))
+        d = next(x for x in api.handle(Req(['documents']))['documents'] if x['name'].endswith('deck.pdf'))
+        self.assertIn('kept as a file', d['what_changed'])
+
+    def test_re_read_and_determinism(self):
+        api.handle(Req(['documents'], 'POST', body={'name': 'again.txt', 'text': self.NOTE}))
+        name = next(x['name'] for x in api.handle(Req(['documents']))['documents'] if x['name'].endswith('again.txt'))
+        status, res = api.handle(Req(['documents', 'extract'], 'POST', body={'name': name}))
+        self.assertEqual(status, 201)
+        a = api.ingest.extract(self.NOTE, 'bombas', 'documents/x.md', DAY)
+        b = api.ingest.extract(self.NOTE, 'bombas', 'documents/x.md', DAY)
+        self.assertEqual(json.dumps(a), json.dumps(b))
+        self.assertEqual(api.handle(Req(['documents', 'extract'], 'POST', body={'name': 'nope.md'}))[0], 404)

@@ -37,6 +37,7 @@ question, and accept or ignore on a proposed record. Nothing external.
   POST questions/bank/<qid>     {answer}: answers a bank question with an approved founder record on its first field
   GET  decisions                the decisions timeline: action decisions from every screen plus the brain's
                                 decisions section, newest first
+  POST documents/extract        {name}: re-read a stored text or markdown file into proposed records
   GET  records?section=<name>   one section's records with tier, date, source and evidence
   GET  audit                    findings from audit.py (app/contracts/audit.md shape)
   POST questions/<field>        {answer}: writes a founder record, marks the question answered
@@ -78,6 +79,9 @@ _spec.loader.exec_module(audit)
 _hspec = importlib.util.spec_from_file_location("brand_brain_health", HERE / "health.py")
 health = importlib.util.module_from_spec(_hspec)
 _hspec.loader.exec_module(health)
+_ispec = importlib.util.spec_from_file_location("brand_brain_ingest", HERE / "ingest.py")
+ingest = importlib.util.module_from_spec(_ispec)
+_ispec.loader.exec_module(ingest)
 _mspec = importlib.util.spec_from_file_location("brand_brain_market", HERE / "market.py")
 market = importlib.util.module_from_spec(_mspec)
 _mspec.loader.exec_module(market)
@@ -557,10 +561,33 @@ def documents(brain: Brain) -> dict:
     out = []
     for d in docs:
         name = Path(d.get("file", "")).name
-        changed = [r["id"] for r in recs if name and name in str((r.get("source") or {}).get("ref") or "")]
-        out.append(dict(d, name=name, records_changed=changed[:20], records_changed_count=len(changed)))
+        mine = [r for r in recs if name and name in str((r.get("source") or {}).get("ref") or "")]
+        proposed = [r for r in mine if r["status"] == "proposed"]
+        accepted = [r for r in mine if r["status"] == "active"]
+        ignored = [r for r in mine if r["status"] == "retired"]
+        out.append(dict(d, name=name, records_changed=[r["id"] for r in mine][:20], records_changed_count=len(mine),
+                        proposed=len(proposed), accepted=len(accepted), ignored=len(ignored),
+                        sections_changed=sorted({r["section"] for r in mine}), readable=ingest.is_text_file(name),
+                        what_changed=(f"{len(accepted)} accepted, {len(proposed)} waiting in the review queue, {len(ignored)} ignored" if mine
+                                      else ("read, nothing to propose" if d.get("extracted") else ("kept as a file; not a text file" if not ingest.is_text_file(name) else "not read yet")))))
     out.sort(key=lambda d: d.get("added_at", ""), reverse=True)
-    return {"documents": out, "count": len(out)}
+    return {"documents": out, "count": len(out), "proposed_total": sum(d["proposed"] for d in out), "accepted_total": sum(d["accepted"] for d in out)}
+
+
+def extract_document(brain: Brain, line: dict, data: bytes) -> dict:
+    """Propose records from a text file into the review queue and mark the manifest line. Never blocks the upload."""
+    try:
+        text = data.decode("utf-8")
+    except UnicodeDecodeError:
+        text = data.decode("latin-1", errors="replace")
+    recs = ingest.extract(text, brain.brand, line["file"], brain.today.isoformat())
+    written, errors = [], []
+    for r in recs:
+        errs = brain.put(r)
+        (errors if errs else written).append(r["id"] if not errs else {"id": r["id"], "errors": errs})
+    sm = ingest.summary([r for r in recs if r["id"] in set(written)])
+    line.update(extracted=True, sections=sm["sections"], records_proposed=len(written))
+    return dict(sm, written=written, errors=errors)
 
 
 def document_add(brain: Brain, body: dict):
@@ -603,10 +630,33 @@ def document_add(brain: Brain, body: dict):
         line["note"] = note
     if url:
         line["tags"] = ["url"]
+    result = None
+    if not url and ingest.is_text_file(target.name):
+        result = extract_document(brain, line, data)
     manifest.append(line)
     (ddir / "manifest.json").write_text(json.dumps(manifest, indent=1), encoding="utf-8")
-    return 201, {"ok": True, "document": dict(line, name=target.name, bytes=len(data)), "records_changed_count": 0,
-                 "next": "Kept as it is. Extraction into records is proposed through the review queue.", "version": brain.version()}
+    if result:
+        nxt = (f"Read it: {result['proposed']} records proposed into the review queue ({', '.join(result['sections']) or 'none'}). "
+               f"{result['forbidden']} marked forbidden. Nothing reaches the brain until you accept it.") if result["proposed"] else "Read it: nothing to propose. Kept as a file."
+    else:
+        nxt = "Kept as it is. A text or markdown file is read into proposed records; this one is not, so it stays a document."
+    return 201, {"ok": True, "document": dict(line, name=target.name, bytes=len(data)), "records_changed_count": (result or {}).get("proposed", 0),
+                 "extraction": result, "next": nxt, "version": brain.version()}
+
+
+def document_extract(brain: Brain, body: dict):
+    """Re-read one stored text file into the review queue (for files added before extraction existed)."""
+    name = str((body or {}).get("name") or "").strip()
+    manifest = brain.documents()
+    line = next((d for d in manifest if Path(d.get("file", "")).name == name), None)
+    if line is None:
+        return 404, {"error": "no such document", "name": name}
+    path = brain.dir / line["file"]
+    if not path.is_file() or not ingest.is_text_file(name):
+        return 400, {"error": "not a readable text file", "name": name}
+    result = extract_document(brain, line, path.read_bytes())
+    (brain.dir / "documents" / "manifest.json").write_text(json.dumps(manifest, indent=1), encoding="utf-8")
+    return 201, {"ok": True, "name": name, "extraction": result, "version": brain.version()}
 
 
 def competitors(brain: Brain) -> dict:
@@ -679,6 +729,8 @@ def handle(req):
         return documents(brain)
     if req.method == "POST" and parts == ["documents"]:
         return document_add(brain, req.body)
+    if req.method == "POST" and parts == ["documents", "extract"]:
+        return document_extract(brain, req.body)
     if req.method == "GET" and parts == ["competitors"]:
         return competitors(brain)
     if req.method == "GET" and parts == ["conflicts"]:

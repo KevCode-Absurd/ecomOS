@@ -133,11 +133,18 @@
         { key: 'name', label: 'File' },
         { key: 'added_at', label: 'Added', format: (v) => v ? fmt.date(v) : NA },
         { key: 'added_by', label: 'By', format: (v) => v || 'unknown' },
-        { key: 'records_changed_count', label: 'Records changed', unit: 'n' },
-        { key: 'extracted', label: 'Read into records', format: (v) => v ? 'yes' : 'kept as a file' },
+        { key: 'proposed', label: 'Waiting', unit: 'n', align: 'right' },
+        { key: 'accepted', label: 'Accepted', unit: 'n', align: 'right' },
+        { key: 'sections_changed', label: 'Sections', format: (v) => (v || []).map(pretty).join(', ') || '' },
+        { key: 'what_changed', label: 'What it changed' },
         { key: 'note', label: 'Note', format: (v) => v || '' },
       ], rows: d.documents, sort: false, empty: 'No files yet. Drop a brand book, a deck, past tests, anything.',
+      onRow: (r) => { if (r.readable && !r.extracted) reReadDoc(r.name); },
     });
+  }
+  async function reReadDoc(name) {
+    try { const res = await api(BASE + 'documents/extract', { method: 'POST', body: { name } }); loadDocs(); loadDesk(); return res; }
+    catch (e) { return null; }
   }
   async function loadDocs() {
     try { mount('#documents', docsTable(await api(BASE + 'documents'))); }
@@ -149,13 +156,14 @@
   function mountDrop() {
     const status = el('div', { class: 'small muted', 'aria-live': 'polite' });
     const zone = UI.dropZone({
-      hint: 'Up to 5 MB each. It is stored as it is in the documents folder and listed here with the date.',
+      hint: 'Up to 5 MB each. It is stored as it is. A text or markdown file is also read into proposed records: headings, key: value lines, bullets, things you tried, things we must never say. You accept them in the review queue.',
       onFiles: async (files) => {
         for (const f of files) {
           status.textContent = 'Adding ' + f.name;
           try {
             const res = await api(BASE + 'documents', { method: 'POST', body: { name: f.name, content_base64: await readAsBase64(f) } });
             status.textContent = 'Added ' + res.document.name + ' (' + fmt.compact(res.document.bytes) + ' bytes). ' + res.next;
+            if (res.records_changed_count) loadDesk();
           } catch (e) { status.textContent = 'Could not add ' + f.name + ': ' + e.message; }
         }
         loadDocs();
