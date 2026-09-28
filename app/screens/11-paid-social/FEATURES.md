@@ -6,9 +6,37 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | # | Feature | Status |
 |---|---|---|
-| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | todo |
-| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | todo |
-| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | todo |
+| 0.1 | Page shell in the shared UI kit: header, simulated-data line, tiles, insights, decision row | done |
+| 0.2 | `api.py` (`overview`, `findings`, default brand bombas) from `app/metrics.py`, unavailable states | done |
+| 0.3 | Tiles: spend pace vs 28-day run rate, Meta ROAS and MER side by side, CPA; window and freshness on each | done |
+| 0.4 | Kill and scale list by rule (kill: 7-day ROAS under break-even, live 7 days, spend over 3 x target CAC; scale: ROAS over target, frequency under 2.5), money not paid back | done |
+| 0.5 | Creative table at ad level, shared-image and dynamic flags, verdict per ad | done |
+| 0.6 | Fatigue insight: CTR down 20 percent over 14 days while frequency rises | done |
+| 0.7 | Chart: daily Meta spend and purchases, 90 days | done |
+| 0.8 | `audit.py`: PAID-R01 kill and PAID-R03 fatigue in the audit.md shape, money at stake, unavailable when ad rows are missing | done |
+
+Round 0 notes (28 Sep 2026, Bombas simulated, scale 0.1):
+- Break-even ROAS for Bombas falls back to 1 / target gross margin (1.61x). `break_even_roas` needs order rows, and the Bombas finance_inputs SKU keys (`BMB-...`) do not match the generator's SKUs (`BB-...`), so full costs cannot be joined yet. Data-layer fix, not this screen.
+- The simulated ad rows have flat CTR and frequency under 2.1, so PAID-R03 fires on nothing for Bombas. The rule is proven on a synthetic account in `tests/test_screen_paid_social.py`. The generator needs a fatigue curve to show it.
+- Frequency is impressions over summed daily reach, so it reads low. A period reach pull fixes it.
+
+## Candidates from the jobs-to-be-done table (PRODUCT-PLAN.md 5.3, Meta)
+
+Goal: profitable new-customer acquisition at target CAC and MER, with retention spend kept efficient.
+
+| Job | Who does it today | Data needed | Candidate feature | Status |
+|---|---|---|---|---|
+| Know where money goes and what it returns | media buyer | insights at ad level, daily, actions and values, MER from orders | spend vs plan (needs a monthly budget), ROAS and CPA by campaign and ad set, MER next to platform ROAS | partly done (pace, ROAS, MER, CPA tiles) |
+| Kill and scale | media buyer | 7d and 28d rows, frequency, CTR trend, purchases | ranked kill and scale list with the rule that fired and the dollars at stake; ad set level; 28-day read | partly done (ad level, 7 days) |
+| Find winning and losing creative | creative strategist | creatives joined to insights, tagged by angle, hook, format, avatar | creative leaderboard, fatigue alerts, winners by angle and avatar | partly done (table, fatigue rule) |
+| Cover the creative map | creative strategist | brain avatars and angles, current ads tagged | coverage grid of avatars by angles by formats, gaps turned into briefs | todo |
+| Produce new creative | creative team, agency, UGC creators | brain voice, claims, winners, competitor signals, references | brief generator, script generator, static concepts, variant sets from a winner, claim check | todo (09-creative owns most) |
+| Know which audiences and placements work | media buyer | breakdowns by age, gender, placement, geo, device | breakdown tables with significance flags, structure audit (consolidation, Advantage+ versus manual, exclusions) | todo |
+| Watch competitors | strategist | Ad Library by page, run length, formats | competitor board, long-running ads as signals, never copied | todo |
+| Keep setup healthy | technical marketer | pixel and dataset stats, event match quality, catalog diagnostics | setup audit with fixes | todo |
+| Match ad to page | media buyer and CRO | ad promise, landing page content, page speed | message-match audit, ad to page to checkout trace | todo |
+| Plan tests | strategist | registry of past tests, current spend | test plan with sample size and read dates, conflicts flagged | todo |
+| Report | account manager | everything above | weekly founder summary in plain words | todo |
 
 ## Candidates from the room spec (pick 10 per round)
 
@@ -106,3 +134,4 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
+| 0 | 0.1 to 0.8 | 28 Sep 2026 | skeleton on Bombas simulated data |
