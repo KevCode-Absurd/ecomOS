@@ -2318,5 +2318,21 @@ class HandoffReadTest(unittest.TestCase):
         self.assertIn("'Handed over'", js)
 
 
+class PriceFileTest(unittest.TestCase):
+    """Round 10 feature 3: a price move ships with its arm B price file, holding exactly the packs the move names."""
+
+    def test_bombas(self):
+        import re
+        acts = {a['rule_id']: a for a in api.actions.rank('bombas')['actions'] if a.get('price_file')}
+        cost = acts['OFFER-R22']
+        n = int(re.search(r'on the (\d+) packs', cost['title']).group(1))
+        self.assertEqual(len(cost['price_file']['rows']), n)
+        for r in cost['price_file']['rows']:
+            self.assertIn(r['sku'], cost['artefact']['draft'])
+            self.assertAlmostEqual(r['change'], r['price_b'] - r['price_now'], 2)
+        for a in acts.values():
+            self.assertEqual(a['artefact']['kind'], 'price_change')
+
+
 if __name__ == '__main__':
     unittest.main()

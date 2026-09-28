@@ -203,7 +203,16 @@
   function actionsList(d) {
     const open = d.plan.filter((a) => a.status !== 'unavailable');
     mount('#actions', UI.sectionHead({ title: 'Actions: how each move gets done', sub: 'Owner, steps with who does each, the artefact it produces, the win and stop rules, the check date.' }),
-      el('div', { class: 'grid' }, open.map((a, i) => UI.actionCard(a, { expanded: i === 0, screen: SLUG, extra: saveRow(a) }))));
+      el('div', { class: 'grid' }, open.map((a, i) => UI.actionCard(a, { expanded: i === 0, screen: SLUG, extra: el('div', null, saveRow(a), priceFile(a)) }))));
+  }
+
+  /** A price move's file for arm B: SKU, today's price, the test price. */
+  function priceFile(a) {
+    const pf = a.price_file;
+    if (!pf) return null;
+    return el('div', { class: 'row save-row' }, el('span', { class: 'kicker', text: 'Price file' }),
+      el('button', { class: 'btn sm', type: 'button', text: 'Export ' + pf.rows.length + (pf.rows.length === 1 ? ' price' : ' prices'), onclick: () => UI.csv(pf.rows, null, pf.name) }),
+      el('span', { class: 'micro faint', text: pf.note }));
   }
 
   // ---------- 5. the desk ----------

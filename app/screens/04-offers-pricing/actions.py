@@ -917,9 +917,16 @@ def second_order_action(f, a, ctx):
     return a
 
 
+COST_TEST_PACKS = 6   # the cost pass-through test covers the packs whose cost rose most, first in the cost table
+
+
+def cost_hits(ctx):
+    return [r for r in (ctx.costs or {}).get('rows') or [] if r.get('fires')][:COST_TEST_PACKS]
+
+
 def cost_action(f, a, ctx):
     cm = ctx.costs
-    hit = [r for r in cm['rows'] if r['fires']][:6]
+    hit = cost_hits(ctx)
     cp = ctx.position or {}
     us = cp.get('us') or {}
     rows = [f'- {r["sku"]}: cost {money(r["cost_then"])} to {money(r["cost_now"])} (+{r["cost_move"] * 100:.0f} percent), price '
@@ -1414,6 +1421,30 @@ def close_drafts(actions):
     return actions
 
 
+def price_files(actions, ctx):
+    """A price move ships with its price file: SKU, today's price and the arm B price, ready for the price-test tool
+    or the store's bulk editor. Cost pass-through rows come from the cost table; pack price tests from the ladder."""
+    costs = {r['sku']: r for r in cost_hits(ctx)}   # the same packs the move names, no more
+    ladder = {r['line']: r for r in ctx.ladder_rows or []}
+    for a in actions:
+        if a.get('status') != 'open':
+            continue
+        rows = []
+        if a.get('rule_id') == 'OFFER-R22':
+            rows = [{'sku': k, 'price_now': r['price_now'], 'price_b': r['test_price'], 'change': round(r['test_price'] - r['price_now'], 2)}
+                    for k, r in costs.items() if r.get('test_price')]
+        elif a.get('rule_id') == 'OFFER-R07' and (a.get('artefact') or {}).get('kind') == 'price_change':
+            for fid in a.get('finding_ids') or []:
+                r = ladder.get(fid.split('.')[-1])
+                if r and r.get('test_price') and r.get('pack_sku'):
+                    rows.append({'sku': r['pack_sku'], 'price_now': r['pack_price'], 'price_b': r['test_price'],
+                                 'change': round(r['test_price'] - r['pack_price'], 2)})
+        if rows:
+            a['price_file'] = {'name': f'{a["rule_id"].lower()}-arm-b-prices.csv', 'rows': rows,
+                               'note': 'arm B only; arm A keeps today\'s price. Prices are per pack before tax.'}
+    return actions
+
+
 def bunches(rd):
     """Order-value bunches and the tiers above them, from real order bins only (never from the fixture)."""
     dist = rd.m('order_value_distribution', audit.WINDOW, step=5)
@@ -1633,7 +1664,7 @@ def rank(brand='bombas', window=None, data=None):
     actions = merge_into(actions, 'OFFER-R38', 'OFFER-R32')
     actions = flag_stale_inputs(attach_margin_checks(add_priors(covered_by_registry(actions, ctx), ctx), ctx), ctx)
     actions = [a for a in actions if not RANK.validate_action(a)]
-    actions = close_drafts(add_unlocks(add_exposure(actions, ctx, nr), ctx))
+    actions = price_files(close_drafts(add_unlocks(add_exposure(actions, ctx, nr), ctx)), ctx)
     actions.sort(key=RANK.sort_key)
     calendar = test_calendar(actions, ctx)
     for row in calendar:   # the change a sitewide test of this length can see; a single page sees less
