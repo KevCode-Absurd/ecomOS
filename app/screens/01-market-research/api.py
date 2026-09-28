@@ -398,6 +398,29 @@ def recipe(f):
             'check_on': _check_on(f, 14), 'time_to_ship_hours': 6 if sold else 8,
             'win_rule': 'an active ad of ours names the lane, or the candidate has a logged go or kill',
         }
+    if rid == 'PROD-R07':
+        ent = f.get('entity') or {}
+        label = (ent.get('label') or ent.get('id') or '').lower()
+        doubt = ent.get('doubt') or label
+        onsite = ent.get('answered_on_site')
+        c, p = _ev_value(f, 'complaint_quotes'), next((e.get('baseline') for e in f['evidence'] if e.get('metric') == 'complaint_quotes'), None)
+        return {
+            'title': f'Answer "{doubt}" in an ad and on the page',
+            'owner': 'agent_drafts',
+            'artefact': {'kind': 'ad_brief', 'label': f'an ad brief that answers "{doubt}" with the proof on file, plus the PDP section that carries the same answer'},
+            'steps': [
+                {'n': 1, 'who': 'agent', 'text': f'Pull the {c} complaint quotes and {p} praise quotes on {label} from the ladder, with the rung each sits on.'},
+                {'n': 2, 'who': 'agent', 'text': ('Pull the site proof that already answers it (claims, guarantee, policy) and check its claim tier.' if onsite else
+                                                  'Find or build the proof: a claim the founder can approve, a policy, or a test result. Nothing ships on an unapproved claim.')},
+                {'n': 3, 'who': 'agent', 'text': 'Draft the ad brief: the doubt in the buyer\'s words as the hook, the proof as the answer, one static and one video. Reddit words inform the hook and are never quoted as a testimonial.'},
+                {'n': 4, 'who': 'agent', 'text': 'Draft the PDP section with the same answer next to the price.'},
+                {'n': 5, 'who': 'person', 'text': 'Approve the claim tier and the brief. Creative and landing pages ship them.'},
+                {'n': 6, 'who': 'agent', 'text': 'Read at 30 days: 1-star share of new reviews on the theme and cost per order of the ad against the account median.'}],
+            'size': {'text': f'{c} complaint quotes against {p} praise, no active ad answers it', 'usd': None},
+            'stop_rule': 'stop the ad if cost per order is over 1.3 times the account median for 7 days; keep the page section',
+            'check_on': _check_on(f, 30), 'time_to_ship_hours': 8,
+            'win_rule': 'complaint quotes on the theme fall below praise quotes in new reviews over 60 days',
+        }
     return None
 
 
@@ -503,6 +526,7 @@ def overview(data, brand):
             'orientation': orientation(tr, br, ends_on, findings),
             'wrong': wrong(findings),
             'desk': {'trends': trends(br, mix), 'mix': mix, 'lanes': audit.subcategory_table(br, ends_on),
+                     'conversation': audit.conversation(br),
                      'demand': demand(tr, reviews), 'store_growth': tr.get('store_growth'),
                      'demand_unavailable': {'reason': tr.get('reason'), 'fix': tr.get('fix')} if tr.get('unavailable') else None,
                      'price_bands': bands, 'reviews': review_mining(reviews, lads),

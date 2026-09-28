@@ -36,6 +36,11 @@ Rules
             pages push in the Ad Library with at least one ad live 30 days or more, and that none of the
             brand's active-ad signals name. Sold or not, it is a gap. Money: null (signals, not proof).
             Capability PROD-C03 (scout ad libraries, agent does). Owner: 01-market-research.
+  PROD-R07  Unanswered conversation theme: a review theme (from the objection ladders, plus Reddit mentions and
+            the social keyword pull) with 10 or more quotes, more complaint than praise quotes, and no
+            active-ad signal of ours that carries its answer words. Money: null (a test prices it).
+            Capability PROD-C12 (hand the validated angle to creative, human assist; the desk drafts and a
+            person approves). Owner: 01-market-research. Reputation override: 4 (a deal-breaker rung).
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -74,13 +79,17 @@ RULES = [
      'entity_type': 'metric', 'inputs': ['fixtures.market_trends', 'brain.products', 'brain.learnings'], 'capability': 'PROD-C05', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R06', 'name': 'Lane 2 or more competitors push with an ad live 30 days or more, and no active ad of ours names it',
      'entity_type': 'metric', 'inputs': ['brain.competitors', 'brain.learnings', 'fixtures.market_trends'], 'capability': 'PROD-C03', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R07', 'name': 'Conversation theme with 10 or more review quotes, more complaints than praise, and no active ad answering it',
+     'entity_type': 'ladder_rung', 'inputs': ['brain.objection_ladders', 'brain.language_bank', 'brain.claims', 'brain.learnings', 'fixtures.social_pull'],
+     'capability': 'PROD-C12', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
               'PROD-R03': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
               'PROD-R04': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R05': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
-              'PROD-R06': {'id': 'PROD-C03', 'autonomy': 'agent_does'}}
+              'PROD-R06': {'id': 'PROD-C03', 'autonomy': 'agent_does'},
+              'PROD-R07': {'id': 'PROD-C12', 'autonomy': 'human_assist'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -484,6 +493,7 @@ def run(brand, window=None, data=None):
         out += review_findings(reviews, ladders(br), rd, tr, ends_on, net)
     out += trend_findings(br, category_mix(data, brand, rd), ends_on)
     out += subcategory_findings(br, ends_on)
+    out += conversation_findings(br, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -783,5 +793,128 @@ def subcategory_findings(br, ends_on):
                      money_reason='competitor ads are signals, not proof; no spend or share is measurable')
         f['entity'] = {'type': 'metric', 'id': row['key'], 'label': row['label'], 'sold': row['sold'], 'kind': row['kind'], 'names': names}
         f['id'] = f'{SCREEN}.PROD-R06.{row["key"]}'
+        out.append(f)
+    return out
+
+
+# ---------------------------------------------------------------- what people are talking about
+
+# theme vocabulary is the adapter's (app/connectors/apify_adapters.THEMES); ladders name the same themes their way
+LADDER_THEME = {'durability': 'durability', 'price_and_value': 'price_value', 'fit_and_sizing': 'fit_sizing',
+                'comfort_and_feel': 'comfort', 'order_and_delivery': 'delivery', 'marketplace_trust': 'authenticity',
+                'mission_trust': 'mission'}
+THEME_LABEL = {'durability': 'Durability and wear life', 'price_value': 'Price and worth', 'fit_sizing': 'Fit and sizing',
+               'comfort': 'Comfort and feel', 'delivery': 'Orders and delivery', 'authenticity': 'Marketplace trust',
+               'mission': 'Mission and giving', 'general': 'General'}
+# what an answer to each theme sounds like in the brand's own claims and ads
+ANSWER_WORDS = {'durability': ['guarantee', 'durab', 'lasts', 'lifetime', 'wear life', 'reinforced', 'y-stitched heel'],
+                'price_value': ['worth', 'per wear', 'value', 'guarantee', 'lasts'],
+                'fit_sizing': ['size guide', 'fit finder', 'stay-up', 'stays up', 'stay up', 'size chart', 'true to size'],
+                'comfort': ['comfort', 'soft', 'cushion', 'seamless', 'blister tab', 'arch support'],
+                'delivery': ['free shipping', 'ships', 'delivery', 'arrives'],
+                'authenticity': ['sold by', 'official', 'authorized', 'brand store'],
+                'mission': ['donate', 'donated', 'one purchased', 'give', 'giving']}
+CONVERSATION_MIN_VOLUME = 10
+
+
+def social_pull():
+    path = HERE / 'fixtures' / 'social_pull.json'
+    return json.loads(path.read_text(encoding='utf-8')) if path.is_file() else None
+
+
+def conversation(br):
+    """One row per theme: volume and sentiment by source (review ladders, Reddit, the social pull), and whether the
+    brand answers it on the site (claims, offers, policies) and in its active ads."""
+    if br is None:
+        return {'rows': [], 'sources': [], 'social': None}
+    rows = {}
+    for rec in br.records('objection_ladders'):
+        v = rec.get('value') or {}
+        th = LADDER_THEME.get(v.get('theme') or rec.get('field'))
+        if not th:
+            continue
+        c = v.get('counts') or {}
+        r = rows.setdefault(th, {'theme': th, 'label': THEME_LABEL.get(th, th), 'review_complaints': 0, 'review_praise': 0,
+                                 'by_source': {}, 'reddit_mentions': 0, 'reddit_upvotes': 0, 'reddit_praise': 0, 'reddit_complaint': 0,
+                                 'social_posts': None, 'social_engagement': None, 'social_praise': None, 'social_complaint': None,
+                                 'ladder': rec['id'], 'top_rung': None, 'proof_missing': 0})
+        r['review_complaints'] += c.get('one_star') or 0
+        r['review_praise'] += c.get('five_star') or 0
+        for src, n in (c.get('sources') or v.get('sources') or {}).items():
+            r['by_source'][src] = r['by_source'].get(src, 0) + (n or 0)
+        rungs = v.get('rungs') or []
+        if rungs:
+            top = max(rungs, key=lambda g: ((g.get('counts') or {}).get('one_star') or 0))
+            r['top_rung'] = {'doubt': top.get('doubt'), 'one_star': (top.get('counts') or {}).get('one_star'), 'proof': bool(top.get('proof'))}
+            r['proof_missing'] = sum(1 for g in rungs if not g.get('proof'))
+    for rec in br.records('language_bank'):
+        v = rec.get('value') or {}
+        if not v.get('subreddit'):
+            continue
+        for th in v.get('themes') or ['general']:
+            r = rows.setdefault(th, {'theme': th, 'label': THEME_LABEL.get(th, th), 'review_complaints': 0, 'review_praise': 0, 'by_source': {},
+                                     'reddit_mentions': 0, 'reddit_upvotes': 0, 'reddit_praise': 0, 'reddit_complaint': 0,
+                                     'social_posts': None, 'social_engagement': None, 'social_praise': None, 'social_complaint': None,
+                                     'ladder': None, 'top_rung': None, 'proof_missing': 0})
+            r['reddit_mentions'] += 1
+            r['reddit_upvotes'] += v.get('weight') or 0
+            if v.get('theme') == 'praise':
+                r['reddit_praise'] += 1
+            elif v.get('theme') == 'complaint':
+                r['reddit_complaint'] += 1
+    social = social_pull()
+    for th, g in ((social or {}).get('themes') or {}).items():
+        r = rows.get(th)
+        if r is None:
+            continue
+        r['social_posts'] = g.get('posts')
+        r['social_engagement'] = (g.get('likes') or 0) + (g.get('comments') or 0)
+        r['social_praise'] = g.get('praise')
+        r['social_complaint'] = g.get('complaint')
+    site = brand_words(br)
+    ads = ad_words(br)
+    out = []
+    for th, r in rows.items():
+        words = ANSWER_WORDS.get(th, [th])
+        r['answered_on_site'] = any(w in site for w in words) if site else None
+        r['answered_in_ads'] = any(w in ads for w in words) if ads else None
+        tot = r['review_complaints'] + r['review_praise']
+        r['praise_share'] = round(r['review_praise'] / tot, 4) if tot else None
+        r['volume'] = tot + r['reddit_mentions'] + (r['social_posts'] or 0)
+        r['complaint_led'] = tot >= CONVERSATION_MIN_VOLUME and r['review_complaints'] > r['review_praise']
+        r['verdict'] = ('gap' if r['complaint_led'] and not r['answered_in_ads'] else 'answered' if r['complaint_led'] else
+                        'strength' if r['praise_share'] is not None and r['praise_share'] >= 0.7 else 'watch')
+        r['finding_id'] = f'{SCREEN}.PROD-R07.{th}'
+        out.append(r)
+    out.sort(key=lambda r: (-(1 if r['verdict'] == 'gap' else 0), -r['volume']))
+    srcs = sorted({s for r in out for s in r['by_source']})
+    return {'rows': out, 'sources': srcs, 'social': {k: social[k] for k in ('captured_at', 'mode', 'actor', 'run_id', 'usd', 'estimate_usd', 'hashtags', 'items', 'co_hashtags', 'samples', 'note') if k in social} if social else None}
+
+
+def conversation_findings(br, ends_on):
+    """PROD-R07: a theme with 10 or more review quotes, more complaints than praise, and no active ad that answers it."""
+    out = []
+    for r in conversation(br)['rows']:
+        if r['verdict'] != 'gap':
+            continue
+        srcs = ', '.join(f'{k} {v}' for k, v in sorted(r['by_source'].items(), key=lambda kv: -kv[1]) if v)
+        ev = [_ev('complaint_quotes', r['review_complaints'], 'count', ends_on.isoformat(), 'all reviews to capture', r['review_praise'], 'threshold',
+                  source=r['ladder'] or 'brain.objection_ladders', simulated=False, freshness_days=0, note='baseline is the praise count on the same theme; sources: ' + srcs),
+              _ev('praise_share', r['praise_share'], 'ratio', ends_on.isoformat(), 'all reviews to capture', 0.5, 'threshold', source=r['ladder'] or 'brain.objection_ladders', simulated=False, freshness_days=0),
+              _ev('reddit_mentions', r['reddit_mentions'], 'count', ends_on.isoformat(), 'past year', source='brain.language_bank', simulated=False, freshness_days=0, upvotes=r['reddit_upvotes']),
+              _ev('active_ads_answering', 0, 'count', ends_on.isoformat(), 'active ads now', 1, 'threshold', source='brain.learnings', simulated=False, freshness_days=0)]
+        if r['social_posts'] is not None:
+            ev.append(_ev('social_posts', r['social_posts'], 'count', ends_on.isoformat(), 'hashtag pull', source='fixtures.social_pull', simulated=False, freshness_days=0,
+                          engagement=r['social_engagement']))
+        rung = r.get('top_rung') or {}
+        site = 'The site answers it' if r['answered_on_site'] else 'Nothing on the site answers it'
+        sentence = (f'{r["label"]}: {r["review_complaints"]} complaint quotes against {r["review_praise"]} praise across reviews and Reddit. '
+                    f'{site} and no active ad does.')
+        if rung.get('doubt'):
+            sentence = sentence[:-1] + f'. The top doubt is "{rung["doubt"]}" ({rung.get("one_star")} one-star).'
+        f = _finding('PROD-R07', r['theme'], ends_on, 'medium', ev, sentence, None, 0.7, [x for x in [r['ladder'], f'{br.brand}.learnings.hook_types'] if x],
+                     money_reason='lost orders from an unanswered doubt are not measurable without a test')
+        f['entity'] = {'type': 'ladder_rung', 'id': r['theme'], 'label': r['label'], 'answered_on_site': r['answered_on_site'], 'doubt': rung.get('doubt')}
+        f['id'] = f'{SCREEN}.PROD-R07.{r["theme"]}'
         out.append(f)
     return out

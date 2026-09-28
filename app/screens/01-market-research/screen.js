@@ -223,12 +223,50 @@
         gaps.length ? { label: 'Brief the first', onClick: () => { const a = actionFor(gaps[0].finding_id); if (a) openAction(a); } } : null));
   }
 
+  function conversationBlock(c) {
+    const rows = (c && c.rows) || [];
+    if (!rows.length) return UI.emptyState({ screen: SLUG, title: 'No conversation on file', text: 'The brain holds no objection ladders or Reddit language yet.', missing: ['reviews', 'reddit'] });
+    const vrows = rows.map((r) => { const a = actionFor(r.finding_id); return Object.assign({}, r, {
+      reviews: r.review_complaints + r.review_praise ? r.review_complaints + ' vs ' + r.review_praise : 'none',
+      sources: Object.keys(r.by_source).length ? Object.entries(r.by_source).filter(([k, v]) => v).sort((a, b) => b[1] - a[1]).map(([k, v]) => pretty(k) + ' ' + v).join(', ') : 'reviews not split',
+      reddit: r.reddit_mentions ? r.reddit_mentions + ' (' + fmt.int(r.reddit_upvotes) + ' upvotes)' : 'none',
+      social: r.social_posts == null ? NA : r.social_posts + ' posts, ' + fmt.int(r.social_engagement || 0) + ' likes and comments',
+      site: r.answered_on_site == null ? NA : r.answered_on_site ? 'yes' : 'no', ads: r.answered_in_ads == null ? NA : r.answered_in_ads ? 'yes' : 'no',
+      doubt: r.top_rung ? '"' + r.top_rung.doubt + '" (' + r.top_rung.one_star + ' one-star' + (r.top_rung.proof ? '' : ', no proof') + ')' : '',
+      actions: [a ? { label: 'Answer it', onClick: () => openAction(a) } : { label: r.verdict === 'strength' ? 'Lead with it' : 'Watch', cls: 'quiet', onClick: () => {} }] }); });
+    const t = UI.verdictTable({
+      columns: [{ key: 'label', label: 'Theme' }, { key: 'reviews', label: 'Complaint vs praise quotes' }, { key: 'praise_share', label: 'Praise share', unit: '%' },
+        { key: 'sources', label: 'Review sources' }, { key: 'reddit', label: 'Reddit' }, { key: 'social', label: 'Instagram pull' }, { key: 'doubt', label: 'Top doubt' },
+        { key: 'site', label: 'Site answers it' }, { key: 'ads', label: 'Active ad answers it' }],
+      rows: vrows,
+      verdict: { at: 1, kind: (r) => r.verdict === 'gap' ? 'fix' : r.verdict === 'strength' ? 'scale' : r.verdict === 'answered' ? 'keep' : 'watch',
+        text: (r) => r.verdict === 'gap' ? 'Unanswered' : r.verdict === 'strength' ? 'Strength' : r.verdict === 'answered' ? 'Answered' : 'Watch',
+        reason: (r) => 'volume ' + r.volume + '; a gap needs 10 quotes, more complaints than praise, and no ad answer' },
+      actions: { label: 'Do', onClick: () => {} }, sort: false });
+    const gaps = rows.filter((r) => r.verdict === 'gap');
+    const soc = c.social;
+    const socialCard = el('div', { class: 'card flat' });
+    if (!soc) socialCard.append(el('h4', { text: 'Instagram keyword pull' }), el('p', { class: 'muted small', text: 'No pull on file. Run social_pull.py for this brand; it stays under the brand\'s Apify caps and stores no usernames.' }));
+    else {
+      socialCard.append(el('h4', { text: 'Instagram keyword pull, ' + soc.captured_at }),
+        el('div', { class: 'row', style: { gap: '6px' } }, (soc.hashtags || []).map((h) => chip('#' + h)), chip(soc.mode === 'live' ? 'live run' : 'mock run, invented sample', soc.mode === 'live' ? 'good' : 'warn'), chip((soc.items || 0) + ' posts'), chip(soc.usd != null ? fmt.money(soc.usd) + ' spent' : 'cost unavailable')),
+        el('p', { class: 'micro muted', text: soc.note + (soc.mode !== 'live' ? ' This block was filled by the mock run because the live pull could not be authorised from this session. The numbers in it are a sample shape, not the market.' : '') }),
+        soc.co_hashtags && soc.co_hashtags.length ? el('div', { class: 'small' }, el('b', { text: 'Tags that travel with ours: ' }), soc.co_hashtags.slice(0, 10).map((x) => '#' + x[0] + ' ' + x[1]).join(', ')) : null,
+        el('ul', { class: 'small', style: { margin: '6px 0 0', paddingLeft: '18px' } }, (soc.samples || []).slice(0, 6).map((sm) => el('li', null, el('span', { class: 'muted', text: '#' + sm.hashtag + ', ' + fmt.int(sm.likes) + ' likes: ' }), '"' + sm.quote + '"'))));
+    }
+    return el('div', { class: 'stack' }, el('div', { class: 'card scroll' }, t), socialCard,
+      el('p', { class: 'micro faint', text: 'Review quotes are the objection ladders built from the brand site, Amazon, Trustpilot, retailers and Reddit. Reddit language shapes hooks and is never quoted as a testimonial. Usernames are never stored.' }),
+      gapLine(gaps.length ? gaps.length + ' themes are complaint-led and no active ad answers them: ' + gaps.map((g) => g.label.toLowerCase()).join(', ') + '. Each has an ad brief and a page section in the plan.' : 'Every complaint-led theme has an active ad answering it.',
+        gaps.length ? { label: 'Answer the first', onClick: () => { const a = actionFor(gaps[0].finding_id); if (a) openAction(a); } } : null));
+  }
+
   function loadDesk(o) {
     const d = o.desk || {};
     const w = (o.window || {}).trend;
     const parts = [];
     parts.push(section('desk-trends', 'Where is the category going, and which lane is under-advertised?', 'Public market sizes and growth from the web pass, a url and a date on every number, against our category mix over 12 whole months. Sales are simulated; markets are public.', trendsBlock(d.trends || { on_file: false }, d.mix || {})));
     parts.push(section('desk-lanes', 'Which lanes are competitors betting on, and what launched?', 'Competitor pages from the Ad Library pull in the brain, by lane: who pushes it, how long their ads have run, what launched in the last 24 months, and whether we sell and advertise it.', lanesBlock(d.lanes)));
+    parts.push(section('desk-conversation', 'What are people talking about, and what goes unanswered?', 'Themes across reviews (site, Amazon, Trustpilot, retailers), Reddit and an Instagram hashtag pull: volume, complaint against praise, the top doubt, and whether the site and the active ads answer it.', conversationBlock(d.conversation)));
     parts.push(section('desk-demand', 'Which lines are losing share, and which reviews say why?', 'Last 3 whole months against the same months a year earlier. A line fires when units fall or growth trails the store by 1 point or more.', demandBlock(d, w || { months: [], year_ago: [] })));
     parts.push(section('desk-price', 'Where do our prices sit against the competitor band?', 'Per-pair list price by line against the band of competitor median prices from the brain. Socks only; other categories have no competitor price on file.', priceBlock(d.price_bands || {})));
     parts.push(section('desk-reviews', 'What do reviews praise and fail, line by line?', 'Public site review totals per line, with the objection ladder rungs built from them.', reviewBlock(d.reviews || [])));

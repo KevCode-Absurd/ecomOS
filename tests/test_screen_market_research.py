@@ -257,6 +257,62 @@ class RulesTest(unittest.TestCase):
         covered = [fid for a in acts for fid in a['finding_ids']]
         self.assertEqual(len(covered), len(set(covered)))   # one action per finding
 
+    def test_conversation_rule_from_ladders(self):
+        """R07 fires for a complaint-led theme with no ad answer; a praise-led theme is a strength, not a finding."""
+        class B:
+            brand = 'fake'
+            def records(self, sec):
+                if sec == 'objection_ladders':
+                    return [{'id': 'fake.objection_ladders.durability', 'field': 'durability', 'value': {'theme': 'durability',
+                             'counts': {'one_star': 30, 'five_star': 5, 'sources': {'own_site': 20, 'amazon': 15}},
+                             'rungs': [{'level': 1, 'doubt': 'will it get a hole', 'counts': {'one_star': 30}, 'proof': 'guarantee'}]}},
+                            {'id': 'fake.objection_ladders.comfort_and_feel', 'field': 'comfort_and_feel', 'value': {'theme': 'comfort_and_feel',
+                             'counts': {'one_star': 2, 'five_star': 40, 'sources': {'own_site': 42}}, 'rungs': []}}]
+                if sec == 'claims':
+                    return [{'text': 'a guarantee that replaces a pair that fails', 'value': None, 'source': {}, 'evidence': []}]
+                if sec == 'learnings':
+                    return [{'text': 'active ads: comfort you notice', 'value': {'role': 'self'}, 'source': {'type': 'ad_library'}, 'evidence': []}]
+                return []
+        rows = {r['theme']: r for r in audit.conversation(B())['rows']}
+        self.assertEqual(rows['durability']['verdict'], 'gap')
+        self.assertTrue(rows['durability']['answered_on_site'])
+        self.assertFalse(rows['durability']['answered_in_ads'])
+        self.assertEqual(rows['durability']['by_source'], {'own_site': 20, 'amazon': 15})
+        self.assertEqual(rows['comfort']['verdict'], 'strength')
+        fs = audit.conversation_findings(B(), date(2026, 9, 27))
+        self.assertEqual([f['id'] for f in fs], ['01-market-research.PROD-R07.durability'])
+        self.assertIn('30 complaint quotes against 5 praise', fs[0]['sentence'])
+        self.assertIn('will it get a hole', fs[0]['sentence'])
+        self.check_shape(fs[0])
+
+    def test_social_pull_stores_no_usernames(self):
+        import importlib.util as iu
+        spec = iu.spec_from_file_location('social_pull_t', SCREEN / 'social_pull.py')
+        sp = iu.module_from_spec(spec)
+        spec.loader.exec_module(sp)
+        items = [{'caption': 'Love these socks @someone, so comfortable', 'hashtags': ['socks', 'comfy'], 'likesCount': 10, 'commentsCount': 2,
+                  'timestamp': '2026-09-01T00:00:00Z', 'url': 'https://www.instagram.com/p/x/', 'type': 'Image', 'hashtag': 'socks',
+                  'ownerUsername': 'secret_person', 'ownerId': '123', 'ownerFullName': 'Secret Person'}]
+        out = sp.summarise(items, ['socks'], {'mode': 'mock'})
+        dump = json.dumps(out)
+        self.assertNotIn('secret_person', dump)
+        self.assertNotIn('Secret Person', dump)
+        self.assertNotIn('@someone', dump)
+        self.assertEqual(out['themes']['comfort']['posts'], 1)
+        self.assertEqual(out['co_hashtags'], [['comfy', 1]] if isinstance(out['co_hashtags'][0], list) else [('comfy', 1)])
+        fx = json.loads((SCREEN / 'fixtures' / 'social_pull.json').read_text(encoding='utf-8'))
+
+        def keys(o):
+            if isinstance(o, dict):
+                for k, v in o.items():
+                    yield k.lower()
+                    yield from keys(v)
+            elif isinstance(o, list):
+                for v in o:
+                    yield from keys(v)
+        self.assertFalse([k for k in keys(fx) if 'owner' in k or 'user' in k])
+        self.assertIn(fx['mode'], ('mock', 'live'))
+
     def test_web_pass_fixture_cites_every_number(self):
         fx = audit.market_trends()
         self.assertIsNotNone(fx)
