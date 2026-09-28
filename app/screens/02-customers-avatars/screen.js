@@ -623,17 +623,23 @@
     UI.csv(actions.map((a, i) => ({ rank: i + 1, title: a.title, owner: a.owner, severity: a.severity, status: a.status,
       total: a.rubric && a.rubric.total, artefact: a.artefact && a.artefact.kind, why: a.why })), null, 'customers-avatars-plan.csv');
   }
+  let planJob = 'all';
   function renderPlan(d, r) {
     const acts = r.actions || [];
-    const open = acts.filter(isOpen);
+    const open = acts.filter(isOpen).filter((a) => planJob === 'all' || a.job === planJob);
     const win = r.window || {};
+    const counts = {}; for (const a of acts.filter(isOpen)) counts[a.job] = (counts[a.job] || 0) + 1;
+    const pills = UI.pills({ items: [{ key: 'all', label: 'All jobs', n: acts.filter(isOpen).length }].concat(DESK.map((t) => ({ key: t.key, label: t.label, n: counts[t.key] || 0 }))),
+      current: planJob, onChange: (k) => { planJob = k; renderPlan(d, r); } });
+    const openTab = planJob === 'all' ? null : el('button', { class: 'btn quiet sm', type: 'button', text: 'Open the ' + DESK.find((t) => t.key === planJob).label + ' desk',
+      onclick: () => { if (deskTabs) { deskTabs.show(planJob); document.getElementById('desk-wrap').scrollIntoView({ behavior: 'smooth' }); } } });
     mount('#plan', UI.planBoard({
       title: 'Next moves for our customers', sub: 'Brain as of ' + fmt.date(d.today) + '. Sales numbers ' + (win.days || 28) + ' days to ' + fmt.date(win.ends_on) + '.',
       orient: d.orientation, actions: open, limit: 10, screen: SLUG,
-      tools: [el('button', { class: 'btn sm', type: 'button', text: 'Export CSV', onclick: () => exportCsv(acts) })],
+      tools: [pills, openTab, el('button', { class: 'btn sm', type: 'button', text: 'Export CSV', onclick: () => exportCsv(acts) })].filter(Boolean),
       foot: el('div', { class: 'row', style: { gap: '14px' } }, UI.rubricLegend(),
         el('span', { class: 'micro faint', text: 'Ranked by the shared rubric. "Not now" snoozes 14 days. Approved items go to the master list on the brand brain.' })),
-      empty: 'No open move. Every avatar is grounded and every top doubt has proof.',
+      empty: planJob === 'all' ? 'No open move. Every avatar is grounded and every top doubt has proof.' : 'No open move in this job.',
     }));
     const con = acts.filter((a) => !isOpen(a));
     const cw = document.getElementById('connect-wrap');

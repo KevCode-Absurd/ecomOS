@@ -1040,5 +1040,18 @@ class DeskTabs(unittest.TestCase):
         self.assertEqual(len(grouped), len(set(grouped)))
 
 
+class PlanByJob(TempBrain):
+    """Feature 4.2: every action carries a job that matches a desk tab."""
+
+    def test_jobs(self):
+        js = (SCREEN / 'screen.js').read_text(encoding='utf-8')
+        tabs = set(__import__('re').findall(r"key: '([a-z]+)', label", js[js.index('const DESK = ['):js.index('let deskTabs')]))
+        acts = api.rank('bombas', RANK_WINDOW)['actions']
+        self.assertTrue(acts)
+        for a in acts:
+            self.assertIn(a['job'], tabs)
+        self.assertEqual(set(api.RULE_JOB), {r['rule_id'] for r in audit.RULES})
+
+
 if __name__ == '__main__':
     unittest.main()

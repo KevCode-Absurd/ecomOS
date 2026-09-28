@@ -75,7 +75,7 @@ Web pass: Peel, Triple Whale, Lifetimely, Klaviyo predictive, Daasity RFM, Thema
 | # | Feature | Status |
 |---|---|---|
 | 4.1 | The desk in tabs by job (Avatars, Doubts and words, Offers and claims, Retention, Brand and voice) below the plan, what is wrong and the actions; `#tab=<key>` opens a tab. Every desk section sits in exactly one tab (tested); the plan stays the first section | done |
-| 4.2 | Plan by job: pills over the plan filter the ranked moves by desk tab | todo |
+| 4.2 | Plan by job: every ranked action carries a `job` that matches a desk tab (rule to job map in `api.RULE_JOB`, tested against the rule list). Pills over the plan filter the 10 moves by job with counts, and "Open the desk" jumps to that tab. Bombas: avatars 19, doubts and words 9, offers and claims 8, retention 5, brand and voice 3 | done |
 | 4.3 | Tests this screen proposes, in the experiment registry shape, for 25-experiments to read | todo |
 | 4.4 | Hand-off packs: what 09-creative, 10-copy, 07-landing-pages-cro and 14-email-messaging get from this screen, ready to use | todo |
 | 4.5 | Ad naming convention from the ladders, and a parser so objection coverage in ads can run once ads follow it | todo |

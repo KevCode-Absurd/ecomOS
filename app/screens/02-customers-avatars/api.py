@@ -450,6 +450,11 @@ def _engine():
     return _rank_engine
 
 
+RULE_JOB = {"CUST-R01": "avatars", "CUST-R05": "avatars", "CUST-R06": "avatars", "CUST-R13": "avatars", "CUST-R14": "avatars",
+            "CUST-R02": "doubts", "CUST-R03": "doubts", "CUST-R04": "doubts", "CUST-R11": "doubts", "CUST-R12": "doubts",
+            "CUST-R10": "offers", "CUST-R18": "offers", "CUST-R20": "offers", "CUST-R21": "offers",
+            "CUST-R07": "retention", "CUST-R08": "retention", "CUST-R09": "retention", "CUST-R15": "retention", "CUST-R16": "retention",
+            "CUST-R23": "retention", "CUST-R17": "brand", "CUST-R19": "brand", "CUST-R22": "brand"}
 EASE = {"agent": 5, "agent_drafts": 4, "person_draft": 3, "person": 2}
 
 
@@ -593,6 +598,7 @@ def rank(brand: str, window: dict) -> dict:
                     a[k] = plan[k]
             a["plan_capability"] = plan.get("capability")
         _rescore(a, eng)
+        a["job"] = RULE_JOB.get(f["rule_id"], "avatars")
         actions.append(a)
     return {"actions": actions}
 
