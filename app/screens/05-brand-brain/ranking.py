@@ -139,6 +139,13 @@ def build(f: dict, nr: float | None) -> dict:
         a.update(title=f"Settle {label.replace('_', ' ')}: {_pct(_ev(f, 'weak_share'))} of it is inferred", owner="agent_drafts",
                  artefact={"kind": "brain_record", "label": "approved records in place of inferred ones", "draft": None},
                  steps=f.get("steps") or a["steps"], check_on=_check_on(f, 7), time_to_ship_hours=1)
+    elif rid == "BRN-R21":
+        a.update(title=f"Confirm or correct: {label}", owner="person",
+                 artefact={"kind": "brain_record", "label": "your number as an approved record; the generator reads it next run", "draft": None},
+                 steps=[{"n": 1, "who": "agent", "text": "Show the modelled value, the reasoning and the rooms that read it, in the assumptions register."},
+                        {"n": 2, "who": "person", "text": "Confirm it as is, or type the real number."},
+                        {"n": 3, "who": "agent", "text": "Write the approved record. The next generator run and every screen use your number."}],
+                 check_on=_check_on(f, 14), time_to_ship_hours=1)
     elif rid == "BRN-R20":
         a.update(title="Set who sees which part of the brain", owner="person",
                  artefact={"kind": "policy", "label": "the permission map: sections by role", "draft": None},

@@ -102,6 +102,11 @@ BRN-R20 permission gap. A section with records and no explicit permission
     entry defaults to restricted (health.permissions). One low finding naming
     the count, so the founder sets the map once. Capability LOOP-C29.
     Owner: 05-brand-brain.
+BRN-R21 modelled assumption read by rooms. An assumption in
+    assumptions.json with status modelled or sourced, no founder record on its
+    source id, and rooms that read its section (assumptions.py). Severity
+    medium for modelled, low for sourced. Capability BRN-C07 (founder round).
+    Owner: 05-brand-brain.
 BRN-R07 competitor snapshot stale. A configured Ad Library page was captured
     more than SNAPSHOT_STALE_DAYS (7) ago, or never. Severity low. Capability
     BRN-C11 (competitor snapshot, signals only). Owner: 05-brand-brain.
@@ -174,11 +179,16 @@ RULES = [
      "inputs": ["policies", "site_map", "stack", "learnings"], "capability": "LOOP-C27", "owner_screen": SCREEN},
     {"rule_id": "BRN-R20", "name": "permission gap", "entity_type": "brand",
      "inputs": ["team.permission_*"], "capability": "LOOP-C29", "owner_screen": SCREEN},
+    {"rule_id": "BRN-R21", "name": "modelled assumption read by rooms", "entity_type": "metric",
+     "inputs": ["assumptions.json", "questions.bank.json"], "capability": "BRN-C07", "owner_screen": SCREEN},
 ]
 AUTONOMY = {"BRN-C12": "agent_does", "BRN-C07": "founder_gate", "BRN-C03": "agent_does",
             "CREA-C19": "agent_does", "CREA-C04": "agent_does", "BRN-C11": "agent_does", "CREA-C06": "agent_does",
             "BRAND-C57": "agent_does", "CREA-C03": "agent_does", "BRN-C05": "founder_gate", "BRN-C01": "agent_does", "PROD-C46": "agent_does", "LOOP-C28": "agent_does", "LOOP-C27": "agent_does", "LOOP-C29": "agent_does"}
 
+_uspec = importlib.util.spec_from_file_location("brand_brain_assumptions", Path(__file__).resolve().parent / "assumptions.py")
+assumptions = importlib.util.module_from_spec(_uspec)
+_uspec.loader.exec_module(assumptions)
 _tspec = importlib.util.spec_from_file_location("brand_brain_contracts", Path(__file__).resolve().parent / "contracts.py")
 contracts = importlib.util.module_from_spec(_tspec)
 _tspec.loader.exec_module(contracts)
@@ -576,6 +586,21 @@ def rule_legal(brain: Brain, ends_on: str) -> list[dict]:
     return out
 
 
+def rule_assumptions(brain: Brain, bank: list[dict] | None, ends_on: str) -> list[dict]:
+    out = []
+    rooms = health.rooms_by_section(bank) if bank else {}
+    for a in assumptions.register(brain, rooms)["assumptions"]:
+        if a["status"] not in ("modelled", "sourced") or not a["rooms"]:
+            continue
+        ev = [_row("assumption_status_founder", 0, "flag", ends_on, a["age_days"], 1, "assumptions.json"),
+              _row("rooms_reading", len(a["rooms"]), "n", ends_on, None, 1, "questions.bank.json")]
+        sentence = (f"{a['label']} is {a['status']}, not your number: {a['summary'][:80]}. "
+                    f"{len(a['rooms'])} rooms read it: {', '.join(r.replace('_', ' ') for r in a['rooms'][:4])}.")
+        out.append(_finding("BRN-R21", "medium" if a["status"] == "modelled" else "low",
+                            {"type": "metric", "id": f"assumption_{a['field']}", "label": a["label"]}, ev, sentence, a["source_ids"][:3], ends_on, 0.7))
+    return out
+
+
 def rule_permissions(brain: Brain, ends_on: str) -> list[dict]:
     pm = health.permissions(brain)
     unset = [s for s in pm["sections"] if not s["explicit"] and s["records"]]
@@ -624,7 +649,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
                      "connector": "none, a repo file", "fix": "Restore questions.bank.json."})
             out.append(f)
     else:
-        out += rule_empty(brain, bank, ends_on) + rule_questions(brain, bank, ends_on)
+        out += rule_empty(brain, bank, ends_on) + rule_questions(brain, bank, ends_on) + rule_assumptions(brain, bank, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f["severity"]], f["id"]))
     return out
 

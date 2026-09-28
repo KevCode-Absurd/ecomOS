@@ -101,6 +101,36 @@
     mount('#ask', el('div', { class: 'card flat ask' }, el('div', { class: 'row' }, input, btn), out));
   }
 
+  // ---------- 5e2. assumptions register ----------
+  function assumptionPanel(a, byAct, reload) {
+    const body = el('div', { class: 'stack' });
+    body.append(el('div', { class: 'row' }, UI.verdict(a.verdict.kind, a.verdict.text, ''), el('span', { class: 'chip', text: a.unit || 'no unit' }), a.as_of ? el('span', { class: 'chip', text: 'as of ' + a.as_of }) : null, ...a.rooms.map((r) => el('span', { class: 'chip mono', text: pretty(r) }))));
+    body.append(el('div', null, el('b', { text: 'Value: ' }), a.summary));
+    if (a.reasoning) body.append(el('div', { class: 'small muted', text: a.reasoning }));
+    if (a.source_refs.length) body.append(el('div', { class: 'small' }, el('b', { text: 'Sources: ' }), a.source_refs.map((r) => r.slice(0, 90)).join('; ')));
+    body.append(el('div', { class: 'small' }, el('b', { text: 'Writes to: ' }), a.target || NA));
+    const input = el('input', { class: 'text sm', placeholder: 'The real number or value', style: { flex: '1 1 200px' } });
+    const status = el('span', { class: 'micro muted' });
+    const go = (bodyReq) => async () => { try { const r = await api(BASE + 'assumptions/' + a.field, { method: 'POST', body: bodyReq }); status.textContent = 'Saved ' + r.record + '. Read by ' + (r.rooms || []).map(pretty).join(', ') + '.'; reload(); } catch (e) { status.textContent = 'Could not save: ' + e.message; } };
+    body.append(el('div', { class: 'row' }, el('button', { class: 'btn primary sm', type: 'button', text: 'Confirm as is', onclick: go({ choice: 'confirm' }) }), input, el('button', { class: 'btn sm', type: 'button', text: 'Correct it', onclick: () => go({ value: input.value })() }), status));
+    const act = byAct['assumption_' + a.field];
+    if (act) body.append(UI.actionCard(act, { screen: SCREEN, expanded: false }));
+    UI.panel({ title: a.label, body });
+  }
+  async function loadAssumptions() {
+    let ar, actions = [];
+    try { ar = await api(BASE + 'assumptions'); } catch (e) { mount('#assumptions', el('p', { class: 'muted', text: 'Assumptions unavailable: ' + e.message })); return; }
+    try { const r = await api(BASE + 'rank'); actions = (r.actions || []).filter((a) => a.rule_id === 'BRN-R21'); } catch (e) { actions = []; }
+    const byAct = {}; for (const a of actions) if (a.entity && a.entity.id) byAct[a.entity.id] = a;
+    mount('#assumptions-tools', UI.orientation([{ label: 'yours', value: ar.counts.founder, unit: 'n', tone: 'good' }, { label: 'sourced', value: ar.counts.sourced, unit: 'n' }, { label: 'modelled', value: ar.counts.modelled, unit: 'n', tone: ar.counts.modelled ? 'bad' : null }, { label: 'derived', value: ar.counts.derived, unit: 'n' }]));
+    mount('#assumptions', UI.verdictTable({
+      columns: [{ key: 'label', label: 'Assumption' }, { key: 'summary', label: 'Value' }, { key: 'unit', label: 'Unit', format: (v) => v || '' }, { key: 'as_of', label: 'As of', format: (v) => v || NA }, { key: 'rooms_text', label: 'Read by' }],
+      verdict: { at: 1, kind: (r) => r.verdict.kind, text: (r) => r.verdict.text, reason: (r) => r.verdict.reason },
+      actions: { label: (r) => r.status === 'founder' ? 'Open' : 'Confirm or correct', onClick: (r) => assumptionPanel(r, byAct, loadAssumptions) },
+      rows: ar.assumptions.map((a) => Object.assign({}, a, { rooms_text: a.rooms.slice(0, 4).map(pretty).join(', ') + (a.rooms.length > 4 ? ' +' + (a.rooms.length - 4) : '') })), sort: false, maxRows: 30,
+    }), el('div', { class: 'micro faint', text: ar.note }));
+  }
+
   // ---------- 5f. permissions and export ----------
   function permPanel(sec, pm, reload) {
     const selects = {};
@@ -1180,6 +1210,7 @@
     loadVoice();
     loadBattlecards();
     loadPermissions();
+    loadAssumptions();
     const [prof] = await Promise.all([loadProfile(), loadDesk()]);
     await loadPlan(prof);
   }

@@ -75,6 +75,8 @@ question, and accept or ignore on a proposed record. Nothing external.
   GET  changes                  the changes log (every write through this screen and every site change), newest
                                 first, with counts for the week and the version steps
   GET  dependents?record=<id>   what depends on one fact: records, ladder rungs, questions, snippets, ads
+  GET  assumptions              the register: the numbers the simulation runs on, status, unit, as of, rooms
+  POST assumptions/<field>      {choice: confirm} or {value}: an approved founder record on the source id
   GET  records?section=<name>   one section's records with tier, date, source and evidence
   GET  audit                    findings from audit.py (app/contracts/audit.md shape)
   POST questions/<field>        {answer}: writes a founder record, marks the question answered
@@ -116,6 +118,9 @@ _spec.loader.exec_module(audit)
 _hspec = importlib.util.spec_from_file_location("brand_brain_health", HERE / "health.py")
 health = importlib.util.module_from_spec(_hspec)
 _hspec.loader.exec_module(health)
+_uspec = importlib.util.spec_from_file_location("brand_brain_assumptions", HERE / "assumptions.py")
+assumptions = importlib.util.module_from_spec(_uspec)
+_uspec.loader.exec_module(assumptions)
 _gspec = importlib.util.spec_from_file_location("brand_brain_changes", HERE / "changes.py")
 changes = importlib.util.module_from_spec(_gspec)
 _gspec.loader.exec_module(changes)
@@ -807,6 +812,33 @@ def claim_add(brain: Brain, body: dict):
     return 201, {"ok": True, "record": rid, "tier": tier, "flows_to": FLOWS_TO.get("claims", ""), "version": brain.version()}
 
 
+def assumption_set(brain: Brain, field: str, body: dict):
+    body = body or {}
+    row = next((a for a in assumptions.load(brain) if a.get("field") == field), None)
+    if row is None:
+        return 404, {"error": "no such assumption", "field": field}
+    target = (row.get("source_ids") or [None])[0]
+    if not target or target.count(".") < 2 or target.split(".")[1] not in SECTIONS:
+        return 400, {"error": "assumption has no brain record to write to", "field": field}
+    section, rfield = target.split(".")[1], target.split(".", 2)[2]
+    if body.get("choice") == "confirm":
+        value = row.get("value")
+        text = f"{field.replace('_', ' ')} confirmed by the founder: {assumptions._summary(value)}"
+    else:
+        raw = str(body.get("value") or "").strip()
+        if not raw:
+            return 400, {"error": "send choice confirm or a value"}
+        value = _coerce(raw)
+        text = f"{field.replace('_', ' ')} set by the founder: {raw[:160]}"
+    rec = {"id": target, "brand": brain.brand, "section": section, "field": rfield, "value": value, "text": text,
+           "tier": "approved", "confidence": 1.0, "visibility": "private",
+           "source": {"type": "founder", "ref": "05-brand-brain assumptions register", "captured_at": brain.today.isoformat()}}
+    errs = founder_put(brain, rec, what=f"assumption {field}: {text[:100]}")
+    if errs:
+        return 400, {"error": "record not valid", "details": errs}
+    return 201, {"ok": True, "record": target, "status": "founder", "rooms": next((a["rooms"] for a in assumptions.register(brain, health.rooms_by_section(keeper.load_bank()))["assumptions"] if a["field"] == field), []), "version": brain.version()}
+
+
 def permission_set(brain: Brain, section: str, body: dict):
     if section not in SECTIONS or section in health.META_SECTIONS:
         return 404, {"error": "no such section", "section": section}
@@ -1027,6 +1059,16 @@ def handle(req):
         ends = (brain.today - dt.timedelta(days=1)).isoformat()
         findings = audit.run(brain.brand, {"ends_on": ends, "days": 1, "trailing": 0}, BRAIN_ROOT)
         return {"findings": findings, "rules": audit.RULES, "brain_version": brain.version()}
+    if req.method == "GET" and parts == ["assumptions"]:
+        try:
+            rooms = health.rooms_by_section(keeper.load_bank())
+        except (OSError, ValueError, KeyError):
+            rooms = {}
+        ar = assumptions.register(brain, rooms)
+        ar.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())
+        return ar
+    if req.method == "POST" and len(parts) == 2 and parts[0] == "assumptions":
+        return assumption_set(brain, parts[1], req.body)
     if req.method == "GET" and parts == ["changes"]:
         ch = changes.recent(brain)
         ch.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())

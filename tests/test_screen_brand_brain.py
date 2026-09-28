@@ -90,7 +90,7 @@ class AuditShape(unittest.TestCase):
         self.assertIn('05-brand-brain.BRN-R02.section_economics', ids)
         self.assertIn('05-brand-brain.BRN-R04.mission_trust.rung_1.donation_pledge', ids)
         rules = {r['rule_id'] for r in audit.RULES}
-        self.assertLessEqual({'BRN-R01', 'BRN-R02', 'BRN-R03', 'BRN-R04', 'BRN-R05', 'BRN-R06', 'BRN-R07', 'BRN-R08', 'BRN-R09', 'BRN-R10', 'BRN-R11', 'BRN-R12', 'BRN-R13', 'BRN-R14', 'BRN-R15', 'BRN-R16', 'BRN-R17', 'BRN-R18', 'BRN-R19', 'BRN-R20'}, rules)
+        self.assertLessEqual({'BRN-R01', 'BRN-R02', 'BRN-R03', 'BRN-R04', 'BRN-R05', 'BRN-R06', 'BRN-R07', 'BRN-R08', 'BRN-R09', 'BRN-R10', 'BRN-R11', 'BRN-R12', 'BRN-R13', 'BRN-R14', 'BRN-R15', 'BRN-R16', 'BRN-R17', 'BRN-R18', 'BRN-R19', 'BRN-R20', 'BRN-R21'}, rules)
 
 
 class AuditRules(TempBrain):
@@ -1173,3 +1173,33 @@ class Round3ChangesTrace(TempBrain):
         self.assertIn('snippet', d['counts'])
         self.assertEqual(api.handle(Req(['dependents'], query={'record': ['nope']}))[0], 400)
         self.assertIn('reason', api.handle(Req(['dependents'], query={'record': ['bombas.offers.nope']})))
+
+
+class Round3Assumptions(TempBrain):
+    """Round 3 feature 3: the assumptions register with confirm and correct."""
+
+    def test_register_and_rule(self):
+        ar = api.handle(Req(['assumptions']))
+        self.assertEqual(ar['total'], 12)
+        by = {a['field']: a for a in ar['assumptions']}
+        self.assertEqual(by['gross_margin']['status'], 'modelled')
+        self.assertEqual(by['aov_usd']['status'], 'founder')
+        self.assertIn('finance', by['gross_margin']['rooms'])
+        self.assertEqual(ar['assumptions'][0]['status'], 'modelled')   # modelled first
+        f = next(f for f in api.handle(Req(['audit']))['findings'] if f['id'] == '05-brand-brain.BRN-R21.assumption_gross_margin')
+        self.assertEqual((f['severity'], f['capability']['id'], f['entity']['type']), ('medium', 'BRN-C07', 'metric'))
+        a = next(a for a in api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions'] if a['rule_id'] == 'BRN-R21')
+        self.assertTrue(a['title'].startswith('Confirm or correct'))
+
+    def test_confirm_and_correct_write_founder_records(self):
+        status, res = api.handle(Req(['assumptions', 'gross_margin'], 'POST', body={'choice': 'confirm'}))
+        self.assertEqual((status, res['record'], res['status']), (201, 'bombas.economics.gross_margin_model', 'founder'))
+        by = {a['field']: a for a in api.handle(Req(['assumptions']))['assumptions']}
+        self.assertEqual(by['gross_margin']['status'], 'founder')
+        self.assertFalse([f for f in api.handle(Req(['audit']))['findings'] if f['id'] == '05-brand-brain.BRN-R21.assumption_gross_margin'])
+        status, res = api.handle(Req(['assumptions', 'return_share'], 'POST', body={'value': '3.8'}))
+        self.assertEqual(status, 201)
+        rec = next(r for r in self.section('economics') if r['id'] == 'bombas.economics.return_share_model')
+        self.assertEqual((rec['value'], rec['tier'], rec['source']['type']), (3.8, 'approved', 'founder'))
+        self.assertEqual(api.handle(Req(['assumptions', 'nope'], 'POST', body={'choice': 'confirm'}))[0], 404)
+        self.assertEqual(api.handle(Req(['assumptions', 'return_share'], 'POST', body={}))[0], 400)
