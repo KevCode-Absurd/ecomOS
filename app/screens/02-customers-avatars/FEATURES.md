@@ -160,7 +160,16 @@ Lead's review: rounds 1 to 4 passed. Focus: returns and tickets by avatar, depth
 | 9.7 | Depth rule 6, no dead buttons: 14 row buttons (Keep, No gap, Nothing to do, Site-led and the like) did nothing when clicked. Each now opens why the row needs no move, in plain words with no threshold in page code, and says the row becomes a move when its rule fires. A theme with no ladder now says to add a rung in the brain. Tested: no empty click handler left | done |
 | 9.8 | Depth rule 13 as a test: two cold processes with different hash seeds give the same 67 actions (ids, order, totals, finding ids, sizes) and the same 69 findings with the same sentences, so no set or dict order leaks into the ranking; the screen's code imports nothing that could call a model or the network | done |
 | 9.9 | The page at phone width, re-checked with the round 7 and 8 blocks (sales and reviews, gap lines, caveats, compare buttons): 360 px on all 5 tabs, nothing past the edge. The smoke test now checks page width at 360 px on every tab for both brands, so a wide block can no longer slip in | done |
-| 9.10 | Audit rules and `rank` for round 9, screenshot `round9.png` | todo |
+| 9.10 | Round 9 close: no new rule; the 32 rules now pass depth rules 4, 6, 12 and 13 as tests, and the page passes 7, 11 and the first-screen and phone checks in the browser for both brands. 67 actions; none in the master top 10 (best 62, cut-off 63), as in round 8. Fixed on the way: a buyer line could show twice on an avatar page and in the compare row. Full screen suite: only the known site speed failures. Screenshot `round9.png` (an avatar page with the share of sales and its decisions section) | done |
+
+### Round 9 founder note (28 Sep 2026)
+
+1. The screen now checks itself on every run. Every sentence passes the writing rules, and every number in a finding is backed in its evidence.
+2. The page loads in a quarter of a second, down from 0.6. It fits a phone and shows your top 3 moves without scrolling, for any brand.
+3. No button does nothing any more. "Keep" and "Nothing to do" now say why the row needs no move.
+4. Each avatar page now lists what you decided on its moves, with dates and when a "Not now" comes back.
+5. Survey answers will set avatar shares once 385 are in. Until the survey runs, shares come from reviews, or from sales where reviews give none.
+6. Next, round 10: a last pass on depth, the data layer's order, ticket and survey tables if they land, and a hand-off note for Kevin.
 
 ### Round 8 founder note (28 Sep 2026)
 
@@ -375,3 +384,4 @@ The job to be done for each avatar is brand data: it lives in `app/brain/<brand>
 | 6 | 6.1 to 6.10, any brand, one action per draft, agenda, compare, report, speed, phone width | 28 Sep 2026 | done; screenshot `round6.png` |
 | 7 | 7.1 to 7.10, depth rules 5, 9, 10 and 14 on this screen, money on retention, sales against reviews, avatar pages, keys, print | 28 Sep 2026 | done; screenshot `round7.png` |
 | 8 | 8.1 to 8.10, desk moves sized, January against last year, sales in the scores, survey settles, browser smoke test, weak cohorts, any brand on the page, money tile | 28 Sep 2026 | done; screenshot `round8.png` |
+| 9 | 9.1 to 9.10, first screen, writing rules everywhere, decisions per avatar, survey answers back, faster overview, depth rules 4, 6 and 13 as tests, phone width | 28 Sep 2026 | done; screenshot `round9.png` |

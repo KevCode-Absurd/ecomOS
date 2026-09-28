@@ -2570,7 +2570,7 @@ def compare_rows(d: dict) -> dict:
     out = {}
     for a in d["avatars"]:
         k, m, t = a["key"], a.get("meta") or {}, a.get("top_objection")
-        words = [w["text"] for r in d["words"]["rows"] if k in r["avatars"] for w in r["win_words"] if not w["language_only"]][:3]
+        words = list(dict.fromkeys(w["text"] for r in d["words"]["rows"] if k in r["avatars"] for w in r["win_words"] if not w["language_only"]))[:3]
         out[k] = {"name": a["name"], "share": a["share_estimate"], "sales_share": sales.get(k), "served": served.get(k), "build_rank": m.get("focus_rank"),
                   "top_doubt": t["doubt"] if t else None, "proof": ("yes" if t["proof"] else "no") if t else None,
                   "open_doubts": sum(1 for r in d["ladders"]["rows"] if k in r["avatars"] and r["verdict"] in ("answer", "not_landing")),
@@ -2917,8 +2917,8 @@ def avatar_page(a: dict, d: dict, forbidden: list[str], actions: list[dict], nam
               "lines": [f"\"{r['doubt']}\": {r['one_star']} one-star, {r['five_star']} five-star. " + (f"Answer with {r['proof']}." if r["proof"] else "NO PROOF YET, do not promise it.")
                         for r in doubts] or ["No doubt on a ladder names this avatar."]})
     w = [r for r in d["words"]["rows"] if key in r["avatars"]]
-    win = [x["text"] for r in w for x in r["win_words"] if not x["language_only"]][:4]
-    doubt = [x["text"] for r in w for x in r["doubt_words"]][:3]
+    win = list(dict.fromkeys(x["text"] for r in w for x in r["win_words"] if not x["language_only"]))[:4]
+    doubt = list(dict.fromkeys(x["text"] for r in w for x in r["doubt_words"]))[:3]
     hooks = [h["hook"] for h in d["hooks"]["rows"] if a["name"] in h["avatars"]][:5]
     S.append({"title": "Their words", "lines": ["For the win: " + ("; ".join(f'"{x}"' for x in win) or "none banked") + ".",
                                                "For the doubt: " + ("; ".join(f'"{x}"' for x in doubt) or "none banked") + ".",

@@ -2349,3 +2349,14 @@ print(json.dumps({'rank': [(a['id'], a['rubric']['total'], a['finding_ids'], (a.
         for name in ('api.py', 'audit.py', 'builds.py'):
             src = (SCREEN / name).read_text(encoding='utf-8')
             self.assertNotRegex(src, r'import (openai|anthropic|requests)|urllib\.request|http\.client', name)
+
+
+class NoRepeatedWords(TempBrain):
+    """Round 9 close: a buyer line shows once on an avatar page and in the compare row."""
+
+    def test_win_words_unique(self):
+        for a in api.handle(Req(['overview']))['avatars']:
+            r = api.handle(Req(['avatar', a['key'], 'brief']))
+            line = next(s for s in r['sections'] if s['title'] == 'Their words')['lines'][0]
+            quotes = re.findall(r'"([^"]+)"', line)
+            self.assertEqual(len(quotes), len(set(quotes)), a['key'])
