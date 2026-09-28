@@ -126,6 +126,14 @@ BRN-R25 duplicate records. Two active records in one section say the same
     thing (same normalised text, or the same scalar value on the same field).
     One low finding naming the pairs; the stronger record is kept and the other
     retired, never deleted. Capability BRN-C12. Owner: 05-brand-brain.
+BRN-R26 peak not ready. A peak inside the next 90 days (US retail peaks
+    computed from the date, plus the brand's own dated calendar records) with
+    at least one gap in its readiness checks (peaks.py): no offer decided, no
+    holiday return window, a derived shipping cutoff not confirmed, no gift
+    card record, a giving claim not tiered, no creative on the peak's hook.
+    Unavailable checks never count. Severity high at 30 days or less, medium
+    at 60 or less, else low. Capability BRN-C07 (founder round; the agent
+    drafts the briefs, the founder decides the offer). Owner: 05-brand-brain.
 BRN-R07 competitor snapshot stale. A configured Ad Library page was captured
     more than SNAPSHOT_STALE_DAYS (7) ago, or never. Severity low. Capability
     BRN-C11 (competitor snapshot, signals only). Owner: 05-brand-brain.
@@ -208,6 +216,8 @@ RULES = [
      "inputs": ["BRAIN.md", "every section"], "capability": "BRN-C12", "owner_screen": SCREEN},
     {"rule_id": "BRN-R25", "name": "duplicate records", "entity_type": "brand",
      "inputs": ["every section"], "capability": "BRN-C12", "owner_screen": SCREEN},
+    {"rule_id": "BRN-R26", "name": "peak not ready", "entity_type": "brand",
+     "inputs": ["calendar", "offers", "policies", "products", "identity", "claims", "learnings", "assumptions.json"], "capability": "BRN-C07", "owner_screen": SCREEN},
 ]
 AUTONOMY = {"BRN-C12": "agent_does", "BRN-C07": "founder_gate", "BRN-C03": "agent_does",
             "CREA-C19": "agent_does", "CREA-C04": "agent_does", "BRN-C11": "agent_does", "CREA-C06": "agent_does",
@@ -225,6 +235,9 @@ _lspec.loader.exec_module(legal)
 _pspec = importlib.util.spec_from_file_location("brand_brain_parity", Path(__file__).resolve().parent / "parity.py")
 parity = importlib.util.module_from_spec(_pspec)
 _pspec.loader.exec_module(parity)
+_qspec = importlib.util.spec_from_file_location("brand_brain_peaks", Path(__file__).resolve().parent / "peaks.py")
+peaks = importlib.util.module_from_spec(_qspec)
+_qspec.loader.exec_module(peaks)
 _xspec = importlib.util.spec_from_file_location("brand_brain_selfaudit", Path(__file__).resolve().parent / "selfaudit.py")
 selfaudit = importlib.util.module_from_spec(_xspec)
 _xspec.loader.exec_module(selfaudit)
@@ -669,6 +682,26 @@ def rule_ladder_proof(brain: Brain, ends_on: str) -> list[dict]:
     return out
 
 
+def rule_peaks(brain: Brain, ends_on: str) -> list[dict]:
+    out = []
+    r = peaks.readiness(brain, market.angles_of, legal, assumptions)
+    for p in r["peaks"]:
+        gaps = [c for c in p["checks"] if c["status"] == "gap"]
+        if not gaps:
+            continue
+        days = p.get("days_to")
+        sev = "high" if days is not None and days <= 30 else ("medium" if days is not None and days <= 60 else "low")
+        ev = [_row("days_to_peak", days, "n", ends_on, None, 30, "calendar"), _row("gaps", len(gaps), "n", ends_on, None, 0, "calendar"),
+              _row("checks_ok", p["counts"]["ok"], "n", ends_on, None, None, "calendar"), _row("checks_unavailable", p["counts"]["unavailable"], "n", ends_on, None, None, "calendar")]
+        when = f"in {days} days" if days is not None else (f"in {p['window']}" if p.get("window") else "with no date yet")
+        names = ", ".join(c["label"].lower() for c in gaps[:3]) + (" and more" if len(gaps) > 3 else "")
+        f = _finding("BRN-R26", sev, {"type": "brand", "id": f"peak_{p['key']}", "label": p["label"]}, ev,
+                     f"{p['label']} is {when} and {len(gaps)} check{'s' if len(gaps) != 1 else ''} wait{'' if len(gaps) != 1 else 's'} on a decision: {names}.", [x for c in gaps for x in c["records"]][:6], ends_on, 0.9 if days is not None else 0.6)
+        f["peak"] = {"key": p["key"], "label": p["label"], "date": p.get("date"), "days_to": days, "kind": p["kind"], "gaps": [{k: c[k] for k in ("key", "label", "fix", "who", "capability")} for c in gaps], "unavailable": [c["label"] for c in p["checks"] if c["status"] == "unavailable"]}
+        out.append(f)
+    return out
+
+
 def rule_self_audit(brain: Brain, ends_on: str) -> list[dict]:
     out = []
     sa = selfaudit.run(brain)
@@ -731,7 +764,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
         bank = keeper.load_bank()
     except (OSError, ValueError, KeyError):
         bank = None
-    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_untiered_claims(brain, ends_on) + rule_site_changes(brain, ends_on) + rule_parity(brain, ends_on) + rule_contracts(brain, ends_on) + rule_legal(brain, ends_on) + rule_picked_ideas(brain, ends_on) + rule_ladder_proof(brain, ends_on) + rule_self_audit(brain, ends_on) + rule_permissions(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
+    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_untiered_claims(brain, ends_on) + rule_site_changes(brain, ends_on) + rule_parity(brain, ends_on) + rule_contracts(brain, ends_on) + rule_legal(brain, ends_on) + rule_picked_ideas(brain, ends_on) + rule_ladder_proof(brain, ends_on) + rule_self_audit(brain, ends_on) + rule_peaks(brain, ends_on) + rule_permissions(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
     if bank is None:
         for rid, sev in (("BRN-R02", "medium"), ("BRN-R03", "medium")):
             f = _finding(rid, sev, {"type": "brand", "id": "question_bank", "label": "question bank"},

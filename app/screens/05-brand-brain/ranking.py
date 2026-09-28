@@ -159,6 +159,22 @@ def build(f: dict, nr: float | None) -> dict:
                         {"n": 3, "who": "person", "text": "Pick the record as proof, or approve the drafted fact as an approved record."},
                         {"n": 4, "who": "agent", "text": f"Attach it to the rung. The surfaces that use the rung ({surfaces or 'copy, page, listing, macro'}) read the proof on their next brief."}],
                  check_on=_check_on(f, 7), time_to_ship_hours=1)
+    elif rid == "BRN-R26":
+        pk = f.get("peak") or {}
+        gaps = pk.get("gaps") or []
+        when = f" ({pk['days_to']} days)" if pk.get("days_to") is not None else ""
+        offer_gap = any(g["key"] == "offer" for g in gaps)
+        steps = []
+        for g in gaps[:5]:
+            steps.append({"n": len(steps) + 1, "who": "person" if g["who"] == "person" else "agent", "text": g["fix"]})
+        steps.append({"n": len(steps) + 1, "who": "agent", "text": f"Write the decisions as founder records; the site, email, ads and CX screens read them for {pk.get('label') or label}."})
+        if len(steps) < 2:
+            steps.insert(0, {"n": 1, "who": "agent", "text": "List the checks and what each one waits on."})
+            steps = [dict(x, n=i + 1) for i, x in enumerate(steps)]
+        draft = f"Peak plan: {pk.get('label')}" + (f", {pk.get('date')}" if pk.get("date") else "") + "\n" + "\n".join(f"- {g['label']}: {g['fix']}" for g in gaps) + ("\nNot checkable yet: " + ", ".join(pk.get("unavailable") or []) if pk.get("unavailable") else "")
+        a.update(title=f"Get ready for {pk.get('label') or label}{when}: " + ", ".join(g["label"].lower() for g in gaps[:3]), owner="person" if offer_gap and len(gaps) == 1 else "agent_drafts",
+                 artefact={"kind": "offer" if offer_gap else "brain_record", "label": f"the {pk.get('label') or label} plan as founder records: offer, window, cutoff, creative brief", "draft": draft},
+                 steps=steps[:8], check_on=_check_on(f, 7), time_to_ship_hours=2)
     elif rid == "BRN-R24":
         r = f.get("router") or {}
         a.update(title="Regenerate BRAIN.md" + (f" and fix {len(r.get('broken') or [])} broken link{'s' if len(r.get('broken') or []) != 1 else ''}" if r.get("broken") else ": the router no longer matches the records"), owner="agent",

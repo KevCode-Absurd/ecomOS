@@ -1558,10 +1558,84 @@ class Round4SelfAudit(TempBrain):
         self.assertTrue(all(r['records'] and not r['reads'] for r in sa['reads']['unread']))
 
 
+class Round4Peaks(TempBrain):
+    """Round 4 feature 5: peak readiness; the US peaks from the date, checks against the brain, a decision writes records; rule BRN-R26."""
+
+    def test_calendar_and_checks(self):
+        r = api.handle(Req(['peaks']))
+        keys = [p['key'] for p in r['peaks']]
+        self.assertEqual(keys[:2], ['prime_deal_days_2026', 'black_friday_2026'])  # 28 Sep 2026: deal days first (window), then Black Friday
+        bf = next(p for p in r['peaks'] if p['key'] == 'black_friday_2026')
+        self.assertEqual((bf['date'], bf['days_to'], bf['kind']), ('2026-11-27', 60, 'sale'))
+        self.assertEqual(next(p['date'] for p in r['peaks'] if p['key'] == 'cyber_monday_2026'), '2026-11-30')
+        self.assertEqual(next(p['date'] for p in r['peaks'] if p['key'] == 'giving_tuesday_2026'), '2026-12-01')
+        ho = next(p for p in r['peaks'] if p['key'] == 'holiday_orderby_2026')
+        self.assertTrue(ho['derived'])
+        self.assertEqual(ho['date'], '2026-12-11')  # 25 December less 10 business days, the slowest standard promise
+        self.assertEqual(next(c['status'] for c in ho['checks'] if c['key'] == 'cutoff'), 'gap')
+        byk = {c['key']: c for c in bf['checks']}
+        self.assertEqual((byk['offer']['status'], byk['returns_holiday']['status'], byk['email']['status']), ('gap', 'ok', 'unavailable'))
+        self.assertIn('60 days', byk['returns_holiday']['evidence'])
+        self.assertIn('COMFORT20', byk['offer']['fix'])
+        self.assertEqual(bf['counts']['ok'] + bf['counts']['gaps'] + bf['counts']['unavailable'], len(bf['checks']))
+        self.assertEqual(bf['readiness_pct'], round(100 * bf['counts']['ok'] / (bf['counts']['ok'] + bf['counts']['gaps'])))
+        self.assertIsNone(next(p for p in r['peaks'] if p['key'] == 'prime_deal_days_2026')['date'])
+        self.assertTrue(r['heavy_months']['available'])
+        self.assertTrue([m for m in r['heavy_months']['months'] if m['month'] == '2026-11' and m['heavy']])
+
+    def test_rule_and_action(self):
+        fs = {f['entity']['id']: f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R26'}
+        self.assertEqual(fs['peak_black_friday_2026']['severity'], 'medium')  # 60 days
+        self.assertEqual(fs['peak_christmas_2026']['severity'], 'low')
+        self.assertIn('Black Friday is in 60 days', fs['peak_black_friday_2026']['sentence'])
+        acts = {a['entity']['id']: a for a in api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions'] if a['rule_id'] == 'BRN-R26'}
+        a = acts['peak_black_friday_2026']
+        self.assertTrue(a['title'].startswith('Get ready for Black Friday (60 days)'))
+        self.assertEqual(a['artefact']['kind'], 'offer')
+        self.assertTrue(a['artefact']['draft'].startswith('Peak plan: Black Friday, 2026-11-27'))
+        self.assertTrue(any(st['who'] == 'person' for st in a['steps']))
+        for x in acts.values():
+            self.assertEqual(api.rank_mod.validate_action(x), [])
+
+    def test_decide_writes_records_and_clears_gaps(self):
+        status, res = api.handle(Req(['peaks', 'plan'], 'POST', body={'peak': 'black_friday_2026', 'offer': '25 percent off sitewide, code BF25, no stacking', 'note': 'ends Monday', 'cutoff': '2026-12-12'}))
+        self.assertEqual(status, 201)
+        self.assertEqual(res['records'], ['bombas.offers.peak_black_friday_2026', 'bombas.calendar.peak_black_friday_2026', 'bombas.policies.holiday_shipping_cutoff'])
+        r = api.handle(Req(['peaks']))
+        bf = next(p for p in r['peaks'] if p['key'] == 'black_friday_2026')
+        self.assertEqual(next(c['status'] for c in bf['checks'] if c['key'] == 'offer'), 'ok')
+        ho = next(p for p in r['peaks'] if p['key'] == 'holiday_orderby_2026')
+        self.assertEqual((ho['date'], ho['derived']), ('2026-12-12', False))
+        self.assertEqual(next(c['status'] for c in ho['checks'] if c['key'] == 'cutoff'), 'ok')
+        self.assertNotIn('peak_holiday_orderby_2026', [f['entity']['id'] for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R26'])
+        off = next(x for x in self.section('offers') if x['id'] == 'bombas.offers.peak_black_friday_2026')
+        self.assertEqual((off['tier'], off['source']['type'], off['value']['offer']), ('approved', 'founder', '25 percent off sitewide, code BF25, no stacking'))
+        cal = next(x for x in self.section('calendar') if x['id'] == 'bombas.calendar.peak_black_friday_2026')
+        self.assertEqual(cal['value']['date'], '2026-11-27')
+        self.assertIn('peak', [c['kind'] for c in api.handle(Req(['changes']))['changes']])
+        # the peak records never join the calendar as a second event
+        self.assertEqual(len([p for p in r['peaks'] if p['key'] == 'black_friday_2026']), 1)
+        self.assertEqual(api.handle(Req(['peaks', 'plan'], 'POST', body={'peak': 'black_friday_2026'}))[0], 400)
+        # a forbidden phrase in the offer is refused
+        status, res = api.handle(Req(['claims'], 'POST', body={'text': 'lifetime guarantee', 'tier': 'forbidden'}))
+        self.assertEqual(status, 201)
+        self.assertEqual(api.handle(Req(['peaks', 'plan'], 'POST', body={'peak': 'cyber_monday_2026', 'offer': 'Cyber deal with a lifetime guarantee'}))[0], 400)
+
+    def test_own_calendar_event_joins_the_window(self):
+        rows = self.section('calendar')
+        rows.append({'id': 'bombas.calendar.launch_slippers_2026', 'brand': 'bombas', 'section': 'calendar', 'field': 'launch_slippers_2026', 'value': {'date': '2026-11-05', 'event': 'Slipper launch'}, 'text': 'A new slipper line launches on 5 November 2026.', 'tier': 'approved', 'confidence': 1.0, 'visibility': 'private', 'source': {'type': 'founder', 'ref': 'test', 'captured_at': '2026-09-28'}})
+        self.write('calendar', rows)
+        r = api.handle(Req(['peaks']))
+        ev = next(p for p in r['peaks'] if p['key'] == 'launch_slippers_2026')
+        self.assertEqual((ev['label'], ev['days_to'], ev['kind'], ev['own']), ('Slipper launch', 38, 'event', True))
+        self.assertEqual(next(c['status'] for c in ev['checks'] if c['key'] == 'offer'), 'gap')
+        self.assertEqual(next(f['severity'] for f in api.handle(Req(['audit']))['findings'] if f['entity']['id'] == 'peak_launch_slippers_2026'), 'medium')
+
+
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
-    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'],
+    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'],
               ['decisions'], ['flows'], ['claims'], ['site', 'diff'], ['parity'], ['contracts'], ['legal'], ['voice'], ['battlecards'], ['permissions'],
               ['export'], ['assumptions'], ['facts'], ['summaries'], ['changes'], ['learn'], ['report'], ['digest'], ['review'], ['bottlenecks'], ['audit']]
 

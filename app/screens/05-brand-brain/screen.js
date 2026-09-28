@@ -61,6 +61,7 @@
     loadUnlocks();
     loadLadderProof(m.actions || []);
     loadSelfAudit(m.actions || []);
+    loadPeaks(m.actions || []);
     const con = m.connect || [];
     const cw = document.getElementById('connect-wrap');
     if (con.length) {
@@ -165,6 +166,48 @@
     const st = el('span', { class: 'micro muted' });
     exp.addEventListener('click', async () => { exp.disabled = true; try { const b = await api(BASE + 'export'); const blob = new Blob([JSON.stringify(b, null, 1)], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = b.brand + '-brain-' + b.exported_at + '.json'; a.click(); st.textContent = b.counts.records + ' records, ' + b.counts.documents + ' documents, ' + b.counts.conflicts + ' conflicts. ' + b.note; } catch (e) { st.textContent = 'Could not export: ' + e.message; } exp.disabled = false; });
     mount('#perm', matrix, el('div', { class: 'row', style: { marginTop: '10px' } }, exp, UI.decisionRow({ capability: 'LOOP-C22', autonomy: 'founder_gate', owner: 'agent_drafts', screen: SCREEN, compact: true, stub: 'Offboarding: export the brain and the registry as a handoff package, list every connector to revoke in Setup, and confirm no external write access stays open. You approve each revoke.' }), st));
+  }
+
+  // ---------- 5b1. peak readiness ----------
+  function peakPanel(p, action, reload) {
+    const body = el('div', { class: 'stack' });
+    body.append(el('div', { class: 'row' }, UI.verdict(p.verdict.kind, p.verdict.text), el('span', { class: 'chip', text: p.date ? fmt.date(p.date) + (p.days_to != null ? ', ' + p.days_to + ' days' : '') : (p.window || 'date unavailable') }), el('span', { class: 'chip', text: pretty(p.kind) }), el('span', { class: 'chip', text: p.surfaces })));
+    body.append(el('div', { class: 'small', text: p.why }));
+    if (p.derived) body.append(el('div', { class: 'small warn', text: 'Derived: ' + p.derivation + '. Confirm it below.' }));
+    const checks = el('div', { class: 'checks' });
+    for (const c of p.checks) {
+      checks.append(el('div', { class: 'row' }, el('span', { class: 'chip ' + (c.status === 'ok' ? 'good' : c.status === 'gap' ? 'bad' : ''), text: c.status === 'ok' ? 'ok' : c.status === 'gap' ? 'decide' : 'unavailable' }), el('b', { text: c.label + ': ' }), el('span', { text: c.evidence + (c.fix ? ' ' + c.fix : '') + (c.note ? ' (' + c.note + ')' : '') }), c.who ? el('span', { class: 'micro faint', text: pretty(c.who) }) : null));
+    }
+    body.append(checks);
+    const status = el('span', { class: 'micro muted' });
+    if (p.kind !== 'event' || true) {
+      const offer = el('input', { class: 'text', placeholder: p.kind === 'mission' ? 'The plan, like: match every order with a second donation, no discount' : 'The offer, like: 25 percent off sitewide, code BF25, no stacking with COMFORT20', style: { flex: '1 1 360px' } });
+      const note = el('input', { class: 'text', placeholder: 'Note (optional)', style: { flex: '1 1 200px' } });
+      const cutoff = p.key.indexOf('holiday_orderby') === 0 || p.key.indexOf('christmas') === 0 ? el('input', { class: 'text', type: 'date', value: p.key.indexOf('holiday_orderby') === 0 && p.date ? p.date : '', title: 'Holiday shipping cutoff' }) : null;
+      const go = el('button', { class: 'btn primary sm', type: 'button', text: 'Decide it' });
+      go.addEventListener('click', async () => { if (!offer.value.trim()) { status.textContent = 'Type the offer or the plan first.'; return; } go.disabled = true; try { const r = await api(BASE + 'peaks/plan', { method: 'POST', body: { peak: p.key, offer: offer.value.trim(), note: note.value.trim(), cutoff: cutoff ? cutoff.value : null } }); status.textContent = r.next + (r.warns.length ? ' Scanner warned on: ' + r.warns.join(', ') + '.' : ''); panel.close(); reload(); loadPlan(); } catch (e) { go.disabled = false; status.textContent = 'Could not save: ' + e.message; } });
+      body.append(el('div', { class: 'row' }, offer, note, cutoff, go));
+    }
+    body.append(el('div', { class: 'row' }, status));
+    if (action) body.append(UI.decisionRow({ capability: 'BRN-C07', autonomy: 'founder_gate', owner: action.owner, screen: SCREEN, compact: true, finding_id: action.id, current: action.decision, stub: action.title + '. ' + action.artefact.label + '.' }));
+    const panel = UI.panel({ title: p.label + (p.date ? ', ' + fmt.date(p.date) : ''), body });
+  }
+  async function loadPeaks(actions) {
+    let r;
+    try { r = await api(BASE + 'peaks'); } catch (e) { mount('#peaks', el('p', { class: 'muted', text: 'Peaks unavailable: ' + e.message })); return; }
+    const byAct = {}; for (const a of actions || []) if (a.rule_id === 'BRN-R26' && a.entity) byAct[a.entity.id] = a;
+    mount('#peaks-tools', UI.orientation([{ label: 'peaks in 90 days', value: r.counts.peaks, unit: 'n' }, { label: 'ready', value: r.counts.ready, unit: 'n', tone: r.counts.ready === r.counts.peaks ? 'good' : null }, { label: 'decisions waiting', value: r.counts.gaps, unit: 'n', tone: r.counts.gaps ? 'bad' : 'good' }, { label: 'checks waiting on a source', value: r.counts.unavailable, unit: 'n' }]));
+    const months = el('div', { class: 'months' });
+    if (r.heavy_months.available) { months.append(el('span', { class: 'small', text: 'Seasonality index (' + pretty(r.heavy_months.status || 'modelled') + '): ' })); for (const m of r.heavy_months.months) months.append(el('span', { class: 'chip' + (m.heavy ? ' heavy warn' : ''), text: m.label + ' ' + m.index.toFixed(2) + (m.heavy ? ', heavy' : '') })); }
+    else months.append(el('span', { class: 'small muted', text: 'Seasonality index unavailable: ' + r.heavy_months.reason + '.' }));
+    const table = UI.verdictTable({
+      columns: [{ key: 'label', label: 'Peak' }, { key: 'when', label: 'When' }, { key: 'days', label: 'Days', num: true }, { key: 'ready', label: 'Ready', num: true, unit: '%' }, { key: 'decide', label: 'To decide' }, { key: 'waiting', label: 'Waiting on a source', num: true }],
+      verdict: { at: 1, kind: (x) => x.verdict.kind, text: (x) => x.verdict.text, reason: (x) => x.why },
+      rows: r.peaks.map((p) => ({ key: p.key, label: p.label + (p.own ? ' (yours)' : ''), when: p.date ? fmt.date(p.date) + (p.derived ? ', derived' : '') : (p.window || NA), days: p.days_to, ready: p.readiness_pct == null ? null : p.readiness_pct / 100, decide: p.checks.filter((c) => c.status === 'gap').map((c) => c.label.toLowerCase()).join(', ') || 'nothing', waiting: p.checks.filter((c) => c.status === 'unavailable').length, verdict: p.verdict, why: p.why })),
+      sort: false, empty: 'No peak in the next 90 days.', onRow: (x) => { const p = r.peaks.find((q) => q.key === x.key); if (p) peakPanel(p, byAct['peak_' + p.key], () => loadPeaks(actions)); },
+      actions: { label: 'Open', onClick: (x) => { const p = r.peaks.find((q) => q.key === x.key); if (p) peakPanel(p, byAct['peak_' + p.key], () => loadPeaks(actions)); } },
+    });
+    mount('#peaks', months, table, el('p', { class: 'micro faint', text: r.note }));
   }
 
   // ---------- 5b2. the brain audits itself ----------

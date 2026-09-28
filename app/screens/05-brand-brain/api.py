@@ -179,6 +179,9 @@ _pspec.loader.exec_module(parity)
 _sspec = importlib.util.spec_from_file_location("brand_brain_sitediff", HERE / "sitediff.py")
 sitediff = importlib.util.module_from_spec(_sspec)
 _sspec.loader.exec_module(sitediff)
+_qspec = importlib.util.spec_from_file_location("brand_brain_peaks", HERE / "peaks.py")
+peaks = importlib.util.module_from_spec(_qspec)
+_qspec.loader.exec_module(peaks)
 _xspec = importlib.util.spec_from_file_location("brand_brain_selfaudit", HERE / "selfaudit.py")
 selfaudit = importlib.util.module_from_spec(_xspec)
 _xspec.loader.exec_module(selfaudit)
@@ -1304,6 +1307,31 @@ def handle(req):
         ends = (brain.today - dt.timedelta(days=1)).isoformat()
         findings = audit.run(brain.brand, {"ends_on": ends, "days": 1, "trailing": 0}, BRAIN_ROOT)
         return {"findings": findings, "rules": audit.RULES, "brain_version": brain.version()}
+    if req.method == "GET" and parts == ["peaks"]:
+        r = peaks.readiness(brain, market.angles_of, legal, assumptions)
+        r["capability"] = {"id": "BRN-C07", "autonomy": "founder_gate"}
+        r["simulated_note"] = None
+        return r
+    if req.method == "POST" and parts == ["peaks", "plan"]:
+        body = req.body or {}
+        key = re.sub(r"[^a-z0-9_]+", "_", str(body.get("peak") or "").lower()).strip("_")
+        offer = str(body.get("offer") or "").strip()
+        if not key or not offer:
+            return 400, {"error": "peak and offer are required"}
+        known = {p["key"]: p for p in peaks.calendar(brain, market.angles_of)}
+        pk = known.get(key)
+        label = (pk or {}).get("label") or str(body.get("label") or key.replace("_", " "))
+        date = (pk["date"].isoformat() if pk and pk.get("date") else None) or (str(body.get("date")) if body.get("date") else None)
+        scan_res = claims_mod.scan(brain, offer)
+        if scan_res["verdict"] == "fail":
+            return 400, {"error": "the offer wording fails the claims scan", "hits": scan_res["hits"][:5]}
+        errs = []
+        for rec in peaks.plan(brain, key, label, date, offer, str(body.get("note") or ""), body.get("cutoff")):
+            errs += founder_put(brain, rec, "peak", f"{label}: {rec['section'].replace('_', ' ')} {rec['field'].replace('_', ' ')} set")
+        if errs:
+            return 400, {"error": "; ".join(errs)}
+        return 201, {"ok": True, "peak": key, "records": [f"{brain.brand}.offers.peak_{key}", f"{brain.brand}.calendar.peak_{key}"] + ([f"{brain.brand}.policies.holiday_shipping_cutoff"] if body.get("cutoff") else []),
+                     "warns": [h["match"] for h in scan_res["hits"] if h["severity"] == "warn"][:5], "version": brain.version(), "next": f"{label} has an offer on file; every screen reads it. The creative brief and the send plan stay on the master list until done."}
     if req.method == "GET" and parts == ["selfaudit"]:
         sa = selfaudit.run(brain)
         sa["capability"] = {"id": "BRN-C12", "autonomy": "agent_does"}
