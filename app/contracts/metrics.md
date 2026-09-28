@@ -72,6 +72,13 @@ Both take `by=sku`, `by=line`, `by=month` or `by=line_month` and return `groups`
 
 A brand folder reads both from `data.sqlite` with one GROUP BY each (the tables are too big to load whole); unavailable when data.sqlite is absent. Added 28 Sep 2026 for 04-offers-pricing (free shipping threshold, returns behind an objection rung).
 
+## Landing pages and CRO (07)
+| Metric | Formula |
+|---|---|
+| session_funnel | sessions, add to cart, checkout and purchase summed from `sessions`, with step rates: add_to_cart_rate (add to cart / sessions), checkout_rate (checkout / add to cart), purchase_rate (purchase / checkout), conversion_rate (purchase / sessions). |
+
+Filters `device`, `channel` (GA4 channel group, for example "Paid Social") and `page` (landing page). `by=device`, `by=channel_group`, `by=landing_page` or `by=campaign` returns `groups`. Purchase is GA4 ecommercePurchases, not Shopify orders, so conversion_rate differs from cvr_overall; step counts are GA4 event counts. Also returns sampled and thresholded row counts. A brand folder reads it with one GROUP BY on data.sqlite; unavailable when data.sqlite is absent. Added 28 Sep 2026 for 07-landing-pages-cro (funnel by device, source and lander), because orders by device are not in the daily aggregate.
+
 ## Speed (08)
 Median of the lab's runs in the window from `speed_runs`, for one page, device and variant (default pdp, mobile, baseline).
 | Metric | Formula |

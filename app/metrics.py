@@ -679,6 +679,100 @@ def m_order_value_distribution(ctx, name, kw):
                   basis='paid orders; order value is subtotal minus discounts, before tax and shipping')
 
 
+# ---------------------------------------------------------------- session funnel (07)
+
+FUNNEL_FIELDS = ('sessions', 'product_view', 'add_to_cart', 'checkout', 'purchase')
+FUNNEL_BY = {'device': 'device', 'channel_group': 'channel_group', 'landing_page': 'landing_page',
+             'campaign': 'session_campaign'}
+FUNNEL_FILTERS = {'device': 'device', 'channel': 'channel_group', 'page': 'landing_page'}
+SAFE_VALUE = re.compile(r"^[A-Za-z0-9 /_.,|&+()'-]{1,120}$")
+
+
+def funnel_rates(t):
+    """Step rates from funnel counts. None where the step has no base."""
+    div = lambda a, b: round(t[a] / t[b], 6) if t.get(b) else None
+    return {'add_to_cart_rate': div('add_to_cart', 'sessions'), 'checkout_rate': div('checkout', 'add_to_cart'),
+            'purchase_rate': div('purchase', 'checkout'), 'conversion_rate': div('purchase', 'sessions')}
+
+
+def _funnel_sql(ctx, win, where, col):
+    sql = ctx.data._sql
+    try:
+        span = sql('SELECT MIN(date) AS first, MAX(date) AS last FROM sessions')
+        cover(win, span[0]['first'], span[0]['last'], 'sessions')
+        conds = [f"date BETWEEN '{win.s}' AND '{win.e}'"] + [f"{c} = '{v.replace(chr(39), chr(39) * 2)}'" for c, v in where.items()]
+        sums = ', '.join(f'SUM({f}) AS {f}' for f in FUNNEL_FIELDS)
+        flags = 'SUM(CASE WHEN sampled THEN 1 ELSE 0 END) AS sampled, SUM(CASE WHEN thresholded THEN 1 ELSE 0 END) AS thresholded'
+        key = f'{col} AS grp, ' if col else "'all' AS grp, "
+        rows = sql(f"SELECT {key}{sums}, {flags} FROM sessions WHERE {' AND '.join(conds)}"
+                   + (f' GROUP BY {col} ORDER BY {col}' if col else ''))
+    except KeyError:
+        raise Unavailable('the sessions table is not connected', fix=CONNECTOR['sessions'])
+    return [r for r in rows if r['sessions']]
+
+
+def _funnel_rows(ctx, win, where, col):
+    rows = ctx.rows('sessions')
+    need(rows, ('date',) + FUNNEL_FIELDS + tuple(where) + ((col,) if col else ()), 'sessions')
+    first, last = prep('sessions_span', rows, _build_span)
+    cover(win, first, last, 'sessions')
+    out = {}
+    for r in rows:
+        if not win.has(str(r['date'])) or any(r.get(c) != v for c, v in where.items()):
+            continue
+        g = out.setdefault(r.get(col) if col else 'all', {'grp': r.get(col) if col else 'all', 'sampled': 0, 'thresholded': 0,
+                                                            **{f: 0 for f in FUNNEL_FIELDS}})
+        for f in FUNNEL_FIELDS:
+            if r.get(f) is None:
+                raise Unavailable(f'sessions has blank {f} cells in this window', fix='ga4')
+            g[f] += r[f]
+        g['sampled'] += 1 if r.get('sampled') else 0
+        g['thresholded'] += 1 if r.get('thresholded') else 0
+    return [g for g in out.values() if g['sessions']]
+
+
+@metric('session_funnel', filters=('device', 'channel', 'page', 'by'))
+def m_session_funnel(ctx, name, kw):
+    """Sessions to add to cart to checkout to purchase from the GA4 sessions table, with step rates.
+    Filters: device, channel (GA4 channel group), page (landing page). by: device, channel_group,
+    landing_page or campaign returns `groups`. Purchase is GA4 ecommercePurchases, not Shopify orders."""
+    where = {}
+    for key, col in FUNNEL_FILTERS.items():
+        v = kw.get(key)
+        if v:
+            if not SAFE_VALUE.match(str(v)):
+                raise ValueError(f'{key} has characters a filter cannot take')
+            where[col] = str(v)
+            ctx.filters[key] = str(v)
+    by = kw.get('by') or None
+    if by and by not in FUNNEL_BY:
+        raise ValueError('by must be one of ' + ', '.join(FUNNEL_BY))
+    col = FUNNEL_BY.get(by)
+    if by:
+        ctx.filters['by'] = by
+    if getattr(ctx.data, 'sqlite', None) is not None:
+        rows = _funnel_sql(ctx, ctx.win, where, col)
+        if 'sessions' not in ctx.used:
+            ctx.used.append('sessions')
+    else:
+        rows = _funnel_rows(ctx, ctx.win, where, col)
+    if not rows:
+        raise Unavailable('no sessions match these filters in this window', fix=CONNECTOR['sessions'])
+    tot = {f: int(sum(r[f] for r in rows)) for f in FUNNEL_FIELDS}
+    flags = {'sampled_rows': int(sum(r['sampled'] or 0 for r in rows)), 'thresholded_rows': int(sum(r['thresholded'] or 0 for r in rows))}
+    extra = {'rates': funnel_rates(tot), **flags,
+             'basis': 'GA4 sessions table; product_view, add_to_cart and checkout are event counts; '
+                      'purchase is GA4 ecommercePurchases, not Shopify orders'}
+    if by:
+        groups = []
+        for r in sorted(rows, key=lambda r: -r['sessions']):
+            g = {by: r['grp'], **{f: int(r[f]) for f in FUNNEL_FIELDS}}
+            g.update(funnel_rates(g))
+            groups.append(g)
+        extra['groups'] = groups
+    return ctx.ok(tot['sessions'], 'count', tot, **extra)
+
+
 # ---------------------------------------------------------------- paid
 
 def paid_channels(ctx, kw):
