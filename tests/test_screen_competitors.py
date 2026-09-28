@@ -2238,5 +2238,33 @@ class TestHandoffRows(TempBrain):
         self.assertEqual(out['moves'][0]['to'], api.KIND_TO[acts[0]['artefact']['kind']])
 
 
+class TestDatedReport(TempInputs):
+    """10.2: the weekly report saved as a dated Markdown file the server can serve; same day replaces it."""
+    def setUp(self):
+        super().setUp()
+        self._rep = api.REPORTS
+        api.REPORTS = self.tmp / 'reports'
+
+    def tearDown(self):
+        api.REPORTS = self._rep
+        super().tearDown()
+
+    def test_report_file(self):
+        self.assertEqual(api.handle(Req(['reports']))['reports'], [])
+        r = Req(['reports'], method='POST')
+        r.body = {}
+        code, out = api.handle(r)
+        self.assertEqual((code, out['file'], out['replaced']), (201, 'report_bombas_2026-09-28.md', False))
+        self.assertEqual(api.handle(r)[0], 200)
+        text = (self.tmp / 'reports' / 'report_bombas_2026-09-28.md').read_text(encoding='utf-8')
+        for head in ('# Competitor report, Bombas, week of 2026-09-28', '## The moves to approve this week', '## Waiting on you',
+                     '## What changed', '## Who is a threat', '## Results and team work', '## Caveats'):
+            self.assertIn(head, text)
+        self.assertNotIn('\u2014', text)
+        server = load('ecomos_server_t2', ROOT / 'app' / 'server.py')
+        self.assertTrue(server.SAFE_FILE.match(out['file']))
+        self.assertEqual([x['date'] for x in api.handle(Req(['reports']))['reports']], ['2026-09-28'])
+
+
 if __name__ == '__main__':
     unittest.main()

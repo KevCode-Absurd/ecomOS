@@ -986,6 +986,12 @@
     document.querySelector('.screen').hidden = true;
     document.getElementById('report').hidden = false;
     document.getElementById('r-print').addEventListener('click', () => window.print());
+    const files = (list) => mount('#r-files', el('b', { text: 'Saved reports: ' }), list.length ? list.slice(0, 8).map((x, i) => [i ? ', ' : '', el('a', { href: 'fixtures/' + x.file, target: '_blank', rel: 'noopener', text: fmt.date(x.date) })]) : 'none yet.');
+    api(BASE + 'reports').then((r) => files(r.reports)).catch(() => mount('#r-files', 'Saved reports unavailable.'));
+    document.getElementById('r-save').addEventListener('click', async (e) => {
+      try { const r = await api(BASE + 'reports', { method: 'POST', body: {} }); files(r.reports); e.target.textContent = r.replaced ? 'Saved again' : 'Saved'; }
+      catch (err) { e.target.textContent = 'Not saved'; }
+    });
     loadReport();
   } else load();
 })();

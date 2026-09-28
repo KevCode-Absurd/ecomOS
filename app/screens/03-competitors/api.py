@@ -696,6 +696,54 @@ def brief_pack(brand: str, today: dt.date) -> dict:
             "fields": list(rows[0]) if rows else [], "note": "Proposed shape for a shared briefs table; see Contract asks."}
 
 
+REPORTS = HERE / "fixtures"
+
+
+def report_text(brand: str, today: dt.date) -> str:
+    """The weekly competitor report as Markdown, built in code from the plan, the queue, changes, results and team records."""
+    p = plan(brand, today)
+    g = digest(brand, today)
+    m = audit.market_full(brand, today, BRAIN_ROOT)
+    name = brand.capitalize()
+    na = lambda v: "unavailable" if v is None else v  # noqa: E731
+    lines = [f"# Competitor report, {name}, week of {today.isoformat()}", "",
+             f"Simulated sales and public signals. {len(p['actions'])} open moves from {len(p['rules'])} rules. Brain version {p['brain_version']}.", "",
+             "## The moves to approve this week", ""]
+    lines += [f"{i}. {a['title']} ({UI_OWNER.get(a['owner'], a['owner'])}; check on {na(a.get('check_on'))})" for i, a in enumerate(p["actions"][:10], 1)] or ["None open."]
+    q = p["queue"]
+    lines += ["", f"## Waiting on you ({q['total']})", ""]
+    lines += [f"- {x['question']}: {x['title']}" for x in q["items"]] or ["- Nothing waits on you."]
+    lines += ["", "## What changed", ""]
+    ev = [e for e in m["changes"]["events"] if e["verdict"] in ("follow", "watch")]
+    lines += [f"- {e['when']}, {e['page']}: {e['text']} ({e['verdict_text'].lower()})" for e in ev[:8]] or ["- Nothing crossed a rule in the last 28 days."]
+    lines += ["", "## Who is a threat", ""]
+    lines += [f"- {r['name']}: {r['verdict']['points']} points, {na(r['active_ads'])} active ads" for r in m["pages"]
+              if (r.get("verdict") or {}).get("text") == "Threat"] or ["- None."]
+    r = g["results"]
+    lines += ["", "## Results and team work", "",
+              f"- Moves read: {r['read']}" + (f", win share {round(r['win_share'] * 100)} percent" if r["win_share"] is not None else "")
+              + f"; held {r['held']}; overdue reads {r['overdue']}.",
+              f"- Logged this week: {g['logged']['n']}."] + [f"  - {x}" for x in g["logged"]["lines"][:8]]
+    lines += ["", "## Caveats", "", "- Competitor facts are public signals. Run length is a signal, not proof.",
+              "- Our prices and sales are simulated until the store connects.",
+              "- Ad-level counts wait on the Ad Library pull; shares are estimates until then.",
+              "- Never copy their text, logos, products or faces."]
+    return "\n".join(lines) + "\n"
+
+
+def write_report(brand: str, today: dt.date) -> tuple[int, dict]:
+    """Save the week's report as a dated file, `fixtures/report_<brand>_<date>.md`. Rewriting the same day replaces it."""
+    path = REPORTS / f"report_{brand}_{today.isoformat()}.md"
+    existed = path.exists()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(report_text(brand, today), encoding="utf-8")
+    return (200 if existed else 201), {"ok": True, "file": path.name, "replaced": existed, "reports": list_reports(brand)}
+
+
+def list_reports(brand: str) -> list[dict]:
+    return [{"file": p.name, "date": p.stem.rsplit("_", 1)[-1]} for p in sorted(REPORTS.glob(f"report_{brand}_????-??-??.md"), reverse=True)]
+
+
 def handle(req):
     try:
         brand, today = _brand(req), _today(req)
@@ -726,6 +774,10 @@ def handle(req):
                     "note": "Logged by the team on this screen. Local file, never sent anywhere. No names or quotes kept."}
         if req.method == "POST" and req.path == ["capture"]:
             return run_capture(brand, today)
+        if req.path == ["reports"]:
+            if req.method == "POST":
+                return write_report(brand, today)
+            return {"reports": list_reports(brand)}
         if req.method == "GET" and req.path == ["handoffs"]:
             return handoff_rows(brand, today)
         if req.method == "GET" and req.path == ["briefs"]:
@@ -750,3 +802,7 @@ def handle(req):
     except FileNotFoundError as exc:
         return 404, {"error": str(exc)}
     return 404, {"error": "not found", "path": req.path}
+
+
+if __name__ == "__main__":   # python3 app/screens/03-competitors/api.py [brand]: save this week's report as a dated file
+    print(write_report(_sys.argv[1] if len(_sys.argv) > 1 else "bombas", dt.date.today())[1]["file"])

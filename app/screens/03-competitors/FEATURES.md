@@ -39,6 +39,7 @@ Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `a
 | # | Feature | Status |
 |---|---|---|
 | 10.1 | Briefs and battlecards on the shared hand-offs table (events.md, `/api/handoffs`): `GET handoffs` builds the rows in code, one per decided move (agent or person) sent to the team or screen that ships its kind (creative, copy, landing pages, cx, 04-offers-pricing, 25-experiments, 20-marketplaces, 05-brand-brain, 22-measurement), one per fresh battlecard and one support answer pack for cx; under the brief pack the page shows what was sent by team and what waits, and "Hand over N" posts only rows not yet sent (matched by finding id and team); nothing is sent before a decision or a click; every row passes the server's own validator in a test. The proposed `briefs` table ask is closed | done |
+| 10.2 | The weekly report as a dated file: `POST reports` (or `python3 app/screens/03-competitors/api.py bombas`) writes `fixtures/report_<brand>_<date>.md` in code (moves to approve, waiting on you, what changed, threats, results and team work, caveats); the same day replaces it; the report view has "Save as a dated file" and links every saved report; the first one, for the week of 28 Sep, is on file | done |
 
 ## Round 9: a depth pass on rounds 6 to 8, then what is left of the room
 
@@ -358,7 +359,7 @@ Where each job lives now (round 9). The question column quotes the room spec.
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
-| 10 | 10.1 | 2026-09-28 | Shared hand-offs |
+| 10 | 10.1 to 10.2 | 2026-09-28 | Shared hand-offs; dated weekly report |
 | 9 | 9.1 to 9.10 | 2026-09-28 | Depth pass; room jobs map; price drift across captures; open corners with demand; traffic connect step; visits count as tracking; team exports; sized new rules; evidence on new rules; round close. Screenshot `round9.png` |
 | 8 | 8.1 to 8.10 | 2026-09-28 | Outcomes; lost moves held; overdue reads; scoreboard; site changes; bring back snoozed; results in the brief and report; learnings for the brain; second brand check; round close. Screenshot `round8.png` |
 | 7 | 7.1 to 7.10 | 2026-09-28 | Interview reasons; coverage by name; prices seen on the band chart; price re-check cadence; logged work in the brief; queue and log in the report; briefs as rows; second brand check; form access; round close. Screenshot `round7.png` |
