@@ -1,10 +1,11 @@
 # Brain: status
 
-Updated: 28 Sep 2026 (S1.2a).
+Updated: 28 Sep 2026 (S1.5).
 
 Done (S1.1): contract `app/contracts/brand-brain.md`, `schema.json`, `documents.schema.json`, `sources.registry.json` (76 sources), `questions.bank.json` (18), `validate.py`, example brain, 13 tests.
 Done (S1.2a): `store.py` (read with contract defaults, stale from `expires_at`, put with history, retire, brain version hash), `package.py` (T0 card, T1 summaries citing record ids, T2 records until the budget is spent, private excluded when public_facing, tier and date on every record line, cache by brand, capability and version), `router.py` (writes `<brand>/BRAIN.md` under 1,500 tokens, keeps the founder notes block). `example/BRAIN.md` generated at 516 tokens. 16 tests in `tests/test_brain_package.py`; 29 brain tests pass.
-Next: S1.2b writes `capabilities.overlay.json` ({capability id: {brain_sections, brain_budget, public_facing}}); `package.resolve` already reads it. Then S1.3 extractors in parallel, S1.5 keeper.
-Notes: T1 summaries are built in code from record text until the summary agent exists. Tokens are estimated at 4 characters each. T3 evidence is not in packages yet (on request only). Records with no date read "undated".
+Done (S1.5): `keeper.py` (`gaps`: expired, empty fields a room needs, scalar conflicts on one field, confidence under 0.5; `ask`: pull-first rule, drops questions a connected source answers, "connect X, or answer this in a line" for private sources not connected, plain for founder-only questions and declined sources, ranked by weight x rooms, top 5). `audit.py` (proposals with before and after: stale, conflict, empty, unread documents, drifted BRAIN.md rows and version, broken links). 13 tests in `tests/test_brain_keeper.py`. On the example: the audit finds the missing `agents/skills/CREA/ad-copy/SKILL.md` and `open_questions.json` links.
+Next: S1.2b writes `capabilities.overlay.json` ({capability id: {brain_sections, brain_budget, public_facing}}); `package.resolve` already reads it. Then S1.3 extractors in parallel.
+Notes: Keeper rules chosen here: public sources are never offered and never drop a question (only data fills it); declining a source also stops offers from its category, since a brand connects one per category; a weak record (stale, conflicted, under 0.5) reopens its question; money at stake is a factor of 1 until the metric contract can compute it. T1 summaries are built in code from record text until the summary agent exists. Tokens are estimated at 4 characters each. T3 evidence is not in packages yet (on request only). Records with no date read "undated".
 Parked: `brain_sections` on capabilities moved to S1.2b as an overlay file, so catalogue.json is never edited by hand.
 Decisions still open for Kevin: the 28 sections (schema has 30), auto-publish low-risk changes, ask cadence. Building on the recommendations until told otherwise.
