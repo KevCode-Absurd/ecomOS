@@ -622,6 +622,22 @@ def recipe(f):
             'stop_rule': 'a run length is a funded test, never proof of profit: the margin gate still decides', 'check_on': _check_on(f, 10), 'time_to_ship_hours': 3,
             'win_rule': 'an open candidate on the lane, or a logged kill',
         }
+    if rid == 'PROD-R21':
+        ent = f.get('entity') or {}
+        return {
+            'title': (f'Recheck the price of {ent.get("label")}: reviewers say ${ent.get("review_median"):g} a pair, the plan says ${ent.get("planned_per_pair"):g}'
+                      if ent.get('review_median') is not None and ent.get('planned_per_pair') is not None else f'Recheck the price of {ent.get("label")} against the review signal'),
+            'owner': 'agent',
+            'artefact': {'kind': 'research_note', 'label': f'a price read for {ent.get("label")}: what reviewers say a pair is worth by source and star, the competitor band, our own per-pair ladder, and the price or the proof that closes the gap'},
+            'steps': [
+                {'n': 1, 'who': 'agent', 'text': 'Split the price mentions by star: what 1-star buyers say they paid against what 5-star buyers say it is worth.'},
+                {'n': 2, 'who': 'agent', 'text': 'Put the planned price beside the competitor band and our own per-pair ladder.'},
+                {'n': 3, 'who': 'agent', 'text': 'Write the two ways to close the gap: a lower price that still passes the margin gate, or the proof that earns the premium (wear life, guarantee).'},
+                {'n': 4, 'who': 'person', 'text': 'Pick one and update the candidate\'s planned price or angle from the card.'}],
+            'size': {'text': f'{round((ent.get("gap") or 0) * 100)} percent above what reviewers say', 'usd': None},
+            'stop_rule': 'no funding while the plan sits more than 15 percent above the review signal without a named proof', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 2,
+            'win_rule': 'planned price within 15 percent of the review median, or a proof the founder approved for the premium',
+        }
     return None
 
 
@@ -819,7 +835,8 @@ def overview(data, brand):
                      'demand_unavailable': {'reason': tr.get('reason'), 'fix': tr.get('fix')} if tr.get('unavailable') else None,
                      'price_bands': bands, 'reviews': review_mining(reviews, lads),
                      'pipeline': pipeline_block(brand, ends_on, findings, floor), 'margin': margin_block(brand, data, br, rd, ends_on, findings),
-                     'pattern': pattern_block(brand, data, rd, findings), 'lane_map': audit.lane_map(br, ends_on), 'spend': audit.spend_signal(br, brand, ends_on)},
+                     'pattern': pattern_block(brand, data, rd, findings), 'lane_map': audit.lane_map(br, ends_on), 'spend': audit.spend_signal(br, brand, ends_on),
+                     'price_signal': price_signal_block(br, brand, data, findings)},
             'audit': {'findings': findings, 'rules': audit.RULES}}
 
 
@@ -958,6 +975,20 @@ def pattern_block(brand, data, rd, findings):
     return {'categories': cats, 'candidates': cands, 'unavailable': mix.get('reason') if mix.get('unavailable') else None,
             'rule': f'seasonal when the top 2 months carry {round(audit.SEASONAL_TOP2_SHARE * 100)} percent or more of 12-month units (an even year is 17) or the name says gift; trending at {audit.TRENDING_CAGR:g} percent market growth a year or {audit.TRENDING_LAUNCHES} launches in 24 months; else evergreen',
             'months': mix.get('months')}
+
+
+def price_signal_block(br, brand, data, findings):
+    sig = audit.review_price_signal(br)
+    comps = competitor_bands(br)
+    meds = [c['median'] for c in comps if c['median'] is not None]
+    ours = audit.our_price_per_pair(products(data, brand), br)
+    by_entity = {f['entity']['id']: f['id'] for f in findings if f['rule_id'] == 'PROD-R21'}
+    cands = []
+    for c in audit.pipeline(brand):
+        per = (c['planned_price'] / (c.get('pack_units') or 1)) if isinstance(c.get('planned_price'), (int, float)) else None
+        cands.append({'candidate_id': c.get('candidate_id'), 'name': c.get('name'), 'category': c.get('category'), 'closed': c.get('stage') in audit.CLOSED_STAGES, 'per_pair': round(per, 2) if per else None,
+                      'gap': round(per / sig['median_per_pair'] - 1, 4) if per and sig.get('median_per_pair') else None, 'finding_id': by_entity.get(c.get('candidate_id'))})
+    return dict(sig, competitor_band=[min(meds), max(meds)] if meds else None, ours=ours, candidates=cands, gap_rule=audit.REVIEW_PRICE_GAP)
 
 
 def pipeline_block(brand, ends_on, findings, floor):

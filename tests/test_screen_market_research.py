@@ -650,6 +650,34 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
         self.assertEqual(lanes.get('performance'), ['Merino hiking sock'])
         self.assertNotIn('compression', lanes)   # killed candidates do not count
 
+    def test_review_price_signal_reads_per_pair_only(self):
+        class B:
+            brand = 'fake'
+            def records(self, sec):
+                if sec != 'language_bank':
+                    return []
+                mk = lambda src, q, star=1: {'id': 'fake.language_bank.' + src, 'value': {'reviews': [{'source': src, 'star': star, 'quote': q, 'url': 'u'}]}}
+                return [mk('amazon', 'One pair of socks for $30 is way overpriced.'),
+                        mk('own_site_yotpo', 'For $10 a pair, you would hope for better socks.'),
+                        mk('amazon', 'Came to over $50 for the package of 4 socks.'),          # a pack, not a pair
+                        mk('reddit', 'the $30 pair from walmart are not the same', None),     # Reddit is left out
+                        mk('amazon', 'shipping cost an additional $25 for the socks')]         # no pair in the words around it
+        sig = audit.review_price_signal(B())
+        self.assertEqual(sig['n'], 2)
+        self.assertEqual(sig['median_per_pair'], 20.0)
+        self.assertEqual(sig['by_source'], {'amazon': 1, 'own': 1})
+        self.real3 = audit.PIPELINE_PATH
+        try:
+            audit.PIPELINE_PATH = self.tmp
+            self.tmp.write_text(json.dumps({'rows': [{'candidate_id': 'a', 'brand': 'fake', 'name': 'Pricey sock', 'stage': 'screened', 'category': 'socks', 'planned_price': 96.0, 'pack_units': 4},
+                                                     {'candidate_id': 'b', 'brand': 'fake', 'name': 'Fair sock', 'stage': 'screened', 'category': 'socks', 'planned_price': 22.0, 'pack_units': 1}]}), encoding='utf-8')
+            fs = audit.review_price_findings(B(), 'fake', date(2026, 9, 27))
+        finally:
+            audit.PIPELINE_PATH = self.real3
+        self.assertEqual([f['entity']['id'] for f in fs], ['a'])   # 24 a pair is 20 percent over 20; 22 is 10 percent
+        self.assertIn('around $20', fs[0]['sentence'])
+        self.check_shape(fs[0])
+
     def test_demand_pattern_tags(self):
         even = {'rows': [{'category': 'socks', 'series': [100] * 12}], 'months': [f'2026-{m:02d}' for m in range(1, 13)], 'last': '2026-12'}
         peaked = {'rows': [{'category': 'socks', 'series': [50] * 10 + [300, 400]}], 'months': even['months'], 'last': '2026-12'}

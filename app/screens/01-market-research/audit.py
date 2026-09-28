@@ -86,6 +86,9 @@ Rules
   PROD-R20  Sustained spend found: a product lane where 3 or more competitor pages keep an ad live 90 days or
             more (a funded test, bank idea PRD-023) and the pipeline holds no open candidate whose name or angle
             sits on the lane. Capability PROD-C03 (scout ad libraries, agent does). Owner: 01-market-research.
+  PROD-R21  Review price gap: the median of per-pair price mentions in review quotes (Amazon, the brand site,
+            Trustpilot, retailers; 3 to 60 dollars; never Reddit) against an open sock candidate's planned price per
+            unit in its pack; fires when the plan is more than 15 percent above the median. Capability PROD-C04.
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -152,6 +155,8 @@ RULES = [
      'inputs': ['fixtures.market_trends', 'brain.competitors'], 'capability': 'PROD-C05', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R20', 'name': 'Product lane with 3 or more advertisers keeping an ad live 90 days or more and no open candidate on it', 'entity_type': 'metric',
      'inputs': ['brain.competitors', 'fixtures.pipeline'], 'capability': 'PROD-C03', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R21', 'name': 'Candidate planned more than 15 percent above the per-pair price reviewers say a pair is worth', 'entity_type': 'sku',
+     'inputs': ['brain.language_bank', 'fixtures.pipeline'], 'capability': 'PROD-C04', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -172,7 +177,8 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R17': {'id': 'PROD-C08', 'autonomy': 'agent_does'},
               'PROD-R18': {'id': 'PROD-C07', 'autonomy': 'agent_does'},
               'PROD-R19': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
-              'PROD-R20': {'id': 'PROD-C03', 'autonomy': 'agent_does'}}
+              'PROD-R20': {'id': 'PROD-C03', 'autonomy': 'agent_does'},
+              'PROD-R21': {'id': 'PROD-C04', 'autonomy': 'agent_does'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -644,6 +650,7 @@ def run(brand, window=None, data=None):
     out += pattern_findings(brand, data, rd, ends_on)
     out += lane_map_findings(br, ends_on)
     out += spend_findings(br, brand, ends_on)
+    out += review_price_findings(br, brand, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -1936,5 +1943,74 @@ def spend_findings(br, brand, ends_on):
         f = _finding('PROD-R20', r['key'], ends_on, 'medium', ev, sentence, None, 0.5, [f'{br.brand}.competitors.competitor_set'], money_reason='competitor run length is a signal; no spend or revenue is measurable')
         f['entity'] = {'type': 'metric', 'id': r['key'], 'label': r['label'], 'names': ', '.join(r['funded'][:3]), 'sold': r['sold']}
         f['id'] = f'{SCREEN}.PROD-R20.{r["key"]}'
+        out.append(f)
+    return out
+
+
+# ---------------------------------------------------------------- the review price signal: what buyers say a pair is worth
+
+PRICE_RE = re.compile(r'\$\s?(\d{1,3}(?:\.\d{1,2})?)|(\d{1,3}(?:\.\d{1,2})?)\s?(?:dollars|bucks)', re.I)
+PRICE_MIN, PRICE_MAX = 3.0, 60.0
+PRICE_CONTEXT = 60
+REVIEW_PRICE_GAP = 0.15     # room spec: a planned price more than 15 percent above what reviewers say
+PRICE_SOURCES = ('amazon', 'own_site_yotpo', 'trustpilot', 'retailer', 'nordstrom', 'sitejabber')
+
+
+def review_price_signal(br):
+    """Price mentions in review quotes (never Reddit, which prices other things): per-pair mentions where the words
+    around the number say pair and not pack, between 3 and 60 dollars. Median, count, by source and star, short quotes."""
+    if br is None:
+        return {'n': 0, 'median_per_pair': None, 'mentions': [], 'by_source': {}, 'by_star': {}}
+    mentions = []
+    for rec in br.records('language_bank'):
+        v = rec.get('value') or {}
+        for rv in v.get('reviews') or []:
+            src = str(rv.get('source') or '')
+            if not any(src.startswith(s) for s in PRICE_SOURCES):
+                continue
+            q = str(rv.get('quote') or '')
+            for m in PRICE_RE.finditer(q):
+                val = float(m.group(1) or m.group(2))
+                ctx = q[max(0, m.start() - PRICE_CONTEXT):m.end() + PRICE_CONTEXT].lower()
+                if not (PRICE_MIN <= val <= PRICE_MAX) or 'sock' not in q.lower() and 'pair' not in ctx:
+                    continue
+                per_pair = ('pair' in ctx or 'each' in ctx) and not any(w in ctx for w in ('pairs', 'pack', 'package', '4 ', 'four'))
+                if not per_pair:
+                    continue
+                mentions.append({'usd': val, 'source': src.split('_')[0], 'star': rv.get('star'), 'record': rec['id'], 'url': rv.get('url'),
+                                 'quote': re.sub(r'\s+', ' ', q[max(0, m.start() - 70):m.end() + 70]).strip()[:140]})
+    vals = [m['usd'] for m in mentions]
+    by_source, by_star = {}, {}
+    for m in mentions:
+        by_source[m['source']] = by_source.get(m['source'], 0) + 1
+        by_star[str(m['star'] or 'unknown')] = by_star.get(str(m['star'] or 'unknown'), 0) + 1
+    return {'n': len(mentions), 'median_per_pair': round(statistics.median(vals), 2) if vals else None,
+            'low': min(vals) if vals else None, 'high': max(vals) if vals else None, 'mentions': sorted(mentions, key=lambda m: m['usd'])[:20],
+            'by_source': by_source, 'by_star': by_star,
+            'rule': f'per-pair mentions between ${PRICE_MIN:g} and ${PRICE_MAX:g} in review quotes (Amazon, the brand site, Trustpilot, retailers); Reddit is left out; the gap rule is {round(REVIEW_PRICE_GAP * 100)} percent above the median'}
+
+
+def review_price_findings(br, brand, ends_on):
+    """PROD-R21: an open candidate whose planned price per unit in the pack is more than 15 percent above what reviewers say a pair is worth."""
+    out = []
+    sig = review_price_signal(br)
+    med = sig.get('median_per_pair')
+    if med is None:
+        return out
+    for cand in pipeline(brand):
+        if cand.get('stage') in CLOSED_STAGES or not isinstance(cand.get('planned_price'), (int, float)) or cand.get('category') != 'socks':
+            continue
+        per = cand['planned_price'] / (cand.get('pack_units') or 1)
+        gap = per / med - 1
+        if gap <= REVIEW_PRICE_GAP:
+            continue
+        cid = cand.get('candidate_id') or slug(cand.get('name'))
+        ev = [_ev('review_price_signal', med, 'usd', ends_on.isoformat(), 'all reviews to capture', source='brain.language_bank', simulated=False, freshness_days=0, mentions=sig['n']),
+              _ev('planned_price_per_pair', round(per, 2), 'usd', ends_on.isoformat(), 'candidate', med * (1 + REVIEW_PRICE_GAP), 'threshold', source='fixtures.pipeline', simulated=False, freshness_days=0)]
+        sentence = (f'Reviewers put a pair at around ${med:g} ({sig["n"]} price mentions). {cand["name"]} is planned at ${per:g} a pair, '
+                    f'{round(gap * 100)} percent above that. Recheck positioning before funding.')
+        f = _finding('PROD-R21', cid, ends_on, 'medium', ev, sentence, None, 0.5, [], money_reason='a price signal has no order count until a test runs')
+        f['entity'] = {'type': 'sku', 'id': cid, 'label': cand['name'], 'candidate': True, 'planned_per_pair': round(per, 2), 'review_median': med, 'gap': round(gap, 4)}
+        f['id'] = f'{SCREEN}.PROD-R21.{cid}'
         out.append(f)
     return out

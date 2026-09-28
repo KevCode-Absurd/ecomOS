@@ -542,6 +542,30 @@
         gaps.length && actionFor(gaps[0].finding_id) ? { label: 'Screen the first', onClick: () => openAction(actionFor(gaps[0].finding_id)) } : null));
   }
 
+  function priceSignalBlock(ps) {
+    if (!ps || !ps.n) return UI.emptyState({ screen: SLUG, title: 'No price mentions in reviews', text: 'The language bank holds no review quote that names a per-pair price.', missing: ['reviews'] });
+    const orient = UI.orientation([
+      { label: 'reviewers say a pair is worth', value: ps.median_per_pair, unit: '$', title: 'median of per-pair price mentions' }, { label: 'mentions', value: ps.n, unit: 'n' },
+      { label: 'range', value: null, unit: 'n', unavailable_label: ps.low != null ? fmt.money(ps.low) + ' to ' + fmt.money(ps.high) : NA },
+      { label: 'competitor medians', value: null, unit: 'n', unavailable_label: ps.competitor_band ? fmt.money(ps.competitor_band[0]) + ' to ' + fmt.money(ps.competitor_band[1]) : NA },
+      { label: 'our pair', value: ps.ours ? ps.ours.value : null, unit: '$', title: ps.ours ? ps.ours.basis : '' }]);
+    const bars = Charts.bar({ title: 'Price mentions by source', labels: Object.keys(ps.by_source), series: [{ name: 'mentions', values: Object.values(ps.by_source) }], unit: 'n',
+      note: ps.rule + '. Stars: ' + Object.entries(ps.by_star).map(([k, v]) => k + '-star ' + v).join(', ') + '.' });
+    const quotes = el('ul', { class: 'small', style: { margin: 0, paddingLeft: '18px' } }, (ps.mentions || []).slice(0, 8).map((m) => el('li', null, el('b', { text: fmt.money(m.usd) + ' ' }), el('span', { class: 'muted', text: '(' + m.source + (m.star ? ', ' + m.star + '-star' : '') + ') ' }), '"' + m.quote + '"')));
+    const vrows = (ps.candidates || []).map((c) => { const a = actionFor(c.finding_id); return Object.assign({}, c, { gapText: c.gap == null ? NA : (c.gap > 0 ? '+' : '') + Math.round(c.gap * 100) + ' percent',
+      actions: [a ? { label: 'Recheck the price', onClick: () => openAction(a) } : { label: c.per_pair == null ? 'No price' : 'Inside the signal', cls: 'quiet', onClick: () => {} }] }); });
+    const t = UI.verdictTable({
+      columns: [{ key: 'name', label: 'Candidate' }, { key: 'category', label: 'Category' }, { key: 'per_pair', label: 'Planned per unit', unit: '$' }, { key: 'gapText', label: 'Against the review median' }],
+      rows: vrows,
+      verdict: { at: 1, kind: (r) => r.closed ? 'na' : r.gap == null ? 'na' : r.gap > ps.gap_rule ? 'fix' : r.gap < -ps.gap_rule ? 'watch' : 'keep', text: (r) => r.closed ? 'Closed' : r.gap == null ? 'No read' : r.gap > ps.gap_rule ? 'Above the signal' : r.gap < -ps.gap_rule ? 'Below the signal' : 'Inside', reason: (r) => 'gap rule ' + Math.round(ps.gap_rule * 100) + ' percent' },
+      actions: { label: 'Do', onClick: () => {} }, sort: false, empty: 'No candidate with a planned price.' });
+    const above = (ps.candidates || []).filter((c) => !c.closed && c.gap != null && c.gap > ps.gap_rule);
+    return el('div', { class: 'stack' }, orient, el('div', { class: 'grid two' }, el('div', { class: 'card' }, bars), el('div', { class: 'card flat' }, el('h4', { text: 'What they say, in their words' }), quotes, el('p', { class: 'micro faint', text: 'Complaint quotes name the price they paid; the ceiling is what they say it should cost. Both feed the median. Never quoted in an ad.' }))),
+      el('div', { class: 'card scroll' }, t),
+      gapLine(above.length ? above.length + ' candidate' + (above.length === 1 ? ' is' : 's are') + ' planned above what reviewers say a pair is worth: ' + above.map((c) => c.name).join(', ') + '.' : 'Every priced candidate sits within the review price signal.',
+        above.length && actionFor(above[0].finding_id) ? { label: 'Recheck the first', onClick: () => openAction(actionFor(above[0].finding_id)) } : null));
+  }
+
   function loadDesk(o) {
     const d = o.desk || {};
     const w = (o.window || {}).trend;
@@ -560,6 +584,7 @@
     parts.push(section('desk-margin', 'Does each candidate make money after real costs?', 'The margin gate per candidate: planned price stepping down through landed cost, the donated item, fulfilment and payment fees to contribution, every term from the finance inputs or the brain.', marginBlock(d.margin)));
     parts.push(section('desk-lane-map', 'Which lanes are growing with room left, and which are growing and already full?', 'Trend direction against competitive saturation per lane, read together as one go or no-go signal: market growth and launches from the web pass, sellers from the competitor pages in the brain.', laneMapBlock(d.lane_map)));
     parts.push(section('desk-spend', 'Who is actually funding which lane, not just posting about it?', 'Competitor pages by the longest run of their active ads per lane. Three or more advertisers at 90 days is a funded test; one at 14 days is a live test; the rest is noise.', spendBlock(d.spend)));
+    parts.push(section('desk-price-signal', 'What would buyers actually pay for a pair?', 'Price mentions mined from review quotes across Amazon, the brand site, Trustpilot and retailers, as a median per pair, against the competitor band, our own pair and each candidate\'s planned price.', priceSignalBlock(d.price_signal)));
     parts.push(section('desk-pattern', 'Is each candidate evergreen, seasonal or a trend, and when does cash move?', 'The demand pattern from our own 12-month series by category and the web pass, with the cash timing it implies and the cash plan attached to each candidate.', patternBlock(d.pattern)));
     parts.push(section('desk-pipeline', 'What is in the next-SKU pipeline, and what is past its time box?', 'Candidates screened in from the gaps above or by hand, their stage, fast checks, time box and hours. Advance, log hours or kill from the card; every write lands in the pipeline log.', pipelineBlock(d.pipeline || { rows: [] })));
     mount('#desk', ...parts);
