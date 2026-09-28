@@ -217,6 +217,28 @@ def page_rows(m: dict) -> dict:
                     "30 days or more 1, runs one of our top 2 angles 1, recommended instead of us on Reddit 1."}
 
 
+FRESH_DAYS, AGEING_DAYS = 7, 30
+
+
+def freshness(m: dict, brand: str) -> dict:
+    """Per page: page id, last capture, age, source; the re-pull plan with its estimate. Nothing runs from here."""
+    rows = []
+    for p in m["pages"]:
+        age = p.get("age_days")
+        kind = ("na" if p["source"] == "none" else "keep" if age is not None and age <= FRESH_DAYS
+                else "watch" if age is not None and age <= AGEING_DAYS else "fix")
+        text = {"na": "No capture", "keep": "Fresh", "watch": "Ageing", "fix": "Stale"}[kind]
+        rows.append({"name": p["name"], "role": p["role"], "page_id": p["page_id"], "captured_at": p.get("captured_at") if p["source"] != "none" else None,
+                     "age_days": age if p["source"] != "none" else None, "source": p["source"], "kind": kind, "text": text})
+    try:
+        plan_ = audit.snap.plan(brand, BRAIN_ROOT or audit.snap.BRAIN)
+    except (OSError, ValueError, KeyError) as exc:
+        plan_ = {"error": f"no pull config: {exc}"}
+    return {"rows": rows, "plan": plan_, "snapshot": m["snapshot"], "fresh_days": FRESH_DAYS, "ageing_days": AGEING_DAYS,
+            "command": f"python3 app/screens/03-competitors/snapshot.py --brand {brand} --live",
+            "rule": f"Fresh up to {FRESH_DAYS} days, ageing to {AGEING_DAYS}, stale after. A page with no capture reads no capture, never 0."}
+
+
 def overview(brand: str, today: dt.date) -> dict:
     m = audit.market_full(brand, today, BRAIN_ROOT)
     brain = m.pop("brain")
@@ -226,7 +248,7 @@ def overview(brand: str, today: dt.date) -> dict:
             "competitors": [_public(c) for c in m["competitors"]], "angles": m["angles"],
             "positioning": positioning(m), "board": board(m),
             "lookalike": m["lookalike"], "gap": gaps(m), "pages": page_rows(m),
-            "coverage": {"all": m["coverage"], "direct": m["coverage_direct"]}, "mix": m["mix"], "references": m["references"], "ladder": m["ladder"], "changes": m["changes"],
+            "coverage": {"all": m["coverage"], "direct": m["coverage_direct"]}, "mix": m["mix"], "references": m["references"], "ladder": m["ladder"], "changes": m["changes"], "freshness": freshness(m, brand),
             "category_median": m["category_median"], "price_position_index": m["price_position_index"]}
 
 

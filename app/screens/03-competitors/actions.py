@@ -364,6 +364,29 @@ def act_refresh(f: dict, m: dict) -> dict:
             "win_rule": None, "stop_rule": None, "check_on": _plus(f["last_seen"], 7), "time_to_ship_hours": 1}
 
 
+def act_no_id(f: dict, m: dict) -> dict:
+    """COMP-R13: a tracked page with no page id. A person finds and pastes it; the agent adds it to the pull."""
+    page = f["entity"]["label"].replace(" page id", "")
+    return {"title": f"Paste {page}'s Ad Library page id so it can be pulled", "owner": "person",
+            "artefact": {"kind": "brain_record", "label": f"{page} page id in the pull config", "draft":
+                         f"Open the Ad Library, search the page name {page}, open the page, copy view_all_page_id from the url. "
+                         "Paste it here. The agent adds it to config/apify.json. Never pull by keyword."},
+            "steps": _steps(("person", f"Find {page}'s page id in the Ad Library and paste it."),
+                            ("agent", "Add the id to the pull config and include it in the next capture.")),
+            "size": None, "win_rule": None, "stop_rule": None, "check_on": _plus(f["last_seen"], 7), "time_to_ship_hours": 1}
+
+
+def act_stale(f: dict, m: dict) -> dict:
+    """COMP-R14: the capture is stale. A person approves the Apify spend shown first; the agent runs the capped pull."""
+    return {"title": "Approve a fresh Ad Library capture; the estimate shows before it runs", "owner": "person",
+            "artefact": {"kind": "research_note", "label": "a fresh ad-level snapshot of the tracked pages", "draft": None},
+            "steps": _steps(("agent", "Show the pages, the item cap, the estimate and the caps left this week."),
+                            ("person", "Approve the spend."),
+                            ("agent", "Run the pull by page id through the capped connector; the ledger logs it."),
+                            ("agent", "Re-run the audit on the new snapshot.")),
+            "size": None, "win_rule": None, "stop_rule": None, "check_on": _plus(f["last_seen"], 7), "time_to_ship_hours": 1}
+
+
 def act_connect(f: dict, m: dict) -> dict:
     un = f.get("unavailable") or {}
     con = un.get("connector") or "the missing source"
@@ -379,7 +402,7 @@ def act_connect(f: dict, m: dict) -> dict:
 BUILDERS = {"COMP-R01": act_angle, "COMP-R02": act_price, "COMP-R03": act_offer_run, "COMP-R04": act_lookalike,
             "COMP-R05": act_coverage, "COMP-R06": act_first_line, "COMP-R07": act_offer_gap, "COMP-R08": act_discount,
             "COMP-R09": act_ladder, "COMP-R10": act_above, "COMP-R11": act_corner,
-            "COMP-R12": act_refresh}
+            "COMP-R12": act_refresh, "COMP-R13": act_no_id, "COMP-R14": act_stale}
 
 
 def action(f: dict, m: dict, net_revenue: float | None) -> dict:

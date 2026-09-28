@@ -332,6 +332,32 @@
       tl, el('p', { class: 'micro faint', text: ch.rule + ' ' + (ch.snapshots < 2 ? 'Ad-level diffs (new ads, formats, offers, angles) start when a second snapshot lands; until then changes come from the brain.' : '') + (ch.older ? ' ' + ch.older + ' older events hidden.' : '') }));
   }
 
+  // ---------- 5h. snapshot freshness and the re-pull ----------
+  function freshSection(fr) {
+    const table = UI.verdictTable({
+      columns: [{ key: 'name', label: 'Page', format: (v, r) => v + (r.role === 'self' ? ' (us)' : '') },
+        { key: 'page_id', label: 'Page id', format: (v) => v || 'none, cannot pull' },
+        { key: 'captured_at', label: 'Last capture', format: (v) => v ? fmt.date(v) : NA },
+        { key: 'age_days', label: 'Age, days', format: (v) => v == null ? NA : String(v) },
+        { key: 'source', label: 'From', format: (v) => ({ snapshot: 'ad-level snapshot', brain: 'brain page summary', none: 'nothing captured' })[v] || v }],
+      rows: fr.rows, verdict: { at: 1, kind: (r) => r.kind, text: (r) => r.text, reason: (r) => r.age_days == null ? 'no capture' : r.age_days + ' days old' },
+      sort: false });
+    const p = fr.plan;
+    const planBox = el('div', { class: 'card sunken repull', hidden: true });
+    if (p.error) planBox.append(el('div', { class: 'na', text: 'Re-pull unavailable: ' + p.error }));
+    else planBox.append(
+      el('div', null, el('b', { text: 'Re-pull plan: ' }), p.pages.length + ' pages by page id, up to ' + fmt.num(p.max_items) + ' ads (' + p.limit_per_page + ' a page) on ' + p.actor + '.'),
+      el('div', null, el('b', { text: 'Estimate: ' }), usd(p.estimate_usd) + '. Caps: ' + usd(p.cap_per_run_usd) + ' a run, ' + usd(p.cap_week_usd) + ' a week, ' + (p.week_spent_usd == null ? 'week spend unavailable' : usd(p.week_spent_usd) + ' spent this week') + '. ' + (p.fits_caps ? 'Fits the caps.' : 'Over a cap: it will be refused.')),
+      p.skipped.length ? el('div', { class: 'small' }, 'Skipped: ' + p.skipped.join(', ') + ' (' + p.skipped_reason + ').') : null,
+      el('div', { class: 'small' }, p.token ? 'The Apify key is set on the server.' : 'No Apify key on the server: the pull cannot run until one is set in the environment.'),
+      el('div', { class: 'row' }, UI.copyButton({ label: 'Copy the run command', text: () => fr.command }), el('span', { class: 'micro faint', text: 'The run logs to the spend ledger. This screen never spends on its own.' })),
+      UI.decisionRow({ capability: 'BRN-C11', owner: 'person', screen: SCREEN, compact: true, finding_id: SCREEN + '.repull' }));
+    const btn = el('button', { class: 'btn primary sm', type: 'button', text: 'Re-pull: show the estimate first' });
+    btn.addEventListener('click', () => { planBox.hidden = !planBox.hidden; btn.textContent = planBox.hidden ? 'Re-pull: show the estimate first' : 'Hide the plan'; });
+    mount('#fresh', el('div', { class: 'row' }, btn, el('span', { class: 'small muted', text: fr.snapshot ? 'Latest ad-level snapshot: ' + fmt.date(fr.snapshot.captured_at) + '.' : 'No ad-level snapshot yet. The screen reads the brain\'s page summaries.' })),
+      planBox, table, el('p', { class: 'micro faint', text: fr.rule }));
+  }
+
   // ---------- 6. the audit ----------
   function rulesTable(rules) {
     return UI.table({ columns: [{ key: 'rule_id', label: 'Rule' }, { key: 'name', label: 'What it checks' }, { key: 'inputs', label: 'Reads', format: (v) => (v || []).join(', ') }, { key: 'capability', label: 'Capability' }],
@@ -358,6 +384,7 @@
     mixSection(d.mix, byId);
     refsSection(d.references);
     changesSection(d.changes);
+    freshSection(d.freshness);
     document.getElementById('audit-sub').textContent = p.findings.length + ' findings from ' + p.rules.length + ' rules. Public signals, one capture.';
     mount('#audit', auditTable(p.findings));
     mount('#rules', el('h4', { text: 'Rules' }), rulesTable(p.rules));

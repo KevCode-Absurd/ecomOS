@@ -69,6 +69,13 @@ COMP-R12 direct competitor refreshed its ads. A direct competitor whose oldest
     active ad is under REFRESH_DAYS (14) days old has replaced every ad it runs
     (changes.py). Severity low. Capability BRN-C11 (agent reads the new flight).
     Owner: 03-competitors.
+COMP-R13 tracked page with no page id. A page in the competitive frame with no
+    Ad Library page id: it cannot be pulled (page ids only, never keyword).
+    Severity low. Capability BRN-C11; owner person (paste the id). Owner screen
+    03-competitors.
+COMP-R14 stale capture. The oldest competitor capture is older than
+    STALE_DAYS (14). Severity medium. Capability BRN-C11; owner person (approves
+    the Apify spend shown before the run). Owner: 03-competitors.
 
 Rubric overrides (depth.md section 4 allows reputation and satisfaction per rule):
 COMP-R01 reputation 5: an unclaimed angle is a competitor position gap named in
@@ -123,6 +130,7 @@ changemod = _local("changes")
 SCREEN = "03-competitors"
 SEVERITY_ORDER = {"critical": 0, "high": 1, "medium": 2, "low": 3}
 PRICE_BAND = (85, 115)
+STALE_DAYS = 14
 ANGLE_SHARE_MAX = 0.25
 DURABILITY_MAX = 3
 COMFORT_MAX = 3
@@ -173,6 +181,10 @@ RULES = [
      "owner_screen": SCREEN},
     {"rule_id": "COMP-R12", "name": "direct competitor replaced every ad in 14 days", "entity_type": "page",
      "inputs": ["brain competitors longest_running_ad", "Ad Library snapshot"], "capability": "BRN-C11", "owner_screen": SCREEN},
+    {"rule_id": "COMP-R13", "name": "tracked page with no page id", "entity_type": "page",
+     "inputs": ["brain positioning.competitive_frame", "config/apify.json pages"], "capability": "BRN-C11", "owner_screen": SCREEN},
+    {"rule_id": "COMP-R14", "name": "stale competitor capture", "entity_type": "brand",
+     "inputs": ["brain competitors captured_at", "Ad Library snapshot"], "capability": "BRN-C11", "owner_screen": SCREEN},
     {"rule_id": "COMP-R08", "name": "discount on most ads while direct peers run none", "entity_type": "offer",
      "inputs": ["brain offers.promo_share_active_ads", "brain competitors offers_seen"], "capability": "LIFE-C38",
      "owner_screen": SCREEN},
@@ -701,6 +713,23 @@ def rule_refresh(m, ends_on):
     return out
 
 
+def rule_freshness(m, ends_on):
+    out = []
+    for p in m["pages"]:
+        if p["role"] != "self" and not p["page_id"]:
+            ev = [_row("page_id_known", 0, "n", "latest capture", ends_on, None, 1, "threshold", "config")]
+            ent = {"type": "page", "id": f"no_id_{p['key']}", "label": f"{p['name']} page id"}
+            out.append(_finding("COMP-R13", "low", ent, ev, f"{p['name']} is tracked but has no page id, so it is never pulled.",
+                                [f"{m['brand']}.positioning.competitive_frame"], ends_on, 0.5, "no baseline: nothing captured"))
+    age = _fresh(m["competitors"])
+    if age is not None and age > STALE_DAYS:
+        ev = [_row("oldest_capture_days", age, "days", "latest capture", ends_on, age, STALE_DAYS, "threshold", "ad_library")]
+        out.append(_finding("COMP-R14", "medium", {"type": "brand", "id": "stale_capture", "label": "competitor capture"}, ev,
+                            f"The oldest competitor capture is {age} days old, past the {STALE_DAYS} day rule.",
+                            [f"{m['brand']}.competitors.competitor_set"], ends_on, 0.5, "no baseline: freshness has no money formula"))
+    return out
+
+
 def packs_month_end(packs):
     if not packs.get("available"):
         return None
@@ -724,7 +753,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
                for rid in ("COMP-R01", "COMP-R03")]
     else:
         out = rule_angles(m, ends_on) + rule_offer_runs(m, ends_on) + rule_coverage(m, ends_on) + rule_mix(m, ends_on)
-        out += rule_ladder(m, ends_on) + rule_corners(m, ends_on) + rule_refresh(m, ends_on)
+        out += rule_ladder(m, ends_on) + rule_corners(m, ends_on) + rule_refresh(m, ends_on) + rule_freshness(m, ends_on)
     out += rule_price(m, ends_on) + rule_lookalike(m, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f["severity"]], f["id"]))
     return out

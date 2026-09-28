@@ -529,6 +529,62 @@ class TestChanges(TempBrain):
         self.assertEqual([f['entity']['id'] for f in r12], ['refresh_stance'])
 
 
+class TestFreshness(TempBrain):
+    """1.9: freshness per page, the re-pull plan with its estimate first, page ids only; unavailable never zero."""
+    def setUp(self):
+        super().setUp()
+        api.BRAIN_ROOT = self.tmp
+        self.fr = api.handle(Req(['overview']))['freshness']
+
+    def test_rows(self):
+        allbirds = next(r for r in self.fr['rows'] if r['name'] == 'Allbirds')
+        self.assertEqual(allbirds['kind'], 'na')
+        self.assertIsNone(allbirds['age_days'])
+        self.assertIsNone(allbirds['page_id'])
+        for r in self.fr['rows']:
+            if r['source'] != 'none':
+                self.assertIsInstance(r['age_days'], int)
+
+    def test_plan_estimate_and_caps(self):
+        p = self.fr['plan']
+        self.assertEqual(len(p['pages']), 12)
+        self.assertEqual(p['skipped'], ['Allbirds'])
+        self.assertTrue(all(x['page_id'] for x in p['pages']))
+        self.assertEqual(p['max_items'], 12 * p['limit_per_page'])
+        self.assertLessEqual(p['estimate_usd'], p['cap_per_run_usd'])
+        self.assertNotIn('token', json.dumps({k: v for k, v in p.items() if k != 'token'}).lower())
+        self.assertIn('--live', self.fr['command'])
+
+    def test_snapshot_rows_keep_no_competitor_text(self):
+        item = {'ad_archive_id': '123', 'page_id': '150444458302730', 'page_name': 'Stance', 'is_active': True,
+                'start_date': 1758067200, 'publisher_platform': ['FACEBOOK'],
+                'snapshot': {'body': {'text': 'Why do socks slip? Get 20% off with code SAVE20.'}, 'display_format': 'VIDEO',
+                             'cta_text': 'Shop Now', 'link_url': 'https://www.stance.com/x'}}
+        row = audit.snap.ad_row(item, 'competitor', dt.date(2026, 9, 28))
+        self.assertNotIn('first_line', row)
+        self.assertNotIn('slip?', json.dumps(row))
+        self.assertEqual(row['first_line_kind'], 'question')
+        self.assertEqual(row['format'], 'video')
+        self.assertEqual({o['tag'] for o in row['offers']}, {'percent_off', 'code'})
+        self.assertIn({'tag': 'fit', 'word': 'slip'}, row['angles'])
+        own = audit.snap.ad_row(item, 'self', dt.date(2026, 9, 28))
+        self.assertEqual(own['first_line'], 'Why do socks slip?')
+
+    def test_rules_r13(self):
+        out = audit.run('bombas', WINDOW, self.tmp)
+        r13 = [f for f in out if f['rule_id'] == 'COMP-R13']
+        self.assertEqual([f['entity']['id'] for f in r13], ['no_id_allbirds'])
+        self.assertFalse([f for f in out if f['rule_id'] == 'COMP-R14'])
+        acts = api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions']
+        a = next(a for a in acts if a['rule_id'] == 'COMP-R13')
+        self.assertEqual(a['owner'], 'person')
+
+    def test_stale_rule(self):
+        late = {'ends_on': '2026-10-20', 'days': 1, 'trailing': 0}
+        out = audit.run('bombas', late, self.tmp)
+        self.assertTrue([f for f in out if f['rule_id'] == 'COMP-R14'])
+
+
 class TestRank(TempBrain):
     """Depth contract rules 2, 3 and 13: owner, steps and artefact on every action; every finding ends in one."""
     W = {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4}
