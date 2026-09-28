@@ -208,6 +208,9 @@ _pspec.loader.exec_module(parity)
 _sspec = importlib.util.spec_from_file_location("brand_brain_sitediff", HERE / "sitediff.py")
 sitediff = importlib.util.module_from_spec(_sspec)
 _sspec.loader.exec_module(sitediff)
+_adspec = importlib.util.spec_from_file_location("brand_brain_askdeep", HERE / "askdeep.py")
+askdeep = importlib.util.module_from_spec(_adspec)
+_adspec.loader.exec_module(askdeep)
 _rlspec = importlib.util.spec_from_file_location("brand_brain_redlines", HERE / "redlines.py")
 redlines = importlib.util.module_from_spec(_rlspec)
 _rlspec.loader.exec_module(redlines)
@@ -1839,7 +1842,20 @@ def handle(req):
         return bc
     if req.method == "GET" and parts == ["ask"]:
         q = (req.arg("q", "") or "")[:300]
-        return ask.search(brain, q)
+        res = ask.search(brain, q)
+        deep = None
+        try:
+            acts = []
+            if askdeep.NEXT.search(q) or askdeep.COMPARE.search(q):
+                try:
+                    acts = rank_mod.master(brain.brand, _window(req, brain))["actions"]
+                except Exception:  # noqa: BLE001
+                    acts = rank(brain.brand, _window(req, brain))["actions"]
+            deep = askdeep.answer(brain, q, {"market": market, "bottlenecks": bottlenecks, "peaks": peaks, "legal": legal, "assumptions": assumptions}, acts)
+        except Exception as exc:  # noqa: BLE001
+            deep = {"intent": "error", "answer": f"typed answer unavailable: {exc}", "verdict": "unavailable", "records": []}
+        res["deep"] = deep
+        return res
     if req.method == "POST" and parts == ["ask", "open"]:
         q = str((req.body or {}).get("q") or "").strip()
         if len(q) < 4:

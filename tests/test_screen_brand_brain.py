@@ -2483,6 +2483,38 @@ class Round6Redlines(TempBrain):
         self.assertIn('reason', [c['kind'] for c in api.handle(Req(['changes']))['changes']])
 
 
+class Round6AskDeep(TempBrain):
+    """Round 6 feature 7: typed answers before the keyword search: numbers, counts, comparisons, the next move, peaks."""
+
+    def _ask(self, q):
+        return api.handle(Req(['ask'], query={'q': [q]}))
+
+    def test_intents(self):
+        d = self._ask('is free shipping over $50?')['deep']
+        self.assertEqual((d['intent'], d['verdict']), ('number', 'no'))
+        self.assertIn('$75', d['answer'])
+        self.assertIn('bombas.offers.free_shipping_threshold_usd', d['records'])
+        self.assertEqual(self._ask('free shipping over 75')['deep']['verdict'], 'yes')
+        self.assertEqual(self._ask('what is our returns window')['deep']['verdict'], 'fact')
+        d = self._ask('how many durability complaints do we have?')['deep']
+        self.assertEqual(d['intent'], 'count')
+        self.assertEqual(d['numbers']['one_star'], 64)
+        d = self._ask('who wins on durability?')['deep']
+        self.assertEqual(d['intent'], 'compare')
+        self.assertIn('Darn Tough', d['answer'])
+        self.assertTrue(d['action'])
+        d = self._ask('what should we do first?')['deep']
+        self.assertEqual(d['intent'], 'next')
+        self.assertIn('durability', d['answer'])
+        self.assertTrue(d['action'])
+        d = self._ask('when is black friday and are we ready?')['deep']
+        self.assertEqual((d['intent'], d['peak']), ('peak', 'black_friday_2026'))
+        self.assertIn('60 days away', d['answer'])
+        r = self._ask('who is our 3PL')
+        self.assertIsNone(r['deep'])
+        self.assertIn('answers', r)
+
+
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
