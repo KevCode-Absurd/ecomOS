@@ -1472,6 +1472,27 @@ class DecisionMemoryTest(unittest.TestCase):
             api.DECISIONS_PATH = saved
             tmp.unlink(missing_ok=True)
 
+    def test_decisions_on_desk(self):
+        base = api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions']
+        tmp = ROOT / 'tests' / '_decisions_desk.json'
+        saved = api.DECISIONS_PATH
+        try:
+            tmp.write_text(json.dumps([
+                {'screen': '01-market-research', 'capability': base[0]['capability']['id'], 'choice': 'person', 'reason': 'Sam takes it', 'time': '2026-09-21T10:00:00Z', 'finding_id': base[0]['id']},
+                {'screen': '01-market-research', 'capability': base[1]['capability']['id'], 'choice': 'not_now', 'reason': 'later', 'time': '2026-09-22T10:00:00Z', 'finding_id': base[1]['id']},
+                {'screen': '01-market-research', 'capability': 'PROD-C99', 'choice': 'agent', 'reason': '', 'time': '2026-08-01T10:00:00Z', 'finding_id': '01-market-research.PROD-R99.gone'},
+                {'screen': '05-brand-brain', 'capability': 'BRAIN-C01', 'choice': 'agent', 'reason': '', 'time': '2026-09-23T10:00:00Z'}]), encoding='utf-8')
+            api.DECISIONS_PATH = tmp
+            d = api.decisions_on_desk(None, 'bombas')
+            self.assertEqual(d['total_on_screen'], 3)                              # the brain screen's decision is not ours
+            self.assertEqual([x['on'] for x in d['rows']], ['2026-09-22', '2026-09-21', '2026-08-01'])   # newest first
+            self.assertEqual([x['state'] for x in d['rows']], ['parked', 'open', 'gone'])
+            self.assertEqual(d['rows'][1]['title'], base[0]['title'])
+            self.assertEqual(d['counts'], {'agent': 1, 'person': 1, 'not_now': 1})
+        finally:
+            api.DECISIONS_PATH = saved
+            tmp.unlink(missing_ok=True)
+
     def test_no_log_means_nothing_parked(self):
         saved = api.DECISIONS_PATH
         try:

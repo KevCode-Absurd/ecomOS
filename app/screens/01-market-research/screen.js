@@ -96,13 +96,21 @@
     const host = document.getElementById('parked') || el('div', { id: 'parked' });
     host.innerHTML = '';
     document.getElementById('plan').append(host);
-    if (!parked.length && !r.decided) return;
+    let dec = null;
+    try { dec = await api(BASE + 'decisions' + Q); } catch (e) { dec = null; }
+    if (!parked.length && !r.decided && !(dec && dec.rows.length)) return;
     const rows = parked.map((a) => ({ title: a.title, choice: 'not now', on: fmt.date(((a.decision || {}).time || '').slice(0, 10)), back: fmt.date(a.returns_on), reason: (a.decision || {}).reason || '', a }));
     host.append(el('div', { class: 'card flat', style: { marginTop: '10px' } },
       el('div', { class: 'sec-head' }, el('h2', { text: 'Decided: ' + (r.decided || 0) + ' on the plan, ' + parked.length + ' parked' }),
         el('span', { class: 'sub', text: 'A "not now" parks an action for ' + r.snooze_days + ' days and it leaves the plan; it comes back on its own or when you decide again here. Agent and person choices stay on their cards.' })),
       parked.length ? UI.table({ columns: [{ key: 'title', label: 'Parked action' }, { key: 'on', label: 'Parked on' }, { key: 'back', label: 'Back on the plan' }, { key: 'reason', label: 'Your note' }], rows }) : null,
-      parked.length ? el('div', { class: 'stack', style: { marginTop: '8px' } }, parked.slice(0, 3).map((a) => UI.actionCard(a, { compact: true, screen: SLUG }))) : null));
+      parked.length ? el('div', { class: 'stack', style: { marginTop: '8px' } }, parked.slice(0, 3).map((a) => UI.actionCard(a, { compact: true, screen: SLUG }))) : null,
+      dec && dec.rows.length ? el('div', { style: { marginTop: '10px' } }, el('h4', { text: 'Decisions on this desk: ' + dec.total_on_screen + ' (' + dec.counts.agent + ' to the agent, ' + dec.counts.person + ' to a person, ' + dec.counts.not_now + ' not now)' }),
+        UI.verdictTable({ columns: [{ key: 'on', label: 'When' }, { key: 'choiceText', label: 'Choice' }, { key: 'title', label: 'Card' }, { key: 'reason', label: 'Note' }],
+          rows: dec.rows.slice(0, 15).map((d) => Object.assign({}, d, { choiceText: { agent: 'agent', person: 'a person', not_now: 'not now' }[d.choice] || d.choice, actions: [d.action_id && state.actions.find((a) => a.id === d.action_id) ? { label: 'Open', onClick: () => openAction(state.actions.find((a) => a.id === d.action_id)) } : { label: d.state, cls: 'quiet', onClick: () => {} }] })),
+          verdict: { at: 1, kind: (d) => d.state === 'open' ? 'keep' : d.state === 'parked' ? 'watch' : 'na', text: (d) => d.state === 'open' ? 'Still open' : d.state === 'parked' ? 'Parked' : 'Gone from the plan', reason: () => 'the card the decision was made on, by finding id' },
+          actions: { label: 'Do', onClick: () => {} }, sort: false }),
+        el('div', { class: 'row', style: { marginTop: '6px' } }, el('button', { class: 'btn sm', type: 'button', text: 'Decisions CSV', onclick: () => UI.csv(dec.rows.map((d) => ({ when: d.time, choice: d.choice, card: d.title, capability: d.capability, finding_id: d.finding_id, note: d.reason, state: d.state })), null, 'research-decisions-' + brand + '.csv') }))) : null));
   }
 
   async function loadPlan(o) {

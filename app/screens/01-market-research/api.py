@@ -2260,6 +2260,33 @@ def week_plan(data, brand):
     return {'brand': brand or 'sample', 'from': ends_on, 'text': '\n'.join(lines), 'due': cal['items'], 'hours': hrs, 'spend': {'cap': cap, 'spent': spent, 'left': left}, 'pulls': [{k: p.get(k) for k in ('key', 'label', 'verdict', 'estimate_usd', 'fits')} for p in affordable], 'top': [a['title'] for a in top]}
 
 
+# ---------------------------------------------------------------- decisions on this desk (round 7.4)
+
+def decisions_on_desk(data, brand, limit=50):
+    """Every choice a person made on this screen from the shared decisions log, newest first, joined to the card it was made on
+    (by finding id, else by capability) so it is not re-argued: when, the choice, the card, the note, and whether the card is
+    still open, parked, or gone from the plan."""
+    path = DECISIONS_PATH
+    try:
+        rows = json.loads(Path(path).read_text(encoding='utf-8'))
+    except (OSError, ValueError):
+        rows = []
+    rows = [r for r in rows if isinstance(r, dict) and r.get('screen') == SCREEN]
+    r = rank(brand or 'sample', None)
+    by_finding = {fid: a for a in r['actions'] + (r.get('parked') or []) for fid in a.get('finding_ids') or []}
+    by_cap = {}
+    for a in r['actions'] + (r.get('parked') or []):
+        by_cap.setdefault((a.get('capability') or {}).get('id'), a)
+    out = []
+    for d in sorted(rows, key=lambda x: str(x.get('time') or ''), reverse=True)[:limit]:
+        a = by_finding.get(d.get('finding_id')) or (by_cap.get(d.get('capability')) if not d.get('finding_id') else None)
+        state = 'gone' if a is None else 'parked' if a.get('status') == 'snoozed' else 'open'
+        out.append({'time': d.get('time'), 'on': str(d.get('time') or '')[:10], 'choice': d.get('choice'), 'capability': d.get('capability'), 'finding_id': d.get('finding_id'), 'reason': d.get('reason') or '',
+                    'title': a['title'] if a else (d.get('finding_id') or d.get('capability')), 'owner': a.get('owner') if a else None, 'state': state, 'action_id': a['id'] if a else None})
+    counts = {k: sum(1 for x in out if x['choice'] == k) for k in ('agent', 'person', 'not_now')}
+    return {'rows': out, 'counts': counts, 'total_on_screen': len(rows), 'log': str(Path(path).name)}
+
+
 def _brand(req):
     brand = req.arg('brand', DEFAULT_BRAND)
     if brand in ('', 'sample'):
@@ -2302,6 +2329,8 @@ def handle(req):
             return changes_since(data, brand)
         if req.path == ['report']:
             return desk_report(data, brand)
+        if req.path == ['decisions']:
+            return decisions_on_desk(data, brand)
         if req.path == ['reports']:
             if 'weekly' not in _SAMPLE:
                 spec = importlib.util.spec_from_file_location('ecomos_research_weekly', HERE / 'weekly.py')
@@ -2320,4 +2349,4 @@ def handle(req):
             return {'parked': r['parked'], 'decided': r['decided'], 'snooze_days': rank_mod.SNOOZE_DAYS, 'window': r['window']}
     except ValueError as exc:
         return 400, {'error': str(exc)}
-    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank', 'parked', 'calendar', 'week', 'report', 'reports', 'changes', 'log', 'candidates/<id>/brief', 'handoff/<finding_id>', 'product_candidates', 'tests']}
+    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank', 'parked', 'decisions', 'calendar', 'week', 'report', 'reports', 'changes', 'log', 'candidates/<id>/brief', 'handoff/<finding_id>', 'product_candidates', 'tests']}
