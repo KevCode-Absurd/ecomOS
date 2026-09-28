@@ -1,0 +1,90 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "app/inspiration/reference.schema.json",
+ "title": "Inspiration reference",
+ "description": "One record in app/inspiration/<brand>/<domain>.json. Shape from app/contracts/inspiration.md section 1.",
+ "type": "object",
+ "required": ["id", "domain", "source", "captured_at", "origin", "signals", "quote", "media", "relevance", "tags"],
+ "additionalProperties": false,
+ "properties": {
+  "id": {"type": "string", "pattern": "^insp\\.(creative|email|landing|organic|offers|research)\\.[a-z0-9_]+\\.[0-9a-f]{10}$"},
+  "domain": {"type": "string", "enum": ["creative", "email", "landing", "organic", "offers", "research"]},
+  "source": {"type": "string", "pattern": "^[a-z0-9_]+$"},
+  "captured_at": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$"},
+  "origin": {
+   "type": "object",
+   "required": ["brand", "role", "url"],
+   "additionalProperties": false,
+   "properties": {
+    "brand": {"type": "string", "minLength": 1},
+    "role": {"type": "string", "enum": ["competitor", "leader", "own"]},
+    "url": {"type": ["string", "null"]},
+    "page_id": {"type": ["string", "null"]}
+   }
+  },
+  "signals": {
+   "type": "object",
+   "additionalProperties": true,
+   "properties": {
+    "format": {"type": ["string", "null"]},
+    "hook_type": {"type": ["string", "null"]},
+    "run_days": {"type": ["integer", "null"], "minimum": 0},
+    "layout": {"type": ["string", "null"]},
+    "mood": {"type": ["string", "null"]},
+    "offer_type": {"type": ["string", "null"]},
+    "cadence_days": {"type": ["number", "null"]},
+    "platforms": {"type": "array", "items": {"type": "string"}},
+    "start_date": {"type": ["string", "null"]},
+    "active": {"type": ["boolean", "null"]},
+    "discount_pct": {"type": ["number", "null"]},
+    "code": {"type": ["string", "null"]},
+    "threshold_usd": {"type": ["number", "null"]},
+    "price_usd": {"type": ["number", "null"]},
+    "promo": {"type": ["string", "null"]}
+   }
+  },
+  "quote": {"type": "string", "maxLength": 140},
+  "media": {
+   "type": "object",
+   "required": ["kind", "path", "thumbnail", "remote_url", "expires", "rights"],
+   "additionalProperties": false,
+   "properties": {
+    "kind": {"type": "string", "enum": ["image", "video", "page", "none"]},
+    "path": {"type": ["string", "null"]},
+    "thumbnail": {"type": ["string", "null"]},
+    "remote_url": {"type": ["string", "null"]},
+    "expires": {"type": ["string", "null"], "pattern": "^\\d{4}-\\d{2}-\\d{2}$"},
+    "rights": {"type": "string", "enum": ["reference_only", "own_brand"]},
+    "files": {"type": "array", "items": {"type": "string"}},
+    "note": {"type": ["string", "null"]}
+   }
+  },
+  "relevance": {
+   "type": "object",
+   "required": ["score", "reasons"],
+   "additionalProperties": false,
+   "properties": {
+    "score": {"type": "number", "minimum": 0, "maximum": 1},
+    "shown": {"type": "boolean"},
+    "reasons": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "required": ["rule", "brain_field", "match"],
+      "additionalProperties": false,
+      "properties": {
+       "rule": {"type": "string", "enum": ["same_category", "same_avatar", "same_offer_type", "same_price_band", "same_calendar", "same_margin_band", "answers_objection", "competitor_in_frame", "own_brand"]},
+       "brain_field": {"type": "string"},
+       "record": {"type": ["string", "null"]},
+       "match": {"type": "string"},
+       "weight": {"type": "number"},
+       "sentence": {"type": "string"}
+      }
+     }
+    }
+   }
+  },
+  "tags": {"type": "array", "items": {"type": "string"}},
+  "notes": {"type": "string"}
+ }
+}
