@@ -20,7 +20,7 @@ Merge rules (app/contracts/brand-brain.md section 6): founder wins over
 everything, then connector, site, document, ad library, interview, press,
 review and ticket, agent, inferred. Ties go to higher confidence, then the
 newer capture. Losers are never dropped: their value, source and record id go
-into the winner's `history`. Two scalar values that differ raise a conflict.
+into the winner's `history`. Two scalar values that differ raise a conflict, unless a founder record wins: then the conflict is filed as resolved.
 Confidence starts from the record (or a base for its source type), rises 0.05
 for each other source that agrees, and drops 0.1 while a conflict is open.
 No third-party packages. No network calls.
@@ -170,10 +170,13 @@ def merge_records(records: list[dict], today: str) -> tuple[list[dict], list[dic
             _absorb(win, agree, "agrees")
             _absorb(win, differ, f"lost to {_stype(win)}")
             if differ:
+                # A founder record settles the field: the conflict is recorded as resolved, not open.
+                settled = _stype(win) == "founder"
                 cid = f"{win['brand']}.conflict.{section}.{field}"
                 conflicts.append({
-                    "id": cid, "brand": win["brand"], "section": section, "field": field, "status": "open",
-                    "raised_at": today, "kept": win["id"], "needs_founder": section in GATED,
+                    "id": cid, "brand": win["brand"], "section": section, "field": field,
+                    "status": "resolved_by_founder" if settled else "open",
+                    "raised_at": today, "kept": win["id"], "needs_founder": (section in GATED) and not settled,
                     "rule": f"{_stype(win)} ranks above {', '.join(sorted({_stype(d) for d in differ}))}"
                             if RANK.get(_stype(win), 0) > max(RANK.get(_stype(d), 0) for d in differ)
                             else "same source type: higher confidence, then newer capture",
@@ -181,9 +184,10 @@ def merge_records(records: list[dict], today: str) -> tuple[list[dict], list[dic
                                 "source_ref": (r.get("source") or {}).get("ref", ""), "record_id": r["id"],
                                 "confidence": r.get("confidence")} for r in [win] + differ],
                 })
-                note = f"Conflict {cid} open; kept by merge rule, other values in history."
-                win["notes"] = f"{win['notes']} {note}" if win.get("notes") else note
-            win["confidence"] = _confidence(win, len(agreeing_sources), bool(differ))
+                if not settled:
+                    note = f"Conflict {cid} open; kept by merge rule, other values in history."
+                    win["notes"] = f"{win['notes']} {note}" if win.get("notes") else note
+            win["confidence"] = _confidence(win, len(agreeing_sources), bool(differ) and _stype(win) != "founder")
             out.append(win)
             done.add(win["id"])
         out.extend(rest)

@@ -1,5 +1,5 @@
 # bombas: brand card (T0)
-Identity: Bombas is B Corp certified.
+Identity: Bombas runs a giving model where one pair purchased equals one pair donated. Founder decision: keep the one pair wording; the impact site's wider one item wording stays in history.
 Diagnosis: unknown yet
 Red lines: none recorded
 Top claims:
@@ -15,7 +15,7 @@ Freshness: all records in date
 
 | Section | Records | Last update | Gist |
 |---|---|---|---|
-| [identity](identity.json) | 11 | 2026-09-28 | Bombas is B Corp certified. |
+| [identity](identity.json) | 11 | 2026-09-28 | Bombas runs a giving model where one pair purchased equals one... |
 | [story_bank](story_bank.json) | 23 | 2026-09-28 | Bombas pitched on Shark Tank in the Season 6 premiere, which first... |
 | [voice](voice.json) | 3 | 2026-09-28 | Bombas repeats the same donation tagline word for word across its... |
 | [visual](visual.json) | 16 | 2026-09-28 | Bombas main stylesheet defines a black color token named black as... |
@@ -39,7 +39,7 @@ Freshness: all records in date
 | [content](content.json) | 3 | 2026-09-28 | Comrad Socks runs 7 creator-style ads (first person, review voice). |
 | [seo_facts](seo_facts.json) | 2 | 2026-09-28 | Question asked on r/BuyItForLife: What's something you WON'T spend... |
 | [team](team.json) | 8 | 2026-09-28 | Bombas has an open Vice President, Distribution role reporting... |
-| [decisions](decisions.json) | 1 | 2026-09-28 | S1.4 review: identity, products, offers, avatars, claims, calendar... |
+| [decisions](decisions.json) | 2 | 2026-09-28 | S1.4 follow-up: no more Amazon reviews; pull the Ad Library set... |
 | [learnings](learnings.json) | 12 | 2026-09-28 | On 2026-09-28 Bombas runs 23 active US Meta ads: 11 image, 8... |
 | [open_questions](open_questions.json) | 5 | undated | What proof answers "will it do the job it claims, like support or... |
 | [freshness](freshness.json) | 26 | 2026-09-28 | avatars: 13 records, last updated 2026-09-28, 0 stale, 0 open... |
@@ -63,7 +63,7 @@ No records yet: diagnosis, changes, plans.
 
 - Documents: [documents/manifest.json](documents/manifest.json), 0 files
 - Open questions: [open_questions.json](open_questions.json), 5 open
-- Brain version 9e620df5c169. Generated from records; edit records, not this file.
+- Brain version 00b133396122. Generated from records; edit records, not this file.
 
 ## Founder notes
 
