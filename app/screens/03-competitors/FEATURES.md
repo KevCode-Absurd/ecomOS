@@ -6,9 +6,31 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | # | Feature | Status |
 |---|---|---|
-| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | todo |
-| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | todo |
-| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | todo |
+| 0.1 | Page shell in the shared UI kit: header, simulated and public signal badge, lookalike page warning, decision row | done |
+| 0.2 | `api.py` (overview, audit) reading the brain through `store.py`, raw Ad Library records as fallback, and simulated `products_monthly` for brand prices; unavailable states | done |
+| 0.3 | 3 tiles (competitors tracked, price position index, competitor active ads), 2 insights as rules (same offer type run longer; price outside the 85 to 115 band), 1 chart (active ads per brand) | done |
+| 0.4 | Competitor cards: positioning, price band, what they push, active ads, longest run as a signal, gap to own | done |
+| 0.5 | Positioning map to scale: median price per pair (with public band) against a durability or comfort claim score (0 to 3, scored in code from hooks and positioning), open quadrants shaded | done |
+| 0.6 | Price ladder table: each brand sock pack per pair against each competitor's median and band | done |
+| 0.7 | What they run board: formats and hook types only, no ad text | done |
+| 0.8 | `audit.py`: COMP-R01 unclaimed angle, COMP-R02 price gap, COMP-R03 same offer type run longer, COMP-R04 lookalike page; tests in `tests/test_screen_competitors.py` | done |
+
+Round 0 notes (28 Sep 2026): brand price per pair is simulated net sales per unit (after discounts) for the last full month, so it reads lower than list. Competitor bands are one public capture, so price and angle findings are medium with confidence 0.5 or lower; the "2 consecutive captures" part of the price drift rule waits for a second capture. Claim scores are keyword rules, not judgement. Screenshot: `round0.png`.
+
+## Room jobs (JTBD)
+
+| Job | Question | Capability | Round 0 |
+|---|---|---|---|
+| map every real alternative a shopper compares against, including doing nothing | who or what are we really competing with | BRAND-C18 | competitor set only; no ladder yet |
+| see which corners of the market are open | where is there room nobody has taken | BRAND-C19 | positioning map, open quadrants |
+| write and test the positioning statement against real shopper frames | does this positioning actually win against the alternative | BRAND-C20 | todo |
+| find an unclaimed angle when no slot is open head on | is there a dimension nobody has claimed, or a reframe of the whole category | BRAND-C21 | COMP-R01, gap to own on cards |
+| check whether price sits inside or outside the category's learned range | are we priced right, and is discounting undercutting us | BRAND-C24 | price tile, insight, ladder table, COMP-R02 |
+| size the market and a candidate niche from the brand's own numbers | is this idea big enough to matter at our numbers | BRAND-C23 | todo |
+| watch the tracked competitors for changes and alert only when it matters | what did they change this week that we should know about | BRN-C11 | todo (needs a second capture) |
+| turn a verified difference into something support can actually say | what do we say when a customer asks how we compare | BRAND-C57 | todo |
+| learn why an almost-buyer chose a named competitor instead | why do we lose the ones we lose, by name | BRAND-C58 | todo |
+| read competitor ads, pages, reviews and Q&A as public signal | what is the market doing that we are not seeing | BRAND-C07 | what they run board, lookalike warning |
 
 ## Candidates from the room spec (pick 10 per round)
 
@@ -88,3 +110,4 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
+| 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
