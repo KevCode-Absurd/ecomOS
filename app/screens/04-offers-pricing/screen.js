@@ -406,6 +406,24 @@
       actionLine(n ? n + ' listings undercut the site. Check each seller, then price or report.' : 'No listing undercuts the site.', a));
   }
 
+  function testsBlock(tests) {
+    const head = { title: 'Which moves can run together, and which must wait?', sub: 'Each move changes a surface for a set number of days. Two moves on one surface cannot run at once, and nothing runs inside a promo window. Earliest start is 7 days after today for approval.' };
+    if (!tests || !tests.length) return section('desk-tests', head, UI.emptyState({ screen: SLUG, title: 'No moves to schedule', text: 'The plan has no open moves.' }));
+    const short = (iso) => { const d = new Date(iso + 'T00:00:00'); return isNaN(d) ? NA : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); };
+    const V = { ready: ['new', 'Starts first'], waits: ['wait', 'Waits'], after_freeze: ['watch', 'After the peak'] };
+    const table = UI.verdictTable({
+      columns: [{ key: 'title', label: 'Move' }, { key: 'start', label: 'Runs', format: (v, r) => short(r.start) + ' to ' + short(r.end) + ', ' + r.days + ' days' },
+        { key: 'surfaces', label: 'Changes', format: (v) => v.join(', ') }, { key: 'waits_for', label: 'Waits for', format: (v) => v.length ? v.join('; ') : 'nothing' }],
+      rows: withActs(tests, (r) => { const a = ACTIONS.find((x) => x.id === r.id); return a ? [{ label: 'Open action', onClick: () => openAction(a) }] : []; }),
+      verdict: { at: 1, kind: (r) => V[r.status][0], text: (r) => V[r.status][1], reason: (r) => r.surfaces.join(', ') },
+      actions: { label: 'Do' }, sort: false,
+    });
+    const ready = tests.filter((t) => t.status === 'ready');
+    return section('desk-tests', head, el('div', { class: 'card tight' }, table,
+      el('div', { class: 'row' }, el('button', { class: 'btn sm', type: 'button', text: 'Export calendar CSV', onclick: () => UI.csv(tests.map((t) => ({ move: t.title, start: t.start, end: t.end, days: t.days, changes: t.surfaces.join('; '), waits_for: t.waits_for.join('; ') })), null, 'offer-test-calendar.csv') }))),
+      actionLine(ready.length + ' moves can start on ' + fmt.date(ready.length ? ready[0].start : null) + ' side by side. ' + (tests.length - ready.length) + ' wait for a shared surface or the peak.', null));
+  }
+
   function returnsChart(r) {
     if (!r || !r.groups || !r.groups.length) return el('p', { class: 'muted small', text: 'Returns by reason ' + NA + '.' });
     const rows = r.groups.slice().sort((a, b) => b.per_1000 - a.per_1000);
@@ -459,7 +477,7 @@
     plan(d);
     wrong(d);
     actionsList(d);
-    mount('#desk', el('div', { class: 'desk-kicker' }, el('h3', { text: 'The desk' })), calendarBlock(d.calendar), giftingBlock(d.gifting),
+    mount('#desk', el('div', { class: 'desk-kicker' }, el('h3', { text: 'The desk' })), testsBlock(d.tests), calendarBlock(d.calendar), giftingBlock(d.gifting),
       stackBlock(d.stack || []), thresholdBlock(d.threshold), cartBlock(d.cart), firstOrderBlock(d.first_order), positionBlock(d.position, d.brand || {}), parityBlock(d.parity), waterfallBlock(d.waterfalls), discountBlock(d), ladderBlock(d.ladder), objectionBlock(d.objections || [], d.returns), guaranteeBlock(d.guarantee, d.returns));
     auditBlock(d);
   }

@@ -799,5 +799,36 @@ class CartLadderTest(unittest.TestCase):
             self.assertTrue(any(ab in s['text'] for s in t['steps']))
 
 
+class TestCalendarTest(unittest.TestCase):
+    """Round 2 feature 6: moves on one surface never overlap, and none runs inside a promo window."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.out = api.actions.rank('bombas')
+        cls.tests = cls.out['tests']
+
+    def test_no_overlap_on_a_surface_and_no_test_in_a_window(self):
+        from datetime import date
+        self.assertTrue(self.tests)
+        spans = [(sf, date.fromisoformat(t['start']), date.fromisoformat(t['end'])) for t in self.tests for sf in t['surfaces']]
+        for i, (sf, a0, a1) in enumerate(spans):
+            for sf2, b0, b1 in spans[i + 1:]:
+                if sf == sf2:
+                    self.assertFalse(a0 <= b1 and b0 <= a1, sf)
+        wins = [(date.fromisoformat(w['start']), date.fromisoformat(w['end'])) for w in self.out['calendar'] if w['days_to_start'] < 120]
+        for t in self.tests:
+            s0, s1 = date.fromisoformat(t['start']), date.fromisoformat(t['end'])
+            self.assertEqual((s1 - s0).days + 1, t['days'])
+            for w0, w1 in wins:
+                self.assertFalse(s0 <= w1 and w0 <= s1, t['title'])
+
+    def test_every_open_move_with_a_surface_is_scheduled_once(self):
+        ids = [t['id'] for t in self.tests]
+        self.assertEqual(len(ids), len(set(ids)))
+        for a in self.out['actions']:
+            if a['status'] == 'open' and api.actions.surfaces(a)[0]:
+                self.assertIn(a['id'], ids)
+
+
 if __name__ == '__main__':
     unittest.main()

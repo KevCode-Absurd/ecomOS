@@ -465,6 +465,73 @@ def claims_action(f, a, ctx):
     return a
 
 
+# What each move changes and for how long, for the test calendar. A move that shares a surface with another cannot
+# run at the same time, and no test runs inside a promo window (the window changes every surface).
+def surfaces(a):
+    """(surfaces, days) a move changes. Two moves on one surface cannot run at once; different elements can."""
+    r, kind = a.get('rule_id'), (a.get('artefact') or {}).get('kind')
+    ent = (a.get('entity') or {}).get('id') or ''
+    if r in ('OFFER-R01', 'OFFER-R20'):
+        return ['cart rewards'], 35
+    if r in ('OFFER-R08', 'OFFER-R10'):
+        return ['first order offer', 'ad angle'], 35
+    if r == 'OFFER-R16':
+        return ['ad angle'], 28
+    if r == 'OFFER-R04':
+        if kind == 'listing_fix':
+            return ['marketplace listing'], 28
+        return (['product page promise: ' + ent.split('.')[0].replace('_', ' '), 'product page promise slot'] if kind == 'offer'
+                else ['product page price block']), 42
+    if r == 'OFFER-R14':
+        return ['product page guarantee block', 'cart trust line'], 42
+    if r == 'OFFER-R07':
+        return (['product page pack selector'] if ent == 'push' else ['pack price']), 35
+    if r == 'OFFER-R09':
+        return ['new packs'], 56
+    return None, None
+
+
+APPROVAL_DAYS = 7
+
+
+def test_calendar(actions, ctx):
+    """Sequence the open moves: earliest start after approval, no two moves on one surface at once, none inside a
+    promo window. Returns rows in plan order with start, end and what each waits for."""
+    freeze = [(date.fromisoformat(w['start']), date.fromisoformat(w['end']), w['name']) for w in ctx.calendar if w['days_to_start'] < 120]
+    busy = []   # (surface, start, end, title)
+    rows = []
+    for a in actions:
+        sf_list, days = surfaces(a) if a.get('status') == 'open' else (None, None)
+        if not sf_list:
+            continue
+        start = ctx.end + timedelta(days=APPROVAL_DAYS)
+        waits = []
+        moved = True
+        while moved:
+            moved = False
+            end = start + timedelta(days=days - 1)
+            for sf, s0, s1, title in busy:
+                if sf in sf_list and s0 <= end and start <= s1:
+                    start, moved = s1 + timedelta(days=1), True
+                    waits.append(title)
+                    break
+            if moved:
+                continue
+            for f0, f1, name in freeze:
+                if f0 <= end and start <= f1:
+                    start, moved = f1 + timedelta(days=1), True
+                    waits.append(name)
+                    break
+        end = start + timedelta(days=days - 1)
+        for sf in sf_list:
+            busy.append((sf, start, end, a['title']))
+        freeze_hit = any(w in [f[2] for f in freeze] for w in waits)
+        rows.append({'id': a['id'], 'title': a['title'], 'surfaces': sf_list, 'days': days, 'start': start.isoformat(),
+                     'status': 'waits' if waits and not freeze_hit else 'after_freeze' if freeze_hit else 'ready',
+                     'end': end.isoformat(), 'waits_for': list(dict.fromkeys(waits)), 'owner': a['owner']})
+    return rows
+
+
 def merge_into(actions, child, parent):
     """A child rule's finding rides on the parent rule's action when both fire (one move fixes both)."""
     host = next((a for a in actions if a.get('rule_id') == parent and a.get('status') == 'open'), None)
@@ -826,7 +893,8 @@ def rank(brand='bombas', window=None):
     actions = merge_into(actions, 'OFFER-R19', 'OFFER-R08')
     actions = [a for a in actions if not RANK.validate_action(a)]
     actions.sort(key=RANK.sort_key)
+    calendar = test_calendar(actions, ctx)
     return {'screen': SCREEN, 'brand': brand, 'window': w, 'simulated': True, 'net_revenue_28d': nr,
             'actions': actions, 'findings': findings, 'objections': ctx.objections, 'returns': returns_block(rd),
             'ladder': dict(ctx.ladder, moves=ctx.ladder_rows), 'first_order': ctx.first_order, 'waterfalls': ctx.waterfalls, 'calendar': ctx.calendar, 'gifting': ctx.gifting, 'guarantee': ctx.guarantee, 'position': ctx.position, 'parity': ctx.parity,
-            'discipline': dict(ctx.discipline, policy=discount_policy(ctx)), 'cart': ctx.cart}
+            'discipline': dict(ctx.discipline, policy=discount_policy(ctx)), 'cart': ctx.cart, 'tests': calendar}
