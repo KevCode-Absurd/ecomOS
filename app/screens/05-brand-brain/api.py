@@ -8,6 +8,7 @@ question, and accept or ignore on a proposed record. Nothing external.
                                 judgement rules, the package, where to check (markdown)
   GET  agentfile/endpoints      this route table as JSON, for an agent or an MCP wrapper
   GET  brainmd                  the router BRAIN.md text
+  GET  walkthrough              the brain end to end: 11 setup steps read from the records, the next one named
   GET  audiences                audience profiles from the avatars with their doubts, proof, approval and defaults
   POST audiences/default        {surface, avatar_id}: the default profile per surface (ads, email, pdp, cx, social)
   POST remember                 {text}: decisions, red lines, learnings and facts proposed from a pasted note
@@ -203,6 +204,9 @@ _pspec.loader.exec_module(parity)
 _sspec = importlib.util.spec_from_file_location("brand_brain_sitediff", HERE / "sitediff.py")
 sitediff = importlib.util.module_from_spec(_sspec)
 _sspec.loader.exec_module(sitediff)
+_wtspec = importlib.util.spec_from_file_location("brand_brain_walkthrough", HERE / "walkthrough.py")
+walkthrough = importlib.util.module_from_spec(_wtspec)
+_wtspec.loader.exec_module(walkthrough)
 _auspec = importlib.util.spec_from_file_location("brand_brain_audiences", HERE / "audiences.py")
 audiences = importlib.util.module_from_spec(_auspec)
 _auspec.loader.exec_module(audiences)
@@ -1888,6 +1892,10 @@ def handle(req):
         return cd
     if req.method == "POST" and parts == ["claims"]:
         return claim_add(brain, req.body)
+    if req.method == "GET" and parts == ["walkthrough"]:
+        w = walkthrough.steps(brain, {"health": health, "audiences": audiences, "ladderproof": ladderproof, "locks": locks, "voice": voice, "peaks": peaks, "market": market, "legal": legal, "assumptions": assumptions, "decisions_log": lambda b: decisions_log(b, _decisions_path(req))})
+        w.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())
+        return w
     if req.method == "GET" and parts == ["audiences"]:
         a = audiences.profiles(brain, ladderproof)
         a.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "BRN-C10", "autonomy": "agent_does"})

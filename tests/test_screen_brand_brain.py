@@ -2362,10 +2362,66 @@ class Round6Audiences(TempBrain):
         self.assertIn('audience', [c['kind'] for c in api.handle(Req(['changes']))['changes']])
 
 
+class Round6Walkthrough(TempBrain):
+    """Round 6 feature 4: the brain end to end on the example brain; each step turns done as the founder does it on its block."""
+
+    def _w(self, brand='example'):
+        return api.handle(Req(['walkthrough'], query={'brand': [brand]}))
+
+    def test_example_brain_end_to_end(self):
+        shutil.copytree(BRAIN / 'example', self.tmp / 'example')
+        w = self._w()
+        keys = [s['key'] for s in w['steps']]
+        self.assertEqual(len(keys), 11)
+        by = {s['key']: s for s in w['steps']}
+        self.assertEqual(by['named']['status'], 'next')            # no identity record yet
+        self.assertEqual(by['site']['status'], 'done')             # offers are site backed
+        self.assertEqual(by['documents']['status'], 'todo')        # the founder notes are not read
+        self.assertEqual(by['audience']['status'], 'todo')
+        self.assertEqual(w['next']['key'], 'named')
+        start = w['counts']['done']
+        # 1. name the brand (a profile edit on identity)
+        self.assertEqual(api.handle(Req(['profile', 'identity', 'name'], 'POST', query={'brand': ['example']}, body={'text': 'Example Socks'}))[0], 201)
+        # 2. read the founder notes
+        self.assertEqual(api.handle(Req(['documents', 'extract'], 'POST', query={'brand': ['example']}, body={'name': '2026-09-28-founder-notes.md'}))[0], 201)
+        # 3. approve the guarantee record as a claim decision stand-in is not a claim: add and approve a claim
+        self.assertEqual(api.handle(Req(['claims'], 'POST', query={'brand': ['example']}, body={'text': 'Every pair carries a 100 percent happiness guarantee.', 'tier': 'approved'}))[0], 201)
+        # 4. approve an audience profile and set the default for ads
+        a = api.handle(Req(['audiences'], query={'brand': ['example']}))
+        gifter = next(p for p in a['profiles'] if p['name'] == 'The Gifter')
+        api.handle(Req(['approve', gifter['id']], 'POST', query={'brand': ['example']}, body={'choice': 'approve'}))
+        self.assertEqual(api.handle(Req(['audiences', 'default'], 'POST', query={'brand': ['example']}, body={'surface': 'ads', 'avatar_id': gifter['id']}))[0], 201)
+        # 5. lock a line
+        self.assertEqual(api.handle(Req(['locks'], 'POST', query={'brand': ['example']}, body={'label': 'guarantee line', 'text': '100 percent happiness guarantee, any reason, any time.', 'scope': 'all'}))[0], 201)
+        # 6. decide the next peak
+        pk = api.handle(Req(['peaks'], query={'brand': ['example']}))
+        first = next(p for p in pk['peaks'] if p['kind'] == 'sale')
+        self.assertEqual(api.handle(Req(['peaks', 'plan'], 'POST', query={'brand': ['example']}, body={'peak': first['key'], 'offer': '20 percent off packs'}))[0], 201)
+        w = self._w()
+        by = {s['key']: s for s in w['steps']}
+        for k in ('named', 'documents', 'claims', 'audience', 'locks', 'peak'):
+            self.assertEqual(by[k]['status'], 'done', k)
+        self.assertGreater(w['counts']['done'], start + 4)
+        self.assertIn(w['next']['key'], ('connector', 'questions', 'positioning', 'decision'))
+        # every route still answers on the example brain after the walkthrough
+        for route in (['master'], ['overview'], ['agentfile', 'endpoints'], ['review', 'draft']):
+            r = api.handle(Req(route, 'POST' if route == ['review', 'draft'] else 'GET', query={'brand': ['example']}, body={'text': 'Soft socks. 100 percent happiness guarantee, any reason, any time.'} if route == ['review', 'draft'] else None))
+            self.assertNotIsInstance(r, tuple, route)
+        rv = api.handle(Req(['review', 'draft'], 'POST', query={'brand': ['example']}, body={'text': 'Soft socks with a 100 percent happiness guarantee for any reason.'}))
+        self.assertTrue(any(h['kind'] == 'locked_altered' for h in rv['hits']))  # the locked line, altered, fails on the second brand too
+
+    def test_bombas_reads_its_own_progress(self):
+        w = self._w('bombas')
+        by = {s['key']: s for s in w['steps']}
+        self.assertEqual((by['named']['status'], by['site']['status']), ('done', 'done'))
+        self.assertIsNotNone(w['counts']['pct'])
+        self.assertTrue(w['next'])
+
+
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
-    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'],
+    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'],
               ['decisions'], ['flows'], ['claims'], ['site', 'diff'], ['parity'], ['contracts'], ['legal'], ['voice'], ['battlecards'], ['permissions'],
               ['export'], ['assumptions'], ['facts'], ['summaries'], ['changes'], ['learn'], ['report'], ['digest'], ['review'], ['bottlenecks'], ['audit']]
 

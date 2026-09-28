@@ -572,6 +572,15 @@
     mount('#moves', UI.tabs({ items: [{ key: 'counter', label: 'Counter-proposals', n: c.against_bottleneck, panel: rows(m.counter_proposals) }, { key: 'watch', label: 'Watch', n: c.watch, panel: rows(m.watch) }] }), el('p', { class: 'micro faint', text: m.scoring + '. ' + m.note }));
   }
 
+  // ---------- 1e. the brain end to end ----------
+  async function loadWalkthrough() {
+    let w;
+    try { w = await api(BASE + 'walkthrough'); } catch (e) { mount('#walkthrough', el('p', { class: 'muted small', text: 'Walkthrough unavailable: ' + e.message })); return; }
+    const c = w.counts;
+    const strip = el('div', { class: 'steps' }, ...w.steps.map((s) => el('a', { class: 'step ' + s.status, href: '#' + s.block + '-wrap', title: s.evidence + (s.status !== 'done' && s.status !== 'na' ? '. ' + s.todo : '') }, el('i'), s.label)));
+    mount('#walkthrough', el('div', { class: 'card flat' }, el('div', { class: 'row' }, el('b', { text: 'The brain, end to end: ' + c.done + ' of ' + c.applicable + ' steps done' + (c.pct != null ? ' (' + c.pct + ' percent)' : '') }), w.next ? el('span', { class: 'small', text: 'Next: ' + w.next.label + '. ' + w.next.todo }) : el('span', { class: 'small good', text: 'Every step is done.' })), strip));
+  }
+
   // ---------- 1d. remember this ----------
   function mountRemember() {
     const ta = el('textarea', { class: 'text', rows: 4, placeholder: 'Paste a chat, a call note or a message. Sentences like "from now on we ship free over $75", "never say waterproof", "we tried a 10 percent code and it did nothing" become records you tick.' });
@@ -1941,6 +1950,7 @@
   async function load() {
     mountAsk();
     mountRemember();
+    loadWalkthrough();
     mountDrop();
     loadDocs();
     loadFlows();
