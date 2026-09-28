@@ -176,18 +176,40 @@
       ], rows: l.rows, sort: false, maxRows: 40 })));
   }
 
-  function guaranteeBlock(rows) {
-    const head = { title: 'Which deal-breaker doubts does nothing answer?', sub: 'The top rung of each objection ladder in the brain. A rung with no proof needs an offer, a guarantee line or proof on the page.' };
-    return section('desk-guarantee', head, el('div', { class: 'card tight' }, UI.verdictTable({
+  function returnsChart(r) {
+    if (!r || !r.groups || !r.groups.length) return el('p', { class: 'muted small', text: 'Returns by reason ' + NA + '.' });
+    const rows = r.groups.slice().sort((a, b) => b.per_1000 - a.per_1000);
+    return Charts.bar({ labels: rows.map((g) => g.reason), series: [{ name: 'Returns per 1,000 orders', values: rows.map((g) => g.per_1000) }], values: true,
+      title: r.fixture ? 'Fixture: returns per 1,000 orders by reason (shape only, not brand data)' : 'Returns per 1,000 orders by reason, ' + r.window.label,
+      note: r.fixture ? 'Returns by reason are ' + NA + ': ' + r.reason + '. The bars are a labelled fixture so the layout can be checked. The action reads the real metric once order rows connect.' : 'Returns opened in the window over paid orders placed in it. Carrier returns left out.' });
+  }
+
+  function objectionBlock(rows, returns) {
+    const head = { title: 'Which deal-breaker doubt gets which offer?', sub: 'The top rung of each objection ladder in the brain. A rung with no proof gets an offer, a guarantee line or proof on the page, priced from finance inputs.' };
+    const findA = (r) => ACTIONS.find((x) => x.rule_id === 'OFFER-R04' && x.entity && x.entity.id === r.theme_key + '.deal_breaker');
+    const table = UI.verdictTable({
       columns: [
         { key: 'theme', label: 'Objection' },
         { key: 'doubt', label: 'Deal-breaker doubt' },
         { key: 'one_star', label: 'One-star', unit: 'n' },
-        { key: 'proof', label: 'Proof on file' },
-        { key: 'returns_per_1000', label: 'Returns per 1,000 orders', format: (v, r) => !r.return_reason ? 'no reason maps' : (v == null ? NA : v.toFixed(1)) + ' for ' + r.return_reason },
-      ], rows, verdict: { at: 1, kind: (r) => r.answered ? 'keep' : 'fix', text: (r) => r.answered ? 'Answered' : 'No proof', reason: (r) => r.rung },
-      actions: { label: 'Open action', onClick: (r) => { const a = ACTIONS.find((x) => x.rule_id === 'OFFER-R04' && (x.entity || {}).label && x.entity.label.indexOf(r.doubt) >= 0); if (a) openAction(a); } },
-      sort: false })));
+        { key: 'offer', label: 'Offer or proof to launch' },
+        { key: 'covered', label: 'Already in policy', format: (v, r) => r.covered_by.length ? r.covered_by.map((c) => c.id.split('.').slice(1).join('.')).join(', ') : 'nothing' },
+        { key: 'cost_per_claim', label: 'Cost per claim', format: (v, r) => r.claim === 'none' ? 'none' : v == null ? NA : fmt.money(v) },
+        { key: 'cost_per_1000_orders', label: 'Per 1,000 orders', format: (v, r) => r.claim === 'none' ? 'none' : v == null ? 'rate ' + NA : fmt.money(v) },
+        { key: 'ret', label: 'Returns per 1,000', format: (v, r) => r.returns.per_1000 != null ? r.returns.per_1000.toFixed(1) : (r.returns.reasons.length ? NA : 'no reason maps') },
+      ],
+      rows: rows.map((r) => Object.assign({ covered: '', ret: '' }, r)),
+      verdict: { at: 1, kind: (r) => r.answered ? 'keep' : 'fix', text: (r) => r.answered ? 'Answered' : 'No proof', reason: (r) => 'rung ' + r.rung },
+      actions: { label: (r) => findA(r) ? 'Open action' : 'Copy spec', onClick: (r) => { const a = findA(r); if (a) openAction(a); else UI.copy(r.spec); } },
+      sort: false,
+    });
+    const open = rows.filter((r) => !r.answered);
+    const top = open.slice().sort((a, b) => b.one_star - a.one_star)[0];
+    return section('desk-objections', head, el('div', { class: 'card tight' }, table),
+      el('div', { class: 'grid two' }, el('div', { class: 'card' }, returnsChart(returns)),
+        el('div', { class: 'card' }, el('h4', { text: top ? 'The spec for the biggest open doubt' : 'Every deal-breaker has proof' }),
+          top ? el('pre', { class: 'spec', text: top.spec }) : null, top ? UI.copyButton({ label: 'Copy spec', text: () => top.spec }) : null)),
+      actionLine(open.length + ' of ' + rows.length + ' deal-breaker doubts have no proof. Launch the offer for the biggest one first.', top ? findA(top) : null));
   }
 
   // ---------- 6. the audit ----------
@@ -208,7 +230,7 @@
     wrong(d);
     actionsList(d);
     mount('#desk', el('div', { class: 'desk-kicker' }, el('h3', { text: 'The desk' })),
-      stackBlock(d.stack || []), thresholdBlock(d.threshold, d), discountBlock(d), ladderBlock(d.ladder), guaranteeBlock(d.guarantee || []));
+      stackBlock(d.stack || []), thresholdBlock(d.threshold, d), discountBlock(d), ladderBlock(d.ladder), objectionBlock(d.objections || [], d.returns));
     auditBlock(d);
   }
 

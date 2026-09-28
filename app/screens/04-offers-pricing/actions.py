@@ -6,6 +6,7 @@ size, the win and stop rules and the check date. Unavailable findings keep rank.
 same tables, brain and window give the same actions in the same order.
 """
 import importlib.util
+import json
 import math
 import sys
 from datetime import date, timedelta
@@ -28,7 +29,9 @@ def _load(name, path):
 
 audit = _load('offers_pricing_audit_mod', HERE / 'audit.py')
 model = _load('offers_pricing_model', HERE / 'model.py')
+playbook = _load('offers_pricing_playbook', HERE / 'playbook.py')
 RANK = _load('ecomos_rank', APP / 'rank.py')
+FIXTURES = HERE / 'fixtures'
 
 
 def money(v, digits=None):
@@ -64,6 +67,7 @@ class Ctx:
         self.contribution = model.contribution_28d(rd)
         self.totals = model.window_totals(rd)
         self.po = model.per_order(self.totals)
+        self.objections = objection_map(rd)
 
     def check_on(self, days):
         return (self.end + timedelta(days=days)).isoformat()
@@ -108,21 +112,136 @@ def threshold_action(f, a, ctx):
     return a
 
 
+def planned_rate(rd, rate_key):
+    """The planned claim rate from a brain record (percent of orders), as a ratio, with its record id."""
+    if not rate_key:
+        return None, None
+    key, field = rate_key
+    val, rec = model.brain_value(rd, key)
+    v = val.get(field) if isinstance(val, dict) else None
+    return (v / 100, rec['id']) if isinstance(v, (int, float)) else (None, None)
+
+
+def objection_map(rd):
+    """Every deal-breaker rung (top rung of each ladder) with the offer or proof that answers it, what in the brain
+    already covers it, the cost of one claim from finance_inputs, and the returns behind it where they exist."""
+    windows = audit.returns_windows(rd)
+    rows = []
+    for r in audit.ladder_rungs(rd):
+        pb = playbook.offer_for(r['theme'])
+        covered = []
+        for key in pb['covers']:
+            rec = rd.record(f'{rd.brand}.{key}') if rd.brand else None
+            if rec:
+                covered.append({'id': rec['id'], 'text': rec.get('text'), 'source': (rec.get('source') or {}).get('ref')})
+        cost = model.claim_cost(rd, pb['cost'])
+        rate, rate_id = planned_rate(rd, pb['rate_key'])
+        per_1000 = round(cost['value'] * rate * 1000, 2) if cost.get('value') is not None and rate is not None else None
+        st = audit.reason_stats(windows, r['reasons'])
+        if st is None:
+            ret = {'per_1000': None, 'reason': 'no return reason maps to this doubt'}
+        elif st.get('unavailable'):
+            ret = {'per_1000': None, 'reason': st['reason'], 'fix': st.get('fix')}
+        else:
+            ret = {'per_1000': round(st['rate'] * 1000, 2) if st['rate'] is not None else None,
+                   'median_per_1000': round(st['median'] * 1000, 2) if st['median'] is not None else None}
+        ret['reasons'] = r['reasons']
+        theme = (r['theme'] or '').replace('_', ' ')
+        row = {'theme': theme, 'theme_key': r['theme'], 'ladder': r['ladder'], 'rung': f'{r["level"]} of {r["levels"]}',
+               'doubt': r['doubt'], 'one_star': r['one_star'], 'answered': r['proof'] is not None, 'proof': r['proof'],
+               'offer': pb['name'], 'gets': pb['gets'], 'kind': pb['kind'], 'where': pb['where'], 'claim': pb['cost'],
+               'covered_by': covered, 'cost_per_claim': cost.get('value'), 'cost_parts': cost.get('parts'),
+               'cost_reason': cost.get('reason'), 'planned_rate': rate, 'rate_source': rate_id,
+               'cost_per_1000_orders': per_1000, 'returns': ret, 'sources': r.get('sources')}
+        row['spec'] = offer_spec(row)
+        rows.append(row)
+    return rows
+
+
+def offer_spec(row):
+    """The drafted spec for one rung: what the shopper gets, what already covers it, where it shows, what it costs."""
+    lines = [f'{"Offer" if row["kind"] == "offer" else "Proof"} spec: {row["offer"]}',
+             f'Answers: "{row["doubt"]}" ({row["one_star"]} one-star mentions, rung {row["rung"]} of the {row["theme"]} ladder).',
+             f'What the shopper gets: {row["gets"]}']
+    if row['covered_by']:
+        lines.append('Already true in policy, not said where the doubt is: ' + ' '.join(c['text'] for c in row['covered_by'] if c['text']))
+    else:
+        lines.append('Nothing in the brain covers it yet. The founder sets the terms.')
+    lines.append(f'Where it shows: {row["where"]}.')
+    if row['claim'] == 'none':
+        lines.append('Cost: none per order. It is proof, not a new promise.')
+    elif row['cost_per_claim'] is None:
+        lines.append(f'Cost per claim: unavailable, {row["cost_reason"]}.')
+    else:
+        parts = ', '.join(f'{p["label"]} {money(p["value"])}' for p in row['cost_parts'])
+        lines.append(f'Cost per claim: {money(row["cost_per_claim"])} ({parts}).')
+        if row['cost_per_1000_orders'] is not None:
+            lines.append(f'At the planned {row["planned_rate"] * 100:.1f} percent claim rate: {money(row["cost_per_1000_orders"])} '
+                         f'per 1,000 orders. That rate covers all causes, so it is a ceiling for this doubt.')
+        else:
+            lines.append('Claim rate: unavailable until returns by reason connect. Cap it in the test at 2 percent of orders.')
+    lines.append('Stop: claims above 2 times the planned rate for 2 weeks, or margin per order under the red line.')
+    return '\n'.join(lines)
+
+
 def rung_action(f, a, ctx):
-    doubt = f['entity']['label'].split(': ', 1)[-1]
-    theme = f['entity']['id'].split('.')[0].replace('_', ' ')
+    theme_key = f['entity']['id'].split('.')[0]
+    row = next((r for r in ctx.objections if r['theme_key'] == theme_key), None)
+    doubt = row['doubt'] if row else f['entity']['label'].split(': ', 1)[-1]
+    if not row:
+        return a
+    kind = row['kind']
+    who_ships = {'offer': 'Add the promise line to the product page, the cart and the ads that meet this doubt.',
+                 'page_section': 'Add the section to the product page price block.',
+                 'listing_fix': 'Update the marketplace title, first image and first bullet.'}[kind]
+    size = (f'{money(row["cost_per_1000_orders"])} per 1,000 orders at the planned claim rate' if row['cost_per_1000_orders'] is not None
+            else f'{money(row["cost_per_claim"])} per claim' if row['cost_per_claim'] else 'no cost per order')
     a.update({
-        'title': f'Answer "{doubt}" with an offer and proof',
+        'title': f'Launch "{row["offer"].split(":")[0]}" to answer "{doubt}"',
+        'why': f['sentence'] + (' The policy already covers it but the page does not say so.' if row['covered_by'] and kind == 'offer' else ''),
         'owner': 'agent_drafts',
-        'artefact': {'kind': 'offer', 'label': f'Offer spec for the {theme} deal-breaker', 'draft': None,
-                     'draft_note': 'The agent drafts the offer spec from the ladder, the guarantee and the returns once approved.'},
+        'artefact': {'kind': kind, 'label': row['offer'], 'draft': row['spec']},
         'steps': steps(
-            ('agent', f'Pull the one-star quotes and the returns behind "{doubt}".'),
-            ('agent', 'Draft an offer that removes the risk, priced from finance inputs.'),
-            ('person', 'Approve the offer and its margin cost.'),
-            ('agent', 'Add the offer line to the product page and the ads that meet this doubt.')),
-        'check_on': ctx.check_on(28), 'time_to_ship_hours': 6,
+            ('agent', f'Pull the {row["one_star"]} one-star quotes and the returns behind "{doubt}".'),
+            ('agent', 'Draft the spec and the one-line promise, priced from finance inputs.'),
+            ('person', 'Approve the terms and the cost per claim. Nothing ships before that.'),
+            ('agent', who_ships),
+            ('agent', f'Read claims and add to cart rate every 7 days; call it on {ctx.check_on(42)}.')),
+        'size': {'text': size, 'usd': None},
+        'win_rule': 'Add to cart rate on the product page up, and returns for this doubt not up more than 10 percent.',
+        'stop_rule': 'Claims above 2 times the planned rate for 2 weeks, or margin per order under the red line.',
+        'check_on': ctx.check_on(42), 'time_to_ship_hours': 6 if kind == 'offer' else 3,
     })
+    return a
+
+
+def returns_block(rd):
+    """returns_by_reason for the window, or the labelled fixture when the metric is unavailable."""
+    m = rd.m('returns_by_reason', audit.WINDOW)
+    if not m.get('unavailable'):
+        orders = m['inputs']['paid_orders']
+        return {'unavailable': False, 'fixture': False, 'window': m['window'], 'paid_orders': orders,
+                'groups': [dict(g, per_1000=round(g['returns'] / orders * 1000, 2) if orders else None) for g in m['groups']]}
+    fx = json.loads((FIXTURES / 'returns_by_reason.json').read_text(encoding='utf-8'))
+    orders = fx['inputs']['paid_orders']
+    return {'unavailable': True, 'reason': m.get('reason'), 'fix': m.get('fix'), 'fixture': True, 'fixture_note': fx['note'],
+            'groups': [dict(g, per_1000=round(g['returns'] / orders * 1000, 2)) for g in fx['groups']]}
+
+
+# Rubric overrides by rule (depth.md section 4 lets a screen raise reputation or satisfaction for a rule; the
+# override is written in audit.py's docstring next to the rule). Weights never change.
+RUBRIC_OVERRIDE = {'OFFER-R04': {'reputation': 4, 'satisfaction': 4}}
+
+
+def rescore(a, dims):
+    r = dict(a['rubric'])
+    for k, v in dims.items():
+        r[k] = max(r.get(k) or 0, v)
+    total = 0.0
+    for k, w in RANK.WEIGHTS.items():
+        total += w * (r[k] if r[k] is not None else 2.5) / 5
+    r['total'] = round(total, 1)
+    a['rubric'] = r
     return a
 
 
@@ -134,6 +253,8 @@ def build(f, rd, ctx, nr):
     a['screen'] = SCREEN
     if f.get('status') == 'unavailable':
         return a
+    if f['rule_id'] in RUBRIC_OVERRIDE:
+        rescore(a, RUBRIC_OVERRIDE[f['rule_id']])
     fn = BUILDERS.get(f['rule_id'])
     return fn(f, a, ctx) if fn else a
 
@@ -158,4 +279,4 @@ def rank(brand='bombas', window=None):
     actions = [a for a in actions if not RANK.validate_action(a)]
     actions.sort(key=RANK.sort_key)
     return {'screen': SCREEN, 'brand': brand, 'window': w, 'simulated': True, 'net_revenue_28d': nr,
-            'actions': actions, 'findings': findings}
+            'actions': actions, 'findings': findings, 'objections': ctx.objections, 'returns': returns_block(rd)}

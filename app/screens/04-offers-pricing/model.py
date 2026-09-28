@@ -166,3 +166,44 @@ def order_steps(rd, day, net, units, free_shipping, shipping_charged=None, cogs=
         steps.append({'key': 'returns', 'label': 'Returns processing', 'value': None if proc is None else round(returns_rate * proc, 2),
                       'source': 'finance_inputs.returns_processing'})
     return steps
+
+
+def item_cost(rd, day=None):
+    """Median landed cost of one item (a pair, one garment) across SKUs: cogs_landed over the pack size in the SKU."""
+    import re
+    import statistics
+    day = day or rd.ends_on
+    cogs = cogs_by_sku(rd, day)
+    per = []
+    for sku, c in cogs.items():
+        m = re.search(r'-(\d+)$', sku)
+        if m and int(m.group(1)) > 0:
+            per.append(c / int(m.group(1)))
+    if not per:
+        return {'value': None, 'reason': 'no cogs_landed keyed by SKU', 'fix': 'finance_inputs.cogs_landed'}
+    return {'value': round(statistics.median(per), 2), 'skus': len(per),
+            'basis': f'median landed cost per item across {len(per)} SKUs (cogs_landed over pack size)'}
+
+
+def claim_cost(rd, kind, day=None):
+    """Cost of one claim on a promise, from finance_inputs. kind: replacement, exchange or none."""
+    day = day or rd.ends_on
+    if kind == 'none':
+        return {'value': 0.0, 'parts': [], 'basis': 'proof on a page or listing; no cost per order'}
+    label = label_average(rd, day)
+    pick = fin_value(rd, 'threepl_pick_pack', day, unit='usd_per_order')
+    pack = fin_value(rd, 'packaging', day)
+    parts = [('outbound label', label, 'finance_inputs.shipping_label'), ('pick and pack', pick, 'finance_inputs.threepl_pick_pack'),
+             ('packaging', pack, 'finance_inputs.packaging')]
+    if kind == 'replacement':
+        ic = item_cost(rd, day)
+        parts.insert(0, ('item', ic['value'], ic.get('basis') or 'finance_inputs.cogs_landed'))
+    else:
+        parts.insert(0, ('returns processing', fin_value(rd, 'returns_processing', day), 'finance_inputs.returns_processing'))
+    missing = [p[0] for p in parts if p[1] is None]
+    out = {'parts': [{'label': p[0], 'value': p[1], 'source': p[2]} for p in parts]}
+    if missing:
+        out.update(value=None, reason='missing ' + ', '.join(missing), fix='finance_inputs')
+    else:
+        out.update(value=round(sum(p[1] for p in parts), 2))
+    return out

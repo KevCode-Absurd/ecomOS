@@ -238,5 +238,55 @@ class PlanFirstTest(unittest.TestCase):
         self.assertNotIn('—', js)
 
 
+class ObjectionOfferTest(unittest.TestCase):
+    """Round 1 feature 2: every deal-breaker rung without proof becomes an offer or proof spec with its cost."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.out = api.actions.rank('bombas')
+        cls.rows = cls.out['objections']
+
+    def test_every_open_rung_has_a_priced_spec_and_an_action(self):
+        open_rows = [r for r in self.rows if not r['answered']]
+        self.assertTrue(open_rows)
+        acts = {a['entity']['id']: a for a in self.out['actions'] if a['rule_id'] == 'OFFER-R04'}
+        for r in open_rows:
+            if r['one_star'] == 0:
+                continue
+            a = acts[r['theme_key'] + '.deal_breaker']
+            self.assertIn(a['artefact']['kind'], ('offer', 'page_section', 'listing_fix'))
+            self.assertEqual(a['artefact']['draft'], r['spec'])
+            self.assertIn(r['doubt'], r['spec'])
+            self.assertTrue(a['win_rule'] and a['stop_rule'] and a['check_on'])
+            if r['claim'] != 'none' and r['cost_per_claim'] is not None:
+                self.assertAlmostEqual(r['cost_per_claim'], round(sum(p['value'] for p in r['cost_parts']), 2))
+            if r['cost_per_1000_orders'] is not None:
+                self.assertAlmostEqual(r['cost_per_1000_orders'], round(r['cost_per_claim'] * r['planned_rate'] * 1000, 2))
+                self.assertTrue(r['rate_source'].startswith('bombas.'))
+
+    def test_severity_and_rubric_override(self):
+        for f in self.out['findings']:
+            if f['rule_id'] == 'OFFER-R04' and f['status'] == 'open':
+                one = next(e['value'] for e in f['evidence'] if e['metric'] == 'one_star_mentions')
+                if one >= audit.TOP_DOUBT:
+                    self.assertEqual(f['severity'], 'high')
+        for a in self.out['actions']:
+            if a['rule_id'] == 'OFFER-R04':
+                self.assertGreaterEqual(a['rubric']['reputation'], 4)
+                self.assertGreaterEqual(a['rubric']['satisfaction'], 4)
+
+    def test_returns_fixture_is_labelled(self):
+        r = self.out['returns']
+        if r['unavailable']:
+            self.assertTrue(r['fixture'])
+            self.assertIn('Fixture', r['fixture_note'])
+            self.assertTrue(r['reason'])
+        else:
+            self.assertFalse(r['fixture'])
+        for f in self.out['findings']:
+            if f['rule_id'] == 'OFFER-R04' and f['money_at_stake'] is None:
+                self.assertTrue(f['money_reason'])
+
+
 if __name__ == '__main__':
     unittest.main()

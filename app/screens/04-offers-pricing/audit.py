@@ -22,7 +22,12 @@ Rules
              per paid order now minus the own median of the 4 trailing 28-day windows, times the 28-day order
              total, times (average refund + returns_processing). Lost orders are not measurable, so the money is a
              floor, or null when returns are within 5 percent of the median. Capability LIFE-C36 (founder gate).
-             Owner: 04-offers-pricing; 10-copy and 07-landing-pages-cro read it from the findings table.
+             Severity high when the stake passes 1 percent of 28-day net, or the rung has TOP_DOUBT (20) or more
+             one-star mentions. Owner: 04-offers-pricing; 10-copy and 07-landing-pages-cro read it from the
+             findings table. The action is an offer spec or a proof spec from playbook.THEME_OFFERS.
+             Rubric override (depth.md section 4): reputation 4 (a review theme in a deal-breaker rung) and
+             satisfaction 4 (a returns and CX theme) for every rung, so the rank follows severity and stake
+             rather than words in the doubt.
 """
 import importlib.util
 import json
@@ -39,6 +44,7 @@ SCREEN = '04-offers-pricing'
 WINDOW = 28
 TRAILING = 4
 BAND_USD = 10          # the "just under" and "just over" bands either side of the threshold
+TOP_DOUBT = 20         # one-star mentions that make a rung a top doubt (severity high)
 RETURNS_NOISE = 0.05    # returns within 5 percent of the own median carry no money
 LABEL_CARRIER = 'usps'  # free standard shipping goes out on the ground carrier
 # Return reasons that are the same doubt as a ladder theme. A theme with no reason here has no money.
@@ -337,8 +343,10 @@ def returns_windows(rd):
 def reason_stats(windows, reasons):
     """(returns now, per-order rate now, own median rate over the 4 windows before, average refund now)."""
     now = windows[0]
-    if now.get('unavailable') or not reasons:
+    if not reasons:
         return None
+    if now.get('unavailable'):
+        return {'unavailable': True, 'reason': now.get('reason'), 'fix': now.get('fix')}
     def pick(w):
         gs = [g for g in w['groups'] if g['reason'] in reasons]
         return sum(g['returns'] for g in gs), sum(g['amount'] for g in gs), w['inputs']['paid_orders']
@@ -373,6 +381,8 @@ def rule_unanswered(rd):
         money, reason, second = None, None, ''
         if st is None:
             reason = 'proof gap: no return reason maps to this rung, lost orders not measurable'
+        elif st.get('unavailable'):
+            reason = f'returns by reason are unavailable ({st["reason"]}); lost orders not measurable'
         else:
             evidence.append(_ev('returns_per_order', st['rate'], 'ratio', end, baseline=st['median'],
                                 baseline_kind='own_median' if st['median'] is not None else None,
@@ -398,7 +408,8 @@ def rule_unanswered(rd):
         if len(sentence.split()) > 40:
             sentence = f'{r["one_star"]} one-star mentions ask "{r["doubt"]}" and nothing public answers it.'
         stake = money['usd'] if money else None
-        sev = 'high' if stake is not None and net_28d and stake > 0.01 * net_28d else 'medium'
+        sev = ('high' if (stake is not None and net_28d and stake > 0.01 * net_28d) or r['one_star'] >= TOP_DOUBT
+               else 'medium')
         out.append(_finding('OFFER-R04', entity, sev, evidence, sentence, money, 0.5, [r['ladder']], end,
                             money_reason=reason))
     return out

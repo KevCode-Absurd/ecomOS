@@ -241,22 +241,6 @@ def ladder(rd, months=12):
             'margin': 'unavailable: cost per SKU does not join to products yet'}
 
 
-# ---------------------------------------------------------------- guarantee versus objection
-
-def guarantee_table(rd):
-    windows = audit.returns_windows(rd)
-    out = []
-    for r in audit.ladder_rungs(rd):
-        st = audit.reason_stats(windows, r['reasons'])
-        out.append({'theme': r['theme'].replace('_', ' '), 'ladder': r['ladder'], 'rung': f'{r["level"]} of {r["levels"]}',
-                    'doubt': r['doubt'], 'one_star': r['one_star'], 'answered': r['proof'] is not None,
-                    'proof': r['proof'] or 'no proof on file', 'proof_ids': r['proof_ids'],
-                    'return_reason': ', '.join(r['reasons']) or None,
-                    'returns_per_1000': round(st['rate'] * 1000, 2) if st and st['rate'] is not None else None,
-                    'median_per_1000': round(st['median'] * 1000, 2) if st and st['median'] is not None else None})
-    return out
-
-
 # ---------------------------------------------------------------- rules behind the desk lines, chart
 
 def insights(th, months, findings):
@@ -352,21 +336,24 @@ def overview(data, brand):
     if brand:
         ranked = actions.rank(brand, {'ends_on': ends_on.isoformat()})
         findings, plan = ranked['findings'], ranked['actions']
+        objections, returns = ranked['objections'], ranked['returns']
     else:
         findings, plan = audit.run(brand, {'ends_on': ends_on.isoformat()}, data=data), []
+        objections, returns = [], {'unavailable': True, 'reason': 'no brand folder', 'groups': []}
     months = discount_months(rd)
     th = threshold(rd)
     return {'brand': head, 'window': {'ends_on': ends_on.isoformat(), 'days': audit.WINDOW},
             'orientation': orientation(rd, th), 'plan': plan,
             'stack': offer_stack(rd), 'threshold': th, 'bfcm': bfcm(rd), 'ladder': ladder(rd),
-            'guarantee': guarantee_table(rd), 'creep': insights(th, months, findings)[1], 'chart': chart(months),
+            'objections': objections, 'returns': returns, 'creep': insights(th, months, findings)[1], 'chart': chart(months),
             'findings': findings, 'rules': audit.RULES}
 
 
 def rank(brand='bombas', window=None):
     """Ranked actions for app/rank.py and the master list (depth.md section 5)."""
     out = actions.rank(brand, window)
-    out.pop('findings', None)
+    for k in ('findings', 'objections', 'returns'):
+        out.pop(k, None)
     return out
 
 
