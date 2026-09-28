@@ -1520,5 +1520,26 @@ class BlockLineTest(unittest.TestCase):
         self.assertNotIn('waits on the source named above', js)
 
 
+class BlindSpotsTest(unittest.TestCase):
+    """Round 6 feature 4: price sensitivity and gift card balances say unavailable on the page, with what fills them.
+    No number stands in for them."""
+
+    def test_bombas(self):
+        d = api.handle(Req(['overview']))
+        keys = {x['key']: x for x in d['blind_spots']}
+        for k in ('price_sensitivity', 'gift_card_balances'):
+            self.assertIn(k, keys)
+            self.assertTrue(keys[k]['reason'] and keys[k]['needs'] and keys[k]['fills'])
+        ids = {a['id'] for a in d['plan']}
+        for x in d['blind_spots']:
+            if x['action_id']:
+                self.assertIn(x['action_id'], ids)
+
+    def test_price_read_clears_it(self):
+        ranked = {'actions': [], 'registry': {'elasticity': {'tests': ['EXP-1'], 'reads': []}},
+                  'gifting': {'ledger': {'unavailable': False}}, 'bundles': {}, 'returns': {}}
+        self.assertEqual(api.blind_spots(ranked), [])
+
+
 if __name__ == '__main__':
     unittest.main()

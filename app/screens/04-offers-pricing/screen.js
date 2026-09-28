@@ -47,7 +47,8 @@
   }
   function findAction(fid) { return ACTIONS.find((a) => (a.finding_ids || []).includes(fid) || a.id === fid); }
   function openAction(a) {
-    const card = document.querySelector('#actions [data-id="' + CSS.escape(a.id) + '"]');
+    const sel = '[data-id="' + CSS.escape(a.id) + '"]';
+    const card = document.querySelector('#actions ' + sel) || document.querySelector('#connect ' + sel);
     if (!card) return;
     card.scrollIntoView({ behavior: 'smooth', block: 'start' });
     card.classList.add('flash');
@@ -95,11 +96,23 @@
         x.can_launch ? el('button', { class: 'btn xs', type: 'button', text: 'Mark launched', onclick: async () => { try { const r = await UI.api('/api/' + SLUG + '/launched?brand=' + encodeURIComponent(brand), { method: 'POST', body: { id: x.id } }); st.textContent = 'Live from today: ' + r.record; } catch (e) { st.textContent = 'Could not mark: ' + e.message; } } }) : null, st); })));
     if ((d.snoozed || []).length) document.getElementById('plan').append(el('p', { class: 'micro faint', text: 'Not now: ' + d.snoozed.map((x) => x.title + (x.back_on ? ' (back ' + fmt.date(x.back_on) + ')' : '')).join('; ') + '.' }));
     const cw = document.getElementById('connect-wrap');
-    cw.hidden = !con.length;
-    if (con.length) mount('#connect', el('div', { class: 'card flat connect' },
+    const blind = d.blind_spots || [];
+    cw.hidden = !con.length && !blind.length;
+    mount('#connect', con.length ? el('div', { class: 'card flat connect' },
       el('div', { class: 'sec-head' }, el('h2', { text: 'Connect first: ' + con.length + ' rules wait on a source' }),
         el('span', { class: 'sub', text: 'Each is a person task in Setup, read-only keys only. They never crowd out work that can start today.' })),
-      el('div', { class: 'grid' }, con.map((a) => UI.actionCard(a, { compact: true, screen: SLUG })))));
+      el('div', { class: 'grid' }, con.map((a) => UI.actionCard(a, { compact: true, screen: SLUG })))) : null, blindBlock(blind));
+  }
+  /** What the screen cannot see yet. Each stays unavailable until its data lands; nothing is estimated in its place. */
+  function blindBlock(rows) {
+    if (!rows.length) return null;
+    return el('div', { class: 'card flat tight blind' }, el('h3', { text: 'What we cannot see yet' }),
+      el('p', { class: 'micro faint', text: 'These read unavailable, never zero. No move on this page guesses them.' }),
+      el('ul', { class: 'small' }, rows.map((r) => {
+        const a = r.action_id ? ACTIONS.find((x) => x.id === r.action_id) : null;
+        return el('li', null, el('b', { text: r.what + ': ' }), NA + ', ' + r.reason + '. Needs ' + r.needs + '. Then we see ' + r.fills + '. ',
+          a ? el('button', { class: 'btn quiet xs', type: 'button', text: a.status === 'unavailable' ? 'Open the connect task' : 'Open the move that fills it', onclick: () => openAction(a) }) : null);
+      })));
   }
 
   // ---------- 2. what is wrong, ranked ----------

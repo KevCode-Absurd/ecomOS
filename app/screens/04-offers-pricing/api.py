@@ -334,6 +334,42 @@ def with_decisions(acts, today=None, path=None):
     return kept, snoozed
 
 
+def blind_spots(ranked):
+    """What this screen cannot see yet, in words, with what fills each gap and the move that starts it.
+    Price sensitivity and gift card balances stay unavailable until their data lands; nothing is estimated."""
+    acts = ranked['actions']
+    def first(rule):
+        return next((a['id'] for a in acts if a.get('rule_id') == rule
+                     or any('.' + rule + '.' in f for f in a.get('finding_ids') or [])), None)
+    reg = ranked.get('registry') or {}
+    out = []
+    if not reg.get('elasticity'):
+        out.append({'key': 'price_sensitivity', 'what': 'Price sensitivity',
+                    'reason': reg.get('elasticity_reason') or reg.get('reason') or 'no finished price test',
+                    'needs': 'a finished price test in the experiment registry, read on profit per visitor',
+                    'fills': 'how far a price can rise before units fall; the pass-through size and promo depth then read from it',
+                    'action_id': first('OFFER-R22')})
+    gl = ((ranked.get('gifting') or {}).get('ledger') or {})
+    if gl.get('unavailable', True):
+        out.append({'key': 'gift_card_balances', 'what': 'Gift card balances',
+                    'reason': gl.get('reason') or 'the gift card ledger is not connected',
+                    'needs': 'the gift_card_ledger table, read-only from the store',
+                    'fills': 'money owed on open cards, redemption rate and unspent value before the holiday push',
+                    'action_id': first('OFFER-R13')})
+    b = ranked.get('bundles') or {}
+    if b.get('unavailable'):
+        out.append({'key': 'order_rows', 'what': 'Order rows', 'reason': b.get('reason'),
+                    'needs': 'the orders table with line items and codes',
+                    'fills': 'bundle pairs, orders bunched under the threshold, and whether code-won buyers come back',
+                    'action_id': first('OFFER-R26') or first('OFFER-R31')})
+    r = ranked.get('returns') or {}
+    if isinstance(r, dict) and r.get('unavailable'):
+        out.append({'key': 'returns', 'what': 'Returns by reason', 'reason': r.get('reason'),
+                    'needs': 'the reversed_orders table', 'fills': 'returns per 1,000 orders behind each doubt the offers answer',
+                    'action_id': None})
+    return out
+
+
 def overview(data, brand):
     ends_on = audit.last_full_day(data, brand)
     rd = audit.Reader(data, brand, ends_on)
@@ -359,7 +395,7 @@ def overview(data, brand):
                          **a['plan_record']} for a in planned],
             'stack': offer_stack(rd), 'threshold': th, 'bfcm': bfcm(rd), **desk,
             'creep': creep_rule(months), 'chart': chart(months), 'findings': ranked['findings'], 'rules': audit.RULES,
-            'settings': page_settings()}
+            'settings': page_settings(), 'blind_spots': blind_spots(ranked)}
 
 
 def rank(brand='bombas', window=None):
