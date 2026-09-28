@@ -1033,7 +1033,7 @@ class DeskTabs(unittest.TestCase):
         self.assertTrue(body[first:first + 60].startswith('<section class="section" id="plan-wrap">'))
         self.assertLess(body.index('id="actions-wrap"'), body.index('id="desk-wrap"'))
         ids = _re.findall(r'<section class="section" id="([a-z-]+)"', body)
-        above = {'plan-wrap', 'connect-wrap', 'wrong-wrap', 'actions-wrap', 'tests-wrap', 'handoff-wrap', 'desk-wrap', 'audit-wrap'}
+        above = {'plan-wrap', 'connect-wrap', 'wrong-wrap', 'actions-wrap', 'tests-wrap', 'decided-wrap', 'handoff-wrap', 'desk-wrap', 'audit-wrap'}
         desk_block = js[js.index('const DESK = ['):js.index('let deskTabs')]
         grouped = _re.findall(r"'([a-z]+-wrap)'", desk_block)
         self.assertEqual(sorted(set(ids) - above), sorted(grouped))
@@ -1141,6 +1141,16 @@ class AdVoice(TempBrain):
 
     def test_no_hook_read_unavailable(self):
         self.assertFalse(api.builds.ad_voice([], [])['available'])
+
+
+class Decided(unittest.TestCase):
+    """Feature 4.8: the decisions timeline reads the shared decisions route for this screen only."""
+
+    def test_reads_shared_route(self):
+        js = (SCREEN / 'screen.js').read_text(encoding='utf-8')
+        self.assertIn("api('/api/decisions?screen=' + SLUG)", js)
+        self.assertIn('d.screen === SLUG', js)
+        self.assertIn('id="decided"', (SCREEN / 'index.html').read_text(encoding='utf-8'))
 
 
 if __name__ == '__main__':

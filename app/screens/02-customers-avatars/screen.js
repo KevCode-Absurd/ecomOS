@@ -780,6 +780,26 @@
     }));
   }
 
+  // ---------- decisions taken on this screen ----------
+  const CHOICE = { agent: ['Agent does it', 'good'], person: ['Sent to a person', 'accent'], not_now: ['Not now', 'warn'] };
+  async function renderDecided(actions) {
+    let rows = [];
+    try { const r = await api('/api/decisions?screen=' + SLUG); rows = Array.isArray(r) ? r : (r.decisions || r.rows || []); }
+    catch (e) { mount('#decided', el('p', { class: 'muted small', text: 'Decisions log unavailable: ' + e.message })); return; }
+    const byId = {}; for (const a of actions) byId[a.id] = a;
+    rows = rows.filter((d) => d.screen === SLUG).slice().reverse();
+    const counts = rows.reduce((o, d) => { o[d.choice] = (o[d.choice] || 0) + 1; return o; }, {});
+    document.getElementById('decided-sub').textContent = rows.length ? rows.length + ' decisions: ' + Object.entries(counts).map(([k, n]) => n + ' ' + (CHOICE[k] ? CHOICE[k][0].toLowerCase() : k)).join(', ') + '. "Not now" comes back after 14 days.'
+      : 'No decision yet. Approve, send or snooze any move above and it lands here with its check date.';
+    if (!rows.length) { mount('#decided', el('p', { class: 'muted small', text: 'Nothing decided on this screen yet.' })); return; }
+    mount('#decided', UI.timeline(rows.slice(0, 20).map((d) => {
+      const a = byId[d.finding_id] || null;
+      const back = d.choice === 'not_now' ? new Date(new Date(d.time).getTime() + 14 * 864e5) : null;
+      return { when: fmt.date(d.time), who: (CHOICE[d.choice] || [d.choice])[0], tone: (CHOICE[d.choice] || [null, null])[1] === 'warn' ? 'warn' : 'good',
+        title: a ? a.title : (d.finding_id || d.capability), text: back ? 'Back on the plan ' + fmt.date(back) : (a && a.check_on ? 'Check on ' + fmt.date(a.check_on) : (d.reason || '')) };
+    })));
+  }
+
   // ---------- hand-off packs ----------
   async function renderHandoff() {
     let h;
@@ -865,6 +885,7 @@
     mount('#voice', ...voiceCards(d.voice, load));
     if (!deskTabs) buildDesk(r.actions || []);
     renderTests();
+    renderDecided(r.actions || []);
     renderHandoff();
     document.getElementById('audit-sub').textContent = a.findings.length + ' findings from ' + a.rules.length + ' rules. Brain version ' + String(a.brain_version || '').slice(0, 7) + '.';
     mount('#audit', auditTable(a.findings));
