@@ -810,7 +810,8 @@ def r08_r09(d, ends_on):
     cb = c.get("calendar_break")
     if cb:
         ev = [_ev("cohorts_falling_together", cb["share"], "%", ends_on, "cohorts", baseline=builds.CLIFF_SHARE, simulated=True),
-              _ev("cohorts_alive", cb["cohorts"], "n", ends_on, "cohorts", simulated=True)]
+              _ev("cohorts_alive", cb["cohorts"], "n", ends_on, "cohorts", simulated=True),
+              _ev("cohort_fall_line", builds.CLIFF_DROP, "%", ends_on, "cohorts", baseline=builds.CLIFF_DROP, simulated=True)]
         st = cb.get("stake") or {}
         s = f"In {cb['month']}, {round(cb['share'] * 100)} percent of {cb['cohorts']} cohorts fell 40 percent or more at once."
         if st.get("fall_last_year") is not None:
@@ -860,7 +861,8 @@ def r11_r12(d, ends_on):
                             ev, s, "BRAND-C13", 0.5, [], ends_on))
     g = d["copy_gap"]
     if g.get("available") and g["missing"] >= 3:
-        ev = [_ev("praise_words_missing", g["missing"], "n", ends_on, "brain.language_bank", baseline=3)]
+        ev = [_ev("praise_words_missing", g["missing"], "n", ends_on, "brain.language_bank", baseline=3),
+              _ev("praise_words_read", len(g["rows"]), "n", ends_on, "brain.language_bank")]
         top = ", ".join([r["word"] for r in g["rows"] if r["verdict"] == "missing"][:5])
         s = f"{g['missing']} of the top {len(g['rows'])} praise words never appear in our own words, like {top}."
         out.append(_finding("CUST-R12", "medium", {"type": "brand", "id": "copy_gap", "label": "Buyer words we never say"},
@@ -940,12 +942,14 @@ def r17_r23(d, ends_on):
     o = d["offer_map"]
     if o.get("action") and o.get("push"):
         ev = [_ev("ads_with_pushed_offer", o["push"]["ads"], "n", ends_on, "brain.offers"),
-              _ev("doubts_it_answers", 0, "n", ends_on, "brain.objection_ladders", baseline=1)]
+              _ev("doubts_it_answers", 0, "n", ends_on, "brain.objection_ladders", baseline=1),
+              _ev("live_ads", o["push"]["of"], "n", ends_on, "brain.learnings")]
         s = f"{o['push']['ads']} of {o['push']['of']} live ads push a discount that answers none of our buyers' doubts."
         out.append(_finding("CUST-R20", "medium", {"type": "offer", "id": "pushed_offer", "label": "The offer our ads push"}, ev, s, "LIFE-C42", 0.5,
                             [o["push"]["id"]], ends_on))
     for m in d["timing"]["moves"]:
-        ev = [_ev("season_lift", m["lift"], "x", ends_on, "brain.language_bank", baseline=builds.SEASON_LIFT)]
+        ev = [_ev("season_lift", m["lift"], "x", ends_on, "brain.language_bank", baseline=builds.SEASON_LIFT),
+              _ev("season_share_of_complaints", m["share"], "%", ends_on, "brain.language_bank", baseline=round(m["share"] / m["lift"], 4))]
         s = f"{m['theme'].replace('_', ' ').capitalize()} complaints peak in {m['season']}: {round(m['share'] * 100)} percent of all complaints then."
         out.append(_finding("CUST-R21", "high" if m["late"] else "medium", {"type": "ladder_rung", "id": "season_" + m["theme"], "label": f"{m['theme'].replace('_', ' ')}, {m['season']}"},
                             ev, s, "SITE-C38", 0.5, [], ends_on))
@@ -1032,7 +1036,8 @@ def r31(d, ends_on):
     for r in x["rows"]:
         if r["verdict"] not in ("sales_higher", "reviews_higher", "sales_only"):
             continue
-        ev = [_ev("sales_share", r["sales_share"], "%", ends_on, "products_monthly", simulated=True)]
+        med = builds._median([y["sales_share"] for y in x["rows"] if y["sales_share"] is not None])
+        ev = [_ev("sales_share", r["sales_share"], "%", ends_on, "products_monthly", baseline=round(med, 4) if med is not None else None, simulated=True)]
         if r["review_share"] is not None:
             ev.append(_ev("review_share", r["review_share"], "%", ends_on, "brain.avatars"))
             ev.append(_ev("sales_to_review_ratio", r["ratio"], "x", ends_on, "products_monthly", baseline=builds.SALES_GAP))

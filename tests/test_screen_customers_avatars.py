@@ -2269,3 +2269,31 @@ class SurveyBack(TempBrain):
             if made:
                 folder.rmdir()
             api._OVERVIEW_CACHE.clear()
+
+
+class NumbersVisible(TempBrain):
+    """Feature 9.6: depth rule 4. Every open finding has a baseline or threshold in its evidence, and every number its
+    sentence quotes is in the evidence. Star labels ("1 or 2 star"), month labels ("month 6") and dates are labels."""
+
+    def test_every_number_is_backed(self):
+        bad = []
+        for f in api.audit.run('bombas', RANK_WINDOW, api.BRAIN_ROOT):
+            if f['status'] != 'open':
+                continue
+            ev = f['evidence']
+            if not any(e['baseline'] is not None for e in ev):
+                bad.append((f['id'], 'no baseline'))
+            vals = set()
+            for e in ev:
+                for v in (e['value'], e['baseline']):
+                    if isinstance(v, (int, float)):
+                        for w in (v, abs(v)):
+                            vals |= {str(w), str(round(w * 100)), str(round(w * 100, 1)), f'{w:,}', str(round(w, 2))}
+                            if float(w).is_integer():
+                                vals.add(str(int(w)))
+            s = re.sub(r'"[^"]*"', '', f['sentence'])
+            s = re.sub(r'\b20\d\d-\d\d(-\d\d)?\b|\b1 (or|and) 2 stars?\b|\bmonths? \d+( to (month )?\d+)?\b', '', s)
+            for n in re.findall(r'\d[\d,]*\.?\d*', s):
+                if n.rstrip('.,') not in vals:
+                    bad.append((f['id'], n))
+        self.assertEqual(bad, [])
