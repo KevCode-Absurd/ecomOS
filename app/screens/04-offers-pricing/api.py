@@ -421,6 +421,10 @@ def finding_history(brand, findings, ends_on, path=None):
         hist = {}
     end = ends_on.isoformat() if hasattr(ends_on, 'isoformat') else str(ends_on)
     now = {f['id']: f for f in findings}
+    prior = max((h.get('last_seen') or '' for h in hist.values()), default='')
+    prior = prior if prior and prior < end else None
+    fresh = [f['id'] for f in findings if prior and f.get('status') == 'open'
+             and (f['id'] not in hist or hist[f['id']].get('status') != 'open')]
     unavailable_rules = {f['rule_id'] for f in findings if f.get('status') == 'unavailable'}
     for fid, f in now.items():
         h = hist.get(fid)
@@ -445,7 +449,7 @@ def finding_history(brand, findings, ends_on, path=None):
         path.write_text(json.dumps(hist, indent=1, sort_keys=True), encoding='utf-8')
     except OSError:
         pass   # a read-only disk keeps the page working; history just does not carry over
-    return resolved
+    return {'resolved': resolved, 'new': fresh, 'prior_run': prior}
 
 
 def overview(data, brand):
@@ -456,7 +460,7 @@ def overview(data, brand):
             'simulated': bool(b.get('simulated') or b.get('fictional')), 'fictional': bool(b.get('fictional')), 'market': b.get('market')}
     # one path for every brand: a brand folder, or a data source with no folder (the sample brand)
     ranked = actions.rank(brand, {'ends_on': ends_on.isoformat()}, data=None if brand else data)
-    resolved = finding_history(brand, ranked['findings'], ends_on, HISTORY_PATH.get(brand))
+    hist = finding_history(brand, ranked['findings'], ends_on, HISTORY_PATH.get(brand))
     desk = {k: ranked[k] for k in DESK_KEYS}
     plan, snoozed = with_decisions(ranked['actions'])
     mark_snoozed(ranked['findings'], snoozed)
@@ -475,7 +479,8 @@ def overview(data, brand):
                          **a['plan_record']} for a in planned],
             'stack': offer_stack(rd), 'threshold': th, 'bfcm': bfcm(rd), **desk,
             'creep': creep_rule(months), 'chart': chart(months), 'findings': ranked['findings'], 'rules': audit.RULES,
-            'settings': page_settings(), 'blind_spots': blind_spots(ranked, rd), 'week': week(ranked, rd), 'resolved': resolved}
+            'settings': page_settings(), 'blind_spots': blind_spots(ranked, rd), 'week': week(ranked, rd), 'resolved': hist['resolved'],
+            'changes': {'new': hist['new'], 'prior_run': hist['prior_run']}}
 
 
 def rank(brand='bombas', window=None):

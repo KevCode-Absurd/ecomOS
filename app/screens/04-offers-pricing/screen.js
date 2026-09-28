@@ -93,6 +93,13 @@
       foot: el('div', { class: 'row' }, UI.rubricLegend(), el('span', { class: 'micro faint', text: 'Ranking: critical first by stake, then rubric total, severity, stake. "Not now" snoozes ' + SET.snooze_days + ' days.' })),
       empty: 'No open offer or price move for this window.',
     }));
+    const ch = d.changes || {};
+    if (ch.prior_run && ((ch.new || []).length || (d.resolved || []).length)) {
+      const newActs = (ch.new || []).map((fid) => findAction(fid)).filter(Boolean);
+      document.getElementById('plan').append(el('div', { class: 'card flat tight week' }, el('span', { class: 'kicker', text: 'Since ' + fmt.date(ch.prior_run) }),
+        el('span', { class: 'small', text: (ch.new || []).length + ' new ' + ((ch.new || []).length === 1 ? 'finding' : 'findings') + ', ' + (d.resolved || []).filter((h) => h.resolved_on > ch.prior_run).length + ' resolved.' }),
+        ...newActs.slice(0, 3).map((a) => el('button', { class: 'btn soft sm', type: 'button', text: a.title.length > 48 ? a.title.slice(0, a.title.lastIndexOf(' ', 48)) + '...' : a.title, onclick: () => openAction(a) }))));
+    }
     const wk = d.week;
     if (wk && wk.approvals) {
       const firstA = ACTIONS.find((a) => a.id === wk.moves[0]);

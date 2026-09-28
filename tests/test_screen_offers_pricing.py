@@ -2199,18 +2199,20 @@ class FindingHistoryTest(unittest.TestCase):
         a = f('a'); a['first_seen'] = '2026-09-01'
         api.finding_history('t', [a, f('b')], date(2026, 9, 1), path)
         a2 = f('a'); a2['first_seen'] = '2026-09-08'
-        res = api.finding_history('t', [a2], date(2026, 9, 8), path)
+        out = api.finding_history('t', [a2, f('n')], date(2026, 9, 8), path)
         self.assertEqual(a2['first_seen'], '2026-09-01')              # kept across runs
-        self.assertEqual([(r['id'], r['resolved_on']) for r in res], [('b', '2026-09-08')])
+        self.assertEqual([(r['id'], r['resolved_on']) for r in out['resolved']], [('b', '2026-09-08')])
+        self.assertEqual((out['new'], out['prior_run']), (['n'], '2026-09-01'))   # new since the last run
         un = f('c', 'unavailable', 'OFFER-R99')
-        res = api.finding_history('t', [un], date(2026, 9, 15), path)
+        res = api.finding_history('t', [un], date(2026, 9, 15), path)['resolved']
         self.assertNotIn('a', [r['id'] for r in res])                  # rule could not read: not resolved
-        res = api.finding_history('t', [], date(2026, 10, 30), path)
+        res = api.finding_history('t', [], date(2026, 10, 30), path)['resolved']
         self.assertNotIn('b', [r['id'] for r in res])                  # resolved more than 28 days ago: archived
 
     def test_overview_uses_temp(self):
         d = api.handle(Req(['overview']))
         self.assertIn('resolved', d)
+        self.assertIn('new', d['changes'])
         self.assertTrue((_HIST / 'findings.bombas.json').is_file())
 
 
