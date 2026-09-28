@@ -139,3 +139,8 @@ Metrics to propose in a contract session (computed in `audit.py` for now, from `
 4. Chart: orders per 1,000 views by hook, 90 days against the 90 before, median hook as the line.
 5. Audit: 16 rules; R16 ($116, Fit check) and R05 fire on Bombas, 12 are unavailable until their tables connect, R03 is IN only.
 6. Tests in `tests/test_screen_organic_content.py` pass; content metrics wait for a contract session to move into `app/metrics.py`.
+
+
+## Round 1 job 1 (added 28 Sep 2026 by the lead session)
+
+On the full-scale rebuild the 5 simulated hooks all sell between 0.18 and 0.20 matched orders per 1,000 views, so ORG-R16 (hook under 0.75 x the median) never trips and the other 11 rules wait on connectors. Two fixes: ask the generator session to spread hook performance in content_posts (one weak hook at 0.5 x, one strong at 1.5 x, per the calibration contract's noise rules), and add a rule that reads the brain's Ad Library learnings for creator-style video share against own organic video share. Tests then assert a firing again.
