@@ -710,5 +710,41 @@ class ParityTest(unittest.TestCase):
             self.assertNotIn('(-', a['artefact']['draft'])
 
 
+class DisciplineTest(unittest.TestCase):
+    """Round 2 feature 3: discount discipline scorecard, creep and always-on rules, the drafted policy."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.rd = audit.Reader(None, 'bombas', audit.last_full_day(None, 'bombas'))
+        cls.d = audit.discipline(cls.rd)
+        cls.out = api.actions.rank('bombas')
+
+    def test_scorecard(self):
+        ty = self.d['this_year']
+        self.assertTrue(ty)
+        self.assertEqual(ty['promo_days'], len(ty['promo_dates']))
+        self.assertTrue(0 <= ty['always_on_share'] <= 1)
+        self.assertTrue(0 <= ty['promo_net_share'] <= 1)
+
+    def test_always_on_rides_on_the_code_test(self):
+        pb = audit._playbook()
+        ty = self.d['this_year']
+        f = next((f for f in self.out['findings'] if f['rule_id'] == 'OFFER-R19'), None)
+        share = api.model.brain_value(self.rd, 'offers.promo_share_active_ads')[0]
+        should = ty['always_on_share'] > pb.ALWAYS_ON and share['ads_with_code'] / share['active_ads'] > pb.CODE_ADS_SHARE
+        self.assertEqual(bool(f), should)
+        if f:
+            host = next(a for a in self.out['actions'] if f['id'] in a['finding_ids'])
+            if any(a['rule_id'] == 'OFFER-R08' for a in self.out['actions']):
+                self.assertEqual(host['rule_id'], 'OFFER-R08')
+            else:
+                self.assertEqual(host['artefact']['kind'], 'policy')
+
+    def test_policy_draft_uses_brand_history(self):
+        pol = self.out['discipline']['policy']
+        self.assertIn('Depth cap', pol)
+        self.assertIn(f'{self.d["this_year"]["always_on_share"] * 100:.0f} percent', pol)
+
+
 if __name__ == '__main__':
     unittest.main()

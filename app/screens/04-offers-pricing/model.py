@@ -794,3 +794,42 @@ def marketplace_parity(rd, patterns, gap):
     return {'site_per_item_by_pack': site, 'rows': rows, 'gap': gap, 'channel_sales': sales,
             'channel_month': ms[-1] if ms else None,
             'basis': 'listing price over the pack count in its title, against the site\'s net sales over items sold for the same pack size'}
+
+
+# ---------------------------------------------------------------- discount discipline
+
+def discount_discipline(rd, promo_ratio):
+    """Discount share of gross per day over the last 365 days and the 365 before: the median, promo days (share at
+    least promo_ratio times the median), their share of net sales, the share of discount dollars spent on ordinary
+    days, and the blended rate over the last 90 days against the same 90 days a year before."""
+    import statistics
+    rows = rd.table('daily') or []
+    by = {r['date']: r for r in rows}
+    end = rd.ends_on
+
+    def year(stop):
+        ds = [(stop - timedelta(days=i)).isoformat() for i in range(365)]
+        if any(d not in by for d in ds):
+            return None
+        rs = [by[d] for d in ds]
+        sh = [r['discounts'] / r['gross_sales'] for r in rs if r['gross_sales']]
+        med = statistics.median(sh)
+        promo = [r for r in rs if r['gross_sales'] and r['discounts'] / r['gross_sales'] >= promo_ratio * med]
+        disc = sum(r['discounts'] for r in rs)
+        return {'median_share': round(med, 4), 'promo_days': len(promo),
+                'promo_dates': [r['date'] for r in promo],
+                'promo_net_share': round(sum(r['net_sales'] for r in promo) / sum(r['net_sales'] for r in rs), 4),
+                'always_on_share': round(1 - sum(r['discounts'] for r in promo) / disc, 4) if disc else None,
+                'discount_dollars': round(disc, 2)}
+
+    def blended(stop, n=90):
+        ds = [(stop - timedelta(days=i)).isoformat() for i in range(n)]
+        if any(d not in by for d in ds):
+            return None
+        g = sum(by[d]['gross_sales'] for d in ds)
+        return round(sum(by[d]['discounts'] for d in ds) / g, 4) if g else None
+
+    now, before = year(end), year(end - timedelta(days=365))
+    return {'this_year': now, 'last_year': before, 'blended_90d': blended(end),
+            'blended_90d_last_year': blended(end - timedelta(days=364)), 'promo_ratio': promo_ratio,
+            'basis': 'discounts over gross sales per day from the daily aggregate, all channels'}

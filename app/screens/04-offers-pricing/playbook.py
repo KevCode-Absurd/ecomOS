@@ -151,3 +151,8 @@ MIN_PROOF_LED = 2         # at least 2 competitors priced above us run no discou
 # site's paid price per item at the same pack size undercuts the site. Pack counts are read from listing titles.
 PARITY_GAP = 0.10
 PACK_PATTERNS = (r'(\d+)\s*-?\s*(?:pack|pairs?|pcs|pk)\b', r'\((\d+)\s*(?:pack|pairs?)\)')
+
+# Discount discipline (screen 04, OFFER-R18 and OFFER-R19).
+CREEP_POINTS = 5          # room spec: discount share of gross up more than 5 points over 3 months is creep
+PROMO_DAY_RATIO = 1.5     # a day whose discount share is 1.5 times the year's median is a promo day
+ALWAYS_ON = 0.75          # more than 75 percent of discount dollars spent on ordinary days: the discount is always on

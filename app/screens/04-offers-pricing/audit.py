@@ -73,6 +73,13 @@ Rules
              months). One finding for all such listings. Money null: the sales they take are not in the data; the
              channel's last full month from marketplace_monthly is shown for scale. Reputation 4 override (price
              integrity across channels). Capability PROD-C46 (human assist): a person checks the seller.
+  OFFER-R18  Discount creep (room spec): discount share of gross in the last full month more than
+             playbook.CREEP_POINTS points above the month 3 before. Money: the extra points times the month's gross.
+             The action is a discount policy. Capability LIFE-C38 (founder gate).
+  OFFER-R19  Always-on discounting: more than playbook.ALWAYS_ON of the year's discount dollars go out on ordinary
+             days (not promo days, model.discount_discipline) while the first-order code is in more than
+             playbook.CODE_ADS_SHARE of active ads. Rides on the first-order code test when it fires. Money null.
+             Capability LIFE-C38 (founder gate).
   OFFER-R03  Margin after discount per SKU. Needs cogs_landed keyed by the store's SKUs. Unavailable while no
              finance_inputs SKU key matches a product SKU. Capability MONEY-C05 (founder gate). Owner: 04.
   OFFER-R04  A deal-breaker rung with no proof: the top rung of an objection ladder whose proof is empty or
@@ -146,6 +153,10 @@ RULES = [
      'capability': 'BRN-C11', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R17', 'name': 'Marketplace listings under the site price', 'entity_type': 'offer',
      'inputs': ['brain.marketplaces', 'products_monthly', 'marketplace_monthly'], 'capability': 'PROD-C46', 'owner_screen': SCREEN},
+    {'rule_id': 'OFFER-R18', 'name': 'Discount creep', 'entity_type': 'offer', 'inputs': ['monthly'],
+     'capability': 'LIFE-C38', 'owner_screen': SCREEN},
+    {'rule_id': 'OFFER-R19', 'name': 'Always-on discounting', 'entity_type': 'offer',
+     'inputs': ['daily', 'brain.offers.promo_share_active_ads'], 'capability': 'LIFE-C38', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R03', 'name': 'Margin after discount per SKU', 'entity_type': 'sku',
      'inputs': ['finance_inputs.cogs_landed keyed by product SKU', 'products'], 'capability': 'MONEY-C05',
      'owner_screen': SCREEN},
@@ -167,6 +178,8 @@ CAPABILITY = {'OFFER-R01': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R15': {'id': 'LIFE-C42', 'autonomy': 'founder_gate'},
               'OFFER-R16': {'id': 'BRN-C11', 'autonomy': 'founder_gate'},
               'OFFER-R17': {'id': 'PROD-C46', 'autonomy': 'human_assist'},
+              'OFFER-R18': {'id': 'LIFE-C38', 'autonomy': 'founder_gate'},
+              'OFFER-R19': {'id': 'LIFE-C38', 'autonomy': 'founder_gate'},
               'OFFER-R06': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R04': {'id': 'LIFE-C36', 'autonomy': 'founder_gate'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
@@ -784,6 +797,46 @@ def rule_parity(rd):
                      money_reason='the sales these listings take from the site are not in the data')]
 
 
+def discipline(rd):
+    return _model().discount_discipline(rd, _playbook().PROMO_DAY_RATIO)
+
+
+def rule_discount(rd):
+    end = rd.ends_on
+    pb = _playbook()
+    out = []
+    mrows = [r for r in (rd.table('monthly') or []) if r.get('gross_sales')]
+    fm = set(_model().full_months(rd, end, 60))
+    full = [r for r in mrows if r['month'] in fm]
+    if len(full) >= 4:
+        a, b = full[-4], full[-1]
+        sa, sb = a['discounts'] / a['gross_sales'], b['discounts'] / b['gross_sales']
+        pts = (sb - sa) * 100
+        if pts > pb.CREEP_POINTS:
+            money = {'usd': round((sb - sa) * b['gross_sales'], 2), 'formula': '(share_now - share_3_months_before) x gross_last_month',
+                     'inputs': {'share_now': round(sb, 4), 'share_3_months_before': round(sa, 4), 'gross_last_month': b['gross_sales']},
+                     'window': b['month']}
+            ev = [_ev('discount_share_of_gross', round(sb, 4), 'ratio', end, baseline=round(sa, 4), baseline_kind='3_months_before',
+                      window=b['month'], source='monthly')]
+            out.append(_finding('OFFER-R18', {'type': 'offer', 'id': 'discount_creep', 'label': 'Discount share'}, 'high', ev,
+                                f'Discounts went from {sa * 100:.1f} to {sb * 100:.1f} percent of gross between {a["month"]} and {b["month"]}.',
+                                money, 0.8, [], end))
+    d = discipline(rd)
+    ty = d['this_year']
+    share, _ = _model().brain_value(rd, 'offers.promo_share_active_ads')
+    code_share = share['ads_with_code'] / share['active_ads'] if isinstance(share, dict) and share.get('active_ads') else None
+    if ty and ty['always_on_share'] is not None and ty['always_on_share'] > pb.ALWAYS_ON and code_share and code_share > pb.CODE_ADS_SHARE:
+        ev = [_ev('discount_dollars_on_ordinary_days', ty['always_on_share'], 'ratio', end, baseline=pb.ALWAYS_ON,
+                  baseline_kind='threshold', window='365d', source='daily'),
+              _ev('promo_days', ty['promo_days'], 'count', end, window='365d', source='daily')]
+        out.append(_finding('OFFER-R19', {'type': 'offer', 'id': 'always_on', 'label': 'Always-on discount'}, 'medium', ev,
+                            f'{ty["always_on_share"] * 100:.0f} percent of the year\'s ${ty["discount_dollars"]:,.0f} in discounts went out on '
+                            f'ordinary days, not in the {ty["promo_days"]} promo days. The code is the discount program.',
+                            None, 0.6, [f'{rd.brand}.offers.first_order_code'], end,
+                            money_reason='priced by the first-order code test'))
+    return out
+
+
 def rule_ladder(rd):
     end = rd.ends_on
     pb = _playbook()
@@ -955,7 +1008,7 @@ def run(brand, window=None, data=None):
     """Findings for one brand, sorted by severity then money at stake. `window` is {ends_on} or None."""
     ends_on = date.fromisoformat(window['ends_on']) if window and window.get('ends_on') else last_full_day(data, brand)
     rd = Reader(data, brand, ends_on)
-    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
+    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
            rule_unanswered(rd))
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f.get('money_at_stake') or {}).get('usd') or -1), f['id']))
     return out

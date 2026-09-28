@@ -76,6 +76,7 @@ class Ctx:
         self.guarantee = audit.guarantee(rd)
         self.position = audit.competitor_position(rd)
         self.parity = audit.marketplace_parity(rd)
+        self.discipline = audit.discipline(rd)
         self.ship_rate = (model.brain_value(rd, 'offers.standard_shipping_cost')[0] or {}).get('cost_usd') if rd.brand else None
         self.scenarios = (model.threshold_scenarios(rd, self.threshold, self.ship_rate, self.be['value'], (self.po or {}).get('units') or 1)
                           if self.threshold is not None and self.be.get('value') is not None else [])
@@ -561,6 +562,40 @@ def parity_action(f, a, ctx):
     return a
 
 
+def discount_policy(ctx):
+    d = ctx.discipline
+    ty, ly = d.get('this_year') or {}, d.get('last_year') or {}
+    bf = next((w for w in ctx.calendar if w['key'] == 'bfcm'), None)
+    depth = (bf or {}).get('last_year') or {}
+    lines = ['Discount policy (draft for the founder)']
+    if depth.get('depth') is not None:
+        lines.append(f'1. Depth cap: no offer deeper than last Black Friday, {depth["depth"] * 100:.1f} percent of gross.')
+    if ty:
+        lines.append(f'2. Promo days: at most {max(ty["promo_days"], ly.get("promo_days") or 0)} a year (this year {ty["promo_days"]}, last year {ly.get("promo_days", "unavailable")}).')
+    lines.append('3. No stacking: one code per order; the first-order code for new customers only.')
+    if ty and ty.get('always_on_share') is not None:
+        lines.append(f'4. Always-on: {ty["always_on_share"] * 100:.0f} percent of discount dollars go out on ordinary days. The code leaves ads that reach '
+                     'returning customers; a price-keeping offer takes its place where it tests better.')
+    if d.get('blended_90d') is not None:
+        lines.append(f'5. Review monthly: the blended 90-day discount rate is {d["blended_90d"] * 100:.1f} percent against '
+                     f'{(d.get("blended_90d_last_year") or 0) * 100:.1f} percent a year ago.')
+    return '\n'.join(lines)
+
+
+def discount_action(f, a, ctx):
+    a.update({
+        'title': 'Set the discount rules: depth cap, promo days, no stacking',
+        'owner': 'agent_drafts',
+        'artefact': {'kind': 'policy', 'label': 'Discount policy', 'draft': discount_policy(ctx)},
+        'steps': steps(('agent', 'Pull discount share by day and by month, and last year\'s promo days.'),
+                       ('agent', 'Draft the policy with caps from the brand\'s own history.'),
+                       ('person', 'Approve the policy. It is saved to the brain as a plan.'),
+                       ('agent', 'Check every new offer against it before it reaches approval.')),
+        'win_rule': 'Blended 90-day discount rate at or under last year.', 'stop_rule': None,
+        'check_on': ctx.check_on(30), 'time_to_ship_hours': 2})
+    return a
+
+
 def returns_block(rd):
     """returns_by_reason for the window, or the labelled fixture when the metric is unavailable."""
     m = rd.m('returns_by_reason', audit.WINDOW)
@@ -720,7 +755,8 @@ def rescore(a, dims):
 BUILDERS = {'OFFER-R01': threshold_action, 'OFFER-R04': rung_action, 'OFFER-R08': first_order_action,
             'OFFER-R10': red_line_action, 'OFFER-R11': promo_action, 'OFFER-R12': gifting_action,
             'OFFER-R14': guarantee_action, 'OFFER-R05': stale_action, 'OFFER-R06': pull_action, 'OFFER-R15': claims_action,
-            'OFFER-R16': position_action, 'OFFER-R17': parity_action}
+            'OFFER-R16': position_action, 'OFFER-R17': parity_action, 'OFFER-R18': discount_action,
+            'OFFER-R19': discount_action}
 
 
 def build(f, rd, ctx, nr):
@@ -753,8 +789,10 @@ def rank(brand='bombas', window=None):
     actions = [build(f, rd, ctx, nr) for f in findings if f.get('status') in ('open', 'unavailable', None)]
     actions = merge_connect(merge_gifting(merge_red_line(merge_ladder(actions, ctx)), ctx))
     actions = merge_into(merge_into(actions, 'OFFER-R05', 'OFFER-R01'), 'OFFER-R06', 'OFFER-R01')
+    actions = merge_into(actions, 'OFFER-R19', 'OFFER-R08')
     actions = [a for a in actions if not RANK.validate_action(a)]
     actions.sort(key=RANK.sort_key)
     return {'screen': SCREEN, 'brand': brand, 'window': w, 'simulated': True, 'net_revenue_28d': nr,
             'actions': actions, 'findings': findings, 'objections': ctx.objections, 'returns': returns_block(rd),
-            'ladder': dict(ctx.ladder, moves=ctx.ladder_rows), 'first_order': ctx.first_order, 'waterfalls': ctx.waterfalls, 'calendar': ctx.calendar, 'gifting': ctx.gifting, 'guarantee': ctx.guarantee, 'position': ctx.position, 'parity': ctx.parity}
+            'ladder': dict(ctx.ladder, moves=ctx.ladder_rows), 'first_order': ctx.first_order, 'waterfalls': ctx.waterfalls, 'calendar': ctx.calendar, 'gifting': ctx.gifting, 'guarantee': ctx.guarantee, 'position': ctx.position, 'parity': ctx.parity,
+            'discipline': dict(ctx.discipline, policy=discount_policy(ctx))}

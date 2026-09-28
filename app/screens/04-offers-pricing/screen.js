@@ -161,8 +161,9 @@
   }
 
   function discountBlock(d) {
-    const c = d.chart, b = d.bfcm || {}, cr = d.creep || {};
-    const head = { title: 'Are we training buyers to wait for a discount?', sub: cr.rule || '' };
+    const c = d.chart, dd = d.discipline;
+    const head = { title: 'Are we training buyers to wait for a discount?', sub: 'Discount share of gross by day and by month. A promo day runs at ' + (dd ? dd.promo_ratio : 1.5) + ' times the year\'s median share or more; the rest is always-on discounting.' };
+    const a = ACTIONS.find((x) => (x.finding_ids || []).some((id) => id.indexOf('OFFER-R19') >= 0 || id.indexOf('OFFER-R18') >= 0));
     const parts = [];
     if (c.unavailable) parts.push(UI.emptyState({ screen: SLUG, title: 'No monthly sales', text: c.reason, missing: [c.fix] }));
     else {
@@ -170,12 +171,18 @@
       parts.push(Charts.line({ labels: c.labels.map((m) => m.slice(2)), series: [{ name: 'Discount share of gross', values: c.discount_share }], unit: '%',
         title: 'Discounts as a share of gross sales, ' + c.window, note: note + 'Discounts over gross sales, all channels.', maxLabels: 8 }));
     }
-    parts.push(kv([
-      ['Creep rule', cr.sentence || NA],
-      ['Last BFCM', b.unavailable ? NA + ': ' + b.reason : pct(b.depth) + ' of gross from ' + fmt.date(b.start) + ' to ' + fmt.date(b.end) + ', against ' + pct(b.baseline) + ' in the 28 days before (' + (b.points >= 0 ? '+' : '') + b.points.toFixed(1) + ' points, ' + fmt.int(b.orders) + ' orders).'],
-    ]));
-    return section('desk-discount', head, el('div', { class: 'card' }, ...parts),
-      actionLine(cr.severity === 'high' ? 'Discount share is creeping. Cap code stacking and move the next promo to a gift.' : 'No creep this quarter. Hold the discount calendar as it is.', null));
+    const ty = (dd || {}).this_year || {}, ly = (dd || {}).last_year || {};
+    const score = UI.table({ columns: [{ key: 'k', label: 'Measure' }, { key: 'now', label: 'Last 365 days' }, { key: 'before', label: 'The 365 before' }], sort: false, rows: [
+      { k: 'Median day, discount share', now: pct(ty.median_share), before: pct(ly.median_share) },
+      { k: 'Promo days', now: ty.promo_days == null ? NA : String(ty.promo_days), before: ly.promo_days == null ? NA : String(ly.promo_days) },
+      { k: 'Net sales on promo days', now: pct(ty.promo_net_share), before: pct(ly.promo_net_share) },
+      { k: 'Discount dollars on ordinary days', now: pct(ty.always_on_share, 0), before: pct(ly.always_on_share, 0) },
+      { k: 'Blended rate, last 90 days', now: pct(dd && dd.blended_90d), before: pct(dd && dd.blended_90d_last_year) },
+    ] });
+    const policy = dd && dd.policy ? el('div', null, el('h4', { text: 'Discount policy, drafted from the brand\'s history' }), el('pre', { class: 'spec', text: dd.policy }), UI.copyButton({ label: 'Copy policy', text: () => dd.policy })) : null;
+    return section('desk-discount', head, el('div', { class: 'grid two' }, el('div', { class: 'card' }, ...parts), el('div', { class: 'card tight' }, score)),
+      el('div', { class: 'card' }, el('p', { class: 'small', text: (d.creep || {}).sentence || '' }), policy),
+      actionLine(ty.always_on_share != null ? pct(ty.always_on_share, 0) + ' of discount dollars go out on ordinary days. The code is the discount program; test what replaces it.' : 'Discount history unavailable.', a));
   }
 
   function ladderBlock(l) {
