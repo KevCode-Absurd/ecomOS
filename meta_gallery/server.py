@@ -462,7 +462,7 @@ def make_handler(gallery):
                     try:
                         meta = products.product(name, code, refresh=(qs.get('refresh') or [''])[0] == '1')
                     except products.ProductError as e:
-                        return self.send_json({'error': str(e)}, 502)
+                        return self.send_json({'error': ai.scrub(e)}, 502)
                     meta = dict(meta, photos=[dict(ph, src=f"/product-photo/{meta['slug']}/{ph['file']}") for ph in meta.get('photos', [])])
                     return self.send_json({'product': meta, 'ads': ai.list_product_ads(meta['slug'])})
                 if len(parts) == 3 and parts[0] == 'product-photo':
@@ -594,9 +594,11 @@ def make_handler(gallery):
                     images = asks = 0
                 return self.send_json(out)
             except (ai.AIError, products.ProductError) as e:
-                return self.send_json({'error': str(e)}, 502)
+                return self.send_json({'error': ai.scrub(e)}, 502)
             except (ValueError, UnicodeDecodeError, TypeError) as e:
-                return self.send_json({'error': str(e)}, 400)
+                return self.send_json({'error': ai.scrub(e)}, 400)
+            except Exception:
+                return self.send_json({'error': 'Something went wrong on the server.'}, 500)
             finally:
                 if name and (images or asks):
                     team.refund(name, images, asks)

@@ -50,6 +50,8 @@ def settings(env_path=None):
     # .env on this machine first, then the host's environment (secrets on a server like Render).
     env = {k: os.environ[k] for k in list(DEFAULTS) + ['ANTHROPIC_API_KEY', 'OPENAI_API_KEY'] if os.environ.get(k)}
     env.update(load_env(Path(env_path) if env_path else ROOT / '.env'))
+    # Pasted secrets often carry a trailing newline or space. Strip them so they are valid header values.
+    env = {k: (v or '').strip() for k, v in env.items()}
     cfg = {k: env.get(k) or v for k, v in DEFAULTS.items()}
     cfg['anthropic_key'] = env.get('ANTHROPIC_API_KEY') or ''
     cfg['openai_key'] = env.get('OPENAI_API_KEY') or ''
@@ -67,10 +69,24 @@ def status(env_path=None):
 
 
 def _scrub(text, cfg):
+    text = str(text)
     for k in (cfg.get('anthropic_key'), cfg.get('openai_key')):
         if k:
-            text = text.replace(k, '[key]')
-    return re.sub(r'sk-[A-Za-z0-9_-]{8,}', '[key]', text)
+            for form in (k, repr(k)[1:-1], k.strip()):
+                if form:
+                    text = text.replace(form, '[key]')
+    text = re.sub(r'sk-[A-Za-z0-9_\-]{8,}', '[key]', text)
+    # Anything else that looks like a long secret token (40+ key-like characters) is hidden too.
+    return re.sub(r'[A-Za-z0-9_\-]{40,}', '[hidden]', text)
+
+
+def scrub(text):
+    """Remove any API key or key-like token from a message before it leaves the server."""
+    try:
+        cfg = settings()
+    except Exception:
+        cfg = {}
+    return _scrub(text, cfg)
 
 
 def _post(url, headers, body, cfg, timeout=240):
@@ -88,6 +104,9 @@ def _post(url, headers, body, cfg, timeout=240):
         raise AIError(_scrub(f'{e.code}: {msg}', cfg)) from None
     except (urllib.error.URLError, TimeoutError) as e:
         raise AIError(_scrub(f'Could not reach the API: {getattr(e, "reason", e)}', cfg)) from None
+    except Exception:
+        # Never pass the raw error on: some (like a bad header) print the key itself.
+        raise AIError('The AI request failed before it was sent. Check the API key setting on the server.') from None
 
 
 def _json_from(text):

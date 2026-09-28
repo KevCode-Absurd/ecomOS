@@ -118,6 +118,49 @@ class TeamModeTests(unittest.TestCase):
             self.assertNotIn(CODE_OWNER.encode(), body)
             self.assertNotIn(CODE_TEAM.encode(), body)
 
+    def test_7_pasted_key_with_newline_works_and_never_leaks(self):
+        fake = 'sk-ant-api03-' + 'Z' * 60
+        seen = {}
+
+        class Resp:
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *a):
+                return False
+
+            def read(self):
+                return json.dumps({'content': [{'type': 'text', 'text': '{"ok": 1}'}], 'usage': {}}).encode()
+
+        real_open = urllib.request.urlopen
+
+        def fake_open(req, timeout=None, **kw):
+            if isinstance(req, urllib.request.Request) and req.full_url.startswith(self.base):
+                return real_open(req)  # the test's own calls to the local server
+            seen.update({k.lower(): v for k, v in req.header_items()})
+            return Resp()
+
+        c = self.login(CODE_OWNER)
+        with mock.patch.dict(os.environ, {'ANTHROPIC_API_KEY': fake + '\n', 'TEAM_DAILY_ASKS': '50'}), \
+                mock.patch.object(ai, 'load_env', return_value={}), mock.patch.object(ai.urllib.request, 'urlopen', fake_open):
+            status, body, _ = self.call('/api/ask', {'prompt': 'z' * 30}, cookie=c)
+            self.assertEqual(seen.get('x-api-key'), fake)  # newline stripped
+            # An error that quotes the key comes back scrubbed.
+            with mock.patch.object(ai, 'ask_json', side_effect=ValueError(f"Invalid header value b'{fake}\\n'")):
+                status, body, _ = self.call('/api/ask', {'prompt': 'z' * 30}, cookie=c)
+            self.assertEqual(status, 400)
+            self.assertNotIn(b'sk-ant', body)
+            self.assertNotIn(b'ZZZZZZZZZZ', body)
+            # A bad header value inside the request is turned into a safe message.
+            def bad_open(req, timeout=None, **kw):
+                if isinstance(req, urllib.request.Request) and req.full_url.startswith(self.base):
+                    return real_open(req)
+                raise ValueError(f"Invalid header value b'{fake}\\n'")
+            with mock.patch.object(ai.urllib.request, 'urlopen', bad_open):
+                status, body, _ = self.call('/api/ask', {'prompt': 'z' * 30}, cookie=c)
+            self.assertEqual(status, 502)
+            self.assertNotIn(b'sk-ant', body)
+
 
 if __name__ == '__main__':
     unittest.main()
