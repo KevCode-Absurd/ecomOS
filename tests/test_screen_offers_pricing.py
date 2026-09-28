@@ -1007,5 +1007,46 @@ class SubscriptionNoteTest(unittest.TestCase):
         self.assertFalse([a for a in out['actions'] if 'subscri' in a['title'].lower()])
 
 
+class DepthRulesTest(unittest.TestCase):
+    """Round 3 feature 6: depth.md section 3 applied to this screen."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.out = api.actions.rank('bombas')
+
+    def test_rule5_sized_with_a_stop_rule(self):
+        for a in self.out['actions']:
+            if a['status'] != 'open':
+                continue
+            self.assertTrue((a.get('size') or {}).get('text'), a['id'])
+            self.assertTrue(a.get('stop_rule'), a['id'])
+            self.assertTrue(a.get('check_on'), a['id'])
+
+    def test_rule12_words(self):
+        import re
+        bad = re.compile(r'\b(should|consider|leverage)\b|\u2014', re.I)
+        for a in self.out['actions']:
+            for t in [a['title'], a['why'], a['artefact'].get('draft') or ''] + [x['text'] for x in a['steps']]:
+                self.assertFalse(bad.search(t), (a['id'], t[:80]))
+
+    def test_every_desk_block_ends_in_an_action_line(self):
+        import re
+        js = (SCREEN / 'screen.js').read_text(encoding='utf-8')
+        self.assertIn("id.indexOf('desk-') === 0 && !node.querySelector('.act-line')", js)
+        blocks = re.findall(r"function (\w+Block)\(", js)
+        body = {b: js[js.index('function ' + b + '('):] for b in blocks}
+        for b, src in body.items():
+            end = src.find('\n  }\n')
+            chunk = src[:end]
+            if "section('desk-" in chunk:
+                self.assertIn('actionLine(', chunk, b)
+
+    def test_headings_are_questions_or_orders(self):
+        import re
+        js = (SCREEN / 'screen.js').read_text(encoding='utf-8')
+        for t in re.findall(r"const head = \{ title: '([^']+)'", js):
+            self.assertTrue(t.endswith('?') or t.split()[0] in ('Should',) or '?' in t, t)
+
+
 if __name__ == '__main__':
     unittest.main()

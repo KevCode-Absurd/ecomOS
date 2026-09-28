@@ -233,7 +233,8 @@ def rung_action(f, a, ctx):
                            ('agent', 'Add it next to the size selector and to the ads that meet this doubt.')),
             'win_rule': 'Returns for this doubt stay at the tested level; add to cart rate up.',
             'stop_rule': 'Returns for this doubt back above the control level for 4 weeks.',
-            'check_on': ctx.check_on(28), 'time_to_ship_hours': 3, 'brain_refs': (a.get('brain_refs') or []) + [done['id']]})
+            'check_on': ctx.check_on(28), 'time_to_ship_hours': 3, 'brain_refs': (a.get('brain_refs') or []) + [done['id']],
+            'size': {'text': f'{row["one_star"]} one-star mentions; {done["id"]} moved {done["metric"]} {abs(res["lift"]) * 100:.0f} percent', 'usd': None}})
         return a
     who_ships = {'offer': 'Add the promise line to the product page, the cart and the ads that meet this doubt.',
                  'page_section': 'Add the section to the product page price block.',
@@ -459,7 +460,7 @@ def stale_action(f, a, ctx):
         'steps': steps(('agent', 'Recompute break-even with the label and AOV in force today.'),
                        ('agent', 'Draft the review with the options and what each must achieve.'),
                        ('person', 'Decide: keep the line or approve a test.')),
-        'win_rule': 'A decision logged with the break-even it was made on.', 'stop_rule': None,
+        'win_rule': 'A decision logged with the break-even it was made on.', 'stop_rule': 'Re-decide if break-even moves 5 percent again.',
         'check_on': ctx.check_on(90), 'time_to_ship_hours': 2})
     return a
 
@@ -494,7 +495,7 @@ def claims_action(f, a, ctx):
         'steps': steps(('agent', 'Split claims by reason and by product line.'),
                        ('agent', 'Draft the review and the options.'),
                        ('person', 'Decide the change. CX updates the macros.')),
-        'win_rule': 'Claims back under plan within 56 days.', 'stop_rule': None, 'check_on': ctx.check_on(56), 'time_to_ship_hours': 4})
+        'win_rule': 'Claims back under plan within 56 days.', 'stop_rule': 'Undo a terms change that lifts one-star mentions on the guarantee.', 'check_on': ctx.check_on(56), 'time_to_ship_hours': 4})
     return a
 
 
@@ -593,7 +594,7 @@ def covered_by_registry(actions, ctx):
                          if res.get('lift') is not None else '')
                 a['registry'] = {'id': e['id'], 'relation': 'covered', 'until': e['until']}
                 a['title'] = f'Read {e["id"]} on {e["until"]}, then roll out: {a["title"][0].lower()}{a["title"][1:]}'
-                a['why'] = a['why'] + f' {e["id"]} already tests this: "{e["hypothesis"]}"' + early
+                a['why'] = a['why'] + f' {e["id"]} already tests this on {e["metric"]}.' + early
                 a['artefact'] = dict(a['artefact'], draft=f'Already running as {e["id"]} until {e["until"]}. Roll out this spec only if it holds.\n\n'
                                      + (a['artefact'].get('draft') or ''))
                 a['steps'] = steps(('agent', f'Read {e["id"]} at its read point, {e["until"]}, against its metric ({e["metric"]}).'),
@@ -671,6 +672,7 @@ def position_action(f, a, ctx):
               'Win: contribution per new visitor at or above the code ad. Stop: cost per first order above the target for 7 days.']
     a.update({
         'title': 'Lead 3 ads with proof instead of the code',
+        'size': {'text': f'{us["code_share"] * 100:.0f} percent of active ads carry the code today; 3 proof ads run beside them', 'usd': None},
         'owner': 'agent_drafts',
         'artefact': {'kind': 'ad_brief', 'label': '3 ad briefs that lead with proof', 'draft': '\n'.join(lines)},
         'steps': steps(('agent', 'Pull the guarantee terms, the top open doubt and the price frame from the brain.'),
@@ -702,7 +704,7 @@ def parity_action(f, a, ctx):
         'size': {'text': f'{len(under)} listings, down to {-min(r["gap"] for r in under) * 100:.0f} percent under the site' +
                          ''.join(f'; {k} sold {money(v)} in {mp["channel_month"]}' for k, v in (mp.get('channel_sales') or {}).items()), 'usd': None},
         'win_rule': 'No listing more than 10 percent under the site price per item in 28 days.',
-        'stop_rule': None, 'check_on': ctx.check_on(28), 'time_to_ship_hours': 6})
+        'stop_rule': 'Stop chasing a listing once its seller is confirmed authorised and priced at the minimum.', 'check_on': ctx.check_on(28), 'time_to_ship_hours': 6})
     return a
 
 
@@ -735,7 +737,7 @@ def discount_action(f, a, ctx):
                        ('agent', 'Draft the policy with caps from the brand\'s own history.'),
                        ('person', 'Approve the policy. It is saved to the brain as a plan.'),
                        ('agent', 'Check every new offer against it before it reaches approval.')),
-        'win_rule': 'Blended 90-day discount rate at or under last year.', 'stop_rule': None,
+        'win_rule': 'Blended 90-day discount rate at or under last year.', 'stop_rule': 'Revisit a cap that cuts net sales more than 5 percent in a window.',
         'check_on': ctx.check_on(30), 'time_to_ship_hours': 2})
     return a
 
@@ -760,6 +762,7 @@ def cart_action(f, a, ctx):
              'Win: share of orders at or past tier 2 up, margin per order up. Stop: margin per order down 2 weeks in a row.']
     a.update({
         'title': f'Add a second cart reward at ${cl["tier2"]:,.0f} in {app}',
+        'size': {'text': f'{money(cl["gift_cost"])} a gift; each climber adds ${cl["climb"]:,.0f} and pays for it {cl["cover"]:.1f} times', 'usd': None},
         'owner': 'agent_drafts',
         'artefact': {'kind': 'page_section', 'label': 'Two-tier cart progress bar', 'draft': '\n'.join(lines)},
         'steps': steps(('agent', 'Pick the gift item and confirm stock for 60 days.'),
@@ -788,6 +791,7 @@ def second_order_action(f, a, ctx):
               'Win: month 2 active share up 1 point in the test cohort. Stop: unsubscribes above 1 percent a send.']
     a.update({
         'title': f'Send first-time buyers a second-order offer by day {cc["send_by_day"]}',
+        'size': {'text': f'{cc["new_customers_latest"]:,} new customers a month; 1 point of month 2 repeat is {round(cc["new_customers_latest"] / 100):,} more second orders', 'usd': None},
         'owner': 'agent_drafts',
         'artefact': {'kind': 'flow', 'label': 'Second-order flow: 3 messages, no percent off', 'draft': '\n'.join(lines)},
         'steps': steps(('agent', 'Pull the cohort curve and the pack each first order bought.'),

@@ -14,7 +14,10 @@
 
   // ---------- helpers ----------
   function section(id, head, ...body) {
-    return el('section', { class: 'section', id: id }, UI.sectionHead(head), ...body);
+    const node = el('section', { class: 'section', id: id }, UI.sectionHead(head), ...body);
+    // depth.md rule 9 and section 2: every desk block ends in a line with the next move, even when it is unavailable
+    if (id.indexOf('desk-') === 0 && !node.querySelector('.act-line')) node.append(actionLine('This block waits on the source named above. The connect strip at the top lists it with its steps.', null));
+    return node;
   }
   function kv(pairs) {
     return el('dl', { class: 'kv' }, pairs.flatMap(([k, v]) => [el('dt', { text: k }), el('dd', { text: v })]));
@@ -108,7 +111,9 @@
           { key: 'source', label: 'Source', format: (v, r) => v ? (SOURCE[v] || v) + (r.ref ? ', ' + r.ref.replace(/^https?:\/\//, '').split('?')[0] : '') : NA },
           { key: 'date', label: 'Seen', format: (v) => v ? fmt.date(v) : NA },
           { key: 'tier', label: 'Tier', format: (v) => pretty(v) || NA },
-        ], rows, sort: false })));
+        ], rows, sort: false })),
+      actionLine(rows.filter((r) => !r.id).length ? rows.filter((r) => !r.id).length + ' offer lines are missing from the brain. Add them on the brand brain screen so every rule can read them.'
+        : 'Every offer line has a source and a date. Each move above reads from these records.', null));
   }
 
   function thresholdBlock(th) {

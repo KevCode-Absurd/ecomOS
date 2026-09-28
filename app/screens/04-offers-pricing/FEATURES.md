@@ -72,6 +72,7 @@ Known gaps from round 0:
 | 3.3 | Loyalty offer: 5 percent back in points, priced as a share of gross margin paid in cash against paid in product at landed cost (the product route costs about a quarter as much), against a 25 percent cap flagged as our own heuristic. New rule OFFER-R24 (no loyalty program in the brain) with the spec, placements, win and stop rules; the tool name comes from the brain stack when present | done |
 | 3.4 | Discount ladder creep over time: each promo window's depth in its last two occurrences, the change in points and how much deeper than the 28 days before it ran, as a year-on-year table in the discount block. New rule OFFER-R25 (a window more than 2 points deeper than the time before; money is the extra points times the window's gross) with the discount policy as its action. For this brand every window held or cut its depth, so the rule is quiet | done |
 | 3.5 | Subscription as a note, not built (founder: non-subscription first): the month 1 and month 6 repeat shares from the cohort curve, the deepest subscribe discount each top line could fund at the red line (from 2.7), and the 3 questions the data cannot answer yet (wear-out interval, repeat by first pack, cancel save rate). No rule, no action; the desk block says it is parked | done |
+| 3.6 | depth.md section 3 on this screen: every open move now has a size, a stop rule and a check date (rule 5; 4 sizes and 4 stop rules added), no banned words or em dashes in any title, why, step or draft (rule 12), every desk block ends in a next-move line, including unavailable ones through the section helper (rule 9), and every desk heading is a question. Tests enforce all four | done |
 
 ## Contract asks
 
@@ -206,7 +207,7 @@ Intelligems (threshold and price tests scored by profit per visitor), Rebuy (tie
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.9 | 2026-09-28 | S3.9; screenshot round0.png |
-| 3 | 3.1 registry, 3.2 referral, 3.3 loyalty, 3.4 window creep, 3.5 subscription note | 2026-09-28 | in progress |
+| 3 | 3.1 registry, 3.2 referral, 3.3 loyalty, 3.4 window creep, 3.5 subscription note, 3.6 depth rules | 2026-09-28 | in progress |
 | 2 | 2.1 to 2.10: position, parity, discipline, gift pick, cart ladder, test calendar, depth by line, second order, cost against price, desk tabs | 2026-09-28 | screenshot round2.png |
 | 1 | 1.1 plan first, 1.2 objection to offer map, 1.3 free shipping line, 1.4 pack ladder, 1.5 first-order offer, 1.6 margin waterfall, 1.7 promo calendar, 1.8 gifting and holiday, 1.9 guarantee as an offer, 1.10 rank complete | 2026-09-28 | manager session; screenshot round1.png (updated as the round lands) |
 
