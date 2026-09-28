@@ -1021,5 +1021,24 @@ class Round3Rules(TempBrain):
         self.assertNotIn('02-customers-avatars.CUST-R22.messaging_hierarchy', ids)
 
 
+class DeskTabs(unittest.TestCase):
+    """Feature 4.1: desk sections grouped into tabs; the plan stays first; every desk section sits in one tab."""
+
+    def test_plan_first_and_every_section_in_a_tab(self):
+        import re as _re
+        html = (SCREEN / 'index.html').read_text(encoding='utf-8')
+        js = (SCREEN / 'screen.js').read_text(encoding='utf-8')
+        body = html[html.index('<div class="screen">'):]
+        first = body.index('<section')
+        self.assertTrue(body[first:first + 60].startswith('<section class="section" id="plan-wrap">'))
+        self.assertLess(body.index('id="actions-wrap"'), body.index('id="desk-wrap"'))
+        ids = _re.findall(r'<section class="section" id="([a-z-]+)"', body)
+        above = {'plan-wrap', 'connect-wrap', 'wrong-wrap', 'actions-wrap', 'desk-wrap', 'audit-wrap'}
+        desk_block = js[js.index('const DESK = ['):js.index('let deskTabs')]
+        grouped = _re.findall(r"'([a-z]+-wrap)'", desk_block)
+        self.assertEqual(sorted(set(ids) - above), sorted(grouped))
+        self.assertEqual(len(grouped), len(set(grouped)))
+
+
 if __name__ == '__main__':
     unittest.main()

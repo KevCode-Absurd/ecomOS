@@ -70,6 +70,21 @@ Web pass: Peel, Triple Whale, Lifetimely, Klaviyo predictive, Daasity RFM, Thema
 | 3.9 | When in the year each doubt peaks: a heatmap of 1 and 2 star reviews behind each ladder theme by month of year (Reddit left out). A season is a 3-month window where the theme's share of all complaints is 1.5x its share over the year, with 4 or more, so months the pull over-samples do not fake a season. Each season is a page, email and macro answer to ship 21 days before it starts, flagged ship now when it has started. Bombas: price and value doubts peak Oct to Dec (48 percent of complaints against 26) | done |
 | 3.10 | Seven more audit rules (CUST-R17 perception gap under 50 percent, R18 claim under fire, R19 lookalike page, R20 pushed offer answers no doubt, R21 doubt season, R22 no approved messaging hierarchy, R23 brand health line falling), each paired in `rank` with its drafted work; reputation raised to 5 for R18 and R19 per the audit docstring. 46 actions; the lookalike report, the comfort season and the calf claim now sit in the top 4. Approving the hierarchy clears R22. Screenshot `round3.png` | done |
 
+## Round 4: one desk, hand-offs, and the room's remaining jobs (from 28 Sep 2026)
+
+| # | Feature | Status |
+|---|---|---|
+| 4.1 | The desk in tabs by job (Avatars, Doubts and words, Offers and claims, Retention, Brand and voice) below the plan, what is wrong and the actions; `#tab=<key>` opens a tab. Every desk section sits in exactly one tab (tested); the plan stays the first section | done |
+| 4.2 | Plan by job: pills over the plan filter the ranked moves by desk tab | todo |
+| 4.3 | Tests this screen proposes, in the experiment registry shape, for 25-experiments to read | todo |
+| 4.4 | Hand-off packs: what 09-creative, 10-copy, 07-landing-pages-cro and 14-email-messaging get from this screen, ready to use | todo |
+| 4.5 | Ad naming convention from the ladders, and a parser so objection coverage in ads can run once ads follow it | todo |
+| 4.6 | Is this one avatar or two: split check on the lines and doubts behind each avatar | todo |
+| 4.7 | What changed in the brain since last quarter: a timeline of voice, claims, positioning and avatar changes with a re-check | todo |
+| 4.8 | Decisions on this screen: what was approved, sent to a person or snoozed, with the check date | todo |
+| 4.9 | Avatar value: which avatars sit on the lines with the most revenue, from products_monthly | todo |
+| 4.10 | Audit rules and `rank` for round 4, screenshot `round4.png` | todo |
+
 ### Round 3 founder note (28 Sep 2026)
 
 1. You can now see a lookalike page running 54 ads that send buyers to sockscool.com; the report, support macro and social note are drafted for a person to send.

@@ -724,6 +724,31 @@
     });
   }
 
+  // ---------- the desk, grouped into tabs by job ----------
+  const DESK = [
+    { key: 'avatars', label: 'Avatars', ids: ['avatars-wrap', 'gate-wrap', 'forces-wrap', 'survey-wrap', 'served-wrap', 'misread-wrap'] },
+    { key: 'doubts', label: 'Doubts and words', ids: ['ladders-wrap', 'cover-wrap', 'themes-wrap', 'words-wrap', 'hooks-wrap', 'gap-wrap'] },
+    { key: 'offers', label: 'Offers and claims', ids: ['offers-wrap', 'claims-wrap', 'timing-wrap'] },
+    { key: 'retention', label: 'Retention', ids: ['paths-wrap', 'cohort-wrap', 'mix-wrap', 'moments-wrap', 'health-wrap'] },
+    { key: 'brand', label: 'Brand and voice', ids: ['perc-wrap', 'hier-wrap', 'look-wrap', 'voice-wrap'] },
+  ];
+  let deskTabs = null;
+  function buildDesk(actions) {
+    const open = {};
+    for (const t of DESK) {
+      const box = document.getElementById('desk-' + t.key) || el('div', { id: 'desk-' + t.key, class: 'desk-panel' });
+      for (const id of t.ids) { const sec = document.getElementById(id); if (sec) box.append(sec); }
+      t.box = box;
+      open[t.key] = 0;
+    }
+    const wanted = (location.hash.match(/tab=([a-z]+)/) || [])[1];
+    deskTabs = UI.tabs({ items: DESK.map((t) => ({ key: t.key, label: t.label, n: t.ids.length, panel: t.box })),
+      current: DESK.some((t) => t.key === wanted) ? wanted : 'avatars',
+      onChange: (k) => { try { history.replaceState(null, '', '#tab=' + k); } catch (e) { /* no history in a sandbox */ } } });
+    mount('#desk', deskTabs);
+  }
+  window.addEventListener('hashchange', () => { const k = (location.hash.match(/tab=([a-z]+)/) || [])[1]; if (deskTabs && DESK.some((t) => t.key === k)) deskTabs.show(k); });
+
   async function load() {
     let d, r, a;
     try {
@@ -764,6 +789,7 @@
     mount('#objections', objectionTable(d.objections));
     mount('#language', ...d.language.themes.map(themeCard));
     mount('#voice', ...voiceCards(d.voice, load));
+    if (!deskTabs) buildDesk(r.actions || []);
     document.getElementById('audit-sub').textContent = a.findings.length + ' findings from ' + a.rules.length + ' rules. Brain version ' + String(a.brain_version || '').slice(0, 7) + '.';
     mount('#audit', auditTable(a.findings));
     mount('#rules', el('h4', { text: 'Rules' }), rulesTable(a.rules, a.findings));
