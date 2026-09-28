@@ -1,0 +1,359 @@
+{
+ "version": "2026-09-28",
+ "note": "Questions the keeper may ask a founder. A question is asked only when no connected source in answerable_by can fill its fields, and only the top 5 by importance are asked per round. Importance = weight x number of blocked rooms x money at stake where computable. An empty answerable_by means only the founder can answer.",
+ "questions": [
+  {
+   "id": "q.economics.gross_margin",
+   "asks": "What is your gross margin after product cost, shipping and payment fees?",
+   "fills": [
+    "economics.gross_margin_pct"
+   ],
+   "answerable_by": [
+    "finance_inputs",
+    "quickbooks",
+    "xero"
+   ],
+   "unblocks_rooms": [
+    "finance",
+    "offers",
+    "paid_social",
+    "google_ads",
+    "today"
+   ],
+   "why": "without margin every ROAS target is a guess",
+   "weight": 10
+  },
+  {
+   "id": "q.economics.targets",
+   "asks": "What CAC or MER do you consider healthy, and why?",
+   "fills": [
+    "economics.target_cac",
+    "economics.target_mer"
+   ],
+   "answerable_by": [
+    "finance_inputs"
+   ],
+   "unblocks_rooms": [
+    "paid_social",
+    "google_ads",
+    "today"
+   ],
+   "why": "kill and scale rules need a target",
+   "weight": 9
+  },
+  {
+   "id": "q.products.hero",
+   "asks": "Which product would you put in front of a first-time buyer, and which one do repeat buyers come back for?",
+   "fills": [
+    "products.hero_flag",
+    "products.repeat_flag"
+   ],
+   "answerable_by": [
+    "shopify",
+    "woocommerce",
+    "bigcommerce",
+    "magento",
+    "custom_store"
+   ],
+   "unblocks_rooms": [
+    "creative",
+    "copy",
+    "offers",
+    "email"
+   ],
+   "why": "acquisition and retention creative start here",
+   "weight": 8
+  },
+  {
+   "id": "q.claims.approved",
+   "asks": "Which claims about your product are you certain you can back, and which must never appear?",
+   "fills": [
+    "claims.approved",
+    "claims.forbidden"
+   ],
+   "answerable_by": [],
+   "unblocks_rooms": [
+    "copy",
+    "creative",
+    "marketplaces",
+    "answer_engines"
+   ],
+   "why": "only the founder can approve a claim",
+   "weight": 10
+  },
+  {
+   "id": "q.avatars.who_buys",
+   "asks": "Who actually buys, in your words, and who do you wish bought more?",
+   "fills": [
+    "avatars"
+   ],
+   "answerable_by": [
+    "klaviyo",
+    "gorgias",
+    "judgeme",
+    "yotpo",
+    "public_reviews",
+    "shopify"
+   ],
+   "unblocks_rooms": [
+    "creative",
+    "copy",
+    "paid_social",
+    "email"
+   ],
+   "why": "reviews and tickets answer most of this when connected",
+   "weight": 7
+  },
+  {
+   "id": "q.offers.policy",
+   "asks": "What discounts do you allow, how often, and what is off limits?",
+   "fills": [
+    "offers.discount_policy"
+   ],
+   "answerable_by": [
+    "klaviyo",
+    "mailchimp",
+    "omnisend",
+    "site"
+   ],
+   "unblocks_rooms": [
+    "offers",
+    "email",
+    "paid_social"
+   ],
+   "why": "promo history shows what happened, not what is allowed",
+   "weight": 7
+  },
+  {
+   "id": "q.calendar.peaks",
+   "asks": "When are your peak weeks, and which launches or events are planned in the next 90 days?",
+   "fills": [
+    "calendar"
+   ],
+   "answerable_by": [
+    "shopify",
+    "klaviyo",
+    "google_drive",
+    "notion"
+   ],
+   "unblocks_rooms": [
+    "today",
+    "supply",
+    "email",
+    "paid_social",
+    "finance"
+   ],
+   "why": "plans are not in any API",
+   "weight": 8
+  },
+  {
+   "id": "q.operations.fulfilment",
+   "asks": "Who ships your orders, from where, and how long does a shipment take?",
+   "fills": [
+    "operations.fulfilment_model",
+    "operations.ship_in_days"
+   ],
+   "answerable_by": [
+    "shipstation",
+    "shipbob",
+    "shiphero",
+    "shopify"
+   ],
+   "unblocks_rooms": [
+    "cx",
+    "supply",
+    "copy"
+   ],
+   "why": "delivery promises in copy must match reality",
+   "weight": 6
+  },
+  {
+   "id": "q.operations.suppliers",
+   "asks": "Who makes your products, where, and what is the lead time to reorder?",
+   "fills": [
+    "operations.suppliers",
+    "operations.lead_time_days"
+   ],
+   "answerable_by": [
+    "supplier_sheet"
+   ],
+   "unblocks_rooms": [
+    "supply",
+    "finance",
+    "wild_bets"
+   ],
+   "why": "stock cover and reorder points need it",
+   "weight": 6
+  },
+  {
+   "id": "q.team.approvals",
+   "asks": "Who has to approve copy, spend changes and promos before they go live?",
+   "fills": [
+    "team.approval_chain"
+   ],
+   "answerable_by": [],
+   "unblocks_rooms": [
+    "orchestrator",
+    "team_ops",
+    "today"
+   ],
+   "why": "routing decisions to the right person",
+   "weight": 8
+  },
+  {
+   "id": "q.channels.roles",
+   "asks": "Which channels matter most to you this quarter, and which are you done with?",
+   "fills": [
+    "channels.role"
+   ],
+   "answerable_by": [
+    "meta_ads",
+    "google_ads",
+    "klaviyo",
+    "ga4"
+   ],
+   "unblocks_rooms": [
+    "today",
+    "paid_social",
+    "google_ads",
+    "organic"
+   ],
+   "why": "spend data shows the past, not the plan",
+   "weight": 7
+  },
+  {
+   "id": "q.learnings.tested",
+   "asks": "What have you already tested that did not work, so we never propose it again?",
+   "fills": [
+    "learnings.what_to_avoid"
+   ],
+   "answerable_by": [
+    "google_drive",
+    "notion",
+    "slack",
+    "upload"
+   ],
+   "unblocks_rooms": [
+    "experiments",
+    "creative",
+    "offers",
+    "cro"
+   ],
+   "why": "the registry starts empty for a new brand",
+   "weight": 9
+  },
+  {
+   "id": "q.voice.examples",
+   "asks": "Paste 3 pieces of copy you love and 3 you would never run.",
+   "fills": [
+    "voice.liked_examples",
+    "voice.disliked_examples"
+   ],
+   "answerable_by": [],
+   "unblocks_rooms": [
+    "copy",
+    "creative",
+    "email"
+   ],
+   "why": "the site shows one voice; the founder knows the range",
+   "weight": 7
+  },
+  {
+   "id": "q.competitors.set",
+   "asks": "Which 3 to 5 brands do your customers compare you to?",
+   "fills": [
+    "competitors.set"
+   ],
+   "answerable_by": [
+    "meta_ad_library",
+    "ahrefs",
+    "semrush",
+    "public_reviews"
+   ],
+   "unblocks_rooms": [
+    "competitors",
+    "creative",
+    "offers",
+    "research"
+   ],
+   "why": "search results find lookalikes, not the real comparison set",
+   "weight": 6
+  },
+  {
+   "id": "q.stack.apps",
+   "asks": "Which apps and tools run your store, email, support and reviews?",
+   "fills": [
+    "stack"
+   ],
+   "answerable_by": [
+    "site",
+    "shopify",
+    "woocommerce"
+   ],
+   "unblocks_rooms": [
+    "store_health",
+    "speed",
+    "measurement",
+    "security"
+   ],
+   "why": "the crawl finds most of it; the rest is a 1-minute answer",
+   "weight": 5
+  },
+  {
+   "id": "q.policies.returns",
+   "asks": "What is your real returns and exchange policy, including exceptions you make?",
+   "fills": [
+    "policies.returns"
+   ],
+   "answerable_by": [
+    "site",
+    "gorgias",
+    "zendesk"
+   ],
+   "unblocks_rooms": [
+    "cx",
+    "copy",
+    "offers"
+   ],
+   "why": "the site page and the practice often differ",
+   "weight": 5
+  },
+  {
+   "id": "q.marketplaces.where",
+   "asks": "Where else do you sell, and does anyone else sell your products online?",
+   "fills": [
+    "marketplaces"
+   ],
+   "answerable_by": [
+    "amazon_sp",
+    "walmart",
+    "site"
+   ],
+   "unblocks_rooms": [
+    "marketplaces",
+    "google_ads",
+    "offers"
+   ],
+   "why": "buy box and price integrity",
+   "weight": 5
+  },
+  {
+   "id": "q.economics.cash",
+   "asks": "Roughly how many weeks of cash do you have at the current burn?",
+   "fills": [
+    "economics.cash_runway_weeks"
+   ],
+   "answerable_by": [
+    "quickbooks",
+    "xero",
+    "finance_inputs"
+   ],
+   "unblocks_rooms": [
+    "finance",
+    "today"
+   ],
+   "why": "changes how aggressive any plan should be",
+   "weight": 8
+  }
+ ]
+}

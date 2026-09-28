@@ -1,6 +1,6 @@
 # Brand brain v2: review of the skill and the design for ecomOS
 
-Date: 28 Sep 2026. Status: design for Kevin's review (session S1.1). Input: Kevin's `brand-brain` skill (9 markdown files, 7 phases, 2 gates, living-system rules). Companion files: `app/brain/schema.json` (records), `app/brain/documents.schema.json` (upload manifest), `app/brain/validate.py`, `app/brain/example/`.
+Date: 28 Sep 2026. Status: design for Kevin's review (session S1.1). Input: Kevin's `brand-brain` skill (9 markdown files, 7 phases, 2 gates, living-system rules). Companion files: `app/brain/schema.json` (records), `app/brain/documents.schema.json` (upload manifest), `app/brain/sources.registry.json` (every source and what it fills), `app/brain/questions.bank.json` (what we ask and when), `app/brain/validate.py`, `app/brain/example/`.
 
 ## 1. What the skill does well
 
@@ -23,7 +23,7 @@ The skill is a chat workflow that writes prose files for one use: ads and creati
 2. **Context bloat by design.** `brain.md` is an append-only log that "must not be trimmed". Nine files are "always load". After 6 months of use a session starts at 30k tokens before the task. The opposite of what Kevin wants.
 3. **Ads-shaped.** The 9 files serve paid social and creative. Nothing for offer economics, shipping and returns policy, fulfilment, suppliers, marketplaces, finance targets, tracking, SEO facts, content series, team and approval chain, security, or experiments. 20 of the 28 rooms would find nothing they need.
 4. **Chat gates block automation.** Gate 1 and Gate 2 need a person typing. A cloud service cannot wait in a chat. Gates must become items in a review queue that the founder clears from a screen, on their own time.
-5. **Tool names are hard-wired.** `mcp__claude_ai_Meta_MCP__...` only exists inside one Claude client. A product needs connector adapters with a stable interface and mock mode.
+5. **Three integrations, hard-wired.** Meta, Klaviyo and Shopify by tool name. A brand may run on WooCommerce, Mailchimp, Zendesk, Yotpo and QuickBooks. A product needs a source registry and connector adapters with a stable interface and mock mode, and its questions must be computed from what the connected sources could not answer.
 6. **Local folders.** Images go to `Products/` on the user's disk. A product needs object storage, a manifest with rights and product ids, and per-brand tenancy.
 7. **No calibration numbers.** The skill never records the numbers that make simulation and diagnosis possible: revenue band, AOV, repeat rate, channel mix, margins, targets. It also mixes what it does record (top campaigns, open rates) into prose where they go stale without a date.
 8. **Personas fixed at 2 to 3, competitors from web search only.** Real brands have 4 to 8 buying situations, and the Ad Library, reviews and tickets are better competitor and avatar evidence than a search results page.
@@ -193,13 +193,32 @@ Merge rules: one active record per (section, field) unless the field is a list. 
 
 Review queue rules: `identity`, `claims`, `red lines`, `decisions` and any `forbidden` change need the founder (gate). Everything else auto-publishes with a low-risk flag and shows in `changes` for 7 days so it can be reverted from the brain screen. This replaces Gate 1 and Gate 2 with something that works without a chat.
 
+### 6.1 Sources: a registry, not three integrations
+
+The skill knows 3 integrations. A brand may run on any of 60. `app/brain/sources.registry.json` lists every source the brain and the data layer can pull from, grouped by category, with the sections and tables each one fills, its access type and whether a mock exists. Categories today: public (site crawl, Ad Library, press, public reviews, job postings), store (Shopify, WooCommerce on WordPress, BigCommerce, Adobe Commerce, custom export), ads (Meta, Google, Merchant Center, TikTok, Pinterest, Amazon Ads), analytics (GA4, Search Console, Bing, Tag Manager, Clarity or Hotjar), email and SMS (Klaviyo, Mailchimp, Omnisend, Brevo, Attentive, Postscript, Customer.io), support (Gorgias, Zendesk, Freshdesk, Intercom, Help Scout), reviews (Judge.me, Yotpo, Okendo, Stamped, Trustpilot, Loox), SEO tools (Ahrefs, Semrush, Screaming Frog), marketplaces (Amazon, Walmart, TikTok Shop), payments (Stripe, PayPal, Shopify Payments), finance (QuickBooks, Xero, brand-supplied numbers), fulfilment (ShipStation, ShipBob, ShipHero, EasyPost, supplier sheet), subscriptions (Recharge, Skio, Loop; later), affiliates and creators (Impact, ShareASale, Refersion, GRIN), social organic (Instagram, TikTok, YouTube, Pinterest), documents (Drive, Notion, Dropbox, Slack, email forwarding, upload), WordPress content, and our own probes (speed lab, answer engine probe).
+
+Rules:
+
+- A source is never required. A brand connects at most one per category, or none. Declining a source is a recorded choice, not an error.
+- Adding a source is one registry entry plus one adapter with `pull(table, window)` and `status()` and a mock. Nothing else changes: the sections and tables it fills already exist.
+- Public sources run for every brand on day one. Private sources run only after the founder connects them.
+- The setup screen shows the categories, what each would unlock (sections and rooms), and lets the founder connect, skip, or mark "not comfortable connecting".
+
 ## 7. Keeping it fresh: the mechanism Kevin asked for
 
 The founder enters the website, connects what they have, and the brain keeps improving from five clocks:
 
 1. **Continuous.** Connectors sync daily. Facts that come from data (hero product, best flow, top ad) are recomputed from the data layer and the brain stores the pointer plus the date. The site is crawled daily and diffed; a changed price, a new product, a new promo, a removed page lands in `changes` and updates its section.
 2. **Event driven.** A new document in the linked Drive folder or Slack channel triggers the document extractor. A new ad in the Ad Library triggers the ad extractor. A spike in one ticket reason triggers the objections extractor.
-3. **Scheduled ask.** Every week (configurable to every 2 days), the keeper computes gaps: expired records, sections with low confidence, open conflicts, open questions, and the rooms that are blocked by them. It sends a short digest with 3 to 5 targeted questions and a place to attach files. Delivered to the app inbox and, where connected, Slack or email. Answers become `approved` records; attachments run through the document extractor. Never more than 5 questions; the rest wait.
+3. **Scheduled ask: pull first, then ask only what matters.** Every week (configurable to every 2 days) the keeper runs in this order:
+   1. Pull every connected source and run every public source. Fill what can be filled. Nothing is asked that a connected source already answered.
+   2. Compute what is still missing: expired records, empty fields a room needs, open conflicts, low-confidence records.
+   3. For each gap, look up `app/brain/questions.bank.json`. Each question names the fields it fills, the sources that could answer it instead, the rooms it unblocks and a weight. Importance is weight times the number of blocked rooms, times money at stake where the metric contract can compute it.
+   4. Drop any question a connected source can answer. For a question a not-yet-connected source could answer, the ask becomes "connect X, or answer this in a line" with the reason. For a source the founder marked as not comfortable connecting, the question is asked plainly and never nags about the source again.
+   5. Send the top 5 by importance, with a place to attach files. Never more. The rest wait for the next round or drop when a source fills them.
+   
+   Answers become records (founder-added, so `approved` where it is a claim or decision). Attachments run through the document extractor. The digest is delivered to the app inbox and, where connected, Slack or email. The bank starts with 18 questions and grows: a room that finds a gap it cannot fill adds a question with its fields and its weight, in a contract session.
+
 4. **Session write-back.** Every agent run can call `propose_brain_update` with records it believes are new (a hook that worked, an objection that came up, a product that is out of stock). They go to the review queue, not to the brain. The founder sees "3 proposed updates" on the brain screen and clears them in a minute.
 
 5. **Weekly audit of the brain and what it links to.** Alongside the questions, a job reviews the brain itself and proposes improvements into the review queue: stale or contradicting records, sections with nothing in them that a room needs, documents added but never read or extracted, summaries that drifted from their records, routing rows that point at a missing file, skills and agent files the routing table links to that overlap, are never used, or reference facts the brain now contradicts, and records that could be merged. Each proposal shows the before and after. The founder accepts or ignores them from the brain screen. Accepted skill changes become a commit in `agents/skills/`. The audit is how the brain, and the skills around it, get better without a person rereading everything.
@@ -238,6 +257,7 @@ Made by Kevin on 28 Sep 2026:
 - One small `BRAIN.md` per brand routes to sections, skills, agent files and the data layer. It does not hold everything.
 - Founders and teams can add context at any time, from anywhere, and it refines the brain.
 - A weekly job audits the brain and the skills it links to, and proposes improvements, alongside at most 5 questions.
+- Sources are a registry of many, not 3 integrations. Pull everything connected first, then ask only what no connected source can answer, ranked by how much it helps the customer.
 
 Still open:
 

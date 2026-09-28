@@ -178,6 +178,36 @@ def check_manifest(path: Path) -> list[str]:
     return errs
 
 
+def check_registry(root: Path) -> list[str]:
+    """sources.registry.json and questions.bank.json: ids unique, sections known, questions point at real sources."""
+    errs = []
+    reg = json.loads((root / "sources.registry.json").read_text(encoding="utf-8"))
+    ids = Counter(s["id"] for s in reg["sources"])
+    errs += [f"registry: source id {i} appears {n} times" for i, n in ids.items() if n > 1]
+    for src in reg["sources"]:
+        for sec in src.get("fills_sections", []):
+            if sec not in SECTIONS:
+                errs.append(f"registry: {src['id']} fills unknown section {sec}")
+    bank = json.loads((root / "questions.bank.json").read_text(encoding="utf-8"))
+    qids = Counter(q["id"] for q in bank["questions"])
+    errs += [f"bank: question id {i} appears {n} times" for i, n in qids.items() if n > 1]
+    for q in bank["questions"]:
+        for key in ("asks", "fills", "answerable_by", "unblocks_rooms", "weight"):
+            if key not in q:
+                errs.append(f"bank: {q.get('id')} missing {key}")
+        for sid in q.get("answerable_by", []):
+            if sid not in ids:
+                errs.append(f"bank: {q['id']} names unknown source {sid}")
+        for f in q.get("fills", []):
+            if f.split(".")[0] not in SECTIONS:
+                errs.append(f"bank: {q['id']} fills unknown section {f}")
+        for s in _strings(q):
+            if EM_DASH in s:
+                errs.append(f"bank: {q['id']} em dash in text")
+                break
+    return errs
+
+
 def check_path(target: Path) -> list[str]:
     if target.is_dir():
         files = sorted(p for p in target.glob("*.json") if p.stem not in ("sources", "assumptions"))
@@ -198,6 +228,12 @@ def main(argv: list[str]) -> int:
         print(__doc__)
         return 2
     total = 0
+    if argv[1] == "--registry":
+        errs = check_registry(HERE)
+        for e in errs:
+            print(e)
+        print("registry and bank: ok" if not errs else f"{len(errs)} problems")
+        return 1 if errs else 0
     for arg in argv[1:]:
         errs = check_path(Path(arg))
         total += len(errs)

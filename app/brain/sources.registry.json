@@ -1,0 +1,1405 @@
+{
+ "version": "2026-09-28",
+ "note": "Read-only sources the brain and data layer can pull from. A source is never required. Categories group the alternatives a brand may use; a brand connects one per category at most, or none. Questions are asked only for what no connected source can answer.",
+ "sources": [
+  {
+   "id": "site",
+   "name": "Brand website crawl",
+   "category": "public",
+   "fills_sections": [
+    "identity",
+    "products",
+    "offers",
+    "policies",
+    "claims",
+    "voice",
+    "visual",
+    "site_map",
+    "stack",
+    "changes"
+   ],
+   "fills_tables": [
+    "site_snapshots",
+    "page_registry"
+   ],
+   "access": "public",
+   "read_only": true,
+   "mock": true,
+   "note": "sitemap, products.json on Shopify, WooCommerce REST store API, legal pages, CSS"
+  },
+  {
+   "id": "meta_ad_library",
+   "name": "Meta Ad Library",
+   "category": "public",
+   "fills_sections": [
+    "competitors",
+    "offers",
+    "learnings",
+    "story_bank"
+   ],
+   "fills_tables": [
+    "ad_library_captures",
+    "competitor_ad_capture"
+   ],
+   "access": "public",
+   "read_only": true,
+   "mock": true,
+   "note": "brand and competitor pages, running ads, dates, formats"
+  },
+  {
+   "id": "press",
+   "name": "Press, interviews, podcasts, filings",
+   "category": "public",
+   "fills_sections": [
+    "identity",
+    "story_bank",
+    "channels",
+    "economics"
+   ],
+   "fills_tables": [],
+   "access": "public",
+   "read_only": true,
+   "mock": true,
+   "note": "transcripts and articles, revenue band with source"
+  },
+  {
+   "id": "public_reviews",
+   "name": "Public reviews and forums",
+   "category": "public",
+   "fills_sections": [
+    "avatars",
+    "objections",
+    "language_bank"
+   ],
+   "fills_tables": [
+    "reviews_raw"
+   ],
+   "access": "public",
+   "read_only": true,
+   "mock": true,
+   "note": "retailer reviews, Reddit, Trustpilot pages"
+  },
+  {
+   "id": "job_postings",
+   "name": "Job postings",
+   "category": "public",
+   "fills_sections": [
+    "team",
+    "stack",
+    "channels"
+   ],
+   "fills_tables": [],
+   "access": "public",
+   "read_only": true,
+   "mock": true,
+   "note": "roles hiring, tools named"
+  },
+  {
+   "id": "shopify",
+   "name": "Shopify Admin API",
+   "category": "store",
+   "fills_sections": [
+    "products",
+    "offers",
+    "policies",
+    "stack",
+    "marketplaces"
+   ],
+   "fills_tables": [
+    "orders",
+    "customers",
+    "products",
+    "inventory",
+    "reversed_orders",
+    "payouts"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "orders, customers, products with unit cost, inventory, fulfilments, returns, disputes, payouts, abandoned checkouts, customer journey"
+  },
+  {
+   "id": "woocommerce",
+   "name": "WooCommerce (WordPress) REST API",
+   "category": "store",
+   "fills_sections": [
+    "products",
+    "offers",
+    "policies",
+    "stack",
+    "marketplaces"
+   ],
+   "fills_tables": [
+    "orders",
+    "customers",
+    "products",
+    "inventory",
+    "reversed_orders",
+    "payouts"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "orders, customers, products, coupons, refunds; WordPress pages and posts for content"
+  },
+  {
+   "id": "bigcommerce",
+   "name": "BigCommerce API",
+   "category": "store",
+   "fills_sections": [
+    "products",
+    "offers",
+    "policies",
+    "stack",
+    "marketplaces"
+   ],
+   "fills_tables": [
+    "orders",
+    "customers",
+    "products",
+    "inventory",
+    "reversed_orders",
+    "payouts"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "orders, customers, products, inventory"
+  },
+  {
+   "id": "magento",
+   "name": "Adobe Commerce (Magento) API",
+   "category": "store",
+   "fills_sections": [
+    "products",
+    "offers",
+    "policies",
+    "stack",
+    "marketplaces"
+   ],
+   "fills_tables": [
+    "orders",
+    "customers",
+    "products",
+    "inventory",
+    "reversed_orders",
+    "payouts"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "orders, customers, products, inventory"
+  },
+  {
+   "id": "custom_store",
+   "name": "Custom store export",
+   "category": "store",
+   "fills_sections": [
+    "products",
+    "offers",
+    "policies",
+    "stack",
+    "marketplaces"
+   ],
+   "fills_tables": [
+    "orders",
+    "customers",
+    "products",
+    "inventory",
+    "reversed_orders",
+    "payouts"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "CSV or database export mapped to the orders and products tables"
+  },
+  {
+   "id": "meta_ads",
+   "name": "Meta Marketing API",
+   "category": "ads",
+   "fills_sections": [
+    "channels",
+    "learnings",
+    "stack"
+   ],
+   "fills_tables": [
+    "ad_rows",
+    "ad_creatives",
+    "pixel_capi_events",
+    "catalog_diagnostics"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "insights at ad level with breakdowns, creatives, datasets, catalog"
+  },
+  {
+   "id": "google_ads",
+   "name": "Google Ads API",
+   "category": "ads",
+   "fills_sections": [
+    "channels",
+    "learnings"
+   ],
+   "fills_tables": [
+    "google_rows",
+    "google_search_terms",
+    "google_audience_lists"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "campaign, ad group, keyword, search term, asset group, impression share"
+  },
+  {
+   "id": "merchant_center",
+   "name": "Google Merchant Center",
+   "category": "ads",
+   "fills_sections": [
+    "products"
+   ],
+   "fills_tables": [
+    "merchant_center_feed",
+    "product_feed_status"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "approval statuses, item issues"
+  },
+  {
+   "id": "tiktok_ads",
+   "name": "TikTok Ads API",
+   "category": "ads",
+   "fills_sections": [
+    "channels",
+    "learnings"
+   ],
+   "fills_tables": [
+    "tiktok_ad_daily"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "later"
+  },
+  {
+   "id": "pinterest_ads",
+   "name": "Pinterest Ads API",
+   "category": "ads",
+   "fills_sections": [
+    "channels"
+   ],
+   "fills_tables": [
+    "pinterest_ad_daily"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "later"
+  },
+  {
+   "id": "amazon_ads",
+   "name": "Amazon Ads API",
+   "category": "ads",
+   "fills_sections": [
+    "marketplaces",
+    "channels"
+   ],
+   "fills_tables": [
+    "amazon_ads_daily"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "sponsored products and brands"
+  },
+  {
+   "id": "ga4",
+   "name": "Google Analytics 4 Data API",
+   "category": "analytics",
+   "fills_sections": [
+    "site_map",
+    "channels"
+   ],
+   "fills_tables": [
+    "sessions",
+    "ga4_orders_join",
+    "ga4_config_audit"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "sessions, funnel events, landing pages, channel groups, purchase revenue"
+  },
+  {
+   "id": "search_console",
+   "name": "Google Search Console",
+   "category": "analytics",
+   "fills_sections": [
+    "seo_facts",
+    "site_map"
+   ],
+   "fills_tables": [
+    "search_console",
+    "gsc_performance"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "query, page, clicks, impressions, position, 16 months"
+  },
+  {
+   "id": "bing_webmaster",
+   "name": "Bing Webmaster Tools",
+   "category": "analytics",
+   "fills_sections": [
+    "seo_facts"
+   ],
+   "fills_tables": [
+    "bing_performance"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "later"
+  },
+  {
+   "id": "gtm",
+   "name": "Google Tag Manager",
+   "category": "analytics",
+   "fills_sections": [
+    "stack"
+   ],
+   "fills_tables": [
+    "tag_manager_log",
+    "utm_audit"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "tags and triggers for the tracking audit"
+  },
+  {
+   "id": "hotjar_clarity",
+   "name": "Microsoft Clarity or Hotjar",
+   "category": "analytics",
+   "fills_sections": [
+    "site_map"
+   ],
+   "fills_tables": [
+    "session_recordings_summary"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "rage clicks, scroll depth, later"
+  },
+  {
+   "id": "klaviyo",
+   "name": "Klaviyo API",
+   "category": "email_sms",
+   "fills_sections": [
+    "channels",
+    "offers",
+    "voice",
+    "calendar",
+    "learnings"
+   ],
+   "fills_tables": [
+    "flows",
+    "campaign_sends",
+    "segments",
+    "consent_log"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "flows, campaigns, sends, opens, clicks, unsubscribes, attributed orders, list size"
+  },
+  {
+   "id": "mailchimp",
+   "name": "Mailchimp API",
+   "category": "email_sms",
+   "fills_sections": [
+    "channels",
+    "offers",
+    "voice",
+    "calendar",
+    "learnings"
+   ],
+   "fills_tables": [
+    "flows",
+    "campaign_sends",
+    "segments",
+    "consent_log"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "flows, campaigns, sends, opens, clicks, unsubscribes, attributed orders, list size"
+  },
+  {
+   "id": "omnisend",
+   "name": "Omnisend API",
+   "category": "email_sms",
+   "fills_sections": [
+    "channels",
+    "offers",
+    "voice",
+    "calendar",
+    "learnings"
+   ],
+   "fills_tables": [
+    "flows",
+    "campaign_sends",
+    "segments",
+    "consent_log"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "flows, campaigns, sends, opens, clicks, unsubscribes, attributed orders, list size"
+  },
+  {
+   "id": "brevo",
+   "name": "Brevo API",
+   "category": "email_sms",
+   "fills_sections": [
+    "channels",
+    "offers",
+    "voice",
+    "calendar",
+    "learnings"
+   ],
+   "fills_tables": [
+    "flows",
+    "campaign_sends",
+    "segments",
+    "consent_log"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "flows, campaigns, sends, opens, clicks, unsubscribes, attributed orders, list size"
+  },
+  {
+   "id": "attentive",
+   "name": "Attentive (SMS) API",
+   "category": "email_sms",
+   "fills_sections": [
+    "channels",
+    "offers",
+    "voice",
+    "calendar",
+    "learnings"
+   ],
+   "fills_tables": [
+    "flows",
+    "campaign_sends",
+    "segments",
+    "consent_log"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "flows, campaigns, sends, opens, clicks, unsubscribes, attributed orders, list size"
+  },
+  {
+   "id": "postscript",
+   "name": "Postscript (SMS) API",
+   "category": "email_sms",
+   "fills_sections": [
+    "channels",
+    "offers",
+    "voice",
+    "calendar",
+    "learnings"
+   ],
+   "fills_tables": [
+    "flows",
+    "campaign_sends",
+    "segments",
+    "consent_log"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "flows, campaigns, sends, opens, clicks, unsubscribes, attributed orders, list size"
+  },
+  {
+   "id": "customer_io",
+   "name": "Customer.io API",
+   "category": "email_sms",
+   "fills_sections": [
+    "channels",
+    "offers",
+    "voice",
+    "calendar",
+    "learnings"
+   ],
+   "fills_tables": [
+    "flows",
+    "campaign_sends",
+    "segments",
+    "consent_log"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "flows, campaigns, sends, opens, clicks, unsubscribes, attributed orders, list size"
+  },
+  {
+   "id": "gorgias",
+   "name": "Gorgias API",
+   "category": "support",
+   "fills_sections": [
+    "avatars",
+    "objections",
+    "language_bank",
+    "policies",
+    "operations"
+   ],
+   "fills_tables": [
+    "tickets",
+    "support_tickets_raw"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "tickets, reasons, response and resolution times, CSAT"
+  },
+  {
+   "id": "zendesk",
+   "name": "Zendesk API",
+   "category": "support",
+   "fills_sections": [
+    "avatars",
+    "objections",
+    "language_bank",
+    "policies",
+    "operations"
+   ],
+   "fills_tables": [
+    "tickets",
+    "support_tickets_raw"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "tickets, reasons, response and resolution times, CSAT"
+  },
+  {
+   "id": "freshdesk",
+   "name": "Freshdesk API",
+   "category": "support",
+   "fills_sections": [
+    "avatars",
+    "objections",
+    "language_bank",
+    "policies",
+    "operations"
+   ],
+   "fills_tables": [
+    "tickets",
+    "support_tickets_raw"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "tickets, reasons, response and resolution times, CSAT"
+  },
+  {
+   "id": "intercom",
+   "name": "Intercom API",
+   "category": "support",
+   "fills_sections": [
+    "avatars",
+    "objections",
+    "language_bank",
+    "policies",
+    "operations"
+   ],
+   "fills_tables": [
+    "tickets",
+    "support_tickets_raw"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "tickets, reasons, response and resolution times, CSAT"
+  },
+  {
+   "id": "helpscout",
+   "name": "Help Scout API",
+   "category": "support",
+   "fills_sections": [
+    "avatars",
+    "objections",
+    "language_bank",
+    "policies",
+    "operations"
+   ],
+   "fills_tables": [
+    "tickets",
+    "support_tickets_raw"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "tickets, reasons, response and resolution times, CSAT"
+  },
+  {
+   "id": "judgeme",
+   "name": "Judge.me API",
+   "category": "reviews",
+   "fills_sections": [
+    "avatars",
+    "objections",
+    "language_bank",
+    "products"
+   ],
+   "fills_tables": [
+    "reviews",
+    "reviews_raw"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "rating, body, product, date, verified"
+  },
+  {
+   "id": "yotpo",
+   "name": "Yotpo API",
+   "category": "reviews",
+   "fills_sections": [
+    "avatars",
+    "objections",
+    "language_bank",
+    "products"
+   ],
+   "fills_tables": [
+    "reviews",
+    "reviews_raw"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "rating, body, product, date, verified"
+  },
+  {
+   "id": "okendo",
+   "name": "Okendo API",
+   "category": "reviews",
+   "fills_sections": [
+    "avatars",
+    "objections",
+    "language_bank",
+    "products"
+   ],
+   "fills_tables": [
+    "reviews",
+    "reviews_raw"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "rating, body, product, date, verified"
+  },
+  {
+   "id": "stamped",
+   "name": "Stamped API",
+   "category": "reviews",
+   "fills_sections": [
+    "avatars",
+    "objections",
+    "language_bank",
+    "products"
+   ],
+   "fills_tables": [
+    "reviews",
+    "reviews_raw"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "rating, body, product, date, verified"
+  },
+  {
+   "id": "trustpilot",
+   "name": "Trustpilot API",
+   "category": "reviews",
+   "fills_sections": [
+    "avatars",
+    "objections",
+    "language_bank",
+    "products"
+   ],
+   "fills_tables": [
+    "reviews",
+    "reviews_raw"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "rating, body, product, date, verified"
+  },
+  {
+   "id": "loox",
+   "name": "Loox API",
+   "category": "reviews",
+   "fills_sections": [
+    "avatars",
+    "objections",
+    "language_bank",
+    "products"
+   ],
+   "fills_tables": [
+    "reviews",
+    "reviews_raw"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "rating, body, product, date, verified"
+  },
+  {
+   "id": "ahrefs",
+   "name": "Ahrefs",
+   "category": "seo_tools",
+   "fills_sections": [
+    "seo_facts",
+    "competitors",
+    "site_map"
+   ],
+   "fills_tables": [
+    "rank_tracker",
+    "backlink_index",
+    "crawl_snapshot"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "rankings, backlinks, crawl issues; export or API"
+  },
+  {
+   "id": "semrush",
+   "name": "Semrush",
+   "category": "seo_tools",
+   "fills_sections": [
+    "seo_facts",
+    "competitors",
+    "site_map"
+   ],
+   "fills_tables": [
+    "rank_tracker",
+    "backlink_index",
+    "crawl_snapshot"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "rankings, backlinks, crawl issues; export or API"
+  },
+  {
+   "id": "screaming_frog",
+   "name": "Screaming Frog export",
+   "category": "seo_tools",
+   "fills_sections": [
+    "seo_facts",
+    "competitors",
+    "site_map"
+   ],
+   "fills_tables": [
+    "rank_tracker",
+    "backlink_index",
+    "crawl_snapshot"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "rankings, backlinks, crawl issues; export or API"
+  },
+  {
+   "id": "amazon_sp",
+   "name": "Amazon Selling Partner API",
+   "category": "marketplaces",
+   "fills_sections": [
+    "marketplaces",
+    "products"
+   ],
+   "fills_tables": [
+    "marketplace_listings",
+    "amazon_traffic_sales",
+    "amazon_inventory",
+    "settlement_reports"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "sales and traffic, inventory, settlements; no review API"
+  },
+  {
+   "id": "walmart",
+   "name": "Walmart Marketplace API",
+   "category": "marketplaces",
+   "fills_sections": [
+    "marketplaces"
+   ],
+   "fills_tables": [
+    "marketplace_listings"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "later"
+  },
+  {
+   "id": "tiktok_shop",
+   "name": "TikTok Shop API",
+   "category": "marketplaces",
+   "fills_sections": [
+    "marketplaces"
+   ],
+   "fills_tables": [
+    "marketplace_listings"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "later"
+  },
+  {
+   "id": "stripe",
+   "name": "Stripe API",
+   "category": "payments",
+   "fills_sections": [
+    "policies"
+   ],
+   "fills_tables": [
+    "payouts",
+    "disputes",
+    "payment_method_mix"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "payouts, fees, disputes"
+  },
+  {
+   "id": "paypal",
+   "name": "PayPal API",
+   "category": "payments",
+   "fills_sections": [
+    "policies"
+   ],
+   "fills_tables": [
+    "payouts",
+    "disputes",
+    "payment_method_mix"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "payouts, fees, disputes"
+  },
+  {
+   "id": "shopify_payments",
+   "name": "Shopify Payments API",
+   "category": "payments",
+   "fills_sections": [
+    "policies"
+   ],
+   "fills_tables": [
+    "payouts",
+    "disputes",
+    "payment_method_mix"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "payouts, fees, disputes"
+  },
+  {
+   "id": "quickbooks",
+   "name": "QuickBooks Online API",
+   "category": "finance",
+   "fills_sections": [
+    "economics",
+    "operations"
+   ],
+   "fills_tables": [
+    "expenses",
+    "bank_ledger",
+    "budget_annual"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "P&L, expenses, cash; makes contribution margin and runway computable"
+  },
+  {
+   "id": "xero",
+   "name": "Xero API",
+   "category": "finance",
+   "fills_sections": [
+    "economics",
+    "operations"
+   ],
+   "fills_tables": [
+    "expenses",
+    "bank_ledger",
+    "budget_annual"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "P&L, expenses, cash; makes contribution margin and runway computable"
+  },
+  {
+   "id": "finance_inputs",
+   "name": "Brand-supplied numbers (form or sheet)",
+   "category": "finance",
+   "fills_sections": [
+    "economics"
+   ],
+   "fills_tables": [
+    "finance_inputs"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "COGS, shipping cost, fees, fixed costs, targets; the platforms never have these"
+  },
+  {
+   "id": "shipstation",
+   "name": "ShipStation API",
+   "category": "fulfilment",
+   "fills_sections": [
+    "operations"
+   ],
+   "fills_tables": [
+    "fulfilments",
+    "carrier_events",
+    "landed_cost"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "shipments, carriers, exceptions, costs"
+  },
+  {
+   "id": "shipbob",
+   "name": "ShipBob API",
+   "category": "fulfilment",
+   "fills_sections": [
+    "operations"
+   ],
+   "fills_tables": [
+    "fulfilments",
+    "carrier_events",
+    "landed_cost"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "shipments, carriers, exceptions, costs"
+  },
+  {
+   "id": "shiphero",
+   "name": "ShipHero API",
+   "category": "fulfilment",
+   "fills_sections": [
+    "operations"
+   ],
+   "fills_tables": [
+    "fulfilments",
+    "carrier_events",
+    "landed_cost"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "shipments, carriers, exceptions, costs"
+  },
+  {
+   "id": "easypost",
+   "name": "EasyPost API",
+   "category": "fulfilment",
+   "fills_sections": [
+    "operations"
+   ],
+   "fills_tables": [
+    "fulfilments",
+    "carrier_events",
+    "landed_cost"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "shipments, carriers, exceptions, costs"
+  },
+  {
+   "id": "supplier_sheet",
+   "name": "Supplier and PO sheet",
+   "category": "fulfilment",
+   "fills_sections": [
+    "operations"
+   ],
+   "fills_tables": [
+    "purchase_orders",
+    "supplier_master"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "upload or sheet"
+  },
+  {
+   "id": "recharge",
+   "name": "Recharge API",
+   "category": "subscriptions",
+   "fills_sections": [
+    "plans"
+   ],
+   "fills_tables": [
+    "subscription_cohorts",
+    "subscription_plans"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "subscription variant only"
+  },
+  {
+   "id": "skio",
+   "name": "Skio API",
+   "category": "subscriptions",
+   "fills_sections": [
+    "plans"
+   ],
+   "fills_tables": [
+    "subscription_cohorts",
+    "subscription_plans"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "subscription variant only"
+  },
+  {
+   "id": "loop_subscriptions",
+   "name": "Loop API",
+   "category": "subscriptions",
+   "fills_sections": [
+    "plans"
+   ],
+   "fills_tables": [
+    "subscription_cohorts",
+    "subscription_plans"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "subscription variant only"
+  },
+  {
+   "id": "impact",
+   "name": "Impact API",
+   "category": "affiliates_creators",
+   "fills_sections": [
+    "channels",
+    "content"
+   ],
+   "fills_tables": [
+    "affiliate_clicks_orders",
+    "creator_seeding"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "partners, clicks, orders, commissions"
+  },
+  {
+   "id": "shareasale",
+   "name": "ShareASale API",
+   "category": "affiliates_creators",
+   "fills_sections": [
+    "channels",
+    "content"
+   ],
+   "fills_tables": [
+    "affiliate_clicks_orders",
+    "creator_seeding"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "partners, clicks, orders, commissions"
+  },
+  {
+   "id": "refersion",
+   "name": "Refersion API",
+   "category": "affiliates_creators",
+   "fills_sections": [
+    "channels",
+    "content"
+   ],
+   "fills_tables": [
+    "affiliate_clicks_orders",
+    "creator_seeding"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "partners, clicks, orders, commissions"
+  },
+  {
+   "id": "grin",
+   "name": "GRIN API",
+   "category": "affiliates_creators",
+   "fills_sections": [
+    "channels",
+    "content"
+   ],
+   "fills_tables": [
+    "affiliate_clicks_orders",
+    "creator_seeding"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "partners, clicks, orders, commissions"
+  },
+  {
+   "id": "instagram_insights",
+   "name": "Instagram and Facebook page insights",
+   "category": "social_organic",
+   "fills_sections": [
+    "content",
+    "channels"
+   ],
+   "fills_tables": [
+    "content_posts",
+    "post_performance"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "posts, views, saves, clicks"
+  },
+  {
+   "id": "tiktok_organic",
+   "name": "TikTok organic",
+   "category": "social_organic",
+   "fills_sections": [
+    "content",
+    "channels"
+   ],
+   "fills_tables": [
+    "content_posts",
+    "post_performance"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "posts, views, saves, clicks"
+  },
+  {
+   "id": "youtube",
+   "name": "YouTube Studio",
+   "category": "social_organic",
+   "fills_sections": [
+    "content",
+    "channels"
+   ],
+   "fills_tables": [
+    "content_posts",
+    "post_performance"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "posts, views, saves, clicks"
+  },
+  {
+   "id": "pinterest_organic",
+   "name": "Pinterest organic",
+   "category": "social_organic",
+   "fills_sections": [
+    "content",
+    "channels"
+   ],
+   "fills_tables": [
+    "content_posts",
+    "post_performance"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "posts, views, saves, clicks"
+  },
+  {
+   "id": "google_drive",
+   "name": "Google Drive folder",
+   "category": "documents",
+   "fills_sections": [
+    "decisions",
+    "learnings",
+    "voice",
+    "team",
+    "open_questions"
+   ],
+   "fills_tables": [
+    "documents"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "any file dropped in the linked folder"
+  },
+  {
+   "id": "notion",
+   "name": "Notion",
+   "category": "documents",
+   "fills_sections": [
+    "decisions",
+    "learnings",
+    "voice",
+    "team",
+    "open_questions"
+   ],
+   "fills_tables": [
+    "documents"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "pages and databases"
+  },
+  {
+   "id": "dropbox",
+   "name": "Dropbox folder",
+   "category": "documents",
+   "fills_sections": [
+    "decisions",
+    "learnings",
+    "voice",
+    "team",
+    "open_questions"
+   ],
+   "fills_tables": [
+    "documents"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "any file"
+  },
+  {
+   "id": "slack",
+   "name": "Slack channel",
+   "category": "documents",
+   "fills_sections": [
+    "decisions",
+    "learnings",
+    "voice",
+    "team",
+    "open_questions"
+   ],
+   "fills_tables": [
+    "documents"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "messages and files in a linked channel"
+  },
+  {
+   "id": "email_forward",
+   "name": "Email forwarding address",
+   "category": "documents",
+   "fills_sections": [
+    "decisions",
+    "learnings",
+    "voice",
+    "team",
+    "open_questions"
+   ],
+   "fills_tables": [
+    "documents"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "forward anything; becomes a document"
+  },
+  {
+   "id": "upload",
+   "name": "Direct upload",
+   "category": "documents",
+   "fills_sections": [
+    "decisions",
+    "learnings",
+    "voice",
+    "team",
+    "open_questions"
+   ],
+   "fills_tables": [
+    "documents"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "any file, from the app"
+  },
+  {
+   "id": "wordpress_content",
+   "name": "WordPress pages and posts",
+   "category": "content",
+   "fills_sections": [
+    "content",
+    "seo_facts",
+    "site_map"
+   ],
+   "fills_tables": [
+    "content_inventory"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "for brands on WordPress or with a WordPress blog"
+  },
+  {
+   "id": "speed_lab",
+   "name": "Page speed lab (own)",
+   "category": "own",
+   "fills_sections": [
+    "site_map"
+   ],
+   "fills_tables": [
+    "speed_runs"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "already built"
+  },
+  {
+   "id": "ai_answer_probe",
+   "name": "Answer engine probe (own)",
+   "category": "own",
+   "fills_sections": [
+    "seo_facts"
+   ],
+   "fills_tables": [
+    "ai_prompt_runs"
+   ],
+   "access": "oauth_or_key",
+   "read_only": true,
+   "mock": true,
+   "note": "fixed prompt set against AI assistants"
+  }
+ ]
+}

@@ -84,6 +84,14 @@ class BrainSchemaTests(unittest.TestCase):
             tmp.rmdir()
         self.assertTrue(any("2 active records" in e for e in errs))
 
+    def test_source_registry_and_question_bank_are_consistent(self):
+        self.assertEqual(validate.check_registry(ROOT / "app" / "brain"), [])
+
+    def test_every_question_names_a_room_and_a_field(self):
+        bank = json.loads((ROOT / "app" / "brain" / "questions.bank.json").read_text(encoding="utf-8"))
+        for q in bank["questions"]:
+            self.assertTrue(q["fills"] and q["unblocks_rooms"] and q["weight"] > 0, q["id"])
+
     def test_section_file_name_must_match(self):
         rec = good()
         errs = validate.check_record(rec, expect_section="avatars")
