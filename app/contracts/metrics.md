@@ -25,6 +25,11 @@ Round 0 lifts the metrics the first screens need. Each screen's `FEATURES.md` li
 | return_to_sender_rate | carrier returned parcels / shipped orders | universal (US carrier exceptions) |
 | rto_rate | RTO parcels / cash-on-delivery orders | markets IN only, null for US |
 | payment_method_mix | share of orders by card, wallet, BNPL, cod | cod_share null for US |
+| reversed_by_month | per month: paid orders, returns (carrier returns out), carrier returns, chargebacks, inquiries, each per 1,000 paid orders | months the window cuts are flagged partial |
+| open_disputes | chargebacks and inquiries still open or needing a response at the window end: count, amount, and the part opened `older_than` days or more before it (default 21) | universal |
+| payout_reversals | payouts issued in the window: adjustments (chargeback withdrawals), refunds, gross charges, fees, net | from `payouts` |
+
+A brand folder answers chargeback_rate, dispute_win_rate, payment_method_mix, return_to_sender_rate and the 3 above from `data.sqlite` with GROUP BY queries, orders and reversals counted from the same file so rates hold at any data scale. Without a `carrier_events` feed, return_to_sender_rate counts returns with reason `carrier_returned` over paid orders placed in the window. chargeback_rate also returns the disputed amount and counts by reason. Added 28 Sep 2026 for 06-store-health.
 
 ## Paid (11, 12, 13)
 | Metric | Formula |

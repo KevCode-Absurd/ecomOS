@@ -480,6 +480,33 @@ def return_window_days(brand):
     m = re.search(r'(\d+)[- ]day', str((brand.get('policies') or {}).get('returns') or ''))
     return int(m.group(1)) if m else 30
 
+def brand_sql(ctx):
+    """data.sqlite's query function for a brand folder, or None for the sample brand (rows in memory)."""
+    if getattr(ctx.data, 'sqlite', None) is None:
+        return None
+    return ctx.data._sql
+
+
+def sql_rows(ctx, query, tables):
+    try:
+        rows = ctx.data._sql(query)
+    except KeyError:
+        raise Unavailable(f'the {tables[-1]} table is not connected', fix=CONNECTOR.get(tables[-1]))
+    for t in tables:
+        if t not in ctx.used:
+            ctx.used.append(t)
+    return rows
+
+
+def sql_paid_orders(ctx, win):
+    """Paid orders placed in the window, counted in data.sqlite so rates hold at any data scale."""
+    paid = ', '.join(f"'{s}'" for s in PAID_STATES)
+    span = sql_rows(ctx, 'SELECT MIN(substr(created_at, 1, 10)) AS first, MAX(substr(created_at, 1, 10)) AS last FROM orders',
+                    ('orders',))
+    cover(win, span[0]['first'], span[0]['last'], 'orders')
+    return sql_rows(ctx, f"SELECT COUNT(*) AS n FROM orders WHERE status IN ({paid}) "
+                         f"AND substr(created_at, 1, 10) BETWEEN '{win.s}' AND '{win.e}'", ('orders',))[0]['n']
+
 
 @metric('return_rate')
 def m_return_rate(ctx, name, kw):
@@ -547,16 +574,38 @@ def m_returns_by_reason(ctx, name, kw):
 
 @metric('chargeback_rate')
 def m_chargeback_rate(ctx, name, kw):
-    n, _ = order_totals(ctx, ctx.win)
-    cbs = [r for r in reversed_rows(ctx, 'chargeback') if ctx.win.has(str(r['opened_at'])[:10])]
-    value = ratio(len(cbs), n, 'paid orders')
-    return ctx.ok(value, 'ratio', {'numerator': len(cbs), 'denominator': n},
-                  benchmark={'max': CHARGEBACK_BENCHMARK, 'over': value > CHARGEBACK_BENCHMARK},
+    if brand_sql(ctx):
+        n = sql_paid_orders(ctx, ctx.win)
+        rows = sql_rows(ctx, "SELECT reason, COUNT(*) AS n, SUM(COALESCE(amount, 0)) AS amount FROM reversed_orders "
+                             f"WHERE type = 'chargeback' AND substr(opened_at, 1, 10) BETWEEN '{ctx.win.s}' AND '{ctx.win.e}' "
+                             "GROUP BY reason", ('orders', 'reversed_orders'))
+        by_reason = {r['reason']: r['n'] for r in rows}
+        count, amount = sum(by_reason.values()), sum(r['amount'] or 0 for r in rows)
+    else:
+        n, _ = order_totals(ctx, ctx.win)
+        cbs = [r for r in reversed_rows(ctx, 'chargeback') if ctx.win.has(str(r['opened_at'])[:10])]
+        by_reason = {}
+        for r in cbs:
+            by_reason[r.get('reason')] = by_reason.get(r.get('reason'), 0) + 1
+        count, amount = len(cbs), sum(r.get('amount') or 0 for r in cbs)
+    value = ratio(count, n, 'paid orders')
+    return ctx.ok(value, 'ratio', {'numerator': count, 'denominator': n},
+                  benchmark={'max': CHARGEBACK_BENCHMARK, 'over': value > CHARGEBACK_BENCHMARK}, amount=money(amount),
+                  by_reason=sorted(by_reason.items(), key=lambda kv: -kv[1]),
                   basis='chargebacks opened in the window over paid orders placed in the window')
 
 
 @metric('dispute_win_rate')
 def m_dispute_win_rate(ctx, name, kw):
+    if brand_sql(ctx):
+        sql_paid_orders(ctx, ctx.win)  # the window must sit inside the order history
+        rows = sql_rows(ctx, "SELECT outcome, COUNT(*) AS n FROM reversed_orders WHERE type = 'chargeback' AND "
+                             f"(outcome IN ('open', 'needs_response') OR substr(closed_at, 1, 10) BETWEEN '{ctx.win.s}' AND '{ctx.win.e}') "
+                             "GROUP BY outcome", ('orders', 'reversed_orders'))
+        by = {r['outcome']: r['n'] for r in rows}
+        won, closed = by.get('won', 0), by.get('won', 0) + by.get('lost', 0)
+        return ctx.ok(ratio(won, closed, 'closed disputes'), 'ratio', {'numerator': won, 'denominator': closed},
+                      open_now=by.get('open', 0) + by.get('needs_response', 0))
     o = orders(ctx)
     cover(ctx.win, o['first'], o['last'], 'orders')
     cbs = reversed_rows(ctx, 'chargeback')
@@ -569,6 +618,18 @@ def m_dispute_win_rate(ctx, name, kw):
 
 @metric('return_to_sender_rate')
 def m_return_to_sender(ctx, name, kw):
+    if brand_sql(ctx):
+        try:
+            ctx.data.table('carrier_events')
+        except (KeyError, ValueError):
+            # No carrier feed: the Shopify return a carrier sends back (reason carrier_returned) stands in.
+            n = sql_paid_orders(ctx, ctx.win)
+            back = sql_rows(ctx, "SELECT COUNT(DISTINCT order_id) AS n FROM reversed_orders WHERE reason = 'carrier_returned' "
+                                 f"AND substr(opened_at, 1, 10) BETWEEN '{ctx.win.s}' AND '{ctx.win.e}'",
+                            ('orders', 'reversed_orders'))[0]['n']
+            return ctx.ok(ratio(back, n, 'paid orders'), 'ratio', {'numerator': back, 'denominator': n},
+                          basis='carrier returns opened in the window over paid orders placed in the window; '
+                                'no carrier_events feed, so shipped orders are not counted')
     events = ctx.rows('carrier_events')
     need(events, ('order_id', 'event', 'date'), 'carrier_events')
     o = orders(ctx)
@@ -610,21 +671,136 @@ def pay_group(method):
 
 @metric('payment_method_mix')
 def m_payment_mix(ctx, name, kw):
-    rows = paid_in_window(ctx, ctx.win)
-    if not rows:
+    if brand_sql(ctx):
+        sql_paid_orders(ctx, ctx.win)
+        paid = ', '.join(f"'{s}'" for s in PAID_STATES)
+        counts = {r['m']: r['n'] for r in sql_rows(
+            ctx, f"SELECT COALESCE(payment_method, 'unknown') AS m, COUNT(*) AS n FROM orders WHERE status IN ({paid}) "
+                 f"AND substr(created_at, 1, 10) BETWEEN '{ctx.win.s}' AND '{ctx.win.e}' GROUP BY m", ('orders',))}
+    else:
+        counts = {}
+        for _, _, _, r in paid_in_window(ctx, ctx.win):
+            m = r.get('payment_method') or 'unknown'
+            counts[m] = counts.get(m, 0) + 1
+    if not counts:
         raise Unavailable('no paid orders in this window')
     by_method, by_group = {}, {'card': 0, 'wallet': 0, 'bnpl': 0, 'cod': 0}
-    for _, _, _, r in rows:
-        m = r.get('payment_method') or 'unknown'
-        by_method[m] = by_method.get(m, 0) + 1
-        g = pay_group(m)
-        by_group[g] = by_group.get(g, 0) + 1
-    n = len(rows)
+    for m, c in counts.items():
+        by_method[m] = c
+        by_group[pay_group(m)] = by_group.get(pay_group(m), 0) + c
+    n = sum(counts.values())
     shares = {g: round(c / n, 6) for g, c in by_group.items()}
     if market(ctx) not in COD_MARKETS:
         shares['cod'] = None
     return ctx.ok(shares, 'share', {'orders': n}, counts=by_group,
                   by_method={m: round(c / n, 6) for m, c in sorted(by_method.items(), key=lambda kv: -kv[1])})
+
+
+@metric('reversed_by_month')
+def m_reversed_by_month(ctx, name, kw):
+    """The reversed-order legs by calendar month inside the window: paid orders placed, returns opened (carrier returns
+    out), carrier returns, chargebacks and inquiries opened, each also per 1,000 paid orders. Months the window cuts
+    are flagged partial, never dropped silently."""
+    if brand_sql(ctx):
+        paid = ', '.join(f"'{s}'" for s in PAID_STATES)
+        sql_paid_orders(ctx, ctx.win)
+        orders_m = {r['m']: r['n'] for r in sql_rows(
+            ctx, f"SELECT substr(created_at, 1, 7) AS m, COUNT(*) AS n FROM orders WHERE status IN ({paid}) "
+                 f"AND substr(created_at, 1, 10) BETWEEN '{ctx.win.s}' AND '{ctx.win.e}' GROUP BY m", ('orders',))}
+        rev = sql_rows(ctx, "SELECT substr(opened_at, 1, 7) AS m, type, reason = 'carrier_returned' AS carrier, COUNT(*) AS n "
+                            f"FROM reversed_orders WHERE substr(opened_at, 1, 10) BETWEEN '{ctx.win.s}' AND '{ctx.win.e}' "
+                            "GROUP BY m, type, carrier", ('orders', 'reversed_orders'))
+    else:
+        orders_m = {}
+        for day, _, _, _ in paid_in_window(ctx, ctx.win):
+            orders_m[day[:7]] = orders_m.get(day[:7], 0) + 1
+        agg = {}
+        for r in ctx.rows('reversed_orders'):
+            day = str(r.get('opened_at') or '')[:10]
+            if ctx.win.has(day):
+                k = (day[:7], r.get('type'), r.get('reason') == 'carrier_returned')
+                agg[k] = agg.get(k, 0) + 1
+        rev = [{'m': k[0], 'type': k[1], 'carrier': k[2], 'n': v} for k, v in agg.items()]
+    legs = {m: {'returns': 0, 'carrier_returns': 0, 'chargebacks': 0, 'inquiries': 0} for m in orders_m}
+    for r in rev:
+        if r['m'] not in legs:
+            continue
+        if r['type'] == 'return':
+            key = 'carrier_returns' if r['carrier'] else 'returns'
+        else:
+            key = {'chargeback': 'chargebacks', 'inquiry': 'inquiries'}.get(r['type'])
+        if key:
+            legs[r['m']][key] += r['n']
+    groups = []
+    for m in sorted(orders_m):
+        n = orders_m[m]
+        g = {'month': m, 'paid_orders': n, 'partial': f'{m}-01' < ctx.win.s or month_end(m).isoformat() > ctx.win.e,
+             **legs[m]}
+        for k in ('returns', 'carrier_returns', 'chargebacks', 'inquiries'):
+            g[f'{k}_per_1000'] = round(legs[m][k] / n * 1000, 3) if n else None
+        groups.append(g)
+    if not groups:
+        raise Unavailable('no paid orders in this window')
+    return ctx.ok(len(groups), 'count', {'months': len(groups)}, groups=groups,
+                  basis='each leg opened in the month over paid orders placed in the same month')
+
+
+@metric('open_disputes')
+def m_open_disputes(ctx, name, kw):
+    """Chargebacks and inquiries still waiting for a response at the window end: count and disputed amount, and the
+    part opened `older_than` days or more before it (default 21)."""
+    older = int(kw.get('older_than') or 21)
+    cut = (ctx.win.end - timedelta(days=older)).isoformat()
+    if brand_sql(ctx):
+        rows = sql_rows(ctx, f"SELECT type, substr(opened_at, 1, 10) <= '{cut}' AS aged, COUNT(*) AS n, "
+                             "SUM(COALESCE(amount, 0)) AS amount FROM reversed_orders WHERE type IN ('chargeback', 'inquiry') "
+                             f"AND outcome IN ('open', 'needs_response') AND substr(opened_at, 1, 10) <= '{ctx.win.e}' "
+                             "GROUP BY type, aged", ('reversed_orders',))
+    else:
+        agg = {}
+        for r in ctx.rows('reversed_orders'):
+            day = str(r.get('opened_at') or '')[:10]
+            if r.get('type') in ('chargeback', 'inquiry') and r.get('outcome') in ('open', 'needs_response') and day <= ctx.win.e:
+                a = agg.setdefault((r['type'], day <= cut), [0, 0.0])
+                a[0] += 1
+                a[1] += r.get('amount') or 0
+        rows = [{'type': k[0], 'aged': k[1], 'n': v[0], 'amount': v[1]} for k, v in agg.items()]
+    out = {'count': 0, 'amount': 0.0, 'aged_count': 0, 'aged_amount': 0.0, 'by_type': {}}
+    for r in rows:
+        t = out['by_type'].setdefault(r['type'], {'count': 0, 'amount': 0.0, 'aged_count': 0, 'aged_amount': 0.0})
+        for o in (out, t):
+            o['count'] += r['n']
+            o['amount'] += r['amount'] or 0
+            if r['aged']:
+                o['aged_count'] += r['n']
+                o['aged_amount'] += r['amount'] or 0
+    for o in [out, *out['by_type'].values()]:
+        o['amount'], o['aged_amount'] = money(o['amount']), money(o['aged_amount'])
+    return ctx.ok(out.pop('count'), 'count', {'older_than_days': older, 'opened_on_or_before': cut}, **out,
+                  basis='disputes with outcome open or needs_response, opened by the window end')
+
+
+@metric('payout_reversals')
+def m_payout_reversals(ctx, name, kw):
+    """What left the payouts in the window: refunds and adjustments (chargeback withdrawals and reversals), with gross
+    charges and fees, summed over payouts issued in the window."""
+    rows = ctx.rows('payouts')
+    if rows and 'issued_at' in rows[0]:  # Shopify Payments payout: refunds and adjustments are negative
+        need(rows, ('issued_at', 'charges_gross', 'refunds_gross', 'adjustments_gross'), 'payouts')
+        pick = lambda r: (str(r['issued_at'])[:10], r.get('charges_gross') or 0, r.get('charges_fee') or 0,
+                          r.get('refunds_gross') or 0, r.get('adjustments_gross') or 0, r.get('net') or 0)
+    else:  # gateway settlement rows: refunds and chargebacks are positive amounts taken out
+        need(rows, ('deposit_date', 'gross', 'refunds', 'chargebacks'), 'payouts')
+        pick = lambda r: (str(r['deposit_date'])[:10], r.get('gross') or 0, r.get('fees') or 0, -(r.get('refunds') or 0),
+                          -((r.get('chargebacks') or 0) + (r.get('chargeback_fees') or 0)), r.get('net') or 0)
+    inside = [pick(r) for r in rows if ctx.win.has(pick(r)[0])]
+    if not inside:
+        raise Unavailable('no payouts issued in this window', fix=CONNECTOR['payouts'])
+    tot = {k: money(sum(r[i] for r in inside)) for i, k in ((1, 'charges_gross'), (2, 'charges_fee'),
+                                                          (3, 'refunds_gross'), (5, 'net'))}
+    adj = money(sum(r[4] for r in inside))
+    return ctx.ok(adj, 'usd', {'payouts': len(inside)}, **tot,
+                  basis='payouts issued in the window; value is adjustments (chargeback withdrawals); refunds and adjustments are negative')
 
 
 # ---------------------------------------------------------------- order value (04)
