@@ -258,7 +258,24 @@ Picked from the round 7 note, the room spec (PROD-C08, C10, C11, C12) and the id
 | 8.7 | Sourcing channel comparison (bank idea PRD-099): the sourcing channel per candidate with a first run (agent, marketplace direct, domestic, own factory) and the alternatives compared on cost, days and branding; rule PROD-R55 a first run decided on one channel with no alternative compared (`sourcing_read`: chosen channel plus alternatives, each with landed cost a unit, days and branding; cheapest and fastest marked; the sourcing entered on the candidate from the desk block; merged into the candidate card) | done |
 | 8.8 | Go candidate hand-offs through the shared log: listing copy to copy and the launch page section to landing pages, posted from the candidate brief panel (Send to copy, Send to landing pages; POST `candidates/<id>/handoff/<team>`, from shortlisted on) with the brief drafted from the candidate, the angle and its source, the price and offer, the candidate brief, a do-not list and the terms; kinds copy and page_section; a file per send and a pointer row with the shared id | done |
 | 8.9 | Second brand pass: every route (13) answers 200 on Tallgrass Goods and Bombas, the 7 new blocks render their honest empty state on the sample brand, no page errors; the memo slot now includes the data object, so the server's reader and the api's own sample reader keep separate states instead of evicting each other (the server ran the audit 8 times for 2 brands before, once each now); the shared hand-off log and the decisions log are not audit inputs, so the memo does not watch them | done |
-| 8.10 | Recipes for R50 to R55, 129 tests green on both suites, round8.png to round8d.png (Bombas) and round8s.png (Tallgrass Goods), founder note | done |
+| 8.10 | Recipes for R50 to R55, 127 tests green on both suites, round8.png to round8d.png (Bombas) and round8s.png (Tallgrass Goods), founder note | done |
+
+## Round 9: one place for go-live (from 28 Sep 2026)
+
+Picked from the round 8 note and the idea pass (PRD-101 re-quote thresholds, PRD-094 the cost floor by reverse-image search, PRD-121 the launch stack). The registry route for proposed tests stays a contract ask until one exists.
+
+| # | Feature | Status |
+|---|---|---|
+| 9.1 | Team statuses on the checklist: the launch checklist reads the status each team set on the shared hand-off log (listing copy, launch page) as soft items, `launch_ready` when every hard stop passed and both teams are done, on the product_candidates hand-off too; the shared log path lives in audit and the memo watches it | done |
+| 9.2 | The launch plan per candidate (route `candidates/<id>/launch`): every dated step to go-live on one list (quote, sample, order by, copy, page, ad brief, first read) with its date from the lead time, the peak and the review date, its owner and its state, on the calendar as launch items and copyable from the brief panel | todo |
+| 9.3 | Brand floors from the brain: a `learnings.research_floors` record overrides the price band, the identical-sellers floor, the opportunity weights, the first-run cash share and the kill hold; a block showing each floor, its value and whether it is brand-set or the default | todo |
+| 9.4 | Re-quote thresholds (bank idea PRD-101): units ordered so far on the candidate; rule PROD-R56 a candidate whose ordered units crossed 500 or 1,000 since its quote date | todo |
+| 9.5 | The cost floor (bank idea PRD-094): the supplier price seen for the identical item (reverse-image search, entered with its source) on the candidate; rule PROD-R57 a landed cost more than twice the floor seen at gated or later | todo |
+| 9.6 | Launch items in the week plan and the desk report, and the hand-off statuses in the desk report | todo |
+| 9.7 | Candidate report (route `candidates/<id>/report`, markdown): the brief, the checklist, the launch plan and the hand-offs sent on one page, downloadable from the brief panel | todo |
+| 9.8 | A screen-in from a lane keeps the lane: the candidate carries `lane`, the opportunity block and the lane cards read it instead of matching words | todo |
+| 9.9 | Second brand pass; every new block and route on Tallgrass Goods | todo |
+| 9.10 | Recipes, tests, round9.png, founder note | todo |
 
 ## Round 8 note for the founder (28 Sep 2026)
 

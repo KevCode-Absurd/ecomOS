@@ -1479,8 +1479,8 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
             read = audit.launch_readiness('fake', data, None, rd, D)
             by = {r['candidate_id']: r for r in read['rows']}
             self.assertNotIn('c', by)                                   # before shortlisted with no first run
-            self.assertEqual(len(read['items']), 12)
             self.assertEqual(sum(1 for i in read['items'] if i['hard']), 8)
+            self.assertEqual(len(read['items']), 14)
             self.assertEqual(by['b']['verdict'], 'not_ready')
             self.assertEqual(len(by['b']['hard_open']), 8)
             a = by['a']
@@ -1976,9 +1976,9 @@ class HandoffCreativeTest(unittest.TestCase):
 
     def test_send_to_creative(self):
         import tempfile
-        saved = (api.HANDOFFS_DIR, api.HANDOFFS_PATH, api.SHARED_HANDOFFS_PATH)
+        saved = (api.HANDOFFS_DIR, api.HANDOFFS_PATH, audit.SHARED_HANDOFFS_PATH)
         tmp = Path(tempfile.mkdtemp())
-        api.HANDOFFS_DIR, api.HANDOFFS_PATH, api.SHARED_HANDOFFS_PATH = tmp / 'handoffs', tmp / 'creative_handoffs.json', tmp / 'shared' / 'handoffs.json'
+        api.HANDOFFS_DIR, api.HANDOFFS_PATH, audit.SHARED_HANDOFFS_PATH = tmp / 'handoffs', tmp / 'creative_handoffs.json', tmp / 'shared' / 'handoffs.json'
         try:
             fid = f'{audit.SCREEN}.PROD-R07.durability'
             code, out = api.handle(Req(['handoff', fid, 'send'], method='POST'))
@@ -1987,7 +1987,7 @@ class HandoffCreativeTest(unittest.TestCase):
             self.assertEqual((row['from'], row['to'], row['finding_id'], row['status']), ('01-market-research', 'creative', fid, 'sent'))
             self.assertTrue((api.HANDOFFS_DIR / 'bombas' / (row['id'][3:] + '.md')).is_file())
             # the same send is one row in the shared log, in the events contract shape, that 09-creative reads by to=creative
-            shared = json.loads(api.SHARED_HANDOFFS_PATH.read_text(encoding='utf-8'))
+            shared = json.loads(audit.SHARED_HANDOFFS_PATH.read_text(encoding='utf-8'))
             self.assertEqual(len(shared), 1)
             sr = shared[0]
             self.assertEqual((sr['from_screen'], sr['to'], sr['kind'], sr['status'], sr['finding_id'], sr['owner']), ('01-market-research', 'creative', 'ad_brief', 'proposed', fid, 'agent_drafts'))
@@ -1999,20 +1999,20 @@ class HandoffCreativeTest(unittest.TestCase):
             api.handle(Req(['handoff', fid, 'send'], method='POST'))
             sent = api.handoffs_sent('bombas')
             self.assertEqual(len(sent['rows']), 1)      # a second send refreshes the pointer, never duplicates it
-            self.assertEqual(len(json.loads(api.SHARED_HANDOFFS_PATH.read_text(encoding='utf-8'))), 2)   # the shared log is append-only: the resend is a new row
+            self.assertEqual(len(json.loads(audit.SHARED_HANDOFFS_PATH.read_text(encoding='utf-8'))), 2)   # the shared log is append-only: the resend is a new row
             self.assertEqual(sent['rows'][0]['shared_status'], 'proposed')
             self.assertEqual(sent['shared']['by_status'], {'proposed': 2})
             self.assertIn('never edits', sent['rule'])
             self.assertEqual(api.handoffs_sent('other')['rows'], [])
             self.assertEqual(api.handle(Req(['handoff', 'nope', 'send'], method='POST'))[0], 400)
         finally:
-            api.HANDOFFS_DIR, api.HANDOFFS_PATH, api.SHARED_HANDOFFS_PATH = saved
+            api.HANDOFFS_DIR, api.HANDOFFS_PATH, audit.SHARED_HANDOFFS_PATH = saved
 
     def test_go_candidate_handoffs_to_copy_and_landing_pages(self):
         import tempfile
-        saved = (api.HANDOFFS_DIR, api.HANDOFFS_PATH, api.SHARED_HANDOFFS_PATH, audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH)
+        saved = (api.HANDOFFS_DIR, api.HANDOFFS_PATH, audit.SHARED_HANDOFFS_PATH, audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH)
         tmp = Path(tempfile.mkdtemp())
-        api.HANDOFFS_DIR, api.HANDOFFS_PATH, api.SHARED_HANDOFFS_PATH = tmp / 'handoffs', tmp / 'creative_handoffs.json', tmp / 'shared' / 'handoffs.json'
+        api.HANDOFFS_DIR, api.HANDOFFS_PATH, audit.SHARED_HANDOFFS_PATH = tmp / 'handoffs', tmp / 'creative_handoffs.json', tmp / 'shared' / 'handoffs.json'
         audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH = tmp / 'pipeline.json', tmp / 'product_candidates.json', tmp / 'proposed_tests.json'
         try:
             rows = [{'candidate_id': 'g1', 'brand': 'bombas', 'name': 'Merino calf sock with a wear-life promise', 'category': 'socks', 'stage': 'go', 'planned_price': 24.0, 'pack_units': 1, 'angle_text': 'a wear-life promise on merino', 'angle_source': 'review gap on Amazon', 'owner': 'Sam', 'offer_structure': '3-pack at 60'},
@@ -2039,9 +2039,37 @@ class HandoffCreativeTest(unittest.TestCase):
             self.assertEqual(sent['shared']['by_status'], {'proposed': 2})
             api.handle(Req(['candidates', 'g1', 'handoff', 'copy'], method='POST'))
             self.assertEqual(len(api.handoffs_sent('bombas')['rows']), 2)     # a resend refreshes the pointer
-            self.assertEqual(len(json.loads(api.SHARED_HANDOFFS_PATH.read_text(encoding='utf-8'))), 3)   # and appends to the shared log
+            self.assertEqual(len(json.loads(audit.SHARED_HANDOFFS_PATH.read_text(encoding='utf-8'))), 3)   # and appends to the shared log
         finally:
-            api.HANDOFFS_DIR, api.HANDOFFS_PATH, api.SHARED_HANDOFFS_PATH, audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH = saved
+            api.HANDOFFS_DIR, api.HANDOFFS_PATH, audit.SHARED_HANDOFFS_PATH, audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH = saved
+
+    def test_team_statuses_feed_the_checklist(self):
+        import tempfile
+        saved = (audit.SHARED_HANDOFFS_PATH, audit.PIPELINE_PATH)
+        tmp = Path(tempfile.mkdtemp())
+        audit.SHARED_HANDOFFS_PATH, audit.PIPELINE_PATH = tmp / 'handoffs.json', tmp / 'pipeline.json'
+        try:
+            audit.PIPELINE_PATH.write_text(json.dumps({'rows': [{'candidate_id': 'g1', 'brand': 'fake', 'name': 'G', 'stage': 'go'}]}), encoding='utf-8')
+            fid = f'{audit.SCREEN}.candidate.g1'
+            self.assertEqual(audit.team_status('g1', 'copy')['status'], 'none')       # no log yet
+            audit.SHARED_HANDOFFS_PATH.write_text(json.dumps([
+                {'id': 'HO-1', 'from_screen': audit.SCREEN, 'to': 'copy', 'finding_id': fid, 'status': 'proposed', 'time': '2026-09-20T10:00:00Z'},
+                {'id': 'HO-2', 'from_screen': audit.SCREEN, 'to': 'copy', 'finding_id': fid, 'status': 'done', 'time': '2026-09-22T10:00:00Z'},
+                {'id': 'HO-3', 'from_screen': audit.SCREEN, 'to': 'landing pages', 'finding_id': fid, 'status': 'proposed', 'time': '2026-09-21T10:00:00Z'},
+                {'id': 'HO-4', 'from_screen': '09-creative', 'to': 'landing pages', 'finding_id': fid, 'status': 'done', 'time': '2026-09-23T10:00:00Z'}]), encoding='utf-8')
+            self.assertEqual((audit.team_status('g1', 'copy')['status'], audit.team_status('g1', 'copy')['id']), ('done', 'HO-2'))    # the latest row wins
+            self.assertEqual(audit.team_status('g1', 'landing pages')['status'], 'proposed')                                          # another screen's row never counts
+            data = api.sample_data()
+            D = audit.last_full_day(data, None)
+            row = audit.launch_readiness('fake', data, None, audit.Reader(data, None, D), D)['rows'][0]
+            items = {i['key']: i for i in row['checklist']}
+            self.assertEqual((items['copy']['status'], items['copy']['why']), ('pass', 'done by copy on 2026-09-22'))
+            self.assertEqual((items['page']['status'], items['page']['why']), ('open', 'sent to landing pages, waiting'))
+            self.assertFalse(items['copy']['hard'])
+            self.assertFalse(row['launch_ready'])
+            self.assertEqual(row['teams']['page']['status'], 'proposed')
+        finally:
+            audit.SHARED_HANDOFFS_PATH, audit.PIPELINE_PATH = saved
 
     def test_avatar_handoff_names_the_buyer(self):
         fid = next(f['id'] for f in audit.run('bombas', {'ends_on': '2026-09-27'}) if f['rule_id'] == 'PROD-R11')

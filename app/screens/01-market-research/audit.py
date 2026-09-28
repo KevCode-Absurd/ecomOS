@@ -704,6 +704,7 @@ def review_findings(reviews, lads, rd, tr, ends_on, net_28d):
 # ---------------------------------------------------------------- hero line, pipeline
 
 PIPELINE_PATH = HERE / 'fixtures' / 'pipeline.json'
+SHARED_HANDOFFS_PATH = APP / 'data' / 'handoffs.json'   # the shared append-only hand-off log (events.md); the api posts to it, the checklist reads the statuses the teams set; tests point this elsewhere
 STAGES = ['screened', 'researched', 'gated', 'shortlisted', 'go']
 CLOSED_STAGES = ('go', 'killed', 'kill')
 SCREEN_CHECKS = ('demand', 'competition', 'store_fit')
@@ -830,7 +831,7 @@ def _memo_paths(brand):
     history, hand-offs, seen, reports), the pipeline file wherever a test points it, the spend ledger, the brand's data
     folder and the brain folder. Missing paths count as absent."""
     paths = [p for p in sorted((HERE / 'fixtures').rglob('*')) if p.is_file()]
-    paths += [Path(PIPELINE_PATH), Path(LEDGER_PATH)]
+    paths += [Path(PIPELINE_PATH), Path(LEDGER_PATH), Path(SHARED_HANDOFFS_PATH)]
     for folder in ((APP / 'data' / str(brand)) if brand else None, (APP / 'brain' / str(brand)) if brand else None):
         if folder and folder.is_dir():
             paths += [p for p in sorted(folder.rglob('*')) if p.is_file()]
@@ -4647,7 +4648,32 @@ READINESS_ITEMS = [
     ('demand_screen', 'Demand screen run', True), ('angle', 'Angle with a source', True), ('margin', 'Margin gate', True), ('compliance', 'Compliance', True),
     ('tech_pack', 'Tech pack current', True), ('sample', 'Sample passed', True), ('first_run', 'First run sized', True), ('owner', 'Owner named', True),
     ('one_sku', 'One SKU', False), ('packaging', 'Stock packaging', False), ('kill_hold', 'Kill hold clear', False), ('ad_cost', 'Ad-cost ceiling', False),
+    ('copy', 'Listing copy done', False), ('page', 'Launch page done', False),
 ]
+TEAM_ITEMS = {'copy': 'copy', 'page': 'landing pages'}   # checklist item to the team on the shared log
+
+
+def shared_handoff_rows():
+    """Rows of the shared hand-off log (data/handoffs.json), oldest first; empty when the log is absent or unreadable."""
+    p = Path(SHARED_HANDOFFS_PATH)
+    if not p.is_file():
+        return []
+    try:
+        rows = json.loads(p.read_text(encoding='utf-8'))
+    except json.JSONDecodeError:
+        return []
+    return rows if isinstance(rows, list) else []
+
+
+def team_status(cid, team, rows=None):
+    """The latest status a team set on this candidate's hand-off in the shared log (proposed, decided, done, dropped), with
+    its time; none when this desk never sent one. The candidate's rows carry finding_id <screen>.candidate.<id>."""
+    rows = shared_handoff_rows() if rows is None else rows
+    mine = [r for r in rows if r.get('from_screen') == SCREEN and r.get('to') == team and r.get('finding_id') == f'{SCREEN}.candidate.{cid}']
+    if not mine:
+        return {'status': 'none', 'time': None, 'id': None}
+    last = max(mine, key=lambda r: str(r.get('time') or ''))
+    return {'status': last.get('status') or 'proposed', 'time': last.get('time'), 'id': last.get('id')}
 
 
 def launch_readiness(brand, data, br, rd, ends_on):
@@ -4658,6 +4684,7 @@ def launch_readiness(brand, data, br, rd, ends_on):
     gates = {g['candidate_id']: g for g in candidate_gates(brand, data, br, rd, ends_on)}
     runs = {r['candidate_id']: r['sizing'] for r in first_run_read(brand, ends_on, net_28d(rd))['rows']}   # sizing is read whatever the stage, so a go candidate is judged too
     lookalike = {la['candidate_id']: k for k in kill_memory(brand, ends_on)['rows'] for la in k['lookalikes']}
+    shared = shared_handoff_rows()
     rows = []
     for c in pipeline(brand):
         st = c.get('stage')
@@ -4696,17 +4723,21 @@ def launch_readiness(brand, data, br, rd, ends_on):
         items['kill_hold'] = ('open', f'reads like {k["name"]}, killed {k["killed_on"]}') if k else ('pass', 'no killed lookalike')
         ac = gg.get('ad_cost_ceiling') or {}
         items['ad_cost'] = ('pass' if ac.get('status') == 'pass' else 'unavailable' if ac.get('status') == 'unavailable' else 'open', ac.get('why') or 'not run')
+        for key, team in TEAM_ITEMS.items():
+            ts = team_status(cid, team, shared)
+            items[key] = ('pass', f'done by {team}' + (f' on {str(ts["time"])[:10]}' if ts.get('time') else '')) if ts['status'] == 'done' else ('open', {'none': f'not sent to {team}', 'proposed': f'sent to {team}, waiting', 'decided': f'{team} decided, not done', 'dropped': f'dropped by {team}'}.get(ts['status'], ts['status']))
         checklist = [{'key': key, 'label': label, 'hard': hard, 'status': items[key][0], 'why': items[key][1]} for key, label, hard in READINESS_ITEMS]
         hard_open = [i for i in checklist if i['hard'] and i['status'] != 'pass']
         soft_open = [i for i in checklist if not i['hard'] and i['status'] == 'open']
         verdict = 'not_ready' if hard_open else 'soft_open' if soft_open else 'ready'
-        rows.append({'candidate_id': cid, 'name': c.get('name'), 'stage': st, 'first_run_decided': bool(c.get('first_run')), 'checklist': checklist,
+        launch_ready = verdict == 'ready' and all(items[k][0] == 'pass' for k in TEAM_ITEMS)
+        rows.append({'candidate_id': cid, 'name': c.get('name'), 'stage': st, 'first_run_decided': bool(c.get('first_run')), 'checklist': checklist, 'launch_ready': launch_ready, 'teams': {k: team_status(cid, t, shared) for k, t in TEAM_ITEMS.items()},
                      'passed': sum(1 for i in checklist if i['status'] == 'pass'), 'of': len(checklist), 'hard_open': [i['key'] for i in hard_open], 'soft_open': [i['key'] for i in soft_open],
                      'verdict': verdict, 'finding_id': f'{SCREEN}.PROD-R50.{cid}'})
     order = {'not_ready': 0, 'soft_open': 1, 'ready': 2}
     rows.sort(key=lambda r: (order[r['verdict']], 0 if r['stage'] == 'go' else 1, r['name'] or ''))
     return {'rows': rows, 'items': [{'key': k, 'label': l, 'hard': h} for k, l, h in READINESS_ITEMS],
-            'rule': 'from shortlisted on, or once a first run is decided, every hard stop (demand screen, sourced angle, margin gate, compliance, tech pack, passed sample, sized first run, owner) is clear before sample or ad money goes out; a go with a hard stop open is a finding (bank ideas PRD-121, PRD-112)'}
+            'rule': 'from shortlisted on, or once a first run is decided, every hard stop (demand screen, sourced angle, margin gate, compliance, tech pack, passed sample, sized first run, owner) is clear before sample or ad money goes out; a go with a hard stop open is a finding (bank ideas PRD-121, PRD-112); listing copy and the launch page read the status the team set on the shared hand-off log, and launch-ready means every hard stop passed and both teams are done'}
 
 
 def readiness_findings(brand, data, br, rd, ends_on):

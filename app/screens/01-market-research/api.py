@@ -2052,7 +2052,7 @@ def handoff_rows(brand):
         price, cogs = c.get('planned_price'), c.get('cogs_estimate')
         rd_row = ready.get(c.get('candidate_id'))
         rows.append({'candidate_id': c.get('candidate_id'), 'brand': c.get('brand'), 'name': c.get('name'), 'category': c.get('category'), 'stage': c.get('stage'),
-                     'readiness': {'verdict': rd_row['verdict'], 'hard_open': rd_row['hard_open'], 'soft_open': rd_row['soft_open'], 'passed': rd_row['passed'], 'of': rd_row['of']} if rd_row else None,
+                     'readiness': {'verdict': rd_row['verdict'], 'hard_open': rd_row['hard_open'], 'soft_open': rd_row['soft_open'], 'passed': rd_row['passed'], 'of': rd_row['of'], 'launch_ready': rd_row['launch_ready'], 'teams': {k: v['status'] for k, v in rd_row['teams'].items()}} if rd_row else None,
                      'decision': 'go' if c.get('stage') == 'go' else 'no_go' if c.get('stage') == 'killed' else 'open',
                      'planned_price_usd': price, 'landed_cost_estimate_usd': cogs, 'pack_units': c.get('pack_units') or 1,
                      'gross_margin_pct_from_estimates': round((price - cogs) / price * 100, 1) if price and cogs is not None and price > 0 else None,
@@ -2517,7 +2517,6 @@ def decisions_on_desk(data, brand, limit=50):
 
 HANDOFFS_DIR = HERE / 'fixtures' / 'handoffs'
 HANDOFFS_PATH = HERE / 'fixtures' / 'creative_handoffs.json'
-SHARED_HANDOFFS_PATH = Path(rank_mod.DECISIONS).parent / 'handoffs.json'   # the shared append-only log (events.md), next to the decisions log; tests point this elsewhere
 HANDOFF_TO = {'creative': 'creative', 'copy': 'copy', 'landing pages': 'landing pages'}
 
 
@@ -2533,7 +2532,7 @@ def _server():
 
 def shared_handoffs():
     """The shared hand-off log (data/handoffs.json) as the server's Handoffs class, at the path this module points to."""
-    return _server().Handoffs(SHARED_HANDOFFS_PATH)
+    return _server().Handoffs(audit.SHARED_HANDOFFS_PATH)   # the path lives in audit, which reads the statuses the teams set
 
 
 def post_shared_handoff(to, kind, title, why, draft, terms, finding_id, owner='agent_drafts'):
@@ -2593,7 +2592,7 @@ def handoffs_sent(brand):
     for sr in shared_rows:
         by_status[sr.get('status') or 'proposed'] = by_status.get(sr.get('status') or 'proposed', 0) + 1
     return {'rows': rows, 'file': str(HANDOFFS_PATH.relative_to(APP.parent)) if str(HANDOFFS_PATH).startswith(str(APP.parent)) else str(HANDOFFS_PATH),
-            'shared': {'file': str(SHARED_HANDOFFS_PATH.relative_to(APP.parent)) if str(SHARED_HANDOFFS_PATH).startswith(str(APP.parent)) else str(SHARED_HANDOFFS_PATH), 'by_status': by_status, 'route': '/api/handoffs?from_screen=' + SCREEN},
+            'shared': {'file': str(audit.SHARED_HANDOFFS_PATH.relative_to(APP.parent)) if str(audit.SHARED_HANDOFFS_PATH).startswith(str(APP.parent)) else str(audit.SHARED_HANDOFFS_PATH), 'by_status': by_status, 'route': '/api/handoffs?from_screen=' + SCREEN},
             'rule': 'a send writes the brief file here and one row to the shared hand-off log; the receiving team reads the log by to and sets the status; this desk never edits another screen\'s rows'}
 
 
