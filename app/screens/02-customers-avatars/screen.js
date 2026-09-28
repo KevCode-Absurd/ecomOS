@@ -3,7 +3,10 @@
    Writes only through the api: a founder-marked voice example, and decisions from the plan. */
 (function () {
   'use strict';
-  const { el, mount, api, fmt } = UI;
+  const { el, mount, fmt } = UI;
+  // any brand: ?brand=<slug> in the page address goes to every call, so the same page renders another brain
+  const BRAND = (() => { try { return new URLSearchParams(location.search).get('brand') || ''; } catch (e) { return ''; } })();
+  const api = (u, o) => UI.api(BRAND && u.startsWith('/api/02-') ? u + (u.includes('?') ? '&' : '?') + 'brand=' + encodeURIComponent(BRAND) : u, o);
   const SLUG = '02-customers-avatars';
   const BASE = '/api/' + SLUG + '/';
   const NA = 'unavailable';

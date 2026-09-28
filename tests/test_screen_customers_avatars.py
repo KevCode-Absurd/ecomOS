@@ -1995,22 +1995,33 @@ const { chromium } = require(process.env.PW_MODULE);
   p.on('pageerror', (e) => errs.push(e.message));
   p.on('console', (m) => { if (m.type() === 'error' && !/^Failed to load resource/.test(m.text())) errs.push(m.text()); });
   p.on('response', (r) => { if (r.status() >= 400 && r.url().startsWith(process.env.BASE)) errs.push(r.status() + ' ' + r.url()); });
-  const base = process.env.BASE + '/screens/02-customers-avatars/';
+  const q = process.env.BRAND ? '?brand=' + process.env.BRAND : '';
+  const base = process.env.BASE + '/screens/02-customers-avatars/' + q;
+  const bad = [];
+  const scan = async (where) => {
+    const t = await p.evaluate(() => document.body.innerText);
+    for (const line of t.split('\n')) if (/\b(undefined|NaN|null)\b|\[object Object\]/.test(line)) bad.push(where + ': ' + line.slice(0, 120));
+  };
   await p.goto(base, { waitUntil: 'networkidle' });
   await p.waitForSelector('#plan .plan-item', { timeout: 20000 });
   const out = { plan: await p.$$eval('#plan .plan-item', (n) => n.length), tabs: {} };
   for (const t of ['avatars', 'doubts', 'offers', 'retention', 'brand']) {
     await p.goto(base + '#tab=' + t); await p.waitForTimeout(300);
     out.tabs[t] = await p.$$eval('#desk .section', (n) => n.filter((x) => x.offsetParent !== null).length);
+    await scan(t);
   }
+  out.badge = await p.evaluate(() => document.querySelector('#badge').innerText);
   await p.click('#report-btn'); await p.waitForSelector('.panel .report', { timeout: 10000 });
   out.report = await p.$$eval('.panel .report section', (n) => n.length);
+  await scan('report');
   await p.keyboard.press('Escape');
   await p.goto(base + '#tab=avatars'); await p.waitForTimeout(300);
   await p.locator('text=One page to take away').first().click();
   await p.waitForSelector('.panel .report', { timeout: 10000 });
   out.avatar = await p.$$eval('.panel .report section', (n) => n.length);
+  await scan('avatar page');
   out.errors = errs;
+  out.bad = bad;
   console.log(JSON.stringify(out));
   await b.close();
 })().catch((e) => { console.log(JSON.stringify({ fatal: String(e) })); process.exit(1); });
@@ -2018,8 +2029,9 @@ const { chromium } = require(process.env.PW_MODULE);
 
 
 class BrowserSmoke(unittest.TestCase):
-    """Feature 8.6: load the page, every desk tab, the report and an avatar page in Chromium against a real server.
-    Fails on any script error or a missing plan, desk block or report. Skipped without Node and Playwright."""
+    """Features 8.6 and 8.8: load the page, every desk tab, the report and an avatar page in Chromium against a real server,
+    for the sample brand and a second brand (?brand=example). Fails on any script error, a missing plan, desk block or
+    report, or any "undefined", "NaN" or "null" on the page (depth rule 7). Skipped without Node and Playwright."""
 
     def test_page_loads_clean(self):
         import os
@@ -2042,20 +2054,26 @@ class BrowserSmoke(unittest.TestCase):
                     break
                 except OSError:
                     time.sleep(0.2)
-            env = dict(os.environ, PW_MODULE=mods[0], BASE=f'http://127.0.0.1:{port}',
-                       PW_CHROME='/opt/pw-browsers/chromium' if Path('/opt/pw-browsers/chromium').exists() else '')
-            r = subprocess.run([node, '-e', SMOKE_JS], env=env, capture_output=True, text=True, timeout=180)
-            out = json.loads((r.stdout.strip().splitlines() or ['{}'])[-1])
+            outs = {}
+            for brand in ('', 'example'):
+                env = dict(os.environ, PW_MODULE=mods[0], BASE=f'http://127.0.0.1:{port}', BRAND=brand,
+                           PW_CHROME='/opt/pw-browsers/chromium' if Path('/opt/pw-browsers/chromium').exists() else '')
+                r = subprocess.run([node, '-e', SMOKE_JS], env=env, capture_output=True, text=True, timeout=180)
+                outs[brand or 'bombas'] = json.loads((r.stdout.strip().splitlines() or ['{}'])[-1])
         finally:
             srv.terminate()
             srv.wait(timeout=10)
-        self.assertNotIn('fatal', out, out)
-        self.assertEqual(out['errors'], [])
-        self.assertGreater(out['plan'], 0)
-        for tab, n in out['tabs'].items():
-            self.assertGreater(n, 0, tab)
-        self.assertGreaterEqual(out['report'], 6)
-        self.assertEqual(out['avatar'], 8)
+        for brand, out in outs.items():
+            self.assertNotIn('fatal', out, (brand, out))
+            self.assertEqual(out['errors'], [], brand)
+            self.assertEqual(out['bad'], [], brand)
+            self.assertGreater(out['plan'], 0, brand)
+            for tab, n in out['tabs'].items():
+                self.assertGreater(n, 0, (brand, tab))
+            self.assertGreaterEqual(out['report'], 6, brand)
+            self.assertEqual(out['avatar'], 8, brand)
+        self.assertIn('Example is the sample brand', outs['example']['badge'])
+        self.assertNotIn('Bombas', outs['example']['badge'])
 
 
 class WeakCohortMoney(unittest.TestCase):
