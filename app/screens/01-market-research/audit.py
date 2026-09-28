@@ -4946,3 +4946,54 @@ def identical_seller_findings(brand, br, ends_on):
         f['id'] = f'{SCREEN}.PROD-R54.{cid}'
         out.append(f)
     return out
+
+
+# ---------------------------------------------------------------- lane opportunity: the Jungle Scout job as rules
+
+OPP_WEIGHTS = {'demand': 30, 'competition': 25, 'price_room': 15, 'complaint_room': 15, 'presence': 15}
+OPP_LABEL = {'demand': 'Demand', 'competition': 'Room from competitors', 'price_room': 'Price room', 'complaint_room': 'Complaint to build on', 'presence': 'Room for us'}
+OPP_MIN_PARTS = 3      # fewer parts read than this: the score is thin and says so
+OPP_STRONG = 60        # at or above: a lane worth a candidate
+
+
+def lane_opportunity(br, prods, ends_on):
+    """Per lane, an opportunity score 0 to 100 from 5 parts on stated weights, each 0 to 1 or unavailable: demand (the lane's
+    trend score), room from competitors (sellers against the full line), price room (what reviewers say they pay a pair
+    against our site price, a brand-level read applied to every lane), a complaint to build on (the top complaint rate on
+    our listings that match the lane, against the 15 percent rule), and room for us (a lane we do not sell scores highest,
+    one we sell and advertise lowest). The score averages the parts that were read, weighted; fewer than 3 parts read is
+    thin. Each lane names its open candidates, so the top lane with none ends in a screen-in."""
+    if br is None:
+        return {'rows': [], 'weights': OPP_WEIGHTS, 'labels': OPP_LABEL, 'rule': None}
+    lm = lane_map(br, ends_on)
+    price = review_price_signal(br)
+    site = our_price_per_pair(prods, br).get('value')
+    price_part = None
+    if price.get('median_per_pair') is not None and site:
+        price_part = round(max(0.0, min(1.0, price['median_per_pair'] / site)), 3)
+    listings = listing_complaints(br)
+    cands = [c for c in pipeline(br.brand) if c.get('stage') not in CLOSED_STAGES]
+    lanes = {k: (label, terms) for k, label, terms in lanes_for(br)}
+    rows = []
+    for pt in lm['points']:
+        label, terms = lanes.get(pt['key'], (pt['label'], []))
+        parts = {}
+        parts['demand'] = round((pt['y'] + 1) / 2, 3) if pt['y'] is not None else None
+        parts['competition'] = round(1 - min(pt['x'], SATURATION_FULL) / SATURATION_FULL, 3)
+        parts['price_room'] = price_part
+        matched = [l for l in listings if any(t in str(l.get('title') or '').lower() for t in terms) and l.get('mined')]
+        rates = [l['top_rate'] for l in matched if l.get('top_rate') is not None]
+        parts['complaint_room'] = round(min(1.0, max(rates) / COMPLAINT_RATE), 3) if rates else None
+        parts['presence'] = 1.0 if not pt['sold'] else 0.6 if not pt['advertised'] else 0.2
+        read = {k: v for k, v in parts.items() if v is not None}
+        wsum = sum(OPP_WEIGHTS[k] for k in read)
+        score = round(sum(OPP_WEIGHTS[k] * v for k, v in read.items()) / wsum * 100) if wsum else None
+        open_c = [c.get('name') for c in cands if any(t in (str(c.get('name') or '') + ' ' + str(c.get('angle_text') or '')).lower() for t in terms)]
+        verdict = 'thin' if len(read) < OPP_MIN_PARTS or score is None else 'strong_no_candidate' if score >= OPP_STRONG and not open_c else 'strong' if score >= OPP_STRONG else 'weak'
+        rows.append({'key': pt['key'], 'label': label, 'score': score, 'parts': parts, 'parts_read': len(read), 'of': len(OPP_WEIGHTS), 'sellers': pt['x'], 'trend': pt['y'], 'quadrant': pt['quadrant'],
+                     'sold': pt['sold'], 'advertised': pt['advertised'], 'complaint_listings': [l['asin'] for l in matched], 'open_candidates': open_c, 'verdict': verdict, 'finding_id': pt['finding_id']})
+    rows.sort(key=lambda r: (-(r['score'] if r['score'] is not None else -1), r['label']))
+    for i, r in enumerate(rows):
+        r['rank'] = i + 1
+    return {'rows': rows, 'weights': OPP_WEIGHTS, 'labels': OPP_LABEL, 'strong': OPP_STRONG, 'min_parts': OPP_MIN_PARTS, 'site_per_pair': site, 'review_median_per_pair': price.get('median_per_pair'),
+            'rule': f'score = weighted mean of the parts read (demand {OPP_WEIGHTS["demand"]}, room from competitors {OPP_WEIGHTS["competition"]}, price room {OPP_WEIGHTS["price_room"]}, complaint to build on {OPP_WEIGHTS["complaint_room"]}, room for us {OPP_WEIGHTS["presence"]}) times 100; fewer than {OPP_MIN_PARTS} parts read is thin; {OPP_STRONG} or more with no open candidate is a lane to screen a candidate into; the score ranks lanes, it never replaces the demand screen'}

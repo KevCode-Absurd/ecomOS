@@ -1335,6 +1335,7 @@ def merge_strength(actions):
     return keep
 
 
+LANE_RULES = ('PROD-R06', 'PROD-R19', 'PROD-R20', 'PROD-R33', 'PROD-R26', 'PROD-R29')
 CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28', 'PROD-R37', 'PROD-R38', 'PROD-R39', 'PROD-R40', 'PROD-R45', 'PROD-R46', 'PROD-R47', 'PROD-R48', 'PROD-R49', 'PROD-R50', 'PROD-R51', 'PROD-R52', 'PROD-R53', 'PROD-R54')
 
 
@@ -1448,6 +1449,11 @@ def rank(brand, window=None):
     for a in actions:
         sr = audit.strength_of_rule(strength, a.get('rule_id'))
         a['read_strength'] = {'read': sr['label'], 'verdict': sr['verdict'], 'sample': sr['sample'], 'sources': sr['sources'], 'age_days': sr['age_days']} if sr else None
+    # the lane opportunity score on every lane card, so a lane brief says where the lane ranks and on what
+    opp = {r['key']: r for r in audit.lane_opportunity(br_s, products(data, brand), dt.date.fromisoformat(window['ends_on']))['rows']} if br_s is not None else {}
+    for a in actions:
+        o = opp.get((a.get('entity') or {}).get('id')) if a.get('rule_id') in LANE_RULES else None
+        a['opportunity'] = {'score': o['score'], 'rank': o['rank'], 'of': len(opp), 'parts': o['parts'], 'parts_read': o['parts_read'], 'verdict': o['verdict']} if o else None
     # what each card covers: every finding behind it, so a merged card reads as a checklist, never a black box
     by_id = {f['id']: f for f in findings}
     names = {r['rule_id']: r['name'] for r in audit.RULES}
@@ -1588,7 +1594,7 @@ def overview(data, brand):
                      'gates': gates_block(brand, data, br, rd, ends_on, findings), 'scorecard': scorecard_block(brand, data, br, rd, ends_on, findings),
                      'video': audit.video_signals(br, brand, ends_on), 'tech_packs': tech_pack_block(brand, findings),
                      'hours': dict(audit.hours_table(brand, br), findings={f['entity']['id']: f['id'] for f in findings if f['rule_id'] == 'PROD-R28'}),
-                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on), 'returns': audit.return_rates(data, brand, ends_on), 'questions': audit.open_questions(br, ends_on), 'pulls': audit.pulls(br, brand, ends_on), 'first_runs': audit.first_run_read(brand, ends_on, audit.net_28d(rd)), 'brain_freshness': audit.brain_freshness(br, ends_on), 'assumptions': audit.assumptions(br), 'strength': audit.read_strength(br, brand, data, rd, ends_on), 'line_themes': audit.line_theme_matrix(br), 'samples': audit.sample_read(brand or 'sample', ends_on), 'kills': audit.kill_memory(brand or 'sample', ends_on), 'packaging': audit.packaging_read(brand or 'sample', ends_on), 'readiness': audit.launch_readiness(brand, data, br, rd, ends_on), 'price_bands': audit.price_band_read(brand or 'sample'), 'margin_points': audit.margin_point_read(brand, data, br, rd, ends_on), 'identical_sellers': audit.identical_sellers_read(brand or 'sample', br), 'audit_memo': audit.memo_stats()},
+                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on), 'returns': audit.return_rates(data, brand, ends_on), 'questions': audit.open_questions(br, ends_on), 'pulls': audit.pulls(br, brand, ends_on), 'first_runs': audit.first_run_read(brand, ends_on, audit.net_28d(rd)), 'brain_freshness': audit.brain_freshness(br, ends_on), 'assumptions': audit.assumptions(br), 'strength': audit.read_strength(br, brand, data, rd, ends_on), 'line_themes': audit.line_theme_matrix(br), 'samples': audit.sample_read(brand or 'sample', ends_on), 'kills': audit.kill_memory(brand or 'sample', ends_on), 'packaging': audit.packaging_read(brand or 'sample', ends_on), 'readiness': audit.launch_readiness(brand, data, br, rd, ends_on), 'price_bands': audit.price_band_read(brand or 'sample'), 'margin_points': audit.margin_point_read(brand, data, br, rd, ends_on), 'identical_sellers': audit.identical_sellers_read(brand or 'sample', br), 'opportunity': audit.lane_opportunity(br, products(data, brand), ends_on), 'audit_memo': audit.memo_stats()},
             'audit': {'findings': findings, 'rules': audit.RULES}}
 
 

@@ -23,6 +23,11 @@
     if (action) line.append(el('button', { class: 'btn soft xs', type: 'button', text: action.label, onclick: action.onClick }));
     return line;
   }
+  function opportunityNote(a) {
+    const o = a.opportunity;
+    if (!o || o.score == null) return null;
+    return el('p', { class: 'micro muted', style: { marginTop: '-4px', marginBottom: '8px' }, text: 'Lane opportunity ' + o.score + ' of 100, rank ' + o.rank + ' of ' + o.of + ' (' + o.parts_read + ' of 5 parts read' + (o.verdict === 'thin' ? ', thin' : '') + ').' });
+  }
   function strengthNote(a) {
     const s = a.read_strength;
     if (!s || s.verdict === 'ok' || s.verdict === 'strong') return null;
@@ -48,7 +53,7 @@
   }
   function openAction(a) {
     const tools = CREATIVE_RULES.includes(a.rule_id) ? [el('button', { class: 'btn sm', type: 'button', text: 'Creative hand-off', onclick: () => openHandoff(a) })] : null;
-    UI.panel({ title: a.title, tools, body: el('div', { class: 'stack' }, UI.actionCard(a, { expanded: true, screen: SLUG }), strengthNote(a), coversList(a, false)) });
+    UI.panel({ title: a.title, tools, body: el('div', { class: 'stack' }, UI.actionCard(a, { expanded: true, screen: SLUG }), strengthNote(a), opportunityNote(a), coversList(a, false)) });
   }
   const state = { actions: [], byFinding: {} };
   function actionFor(findingId) { return state.byFinding[findingId] || null; }
@@ -855,6 +860,32 @@
         open.length && actionFor(open[0].finding_id) ? { label: 'Open the first', onClick: () => openAction(actionFor(open[0].finding_id)) } : null));
   }
 
+  function opportunityBlock(op) {
+    const rows = (op && op.rows) || [];
+    if (!rows.length) return UI.emptyState({ screen: SLUG, title: 'No lanes to score', text: 'The score needs the web pass lanes and the brain.', missing: ['web_pass', 'brain'] });
+    const keys = Object.keys(op.weights || {});
+    const cols = keys.map((k) => ({ key: k, label: op.labels[k] + ' (' + op.weights[k] + ')' }));
+    const cells = {};
+    rows.forEach((r) => { cells[r.key] = {}; keys.forEach((k) => { const v = r.parts[k]; cells[r.key][k] = { us: v == null ? null : Math.round(v * 100), unit: 'n', label: v == null ? 'not read' : Math.round(v * 100) + ' of 100' }; }); });
+    const matrix = UI.coverageMatrix({ rows: rows.map((r) => ({ key: r.key, label: r.rank + '. ' + r.label, sub: (r.score == null ? 'no score' : r.score + ' of 100') + ', ' + r.parts_read + ' of ' + r.of + ' parts' })), cols, cells, single: true, max: 100, unit: 'n', corner: 'lane x part',
+      note: 'Each part 0 to 100; n/a is not read. Weights in the column heads. ' + (op.rule || '') });
+    const vt = { strong_no_candidate: 'Strong, no candidate', strong: 'Strong, candidate open', weak: 'Weak', thin: 'Thin read' };
+    const screenIn = (r) => { const name = prompt('Name the candidate to screen into ' + r.label, ''); if (name == null || !name.trim()) return; candidatePost('candidates', { name: name.trim(), category: 'socks', time_box_days: 10, angle_text: null, who: 'person' }); };
+    const vrows = rows.map((r) => { const a = actionFor(r.finding_id); return Object.assign({}, r, {
+      scoreText: r.score == null ? NA : r.score + ' of 100 (' + r.parts_read + ' of ' + r.of + ' parts)', candText: r.open_candidates.length ? r.open_candidates.join(', ') : 'none', quad: r.quadrant, sellersText: String(r.sellers),
+      actions: [r.verdict === 'strong_no_candidate' ? { label: 'Screen a candidate in', onClick: () => screenIn(r) } : null, a ? { label: 'Open the lane card', cls: 'quiet', onClick: () => openAction(a) } : null].filter(Boolean) }); });
+    const tbl = UI.verdictTable({
+      columns: [{ key: 'label', label: 'Lane' }, { key: 'scoreText', label: 'Score' }, { key: 'quad', label: 'Trend and sellers' }, { key: 'sellersText', label: 'Sellers' }, { key: 'candText', label: 'Open candidates' }],
+      rows: vrows,
+      verdict: { at: 1, kind: (r) => r.verdict === 'strong_no_candidate' ? 'fix' : r.verdict === 'strong' ? 'keep' : r.verdict === 'thin' ? 'na' : 'watch', text: (r) => vt[r.verdict], reason: (r) => op.rule },
+      actions: { label: 'Do', onClick: () => {} }, sort: false });
+    const top = rows.find((r) => r.verdict === 'strong_no_candidate');
+    return el('div', { class: 'stack' }, el('div', { class: 'card' }, matrix), el('div', { class: 'card scroll' }, tbl),
+      el('p', { class: 'micro faint', text: 'Price room reads the review median a pair (' + (op.review_median_per_pair == null ? NA : fmt.money(op.review_median_per_pair)) + ') against our site price a pair (' + (op.site_per_pair == null ? NA : fmt.money(op.site_per_pair)) + '), one brand-level read applied to every lane. The score ranks lanes; it never replaces the demand screen.' }),
+      gapLine(top ? 'The best lane with no candidate is ' + top.label + ' at ' + top.score + ' of 100. Screen one in and run the fast checks.' : rows.some((r) => r.verdict === 'strong') ? 'Every strong lane has an open candidate.' : 'No lane scores ' + op.strong + ' or more on the parts read.',
+        top ? { label: 'Screen a candidate into ' + top.label, onClick: () => screenIn(top) } : null));
+  }
+
   function scorecardBlock(sc) {
     const rows = (sc && sc.rows) || [];
     if (!rows.length) return el('p', { class: 'muted', text: 'No candidate to score.' });
@@ -1284,6 +1315,7 @@
     parts.push(section('desk-price-band', 'Is each candidate priced where paid acquisition can pay back?', 'The planned checkout price per candidate against the reject line ($9.99 or under needs an offer structure), the $9 to $20 caution band (needs a band check) and the $50 to $150 target band for a paid-acquisition launch (bank ideas PRD-077, PRD-078). Below the target a candidate sells on organic, retention or as a bundle part.', priceBandBlock(d.price_bands)));
     parts.push(section('desk-margin-points', 'Does the margin hold at the low price, and whose number is the cost?', 'The margin gate at the low, planned and high price and at the expected bulk cost (bank idea PRD-080), and the cost basis: from gated on it must be the brand\'s own supplier quote, not an estimate, a competitor-implied number or the category median (bank idea PRD-081).', marginPointsBlock(d.margin_points)));
     parts.push(section('desk-lane-map', 'Which lanes are growing with room left, and which are growing and already full?', 'Trend direction against competitive saturation per lane, read together as one go or no-go signal: market growth and launches from the web pass, sellers from the competitor pages in the brain.', laneMapBlock(d.lane_map)));
+    parts.push(section('desk-opportunity', 'Which lane is the best bet for the next candidate?', 'One score per lane from 5 parts on stated weights: demand (the trend score), room from competitors, price room (what reviewers say they pay against our price), a complaint to build on, and room for us. A part not read is left out and the score says how many parts it rests on. The top lane with no open candidate ends in a screen-in.', opportunityBlock(d.opportunity)));
     parts.push(section('desk-spend', 'Who is actually funding which lane, not just posting about it?', 'Competitor pages by the longest run of their active ads per lane. Three or more advertisers at 90 days is a funded test; one at 14 days is a live test; the rest is noise.', spendBlock(d.spend)));
     parts.push(section('desk-price-signal', 'What would buyers actually pay for a pair?', 'Price mentions mined from review quotes across Amazon, the brand site, Trustpilot and retailers, as a median per pair, against the competitor band, our own pair and each candidate\'s planned price.', priceSignalBlock(d.price_signal)));
     parts.push(section('desk-complaints', 'What do buyers hate about what exists, listing by listing?', 'Complaint themes mined from the brand\'s own Amazon listings as a share of reviews mined, against praise, with the listing\'s public stars, ratings and price. One complaint over 15 percent is the angle to build on.', complaintBlock(d.complaints)));

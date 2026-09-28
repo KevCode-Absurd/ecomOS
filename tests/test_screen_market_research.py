@@ -2090,6 +2090,38 @@ class WebPassTest(unittest.TestCase):
         self.assertIn('--check', a['steps'][2]['text'])
 
 
+class OpportunityTest(unittest.TestCase):
+    def test_lane_opportunity_scores_on_stated_weights(self):
+        br = audit.brain('bombas')
+        data = audit.brand_data('bombas')
+        D = audit.last_full_day(data, 'bombas')
+        op = audit.lane_opportunity(br, api.products(data, 'bombas'), D)
+        rows = op['rows']
+        self.assertTrue(rows)
+        self.assertEqual(sum(op['weights'].values()), 100)
+        self.assertEqual([r['rank'] for r in rows], list(range(1, len(rows) + 1)))
+        scores = [r['score'] for r in rows if r['score'] is not None]
+        self.assertEqual(scores, sorted(scores, reverse=True))
+        for r in rows:
+            read = {k: v for k, v in r['parts'].items() if v is not None}
+            self.assertEqual(r['parts_read'], len(read))
+            if read:
+                w = sum(op['weights'][k] for k in read)
+                self.assertEqual(r['score'], round(sum(op['weights'][k] * v for k, v in read.items()) / w * 100))   # the score is the arithmetic of its parts
+                self.assertTrue(all(0 <= v <= 1 for v in read.values()))
+            self.assertIn(r['verdict'], ('strong_no_candidate', 'strong', 'weak', 'thin'))
+            if r['parts_read'] < op['min_parts']:
+                self.assertEqual(r['verdict'], 'thin')
+        self.assertEqual(audit.lane_opportunity(None, [], D)['rows'], [])
+        # the score rides on every lane card
+        r = api.rank('bombas', None)
+        lane_cards = [a for a in r['actions'] if a.get('rule_id') in api.LANE_RULES and a.get('opportunity')]
+        self.assertTrue(lane_cards)
+        o = lane_cards[0]['opportunity']
+        self.assertEqual(set(o), {'score', 'rank', 'of', 'parts', 'parts_read', 'verdict'})
+        self.assertTrue(all(a.get('opportunity') is None for a in r['actions'] if a.get('rule_id') in api.CANDIDATE_RULES))
+
+
 class SecondBrandTest(unittest.TestCase):
     """The desk is not Bombas-shaped: the sample brand (Tallgrass Goods, kitchen goods, no brain, no web pass) reads
     nothing of Bombas and every route still answers."""
