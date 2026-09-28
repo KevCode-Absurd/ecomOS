@@ -51,6 +51,15 @@ Rules
             and the brand's active ads carry proof in a smaller share of hook types than the median
             competitor page with a price band. One finding for the brand, severity high (a competitor
             position gap named in the brain). Money: null. Capability PROD-C06. Owner: 01-market-research.
+  PROD-R10  Avatar not served: an avatar record in the brain with no evidence quote or record that names a line
+            we sell, while at least one competitor page pitches to them (2 or more of the avatar's words in its
+            pitch). Money: null. Capability PROD-C01 (screen the candidate, agent does). Owner: 01-market-research.
+  PROD-R11  Avatar under-served: an avatar with a share estimate of 10 percent or more (or high intensity) whose
+            theme (from its own words) is complaint-led in the objection ladders. Money: share_estimate x
+            28-day net revenue x complaint share of the theme's quotes, the revenue sitting with buyers whose
+            main doubt goes unanswered, times the 12-month repeat rate (the repeat revenue at risk). Severity by
+            the stake ladder, capped at high (a structural gap, not a break in the buy path). Capability PROD-C12. Owner:
+            01-market-research. Satisfaction override: 4 (a review theme in a deal-breaker rung).
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -97,6 +106,10 @@ RULES = [
      'entity_type': 'metric', 'inputs': ['fixtures.market_trends', 'brain.claims', 'brain.competitors', 'brain.learnings'], 'capability': 'PROD-C05', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R09', 'name': 'Category framed by a proof word on Reddit (3 or more posts, brand never named), a competitor recommended instead, and our proof share of hooks below the competitor median',
      'entity_type': 'brand', 'inputs': ['brain.positioning', 'brain.competitors', 'brain.learnings', 'products'], 'capability': 'PROD-C06', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R10', 'name': 'Avatar in the brain with no record or quote tying them to a line we sell, while a competitor pitches to them',
+     'entity_type': 'brand', 'inputs': ['brain.avatars', 'brain.products', 'brain.competitors'], 'capability': 'PROD-C01', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R11', 'name': 'Avatar with 10 percent or more of buyers (or high intensity) whose theme is complaint-led; money = share x 28-day net revenue x complaint share',
+     'entity_type': 'brand', 'inputs': ['brain.avatars', 'brain.objection_ladders', 'daily', 'brain.learnings'], 'capability': 'PROD-C12', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -106,7 +119,9 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R06': {'id': 'PROD-C03', 'autonomy': 'agent_does'},
               'PROD-R07': {'id': 'PROD-C12', 'autonomy': 'human_assist'},
               'PROD-R08': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
-              'PROD-R09': {'id': 'PROD-C06', 'autonomy': 'agent_does'}}
+              'PROD-R09': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
+              'PROD-R10': {'id': 'PROD-C01', 'autonomy': 'agent_does'},
+              'PROD-R11': {'id': 'PROD-C12', 'autonomy': 'human_assist'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -517,6 +532,7 @@ def run(brand, window=None, data=None):
     except (KeyError, ValueError):
         prods_for_map = None
     out += positioning_findings(br, prods_for_map, ends_on)
+    out += avatar_findings(br, ends_on, net, prods_for_map)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -1145,3 +1161,152 @@ def positioning_findings(br, prods, ends_on):
                    'proof_share': ours['y'], 'peer_proof_share': m['mid_y']}
     f['id'] = f'{SCREEN}.PROD-R09.brand'
     return [f]
+
+
+# ---------------------------------------------------------------- avatars by line: served and not served
+
+# line groups are a fixed structure; which ones exist for a brand comes from products.lines in the brain
+LINE_GROUPS = [('socks', 'Socks', ['sock']), ('underwear', 'Underwear', ['underwear', 'boxer', 'brief', 'bralette', 'thong', 'hipster']),
+               ('tshirts', 'T-shirts', ['t-shirt', 'tshirt', ' tee', 'shirt']), ('slippers', 'Slippers', ['slipper', 'bootie']),
+               ('footwear', 'Footwear', ['clog', 'moccasin', 'sandal', 'slip-on', 'shoe', 'sneaker', 'boot']),
+               ('gifting', 'Gifts and gift cards', ['gift'])]
+STOP = set('the and for that with from into over under after before when than then this these those their there them they its our your his her '
+           'she he who what which where while about above after again against all any are been being between both but can did does doing down '
+           'during each few had has have having here how just more most not now off once only other out own same some such too very was were will '
+           'would you socks sock clothing brand brands pair pairs buying buy order orders one first new like size sizes wear wearing day'.split())
+AVATAR_MIN_WORDS = 2
+UNDER_SERVED_MIN_SHARE = 0.10
+
+
+def avatar_words(v):
+    """Distinctive words of an avatar from its job, triggers and pains: lower case, 5 letters or more, no stop words."""
+    text = ' '.join([str(v.get('job') or ''), ' '.join(v.get('triggers') or []), ' '.join(v.get('pains') or []), str(v.get('situation') or '')]).lower()
+    words = {w.strip('.,;:()"\'') for w in re.split(r'[\s/]+', text)}
+    return sorted(w for w in words if len(w) >= 5 and w not in STOP and w.isalpha())
+
+
+def avatar_coverage(br, prods=None):
+    """Rows: avatars from the brain. Cols: the brand's line groups. Cell us: the avatar's own evidence and text that
+    names the line (quotes and records). Cell them: competitor pages whose pitch carries 2 or more of the avatar's
+    words and names the line. Avatars with no line evidence anywhere are not served by anything we can point at."""
+    if br is None:
+        return {'rows': [], 'cols': [], 'cells': {}}
+    lines = [l.lower() for l in (brain_value_lines(br) or [])]
+    line_text = ' '.join(lines) + ' ' + brand_words(br)
+    cols = [{'key': k, 'label': lab, 'terms': t} for k, lab, t in LINE_GROUPS if any(term in line_text for term in t)]
+    comps = competitor_signals(br)
+    themes = {r['theme']: r for r in conversation(br)['rows']}
+    from_ads = ad_words(br)
+    rows, cells = [], {}
+    for rec in br.records('avatars'):
+        v = rec.get('value') or {}
+        name = v.get('name') or (v.get('situation') or rec.get('field') or '').replace('_', ' ').title()
+        words = avatar_words(v)
+        quotes = [str(e.get('quote') or '') for e in rec.get('evidence') or []]
+        own_text = (' '.join(quotes) + ' ' + str(rec.get('text') or '') + ' ' + json.dumps(v)).lower()
+        served = [c for c in comps if sum(1 for w in words if w in c['text']) >= AVATAR_MIN_WORDS]
+        row_cells = {}
+        total_us = 0
+        for c in cols:
+            us = sum(1 for q in quotes if any(t in q.lower() for t in c['terms'])) + (1 if any(t in own_text for t in c['terms']) else 0)
+            them = sum(1 for s in served if any(t in s['text'] for t in c['terms']))
+            if us or them:
+                row_cells[c['key']] = {'us': us, 'them': them, 'unit': 'n', 'n': len(quotes)}
+            total_us += us
+        # the theme the avatar lives on: the adapter's theme words counted in its job, pains and triggers (not its quotes)
+        theme_row = themes.get(avatar_theme(v) or '')
+        in_ads = any(w in from_ads for w in words[:12]) if from_ads else None
+        rows.append({'key': rec['id'].split('.')[-1], 'record': rec['id'], 'label': name, 'share': v.get('share_estimate'), 'intensity': v.get('intensity'),
+                     'job': v.get('job'), 'words': words[:12], 'quotes': len(quotes), 'served_by': [c['name'] for c in served],
+                     'lines_us': total_us, 'in_ads': in_ads, 'theme': theme_row['theme'] if theme_row else None,
+                     'theme_verdict': theme_row['verdict'] if theme_row else None,
+                     'complaint_share': (round(1 - theme_row['praise_share'], 4) if theme_row and theme_row.get('praise_share') is not None else None),
+                     'not_served': total_us == 0, 'finding_id': None})
+        cells[rec['id'].split('.')[-1]] = row_cells
+    rows.sort(key=lambda r: (-(r['share'] or 0), r['label']))
+    return {'rows': rows, 'cols': [{'key': c['key'], 'label': c['label']} for c in cols], 'cells': cells,
+            'competitors': [c['name'] for c in comps], 'note': 'us: the avatar\'s own quotes and records that name the line; them: competitor pages whose pitch carries 2 or more of the avatar\'s words and names the line'}
+
+
+GENERIC_THEME_TERMS = {'last', 'lasted', 'small', 'large', 'fine', 'sale', 'opened'}
+EXTRA_THEME_TERMS = {'durability': ['hole', 'holes', 'shedding', 'pilling', 'wear out', 'fall apart', 'hold up', 'go thin'],
+                     'fit_sizing': ['size chart', 'fit', 'slip', 'ride down', 'tight', 'pull on'],
+                     'price_value': ['price', 'cheaper', 'worth', 'premium', 'per-pair', 'per pair', 'multi-pack'],
+                     'delivery': ['arriv', 'mis-shipped', 'missing order', 'on time'],
+                     'comfort': ['comfort', 'seam', 'rub', 'pinch', 'foot pain', 'warm'],
+                     'mission': ['giving', 'donat', 'mission']}
+
+
+def avatar_theme(v):
+    """The theme with the most term hits in the avatar's job, pains and triggers, or None."""
+    try:
+        from app.connectors.apify_adapters import THEMES  # noqa: WPS433
+    except Exception:  # noqa: BLE001
+        THEMES = {}
+    text = ' ' + ' '.join([str(v.get('job') or ''), ' '.join(v.get('pains') or []), ' '.join(v.get('triggers') or [])]).lower() + ' '
+    best, best_n = None, 0
+    for th in set(THEMES) | set(EXTRA_THEME_TERMS):
+        terms = [t for t in (THEMES.get(th) or []) if t not in GENERIC_THEME_TERMS] + EXTRA_THEME_TERMS.get(th, [])
+        n = sum(1 for t in terms if t in text)
+        if n > best_n:
+            best, best_n = th, n
+    return best
+
+
+def brain_value_num(br, rid):
+    r = br.get(rid) if br else None
+    v = (r or {}).get('value') if r else None
+    return float(v) if isinstance(v, (int, float)) else None
+
+
+def brain_value_lines(br):
+    r = br.get(f'{br.brand}.products.lines') if br else None
+    return (r or {}).get('value') if r else None
+
+
+def avatar_findings(br, ends_on, net_28d_value, prods=None):
+    """PROD-R10: an avatar the brain holds with no line evidence on our side and a competitor serving it.
+    PROD-R11: an avatar with 10 percent or more of buyers (or high intensity) whose theme is complaint-led;
+    money = share x 28-day net revenue x complaint share of the theme's quotes."""
+    out = []
+    cov = avatar_coverage(br, prods)
+    for r in cov['rows']:
+        rid = r['key']
+        if r['not_served'] and r['served_by']:
+            ev = [_ev('own_line_evidence', 0, 'count', ends_on.isoformat(), 'brain now', 1, 'threshold', source=r['record'], simulated=False, freshness_days=0),
+                  _ev('competitors_serving', len(r['served_by']), 'count', ends_on.isoformat(), 'active ads now', source='brain.competitors', simulated=False, freshness_days=0, names=r['served_by'])]
+            sentence = (f'{r["label"]} is in the brain with no record or quote that ties them to a line we sell. {", ".join(r["served_by"][:3])} pitch to them.')
+            f = _finding('PROD-R10', rid, ends_on, 'medium', ev, sentence, None, 0.5, [r['record']], money_reason='no line evidence, so no order count')
+            f['entity'] = {'type': 'brand', 'id': rid, 'label': r['label'], 'names': ', '.join(r['served_by'][:3]), 'job': r['job']}
+            f['id'] = f'{SCREEN}.PROD-R10.{rid}'
+            out.append(f)
+            r['finding_id'] = f['id']
+            continue
+        big = (r['share'] or 0) >= UNDER_SERVED_MIN_SHARE or r['intensity'] == 'high'
+        if big and r['theme_verdict'] == 'gap' and r['complaint_share'] is not None:
+            stake = None
+            reason = None
+            repeat = brain_value_num(br, f'{br.brand}.economics.repeat_rate_12m')
+            if net_28d_value and r['share'] and repeat:
+                usd = round(r['share'] * net_28d_value * r['complaint_share'] * repeat)
+                stake = {'usd': usd, 'formula': 'share_estimate * net_revenue_28d * complaint_share_of_theme * repeat_rate_12m',
+                         'inputs': {'share_estimate': r['share'], 'net_revenue_28d': round(net_28d_value, 2), 'complaint_share_of_theme': r['complaint_share'],
+                                    'repeat_rate_12m': repeat}, 'window': '28d'}
+            else:
+                reason = ('no share estimate for this avatar' if not r['share'] else 'net revenue for 28 days unavailable' if not net_28d_value
+                          else 'no repeat rate in the brain (economics.repeat_rate_12m)')
+            th = THEME_LABEL.get(r['theme'], r['theme'])
+            ev = [_ev('share_estimate', r['share'], 'ratio', ends_on.isoformat(), 'brain now', UNDER_SERVED_MIN_SHARE, 'threshold', source=r['record'], simulated=False, freshness_days=0, intensity=r['intensity']),
+                  _ev('complaint_share_of_theme', r['complaint_share'], 'ratio', ends_on.isoformat(), 'all reviews to capture', 0.5, 'threshold', source='brain.objection_ladders', simulated=False, freshness_days=0, theme=r['theme']),
+                  _ev('net_revenue_28d', round(net_28d_value, 2) if net_28d_value else None, 'usd', ends_on.isoformat(), '28d'),
+                  _ev('in_active_ads', 1 if r['in_ads'] else 0, 'flag', ends_on.isoformat(), 'active ads now', 1, 'threshold', source='brain.learnings', simulated=False, freshness_days=0)]
+            sentence = (f'{r["label"]}: about {round(r["share"] * 100)} percent of buyers with {r["intensity"]} intensity. Their theme, {th.lower()}, is '
+                        f'{round(r["complaint_share"] * 100)} percent complaint quotes' + (' and no active ad speaks to them.' if not r['in_ads'] else '.'))
+            sev = _severity(stake['usd'] if stake else None, net_28d_value, 1)
+            sev = 'high' if sev == 'critical' else sev   # a structural gap, not a break in the buy path
+            f = _finding('PROD-R11', rid, ends_on, sev, ev, sentence, stake, 0.5, [r['record'], f'{br.brand}.economics.repeat_rate_12m'], reason)
+            f['entity'] = {'type': 'brand', 'id': rid, 'label': r['label'], 'theme': r['theme'], 'job': r['job'], 'in_ads': r['in_ads']}
+            f['id'] = f'{SCREEN}.PROD-R11.{rid}'
+            out.append(f)
+            r['finding_id'] = f['id']
+    return out

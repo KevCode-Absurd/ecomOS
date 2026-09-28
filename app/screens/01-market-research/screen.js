@@ -320,6 +320,34 @@
         a9 ? { label: 'Take the position', onClick: () => openAction(a9) } : null));
   }
 
+  function avatarBlock(c) {
+    if (!c || !c.rows || !c.rows.length) return UI.emptyState({ screen: SLUG, title: 'No avatars in the brain', text: 'The brain holds no avatar records yet. Reviews, tickets and Reddit build them.', missing: ['reviews'] });
+    const rows = c.rows.map((r) => ({ key: r.key, label: r.label, sub: (r.share != null ? Math.round(r.share * 100) + ' percent' : 'share unavailable') + (r.intensity ? ', ' + r.intensity : '') }));
+    const matrix = UI.coverageMatrix({
+      rows, cols: c.cols, cells: c.cells, unit: 'n', corner: 'avatar x line',
+      note: c.note + '. An empty cell is not tried on either side; a red cell is a competitor pitch with nothing of ours.',
+      action: { label: 'Research it', onClick: (cell, row) => { const r = c.rows.find((x) => x.key === row.key); const a = r && actionFor(r.finding_id); if (a) openAction(a); else UI.panel({ title: row.label, body: el('div', { class: 'stack' }, el('p', { text: (r && r.job) || '' }), el('p', { class: 'muted small', text: 'No rule fired for this cell yet. The avatar has line evidence elsewhere; the competitor pitch here is a signal to watch.' }), UI.decisionRow({ capability: 'PROD-C01', screen: SLUG, finding_id: SLUG + '.avatar.' + row.key })) }); } },
+      onCell: (cell, row) => { const r = c.rows.find((x) => x.key === row.key); if (!r) return; UI.panel({ title: r.label, body: el('div', { class: 'stack' }, el('p', { text: r.job || '' }), el('div', { class: 'small muted', text: 'Words matched: ' + (r.words || []).join(', ') }), el('div', { class: 'small', text: 'Competitor pages pitching to them: ' + (r.served_by.length ? r.served_by.join(', ') : 'none seen') }), actionFor(r.finding_id) ? UI.actionCard(actionFor(r.finding_id), { expanded: true, screen: SLUG }) : el('p', { class: 'muted small', text: 'No finding on this avatar.' })) }); },
+    });
+    const vrows = c.rows.map((r) => { const a = actionFor(r.finding_id); return Object.assign({}, r, {
+      shareText: r.share == null ? NA : fmt.pct(r.share), themeText: r.theme ? pretty(r.theme) + (r.complaint_share != null ? ', ' + fmt.pct(r.complaint_share) + ' complaints' : '') : 'no theme read',
+      served: r.served_by.length ? r.served_by.join(', ') : 'none seen', ads: r.in_ads == null ? NA : r.in_ads ? 'yes' : 'no',
+      verdict: r.not_served ? 'not_served' : a ? 'under' : r.theme_verdict === 'strength' ? 'strength' : 'served',
+      actions: [a ? { label: r.not_served ? 'Screen it' : 'Win them back', onClick: () => openAction(a) } : { label: r.not_served ? 'No line' : 'Served', cls: 'quiet', onClick: () => {} }] }); });
+    const t = UI.verdictTable({
+      columns: [{ key: 'label', label: 'Avatar' }, { key: 'shareText', label: 'Share of buyers' }, { key: 'intensity', label: 'Intensity', format: (v) => v || NA }, { key: 'lines_us', label: 'Lines with our evidence', unit: 'n' },
+        { key: 'themeText', label: 'Their theme' }, { key: 'served', label: 'Competitors pitching to them' }, { key: 'ads', label: 'In our active ads' }],
+      rows: vrows,
+      verdict: { at: 1, kind: (r) => r.verdict === 'not_served' ? 'new' : r.verdict === 'under' ? 'fix' : r.verdict === 'strength' ? 'scale' : 'keep',
+        text: (r) => r.verdict === 'not_served' ? 'Not served' : r.verdict === 'under' ? 'Under-served' : r.verdict === 'strength' ? 'Strength' : 'Served',
+        reason: (r) => r.verdict === 'under' ? 'big segment on a complaint-led theme no ad answers' : r.verdict === 'not_served' ? 'no record ties them to a line we sell' : 'line evidence on file' },
+      actions: { label: 'Do', onClick: () => {} }, sort: false });
+    const under = c.rows.filter((r) => r.finding_id && !r.not_served), ns = c.rows.filter((r) => r.not_served);
+    return el('div', { class: 'stack' }, el('div', { class: 'card' }, matrix), el('div', { class: 'card scroll' }, t),
+      gapLine((under.length ? under.length + ' big segments sit on a complaint-led theme no active ad answers: ' + under.map((r) => r.label).join(', ') + '. ' : '') + (ns.length ? ns.length + ' avatars have no line evidence: ' + ns.map((r) => r.label).join(', ') + '.' : 'Every avatar has line evidence on our side.'),
+        under.length ? { label: 'Win back the first', onClick: () => { const a = actionFor(under[0].finding_id); if (a) openAction(a); } } : null));
+  }
+
   function loadDesk(o) {
     const d = o.desk || {};
     const w = (o.window || {}).trend;
@@ -329,6 +357,7 @@
     parts.push(section('desk-conversation', 'What are people talking about, and what goes unanswered?', 'Themes across reviews (site, Amazon, Trustpilot, retailers), Reddit and an Instagram hashtag pull: volume, complaint against praise, the top doubt, and whether the site and the active ads answer it.', conversationBlock(d.conversation)));
     parts.push(section('desk-preferences', 'Which preferences are shifting, and where do we stand on each?', 'Public survey numbers from the web pass against our own claims, our active ads, the competitors\' pitches and the category conversation.', preferencesBlock(d.preferences)));
     parts.push(section('desk-map', 'Where do we sit against the competitors, and which position is open?', 'Price per pair against the share of proof-led hooks, from the brain\'s competitor records and the Ad Library pull. Sized by active ads. The Reddit frames show how the category talks about itself.', mapBlock(d.map)));
+    parts.push(section('desk-avatars', 'Which buyers do we serve, and which do competitors pitch to that we do not?', 'The brain\'s avatars by the lines we sell: our evidence against competitor pitches in every cell. Big segments on a complaint-led theme carry the repeat revenue at risk.', avatarBlock(d.avatars)));
     parts.push(section('desk-demand', 'Which lines are losing share, and which reviews say why?', 'Last 3 whole months against the same months a year earlier. A line fires when units fall or growth trails the store by 1 point or more.', demandBlock(d, w || { months: [], year_ago: [] })));
     parts.push(section('desk-price', 'Where do our prices sit against the competitor band?', 'Per-pair list price by line against the band of competitor median prices from the brain. Socks only; other categories have no competitor price on file.', priceBlock(d.price_bands || {})));
     parts.push(section('desk-reviews', 'What do reviews praise and fail, line by line?', 'Public site review totals per line, with the objection ladder rungs built from them.', reviewBlock(d.reviews || [])));

@@ -366,6 +366,36 @@ class RulesTest(unittest.TestCase):
         self.assertIn('recommended instead', fs[0]['sentence'])
         self.check_shape(fs[0])
 
+    def test_avatar_theme_and_words(self):
+        v = {'job': 'socks that survive a season before holes start', 'pains': ['holes in the heel', 'shedding and pilling'], 'triggers': ['a hole after weeks']}
+        self.assertEqual(audit.avatar_theme(v), 'durability')
+        self.assertEqual(audit.avatar_theme({'job': 'proof it is worth more than a cheaper multi-pack', 'pains': ['paying a premium'], 'triggers': []}), 'price_value')
+        self.assertIsNone(audit.avatar_theme({'job': '', 'pains': [], 'triggers': []}))
+        w = audit.avatar_words(v)
+        self.assertIn('holes', w)
+        self.assertNotIn('socks', w)
+
+    def test_avatar_rules_on_bombas_brain(self):
+        br = audit.brain('bombas')
+        if br is None:
+            self.skipTest('no bombas brain')
+        cov = audit.avatar_coverage(br)
+        self.assertTrue(cov['rows'] and cov['cols'])
+        for r in cov['rows']:
+            self.assertEqual(r['not_served'], r['lines_us'] == 0)
+        fs = audit.avatar_findings(br, date(2026, 9, 27), 28640586.4)
+        r11 = [f for f in fs if f['rule_id'] == 'PROD-R11']
+        self.assertTrue(r11)
+        for f in r11:
+            self.check_shape(f)
+            self.assertNotEqual(f['severity'], 'critical')
+            if f['money_at_stake']:
+                inp = f['money_at_stake']['inputs']
+                self.assertEqual(f['money_at_stake']['usd'], round(inp['share_estimate'] * inp['net_revenue_28d'] * inp['complaint_share_of_theme'] * inp['repeat_rate_12m']))
+        self.assertIsNone(next((f for f in fs if f['rule_id'] == 'PROD-R11' and f['money_at_stake'] is None and not f.get('money_reason')), None))
+        no_net = audit.avatar_findings(br, date(2026, 9, 27), None)
+        self.assertTrue(all(f['money_at_stake'] is None and f['money_reason'] for f in no_net if f['rule_id'] == 'PROD-R11'))
+
     def test_web_pass_fixture_cites_every_number(self):
         fx = audit.market_trends()
         self.assertIsNotNone(fx)

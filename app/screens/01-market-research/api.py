@@ -461,6 +461,45 @@ def recipe(f):
             'check_on': _check_on(f, 30), 'time_to_ship_hours': 10,
             'win_rule': 'proof share of active hook types at or above the competitor median, and the brand named in the next Reddit pull on the frame',
         }
+    if rid == 'PROD-R10':
+        ent = f.get('entity') or {}
+        label = ent.get('label') or ent.get('id') or 'this avatar'
+        names = ent.get('names') or 'competitors'
+        return {
+            'title': f'Screen an offer for {label}: {names} pitch to them and we have nothing on file',
+            'owner': 'agent',
+            'artefact': {'kind': 'research_note', 'label': f'a fast screen for {label}: the job ({(ent.get("job") or "")[:80]}), which line could serve it, the demand signal, and a go or kill'},
+            'steps': [
+                {'n': 1, 'who': 'agent', 'text': f'Read what {names} say to {label} in their ads (signals only) and which product they lead with.'},
+                {'n': 2, 'who': 'agent', 'text': 'Check our catalog and reviews for anything that already serves the job; note the gap if nothing does.'},
+                {'n': 3, 'who': 'agent', 'text': 'Run the fast screen: demand, competition, store fit. Write a go (candidate to the pipeline with a time box) or a kill with the reason.'},
+                {'n': 4, 'who': 'person', 'text': 'Decide. A go writes the candidate; a kill writes a decision so it is not re-argued.'}],
+            'size': {'text': f'{_ev_value(f, "competitors_serving")} competitor pages pitch to them', 'usd': None},
+            'stop_rule': 'stop at the time box: 10 days of research, then decide',
+            'check_on': _check_on(f, 10), 'time_to_ship_hours': 6,
+            'win_rule': 'a logged go or kill for the avatar',
+        }
+    if rid == 'PROD-R11':
+        ent = f.get('entity') or {}
+        label = ent.get('label') or ent.get('id') or 'this avatar'
+        theme = audit.THEME_LABEL.get(ent.get('theme'), ent.get('theme') or 'their theme').lower()
+        m = f.get('money_at_stake') or {}
+        in_ads = ent.get('in_ads')
+        return {
+            'title': f'Win back {label}: answer {theme} where they buy',
+            'owner': 'agent_drafts',
+            'artefact': {'kind': 'offer', 'label': f'an offer and message spec for {label}: the proof for {theme} next to the price, a guarantee or fit promise where the brain holds one, an email to past buyers, and the ad hook' + ('' if in_ads else ' (no active ad speaks to them today)')},
+            'steps': [
+                {'n': 1, 'who': 'agent', 'text': f'Pull the avatar record, its quotes and the {theme} ladder rungs with proof.'},
+                {'n': 2, 'who': 'agent', 'text': 'Draft the spec: the one promise that answers their top doubt, where it shows (PDP, cart, post-purchase email, ad), and the offer if one is needed (a replacement pledge, a fit exchange, a pack price per wear).'},
+                {'n': 3, 'who': 'agent', 'text': 'Size it: the share of buyers, the repeat revenue at risk, the cost of the promise from finance inputs.'},
+                {'n': 4, 'who': 'person', 'text': 'Approve the promise and its cost. Offers, email and creative ship their parts.'},
+                {'n': 5, 'who': 'agent', 'text': 'Read at 60 days: repeat rate of buyers who saw the promise against those who did not, and the theme\'s complaint share in new reviews.'}],
+            'size': {'text': f'{rank_mod_money(m)} of repeat revenue at risk in 28 days', 'usd': m.get('usd')} if m else None,
+            'stop_rule': 'stop the offer if its cost passes 2 percent of the segment\'s net revenue in the window; keep the proof on the page',
+            'check_on': _check_on(f, 60), 'time_to_ship_hours': 12,
+            'win_rule': 'repeat rate of the segment up 2 points, or complaint share on the theme under 50 percent in new reviews',
+        }
     return None
 
 
@@ -519,6 +558,17 @@ def rank(brand, window=None):
 
 # ---------------------------------------------------------------- overview
 
+def avatar_block(br, findings):
+    cov = audit.avatar_coverage(br)
+    by_entity = {}
+    for f in findings:
+        if f['rule_id'] in ('PROD-R10', 'PROD-R11'):
+            by_entity[f['entity']['id']] = f['id']
+    for r in cov['rows']:
+        r['finding_id'] = by_entity.get(r['key'])
+    return cov
+
+
 def head(data, brand, ends_on, br):
     b = source_of(data, brand).brand
     return {'brand': b.get('brand'), 'name': b.get('name'), 'as_of': b.get('as_of'),
@@ -568,6 +618,7 @@ def overview(data, brand):
             'desk': {'trends': trends(br, mix), 'mix': mix, 'lanes': audit.subcategory_table(br, ends_on),
                      'conversation': audit.conversation(br), 'preferences': audit.preferences(br),
                      'map': dict(audit.positioning_map(br, products(data, brand)), frames=audit.reddit_frames(br)[0], instead=audit.reddit_frames(br)[1]),
+                     'avatars': avatar_block(br, findings),
                      'demand': demand(tr, reviews), 'store_growth': tr.get('store_growth'),
                      'demand_unavailable': {'reason': tr.get('reason'), 'fix': tr.get('fix')} if tr.get('unavailable') else None,
                      'price_bands': bands, 'reviews': review_mining(reviews, lads),
