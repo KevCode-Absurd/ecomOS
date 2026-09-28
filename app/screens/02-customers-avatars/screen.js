@@ -913,6 +913,25 @@
     });
   }
 
+  // ---------- since your last visit (this browser only) ----------
+  function renderSince(d, r) {
+    const key = 'ecomos.' + SLUG + '.' + d.brand + '.seen';
+    const now = { version: d.version, at: d.today, ids: (r.actions || []).filter(isOpen).map((a) => a.id) };
+    let before = null;
+    try { before = JSON.parse(localStorage.getItem(key) || 'null'); } catch (e) { before = null; }
+    try { localStorage.setItem(key, JSON.stringify(now)); } catch (e) { /* storage blocked: the strip just stays hidden */ }
+    const box = document.getElementById('since');
+    if (!before || !Array.isArray(before.ids)) { box.hidden = true; return; }
+    const was = new Set(before.ids), is = new Set(now.ids);
+    const added = (r.actions || []).filter((a) => isOpen(a) && !was.has(a.id));
+    const gone = before.ids.filter((id) => !is.has(id)).length;
+    if (!added.length && !gone && before.version === now.version) { box.hidden = true; return; }
+    box.hidden = false;
+    mount(box, el('b', { text: 'Since your last visit' + (before.at ? ' on ' + fmt.date(before.at) : '') + ': ' }),
+      el('span', { text: added.length + ' new move' + (added.length === 1 ? '' : 's') + ', ' + gone + ' resolved or merged' + (before.version !== now.version ? ', the brain changed.' : '.') }),
+      ...added.slice(0, 3).map((a) => el('span', { class: 'chip accent', text: a.title.length > 60 ? a.title.slice(0, 57) + '...' : a.title })));
+  }
+
   // ---------- the next 30 days ----------
   async function renderAgenda() {
     let x;
@@ -1011,6 +1030,7 @@
     }
     mount('#badge', el('span', null, el('b', { text: 'Simulated data. ' }), d.simulated_note));
     renderPlan(d, r);
+    renderSince(d, r);
     renderWrong(a, r);
     renderActions(r);
     renderOffers(d.offer_map);

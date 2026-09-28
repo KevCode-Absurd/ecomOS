@@ -1482,5 +1482,15 @@ class RungEvidence(TempBrain):
         self.assertIn('onRow: (r) => rungPanel(r)', (SCREEN / 'screen.js').read_text(encoding='utf-8'))
 
 
+class SinceLastVisit(unittest.TestCase):
+    """Feature 6.6: per-browser strip; storage wrapped so a blocked store never breaks the page."""
+
+    def test_storage_guarded(self):
+        js = (SCREEN / 'screen.js').read_text(encoding='utf-8')
+        block = js[js.index('function renderSince'):js.index('// ---------- the next 30 days')]
+        self.assertEqual(block.count('localStorage'), 2)
+        self.assertEqual(block.count('try {'), 2)
+
+
 if __name__ == '__main__':
     unittest.main()
