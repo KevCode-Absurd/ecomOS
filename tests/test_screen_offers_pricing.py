@@ -2168,5 +2168,22 @@ class YearAgreementTest(unittest.TestCase):
         self.assertEqual((cost['windows']['agree'], cost['confidence']), (1, 0.5))   # the duty rise is this year's
 
 
+class StaleConfidenceTest(unittest.TestCase):
+    """Round 9 feature 4: an input past its shelf life takes 0.2 off confidence (audit.md section 2)."""
+
+    def test_old_record(self):
+        import datetime as dtm
+        class R:
+            ends_on = dtm.date(2026, 9, 24)
+            def record(self, rid):
+                return {'date': '2026-01-01'} if rid == 'b.offers.old' else {'date': '2026-09-20'}
+        f1 = {'confidence': 0.7, 'status': 'open', 'evidence': [], 'brain_refs': ['b.offers.old', 'b.offers.new']}
+        f2 = {'confidence': 0.7, 'status': 'open', 'evidence': [], 'brain_refs': ['b.offers.new']}
+        out = audit.confidence_rules([f1, f2], R())
+        self.assertEqual((out[0]['confidence'], out[0]['stale_refs']), (0.5, ['b.offers.old']))
+        self.assertEqual(out[1]['confidence'], 0.7)
+        self.assertNotIn('stale_refs', out[1])
+
+
 if __name__ == '__main__':
     unittest.main()

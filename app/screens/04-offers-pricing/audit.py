@@ -1807,7 +1807,7 @@ def run(brand, window=None, data=None):
     rd = Reader(data, brand, ends_on)
     out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_cost(rd) + rule_referral(rd) + rule_loyalty(rd) + rule_window_creep(rd) + rule_bundles(rd) + rule_launched(rd) + rule_upsell(rd) + rule_bnpl(rd) + rule_threshold_match(rd) + rule_cohorts(rd) + rule_welcome(rd) + rule_test_trust(rd) + rule_price_moves(rd) + rule_claim_stress(rd) + rule_paid(rd) + rule_attach(rd) + rule_code_returns(rd) + rule_power(rd) + rule_leaks(rd) + rule_returners(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
            rule_unanswered(rd))
-    out = confidence_rules(severity_from_money(window_agreement(out, rd), _net_28d(rd)))
+    out = confidence_rules(severity_from_money(window_agreement(out, rd), _net_28d(rd)), rd)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f.get('money_at_stake') or {}).get('usd') or -1), f['id']))
     return out
 
@@ -1868,15 +1868,37 @@ def window_agreement(findings, rd):
 WEAK_EVIDENCE = 0.3
 
 
-def confidence_rules(findings):
+def _stale_refs(f, rd):
+    """Brain records this finding read that are older than playbook.STALE_DAYS at the window end."""
+    if rd is None:
+        return []
+    old = []
+    for rid in f.get('brain_refs') or []:
+        rec = rd.record(rid) if isinstance(rid, str) and rid.count('.') >= 2 else None
+        d = str((rec or {}).get('date') or '')[:10]
+        try:
+            age = (rd.ends_on - date.fromisoformat(d)).days
+        except ValueError:
+            continue
+        if age > _playbook().STALE_DAYS:
+            old.append(rid)
+    return old
+
+
+def confidence_rules(findings, rd=None):
     """audit.md section 2, the parts this screen can apply to every rule: minus 0.2 when a baseline is a peer band
-    rather than the brand's own history, floor 0.1. Under WEAK_EVIDENCE the page labels the finding weak evidence."""
+    rather than the brand's own history, minus 0.2 when an input is past its shelf life (a brain record older than
+    playbook.STALE_DAYS), floor 0.1. Under WEAK_EVIDENCE the page labels the finding weak evidence."""
     for f in findings:
         c = f.get('confidence')
         if not isinstance(c, (int, float)):
             continue
         if any(e.get('baseline_kind') == 'peer_band' for e in f.get('evidence') or []):
             c -= 0.2
+        stale = _stale_refs(f, rd) if f.get('status') == 'open' else []
+        if stale:
+            c -= 0.2
+            f['stale_refs'] = stale
         f['confidence'] = round(max(0.1, c), 2)
         f['weak_evidence'] = f.get('status') == 'open' and f['confidence'] < WEAK_EVIDENCE
     return findings
