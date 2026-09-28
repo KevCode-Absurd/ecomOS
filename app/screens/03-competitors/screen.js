@@ -400,6 +400,12 @@
   }
 
   // ---------- 5h. snapshot freshness and the re-pull ----------
+  function pullTable(pl) {
+    if (!pl) return null;
+    return el('div', { class: 'stack' }, el('h4', { text: 'What lights up when the pull lands (' + pl.lit + ' of ' + pl.rows.length + ' lit)' }),
+      UI.table({ columns: [{ key: 'label', label: 'Block' }, { key: 'now', label: 'Today' }, { key: 'then', label: 'With the pull' },
+        { key: 'waits_for', label: 'Waits for', format: (v) => v || 'lit' }], rows: pl.rows, sort: false }));
+  }
   function freshSection(fr) {
     const table = UI.verdictTable({
       columns: [{ key: 'name', label: 'Page', format: (v, r) => v + (r.role === 'self' ? ' (us)' : '') },
@@ -433,7 +439,7 @@
     });
     const capRow = el('div', { class: 'row wrap' }, capBtn, el('span', { class: 'small muted', text: cp.n + ' dated captures, last ' + (cp.last ? fmt.date(cp.last) : NA) + '. The agent runs it weekly after each brain refresh; it reads only the brain and spends nothing.' }), capStatus);
     mount('#fresh', capRow, el('div', { class: 'row' }, btn, el('span', { class: 'small muted', text: fr.snapshot ? 'Latest ad-level snapshot: ' + fmt.date(fr.snapshot.captured_at) + '.' : 'No ad-level snapshot yet. The screen reads the brain\'s page summaries.' })),
-      planBox, table, el('p', { class: 'micro faint', text: fr.rule }));
+      planBox, table, pullTable(fr.pull), el('p', { class: 'micro faint', text: fr.rule }));
   }
 
   // ---------- 5i. who we lose to, by name ----------

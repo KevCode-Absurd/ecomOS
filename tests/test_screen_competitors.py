@@ -2266,5 +2266,56 @@ class TestDatedReport(TempInputs):
         self.assertEqual([x['date'] for x in api.handle(Req(['reports']))['reports']], ['2026-09-28'])
 
 
+class TestPullLightsUp(TempInputs):
+    """10.3: every pull-dependent block says today what it waits for, and lights up the moment a snapshot lands (built here
+    from the connector's fixture shape with Bombas page ids; no client, no ledger, no network)."""
+    def setUp(self):
+        super().setUp()
+        self._snaps = api.audit.snap.SNAPSHOTS
+        api.audit.snap.SNAPSHOTS = self.tmp / 'snapshots'
+
+    def tearDown(self):
+        api.audit.snap.SNAPSHOTS = self._snaps
+        super().tearDown()
+
+    def land(self, day):
+        src = json.loads((ROOT / 'app' / 'connectors' / 'fixtures' / 'apify' / 'curious_coder~facebook-ads-library-scraper.json').read_text())
+        items = src['items'] if isinstance(src, dict) else src
+        cfg = api.audit.snap.config('bombas', self.tmp)
+        pages = [p for p in cfg['meta_ad_library']['pages'] if p.get('page_id')]
+        ids = [p['page_id'] for p in pages]
+        out = []
+        for k in range(4):
+            for i, it in enumerate(items):
+                x = json.loads(json.dumps(it))
+                x['page_id'] = ids[(i * 4 + k) % len(ids)]
+                x['ad_archive_id'] = f'{x.get("ad_archive_id")}-{k}-{day}'
+                out.append(x)
+        snap = api.audit.snap.build('bombas', out, pages, dt.date.fromisoformat(day), {'mode': 'test'})
+        d = self.tmp / 'snapshots' / 'bombas'
+        d.mkdir(parents=True, exist_ok=True)
+        (d / f'{day}.json').write_text(json.dumps(snap))
+
+    def test_lights_up(self):
+        fr = api.handle(Req(['overview']))['freshness']
+        self.assertEqual((fr['pull']['snapshots'], fr['pull']['lit']), (0, 0))
+        self.assertTrue(all(r['waits_for'] for r in fr['pull']['rows']))
+        self.assertTrue(api.handle(Req(['overview']))['coverage']['all']['estimated'])
+        self.land('2026-09-27')
+        d = api.handle(Req(['overview']))
+        pl = d['freshness']['pull']
+        self.assertEqual(pl['snapshots'], 1)
+        self.assertEqual([r['key'] for r in pl['rows'] if not r['lit']], ['changes'])
+        self.assertEqual(next(r for r in pl['rows'] if r['key'] == 'changes')['waits_for'], '1 more Ad Library pull')
+        pulled = [r for r in d['pages']['rows'] if r['source'] == 'snapshot']
+        self.assertTrue(pulled)
+        self.assertFalse(d['coverage']['all']['estimated'])
+        for a in api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions']:
+            self.assertEqual(api.actions.ranker.validate_action(a), [])
+        self.land('2026-09-28')
+        pl = api.handle(Req(['overview']))['freshness']['pull']
+        self.assertEqual(pl['lit'], len(pl['rows']))
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -254,12 +254,12 @@ def pull(brand: str, live: bool = False, write: bool | None = None, root: Path =
     return snap
 
 
-def snapshots(brand: str, folder: Path = SNAPSHOTS) -> list[Path]:
-    d = folder / brand
+def snapshots(brand: str, folder: Path | None = None) -> list[Path]:
+    d = (folder or SNAPSHOTS) / brand
     return sorted(d.glob("????-??-??.json")) if d.is_dir() else []
 
 
-def load(brand: str, folder: Path = SNAPSHOTS, before: str | None = None) -> dict | None:
+def load(brand: str, folder: Path | None = None, before: str | None = None) -> dict | None:
     """The latest snapshot (or the latest strictly before a date), or None."""
     paths = [p for p in snapshots(brand, folder) if before is None or p.stem < before]
     return json.loads(paths[-1].read_text(encoding="utf-8")) if paths else None

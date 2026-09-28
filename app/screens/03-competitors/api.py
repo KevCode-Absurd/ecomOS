@@ -285,6 +285,25 @@ def page_rows(m: dict) -> dict:
 FRESH_DAYS, AGEING_DAYS = 7, 30
 
 
+# what each pull-dependent block does today, and what it becomes the moment an ad-level snapshot lands
+PULL_BLOCKS = [("coverage", "Angles by format", "estimated from page summaries", "counted per ad", 1),
+               ("mix", "First lines, offers and calls to action", "first lines and offers from quoted ads; offer share, main CTA unavailable", "counted per ad, with offer share and the main call to action", 1),
+               ("pages", "New ads in 14 days per page", "unavailable", "counted from each ad's start date", 1),
+               ("velocity", "New ads a week", "estimated from ad life", "counted from start dates", 1),
+               ("placements", "Our placements", "unavailable", "read from our own ads", 1),
+               ("refs", "Longest running ads", "from the brain's longest ad per page", "every ad ranked by days live", 1),
+               ("changes", "New ads, formats, offers and angles since last pull", "page-summary diffs only", "ad-level diffs between 2 snapshots", 2)]
+
+
+def pull_status(brand: str) -> dict:
+    n = len(audit.snap.snapshots(brand))
+    rows = [{"key": k, "label": lbl, "now": now if n < need else then, "then": then, "lit": n >= need,
+             "waits_for": None if n >= need else ("the Ad Library pull" if need == 1 else f"{need - n} more Ad Library pull{'s' if need - n > 1 else ''}")}
+            for k, lbl, now, then, need in PULL_BLOCKS]
+    return {"snapshots": n, "rows": rows, "lit": sum(r["lit"] for r in rows),
+            "command": f"python3 app/screens/03-competitors/snapshot.py --brand {brand} --live"}
+
+
 def freshness(m: dict, brand: str) -> dict:
     """Per page: page id, last capture, age, source; the re-pull plan with its estimate. Nothing runs from here."""
     rows = []
@@ -301,7 +320,7 @@ def freshness(m: dict, brand: str) -> dict:
         plan_ = {"error": f"no pull config: {exc}"}
     caps = audit.capmod.captures(brand)
     return {"rows": rows, "plan": plan_, "snapshot": m["snapshot"], "fresh_days": FRESH_DAYS, "ageing_days": AGEING_DAYS,
-            "captures": {"n": len(caps), "last": caps[-1].stem if caps else None},
+            "captures": {"n": len(caps), "last": caps[-1].stem if caps else None}, "pull": pull_status(brand),
             "command": f"python3 app/screens/03-competitors/snapshot.py --brand {brand} --live",
             "rule": f"Fresh up to {FRESH_DAYS} days, ageing to {AGEING_DAYS}, stale after. A page with no capture reads no capture, never 0."}
 
