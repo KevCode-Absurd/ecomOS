@@ -1,7 +1,7 @@
 {
  "brand": "bombas",
  "read_from": "app/brain/bombas/assumptions.json",
- "sha256": "1048747a403f2954",
+ "sha256": "7bad1b7dc2b8adcb",
  "fields": [
   {
    "field": "revenue_band",
@@ -9,7 +9,7 @@
     "year": 2025,
     "low_usd": 450000000,
     "high_usd": 550000000,
-    "point_usd": 500000000,
+    "point_usd": 457000000,
     "series": [
      {
       "year": 2017,
@@ -33,14 +33,11 @@
      }
     ]
    },
-   "status": "sourced",
+   "status": "founder",
    "unit": "usd per year",
    "as_of": "2025-10",
    "source_ids": [
-    "bombas.operations.revenue_mix.1",
-    "bombas.economics.revenue_band_2023",
-    "bombas.economics.revenue_band_2018",
-    "bombas.economics.revenue_band_2017_projection"
+    "bombas.economics.revenue_point_usd"
    ],
    "source_refs": [
     "https://www.cnbc.com/2017/08/21/shark-tank-investor-daymond-john-won-big-with-bombas.html",
@@ -48,7 +45,7 @@
     "https://www.modernretail.co/marketing/being-very-consistent-bombas-co-founders-david-heath-randy-goldberg-on-how-the-apparel-brand-bucked-the-dtc-doldrums/",
     "https://www.modernretail.co/retailers/how-bombas-is-growing-its-wholesale-business/"
    ],
-   "reasoning": "Press in October 2025 projects Bombas near 500 million dollars for 2025. The plus or minus 10 percent band around it is ours. Growth check: 300 million in 2023 to 500 million in 2025 is about 29 percent a year."
+   "reasoning": "Kevin set the simulated point at the low end of the public band, as an uneven number."
   },
   {
    "field": "aov_usd",
@@ -57,14 +54,11 @@
     "low": 52.0,
     "high": 93.75
    },
-   "status": "assumed",
+   "status": "founder",
    "unit": "usd",
    "as_of": "2026-09-28",
    "source_ids": [
-    "bombas.products.price_ladder_socks",
-    "bombas.products.pack_sizes",
-    "bombas.offers.free_shipping_threshold_usd",
-    "bombas.offers.first_order_code"
+    "bombas.economics.aov_usd"
    ],
    "source_refs": [
     "https://shop.bombas.com/policies/shipping-policy",
@@ -76,12 +70,11 @@
   {
    "field": "repeat_rate_12m",
    "value": 0.35,
-   "status": "assumed",
+   "status": "founder",
    "unit": "share of new customers",
    "as_of": "2026-09-28",
    "source_ids": [
-    "bombas.avatars.guarantee_reassured_loyalist",
-    "bombas.avatars.durability_disappointed_repeat_customer"
+    "bombas.economics.repeat_rate_12m"
    ],
    "source_refs": [
     "https://www.trustpilot.com/review/bombas.com",
@@ -92,10 +85,10 @@
   {
    "field": "channel_mix",
    "value": {
-    "dtc_site_pct": 90,
-    "wholesale_pct": 9,
-    "owned_retail_pct": 1,
-    "marketplaces_pct": null,
+    "dtc_site_pct": 74,
+    "wholesale_pct": 12,
+    "owned_retail_pct": 6,
+    "marketplaces_pct": 8,
     "history": [
      {
       "as_of": "2020-02",
@@ -108,21 +101,18 @@
      }
     ]
    },
-   "status": "assumed",
+   "status": "founder",
    "unit": "percent of revenue",
    "as_of": "2026-09-28",
    "source_ids": [
-    "bombas.economics.wholesale_vs_dtc_mix_2020",
-    "bombas.operations.revenue_mix.1",
-    "bombas.channels.flagship_retail_2025",
-    "bombas.calendar.flagship_store_nyc_2025"
+    "bombas.economics.channel_mix"
    ],
    "source_refs": [
     "https://www.forbes.com/sites/pamdanziger/2025/10/17/bombas-takes-next-big-steps-opening-flagship-store-in-nyc-and-entering-target-dsw/",
     "https://www.king5.com/article/news/nation-world/bombas-socks-retail-locations/507-a6d5745e-99a2-4951-b959-788345114f43",
     "https://www.modernretail.co/retailers/how-bombas-is-growing-its-wholesale-business/"
    ],
-   "reasoning": "Sourced: 97 percent DTC and 3 percent wholesale in early 2020, and wholesale under 10 percent in October 2025. Assumed: wholesale at 9 percent now that Target and DSW are rolling out, 1 percent from 3 owned stores opened in late 2025, the rest on the site. Marketplace share is unknown and reads null. Open question: channel_mix."
+   "reasoning": "Kevin's split for the simulation: site 74, wholesale 12, owned stores 6, marketplaces 8."
   },
   {
    "field": "paid_channels_present",
@@ -176,17 +166,11 @@
      "dec": 1.908
     }
    },
-   "status": "assumed",
+   "status": "founder",
    "unit": "index, mean 1",
    "as_of": "2026-09-28",
    "source_ids": [
-    "bombas.offers.guarantee",
-    "bombas.policies.returns_window_days",
-    "bombas.offers.gifting",
-    "bombas.avatars.holiday_gift_buyer",
-    "bombas.objections.gift_order_arrival_risk",
-    "bombas.avatars.cold_weather_wool_loyalist",
-    "bombas.learnings.hook_types"
+    "bombas.economics.monthly_revenue_shape"
    ],
    "source_refs": [
     "https://shop.bombas.com/pages/bulk-gifting",
@@ -195,7 +179,7 @@
     "https://www.nordstrom.com/s/bombas-merino-wool-blend-crew-socks/8477108",
     "https://www.trustpilot.com/review/bombas.com?page=5"
    ],
-   "reasoning": "Sourced signals: a 60 day return window for November and December orders, a gift card and bulk gifting program, a holiday gift buyer group in reviews, late holiday order complaints, a cold weather wool group and seasonal cozy hooks in current ads. The peak months follow from these; the monthly index is ours, scaled so the 12 months average 1. Open question: seasonality."
+   "reasoning": "Kevin signed off the seasonality index at the S1.4 review: November and December carry about 26 percent of the year."
   },
   {
    "field": "giving_units",
@@ -330,6 +314,68 @@
     "https://www.modernretail.co/operations/why-bombas-is-expanding-into-bralettes/"
    ],
    "reasoning": "93 to 7 split as of March 2023. Footwear near 20 percent of sales by late 2025 is a single report at 0.5 confidence."
+  },
+  {
+   "field": "paid_media_split",
+   "value": {
+    "meta_pct": 60,
+    "google_pct": 20,
+    "youtube_creator_pct": 8,
+    "tiktok_pct": 6,
+    "pinterest_pct": 3,
+    "other_pct": 3
+   },
+   "status": "founder",
+   "unit": "percent of paid spend",
+   "as_of": "2026-09-28",
+   "source_ids": [
+    "bombas.economics.paid_media_split"
+   ],
+   "source_refs": [
+    "Kevin, S1.4 review, 28 Sep 2026"
+   ],
+   "reasoning": "Kevin set Meta 60 and Google 20 and asked for the rest to be made up."
+  },
+  {
+   "field": "gross_margin",
+   "value": {
+    "net_price_pct": 100,
+    "product_cost_pct": 22,
+    "donated_item_cost_pct": 12,
+    "inbound_freight_duty_pct": 3,
+    "fulfilment_packaging_pct": 8,
+    "payment_fees_pct": 2.5,
+    "gross_margin_after_product_and_donation_pct": 63,
+    "gross_margin_after_fulfilment_pct": 52.5
+   },
+   "status": "modelled",
+   "unit": "percent of net revenue",
+   "as_of": "2026-09-28",
+   "source_ids": [
+    "bombas.economics.gross_margin_model"
+   ],
+   "source_refs": [
+    "modelled from public DTC apparel and sock benchmarks (basics brands report 55 to 65 percent gross margin before fulfilment; one-for-one giving adds a second, simpler unit at roughly half the sold unit's cost); authorised by Kevin to model"
+   ],
+   "reasoning": "Modelled from DTC basics benchmarks with the donated item counted as a second unit at about half the sold unit's cost. Not a Bombas figure."
+  },
+  {
+   "field": "return_share",
+   "value": {
+    "refund_or_replace_share_of_orders_pct": 4.5,
+    "replacement_under_guarantee_pct": 2.0,
+    "refund_pct": 2.5
+   },
+   "status": "modelled",
+   "unit": "percent of orders",
+   "as_of": "2026-09-28",
+   "source_ids": [
+    "bombas.economics.return_share_model"
+   ],
+   "source_refs": [
+    "modelled from sock and basics return norms of 3 to 6 percent and the guarantee's replacement policy; authorised by Kevin"
+   ],
+   "reasoning": "Modelled from sock and basics return norms and the guarantee's replacement policy. Not a Bombas figure."
   }
  ]
 }
