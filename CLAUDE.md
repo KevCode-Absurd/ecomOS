@@ -4,9 +4,13 @@ Kevin's e-commerce operating system for brands and agencies: research, offers, c
 
 Priorities: quality first, cost second, speed third. Deliverables must be ecommerce-specific and usable, not citation-heavy.
 
+## What we are building (decided 28 Sep 2026)
+
+ecomOS is general purpose: an operating system for any e-commerce store. It is not built for one client. Gehna was an example we tweaked things on; Tallgrass Goods was a fictional stand-in. Non-subscription stores first; a subscription variant comes later as a sibling product after we read the finished codebase. The model brand for the demo is Bombas, using public information only (site, Meta Ad Library, interviews, press, reviews) with simulated performance data that every page labels as simulated. Build order: brand brain, data layer, screens, inspiration layer, then the audit-to-top-10-to-deploy loop. Agents are small and domain specific with an orchestrator. The full plan, session list and model choices are in `PRODUCT-PLAN.md`.
+
 ## Read first
 
-1. This file.
+1. This file, then `PRODUCT-PLAN.md` (the current plan, 28 Sep 2026).
 2. `CLAUDE_HANDOFF.md`: full history from Codex (architecture, phases, decisions, benchmarks, budgets, gaps). `CLAUDE_START_HERE.md` is the short version. `HANDOFF_PROJECT_SNAPSHOT.json` has dated counts, hashes and ledger totals.
 3. For the library and copy track: `LIBRARY_WORKFLOW.md`, `KNOWLEDGE_RETRIEVAL.md`, `CREATIVE_RETRIEVAL.md`, `AD_COPY_ITERATION_DECISION.md`, `playbooks/README.md`, `playbooks/OPERATING_CONTRACT.md`, `playbooks/ad-copy-v1.2/`.
 4. For the Meta gallery track: `META_GALLERY_STATUS.md`, newest update first.
@@ -77,9 +81,13 @@ Not built yet: the brand brain and metric contract, the experiment registry, the
 
 ## The build (from 25 Sep 2026)
 
-The product is built screen by screen in `app/`, the way the Meta gallery was built: a skeleton, then features in rounds of 10 on a fictional US sample brand (Tallgrass Goods) with generated data. Read `app/CLAUDE.md` and `app/BUILD-PLAN.md`. Each screen folder under `app/screens/` has its own CLAUDE.md and FEATURES.md; a build session works in one folder and reads only `app/CLAUDE.md`, `app/contracts/` and that folder. The spec shelf is `agents/` (catalogue, rooms, workflows, skills); screens link to it by id and never copy it. US brand by default; market-only fields read null.
+The product is built screen by screen in `app/`, the way the Meta gallery was built: a skeleton, then features in rounds of 10 on a sample brand with generated data. Phase A (server, kit, generator, metric contract) was built on the fictional Tallgrass Goods. From 28 Sep 2026 the sample brand is Bombas: a public profile in `app/brain/bombas/` and simulated tables calibrated to it, per `PRODUCT-PLAN.md`. Data stays simulated until a real store connects. Read `app/CLAUDE.md` and `app/BUILD-PLAN.md`. Each screen folder under `app/screens/` has its own CLAUDE.md and FEATURES.md; a build session works in one folder and reads only `app/CLAUDE.md`, `app/contracts/` and that folder. The spec shelf is `agents/` (catalogue, rooms, workflows, skills); screens link to it by id and never copy it. US brand by default; market-only fields read null.
 
-## Next steps (Kevin picks the track)
+## Next steps (28 Sep 2026)
+
+The order is in `PRODUCT-PLAN.md` section 9. Next: S1.1 brain schema (needs Kevin's brain skill file), and in parallel S2.1 field census of each platform API (Sonnet sessions, public docs only). Older tracks below stay valid but are not the focus.
+
+### Older tracks
 
 - Copy track: build a compact Peach Bucket writing brief from Kevin's liked and disliked examples, then write 3 real requests with ad-copy v1.2 and only the cards each decision needs. Judge by whether Kevin would use them and how much editing they need.
 - Gallery track: production access for Meta and Metabase, then scheduled refreshes; tie tests to results.

@@ -1,6 +1,6 @@
 # How we build ecomOS: screen by screen, the Meta gallery way
 
-Date: 25 Sep 2026. Status: agreed direction, nothing built yet beyond the skeleton folders.
+Date: 25 Sep 2026. Status: Phase A done 26 Sep 2026 (server, kit, generator, metric contract, Today round 0 pending). Update 28 Sep 2026: the product is general purpose for any e-commerce store, and the sample brand becomes Bombas (public profile, simulated data). The stage order, sessions and models are in `PRODUCT-PLAN.md`, which takes precedence over this file where they differ. The screen structure below stands.
 
 ## The idea in one paragraph
 
