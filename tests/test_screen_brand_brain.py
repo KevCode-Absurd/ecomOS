@@ -769,6 +769,14 @@ class Round1RankAndFlows(TempBrain):
         self.assertIn('01-market-research', by['positioning']['read_by'])
         self.assertIsNone(by['positioning']['last_read'])
         self.assertTrue(by['positioning']['last_read_reason'])
+        # a caller that names itself stamps the read log; the flow proof then shows the reader and the time
+        api.handle(Req(['records'], query={'section': ['positioning'], 'reader': ['10-copy']}))
+        api.handle(Req(['profile'], query={'reader': ['02-customers-avatars']}))
+        by = {s['section']: s for s in api.handle(Req(['flows']))['sections']}
+        self.assertEqual(by['positioning']['read_by_log'], ['02-customers-avatars', '10-copy'])
+        self.assertEqual(by['positioning']['last_reader'], '02-customers-avatars')
+        self.assertTrue(by['positioning']['last_read'])
+        self.assertTrue((self.tmp / 'bombas' / 'reads.log.jsonl').is_file())
         self.assertGreaterEqual(fl['screens_scanned'], 20)
         api.handle(Req(['profile', 'positioning', 'frame'], 'POST', body={'text': 'Comfort that lasts.'}))
         by = {s['section']: s for s in api.handle(Req(['flows']))['sections']}
@@ -1338,6 +1346,8 @@ class Round3Review(TempBrain):
     """Round 3 feature 9: the review queue grouped by source with the record each proposal would replace, and bulk actions."""
 
     def test_grouped_with_before_and_bulk(self):
+        # the active value is set here, so the test never depends on what the repo brain holds today
+        api.handle(Req(['profile', 'offers', 'free_shipping_threshold_usd'], 'POST', body={'text': '75'}))
         api.handle(Req(['documents'], 'POST', body={'name': 'call.md', 'text': '# Offers\nFree shipping threshold: $75\nFirst order code: WELCOME25\n- Bundles: 4 pack saves 10 percent\n\n# Voice\nWe write like a friend who knows socks and never oversells.'}))
         rv = api.handle(Req(['review']))
         self.assertEqual(rv['counts']['groups'], 1)

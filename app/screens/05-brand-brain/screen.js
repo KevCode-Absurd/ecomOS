@@ -283,7 +283,7 @@
   async function loadFlows() {
     let fl;
     try { fl = await api(BASE + 'flows'); } catch (e) { mount('#flows', el('p', { class: 'muted small', text: 'Flow proof unavailable: ' + e.message })); return; }
-    const rows = fl.sections.map((s) => Object.assign({}, s, { readers: s.read_by.join(', ') || 'none directly', t0: s.read_by_t0.length ? s.read_by_t0.join(', ') : 'none', last_read_text: s.last_read ? fmt.date(s.last_read) : NA + ' (' + s.last_read_reason + ')' }));
+    const rows = fl.sections.map((s) => Object.assign({}, s, { readers: s.read_by.join(', ') || 'none directly', t0: s.read_by_t0.length ? s.read_by_t0.join(', ') : 'none', logged: (s.read_by_log || []).join(', ') || 'none yet', last_read_text: s.last_read ? fmt.date(s.last_read) + (s.last_reader ? ' by ' + s.last_reader : '') : NA + ' (' + s.last_read_reason + ')' }));
     const table = UI.table({
       columns: [
         { key: 'label', label: 'Profile section' },
@@ -291,6 +291,7 @@
         { key: 'last_founder_edit', label: 'Last edit', format: (v) => v ? fmt.date(v) : 'none yet' },
         { key: 'readers', label: 'Read by (code scan)' },
         { key: 't0', label: 'Read through the T0 card' },
+        { key: 'logged', label: 'Read log' },
         { key: 'reach', label: 'Screens reached', unit: 'n', align: 'right' },
         { key: 'last_read_text', label: 'Last read' },
         { key: 'flows_to', label: 'Flows to (contract)' },

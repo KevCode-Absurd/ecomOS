@@ -40,8 +40,9 @@ question, and accept or ignore on a proposed record. Nothing external.
   POST documents/extract        {name}: re-read a stored text or markdown file into proposed records
   GET  rank                     this screen's ranked actions with real titles, steps, artefacts and drafts (ranking.py);
                                 served by app/rank.py through the `rank(brand, window)` export below
-  GET  flows                    which screens read each profile section, from a scan of their code, and when a
-                                founder last edited it; last read is unavailable until reads are logged
+  GET  flows                    which screens read each profile section (a scan of their code plus the store's read
+                                log), when a founder last edited it and when it was last read; `profile`, `records`
+                                and `package` stamp the read log when the caller names itself with ?reader=
   GET  claims                   the claims desk: every claim with tier, category, source, where the ladders use it,
                                 the verdict, tier counts and the forbidden phrases
   POST claims                   {text, tier: approved | forbidden}: add a claim or forbid a phrase (founder record)
@@ -1156,9 +1157,20 @@ def rank(brand: str = "bombas", window: dict | None = None) -> dict:
 READ_PATTERNS = (re.compile(r"""records\(\s*["']([a-z_]+)["']"""), re.compile(r"""for sec in \(([^)]*)\)"""))
 
 
+def _log_read(brain: Brain, sections, reader: str | None) -> None:
+    """Stamp a read in the store's read log when the caller names itself (?reader=<screen or agent>)."""
+    if not reader or not hasattr(brain, "log_read"):
+        return
+    reader = re.sub(r"[^A-Za-z0-9_.:-]+", "", str(reader))[:80]
+    if not reader:
+        return
+    for sec in ([sections] if isinstance(sections, str) else sections):
+        brain.log_read(sec, reader)
+
+
 def flows(brain: Brain) -> dict:
-    """Which screens read each profile section and when they last read it. Reads come from a code scan of app/screens/*/api.py;
-    a read log does not exist yet, so last_read is unavailable with the reason (contract ask in FEATURES.md)."""
+    """Which screens read each profile section and when they last read it. Readers come from a code scan of app/screens/*/api.py
+    and from the store's read log (reads.log.jsonl, written when a caller names itself with ?reader=); last_read is the log's newest line."""
     readers: dict[str, set] = {}
     t0_readers: set = set()
     root = APP / "screens"
@@ -1183,10 +1195,14 @@ def flows(brain: Brain) -> dict:
         approved = [r for r in recs if r["tier"] == "approved"]
         newest_founder = max((r["date"] for r in approved if r["date"] != "undated"), default=None)
         direct = sorted(readers.get(sec, set()))
+        logged = brain.reads(sec) if hasattr(brain, "reads") else []
+        last = logged[-1] if logged else None
+        logged_readers = sorted({r.get("reader") for r in logged if r.get("reader")})
         out.append({"section": sec, "label": label, "records": len(recs), "approved": len(approved), "last_founder_edit": newest_founder,
-                    "read_by": direct, "read_by_t0": sorted(t0_readers), "flows_to": FLOWS_TO.get(sec, ""),
-                    "last_read": None, "last_read_reason": "no read log yet; the store does not stamp reads",
-                    "reach": len(set(direct) | t0_readers)})
+                    "read_by": direct, "read_by_t0": sorted(t0_readers), "read_by_log": logged_readers, "reads_logged": len(logged), "flows_to": FLOWS_TO.get(sec, ""),
+                    "last_read": last.get("at") if last else None, "last_reader": last.get("reader") if last else None,
+                    "last_read_reason": None if last else "no read logged yet; a screen or agent stamps one by naming itself (?reader=) when it reads this section",
+                    "reach": len(set(direct) | t0_readers | set(logged_readers))})
     return {"sections": out, "screens_scanned": sum(1 for p in root.iterdir() if p.is_dir() and (p / "api.py").is_file()) - 1,
             "note": "Read by: screens whose api reads the section from the brain store, from a scan of their code. T0: screens that read the compact brand card, which carries every profile section. An edit here reaches them on their next load."}
 
@@ -1202,6 +1218,7 @@ def handle(req):
     if req.method == "GET" and parts == ["master"]:
         return master(brain, _window(req, brain))
     if req.method == "GET" and parts == ["profile"]:
+        _log_read(brain, [sec for sec, _, _ in PROFILE_SECTIONS], req.arg("reader"))
         return profile(brain)
     if req.method == "POST" and len(parts) == 3 and parts[0] == "profile":
         return profile_edit(brain, parts[1], parts[2], req.body)
@@ -1243,6 +1260,7 @@ def handle(req):
         sec = req.arg("section", "")
         if sec not in SECTIONS:
             return 404, {"error": "no such section", "section": sec}
+        _log_read(brain, sec, req.arg("reader"))
         return {"section": sec, "records": [record_view(r) for r in brain.records(sec)]}
     if req.method == "GET" and parts == ["audit"]:
         ends = (brain.today - dt.timedelta(days=1)).isoformat()
@@ -1267,7 +1285,10 @@ def handle(req):
         sm.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())
         return sm
     if req.method == "GET" and parts == ["package"]:
-        return package_view(brain, req.arg("capability", "") or "")
+        res = package_view(brain, req.arg("capability", "") or "")
+        if not isinstance(res, tuple):
+            _log_read(brain, [p["section"] for p in res["parts"] if p.get("section")], req.arg("reader") or res["capability"])
+        return res
     if req.method == "GET" and parts == ["facts"]:
         fp = facts.pairs(brain)
         fp.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())

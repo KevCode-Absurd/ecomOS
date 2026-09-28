@@ -164,10 +164,7 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 5. Not built yet from the room spec: claims tier bar, site diff between crawls, marketplace parity, contract renewals, permission matrix, legal disclosure gate. Round 2 starts with these plus the web pass picks (word scanner on drafts, voice sheet with liked and disliked examples, approved snippets, battlecards, ask the brain).
 6. Screenshot: `round1.png` (top of the page at 1280 wide). Click-through: run the server and open `/screens/05-brand-brain/`.
 
-Contract asks (for the lead):
-- A read log in `app/brain/store.py` (stamp `section`, `reader`, `at` when a screen reads a section) so "last read" in the flow proof stops reading unavailable.
-- `app/connectors/apify.py` (or the onboarding runner) to read `competitors.page_id_<slug>` founder records as extra Ad Library pages, so a page id typed on this screen joins the real pull as well as the estimate.
-- `app/rank.py` `_title` falls back to the capability name; screens without an override read as capability names in the master list. Not mine to change; noted for the lead.
+Contract asks (for the lead): all three answered on 28 Sep 2026 (commit 029ff27). The flow proof now reads the store's read log (`profile`, `records` and `package` stamp it when the caller names itself with `?reader=`); founder page ids join the Ad Library pull; default rank titles use the rule name.
 
 Web pass for round 2 ideas: `WEB-PASS.md` in this folder (25 features from the best brand-ops tools, 5 that none of them do).
 
