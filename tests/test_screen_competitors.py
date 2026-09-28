@@ -1801,5 +1801,49 @@ class TestBriefRows(TempBrain):
         self.assertIn('briefs', (SCREEN / 'FEATURES.md').read_text(encoding='utf-8').split('## Contract asks')[1])
 
 
+class TestSecondBrandInputs(TestSecondBrand):
+    """7.8: rounds 6 and 7 on a second brand: every write-back validates against its own names, and nothing leaks."""
+    def setUp(self):
+        super().setUp()
+        self._folder = api.audit.inpmod.FOLDER
+        api.audit.inpmod.FOLDER = self.tmp / 'inputs'
+
+    def tearDown(self):
+        api.audit.inpmod.FOLDER = self._folder
+        super().tearDown()
+
+    def post(self, body):
+        r = Req(['inputs'], method='POST', query={'brand': ['acme']})
+        r.body = body
+        return api.handle(r)
+
+    def test_inputs_on_acme(self):
+        self.assertEqual(self.post({'kind': 'interview', 'outcome': 'loss', 'competitor': 'Stance', 'reason': 'style'})[0], 400)
+        for _ in range(3):
+            self.assertEqual(self.post({'kind': 'interview', 'outcome': 'loss', 'competitor': 'HatCo', 'reason': 'price and value'})[0], 201)
+        self.assertEqual(self.post({'kind': 'price_seen', 'page': 'HatCo', 'product': 'Beanie', 'price': 30, 'units': 1, 'date': '2026-09-01'})[0], 201)
+        self.assertEqual(self.post({'kind': 'price_seen', 'page': 'HatCo', 'product': 'Beanie', 'price': 12, 'units': 1})[0], 201)
+        code, out = self.post({'kind': 'frame_test', 'line': 'B', 'asked': 200, 'prefer_new': 120, 'prefer_current': 60})
+        self.assertEqual(code, 400)
+        self.assertIn('line must be one of', out['error'])
+        self.assertEqual(self.post({'kind': 'threshold', 'name': 'stale_days', 'value': 21})[0], 201)
+        q = {'brand': ['acme']}
+        out = {k: api.handle(Req([k], query=q)) for k in ('overview', 'plan', 'digest', 'briefs', 'inputs')}
+        blob = json.dumps(out)
+        for word in ('Bombas', 'Stance', 'Darn Tough', 'COMFORT20', 'sock'):
+            self.assertNotIn(word, blob)
+        o = out['overview']
+        self.assertEqual(o['losses']['win_loss']['rows'][0]['losses'], 3)
+        self.assertEqual(o['price_moves']['logged']['moves'][0]['kind'], 'cut')
+        self.assertEqual(out['plan']['thresholds']['values']['stale_days']['source'], 'screen')
+        ids = [a['rule_id'] for a in api.rank('acme', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions']]
+        self.assertIn('COMP-R25', ids)   # the logged cut
+        self.assertIn('COMP-R31', ids)   # 3 losses for one reason
+        self.assertIn('COMP-R33', ids)   # 12 a pair is outside the 20 to 40 band on file
+        for a in api.rank('acme', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions']:
+            self.assertEqual(api.actions.ranker.validate_action(a), [])
+        self.assertFalse((SCREEN / 'fixtures' / 'inputs' / 'acme.json').exists())
+
+
 if __name__ == '__main__':
     unittest.main()

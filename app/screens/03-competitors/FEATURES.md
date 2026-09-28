@@ -45,6 +45,7 @@ Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `a
 | 7.5 | The weekly brief carries what the team logged this week (interviews, prices seen, card checks, polls, threshold changes, by each record's date), up to 6 lines and a count, or says nothing is logged yet and where it goes | done |
 | 7.6 | The printable weekly report adds "Waiting on you" (the founder's top calls with what yes means) and "What the team logged this week"; the browser smoke test checks the queue renders in the report | done |
 | 7.7 | The brief pack as rows: `GET briefs` also returns one row per open move in a proposed shape for a shared briefs table (team, kind, title, why, draft, win and stop rules, check date, capability, owner, proposed or decided), with a "Copy as rows" button; the table itself is a Contract ask, since only the app level adds shared tables | done |
+| 7.8 | Second brand check for rounds 6 and 7: on a minimal hat brand every write-back validates against that brand's own names (a Bombas rival is refused), a poll with no challenger line is refused with the reason, the logged cut, the repeated loss reason and the band check fire from its own data, every action validates, and no Bombas word or "sock" appears on any route | done |
 
 ## Round 6: the page writes back (first-party records the rules read)
 
@@ -288,7 +289,7 @@ Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permi
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
-| 7 | 7.1 to 7.7 | 2026-09-28 | Interview reasons; coverage by name; prices seen on the band chart; price re-check cadence; logged work in the brief; queue and log in the report; briefs as rows |
+| 7 | 7.1 to 7.8 | 2026-09-28 | Interview reasons; coverage by name; prices seen on the band chart; price re-check cadence; logged work in the brief; queue and log in the report; briefs as rows; second brand check |
 | 6 | 6.1 to 6.10 | 2026-09-28 | Win-loss log; repeated loss reason; rival prices seen; battlecard checks; positioning polls; thresholds on the page; capture from the page; the team log; waiting on you; round close (and the hand-off fix). Screenshot `round6.png` |
 | 5 | 5.1 to 5.10 | 2026-09-28 | Hand-offs; action lanes; season plan; quarterly review; exports (and the 5.4 load fix); browser smoke test; team notes; brief pack; check due lane; round close |
 | 4 | 4.1 to 4.10 | 2026-09-28 | Placements and new channel alerts; gap lines; stop rules; unit from the brain; never zero; phone width; threat history; support answers; room metrics. Screenshot `round4.png` |
