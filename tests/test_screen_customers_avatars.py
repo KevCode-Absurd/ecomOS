@@ -1292,5 +1292,23 @@ class MarketVoice(TempBrain):
         self.assertEqual(x['rows'][0]['key'], 'in_store_single_pair_trier')
 
 
+class Rechecks(TempBrain):
+    """Feature 5.6: re-check calendar from record expiry dates."""
+
+    def test_rechecks(self):
+        x = api.handle(Req(['overview']))['rechecks']
+        for r in x['rows']:
+            if r['days_left'] is None:
+                self.assertEqual(r['status'], 'no_date')
+            else:
+                self.assertEqual(r['status'], 'expired' if r['days_left'] < 0 else ('due' if r['days_left'] <= 30 else 'ok'))
+        self.assertEqual(x['due'], sum(1 for r in x['rows'] if r['status'] in ('due', 'expired')))
+        self.assertEqual(x['action']['check_on'], '2026-10-28')
+
+    def test_later_date_expires(self):
+        x = api.builds.rechecks([{'id': 'a', 'name': 'A', 'expires_at': '2026-10-28'}], [], '2026-11-01')
+        self.assertEqual(x['rows'][0]['status'], 'expired')
+
+
 if __name__ == '__main__':
     unittest.main()

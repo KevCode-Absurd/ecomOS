@@ -2227,3 +2227,39 @@ def marketplace(avatars: list[dict], all_rungs: list[dict], lang_records: list[d
     m = [r["name"] for r in rows if r["verdict"] == "marketplace"]
     return {"rows": rows, "line": (f"{len(m)} avatars speak mostly on Amazon: {', '.join(m[:3])}{' and more' if len(m) > 3 else ''}." if m
                                    else "Every avatar speaks mostly on our site or at retailers.")}
+
+
+# ---------------------------------------------------------------- re-check calendar
+
+RECHECK_DAYS = 30         # a record that expires within 30 days is due for a re-check
+
+
+def rechecks(avatars: list[dict], ladder_records: list[dict], today: str) -> dict:
+    """When each avatar and ladder record stops being trusted, and the re-check before it."""
+    import datetime as _dt
+    t = _dt.date.fromisoformat(today)
+    items = [{"id": a["id"], "label": a["name"], "kind": "avatar", "expires": a.get("expires_at")} for a in avatars] + \
+            [{"id": r["id"], "label": ((r.get("value") or {}).get("theme") or r["id"].split(".")[-1]).replace("_", " ") + " ladder", "kind": "ladder",
+              "expires": (r.get("expires_at") or "")[:10] or None} for r in ladder_records]
+    rows = []
+    for it in items:
+        if not it["expires"]:
+            rows.append(dict(it, days_left=None, status="no_date"))
+            continue
+        d = (_dt.date.fromisoformat(it["expires"]) - t).days
+        rows.append(dict(it, days_left=d, status="expired" if d < 0 else ("due" if d <= RECHECK_DAYS else "ok")))
+    rows.sort(key=lambda r: (r["days_left"] is None, r["days_left"] if r["days_left"] is not None else 0, r["label"]))
+    due = [r for r in rows if r["status"] in ("expired", "due")]
+    action = None
+    if due:
+        first = min(r["expires"] for r in due)
+        action = {"id": f"{SCREEN}.recheck", "kind": "brain_record", "owner": "agent", "title": f"Re-check {len(due)} avatar and ladder records before {first}",
+                  "capability": {"id": "BRAND-C15", "autonomy": "agent_does"},
+                  "draft": "DRAFT re-check list\n" + "\n".join(f"- {r['label']}: expires {r['expires']}" for r in due[:15]),
+                  "steps": [{"n": 1, "who": "agent", "text": "Pull the newest reviews for each record's sources."},
+                            {"n": 2, "who": "agent", "text": "Recount quotes, rungs and shares; propose updates in the review queue."},
+                            {"n": 3, "who": "person", "text": "Accept or ignore the proposals on the brand brain screen."}],
+                  "check_on": first}
+    return {"rows": rows, "due": len(due), "no_date": sum(1 for r in rows if r["status"] == "no_date"), "action": action,
+            "line": (f"{len(due)} records stop being trusted within {RECHECK_DAYS} days; the first on {min(r['expires'] for r in due)}." if due
+                     else "No avatar or ladder record expires within 30 days.")}

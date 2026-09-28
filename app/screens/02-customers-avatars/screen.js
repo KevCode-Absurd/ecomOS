@@ -367,6 +367,16 @@
       artefact: { kind: r.action.kind, label: 'a dated plan: ad briefs and 2 emails', draft: r.action.draft } }, { compact: true, screen: SLUG })));
   }
 
+  // ---------- desk: re-check calendar ----------
+  function renderRechecks(x) {
+    document.getElementById('recheck-sub').textContent = 'Each avatar and ladder record stops being trusted on its expiry date. Due: within 30 days. ' + x.line +
+      (x.no_date ? ' ' + x.no_date + ' records carry no expiry; they are re-checked on each review pull.' : '');
+    const S = { expired: ['bad', 'expired'], due: ['warn', 'due'], ok: ['good', 'ok'], no_date: ['', 'no date'] };
+    mount('#recheck', UI.table({ columns: [{ key: 'label', label: 'Record' }, { key: 'kind', label: 'Kind' }, { key: 'expires', label: 'Expires', format: (v) => v ? fmt.date(v) : 'no date' },
+      { key: 'days_left', label: 'Days left', unit: 'n' }, { key: 'status', label: 'Status', format: (v) => S[v][1] }], rows: x.rows, sort: false, maxRows: 30 }));
+    mount('#recheck-act', ...(x.action ? [UI.actionCard(Object.assign({}, x.action, { why: x.line, severity: 'low', artefact: { kind: x.action.kind, label: 'record updates proposed to the review queue', draft: x.action.draft } }), { compact: true, screen: SLUG })] : []));
+  }
+
   // ---------- desk: marketplace voice ----------
   function renderMarket(x) {
     document.getElementById('market-sub').textContent = 'Where each avatar\'s reviews come from: its quotes plus the rated reviews behind its doubts, Reddit left out. Marketplace-led: half or more on Amazon; those get a listing fix for 20-marketplaces. The review pull samples Amazon heavily, so read shares as direction. ' + x.line;
@@ -888,7 +898,7 @@
 
   // ---------- the desk, grouped into tabs by job ----------
   const DESK = [
-    { key: 'avatars', label: 'Avatars', ids: ['focus-wrap', 'avatars-wrap', 'voiceads-wrap', 'split-wrap', 'gate-wrap', 'forces-wrap', 'survey-wrap', 'served-wrap', 'market-wrap', 'returns-wrap', 'misread-wrap'] },
+    { key: 'avatars', label: 'Avatars', ids: ['focus-wrap', 'avatars-wrap', 'voiceads-wrap', 'split-wrap', 'gate-wrap', 'recheck-wrap', 'forces-wrap', 'survey-wrap', 'served-wrap', 'market-wrap', 'returns-wrap', 'misread-wrap'] },
     { key: 'doubts', label: 'Doubts and words', ids: ['ladders-wrap', 'cover-wrap', 'themes-wrap', 'words-wrap', 'hooks-wrap', 'gap-wrap', 'macros-wrap'] },
     { key: 'offers', label: 'Offers and claims', ids: ['offers-wrap', 'claims-wrap', 'timing-wrap'] },
     { key: 'retention', label: 'Retention', ids: ['paths-wrap', 'cohort-wrap', 'mix-wrap', 'moments-wrap', 'health-wrap'] },
@@ -927,6 +937,7 @@
     renderAdVoice(d.ad_voice);
     renderSplit(d.split);
     renderGate(d.gate);
+    renderRechecks(d.rechecks);
     renderForces(d.forces);
     renderSurvey(d.survey);
     renderCoverage(d.coverage, d.formats);
