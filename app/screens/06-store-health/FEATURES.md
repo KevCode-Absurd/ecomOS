@@ -6,9 +6,41 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | # | Feature | Status |
 |---|---|---|
-| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | todo |
-| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | todo |
-| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | todo |
+| 0.1 | Page shell in the shared UI kit: header, simulated banner, tiles, insight list, decision rows | done |
+| 0.2 | `api.py` (`overview`, `findings`) on Bombas simulated data through `app/metrics.py` and the brain, with unavailable states | done |
+| 0.3 | 3 tiles (checklist completion, chargeback rate, returns per 1,000) plus an uptime and checkout tile that reads unavailable and names the connector | done |
+| 0.4 | 2 insights as rules: chargeback rate against the 0.9 percent line and own 90 days (SITE-C67); top return reason over 35 percent of returns (LIFE-C26) | done |
+| 0.5 | 1 chart: returns and chargebacks per 1,000 orders by month, 24 months, with the benchmark line | done |
+| 0.6 | Setup checklist: 21 items, each pass, fail or unavailable with its source (brain record or table) and capability | done |
+| 0.7 | Reversed orders in 3 legs (returns, return to sender, chargebacks and disputes); cash on delivery legs null and hidden for US | done |
+| 0.8 | Payment method mix (30 days) and apps and scripts inventory from brain stack records, with page weight from `speed_runs` | done |
+| 0.9 | `audit.py`: STORE-R01 chargeback rate, STORE-R02 checklist fail (open disputes past 21 days, with money), STORE-R04 monitor unavailable | done |
+
+Round 0 notes (28 Sep 2026):
+- The chargeback rate is 0.23 percent in the simulated data, under the 0.9 percent line and its own 90 days, so STORE-R01 emits no finding. A test forces it to fire and checks the money.
+- Dollar amounts from `data.sqlite` are scaled to the daily totals (paid orders in the aggregate over paid orders in data.sqlite). At dev scale 0.1 that is about 10; for a live store it is 1.
+- Per-app cost, owner, revenue link and script weight are unavailable: stack records carry none, and `speed_runs` has page totals, not script hosts.
+- Return to sender reads carrier returns from `reversed_orders` because there is no `carrier_events` feed.
+
+## Jobs to be done (room spec, SITE agent)
+
+| Job | Question the screen answers | Capability | Round 0 |
+|---|---|---|---|
+| Set up the store foundation and account security | is the account, staff access and 2FA set up the way it should be | SITE-C02 | checklist, 2FA unavailable |
+| Configure and go-live-test payment gateways | does every payment method actually complete a real order | SITE-C09 | payment mix, go-live unavailable |
+| Audit and govern the app and script stack | which apps are we paying for and running that earn nothing back | SITE-C13 | inventory, cost unavailable |
+| Run pre-launch QA and launch sequencing | is every launch step actually verified, not just checked off | SITE-C14 | checklist |
+| Monitor post-launch store hygiene | what quietly broke since the last time someone looked | SITE-C15 | |
+| Configure cart and checkout base settings | is checkout fast, safe and free of settings that cost sales | SITE-C18 | policies in checklist |
+| Route out-of-scope findings to the right specialist | which of these findings are not actually a site problem | ORCH-C03 | |
+| Audit and remediate accessibility | can a keyboard or screen-reader shopper actually buy something here | SITE-C59 | statement pass, scan unavailable |
+| Implement structured data and schema markup | can search and AI answer engines actually read our product pages | ORG-C23 | crawl and sitemap pass, schema unavailable |
+| Run continuous regression testing on theme and app changes | did the last change break browsing, cart or a discount code | SITE-C64 | |
+| Run real-time uptime and transaction monitoring | is the store up and can someone actually complete an order right now | SITE-C65 | tile and finding unavailable |
+| Configure checkout payment methods and validate addresses | which orders are likely to fail delivery or come back as a chargeback | SITE-C67 | reversed legs, chargeback rule |
+| India market option (null for US): cut COD return to origin | which COD orders are likely to bounce back before we ship them | SITE-C67 | hidden for US |
+| Keep staging in sync with production | is what we are testing on staging actually what is live | SITE-C70 | unavailable |
+| Gate tracking scripts by consent | do our tracking scripts actually wait for consent, not just show a banner | SITE-C78 | banner pass, gate unavailable |
 
 ## Candidates from the room spec (pick 10 per round)
 
@@ -118,3 +150,4 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
+| 0 | 0.1 to 0.9 | 28 Sep 2026 | Bombas simulated; round0.png |
