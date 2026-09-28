@@ -1793,6 +1793,67 @@ def creative_handoff(brand, finding_id):
     return {'finding_id': finding_id, 'rule_id': f.get('rule_id'), 'theme': theme, 'title': (a or {}).get('title'), 'text': '\n'.join(lines), 'avatars': [v['name'] for v in avatars], 'quotes': len(praise) + len(complaint)}
 
 
+# ---------------------------------------------------------------- the desk report (round 5.5)
+
+def _n(rows, pred):
+    return sum(1 for r in rows or [] if pred(r))
+
+
+def desk_report(data, brand):
+    """One markdown page: the plan (top 10 with owner, score and stake), the connect list, the parked list, what is due, and
+    one gap line per desk block with its count. Every number is the desk's own; the page a founder pastes into a weekly note."""
+    o = overview(data, brand)
+    r = rank(brand or 'sample', None)
+    cal = calendar_items(data, brand)
+    d = o['desk']
+    head = o['brand']
+    open_acts = [a for a in r['actions'] if a.get('status') != 'unavailable']
+    connect = [a for a in r['actions'] if a.get('status') == 'unavailable']
+    money = lambda v: f'${v:,.0f}' if isinstance(v, (int, float)) else 'n/a'   # noqa: E731
+    L = [f'# Research desk: {head.get("brand")}', f'{o["window"]["ends_on"]}, {len(open_acts)} open actions, {len(connect)} waiting on a source, {len(r.get("parked") or [])} parked. {head.get("simulated_note") or ""}', '',
+         '## The plan, top 10']
+    for i, a in enumerate(open_acts[:10], 1):
+        L.append(f'{i}. {a["title"]} ({a.get("owner")}, {round((a.get("rubric") or {}).get("total") or 0)} of 100, stake {money((a.get("money_at_stake") or {}).get("usd"))}, check {a.get("check_on") or "n/a"})')
+    if len(open_acts) > 10:
+        L.append(f'... and {len(open_acts) - 10} more on the desk.')
+    if connect:
+        L += ['', '## Connect first'] + [f'- {a["title"]}' for a in connect]
+    if r.get('parked'):
+        L += ['', '## Parked'] + [f'- {a["title"]} (back {a.get("returns_on")}; {(a.get("decision") or {}).get("reason") or "no note"})' for a in r['parked']]
+    L += ['', f'## Due: {cal["overdue"]} overdue, {cal["this_week"]} in 7 days, {len(cal["items"])} in {cal["horizon_days"]} days']
+    L += [f'- {i["when"]}: {i["title"]}' for i in cal['items'][:12]]
+    L += ['', '## The desk, block by block']
+    rows = lambda k, key='rows': ((d.get(k) or {}).get(key) if isinstance(d.get(k), dict) else d.get(k)) or []   # noqa: E731
+    lines = [
+        ('Trends', f'{_n(rows("trends", "markets"), lambda m: m.get("verdict") == "gap")} market rows under-advertised of {len(rows("trends", "markets"))}' if (d.get('trends') or {}).get('on_file') else 'no web pass on file'),
+        ('Lanes', f'{_n(rows("lanes"), lambda x: x.get("verdict") == "follow")} lanes to follow of {len(rows("lanes"))}'),
+        ('Launch cadence', f'{_n(rows("cadence", "lanes"), lambda x: x.get("verdict") == "in_play")} lanes in play with none of ours; our cadence {((d.get("cadence") or {}).get("ours") or {}).get("n_12m", "n/a")} in 12 months'),
+        ('Conversation', f'{_n(rows("conversation"), lambda x: x.get("verdict") == "gap")} themes complaint-led and unanswered of {len(rows("conversation"))}'),
+        ('Surfaces', f'{_n(rows("surfaces"), lambda x: x.get("verdict") == "gap")} surfaces with reach and no presence'),
+        ('Open questions', f'{_n(rows("questions"), lambda x: x.get("verdict") in ("never_asked", "overdue"))} questions wait on the founder'),
+        ('Preferences', f'{_n(d.get("preferences") or [], lambda x: x.get("verdict") == "gap")} gaps, {_n(d.get("preferences") or [], lambda x: x.get("verdict") == "prove")} to prove'),
+        ('Positioning', f'{len(rows("map", "frames"))} Reddit frames, {len(rows("map", "points"))} priced pages on the map'),
+        ('Avatars', f'{_n(rows("avatars"), lambda x: x.get("verdict") in ("gap", "under"))} of {len(rows("avatars"))} avatars unserved or under-served'),
+        ('Search', f'{len(rows("search", "groups"))} term groups; Search Console ' + ('connected' if (d.get("search") or {}).get("available") else 'not connected')),
+        ('Falling behind', f'{len(rows("behind"))} items, stake {money((d.get("behind") or {}).get("stake_usd"))}'),
+        ('Returns', f'{_n(rows("returns"), lambda x: x.get("verdict") == "high")} lines returning high' if not (d.get('returns') or {}).get('unavailable') else 'unavailable: ' + str((d.get('returns') or {}).get('reason'))),
+        ('Pipeline', f'{(d.get("pipeline") or {}).get("open", 0)} open candidates, {(d.get("pipeline") or {}).get("over_box", 0)} past their box; hand-off {((d.get("pipeline") or {}).get("handoff") or {}).get("go", 0)} at go'),
+        ('Margin gate', f'{_n(rows("margin"), lambda x: ((x.get("gate") or {}).get("verdict") == "fail"))} candidates below the floor of {len(rows("margin"))}'),
+        ('First run', f'{_n(rows("first_runs"), lambda x: x.get("verdict") in ("no_plan", "full_moq_risk"))} candidates to size or de-risk'),
+        ('Gates', f'{_n(rows("gates"), lambda x: x.get("passed") == x.get("of"))} candidates pass every gate of {len(rows("gates"))}'),
+        ('Scorecard', ', '.join(f'{v} {k.replace("_", " ")}' for k, v in sorted(__import__("collections").Counter(x.get("verdict") for x in rows("scorecard")).items()))),
+        ('Tech packs', f'{_n(rows("tech_packs"), lambda x: x.get("needs_spec") and x.get("status") != "current")} candidates need a spec'),
+        ('Hours', f'{_n(rows("hours"), lambda x: (x.get("over_by") or 0) > 0)} candidates over their hours budget'),
+        ('Video signals', f'{_n(rows("video"), lambda x: x.get("verdict") == "single")} candidate lanes on one platform only'),
+        ('Trend checks', f'{_n(rows("trend_checks"), lambda x: x.get("candidates") and x.get("verdict") != "steady")} candidate lanes on a forecast or a spike'),
+        ('Marketplace', (('the brand is not the seller of record; ' if ((d.get("marketplace") or {}).get("presence") or {}).get("sold_by_brand") is False else '') + f'{((d.get("marketplace") or {}).get("summary") or {}).get("spread_listings", 0)} listings off the site price') if (d.get('marketplace') or {}).get('presence') else 'no marketplace read'),
+        ('Pulls', f'{_n(rows("pulls"), lambda x: x.get("verdict") != "fresh")} pulls not fresh of {len(rows("pulls"))}'),
+    ]
+    L += [f'- **{k}**: {v}.' for k, v in lines]
+    L += ['', f'Rules: {len(audit.RULES)}. Findings: {sum(len(a.get("finding_ids") or []) for a in r["actions"])} across {len(r["actions"])} cards. Simulated sales; public reviews, ads and markets.']
+    return {'brand': brand or 'sample', 'ends_on': o['window']['ends_on'], 'text': '\n'.join(L), 'blocks': len(lines)}
+
+
 def _brand(req):
     brand = req.arg('brand', DEFAULT_BRAND)
     if brand in ('', 'sample'):
@@ -1805,7 +1866,7 @@ def _brand(req):
 def handle(req):
     try:
         brand = _brand(req)
-        data = None if brand else req.data
+        data = None if brand else (req.data if getattr(req, 'data', None) is not None else sample_data())   # the sample brand reads the server's data, or its own reader
         if brand:
             audit.brand_data(brand)  # ValueError for an unknown brand
         if req.method == 'POST':
@@ -1827,6 +1888,8 @@ def handle(req):
             return {'rows': proposed_tests(brand or 'sample'), 'file': str(TESTS_PATH.relative_to(APP.parent))}
         if len(req.path) == 2 and req.path[0] == 'handoff':
             return creative_handoff(brand, req.path[1])
+        if req.path == ['report']:
+            return desk_report(data, brand)
         if req.path == ['calendar']:
             return calendar_items(data, brand)
         if req.path == ['parked']:
@@ -1834,4 +1897,4 @@ def handle(req):
             return {'parked': r['parked'], 'decided': r['decided'], 'snooze_days': rank_mod.SNOOZE_DAYS, 'window': r['window']}
     except ValueError as exc:
         return 400, {'error': str(exc)}
-    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank', 'parked', 'calendar', 'candidates/<id>/brief', 'handoff/<finding_id>', 'product_candidates', 'tests']}
+    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank', 'parked', 'calendar', 'report', 'candidates/<id>/brief', 'handoff/<finding_id>', 'product_candidates', 'tests']}

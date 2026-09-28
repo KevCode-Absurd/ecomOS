@@ -1048,7 +1048,9 @@
         rows: a.rules, sort: false })));
     mount('#exports',
       el('button', { class: 'btn sm', type: 'button', text: 'Findings CSV', onclick: () => UI.csv(a.findings.map((f) => ({ id: f.id, severity: f.severity, status: f.status, sentence: f.sentence, stake_usd: f.money_at_stake ? f.money_at_stake.usd : null, confidence: f.confidence })), null, 'research-findings.csv') }),
-      el('button', { class: 'btn sm', type: 'button', text: 'Print', onclick: () => window.print() }));
+      el('button', { class: 'btn sm', type: 'button', text: 'Print', onclick: () => window.print() }),
+      el('button', { class: 'btn sm', type: 'button', text: 'Copy the desk report', onclick: async (ev) => { const b = ev.currentTarget; const rp = await api(BASE + 'report' + Q); const ok = await UI.copy(rp.text); b.textContent = ok ? 'Copied' : 'Could not copy'; setTimeout(() => { b.textContent = 'Copy the desk report'; }, 1500); } }),
+      el('button', { class: 'btn sm', type: 'button', text: 'Download report (.md)', onclick: async () => { const rp = await api(BASE + 'report' + Q); const blob = new Blob([rp.text], { type: 'text/markdown' }); const u = URL.createObjectURL(blob); const l = el('a', { href: u, download: 'research-desk-' + rp.brand + '-' + rp.ends_on + '.md' }); document.body.append(l); l.click(); l.remove(); URL.revokeObjectURL(u); } }));
   }
 
   async function load() {

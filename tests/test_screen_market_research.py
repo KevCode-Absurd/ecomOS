@@ -1264,6 +1264,22 @@ class HandoffCreativeTest(unittest.TestCase):
         self.assertEqual(api.handle(Req(['handoff', 'nope']))[0], 400)
 
 
+class ReportTest(unittest.TestCase):
+    def test_report_covers_every_block(self):
+        rp = api.handle(Req(['report']))
+        t = rp['text']
+        for head in ('# Research desk', '## The plan, top 10', '## Connect first', '## Due:', '## The desk, block by block'):
+            self.assertIn(head, t)
+        top = api.rank('bombas', None)['actions'][0]['title']
+        self.assertIn(top, t)
+        self.assertGreaterEqual(rp['blocks'], 20)
+        self.assertIn('**Marketplace**: the brand is not the seller of record', t)
+        self.assertNotIn('—', t)
+        s = api.handle(Req(['report'], brand='sample'))
+        self.assertIn('Tallgrass Goods', s['text'])
+        self.assertIn('no web pass on file', s['text'])
+
+
 class BriefTest(unittest.TestCase):
     def test_candidate_brief_reads_every_block(self):
         b = api.handle(Req(['candidates', 'cand-003', 'brief']))

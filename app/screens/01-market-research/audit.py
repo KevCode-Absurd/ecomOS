@@ -1584,7 +1584,7 @@ def avatar_theme(v):
         THEMES = {}
     text = ' ' + ' '.join([str(v.get('job') or ''), ' '.join(v.get('pains') or []), ' '.join(v.get('triggers') or [])]).lower() + ' '
     best, best_n = None, 0
-    for th in set(THEMES) | set(EXTRA_THEME_TERMS):
+    for th in sorted(set(THEMES) | set(EXTRA_THEME_TERMS)):   # sorted: a tie breaks the same way in every process
         terms = [t for t in (THEMES.get(th) or []) if t not in GENERIC_THEME_TERMS] + EXTRA_THEME_TERMS.get(th, [])
         n = sum(1 for t in terms if t in text)
         if n > best_n:
