@@ -753,5 +753,25 @@ class Moments(unittest.TestCase):
         self.assertIsNone(r['sales_index_last_year'])
 
 
+class Survey(TempBrain):
+    """Feature 2.8: a survey whose questions close named gaps, with days to enough answers."""
+
+    def test_survey(self):
+        x = api.handle(Req(['overview']))['survey']
+        self.assertEqual(x['questions'][0]['q'], 'Which of these sounds most like you?')
+        self.assertIn('Hiking and outdoor buyer', x['questions'][0]['options'])
+        self.assertFalse(any('(Reddit)' in o for o in x['questions'][0]['options']))
+        opd = x['orders_per_day']
+        self.assertAlmostEqual(x['days'], round(385 / (opd * 0.15), 1), places=0)
+        self.assertEqual(x['action']['owner'], 'agent_drafts')
+        self.assertTrue(x['action']['draft'].startswith('DRAFT'))
+        self.assertTrue(all(q['closes'] for q in x['questions']))
+
+    def test_no_orders_days_unavailable(self):
+        x = api.builds.survey([], [], [], [], None)
+        self.assertIsNone(x['days'])
+        self.assertIn('unavailable', x['action']['draft'])
+
+
 if __name__ == '__main__':
     unittest.main()

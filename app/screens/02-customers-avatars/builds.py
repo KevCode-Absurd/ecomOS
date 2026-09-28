@@ -1289,3 +1289,56 @@ def moments(avatars: list[dict], monthly: list[dict], as_of: str) -> dict:
     return {"rows": rows, "as_of": as_of,
             "line": (f"Next: {nxt['label']} starts {nxt['starts']}. Ads need to be live by {nxt['ad_by']}." if nxt else
                      "No avatar names a moment in the next 6 months.")}
+
+
+# ---------------------------------------------------------------- post-purchase survey from the gaps
+
+SURVEY_N = 385            # answers for a share within 5 points at 95 percent confidence
+RESPONSE_RATE = 0.15      # assumed post-purchase survey response rate; replace with the brand's own once it runs
+MAX_OPEN_RUNGS = 4
+
+
+def survey(gate_rows: list[dict], ladders_rows: list[dict], forces_rows: list[dict], segments: list[dict],
+           orders_per_day: float | None) -> dict:
+    """A post-purchase survey whose every question closes a named gap on this screen."""
+    qs = []
+    options = [r["name"] for r in gate_rows if "(Reddit)" not in r["name"]] + \
+              [s["segment"].capitalize() + " buyer" for s in segments if s["verdict"] in ("gap", "watch")]
+    no_share = [r["name"] for r in gate_rows if not r["checks"]["share"] and "(Reddit)" not in r["name"]]
+    qs.append({"q": "Which of these sounds most like you?", "type": "single choice", "options": options + ["None of these"],
+               "closes": f"share for {len(no_share)} avatars with no share, and sizes the unserved situations",
+               "gap_ids": [f"{SCREEN}.gate.{r['key']}.share" for r in gate_rows if not r["checks"]["share"]]})
+    open_r = [r for r in ladders_rows if r["verdict"] == "answer"][:MAX_OPEN_RUNGS]
+    if open_r:
+        qs.append({"q": "What almost stopped you from buying?", "type": "multiple choice",
+                   "options": [r["doubt"][:1].upper() + r["doubt"][1:] for r in open_r] + ["Nothing", "Something else"],
+                   "closes": f"how common the {len(open_r)} doubts with no proof are among buyers, not only reviewers",
+                   "gap_ids": [f"{SCREEN}.rung.{r['id']}" for r in open_r]})
+    thin = [r for r in forces_rows if "push" in r["missing"] or "habit" in r["missing"]]
+    if thin:
+        qs.append({"q": "What did you buy before, and what made you switch?", "type": "open text", "options": [],
+                   "closes": f"push and habit lines for {len(thin)} avatars", "gap_ids": [f"{SCREEN}.forces.{r['key']}" for r in thin]})
+    qs.append({"q": "How did you first hear about us?", "type": "single choice with other",
+               "options": ["Instagram or Facebook", "TikTok", "Google search", "A friend", "A store", "Amazon", "Podcast or creator", "Other"],
+               "closes": "channel read to set against platform attribution", "gap_ids": []})
+    qs.append({"q": "Who is this order for?", "type": "single choice", "options": ["Me", "A gift", "My family"],
+               "closes": "gift share by month, for the gift avatar and weak holiday cohorts", "gap_ids": []})
+    days = round(SURVEY_N / (orders_per_day * RESPONSE_RATE), 1) if orders_per_day else None
+    draft = ["DRAFT post-purchase survey", f"Goal: {SURVEY_N} answers, a share within 5 points.",
+             f"Days to get there: {days} at {int(RESPONSE_RATE * 100)} percent response" if days else "Days to get there: unavailable, order volume unknown",
+             "Before launch: a person rewrites each avatar option in plain buyer words.", ""]
+    for i, q in enumerate(qs, 1):
+        draft.append(f"{i}. {q['q']} ({q['type']})")
+        draft += [f"   - {o}" for o in q["options"]]
+        draft.append(f"   Closes: {q['closes']}")
+    action = {"id": f"{SCREEN}.survey", "kind": "research_note", "owner": "agent_drafts",
+              "title": f"Run a {len(qs)}-question post-purchase survey that closes {sum(len(q['gap_ids']) for q in qs)} gaps",
+              "capability": {"id": "LIFE-C50", "autonomy": "founder_gate"}, "draft": "\n".join(draft),
+              "steps": [{"n": 1, "who": "agent", "text": "Draft the survey in the post-purchase survey tool's format."},
+                        {"n": 2, "who": "person", "text": "Approve the questions and switch it on for the order page."},
+                        {"n": 3, "who": "agent", "text": f"After {SURVEY_N} answers, write shares and quotes into the avatar records as drafts."},
+                        {"n": 4, "who": "person", "text": "Approve the record updates. The gate and the map re-check."}]}
+    return {"questions": qs, "days": days, "orders_per_day": round(orders_per_day) if orders_per_day else None,
+            "target": SURVEY_N, "response_rate": RESPONSE_RATE, "action": action,
+            "line": f"{len(qs)} questions close {sum(len(q['gap_ids']) for q in qs)} named gaps." +
+                    (f" At {int(RESPONSE_RATE * 100)} percent response it takes {days} days to get {SURVEY_N} answers." if days else "")}

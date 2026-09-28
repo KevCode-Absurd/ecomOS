@@ -336,6 +336,16 @@
     }), el('p', { class: 'micro faint', text: 'Under-researched: a force with no line, or anxiety plus habit under 15 percent of coded lines. Patterns are word lists, so read counts as direction, not a census.' }));
   }
 
+  // ---------- desk: survey ----------
+  function renderSurvey(x) {
+    document.getElementById('survey-sub').textContent = 'A post-purchase survey where every question closes a gap named above. ' + x.line +
+      ' Response rate is an assumption until the survey runs. Orders a day: ' + (x.orders_per_day == null ? NA : fmt.num(x.orders_per_day)) + ', simulated.';
+    mount('#survey-tools', el('button', { class: 'btn soft sm', type: 'button', text: 'Open the survey draft', onclick: () => briefPanel(x.action) }));
+    mount('#survey', el('ol', { class: 'survey' }, ...x.questions.map((q) => el('li', null, el('b', { text: q.q }), el('span', { class: 'chip', text: q.type }),
+      el('div', { class: 'small muted', text: 'Closes: ' + q.closes + (q.gap_ids.length ? ' (' + q.gap_ids.length + ' gaps)' : '') }),
+      q.options.length ? el('div', { class: 'micro', text: q.options.join(' | ') }) : null))));
+  }
+
   // ---------- desk: copy gap ----------
   function renderGap(x) {
     if (!x.available) { mount('#gap', UI.emptyState({ screen: SLUG, title: 'Copy gap unavailable', text: x.reason })); return; }
@@ -583,6 +593,7 @@
     renderActions(r);
     renderGate(d.gate);
     renderForces(d.forces);
+    renderSurvey(d.survey);
     renderCoverage(d.coverage, d.formats);
     renderLadders(d.ladders, d.avatars);
     renderGap(d.copy_gap);

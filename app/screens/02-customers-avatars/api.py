@@ -329,6 +329,12 @@ def overview(brain: Brain) -> dict:
         a["channels"] = builds.channels(a, a["count_by_source"], audit.source_name)
         a["next"] = builds.next_build(a, top)
     chart = repeat_by_cohort(brain.brand)
+    gate = builds.gate(avatars, all_rungs)
+    lad = builds.ladders(all_rungs, avatars)
+    frc = builds.forces(avatars, all_rungs, brain.records("language_bank"), _competitor_names(brain))
+    srv = builds.served(avatars, all_rungs, brain.records("competitors"), brain.records("positioning"))
+    win = daily_window(brain.brand, ends_on)
+    opd = sum(r.get("orders") or 0 for r in win["rows"]) / len(win["rows"]) if not win["unavailable"] else None
     return {"brand": brain.brand, "today": brain.today.isoformat(), "ends_on": ends_on, "version": brain.version(),
             "simulated_note": SIMULATED_NOTE, "orientation": orientation(brain, avatars, all_rungs, chart, ends_on),
             "avatars": avatars,
@@ -336,14 +342,14 @@ def overview(brain: Brain) -> dict:
             "language": audit.language_rows(brain), "voice": voice_sheet(brain),
             "cohorts": _cohorts(brain.brand, avatars), "mix": _mix(brain.brand),
             "misreads": builds.misreads(brain.records("avatars"), avatars, all_rungs, brain.records("language_bank"), brain.records("products")),
-            "served": (srv := builds.served(avatars, all_rungs, brain.records("competitors"), brain.records("positioning"))),
+            "served": srv,
             "drafts": avatar_drafts(brain, srv),
-            "coverage": builds.coverage(avatars, all_rungs), "ladders": (lad := builds.ladders(all_rungs, avatars)),
+            "coverage": builds.coverage(avatars, all_rungs), "ladders": lad,
             "copy_gap": builds.copy_gap({sec: brain.records(sec) for sec in ("voice", "claims", "identity", "offers", "policies", "products", "visual", "story_bank")},
                                         brain.records("language_bank"), _brand_tokens(brain), audit.source_name),
-            "gate": builds.gate(avatars, all_rungs),
+            "gate": gate, "survey": builds.survey(gate["rows"], lad["rows"], frc["rows"], srv["segments"], opd),
             "moments": _moments(brain.brand, avatars),
-            "forces": builds.forces(avatars, all_rungs, brain.records("language_bank"), _competitor_names(brain)),
+            "forces": frc,
             "hooks": builds.hooks(brain.records("language_bank"), all_rungs, avatars, _brand_tokens(brain), audit.source_name),
             "themes": builds.theme_impact(brain.records("language_bank"), lad["rows"], ends_on),
             "words": builds.words(brain.records("language_bank"), all_rungs, avatars, _brand_tokens(brain), audit.source_name), "formats": _formats(brain, avatars)}
