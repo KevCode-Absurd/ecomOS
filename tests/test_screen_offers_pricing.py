@@ -2109,5 +2109,20 @@ class SeverityWordingTest(unittest.TestCase):
             self.assertNotRegex(s_, r'(?i)\b(should|try|consider)\b')
 
 
+class ConfidenceRuleTest(unittest.TestCase):
+    """Round 8 feature 9: audit.md confidence: minus 0.2 on a peer-band baseline, floor 0.1, weak evidence under 0.3."""
+
+    def test_rules(self):
+        mk = lambda c, kind, status='open': {'confidence': c, 'status': status, 'evidence': [{'baseline_kind': kind}]}
+        out = audit.confidence_rules([mk(0.5, 'peer_band'), mk(0.2, 'own_median'), mk(0.2, 'peer_band'), mk(0.1, None, 'unavailable')])
+        self.assertEqual([f['confidence'] for f in out], [0.3, 0.2, 0.1, 0.1])
+        self.assertEqual([f['weak_evidence'] for f in out], [False, True, True, False])
+
+    def test_bombas_position(self):
+        f = next(x for x in audit.run('bombas') if x['rule_id'] == 'OFFER-R16')
+        self.assertEqual(f['confidence'], 0.3)
+        self.assertIn("'Weak evidence. '", (SCREEN / 'screen.js').read_text(encoding='utf-8'))
+
+
 if __name__ == '__main__':
     unittest.main()
