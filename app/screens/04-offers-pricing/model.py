@@ -1078,3 +1078,21 @@ def depth_history(rd, windows):
                          'points': round((b['depth'] - a['depth']) * 100, 2),
                          'excess_points': round((b['depth'] - b['baseline_depth']) * 100, 2)})
     return rows
+
+
+# ---------------------------------------------------------------- subscription note (parked, not built)
+
+def subscription_note(rd, cc, depth_rows, target):
+    """What would decide a subscription offer, from the brand's own data. Not a rule and not an action: the
+    founder parked subscriptions (non-subscription first). Shows the repeat curve, the share of each month's new
+    customers still active at month 6, and the deepest subscribe-and-save tier each top line could fund."""
+    top = [r for r in (depth_rows or [])[:5]]
+    return {'parked': True,
+            'reason': 'Non-subscription stores first; a subscription variant comes later as a sibling product.',
+            'month_1': cc['curve'][0] if cc and not cc.get('unavailable') else None,
+            'month_6': cc['curve'][-1] if cc and not cc.get('unavailable') else None,
+            'funding': [{'sku': r['sku'], 'max_depth': r['max_depth']} for r in top],
+            'target': target,
+            'questions': ['Is the reason to subscribe stronger than a flat discount? Needs a wear-out interval per line from order rows.',
+                          'Would subscribers be customers who already come back anyway? Needs repeat by first pack from order rows.',
+                          'Can the save rate in a cancel flow hold? Needs a subscription platform export.']}

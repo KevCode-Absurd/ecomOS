@@ -998,5 +998,14 @@ class WindowCreepTest(unittest.TestCase):
         self.assertEqual(fired, {'window_creep_' + h['key'] for h in hist if h['points'] > audit._playbook().WINDOW_CREEP_POINTS})
 
 
+class SubscriptionNoteTest(unittest.TestCase):
+    def test_note_is_parked_and_creates_no_action(self):
+        out = api.actions.rank('bombas')
+        sn = out['subscription']
+        self.assertTrue(sn['parked'])
+        self.assertEqual(len(sn['questions']), 3)
+        self.assertFalse([a for a in out['actions'] if 'subscri' in a['title'].lower()])
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -505,6 +505,18 @@
     return section('desk-buyers', head, el('div', { class: 'grid two' }, ...parts), actionLine(line, ra || la));
   }
 
+  function subscriptionBlock(sn) {
+    const head = { title: 'Should we offer a subscription? Parked, with what would decide it', sub: 'Not built. The brand\'s own numbers that a subscription decision would start from, and the data it still needs.' };
+    if (!sn) return section('desk-subscription', head, UI.emptyState({ screen: SLUG, title: 'No note', text: 'No brand folder.' }));
+    const facts = kv([
+      ['Status', 'Parked. ' + sn.reason],
+      ['Buy again in month 1', pct(sn.month_1)], ['Still buying in month 6', pct(sn.month_6)],
+      ['Deepest subscribe discount the top lines can fund', sn.funding.length ? sn.funding.map((f) => f.sku + ' ' + (f.max_depth == null ? 'none' : pct(f.max_depth, 0))).join(', ') : NA],
+    ]);
+    return section('desk-subscription', head, el('div', { class: 'card' }, facts, el('ul', { class: 'small' }, sn.questions.map((q) => el('li', { text: q })))),
+      actionLine('Parked by the founder. Nothing to approve; the questions above are what the subscription product will answer first.', null));
+  }
+
   function returnsChart(r) {
     if (!r || !r.groups || !r.groups.length) return el('p', { class: 'muted small', text: 'Returns by reason ' + NA + '.' });
     const rows = r.groups.slice().sort((a, b) => b.per_1000 - a.per_1000);
@@ -562,7 +574,7 @@
       { key: 'launch', label: 'Launch next', rules: ['OFFER-R11', 'OFFER-R12', 'OFFER-R21'],
         blocks: () => [testsBlock(d.tests), registryBlock(d.registry), calendarBlock(d.calendar), depthBlock(d.depth), giftingBlock(d.gifting), secondOrderBlock(d.cohorts)] },
       { key: 'offers', label: 'Offers', rules: ['OFFER-R08', 'OFFER-R10', 'OFFER-R19', 'OFFER-R20', 'OFFER-R23', 'OFFER-R24', 'OFFER-R04', 'OFFER-R14', 'OFFER-R15'],
-        blocks: () => [firstOrderBlock(d.first_order), cartBlock(d.cart), buyersBlock(d), objectionBlock(d.objections || [], d.returns), guaranteeBlock(d.guarantee, d.returns), stackBlock(d.stack || [])] },
+        blocks: () => [firstOrderBlock(d.first_order), cartBlock(d.cart), buyersBlock(d), objectionBlock(d.objections || [], d.returns), guaranteeBlock(d.guarantee, d.returns), subscriptionBlock(d.subscription), stackBlock(d.stack || [])] },
       { key: 'prices', label: 'Prices and packs', rules: ['OFFER-R22', 'OFFER-R16', 'OFFER-R17', 'OFFER-R07', 'OFFER-R09'],
         blocks: () => [costBlock(d.costs), positionBlock(d.position, d.brand || {}), parityBlock(d.parity), ladderBlock(d.ladder), waterfallBlock(d.waterfalls)] },
       { key: 'shipping', label: 'Shipping and discounts', rules: ['OFFER-R01', 'OFFER-R05', 'OFFER-R06', 'OFFER-R18', 'OFFER-R25'],
