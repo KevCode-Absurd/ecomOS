@@ -1830,3 +1830,48 @@ def doubt_timing(all_rungs: list[dict], lang_records: list[dict], as_of: str, so
     return {"rows": rows, "cols": [{"key": m, "label": m} for m in MONTH_SHORT], "cells": cells, "moves": moves,
             "max": max((max(c) for c in themes.values()), default=1),
             "line": (f"{len(moves)} doubt theme{'s' if len(moves) != 1 else ''} bunch in one season." if moves else "No doubt theme bunches in one season.")}
+
+
+# ---------------------------------------------------------------- tests this screen proposes (experiment registry shape)
+
+def proposed_tests(d: dict, brand: str, as_of: str) -> list[dict]:
+    """Test-shaped moves from this screen as registry rows with status proposed. 25-experiments owns ids,
+    results and the audience overlap check; this screen only proposes."""
+    import datetime as _dt
+    start = _dt.date.fromisoformat(as_of) + _dt.timedelta(days=7)
+    rows = []
+
+    def add(key, hyp, source_id, metric, direction, days, control, treatment, audience, refs):
+        rows.append({"id": None, "proposal_key": f"{SCREEN}.test.{key}", "brand": brand, "hypothesis": hyp,
+                     "source": {"type": "finding", "ref": source_id, "index": 0}, "idea_id": None, "owner": "founder",
+                     "metric": {"name": metric, "direction": direction, "min_days": days, "registered_on": as_of},
+                     "variant": {"control": control, "treatment": treatment}, "audience": audience,
+                     "start": start.isoformat(), "read_point": (start + _dt.timedelta(days=days)).isoformat(), "end": None,
+                     "status": "proposed", "result": None, "decision": None, "learnings_ref": None, "retro": None, "park": None,
+                     "brain_refs": refs})
+
+    om = d.get("offer_map") or {}
+    if om.get("action") and om.get("push"):
+        add("guarantee_vs_discount", "Leading new-buyer ads with the guarantee instead of the discount keeps cost per order and lifts 60-day repeat.",
+            f"{SCREEN}.CUST-R20.pushed_offer", "cpa", "down", 28, "current discount-led ads", "guarantee as the first line, no code",
+            ["meta", "prospecting"], [om["push"]["id"]])
+    p = d.get("perception") or {}
+    if p.get("available") and p.get("score") is not None and p["score"] < 0.5:
+        words = [t["word"] for t in p["theirs"] if not t["in_positioning"]][:3]
+        add("lead_line_buyer_words", f"A lead line in buyer words ({', '.join(words)}) beats the current frame on click-through.",
+            f"{SCREEN}.CUST-R17.perception_gap", "ctr", "up", 14, "current positioning line", "lead line built from buyer words",
+            ["meta", "prospecting"], [])
+    h = d.get("hooks") or {}
+    if h.get("rows"):
+        add("buyer_hooks", f"Ads that open on a buyer hook (\"{h['rows'][0]['hook']}\") beat our current openers on cost per order.",
+            f"{SCREEN}.hooks", "cpa", "down", 14, "current openers", "one buyer hook per variant", ["meta", "prospecting"], [])
+    for m in (d.get("timing") or {}).get("moves", [])[:1]:
+        add("season_" + m["theme"], f"Answering {m['theme'].replace('_', ' ')} doubts on the product page before {m['season']} lifts add to cart in that season.",
+            f"{SCREEN}.CUST-R21.season_{m['theme']}", "add_to_cart_rate", "up", 30, "product page as today", "seasonal answer in the first screen",
+            ["dtc_site"], [])
+    for r in (d.get("misreads") or {}).get("rows", [])[:1]:
+        if r["action"]["kind"] == "page_section":
+            add(f"fit_block_{r['line']}", f"A fit block on the {r['line'].replace('_', ' ')} page cuts returns for {r['avatar']}.",
+                f"{SCREEN}.CUST-R05.{r['line']}.{r['avatar_key']}", "return_rate", "down", 45, "page as today", "fit and size block above the size picker",
+                ["dtc_site", f"pdp_{r['line']}"], [f"{brand}.avatars.{r['avatar_key']}"])
+    return rows

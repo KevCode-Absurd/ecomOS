@@ -730,6 +730,21 @@
     });
   }
 
+  // ---------- tests proposed to 25-experiments ----------
+  async function renderTests() {
+    let t;
+    try { t = await api(BASE + 'tests'); } catch (e) { mount('#tests', el('p', { class: 'muted', text: 'Tests unavailable: ' + e.message })); return; }
+    document.getElementById('tests-sub').textContent = t.rows.length + ' tests in the experiment registry shape, status proposed. ' + t.note;
+    mount('#tests-tools', UI.copyButton({ label: 'Copy as JSON', text: () => JSON.stringify(t.rows, null, 1) }));
+    mount('#tests', UI.verdictTable({
+      columns: [{ key: 'hypothesis', label: 'Hypothesis' }, { key: 'metric_t', label: 'Metric' }, { key: 'days', label: 'Days', unit: 'n' },
+        { key: 'audience_t', label: 'Audience' }, { key: 'read_point', label: 'Read on', format: (v) => fmt.date(v) }],
+      rows: t.rows.map((r) => Object.assign({}, r, { metric_t: r.metric.name.replace(/_/g, ' ') + ', ' + r.metric.direction, days: r.metric.min_days, audience_t: r.audience.join(', '),
+        actions: [{ label: 'Copy row', onClick: () => UI.copy(JSON.stringify(r, null, 1)) }] })),
+      verdict: { at: 0, kind: () => 'new', text: () => 'Proposed' }, actions: { label: 'Do' }, sort: false,
+    }));
+  }
+
   // ---------- the desk, grouped into tabs by job ----------
   const DESK = [
     { key: 'avatars', label: 'Avatars', ids: ['avatars-wrap', 'gate-wrap', 'forces-wrap', 'survey-wrap', 'served-wrap', 'misread-wrap'] },
@@ -796,6 +811,7 @@
     mount('#language', ...d.language.themes.map(themeCard));
     mount('#voice', ...voiceCards(d.voice, load));
     if (!deskTabs) buildDesk(r.actions || []);
+    renderTests();
     document.getElementById('audit-sub').textContent = a.findings.length + ' findings from ' + a.rules.length + ' rules. Brain version ' + String(a.brain_version || '').slice(0, 7) + '.';
     mount('#audit', auditTable(a.findings));
     mount('#rules', el('h4', { text: 'Rules' }), rulesTable(a.rules, a.findings));

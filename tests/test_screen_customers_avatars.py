@@ -1053,5 +1053,25 @@ class PlanByJob(TempBrain):
         self.assertEqual(set(api.RULE_JOB), {r['rule_id'] for r in audit.RULES})
 
 
+class ProposedTests(TempBrain):
+    """Feature 4.3: proposed tests in the experiment registry shape, metric names from the contract."""
+
+    def test_registry_shape(self):
+        sys.path.insert(0, str(ROOT / 'app'))
+        import metrics
+        x = api.handle(Req(['tests']))
+        keys = ['id', 'brand', 'hypothesis', 'source', 'idea_id', 'owner', 'metric', 'variant', 'audience', 'start', 'read_point', 'end',
+                'status', 'result', 'decision', 'learnings_ref', 'retro', 'park', 'brain_refs']
+        self.assertTrue(x['rows'])
+        for r in x['rows']:
+            for k in keys:
+                self.assertIn(k, r)
+            self.assertEqual(r['status'], 'proposed')
+            self.assertIn(r['metric']['name'], metrics.METRICS)
+            self.assertLessEqual(r['metric']['registered_on'], r['start'])
+            self.assertIsNone(r['id'])
+        self.assertIn('02-customers-avatars.test.guarantee_vs_discount', [r['proposal_key'] for r in x['rows']])
+
+
 if __name__ == '__main__':
     unittest.main()

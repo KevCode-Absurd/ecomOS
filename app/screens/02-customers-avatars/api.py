@@ -10,6 +10,7 @@ founder-marked voice example, through Brain.put. Nothing external, no model.
   GET  rank              served by app/rank.py, which calls `rank(brand, window)` below when present
   GET  audit             findings from audit.py (app/contracts/audit.md shape) and RULES
   POST avatars/draft      {segment}: writes the drafted avatar for an unserved situation, tier inferred
+  GET  tests               tests this screen proposes, as experiment registry rows with status proposed
   GET  avatar/<key>/brief  a plain-text one-pager for one avatar, for a creator or agency
   POST voice/check        {text}: pass, warn or fail against the writing rules, voice sheet and claims; no write
   POST messaging/approve  writes the drafted messaging hierarchy as an approved founder positioning record
@@ -310,6 +311,14 @@ def _hierarchy(brain: Brain, avatars: list[dict], all_rungs: list[dict], lad: di
     return h
 
 
+def proposed(brain: Brain) -> dict:
+    """Tests this screen proposes, in the experiment registry row shape (contracts/events.md)."""
+    d = overview(brain)
+    rows = builds.proposed_tests(d, brain.brand, d["ends_on"])
+    return {"brand": brain.brand, "simulated": True, "status": "proposed", "rows": rows,
+            "note": "25-experiments assigns ids, checks audience overlap and reads results. Nothing starts before a person approves."}
+
+
 def avatar_brief(brain: Brain, key: str):
     if not SAFE_BRAND.match(key or ""):
         return 400, {"error": "bad avatar key"}
@@ -422,6 +431,8 @@ def handle(req):
         ends = (brain.today - dt.timedelta(days=1)).isoformat()
         findings = audit.run(brain.brand, {"ends_on": ends, "days": 1, "trailing": 0}, BRAIN_ROOT)
         return {"findings": findings, "rules": audit.RULES, "brain_version": brain.version()}
+    if req.method == "GET" and parts == ["tests"]:
+        return proposed(brain)
     if req.method == "GET" and len(parts) == 3 and parts[0] == "avatar" and parts[2] == "brief":
         return avatar_brief(brain, parts[1])
     if req.method == "POST" and parts == ["voice", "check"]:
