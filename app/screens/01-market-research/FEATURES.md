@@ -142,7 +142,7 @@ The screen is rebuilt to `app/contracts/depth.md`: the plan first, then what is 
 |---|---|---|
 | 1.1 | Plan board first from `rank`, orientation numbers beside it (units, lines losing share, product lines in the brain, public revenue band, open findings, stake, brain freshness); what is wrong grouped by rule with evidence numbers; action cards with owner, steps, artefact, win and stop rules; the desk restyled as verdict tables with a gap line and an action under each block; the audit with findings and rules at the bottom; exports. Round 0 tiles, insight cards and the units chart removed. New rule PROD-R03 (hero line with no next SKU in the pipeline). `rank` v1 with real titles and steps for R01 to R03. | done |
 | 1.2 | Industry and sub-industry trends: `fixtures/market_trends.json` from a public web pass (12 markets, 8 preferences, 18 launches, a url and a date on every number), trend strips of the public markets beside our 12-month category mix with verdicts against market growth and the public share records in the brain, a lanes table (sold, advertised, or neither), new rules PROD-R04 (category behind its market, money = growth gap x net sales) and PROD-R05 (growing lane sold and not named in any active ad, or the gift window inside 90 days), ad-brief recipes in `rank` | done |
-| 1.3 | Emerging sub-categories and new products, verdict table | todo |
+| 1.3 | Emerging sub-categories and new products: 10 lanes (compression, merino, run and hike, guarantee proof, style drops, gifting, underwear, footwear, apparel, creator proof) read from the competitor pages in the brain (who pushes it, active ads, longest run) and the launches in the web pass (brand, what, date, price, url), against whether we sell and advertise it; verdict follow, watch or ignore by rule (2 pages and a 30-day runner; under 14 days and no launch); rule PROD-R06 (competitor-pushed lane we do not advertise) with a Brief it action, merged with the PROD-R05 market finding on the same lane | done |
 | 1.4 | What people are talking about across Reddit, reviews and a social keyword pull | todo |
 | 1.5 | Shifting preferences: where the brand stands against the category conversation | todo |
 | 1.6 | Positioning map | todo |
@@ -160,4 +160,4 @@ None yet.
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.11 | 28 Sep 2026 | S3.6, Bombas simulated set at scale 0.1 |
-| 1 | 1.1, 1.2 | 28 Sep 2026 | plan first, rank v1, PROD-R03 to R05, web pass fixture; in progress |
+| 1 | 1.1 to 1.3 | 28 Sep 2026 | plan first, rank v1, PROD-R03 to R06, web pass fixture; in progress |

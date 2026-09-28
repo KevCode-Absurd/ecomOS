@@ -31,6 +31,11 @@ Rules
             percent a year or more (or the gift window, 1 Nov, inside 90 days) whose words appear in the
             brand's product, claim or site records and in none of its active-ad signals. Money: null.
             Capability PROD-C05 (agent does). Owner: 01-market-research.
+  PROD-R06  Competitor-pushed lane we do not advertise: a lane (compression, merino, performance, guarantee
+            proof, style drops, gifting, underwear, footwear, apparel, creator proof) that 2 or more competitor
+            pages push in the Ad Library with at least one ad live 30 days or more, and that none of the
+            brand's active-ad signals name. Sold or not, it is a gap. Money: null (signals, not proof).
+            Capability PROD-C03 (scout ad libraries, agent does). Owner: 01-market-research.
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -67,12 +72,15 @@ RULES = [
      'entity_type': 'sku', 'inputs': ['products_monthly', 'fixtures.market_trends'], 'capability': 'PROD-C05', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R05', 'name': 'Sub-category growing 4 percent a year or more (or the gift window within 90 days) that the brand sells and no active ad names',
      'entity_type': 'metric', 'inputs': ['fixtures.market_trends', 'brain.products', 'brain.learnings'], 'capability': 'PROD-C05', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R06', 'name': 'Lane 2 or more competitors push with an ad live 30 days or more, and no active ad of ours names it',
+     'entity_type': 'metric', 'inputs': ['brain.competitors', 'brain.learnings', 'fixtures.market_trends'], 'capability': 'PROD-C03', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
               'PROD-R03': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
               'PROD-R04': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
-              'PROD-R05': {'id': 'PROD-C05', 'autonomy': 'agent_does'}}
+              'PROD-R05': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
+              'PROD-R06': {'id': 'PROD-C03', 'autonomy': 'agent_does'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -475,6 +483,7 @@ def run(brand, window=None, data=None):
     else:
         out += review_findings(reviews, ladders(br), rd, tr, ends_on, net)
     out += trend_findings(br, category_mix(data, brand, rd), ends_on)
+    out += subcategory_findings(br, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -570,12 +579,15 @@ def ad_words(br):
     if br is None:
         return ''
     parts = []
+    rivals = [c['name'].lower() for c in competitor_signals(br)]
     for r in br.records('learnings'):
         v = r.get('value')
         if isinstance(v, dict) and v.get('role') == 'competitor':
             continue
         if (r.get('source') or {}).get('type') != 'ad_library':
             continue
+        if any(n in str(r.get('text') or '').lower() for n in rivals):
+            continue   # a read of competitor ads, not our own
         parts.append(str(r.get('text') or ''))
         parts.append(json.dumps(v))
         for e in r.get('evidence') or []:
@@ -643,5 +655,133 @@ def trend_findings(br, mix, ends_on):
         f['entity'] = {'type': 'metric', 'id': key, 'label': m.get('label') or key, 'category': cat}
         f['id'] = f'{SCREEN}.PROD-R05.{key}'
         f['brain_refs'] = [x for x in f['brain_refs'] if x]
+        out.append(f)
+    return out
+
+
+# ---------------------------------------------------------------- sub-categories: what competitors push, what launched
+
+# the structure is fixed; which lanes fire depends on the brain and the web pass
+PROOF_LANES = {'guarantee', 'creator'}   # proof types, not products: "sold" reads as "proof on file"
+SUBCATS = [
+    ('compression', 'Compression and relief', ['compression', 'relief', 'plantar', 'nurse', 'pots', 'circulation', 'mmhg']),
+    ('merino', 'Merino and wool', ['merino', 'wool']),
+    ('performance', 'Run, hike and sport', ['running sock', 'run sock', 'runner', 'hiking', 'hike', 'trail', 'athlete', 'sport', 'performance', 'ski sock', 'studio']),
+    ('guarantee', 'Guarantee and durability proof', ['lifetime guarantee', 'guarantee', 'durab', 'made in usa', 'made in the usa']),
+    ('style', 'Style, drops and collabs', ['style-led', 'style and', 'self expression', 'new arrival', 'limited drop', 'limited edition', 'collab', 'pokemon', 'jurassic', 'minions', 'embroider']),
+    ('gifting', 'Gifting', ['gift']),
+    ('underwear', 'Underwear', ['underwear', 'boxer', 'briefs', 'boxer brief', 'thong', 'bralette']),
+    ('footwear', 'Slippers and footwear', ['slipper', 'clog', ' boots', 'sneaker', 'slip-on', 'footwear', 'moccasin', 'sandal']),
+    ('apparel', 'Apparel beyond basics', ['sweats', 'denim', 'jean', 'hoody', 'hoodie', 'swim', ' tee ', ' tees', 't-shirt', 'jacket']),
+    ('creator', 'Creator and first-person proof', ['first person', 'first_person', 'creator', 'testimonial', 'review quote', 'nurse count', 'listicle', 'advertorial']),
+]
+FOLLOW_MIN_COMPETITORS = 2
+FOLLOW_MIN_RUN_DAYS = 30
+IGNORE_MAX_RUN_DAYS = 14
+
+
+def competitor_signals(br):
+    """One row per competitor page from the brain: active ads, longest run, hooks and what they push, as text."""
+    if br is None:
+        return []
+    pages = {}
+    for r in br.records('competitors'):
+        v = r.get('value')
+        if not isinstance(v, dict):
+            continue
+        name = v.get('page') or v.get('name')
+        if not name:
+            continue
+        key = name.lower().replace(' socks', '').replace(' vermont', '').strip()
+        p = pages.setdefault(key, {'name': name, 'records': [], 'active_ads': None, 'longest_run_days': None, 'text': ''})
+        p['records'].append(r['id'])
+        ads = v.get('active_ads') or v.get('active_ads_seen')
+        if ads is not None:
+            p['active_ads'] = max(p['active_ads'] or 0, ads)
+        run = v.get('longest_run_days') or (v.get('longest_running_ad') or {}).get('days_running')
+        if run is not None:
+            p['longest_run_days'] = max(p['longest_run_days'] or 0, run)
+        hooks = v.get('hook_types')
+        parts = [str(v.get('what_they_push') or ''), str(v.get('positioning') or '')]
+        parts += list(hooks) if isinstance(hooks, list) else list(hooks.keys()) if isinstance(hooks, dict) else []
+        parts += [str(e.get('quote') or '') for e in r.get('evidence') or []]
+        p['text'] = (p['text'] + ' ' + ' '.join(parts)).lower()
+    for r in br.records('learnings'):
+        v = r.get('value')
+        if isinstance(v, dict) and v.get('role') == 'competitor' and v.get('page'):
+            key = v['page'].lower().replace(' socks', '').replace(' vermont', '').strip()
+            if key in pages:
+                pages[key]['median_run_days'] = v.get('median_run_days')
+                pages[key]['long_runners_30d'] = v.get('long_runners_30d')
+    return sorted(pages.values(), key=lambda p: -(p['active_ads'] or 0))
+
+
+def subcategory_table(br, ends_on):
+    """Each lane: which competitors push it (ads and run length), what launched in it (web pass), whether the brand
+    sells it and advertises it, and the verdict: follow, watch or ignore, by the rule constants above."""
+    comps = competitor_signals(br)
+    fx = market_trends() or {}
+    launches = fx.get('launches') or []
+    words = brand_words(br)
+    ads = ad_words(br)
+    brand_name = (br.brand if br else '').lower()
+    out = []
+    for key, label, terms in SUBCATS:
+        pushing = [c for c in comps if any(t in c['text'] for t in terms)]
+        long_run = [c for c in pushing if (c.get('longest_run_days') or 0) >= FOLLOW_MIN_RUN_DAYS]
+        lane_launches = [l for l in launches if l.get('sub_category') == key or any(t in (l.get('what') or '').lower() for t in terms)]
+        theirs = [l for l in lane_launches if (l.get('brand') or '').lower() != brand_name]
+        ours = [l for l in lane_launches if (l.get('brand') or '').lower() == brand_name]
+        sold = (any(t in words for t in terms) or bool(ours)) if words else None
+        advertised = any(t in ads for t in terms) if ads else None
+        if len(pushing) >= FOLLOW_MIN_COMPETITORS and long_run:
+            verdict = 'follow'
+        elif pushing and all((c.get('longest_run_days') or 0) <= IGNORE_MAX_RUN_DAYS for c in pushing) and not theirs:
+            verdict = 'ignore'
+        elif pushing or theirs:
+            verdict = 'watch'
+        else:
+            verdict = 'ignore'
+        out.append({'key': key, 'label': label, 'competitors': [{'name': c['name'], 'active_ads': c['active_ads'], 'longest_run_days': c['longest_run_days'],
+                                                                   'long_runners_30d': c.get('long_runners_30d')} for c in pushing],
+                    'competitors_n': len(pushing), 'long_run_n': len(long_run),
+                    'ads_sum': sum(c['active_ads'] or 0 for c in pushing) if pushing else None,
+                    'launches': [{'brand': l.get('brand'), 'what': l.get('what'), 'date': l.get('date'), 'price_usd': l.get('price_usd'),
+                                  'url': (l.get('sources') or [{}])[0].get('url')} for l in lane_launches],
+                    'launches_theirs': len(theirs), 'launches_ours': len(ours), 'sold': sold, 'advertised': advertised, 'verdict': verdict,
+                    'kind': 'proof' if key in PROOF_LANES else 'product',
+                    'finding_id': f'{SCREEN}.PROD-R06.{key}'})
+    order = {'follow': 0, 'watch': 1, 'ignore': 2}
+    out.sort(key=lambda r: (order[r['verdict']], -(r['ads_sum'] or 0)))
+    return out
+
+
+def subcategory_findings(br, ends_on):
+    """PROD-R06: a lane 2 or more competitors push with an ad running 30 days or more, that the brand does not name
+    in any active ad. Sold or not, it is a gap: brief it or screen it."""
+    out = []
+    for row in subcategory_table(br, ends_on):
+        if row['verdict'] != 'follow' or row['advertised']:
+            continue
+        top = max(row['competitors'], key=lambda c: c['longest_run_days'] or 0)
+        ev = [_ev('competitors_pushing', row['competitors_n'], 'count', ends_on.isoformat(), 'active ads now', FOLLOW_MIN_COMPETITORS, 'threshold',
+                  source='brain.competitors', simulated=False, freshness_days=0, names=[c['name'] for c in row['competitors']]),
+              _ev('competitor_active_ads', row['ads_sum'], 'count', ends_on.isoformat(), 'active ads now', source='brain.competitors', simulated=False, freshness_days=0),
+              _ev('longest_run_days', top['longest_run_days'], 'days', ends_on.isoformat(), 'active ads now', FOLLOW_MIN_RUN_DAYS, 'threshold',
+                  source='brain.competitors', simulated=False, freshness_days=0, note=top['name']),
+              _ev('our_active_ads_naming_it', 0, 'count', ends_on.isoformat(), 'active ads now', 1, 'threshold', source='brain.learnings', simulated=False, freshness_days=0),
+              _ev('launches_24m', row['launches_theirs'], 'count', ends_on.isoformat(), '24 months', source='fixtures.market_trends', simulated=False, freshness_days=0)]
+        names = ', '.join(c['name'] for c in row['competitors'][:3])
+        if row['kind'] == 'proof':
+            sold = 'The brand has the proof on file' if row['sold'] else 'The brand has no proof on file for it'
+        else:
+            sold = 'The brand sells it' if row['sold'] else 'The brand has no line on file for it'
+        sentence = (f'{row["competitors_n"]} competitors push {row["label"].lower()} with {row["ads_sum"]} active ads; {top["name"]} has run one '
+                    f'{top["longest_run_days"]} days. {sold} and no active ad names it.')
+        f = _finding('PROD-R06', row['key'], ends_on, 'medium', ev, sentence, None, 0.5,
+                     [f'{br.brand}.competitors.competitor_set', f'{br.brand}.learnings.hook_types'],
+                     money_reason='competitor ads are signals, not proof; no spend or share is measurable')
+        f['entity'] = {'type': 'metric', 'id': row['key'], 'label': row['label'], 'sold': row['sold'], 'kind': row['kind'], 'names': names}
+        f['id'] = f'{SCREEN}.PROD-R06.{row["key"]}'
         out.append(f)
     return out

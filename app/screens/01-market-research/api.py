@@ -365,7 +365,61 @@ def recipe(f):
             'check_on': _check_on(f, 14 if not gift else 7), 'time_to_ship_hours': 6,
             'win_rule': 'at least 1 active ad names the lane and its cost per order is at or under the account median',
         }
+    if rid == 'PROD-R06':
+        ent = f.get('entity') or {}
+        label = (ent.get('label') or ent.get('id') or '').lower()
+        names = ent.get('names') or 'the competitors'
+        sold = ent.get('sold')
+        proof = ent.get('kind') == 'proof'
+        n = _ev_value(f, 'competitors_pushing')
+        if sold:
+            title = f'Brief our answer on {label}: {names} run it, we do not'
+            kind, art = 'ad_brief', f'an ad brief on {label}: our proof against theirs, 3 hooks, one static and one video, signals only from their ads'
+        elif proof:
+            title = f'Build the proof for {label} before we advertise it'
+            kind, art = 'research_note', f'a proof plan for {label}: what we can claim today, what needs a test or a policy, and the first ad it unlocks'
+        else:
+            title = f'Screen a {label} candidate: {names} push it and we have no line'
+            kind, art = 'research_note', f'a fast screen of {label} as a next SKU: demand, competition, store fit, with a go or kill'
+        return {
+            'title': title, 'owner': 'agent_drafts' if sold else 'agent',
+            'artefact': {'kind': kind, 'label': art},
+            'steps': [
+                {'n': 1, 'who': 'agent', 'text': f'Read the {n} competitor pages on {label} in the Ad Library by page id: format, hook, run length, offer. Signals only, nothing copied.'},
+                {'n': 2, 'who': 'agent', 'text': ('Pull our own proof for it from the brain: claims, review praise, ladder rungs with proof.' if sold else
+                                                  'Check the brain for anything we already hold on it: a claim, a review theme, a past test.')},
+                {'n': 3, 'who': 'agent', 'text': ('Draft the brief: the one claim we can back, 3 hooks, product and offer, one static and one video.' if sold else
+                                                  ('Write the proof plan: claim by tier, what needs a test or a policy, the first ad it unlocks.' if proof else
+                                                   'Run the fast screen: demand signal, sellers already in it, fit with our lines and price ladder.'))},
+                {'n': 4, 'who': 'person', 'text': ('Approve the brief. Creative makes the ads; paid social sets the test.' if sold else 'Decide: go to the pipeline, or kill it and log why.')},
+                {'n': 5, 'who': 'agent', 'text': 'Re-read the Ad Library on the next pull. The finding resolves when an active ad of ours names the lane.'}],
+            'size': {'text': f'{n} competitors, {_ev_value(f, "competitor_active_ads")} active ads on it', 'usd': None},
+            'stop_rule': 'stop if the competitors drop the lane (no ad live 30 days) before we ship',
+            'check_on': _check_on(f, 14), 'time_to_ship_hours': 6 if sold else 8,
+            'win_rule': 'an active ad of ours names the lane, or the candidate has a logged go or kill',
+        }
     return None
+
+
+def merge_lanes(actions):
+    """One action per lane: a PROD-R05 market finding and a PROD-R06 competitor finding on the same lane share the brief."""
+    r06 = [a for a in actions if a.get('rule_id') == 'PROD-R06']
+    keep = []
+    for a in actions:
+        if a.get('rule_id') != 'PROD-R05':
+            keep.append(a)
+            continue
+        key = (a.get('entity') or {}).get('id') or ''
+        words = set(audit.MARKET_WORDS.get(key, []))
+        host = next((b for b in r06 if words & set(next((t for k, _, t in audit.SUBCATS if k == (b.get('entity') or {}).get('id')), []))), None)
+        if host is None:
+            keep.append(a)
+            continue
+        host['finding_ids'] = sorted(set(host['finding_ids']) | set(a['finding_ids']))
+        host['why'] = host['why'] + ' ' + a['why']
+        host['brain_refs'] = sorted(set(host.get('brain_refs') or []) | set(a.get('brain_refs') or []))
+        host['rubric']['confidence'] = max(host['rubric'].get('confidence') or 0, a['rubric'].get('confidence') or 0)
+    return keep
 
 
 def rank_mod_money(m):
@@ -395,6 +449,7 @@ def rank(brand, window=None):
         a['screen'] = SCREEN
         if not rank_mod.validate_action(a):
             actions.append(a)
+    actions = merge_lanes(actions)
     actions.sort(key=rank_mod.sort_key)
     return {'screen': SCREEN, 'brand': brand, 'window': window, 'actions': actions, 'net_revenue_28d': nr}
 
@@ -447,7 +502,7 @@ def overview(data, brand):
                        'trend': None if tr.get('unavailable') else {'months': [tr['first'], tr['last']], 'year_ago': tr['year_ago']}},
             'orientation': orientation(tr, br, ends_on, findings),
             'wrong': wrong(findings),
-            'desk': {'trends': trends(br, mix), 'mix': mix,
+            'desk': {'trends': trends(br, mix), 'mix': mix, 'lanes': audit.subcategory_table(br, ends_on),
                      'demand': demand(tr, reviews), 'store_growth': tr.get('store_growth'),
                      'demand_unavailable': {'reason': tr.get('reason'), 'fix': tr.get('fix')} if tr.get('unavailable') else None,
                      'price_bands': bands, 'reviews': review_mining(reviews, lads),

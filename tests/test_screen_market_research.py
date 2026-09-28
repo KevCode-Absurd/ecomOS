@@ -218,6 +218,45 @@ class RulesTest(unittest.TestCase):
         for f in fs:
             self.check_shape(f)
 
+    def test_lane_rule_from_competitor_signals(self):
+        """R06 fires for a lane 2 competitors push with a long runner that we do not advertise; quiet when advertised."""
+        class B:
+            brand = 'fake'
+            def records(self, sec):
+                if sec == 'competitors':
+                    return [{'id': 'fake.competitors.a', 'value': {'name': 'A', 'active_ads_seen': 40, 'positioning': 'merino socks with a lifetime guarantee',
+                                                                   'hook_types': ['lifetime guarantee'], 'longest_running_ad': {'days_running': 90}}, 'evidence': []},
+                            {'id': 'fake.competitors.b', 'value': {'page': 'B', 'active_ads': 20, 'longest_run_days': 45, 'hook_types': {'statement': 20}}, 'evidence': [{'quote': 'merino wool all day'}]},
+                            {'id': 'fake.competitors.c', 'value': {'page': 'C', 'active_ads': 5, 'longest_run_days': 3, 'hook_types': {'statement': 5}}, 'evidence': [{'quote': 'new arrival style-led'}]}]
+                if sec == 'products':
+                    return [{'text': 'merino wool calf sock', 'value': None, 'source': {}, 'evidence': []}]
+                if sec == 'learnings':
+                    return [{'text': 'active ads: compression socks and a guarantee hook', 'value': {'role': 'self'}, 'source': {'type': 'ad_library'}, 'evidence': []}]
+                return []
+        real = audit.market_trends
+        audit.market_trends = lambda: {'launches': []}
+        try:
+            rows = {r['key']: r for r in audit.subcategory_table(B(), date(2026, 9, 27))}
+            fs = audit.subcategory_findings(B(), date(2026, 9, 27))
+        finally:
+            audit.market_trends = real
+        self.assertEqual(rows['merino']['verdict'], 'follow')
+        self.assertEqual(rows['style']['verdict'], 'ignore')      # one page, 3-day ads, no launch
+        self.assertEqual(rows['guarantee']['verdict'], 'watch')   # one page pushes it
+        ids = [f['id'] for f in fs]
+        self.assertEqual(ids, ['01-market-research.PROD-R06.merino'])
+        self.assertIn('2 competitors push merino and wool', fs[0]['sentence'])
+        self.check_shape(fs[0])
+
+    def test_rank_merges_market_and_competitor_lane(self):
+        acts = api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions']
+        merged = [a for a in acts if len(a['finding_ids']) > 1]
+        for a in merged:
+            rules = {fid.split('.')[1] for fid in a['finding_ids']}
+            self.assertEqual(rules, {'PROD-R05', 'PROD-R06'})
+        covered = [fid for a in acts for fid in a['finding_ids']]
+        self.assertEqual(len(covered), len(set(covered)))   # one action per finding
+
     def test_web_pass_fixture_cites_every_number(self):
         fx = audit.market_trends()
         self.assertIsNotNone(fx)

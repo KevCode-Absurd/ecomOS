@@ -199,11 +199,36 @@
         gaps.length ? { label: 'Brief the first', onClick: () => { const a = actionFor(gaps[0].finding_id); if (a) openAction(a); } } : null));
   }
 
+  function lanesBlock(rows) {
+    if (!rows || !rows.length) return UI.emptyState({ screen: SLUG, title: 'No competitor ad signals', text: 'The brain holds no Ad Library records for competitor pages yet.', missing: ['ad_library'] });
+    const vrows = rows.map((r) => { const a = actionFor(r.finding_id); return Object.assign({}, r, {
+      who: r.competitors.map((c) => c.name + ' (' + (c.active_ads == null ? '?' : c.active_ads) + ' ads, ' + (c.longest_run_days == null ? '?' : c.longest_run_days) + ' d)').join('; ') || 'none',
+      launched: r.launches.length ? r.launches.map((l) => l.brand + ': ' + l.what + (l.date ? ' (' + l.date + (l.price_usd != null ? ', ' + fmt.money(l.price_usd) : '') + ')' : '')).join(' | ') : 'none in the web pass',
+      soldText: r.sold == null ? NA : r.kind === 'proof' ? (r.sold ? 'proof on file' : 'no proof') : (r.sold ? 'yes' : 'no'),
+      advText: r.advertised == null ? NA : r.advertised ? 'yes' : 'no',
+      actions: [a ? { label: 'Brief it', onClick: () => openAction(a) } : { label: r.verdict === 'follow' ? 'Covered' : r.verdict === 'watch' ? 'Watch' : 'Ignore', cls: 'quiet', onClick: () => {} }] }); });
+    const t = UI.verdictTable({
+      columns: [{ key: 'label', label: 'Lane' }, { key: 'competitors_n', label: 'Competitors pushing it', unit: 'n' }, { key: 'ads_sum', label: 'Their active ads', unit: 'n' },
+        { key: 'long_run_n', label: 'With an ad live 30 d+', unit: 'n' }, { key: 'who', label: 'Who' }, { key: 'launched', label: 'Launched, last 24 months' },
+        { key: 'soldText', label: 'We sell it' }, { key: 'advText', label: 'In our active ads' }],
+      rows: vrows,
+      verdict: { at: 1, kind: (r) => r.verdict === 'follow' ? (r.advertised ? 'keep' : 'fix') : r.verdict === 'watch' ? 'watch' : 'na',
+        text: (r) => r.verdict === 'follow' ? (r.advertised ? 'Follow, covered' : 'Follow') : r.verdict === 'watch' ? 'Watch' : 'Ignore',
+        reason: (r) => r.competitors_n + ' pushing, ' + r.long_run_n + ' with a long runner; follow needs 2 and 1' },
+      actions: { label: 'Do', onClick: () => {} }, sort: false });
+    const gaps = rows.filter((r) => r.verdict === 'follow' && !r.advertised);
+    return el('div', null, el('div', { class: 'card scroll' }, t),
+      el('p', { class: 'micro faint', text: 'Rule: follow when 2 or more competitor pages push the lane and one has an ad live 30 days or more; ignore when every ad on it is under 14 days old and nothing launched; else watch. Competitor ads are signals, never copied. Launches come from the public web pass with a url per row.' }),
+      gapLine(gaps.length ? gaps.length + ' lanes to follow have no active ad of ours: ' + gaps.map((g) => g.label.toLowerCase()).join(', ') + '.' : 'Every lane worth following has an active ad of ours.',
+        gaps.length ? { label: 'Brief the first', onClick: () => { const a = actionFor(gaps[0].finding_id); if (a) openAction(a); } } : null));
+  }
+
   function loadDesk(o) {
     const d = o.desk || {};
     const w = (o.window || {}).trend;
     const parts = [];
     parts.push(section('desk-trends', 'Where is the category going, and which lane is under-advertised?', 'Public market sizes and growth from the web pass, a url and a date on every number, against our category mix over 12 whole months. Sales are simulated; markets are public.', trendsBlock(d.trends || { on_file: false }, d.mix || {})));
+    parts.push(section('desk-lanes', 'Which lanes are competitors betting on, and what launched?', 'Competitor pages from the Ad Library pull in the brain, by lane: who pushes it, how long their ads have run, what launched in the last 24 months, and whether we sell and advertise it.', lanesBlock(d.lanes)));
     parts.push(section('desk-demand', 'Which lines are losing share, and which reviews say why?', 'Last 3 whole months against the same months a year earlier. A line fires when units fall or growth trails the store by 1 point or more.', demandBlock(d, w || { months: [], year_ago: [] })));
     parts.push(section('desk-price', 'Where do our prices sit against the competitor band?', 'Per-pair list price by line against the band of competitor median prices from the brain. Socks only; other categories have no competitor price on file.', priceBlock(d.price_bands || {})));
     parts.push(section('desk-reviews', 'What do reviews praise and fail, line by line?', 'Public site review totals per line, with the objection ladder rungs built from them.', reviewBlock(d.reviews || [])));
