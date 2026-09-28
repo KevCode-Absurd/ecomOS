@@ -89,6 +89,38 @@ class Brain:
                     out.append(r)
         return out
 
+    # reads log: which screen or agent read which section, and when (flow proof on the brain screen)
+
+    def log_read(self, section: str, reader: str) -> None:
+        """Append one line to reads.log.jsonl: {section, reader, at}. Never raises; a read log is not worth a failed read."""
+        try:
+            path = self.dir / "reads.log.jsonl"
+            line = json.dumps({"section": section, "reader": str(reader)[:80], "at": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")})
+            with path.open("a", encoding="utf-8") as fh:
+                fh.write(line + "\n")
+        except OSError:
+            return
+
+    def reads(self, section: str | None = None) -> list[dict]:
+        """Read log lines, oldest first, optionally for one section. Empty when nothing was logged."""
+        path = self.dir / "reads.log.jsonl"
+        if not path.exists():
+            return []
+        out = []
+        for ln in path.read_text(encoding="utf-8").splitlines():
+            try:
+                row = json.loads(ln)
+            except ValueError:
+                continue
+            if section is None or row.get("section") == section:
+                out.append(row)
+        return out
+
+    def last_read(self, section: str) -> dict | None:
+        """The newest read of a section, or None (unavailable, never a stand-in date)."""
+        rows = self.reads(section)
+        return rows[-1] if rows else None
+
     def get(self, rid: str) -> dict | None:
         section = rid.split(".")[1]
         for rec in self.raw(section):

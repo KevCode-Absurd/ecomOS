@@ -27,13 +27,45 @@ def keep_configured_pages(items: list[dict], pages: list[dict]) -> list[dict]:
     return [it for it in items if str(it.get("page_id")) in ids or (it.get("page_name") or "").strip().lower() in names]
 
 
+def founder_pages(brand: str, root=None, pages: list | None = None) -> list[dict]:
+    """Extra Ad Library pages typed on the brand brain screen: approved founder records in the brain's
+    competitors section with field `page_id_<slug>` and a numeric page id as the value. Skips ids already
+    configured. Read straight from the section file so this stays free of the store's import path."""
+    import json as _json
+    from pathlib import Path as _Path
+    base = _Path(root) if root else _Path(__file__).resolve().parents[1]
+    path = base / brand / "competitors.json"
+    if not path.is_file():
+        return []
+    try:
+        rows = _json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return []
+    known = {str(p.get("page_id")) for p in (pages or []) if p.get("page_id")}
+    out = []
+    for r in rows:
+        field = str(r.get("field") or "")
+        if not field.startswith("page_id_") or r.get("status") in ("retired", "proposed"):
+            continue
+        if (r.get("source") or {}).get("type") != "founder" and r.get("tier") != "approved":
+            continue
+        pid = str(r.get("value") or "").strip()
+        if not pid.isdigit() or pid in known:
+            continue
+        known.add(pid)
+        out.append({"name": field[len("page_id_"):].replace("_", " ").title(), "role": "competitor", "page_id": pid,
+                    "source": r.get("id")})
+    return out
+
+
 def run(brand: str, config: dict, *, client=None, root=None, captured_at=None) -> dict:
     cfg = config["meta_ad_library"]
     client = client or apify.ApifyClient(mode="mock", brand=brand, budget=config.get("budget"))
     day = captured_at or client.today.isoformat()
     actor = cfg["actor"]
     status, country = cfg.get("active_status", "active"), cfg.get("country", "US")
-    pages = cfg.get("pages", [])
+    pages = list(cfg.get("pages", []))
+    pages += founder_pages(brand, root, pages)
     # A page with a known id is read directly; a name search is a keyword search and pulls every advertiser
     # whose name contains the word (28 Sep: "Stance" returned car tuners), so items are filtered to the
     # configured pages afterwards and the name route is only a fallback until the id is known.

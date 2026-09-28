@@ -208,9 +208,12 @@ def _artefact_kind(f: dict) -> str:
     return ARTEFACT_BY_SCREEN.get(f.get("screen"), None) or ARTEFACT_BY_PREFIX.get(prefix, "research_note")
 
 
-def _title(f: dict, cap_name: str) -> str:
+def _title(f: dict, cap_name: str, rule_name: str = "") -> str:
+    """Default title: the rule's own name when the audit lists one, else the capability name, plus the entity."""
     ent = f.get("entity") or {}
     label = ent.get("label") or ent.get("id") or ""
+    if rule_name and f.get("status") != "unavailable":
+        cap_name = rule_name
     if f.get("status") == "unavailable":
         un = f.get("unavailable") or {}
         con = un.get("connector") or "the missing source"
@@ -247,10 +250,11 @@ def _steps(f: dict, owner: str, kind: str) -> list[dict]:
     return steps
 
 
-def action_from_finding(f: dict, net_revenue_28d: float | None = None) -> dict:
+def action_from_finding(f: dict, net_revenue_28d: float | None = None, rule_names: dict | None = None) -> dict:
     cap = f.get("capability") or {}
     cid = cap.get("id") if isinstance(cap, dict) else str(cap or "")
     cat = catalogue().get(cid, {})
+    rule_name = (rule_names or {}).get(f.get("rule_id"), "")
     owner = owner_of(f)
     kind = _artefact_kind(f)
     un = f.get("unavailable") or {}
@@ -263,7 +267,7 @@ def action_from_finding(f: dict, net_revenue_28d: float | None = None) -> dict:
             check_on = None
     return {
         "id": f["id"], "finding_ids": [f["id"]], "screen": f.get("screen"), "rule_id": f.get("rule_id"),
-        "title": _title(f, cat.get("name", "")), "why": f.get("sentence") or "",
+        "title": _title(f, cat.get("name", ""), rule_name), "why": f.get("sentence") or "",
         "severity": f.get("severity") or "medium", "status": f.get("status") or "open", "confidence": f.get("confidence"),
         "entity": f.get("entity"), "capability": {"id": cid, "autonomy": (cap.get("autonomy") if isinstance(cap, dict) else None) or cat.get("autonomy")},
         "owner": owner,
@@ -337,6 +341,21 @@ def load_findings(slug: str, brand: str, window: dict, root: Path = SCREENS) -> 
     return list(mod.run(brand, window))
 
 
+def rule_names(slug: str, root: Path = SCREENS) -> dict:
+    """rule_id to the rule's name from the screen's audit RULES list, for default titles."""
+    mod = sys.modules.get(f"rank_audit_{slug.replace('-', '_')}")
+    if mod is None:
+        try:
+            mod = _load(f"rank_audit_{slug.replace('-', '_')}", root / slug / "audit.py")
+        except Exception:  # noqa: BLE001
+            return {}
+    out = {}
+    for r in getattr(mod, "RULES", []) or []:
+        if isinstance(r, dict) and r.get("rule_id") and r.get("name"):
+            out[r["rule_id"]] = str(r["name"])
+    return out
+
+
 def screen_override(slug: str, root: Path = SCREENS):
     for fname in ("api.py", "audit.py"):
         p = root / slug / fname
@@ -367,7 +386,8 @@ def rank(slug: str, brand: str = "bombas", window: dict | None = None, root: Pat
                 actions = None
     if actions is None:
         findings = load_findings(slug, brand, window, root)
-        actions = [action_from_finding(f, nr) for f in findings if f.get("status") in ("open", "unavailable", None)]
+        names = rule_names(slug, root)
+        actions = [action_from_finding(f, nr, names) for f in findings if f.get("status") in ("open", "unavailable", None)]
     good = []
     for a in actions:
         if "rubric" not in a and a.get("finding_ids"):

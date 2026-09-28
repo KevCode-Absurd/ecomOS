@@ -49,6 +49,7 @@ PRICES_PER_1000 = {
     "curious_coder~facebook-ads-library-scraper": 0.75,
     "apify~facebook-ads-scraper": 3.40,
     "trudax~reddit-scraper-lite": 3.40,
+    "apify~instagram-hashtag-scraper": 2.30,  # Apify Store, 28 Sep 2026; market research social pull
 }
 # Reservation is an upper bound: price x items, 50 percent margin for start and compute
 # fees, plus a flat 5 cents. The ledger halts if a run settles above its reservation.
