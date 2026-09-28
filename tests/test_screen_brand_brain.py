@@ -1486,10 +1486,82 @@ class Round4LadderProof(TempBrain):
         self.assertEqual((m['rows'], m['counts']['rungs']), ([], 0))
 
 
+class Round4SelfAudit(TempBrain):
+    """Round 4 feature 4: the brain audits itself; regenerate the router; retire a duplicate; rules BRN-R24 and R25."""
+
+    def test_self_audit_shape_and_router_rule(self):
+        sa = api.handle(Req(['selfaudit']))
+        self.assertEqual(sa['counts']['total'], len(sa['proposals']) + len(sa['duplicates']) + len(sa['missing_files']))
+        self.assertTrue(all(p['fix']['who'] in ('agent', 'person') and p['fix']['text'] for p in sa['proposals']))
+        self.assertFalse(sa['reads']['available'])  # no read logged in a fresh copy: unavailable, not zero
+        self.assertIsNone(sa['counts']['unread_sections'])
+        self.assertTrue(sa['router']['exists'])
+        fs = {f['rule_id']: f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] in ('BRN-R24', 'BRN-R25')}
+        broken = [p for p in sa['proposals'] if p['kind'] in ('drifted', 'broken_link')]
+        self.assertEqual('BRN-R24' in fs, bool(broken))
+        if broken:
+            self.assertEqual(fs['BRN-R24']['capability']['id'], 'BRN-C12')
+            a = next(a for a in api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions'] if a['rule_id'] == 'BRN-R24')
+            self.assertTrue(a['title'].startswith('Regenerate BRAIN.md'))
+            self.assertEqual((a['owner'], a['artefact']['kind']), ('agent', 'brain_record'))
+            self.assertEqual(api.rank_mod.validate_action(a), [])
+
+    def test_regenerate_router_removes_drift(self):
+        # a founder edit changes the records, so the router's rows and version line drift
+        api.handle(Req(['profile', 'offers', 'free_shipping_threshold_usd'], 'POST', body={'text': '80'}))
+        sa = api.handle(Req(['selfaudit']))
+        self.assertTrue(any(p['kind'] == 'drifted' for p in sa['proposals']))
+        status, res = api.handle(Req(['selfaudit', 'regenerate'], 'POST'))
+        self.assertEqual((status, res['ok'], res['drift_after']), (201, True, 0))
+        self.assertGreater(res['drift_before'], 0)
+        self.assertLessEqual(res['tokens'], 1500)
+        sa = api.handle(Req(['selfaudit']))
+        self.assertFalse(any(p['kind'] == 'drifted' for p in sa['proposals']))
+        self.assertIn('router', [c['kind'] for c in api.handle(Req(['changes']))['changes']])
+
+    def test_duplicates_and_retire(self):
+        rows = self.section('policies')
+        twin = dict(next(r for r in rows if r['id'] == 'bombas.policies.happiness_guarantee'))
+        twin['id'] = 'bombas.policies.happiness_guarantee_copy'
+        twin['field'] = 'happiness_guarantee_copy'
+        twin['tier'] = 'inferred'
+        twin['source'] = {'type': 'inferred', 'ref': 'a second synthesis', 'captured_at': '2026-09-20'}
+        twin.pop('history', None)
+        self.write('policies', rows + [twin])
+        sa = api.handle(Req(['selfaudit']))
+        d = next(d for d in sa['duplicates'] if d['retire'] == twin['id'])
+        self.assertEqual((d['keep'], d['section'], d['match']), ('bombas.policies.happiness_guarantee', 'policies', 'same text'))
+        f = next(f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R25')
+        self.assertIn('policies', f['sentence'])
+        a = next(a for a in api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions'] if a['rule_id'] == 'BRN-R25')
+        self.assertTrue(a['title'].startswith('Retire 1 duplicate record'))
+        self.assertIn(twin['id'], a['artefact']['draft'])
+        self.assertEqual(api.rank_mod.validate_action(a), [])
+        self.assertEqual(api.handle(Req(['selfaudit', 'retire'], 'POST', body={'retire': 'bombas.policies.happiness_guarantee', 'keep': twin['id']}))[0], 404)  # never the stronger one
+        status, res = api.handle(Req(['selfaudit', 'retire'], 'POST', body={'retire': twin['id'], 'keep': d['keep']}))
+        self.assertEqual((status, res['retired'], res['kept']), (201, twin['id'], d['keep']))
+        self.assertEqual(next(r['status'] for r in self.section('policies') if r['id'] == twin['id']), 'retired')
+        self.assertTrue(any(r['id'] == 'bombas.policies.happiness_guarantee' and r.get('status', 'active') == 'active' for r in self.section('policies')))
+        self.assertFalse([x for x in api.handle(Req(['selfaudit']))['duplicates'] if x['retire'] == twin['id']])
+        self.assertIn('retired', [c['kind'] for c in api.handle(Req(['changes']))['changes']])
+
+    def test_read_coverage_from_the_log(self):
+        api.handle(Req(['profile'], query={'reader': ['06-creative']}))
+        api.handle(Req(['records', 'voice'], query={'reader': ['06-creative']}))
+        sa = api.handle(Req(['selfaudit']))
+        self.assertTrue(sa['reads']['available'])
+        voice = next(r for r in sa['reads']['sections'] if r['section'] == 'voice')
+        self.assertGreaterEqual(voice['reads'], 1)
+        self.assertIn('06-creative', voice['readers'])
+        self.assertTrue(voice['last_read'])
+        self.assertIsInstance(sa['counts']['unread_sections'], int)
+        self.assertTrue(all(r['records'] and not r['reads'] for r in sa['reads']['unread']))
+
+
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
-    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'],
+    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'],
               ['decisions'], ['flows'], ['claims'], ['site', 'diff'], ['parity'], ['contracts'], ['legal'], ['voice'], ['battlecards'], ['permissions'],
               ['export'], ['assumptions'], ['facts'], ['summaries'], ['changes'], ['learn'], ['report'], ['digest'], ['review'], ['bottlenecks'], ['audit']]
 

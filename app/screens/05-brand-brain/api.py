@@ -179,6 +179,9 @@ _pspec.loader.exec_module(parity)
 _sspec = importlib.util.spec_from_file_location("brand_brain_sitediff", HERE / "sitediff.py")
 sitediff = importlib.util.module_from_spec(_sspec)
 _sspec.loader.exec_module(sitediff)
+_xspec = importlib.util.spec_from_file_location("brand_brain_selfaudit", HERE / "selfaudit.py")
+selfaudit = importlib.util.module_from_spec(_xspec)
+_xspec.loader.exec_module(selfaudit)
 _dspec = importlib.util.spec_from_file_location("brand_brain_ladderproof", HERE / "ladderproof.py")
 ladderproof = importlib.util.module_from_spec(_dspec)
 _dspec.loader.exec_module(ladderproof)
@@ -1301,6 +1304,33 @@ def handle(req):
         ends = (brain.today - dt.timedelta(days=1)).isoformat()
         findings = audit.run(brain.brand, {"ends_on": ends, "days": 1, "trailing": 0}, BRAIN_ROOT)
         return {"findings": findings, "rules": audit.RULES, "brain_version": brain.version()}
+    if req.method == "GET" and parts == ["selfaudit"]:
+        sa = selfaudit.run(brain)
+        sa["capability"] = {"id": "BRN-C12", "autonomy": "agent_does"}
+        return sa
+    if req.method == "POST" and parts == ["selfaudit", "regenerate"]:
+        before_v = brain.version()
+        drift_before = len(selfaudit.brain_audit.drift(brain))
+        changes.log(brain, "router", None, None, f"BRAIN.md regenerated from the records: {drift_before} drifted rows before")  # logged first, so the version line in the new file is final
+        try:
+            res = selfaudit.regenerate(brain)
+        except (ValueError, OSError) as e:
+            return 400, {"error": str(e)}
+        changes.version_step(brain, before_v, "BRAIN.md regenerated")
+        return 201, dict(res, drift_before=drift_before, version=brain.version())
+    if req.method == "POST" and parts == ["selfaudit", "retire"]:
+        body = req.body or {}
+        rid, keep = str(body.get("retire") or ""), str(body.get("keep") or "")
+        dups = selfaudit.duplicates(brain)
+        pair = next((d for d in dups if d["retire"] == rid and (not keep or d["keep"] == keep)), None)
+        if pair is None:
+            return 404, {"error": "no duplicate pair with that record to retire", "retire": rid, "keep": keep or None}
+        before_v = brain.version()
+        if not brain.retire(rid):
+            return 404, {"error": "no such record", "id": rid}
+        changes.log(brain, "retired", pair["section"], rid, f"retired {rid}, a duplicate of {pair['keep']} ({pair['match']})", before=rid, after=pair["keep"])
+        changes.version_step(brain, before_v, f"retired duplicate {rid}")
+        return 201, {"ok": True, "retired": rid, "kept": pair["keep"], "left": len(selfaudit.duplicates(brain)), "version": brain.version()}
     if req.method == "GET" and parts == ["ladders", "proof"]:
         m = ladderproof.matrix(brain, claims_mod)
         m["capability"] = {"id": "BRN-C03", "autonomy": "agent_does"}

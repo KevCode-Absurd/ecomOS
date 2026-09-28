@@ -60,6 +60,7 @@
     loadReport();
     loadUnlocks();
     loadLadderProof(m.actions || []);
+    loadSelfAudit(m.actions || []);
     const con = m.connect || [];
     const cw = document.getElementById('connect-wrap');
     if (con.length) {
@@ -164,6 +165,45 @@
     const st = el('span', { class: 'micro muted' });
     exp.addEventListener('click', async () => { exp.disabled = true; try { const b = await api(BASE + 'export'); const blob = new Blob([JSON.stringify(b, null, 1)], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = b.brand + '-brain-' + b.exported_at + '.json'; a.click(); st.textContent = b.counts.records + ' records, ' + b.counts.documents + ' documents, ' + b.counts.conflicts + ' conflicts. ' + b.note; } catch (e) { st.textContent = 'Could not export: ' + e.message; } exp.disabled = false; });
     mount('#perm', matrix, el('div', { class: 'row', style: { marginTop: '10px' } }, exp, UI.decisionRow({ capability: 'LOOP-C22', autonomy: 'founder_gate', owner: 'agent_drafts', screen: SCREEN, compact: true, stub: 'Offboarding: export the brain and the registry as a handoff package, list every connector to revoke in Setup, and confirm no external write access stays open. You approve each revoke.' }), st));
+  }
+
+  // ---------- 5b2. the brain audits itself ----------
+  async function loadSelfAudit(actions) {
+    let sa;
+    try { sa = await api(BASE + 'selfaudit'); } catch (e) { mount('#selfaudit', el('p', { class: 'muted', text: 'Self audit unavailable: ' + e.message })); return; }
+    const c = sa.counts;
+    const byAct = {}; for (const a of actions || []) if ((a.rule_id === 'BRN-R24' || a.rule_id === 'BRN-R25') && a.entity) byAct[a.entity.id] = a;
+    mount('#selfaudit-tools', UI.orientation([{ label: 'lines', value: c.total, unit: 'n' }, { label: 'router rows to fix', value: sa.proposals.filter((p) => p.kind === 'drifted' || p.kind === 'broken_link').length, unit: 'n', tone: sa.router.ok ? 'good' : 'bad' }, { label: 'duplicates', value: c.duplicates, unit: 'n' }, { label: 'sections nobody reads', value: c.unread_sections, unit: 'n' }]));
+    const status = el('span', { class: 'micro muted' });
+    const regen = el('button', { class: 'btn sm' + (sa.router.ok ? '' : ' primary'), type: 'button', text: 'Regenerate BRAIN.md' });
+    regen.addEventListener('click', async () => { regen.disabled = true; try { const r = await api(BASE + 'selfaudit/regenerate', { method: 'POST' }); status.textContent = 'Rebuilt: ' + r.drift_before + ' drifted rows before, ' + r.drift_after + ' after, ' + r.tokens + ' tokens.'; loadSelfAudit(actions); } catch (e) { regen.disabled = false; status.textContent = 'Could not regenerate: ' + e.message; } });
+    const table = UI.verdictTable({
+      columns: [{ key: 'kind', label: 'Check' }, { key: 'target', label: 'Where' }, { key: 'after', label: 'Fix' }, { key: 'who', label: 'Who' }],
+      verdict: { at: 1, kind: (r) => ({ drifted: 'fix', broken_link: 'fix', stale: 'watch', conflict: 'fix', empty: 'new', unread: 'new' })[r.kindKey] || 'watch', text: (r) => ({ drifted: 'Drifted', broken_link: 'Broken', stale: 'Expired', conflict: 'Conflict', empty: 'Empty', unread: 'Unread' })[r.kindKey] || r.kind, reason: (r) => r.reason + '. Now: ' + r.before },
+      rows: sa.proposals.map((p) => ({ kind: pretty(p.kind), kindKey: p.kind, target: p.target, before: String(p.before).slice(0, 140), after: p.after, who: pretty(p.fix.who), reason: p.reason })),
+      sort: false, empty: 'Nothing past expiry, no open conflict, no empty section a room needs, no unread file, the router matches the records and every link resolves.',
+    });
+    const dupWrap = el('div', { class: 'stack' });
+    if (sa.duplicates.length) {
+      dupWrap.append(el('div', null, el('b', { text: sa.duplicates.length + ' duplicate pair' + (sa.duplicates.length === 1 ? '' : 's') + ': ' }), 'the stronger record is kept; retiring the twin keeps it in history.'));
+      for (const d of sa.duplicates.slice(0, 20)) {
+        const b = el('button', { class: 'btn sm', type: 'button', text: 'Retire the twin' });
+        b.addEventListener('click', async () => { b.disabled = true; try { const r = await api(BASE + 'selfaudit/retire', { method: 'POST', body: { retire: d.retire, keep: d.keep } }); status.textContent = 'Retired ' + r.retired + ', kept ' + r.kept + '. ' + r.left + ' pairs left.'; loadSelfAudit(actions); } catch (e) { b.disabled = false; status.textContent = 'Could not retire: ' + e.message; } });
+        dupWrap.append(el('div', { class: 'row card flat' }, el('span', { class: 'chip', text: pretty(d.section) }), el('span', { class: 'chip mono good', text: 'keep ' + d.keep + ' (' + pretty(d.keep_tier) + ')' }), el('span', { class: 'chip mono warn', text: 'retire ' + d.retire + ' (' + pretty(d.retire_tier) + ')' }), el('span', { class: 'small', text: d.match + ': ' + d.text }), b));
+      }
+    } else dupWrap.append(el('div', { class: 'muted small', text: 'No two active records say the same thing.' }));
+    const reads = el('div', { class: 'stack' });
+    if (!sa.reads.available) reads.append(el('div', { class: 'muted small', text: 'Read coverage unavailable: ' + sa.reads.reason + '.' }));
+    else {
+      reads.append(el('div', null, el('b', { text: sa.reads.total_reads + ' reads logged. ' }), (sa.reads.unread.length ? 'Held but never read: ' + sa.reads.unread.map((r) => pretty(r.section) + ' (' + r.records + ')').join(', ') + '. ' : 'Every section with records has been read. ') + (sa.reads.hot_thin.length ? 'Read often and thin: ' + sa.reads.hot_thin.map((r) => pretty(r.section) + ' (' + r.reads + ' reads, ' + r.records + ' records)').join(', ') + '. A pull there pays.' : '')));
+      reads.append(UI.verdictTable({ columns: [{ key: 'section', label: 'Section' }, { key: 'records', label: 'Records', num: true }, { key: 'reads', label: 'Reads', num: true }, { key: 'readers', label: 'Readers' }, { key: 'last_read', label: 'Last read' }],
+        rows: sa.reads.sections.filter((r) => r.reads || r.records).map((r) => ({ section: pretty(r.section), records: r.records, reads: r.reads, readers: r.readers.join(', ') || NA, last_read: r.last_read ? fmt.date(r.last_read.slice(0, 10)) : NA })), sort: false, empty: 'No section has records or reads.' }));
+    }
+    const files = sa.missing_files.length ? el('div', { class: 'warn small' }, el('b', { text: 'Files missing on disk: ' }), sa.missing_files.map((f) => f.file).join(', ') + '. Put the file back under documents/, or remove the manifest row.') : null;
+    const act = byAct.router || byAct.duplicates;
+    mount('#selfaudit', el('div', { class: 'row' }, regen, act ? UI.decisionRow({ capability: 'BRN-C12', autonomy: 'agent_does', owner: 'agent', screen: SCREEN, compact: true, finding_id: act.id, current: act.decision, stub: act.title + '. ' + act.artefact.label + '.' }) : null, status),
+      UI.tabs({ items: [{ key: 'checks', label: 'Checks', n: sa.proposals.length, panel: table }, { key: 'dups', label: 'Duplicates', n: sa.duplicates.length, panel: dupWrap }, { key: 'reads', label: 'Read coverage', n: sa.reads.available ? sa.reads.total_reads : null, panel: reads }] }),
+      files, el('p', { class: 'micro faint', text: sa.note }));
   }
 
   // ---------- 5c3b. ladder proof matrix: rungs by surface ----------

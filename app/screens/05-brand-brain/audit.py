@@ -118,6 +118,14 @@ BRN-R23 objection rung without proof. A ladder rung used on at least one
     one-star lines sit behind it, else low. Capability BRN-C03 (claim tiering;
     the proof brief is drafted, the founder approves the record). Owner:
     05-brand-brain.
+BRN-R24 brain router drifted or broken. BRAIN.md (the router every agent
+    reads first) has a section row or version line that no longer matches the
+    records, or a link to a missing file (selfaudit.py over app/brain/audit.py).
+    One low finding. Capability BRN-C12 (brain health). Owner: 05-brand-brain.
+BRN-R25 duplicate records. Two active records in one section say the same
+    thing (same normalised text, or the same scalar value on the same field).
+    One low finding naming the pairs; the stronger record is kept and the other
+    retired, never deleted. Capability BRN-C12. Owner: 05-brand-brain.
 BRN-R07 competitor snapshot stale. A configured Ad Library page was captured
     more than SNAPSHOT_STALE_DAYS (7) ago, or never. Severity low. Capability
     BRN-C11 (competitor snapshot, signals only). Owner: 05-brand-brain.
@@ -196,6 +204,10 @@ RULES = [
      "inputs": ["plans.idea_*"], "capability": "PROP-C06", "owner_screen": SCREEN},
     {"rule_id": "BRN-R23", "name": "objection rung without proof", "entity_type": "brand",
      "inputs": ["objection_ladders", "claims", "policies", "offers", "products"], "capability": "BRN-C03", "owner_screen": SCREEN},
+    {"rule_id": "BRN-R24", "name": "brain router drifted or broken", "entity_type": "brand",
+     "inputs": ["BRAIN.md", "every section"], "capability": "BRN-C12", "owner_screen": SCREEN},
+    {"rule_id": "BRN-R25", "name": "duplicate records", "entity_type": "brand",
+     "inputs": ["every section"], "capability": "BRN-C12", "owner_screen": SCREEN},
 ]
 AUTONOMY = {"BRN-C12": "agent_does", "BRN-C07": "founder_gate", "BRN-C03": "agent_does",
             "CREA-C19": "agent_does", "CREA-C04": "agent_does", "BRN-C11": "agent_does", "CREA-C06": "agent_does",
@@ -213,6 +225,9 @@ _lspec.loader.exec_module(legal)
 _pspec = importlib.util.spec_from_file_location("brand_brain_parity", Path(__file__).resolve().parent / "parity.py")
 parity = importlib.util.module_from_spec(_pspec)
 _pspec.loader.exec_module(parity)
+_xspec = importlib.util.spec_from_file_location("brand_brain_selfaudit", Path(__file__).resolve().parent / "selfaudit.py")
+selfaudit = importlib.util.module_from_spec(_xspec)
+_xspec.loader.exec_module(selfaudit)
 _dspec = importlib.util.spec_from_file_location("brand_brain_ladderproof", Path(__file__).resolve().parent / "ladderproof.py")
 ladderproof = importlib.util.module_from_spec(_dspec)
 _dspec.loader.exec_module(ladderproof)
@@ -654,6 +669,29 @@ def rule_ladder_proof(brain: Brain, ends_on: str) -> list[dict]:
     return out
 
 
+def rule_self_audit(brain: Brain, ends_on: str) -> list[dict]:
+    out = []
+    sa = selfaudit.run(brain)
+    drift = [p for p in sa["proposals"] if p["kind"] == "drifted"]
+    broken = [p for p in sa["proposals"] if p["kind"] == "broken_link"]
+    if drift or broken:
+        ev = [_row("router_rows_drifted", len(drift), "n", ends_on, None, 0, "BRAIN.md"), _row("router_links_broken", len(broken), "n", ends_on, None, 0, "BRAIN.md")]
+        what = " and ".join(x for x in [f"{len(drift)} row{'s' if len(drift) != 1 else ''} no longer match the records" if drift else "", f"{len(broken)} link{'s' if len(broken) != 1 else ''} point at a missing file" if broken else ""] if x)
+        f = _finding("BRN-R24", "low", {"type": "brand", "id": "router", "label": "BRAIN.md router"}, ev, f"BRAIN.md, the router every agent reads first: {what}.", [], ends_on, 0.9)
+        f["router"] = {"drifted": [p["target"] for p in drift][:6], "broken": [p["target"] for p in broken][:6]}
+        out.append(f)
+    dups = sa["duplicates"]
+    if dups:
+        secs = sorted({d["section"] for d in dups})
+        ev = [_row("duplicate_pairs", len(dups), "n", ends_on, None, 0, "every section")]
+        f = _finding("BRN-R25", "low", {"type": "brand", "id": "duplicates", "label": "duplicate records"}, ev,
+                     f"{len(dups)} pair{'s' if len(dups) != 1 else ''} of records say the same thing in {', '.join(s.replace('_', ' ') for s in secs[:4])}{' and more' if len(secs) > 4 else ''}.",
+                     [d["keep"] for d in dups[:6]], ends_on, 0.8)
+        f["duplicates"] = dups[:12]
+        out.append(f)
+    return out
+
+
 def rule_permissions(brain: Brain, ends_on: str) -> list[dict]:
     pm = health.permissions(brain)
     unset = [s for s in pm["sections"] if not s["explicit"] and s["records"]]
@@ -693,7 +731,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
         bank = keeper.load_bank()
     except (OSError, ValueError, KeyError):
         bank = None
-    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_untiered_claims(brain, ends_on) + rule_site_changes(brain, ends_on) + rule_parity(brain, ends_on) + rule_contracts(brain, ends_on) + rule_legal(brain, ends_on) + rule_picked_ideas(brain, ends_on) + rule_ladder_proof(brain, ends_on) + rule_permissions(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
+    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_untiered_claims(brain, ends_on) + rule_site_changes(brain, ends_on) + rule_parity(brain, ends_on) + rule_contracts(brain, ends_on) + rule_legal(brain, ends_on) + rule_picked_ideas(brain, ends_on) + rule_ladder_proof(brain, ends_on) + rule_self_audit(brain, ends_on) + rule_permissions(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
     if bank is None:
         for rid, sev in (("BRN-R02", "medium"), ("BRN-R03", "medium")):
             f = _finding(rid, sev, {"type": "brand", "id": "question_bank", "label": "question bank"},

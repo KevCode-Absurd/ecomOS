@@ -159,6 +159,23 @@ def build(f: dict, nr: float | None) -> dict:
                         {"n": 3, "who": "person", "text": "Pick the record as proof, or approve the drafted fact as an approved record."},
                         {"n": 4, "who": "agent", "text": f"Attach it to the rung. The surfaces that use the rung ({surfaces or 'copy, page, listing, macro'}) read the proof on their next brief."}],
                  check_on=_check_on(f, 7), time_to_ship_hours=1)
+    elif rid == "BRN-R24":
+        r = f.get("router") or {}
+        a.update(title="Regenerate BRAIN.md" + (f" and fix {len(r.get('broken') or [])} broken link{'s' if len(r.get('broken') or []) != 1 else ''}" if r.get("broken") else ": the router no longer matches the records"), owner="agent",
+                 artefact={"kind": "brain_record", "label": "BRAIN.md rebuilt from the records, founder notes kept", "draft": None},
+                 steps=[{"n": 1, "who": "agent", "text": "Regenerate BRAIN.md from the records. The founder notes block is kept word for word."}]
+                       + ([{"n": 2, "who": "person", "text": "Create the missing files or point the rows at ones that exist: " + ", ".join(r["broken"][:3]) + "."}] if r.get("broken") else [])
+                       + [{"n": 3 if r.get("broken") else 2, "who": "agent", "text": "Run the self audit again. The finding resolves when no row drifts and every link resolves."}],
+                 check_on=_check_on(f, 7), time_to_ship_hours=0.5)
+    elif rid == "BRN-R25":
+        d = f.get("duplicates") or []
+        n = _ev(f, "duplicate_pairs") or len(d)
+        a.update(title=f"Retire {n} duplicate record{'s' if n != 1 else ''}, keeping the stronger of each pair", owner="agent",
+                 artefact={"kind": "brain_record", "label": "one active record per fact; the weaker twin retired to history", "draft": "\n".join(f"keep {x['keep']} ({x['keep_tier']}), retire {x['retire']} ({x['retire_tier']}): {x['match']}" for x in d[:8]) or None},
+                 steps=[{"n": 1, "who": "agent", "text": "List each pair with the record to keep (source rank, confidence, capture date) and the one to retire."},
+                        {"n": 2, "who": "person", "text": "Approve the list, or unpick a pair where both should stay."},
+                        {"n": 3, "who": "agent", "text": "Retire the weaker twins. Retire never deletes; the changes log keeps each."}],
+                 check_on=_check_on(f, 7), time_to_ship_hours=0.5)
     elif rid == "BRN-R21":
         a.update(title=f"Confirm or correct: {label}", owner="person",
                  artefact={"kind": "brain_record", "label": "your number as an approved record; the generator reads it next run", "draft": None},
