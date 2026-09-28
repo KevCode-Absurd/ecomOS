@@ -140,3 +140,23 @@ Known gaps from round 0:
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.9 | 2026-09-28 | S3.9; screenshot round0.png |
+
+
+## Round 1 candidates (ranked 28 Sep 2026 by the lead session)
+
+Ranked by revenue impact, usefulness to a founder deciding alone, and buildable on the simulated data. Kevin picked the 5 screens; the top 5 here are recommended for round 1. One feature per commit, this table updated in the same commit.
+
+| # | Feature | Capability | Why buildable now | Impact |
+|---|---|---|---|---|
+| 1.1 * | Margin waterfall per offer, revenue down to net, with a founder red line that blocks approval | MONEY-C05 | orders, discount codes and finance inputs exist | high |
+| 1.2 * | Free shipping threshold sensitivity: break-even recomputed live from AOV, margin and shipping cost, with the stale flag | MONEY-C05 | already a finding; make the inputs adjustable | high |
+| 1.3 * | Discount dependency trend over 12 months with the discount-creep rule | LIFE-C38 | discounted revenue share by month from orders | high |
+| 1.4 * | Bundle ladder funnel: share of orders per pack size with the cannibalization rule | LIFE-C39 | pack sizes in products and order_lines | high |
+| 1.5 * | Competitor price index from Amazon listings and Ad Library offers, plus MAP violation count | BRN-C11 | marketplaces records and learnings; signals only | medium |
+| 1.6 | Offer test backlog board wired to the experiment registry with the overlap check | LIFE-C47 | registry from screen 25 | medium |
+| 1.7 | Guarantee claim rate against the modelled 2 percent replacement rate | LIFE-C42 | reversed_orders replacements versus the brain's return_share_model | medium |
+| 1.8 | Gift card liability against redemption, on a fixture until the ledger connects | LIFE-C58 | gift cards exist in products; the ledger does not | low |
+| 1.9 | Upsell take rate by placement | LIFE-C41 | unavailable until the upsell app connects (Rebuy is in the stack) | low |
+| 1.10 | Referral CAC against paid CAC | LIFE-C45 | unavailable until a referral platform connects | low |
+
+\* recommended for round 1

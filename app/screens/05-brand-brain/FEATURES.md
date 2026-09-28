@@ -103,3 +103,23 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.10 | 2026-09-28 | Bombas brain (public sources); tests in tests/test_screen_brand_brain.py. No decisions, changes or contracts data yet, so those jobs wait for a later round. |
+
+
+## Round 1 candidates (ranked 28 Sep 2026 by the lead session)
+
+Ranked by revenue impact, usefulness to a founder deciding alone, and buildable on the simulated data. Kevin picked the 5 screens; the top 5 here are recommended for round 1. One feature per commit, this table updated in the same commit.
+
+| # | Feature | Capability | Why buildable now | Impact |
+|---|---|---|---|---|
+| 1.1 * | Freshness by confidence heatmap, one cell per section | BRN-C12 | freshness.json and confidence per record exist | high |
+| 1.2 * | Claims tier bar with approve and forbid buttons that write founder records | BRN-C03 | claims records and the founder-answer route exist; the QA gate reads tiers | high |
+| 1.3 * | Conflict table with the site-wins default and a founder-decides button | BRN-C05 | review/conflicts.json and founder resolution already work in merge | high |
+| 1.4 * | Decisions log timeline, most recent first, with reason and date | BRN-C08 | decisions section plus data/decisions.json | medium |
+| 1.5 * | Site diff: a second crawl compared to the first for products, prices, policies and claims | BRN-C01 | the site extractor exists; diff two runs | high |
+| 1.6 | Connector health from the onboarding log and sources, unavailable never zero | BRN-C02 | onboard.log.jsonl and sources.json | medium |
+| 1.7 | Marketplace parity strip: brand price against Amazon listing price and MAP per SKU | PROD-C46 | 34 Amazon listings in the brain; MAP is a founder record | medium |
+| 1.8 | Founder question round: 5 questions with pull-first hints and inline answers | BRN-C07 | keeper.ask exists; the answer route exists | medium |
+| 1.9 | Competitor snapshot age with a re-pull button that shows the Apify cost first | BRN-C11 | Ad Library by page id and the connector estimate | low |
+| 1.10 | Permission matrix: sections by role, restricted by default | LOOP-C29 | needs tenancy from stage 6; stub only | low |
+
+\* recommended for round 1

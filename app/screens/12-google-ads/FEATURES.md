@@ -124,3 +124,23 @@ Round 0 notes (28 Sep 2026, Bombas simulated, scale 0.1): R01, R02, R04 and R05 
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.9 | 2026-09-28 | S3.5 on Bombas simulated data |
+
+
+## Round 1 candidates (ranked 28 Sep 2026 by the lead session)
+
+Ranked by revenue impact, usefulness to a founder deciding alone, and buildable on the simulated data. Kevin picked the 5 screens; the top 5 here are recommended for round 1. One feature per commit, this table updated in the same commit.
+
+| # | Feature | Capability | Why buildable now | Impact |
+|---|---|---|---|---|
+| 1.1 * | Brand versus non-brand split with non-brand CPA against break-even CPA from margin | MONEY-C09 | campaign names split brand and non-brand; finance inputs give break-even | high |
+| 1.2 * | Scaling gate checklist: 5 gates as pass, fail or unavailable before any scale call | MEDIA-C41 | 4 gates computable today, 1 waits on Merchant Center | high |
+| 1.3 * | Channel-type funnel: Search, Shopping, PMax and YouTube spend and ROAS side by side | MEDIA-C02 | campaign_type is in the Google table | high |
+| 1.4 * | Google ROAS against blended MER, the same reconciliation as paid social | MONEY-C23 | orders plus Google spend | high |
+| 1.5 * | Budget sizing gauge from the brand's own AOV and non-brand CPA formula | MEDIA-C40 | AOV 73 and CPA exist; the range is a formula | medium |
+| 1.6 | Search terms waste table with a one-click negative, on a fixture until the report connects | MEDIA-C35 | fixture rows and an unavailable state; real terms need the Search terms report | medium |
+| 1.7 | PMax control flags: URL expansion, auto assets, final URL expansion in one view | MEDIA-C36 | settings fixture; unavailable until the account connects | medium |
+| 1.8 | Conversion value coverage: share of purchases passing real order value | MEDIA-C04 | GA4 capture rate is the analog in simulated data | medium |
+| 1.9 | Bid strategy ladder step bar with the volume needed for the next step | MEDIA-C39 | conversion volume by week exists | low |
+| 1.10 | Campaign purpose coverage: one written line per live campaign | MEDIA-C32 | founder records, one per campaign | low |
+
+\* recommended for round 1

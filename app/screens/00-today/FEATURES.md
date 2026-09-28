@@ -109,3 +109,23 @@ Round 0 notes (28 Sep 2026, Bombas simulated set):
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 28 Sep 2026 | skeleton on Bombas simulated data |
+
+
+## Round 1 candidates (ranked 28 Sep 2026 by the lead session)
+
+Ranked by revenue impact, usefulness to a founder deciding alone, and buildable on the simulated data. Kevin picked the 5 screens; the top 5 here are recommended for round 1. One feature per commit, this table updated in the same commit.
+
+| # | Feature | Capability | Why buildable now | Impact |
+|---|---|---|---|---|
+| 1.1 * | Stage waterfall with the break marked and money at stake on the label | DIAG-C01 | pipeline metrics exist; the chart makes the top break visible in one look | high |
+| 1.2 * | Gross versus net orders after expected returns and chargebacks, with the reversals-widening rule | LOOP-C23 | reversed_orders table; shows whether growth is real | high |
+| 1.3 * | Top 10 card stack: every screen's open findings ranked by money at stake, each with the 3-button decision row | PROP-C06 | the face of the audit to top 10 loop; audits exist on all 28 screens | high |
+| 1.4 * | Trend sparkline row per stage, 2-windows-running movers flagged | DIAG-C03 | 4 trailing windows already computed | medium |
+| 1.5 * | Reads due this week and experiment overlap, from the registry screen 25 seeded | REG-C02 | registry shape exists; overlap check is a pairwise rule | medium |
+| 1.6 | Goal gap by stage against a founder-stated period goal | DIAG-C01 | needs one founder record per goal; calibration gives defaults | medium |
+| 1.7 | Same-day trigger ticker for founder-set hard thresholds | LOOP-C40 | config file of triggers; daily data only, so it reads yesterday | medium |
+| 1.8 | Unreadable stage rule: a stage with a failed or late connector reads unavailable, never healthy | DIAG-C02 | connector freshness from the brain sources | medium |
+| 1.9 | Seasonal deadline countdown from the brain calendar (Q4 prep items) | LOOP-C05 | calendar records exist; prep items need a founder list | low |
+| 1.10 | External cause check against a dated events table (platform changes, outages, holidays) | LOOP-C02 | fixture table first; a feed later | low |
+
+\* recommended for round 1

@@ -135,3 +135,23 @@ Goal: profitable new-customer acquisition at target CAC and MER, with retention 
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 28 Sep 2026 | skeleton on Bombas simulated data |
+
+
+## Round 1 candidates (ranked 28 Sep 2026 by the lead session)
+
+Ranked by revenue impact, usefulness to a founder deciding alone, and buildable on the simulated data. Kevin picked the 5 screens; the top 5 here are recommended for round 1. One feature per commit, this table updated in the same commit.
+
+| # | Feature | Capability | Why buildable now | Impact |
+|---|---|---|---|---|
+| 1.1 * | Kill, keep, scale table at ad set level with verdict chips, ranked by spend at risk | MEDIA-C17 | ad_rows has ad set daily spend and value; the rule is fixed at 3x to 5x target CPA | high |
+| 1.2 * | MER bridge: Meta ROAS next to blended MER from the brand's own orders and contribution margin, with the disagreement rule | MONEY-C23 | orders and finance inputs exist; the reconciliation before any scale call | high |
+| 1.3 * | Pacing gauge: month-to-date spend against budget with an end-of-month MER forecast | MEDIA-C46 | spend by day exists; budget is a founder record | high |
+| 1.4 * | Frequency by segment small multiples, with the frequency-rising-reach-flat rule | CREA-C15 | impressions and reach by ad set in ad_rows | medium |
+| 1.5 * | Anomaly strip with root-cause fan-out to same-day site speed, stock and competitor activity | MEDIA-C68 | speed_runs, inventory and Ad Library learnings are all in the data layer | high |
+| 1.6 | Scaling into a stockout: Scale ad sets checked against days of cover for the featured product | MEDIA-C42 | inventory table plus the ad's product line | medium |
+| 1.7 | Creative volume against the 1,000-dollars-of-spend benchmark | CREA-C18 | first date per creative_id in ad_rows | medium |
+| 1.8 | Existing-customer spend share and DPA in its own capped ad set | MEDIA-C20 | campaign names carry the structure in the generator | medium |
+| 1.9 | Competitor discount overlap from Ad Library offers seen, signals only | BRN-C11 | brain learnings and offers from the 13-page pull | low |
+| 1.10 | Founder-gate queue: every waiting decision in one list with the decision row | ORCH-C03 | decisions log exists | low |
+
+\* recommended for round 1
