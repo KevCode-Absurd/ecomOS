@@ -514,7 +514,8 @@ def recipe(f):
                 {'n': 2, 'who': 'agent', 'text': 'Draft the page from the brain: the answer in the buyer\'s words, the proof, the product it leads to, approved claims only.'},
                 {'n': 3, 'who': 'person', 'text': 'Approve the copy and the claims. Landing pages ship it; SEO sets the internal links.'},
                 {'n': 4, 'who': 'agent', 'text': 'Read at 28 days: impressions, clicks and position for the group against this window.'}],
-            'size': {'text': f'{_ev_value(f, "impressions"):,} impressions, {_ev_value(f, "clicks"):,} clicks in 28 days with no page', 'usd': None},
+            'size': {'text': (f'{_ev_value(f, "impressions"):,} impressions, {_ev_value(f, "clicks"):,} clicks in 28 days with no page'
+                              if _ev_value(f, 'impressions') is not None and _ev_value(f, 'clicks') is not None else 'demand unavailable, no page'), 'usd': None},
             'stop_rule': 'stop if clicks on the group do not rise within 2 windows; keep the page if position improves',
             'check_on': _check_on(f, 28), 'time_to_ship_hours': 8,
             'win_rule': 'clicks on the group up 20 percent over the next 28 days, or position under 10',
@@ -548,6 +549,21 @@ def rank_mod_money(m):
     return f'${usd:,.0f}' if isinstance(usd, (int, float)) else 'stake unavailable'
 
 
+# Rubric overrides the audit docstring declares per rule (depth.md section 4: a screen may raise reputation or
+# satisfaction for a specific rule; it may not change the weights).
+RUBRIC_OVERRIDES = {'PROD-R07': {'reputation': 4}, 'PROD-R09': {'reputation': 5}, 'PROD-R11': {'satisfaction': 4}}
+
+
+def rescore(a, f, nr):
+    """The rubric from the finding, the ease from the owner the recipe set, the overrides from the audit, the total recomputed."""
+    r = rank_mod.score(f, nr)
+    r['ease'] = {'agent': 5, 'agent_drafts': 4, 'person': 3}[a['owner']] if f.get('status') != 'unavailable' else 1
+    for k, v in RUBRIC_OVERRIDES.get(f.get('rule_id'), {}).items():
+        r[k] = max(r[k] if r[k] is not None else 0, v)
+    r['total'] = round(sum(rank_mod.WEIGHTS[k] * (r[k] if r[k] is not None else 2.5) / 5 for k in rank_mod.WEIGHTS), 1)
+    return r
+
+
 def rank(brand, window=None):
     """Depth contract section 5: every audit finding becomes an action with an owner, steps and an artefact."""
     window = window or rank_mod.default_window()
@@ -566,12 +582,7 @@ def rank(brand, window=None):
                           {'n': 3, 'who': 'agent', 'text': 'Run PROD-R13 on the brand, category, competitor and problem term groups and report the gaps here.'}]
         if r:
             a.update({k: v for k, v in r.items() if v is not None})
-            a['rubric'] = rank_mod.score(dict(f, capability=f.get('capability')), nr)
-            # the owner the recipe set decides ease, as the rubric table says
-            ease = {'agent': 5, 'agent_drafts': 4, 'person': 3}[a['owner']]
-            a['rubric']['ease'] = ease
-            a['rubric']['total'] = round(sum(rank_mod.WEIGHTS[k] * (a['rubric'][k] if a['rubric'][k] is not None else 2.5) / 5
-                                             for k in rank_mod.WEIGHTS), 1)
+        a['rubric'] = rescore(a, f, nr)
         a['screen'] = SCREEN
         if not rank_mod.validate_action(a):
             actions.append(a)

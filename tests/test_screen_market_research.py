@@ -498,6 +498,35 @@ class RankTest(unittest.TestCase):
             self.assertTrue(a.get('stop_rule') or a.get('win_rule'), a['id'])
             self.assertTrue(a['artefact']['label'])
 
+    def test_rubric_overrides_from_the_audit_docstring(self):
+        acts = {a['rule_id']: a for a in self.actions()}
+        if 'PROD-R09' in acts:
+            self.assertEqual(acts['PROD-R09']['rubric']['reputation'], 5)
+        if 'PROD-R11' in acts:
+            self.assertGreaterEqual(acts['PROD-R11']['rubric']['satisfaction'], 4)
+        for a in self.actions():
+            r = a['rubric']
+            total = round(sum(api.rank_mod.WEIGHTS[k] * (r[k] if r[k] is not None else 2.5) / 5 for k in api.rank_mod.WEIGHTS), 1)
+            self.assertEqual(r['total'], total, a['id'])
+            self.assertEqual(r['ease'], {'agent': 5, 'agent_drafts': 4, 'person': 3}[a['owner']] if a['status'] != 'unavailable' else 1)
+
+    def test_every_rule_has_a_recipe_or_a_connect_action(self):
+        """depth.md rule 2 on every rule id the audit declares, on synthetic findings where Bombas does not fire them."""
+        for rule in audit.RULES:
+            f = {'id': f'01-market-research.{rule["rule_id"]}.x', 'screen': '01-market-research', 'rule_id': rule['rule_id'], 'severity': 'medium',
+                 'entity': {'type': rule['entity_type'], 'id': 'x', 'label': 'X (product line)', 'category': 'socks'}, 'evidence': [], 'sentence': 's',
+                 'capability': dict(audit.CAPABILITY[rule['rule_id']]), 'money_at_stake': None, 'money_reason': 'test', 'confidence': 0.5, 'brain_refs': [],
+                 'first_seen': '2026-09-27', 'last_seen': '2026-09-27', 'status': 'open', 'unavailable': None}
+            r = api.recipe(f)
+            if rule['rule_id'] == 'PROD-R12':
+                self.assertIsNone(r)   # a connect rule: the engine's connect action, retitled in rank
+                continue
+            self.assertIsNotNone(r, rule['rule_id'])
+            self.assertTrue(2 <= len(r['steps']) <= 8, rule['rule_id'])
+            self.assertIn(r['artefact']['kind'], api.rank_mod.ARTEFACT_KINDS, rule['rule_id'])
+            self.assertIn(r['owner'], ('agent', 'agent_drafts', 'person'))
+            self.assertTrue(r.get('stop_rule') and r.get('win_rule') and r.get('check_on'), rule['rule_id'])
+
     def test_deterministic_order(self):
         a = [x['id'] for x in self.actions()]
         b = [x['id'] for x in self.actions()]
