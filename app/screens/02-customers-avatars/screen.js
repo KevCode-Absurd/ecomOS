@@ -8,7 +8,7 @@
   const BRAND = (() => { try { return new URLSearchParams(location.search).get('brand') || ''; } catch (e) { return ''; } })();
   const api = (u, o) => UI.api(BRAND && u.startsWith('/api/02-') ? u + (u.includes('?') ? '&' : '?') + 'brand=' + encodeURIComponent(BRAND) : u, o);
   const SLUG = '02-customers-avatars';
-  const SNOOZE = { days: null };   // from the api: the shared snooze days
+  const SNOOZE = { days: null, brand: null, isDefault: false };   // from the api: snooze days, this brand, whether it is the server's default
   // every chart names the decision it changes (depth.md anti-pattern: charts for their own sake)
   const DECIDES = {
     cohort: 'Decides: the day of the second-order email, the day win-back starts, and the month to plan a return for.',
@@ -1029,6 +1029,7 @@
     let rows = [];
     try { const r = await api('/api/decisions?screen=' + SLUG); rows = Array.isArray(r) ? r : (r.decisions || r.rows || []); }
     catch (e) { mount('#decided', el('p', { class: 'muted small', text: 'Decisions log unavailable: ' + e.message })); return; }
+    rows = rows.filter((r) => r.brand ? r.brand === SNOOZE.brand : SNOOZE.isDefault);   // this brand only; no brand means the default brand
     const byId = {}; for (const a of actions) byId[a.id] = a;
     rows = rows.filter((d) => d.screen === SLUG).slice().reverse();
     const counts = rows.reduce((o, d) => { o[d.choice] = (o[d.choice] || 0) + 1; return o; }, {});
@@ -1144,6 +1145,7 @@
     }
     mount('#badge', el('span', null, el('b', { text: 'Simulated data. ' }), d.simulated_note));
     SNOOZE.days = d.snooze_days;
+    SNOOZE.brand = d.brand; SNOOZE.isDefault = d.is_default_brand;
     r.snoozed = (r.actions || []).filter((x) => x.status === 'snoozed');
     r.actions = (r.actions || []).filter((x) => x.status !== 'snoozed');
     renderPlan(d, r);

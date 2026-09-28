@@ -2660,3 +2660,27 @@ class SendToTeams(unittest.TestCase):
         self.assertFalse((ROOT / 'app' / 'data' / 'handoffs.json').exists() and
                          any(x.get('from_screen') == '02-customers-avatars'
                              for x in json.loads((ROOT / 'app' / 'data' / 'handoffs.json').read_text(encoding='utf-8'))))
+
+
+class DecisionsByBrand(unittest.TestCase):
+    """Feature 11.2: each brand reads only its own decisions; a row with no brand is the default brand's."""
+
+    def setUp(self):
+        self.dtmp = Path(tempfile.mkdtemp())
+        api.DECISIONS_PATH = self.dtmp / 'decisions.json'
+
+    def tearDown(self):
+        api.DECISIONS_PATH = None
+        shutil.rmtree(self.dtmp, ignore_errors=True)
+
+    def test_brand_filter(self):
+        a = api.rank('bombas', RANK_WINDOW)['actions'][0]
+        api.DECISIONS_PATH.write_text(json.dumps([
+            {'finding_id': a['id'], 'choice': 'not_now', 'time': '2026-09-27T09:00:00Z', 'brand': 'example'},
+            {'finding_id': a['id'], 'choice': 'person', 'time': '2026-09-26T09:00:00Z'},
+        ]), encoding='utf-8')
+        got = {x['id']: x for x in api.rank('bombas', RANK_WINDOW)['actions']}[a['id']]
+        self.assertEqual(got['decision']['choice'], 'person')
+        self.assertNotEqual(got['status'], 'snoozed')
+        self.assertEqual(api.decisions_for('example', api.DECISIONS_PATH)[a['id']]['choice'], 'not_now')
+        self.assertEqual(api.decisions_for('nobody', api.DECISIONS_PATH), {})

@@ -60,8 +60,11 @@ builds = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(builds)
 
 
+DEFAULT_BRAND = "bombas"   # the server's default brand; a decision with no brand field is read as its (server.py)
+
+
 def _brain(req) -> Brain:
-    brand = req.arg("brand", "bombas")
+    brand = req.arg("brand", DEFAULT_BRAND)
     if not SAFE_BRAND.match(brand):
         raise ValueError("bad brand")
     t = req.arg("today")
@@ -491,6 +494,7 @@ def _build_overview_raw(brain: Brain) -> dict:
     out["compare"] = builds.compare_rows(out)
     out["blocks"] = builds.block_notes(out)
     out["snooze_days"] = _engine().SNOOZE_DAYS
+    out["is_default_brand"] = brain.brand == DEFAULT_BRAND   # decisions with no brand field belong to the default brand
     w = {"ends_on": out["ends_on"], "days": 28, "trailing": 4}
     acts = rank(brain.brand, w)["actions"]
     builds.size_moves(out, {a["plan_id"]: a for a in acts if a.get("plan_id")})
@@ -735,19 +739,36 @@ def rank(brand: str, window: dict) -> dict:
             _RANK_CACHE.pop(next(iter(_RANK_CACHE)))
         _RANK_CACHE[key] = _build_rank(brand, window)
     out = copy.deepcopy(_RANK_CACHE[key])
-    apply_decisions(out["actions"], dt.date.fromisoformat(window["ends_on"]) + dt.timedelta(days=1))
+    apply_decisions(out["actions"], dt.date.fromisoformat(window["ends_on"]) + dt.timedelta(days=1), brand)
     return out
 
 
 DECISIONS_PATH = None   # None reads the shared log, app/data/decisions.json; tests point it at a temp file
 
 
-def apply_decisions(actions: list[dict], today: dt.date) -> None:
+def decisions_for(brand: str, path) -> dict:
+    """The decisions log for one brand, keyed by finding id, the latest row winning. A row with no brand field is the
+    default brand's, as the server reads it."""
+    import json
+    try:
+        rows = json.loads(Path(path).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    out = {}
+    for r in rows if isinstance(rows, list) else []:
+        if (r.get("brand") or DEFAULT_BRAND) != brand or not r.get("finding_id"):
+            continue
+        if r["finding_id"] not in out or str(r.get("time") or "") >= str(out[r["finding_id"]].get("time") or ""):
+            out[r["finding_id"]] = r
+    return out
+
+
+def apply_decisions(actions: list[dict], today: dt.date, brand: str = DEFAULT_BRAND) -> None:
     """Depth rule 14: the latest founder decision on any finding an action carries shows on the action with its date.
     "Not now" snoozes it for the shared snooze days: status snoozed, with the day it comes back. Read fresh on every call,
     after the cache, so a decision shows on the next load."""
     eng = _engine()
-    dec = eng.decisions_by_finding(DECISIONS_PATH or eng.DECISIONS)
+    dec = decisions_for(brand, DECISIONS_PATH or eng.DECISIONS)
     for a in actions:
         rows = [dec[f] for f in [a["id"]] + list(a.get("finding_ids") or []) if f in dec]
         if not rows:
