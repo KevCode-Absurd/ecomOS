@@ -2932,6 +2932,52 @@ class Round8QuizAndSchedule(TempBrain):
         self.assertEqual(api.handle(Req(['schedule'], 'POST', body={'weekday': 'x'}))[0], 400)
 
 
+class Round8SourceApprove(TempBrain):
+    """Round 8 feature 8: approve a whole source after a review."""
+
+    def _site_ref(self):
+        sr = api.handle(Req(['sources']))
+        g = next(g for g in sr['sources'] if g['type'] == 'site' and g['approvable'] >= 2)
+        return g, sr
+
+    def test_plan_then_approve_keeps_source_and_history(self):
+        g, sr = self._site_ref()
+        self.assertGreater(sr['counts']['approvable'], 0)
+        self.assertEqual(sr['counts']['reviewed'], 0)
+        pl = api.handle(Req(['sources', 'approve'], query={'ref': [g['ref']]}))
+        self.assertEqual(pl['counts']['records'], g['approvable'])
+        self.assertIsNone(pl['reviewed'])
+        self.assertTrue(all(r['tier_before'] in ('site_backed', 'reported', 'evidence', 'inferred', 'unverified') for r in pl['records']))
+        status, r = api.handle(Req(['sources', 'approve'], 'POST', body={'ref': g['ref'], 'note': 'Read the page on 28 Sep; every line still holds.'}))
+        self.assertEqual((status, r['counts']['written'], r['errors']), (201, g['approvable'], []))
+        self.assertEqual(r['review'], 'bombas.team.source_review_001')
+        sec = pl['records'][0]['section']
+        rec = next(x for x in self.section(sec) if x['id'] == pl['records'][0]['id'])
+        self.assertEqual((rec['tier'], rec['confidence'], rec['source']['type'], rec['source']['was']['ref'].split('?')[0], rec['source']['was']['tier']), ('approved', 1.0, 'founder', g['ref'], pl['records'][0]['tier_before']))
+        self.assertEqual(rec['history'][-1]['reason'], 'founder approve after source review')
+        self.assertNotIn('expires_at', rec)
+        sr2 = api.handle(Req(['sources']))
+        g2 = next(x for x in sr2['sources'] if x['ref'] == g['ref'])
+        self.assertEqual((g2['approvable'], g2['reviewed_on'], sr2['counts']['reviewed']), (0, '2026-09-28', 1))
+        team = next(x for x in self.section('team') if x['field'] == 'source_review_001')
+        self.assertEqual((team['value']['ref'], len(team['value']['records'])), (g['ref'], g['approvable']))
+        self.assertIn('every line still holds', team['text'])
+        ch = api.handle(Req(['changes']))['changes']
+        self.assertTrue(any(c['kind'] == 'approve' and 'approved after review' in c['what'] for c in ch))
+        self.assertTrue(any(c['kind'] == 'source_review' for c in ch))
+        status, again = api.handle(Req(['sources', 'approve'], 'POST', body={'ref': g['ref']}))
+        self.assertEqual(status, 400)
+        self.assertEqual(api.handle(Req(['sources', 'approve'], query={'ref': [g['ref']]}))['reviewed']['on'], '2026-09-28')
+
+    def test_sections_filter_and_missing_ref(self):
+        g, _ = self._site_ref()
+        secs = [s for s, n in g['sections']]
+        pl = api.handle(Req(['sources', 'approve'], query={'ref': [g['ref']], 'sections': [secs[0]]}))
+        self.assertTrue(all(r['section'] == secs[0] for r in pl['records']))
+        self.assertEqual(api.handle(Req(['sources', 'approve']))[0], 400)
+        self.assertEqual(api.handle(Req(['sources', 'approve'], 'POST', body={'ref': 'nothing-here'}))[0], 400)
+
+
 class Round8Contradictions(TempBrain):
     """Round 8 feature 7: a contradiction check before a write."""
 

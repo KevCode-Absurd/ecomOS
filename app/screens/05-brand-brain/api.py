@@ -17,6 +17,8 @@ question, and accept or ignore on a proposed record. Nothing external.
   POST round/tick               {key, done}: tick or untick an item; POST round/close closes the round with one dated decision
   GET  trust/history            the trust number per day since the first run (the chart), optional ?sections=
   GET  sources                  where every fact came from: one row per source reference with sections, tiers, dates
+  GET  sources/approve          ?ref=&sections=: the records one source would approve, with the tier each has now
+  POST sources/approve          {ref, sections, note}: approve every record from a source after reading it; logged once, review record on team
   GET  records/csv              every active record as CSV (?retired=1 includes retired)
   GET  trust                    section trust, explained: strong, fresh, reviewed, owned, weighted, with the formula
   GET  proofs                   proof requests for claims below approved, ranked by the doubts they answer, drafted
@@ -2183,6 +2185,34 @@ def handle(req):
         h = trusthistory.series(brain, secs)
         h.update(brand=brain.brand, today=brain.today.isoformat())
         return h
+    if req.method == "GET" and parts == ["sources", "approve"]:
+        ref = (req.arg("ref") or "").strip()
+        if not ref:
+            return 400, {"error": "ref is the source reference to review"}
+        secs = [x for x in (req.arg("sections") or "").split(",") if x]
+        plan = sources_mod.approve_source(brain, ref, secs or None, "")
+        return {"ref": ref, "counts": plan["counts"], "records": [{"id": r["id"], "section": r["section"], "tier_before": (r["history"][-1].get("tier")), "text": str(r.get("text") or r.get("value"))[:140]} for r in plan["records"]][:200],
+                "reviewed": sources_mod.reviews(brain).get(sources_mod._key(ref)), "capability": {"id": "BRN-C07", "autonomy": "founder_gate"},
+                "note": "Read the source, then approve every record it filled in one step. Each record keeps its source and its old tier in history; a review record on the team section says when and why."}
+    if req.method == "POST" and parts == ["sources", "approve"]:
+        body = req.body or {}
+        ref = str(body.get("ref") or "").strip()
+        if not ref:
+            return 400, {"error": "ref is the source reference to approve"}
+        secs = [str(x) for x in (body.get("sections") or []) if x] or None
+        plan = sources_mod.approve_source(brain, ref, secs, str(body.get("note") or ""))
+        if not plan["records"]:
+            return 400, {"error": "nothing to approve from that source: every record is already approved, forbidden or retired", "ref": ref}
+        before_v = brain.version()
+        written, errors = [], []
+        for r in plan["records"]:
+            errs = brain.put(r)
+            (errors if errs else written).append({"id": r["id"], "errors": errs} if errs else r["id"])
+        changes.log(brain, "approve", None, plan["review"]["id"], f"{len(written)} record{'s' if len(written) != 1 else ''} from {sources_mod._key(ref)} approved after review" + (f": {str(body.get('note'))[:80]}" if body.get("note") else ""))
+        changes.version_step(brain, before_v, f"source review {sources_mod._key(ref)}")
+        rerrs = founder_put(brain, plan["review"], "source_review", plan["review"]["text"][:160])
+        return 201, {"ok": True, "ref": sources_mod._key(ref), "approved": written, "errors": errors, "counts": dict(plan["counts"], written=len(written)), "review": None if rerrs else plan["review"]["id"], "version": brain.version(),
+                     "next": f"{len(written)} record{'s' if len(written) != 1 else ''} now approved. Every package and brain file reads them as approved from now."}
     if req.method == "GET" and parts == ["sources"]:
         sr = sources_mod.register(brain)
         sr.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "BRN-C02", "autonomy": "agent_does"})
