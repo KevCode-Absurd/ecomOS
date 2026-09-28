@@ -87,6 +87,8 @@ class Ctx:
         self.loyalty = audit.loyalty(rd)
         self.depth_history = audit.depth_history(rd)
         self.bundles = audit.bundle_pairs(rd)
+        self.plans = _load('offers_pricing_approvals', HERE / 'approvals.py').planned(rd) if rd.brand else {}
+        self.proposed_rows = (_load('offers_pricing_approvals', HERE / 'approvals.py').outbox_rows(rd.brand) if rd.brand else [])
         self.registry = model.registry(rd, playbook.REGISTRY_SURFACES, playbook.PRICE_TEST_WORDS)
         self.ship_rate = (model.brain_value(rd, 'offers.standard_shipping_cost')[0] or {}).get('cost_usd') if rd.brand else None
         self.scenarios = (model.threshold_scenarios(rd, self.threshold, self.ship_rate, self.be['value'], (self.po or {}).get('units') or 1)
@@ -549,7 +551,9 @@ def test_calendar(actions, ctx):
             busy.append((e['surface'], date.fromisoformat(e['start'] or ctx.end.isoformat()), date.fromisoformat(e['until']),
                          f'{e["id"]} (running)'))
     rows = []
-    for a in actions:
+    # approved moves (an active plan record in the brain) take their surfaces first, then the rest in plan order
+    order = sorted(actions, key=lambda a: 0 if (ctx.plans.get(a['id']) or {}).get('status') == 'active' else 1)
+    for a in order:
         sf_list, days = surfaces(a) if a.get('status') == 'open' else (None, None)
         if not sf_list:
             continue
@@ -576,6 +580,7 @@ def test_calendar(actions, ctx):
             busy.append((sf, start, end, a['title']))
         freeze_hit = any(w in [f[2] for f in freeze] for w in waits)
         rows.append({'id': a['id'], 'title': a['title'], 'surfaces': sf_list, 'days': days, 'start': start.isoformat(),
+                     'approved': (ctx.plans.get(a['id']) or {}).get('status') == 'active',
                      'status': 'waits' if waits and not freeze_hit else 'after_freeze' if freeze_hit else 'ready',
                      'end': end.isoformat(), 'waits_for': list(dict.fromkeys(waits)), 'owner': a['owner']})
     return rows
@@ -1162,5 +1167,5 @@ def rank(brand='bombas', window=None, data=None):
     return {'screen': SCREEN, 'brand': brand, 'window': w, 'simulated': True, 'net_revenue_28d': nr,
             'actions': actions, 'findings': findings, 'objections': ctx.objections, 'returns': returns_block(rd),
             'ladder': dict(ctx.ladder, moves=ctx.ladder_rows), 'first_order': ctx.first_order, 'waterfalls': ctx.waterfalls, 'calendar': ctx.calendar, 'gifting': ctx.gifting, 'guarantee': ctx.guarantee, 'position': ctx.position, 'parity': ctx.parity,
-            'discipline': dict(ctx.discipline, policy=discount_policy(ctx), windows=ctx.depth_history, window_creep_points=playbook.WINDOW_CREEP_POINTS), 'cart': ctx.cart, 'tests': calendar, 'depth': ctx.depth, 'cohorts': ctx.cohorts, 'costs': ctx.costs, 'registry': ctx.registry, 'referral': ctx.referral, 'loyalty': ctx.loyalty, 'bundles': ctx.bundles,
+            'discipline': dict(ctx.discipline, policy=discount_policy(ctx), windows=ctx.depth_history, window_creep_points=playbook.WINDOW_CREEP_POINTS), 'cart': ctx.cart, 'tests': calendar, 'depth': ctx.depth, 'cohorts': ctx.cohorts, 'costs': ctx.costs, 'registry': ctx.registry, 'referral': ctx.referral, 'loyalty': ctx.loyalty, 'bundles': ctx.bundles, 'proposed_tests': ctx.proposed_rows,
             'subscription': model.subscription_note(rd, ctx.cohorts, (ctx.depth or {}).get('rows'), (ctx.depth or {}).get('target'))}

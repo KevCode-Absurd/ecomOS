@@ -1236,5 +1236,36 @@ class BundlePairsTest(unittest.TestCase):
             self.assertEqual(f['status'], 'unavailable')
 
 
+class ApprovedFirstTest(unittest.TestCase):
+    """Round 4 feature 5: an approved move takes its surface first in the test calendar."""
+
+    def test_approved_first(self):
+        out = api.actions.rank('bombas')
+        tests = out['tests']
+        # pick the later of two moves that share a surface and mark it approved
+        by_sf = {}
+        for t in tests:
+            for sf in t['surfaces']:
+                by_sf.setdefault(sf, []).append(t)
+        pair = next((v for v in by_sf.values() if len(v) >= 2), None)
+        if not pair:
+            return
+        late = max(pair, key=lambda t: t['start'])
+        ctx_plans = {late['id']: {'status': 'active'}}
+        orig = api.actions.Ctx.__init__
+
+        def init(self, rd):
+            orig(self, rd)
+            self.plans = ctx_plans
+        api.actions.Ctx.__init__ = init
+        try:
+            again = api.actions.rank('bombas')['tests']
+        finally:
+            api.actions.Ctx.__init__ = orig
+        moved = next(t for t in again if t['id'] == late['id'])
+        self.assertTrue(moved['approved'])
+        self.assertLessEqual(moved['start'], min(t['start'] for t in again if set(t['surfaces']) & set(moved['surfaces'])))
+
+
 if __name__ == '__main__':
     unittest.main()
