@@ -426,5 +426,41 @@ class FirstOrderTest(unittest.TestCase):
         self.assertTrue(best['keeps_price'])
 
 
+class WaterfallTest(unittest.TestCase):
+    """Round 1 feature 6: margin waterfall per offer and the red line."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.out = api.actions.rank('bombas')
+        cls.falls = cls.out['waterfalls']
+
+    def test_steps_add_up(self):
+        self.assertTrue(self.falls)
+        for w in self.falls:
+            st = {s['label']: s['value'] for s in w['steps']}
+            if w['missing']:
+                self.assertIsNone(w['contribution'])
+                continue
+            downs = sum(s['value'] for s in w['steps'] if s['kind'] == 'down' and s['label'] not in ('Discount', 'Paid media'))
+            self.assertAlmostEqual(w['price_paid'], round(st['List price'] - st['Discount'], 2))
+            self.assertAlmostEqual(w['before_media'], round(w['price_paid'] - downs, 2), places=1)
+            self.assertAlmostEqual(w['contribution'], round(w['before_media'] - st['Paid media'], 2))
+
+    def test_red_line_rule(self):
+        pb = audit._playbook()
+        for w in self.falls:
+            if w['key'].startswith('first_'):
+                self.assertEqual(w['red_line'], pb.RED_LINE_FIRST_ORDER)
+                self.assertEqual(w['clears'], w['contribution'] >= pb.RED_LINE_FIRST_ORDER)
+        under = {w['key'] for w in self.falls if w['status'] == 'live' and w['clears'] is False}
+        fired = {f['entity']['id'] for f in self.out['findings'] if f['rule_id'] == 'OFFER-R10'}
+        self.assertEqual(under, fired)
+        covered = {fid for a in self.out['actions'] for fid in a['finding_ids']}
+        for f in self.out['findings']:
+            if f['rule_id'] == 'OFFER-R10':
+                self.assertIn(f['id'], covered)
+                self.assertNotIn('$-', f['sentence'])
+
+
 if __name__ == '__main__':
     unittest.main()

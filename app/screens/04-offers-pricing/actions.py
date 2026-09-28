@@ -70,6 +70,7 @@ class Ctx:
         self.objections = objection_map(rd)
         self.ladder, self.ladder_rows = audit.ladder_moves(rd)
         self.first_order = audit.first_order(rd)
+        self.waterfalls = audit.offer_waterfalls(rd, self.objections)
         self.ship_rate = (model.brain_value(rd, 'offers.standard_shipping_cost')[0] or {}).get('cost_usd') if rd.brand else None
         self.scenarios = (model.threshold_scenarios(rd, self.threshold, self.ship_rate, self.be['value'], (self.po or {}).get('units') or 1)
                           if self.threshold is not None and self.be.get('value') is not None else [])
@@ -353,6 +354,37 @@ def ladder_group_action(members, rows, verdict, ctx):
     return a
 
 
+def red_line_action(f, a, ctx):
+    w = next((x for x in ctx.waterfalls if x['key'] == f['entity']['id']), None)
+    a.update({
+        'title': f'Reprice {f["entity"]["label"].lower()}: it is under the red line',
+        'owner': 'agent_drafts',
+        'artefact': {'kind': 'price_change', 'label': f'Price or offer change for {f["entity"]["label"].lower()}',
+                     'draft': '\n'.join(['Margin check: ' + f['entity']['label']] +
+                                         [f'{st["label"]}: {money(st["value"])}' for st in (w or {}).get('steps', [])] +
+                                         ['Change the discount, the item or the media behind it until it clears the red line.'])},
+        'steps': steps(('agent', 'Rebuild the waterfall with the costs in force today.'),
+                       ('agent', 'Draft the smallest price or offer change that clears the red line.'),
+                       ('person', 'Approve the change. Nothing ships before that.'),
+                       ('agent', f'Re-run the check on {ctx.check_on(28)}.')),
+        'stop_rule': 'Contribution after media under the red line for 2 weeks after the change.',
+        'win_rule': 'Contribution after media at or over the red line.', 'check_on': ctx.check_on(28), 'time_to_ship_hours': 4})
+    return a
+
+
+def merge_red_line(actions):
+    """A live first-order offer under the red line is fixed by the first-order test: one action, both findings."""
+    fo = next((a for a in actions if a.get('rule_id') == 'OFFER-R08'), None)
+    keep = []
+    for a in actions:
+        if fo and a.get('rule_id') == 'OFFER-R10' and a['entity']['id'].startswith('first_'):
+            fo['finding_ids'] = fo['finding_ids'] + a['finding_ids']
+            fo['why'] = fo['why'] + ' ' + a['why']
+            continue
+        keep.append(a)
+    return keep
+
+
 def merge_ladder(actions, ctx):
     rows = {r['line']: r for r in ctx.ladder_rows}
     keep, groups = [], {}
@@ -383,7 +415,8 @@ def rescore(a, dims):
     return a
 
 
-BUILDERS = {'OFFER-R01': threshold_action, 'OFFER-R04': rung_action, 'OFFER-R08': first_order_action}
+BUILDERS = {'OFFER-R01': threshold_action, 'OFFER-R04': rung_action, 'OFFER-R08': first_order_action,
+            'OFFER-R10': red_line_action}
 
 
 def build(f, rd, ctx, nr):
@@ -414,9 +447,9 @@ def rank(brand='bombas', window=None):
     ctx = Ctx(rd)
     nr = RANK.net_revenue_28d(brand, w)
     actions = [build(f, rd, ctx, nr) for f in findings if f.get('status') in ('open', 'unavailable', None)]
-    actions = merge_ladder(actions, ctx)
+    actions = merge_red_line(merge_ladder(actions, ctx))
     actions = [a for a in actions if not RANK.validate_action(a)]
     actions.sort(key=RANK.sort_key)
     return {'screen': SCREEN, 'brand': brand, 'window': w, 'simulated': True, 'net_revenue_28d': nr,
             'actions': actions, 'findings': findings, 'objections': ctx.objections, 'returns': returns_block(rd),
-            'ladder': dict(ctx.ladder, moves=ctx.ladder_rows), 'first_order': ctx.first_order}
+            'ladder': dict(ctx.ladder, moves=ctx.ladder_rows), 'first_order': ctx.first_order, 'waterfalls': ctx.waterfalls}

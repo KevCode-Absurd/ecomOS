@@ -462,3 +462,55 @@ def first_order_options(rd, options, pack=None, end=None):
             'basis': ('The average order at list price, 28 days; landed cost from the cogs ratio; the label stays with '
                       'the brand. The line counts after discount: an offer that takes the basket under it is flagged, '
                       'because the shopper then pays shipping or adds an item')}
+
+
+# ---------------------------------------------------------------- margin waterfall per offer
+
+def waterfall(rd, list_price, discount=0.0, cogs=None, units=1.0, extra_item=0.0, extra_units=0, ships_free=True,
+              shipping_charged=0.0, media=None, claim=None, end=None):
+    """One order from list price down to contribution after media. Each step is a cost from finance_inputs or a
+    brain model rate, named with its source. A missing input makes its step and every total after it unavailable.
+    claim: (rate, cost per claim) for a promise that adds claims on top of the modelled returns."""
+    end = end or rd.ends_on
+    price = list_price - discount
+    rm, rm_rec = brain_value(rd, 'economics.return_share_model')
+    rm = rm if isinstance(rm, dict) else {}
+    refund = (rm.get('refund_pct') or 0) / 100 if rm else None
+    replace = (rm.get('replacement_under_guarantee_pct') or 0) / 100 if rm else None
+    proc = fin_value(rd, 'returns_processing', end)
+    repl = claim_cost(rd, 'replacement', end).get('value')
+    label = label_average(rd, end)
+    pick = fin_value(rd, 'threepl_pick_pack', end, unit='usd_per_order')
+    pick_unit = fin_value(rd, 'threepl_pick_pack', end, unit='usd_per_unit') or 0
+    pack = fin_value(rd, 'packaging', end)
+    fee_pct = fin_value(rd, 'payment_fee_percent', end, 'online_store')
+    fee_fix = fin_value(rd, 'payment_fee_fixed', end, 'online_store')
+
+    def v(x, *parts):
+        return None if x is None or any(p is None for p in parts) else round(x, 2)
+
+    steps = [{'label': 'List price', 'value': round(list_price, 2), 'kind': 'total', 'source': 'order'},
+             {'label': 'Discount', 'value': round(discount, 2), 'kind': 'down', 'source': 'offer'},
+             {'label': 'Landed cost', 'value': v((cogs or 0) + extra_item, cogs), 'kind': 'down', 'source': 'finance_inputs.cogs_landed'},
+             {'label': 'Pick, pack, box', 'value': v((pick or 0) + (pack or 0) + pick_unit * max(units - 1 + extra_units, 0), pick, pack),
+              'kind': 'down', 'source': 'finance_inputs.threepl_pick_pack, packaging'},
+             {'label': 'Shipping, net', 'value': v((label or 0) - (0 if ships_free else shipping_charged), label), 'kind': 'down',
+              'source': 'finance_inputs.shipping_label'},
+             {'label': 'Payment fee', 'value': v(price * (fee_pct or 0) / 100 + (fee_fix or 0), fee_pct, fee_fix), 'kind': 'down',
+              'source': 'finance_inputs.payment_fee_*'},
+             {'label': 'Returns', 'value': v(price * (refund or 0) + (refund or 0) * (proc or 0) + (replace or 0) * (repl or 0), refund, proc, repl),
+              'kind': 'down', 'source': (rm_rec or {}).get('id') or 'economics.return_share_model (missing)'}]
+    if claim:
+        rate, cost = claim
+        steps.append({'label': 'Promise claims', 'value': v((rate or 0) * (cost or 0), rate, cost), 'kind': 'down', 'source': 'playbook claim cost'})
+    before = None if any(s['value'] is None for s in steps) else round(price - sum(s['value'] for s in steps[2:]), 2)
+    steps.append({'label': 'Before media', 'value': before, 'kind': 'sub', 'source': 'computed'})
+    steps.append({'label': 'Paid media', 'value': v(media, media), 'kind': 'down', 'source': 'daily spend'})
+    after = None if before is None or media is None else round(before - media, 2)
+    steps.append({'label': 'Contribution', 'value': after, 'kind': 'total', 'source': 'computed'})
+    target = fin_value(rd, 'target_contribution_margin', end)
+    share = round(after / price, 4) if after is not None and price else None
+    return {'steps': steps, 'price_paid': round(price, 2), 'before_media': before, 'contribution': after,
+            'contribution_share': share, 'red_line': target / 100 if target is not None else None,
+            'clears': None if share is None or target is None else share >= target / 100,
+            'missing': [s['label'] for s in steps if s['value'] is None]}

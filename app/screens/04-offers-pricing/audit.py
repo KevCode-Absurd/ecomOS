@@ -38,6 +38,11 @@ Rules
   OFFER-R09  A line in a repeat-buy category (playbook.REPEAT_CATEGORIES) sold only as a single. Proposal: a pack of
              the most common multi-pack size in that category (else 3) at NEW_PACK_SAVING off per item, with its
              margin per pack from cogs_landed x size. Capability LIFE-C39 (founder gate).
+  OFFER-R10  A live offer under the margin red line: one order from list price to contribution after paid media
+             (offer_waterfalls, finance_inputs costs, the brain's modelled return rates). A first order must pay its
+             own media (playbook.RED_LINE_FIRST_ORDER); any other order must keep target_contribution_margin.
+             Proposed offers carry the same check on the desk and cannot clear approval under it. Money null: the
+             share of orders on the offer needs order rows. Capability MONEY-C05 (founder gate).
   OFFER-R03  Margin after discount per SKU. Needs cogs_landed keyed by the store's SKUs. Unavailable while no
              finance_inputs SKU key matches a product SKU. Capability MONEY-C05 (founder gate). Owner: 04.
   OFFER-R04  A deal-breaker rung with no proof: the top rung of an objection ladder whose proof is empty or
@@ -91,6 +96,9 @@ RULES = [
      'capability': 'LIFE-C02', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R09', 'name': 'Basics line sold only as a single', 'entity_type': 'sku',
      'inputs': ['products_monthly', 'finance_inputs.cogs_landed'], 'capability': 'LIFE-C39', 'owner_screen': SCREEN},
+    {'rule_id': 'OFFER-R10', 'name': 'Live offer under the margin red line', 'entity_type': 'offer',
+     'inputs': ['daily', 'finance_inputs', 'brain.offers', 'brain.economics.return_share_model'],
+     'capability': 'MONEY-C05', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R03', 'name': 'Margin after discount per SKU', 'entity_type': 'sku',
      'inputs': ['finance_inputs.cogs_landed keyed by product SKU', 'products'], 'capability': 'MONEY-C05',
      'owner_screen': SCREEN},
@@ -104,6 +112,7 @@ CAPABILITY = {'OFFER-R01': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R07': {'id': 'LIFE-C39', 'autonomy': 'founder_gate'},
               'OFFER-R08': {'id': 'LIFE-C02', 'autonomy': 'founder_gate'},
               'OFFER-R09': {'id': 'LIFE-C39', 'autonomy': 'founder_gate'},
+              'OFFER-R10': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R06': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R04': {'id': 'LIFE-C36', 'autonomy': 'founder_gate'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
@@ -481,6 +490,73 @@ def rule_first_order(rd):
                      [f'{rd.brand}.offers.first_order_code', f'{rd.brand}.offers.promo_share_active_ads'], end)]
 
 
+def offer_waterfalls(rd, objections=None):
+    """Current and proposed offers, each as one order from list price to contribution after media."""
+    model, pb = _model(), _playbook()
+    fo = first_order(rd)
+    t = model.window_totals(rd)
+    po = model.per_order(t)
+    thr, _ = threshold_usd(rd)
+    if not po or fo.get('unavailable'):
+        return []
+    cr = model.cogs_ratio(rd)
+    cogs = cr['ratio'] * po['net'] if cr.get('ratio') is not None else None
+    media_all = po['spend']
+    cac = fo['new_cac']
+    g, units = po['gross'], po['units']
+    code_pct = fo['code_pct'] or 0
+    ic = model.item_cost(rd).get('value')
+    out = [
+        {'key': 'average', 'name': 'The average order today', 'status': 'live',
+         'note': 'All orders, 28 days: discounts, shipping charged and paid media per order as they ran.',
+         **model.waterfall(rd, g, po['discount'], cogs, units, ships_free=False, shipping_charged=po['shipping_charged'], media=media_all)},
+        {'key': 'first_code', 'name': f'First order with the {code_pct:.0f} percent code', 'status': 'live',
+         'note': 'Average list-price order, the code applied, paid media per new customer.',
+         **model.waterfall(rd, g, g * code_pct / 100, cogs, units, media=cac)},
+        {'key': 'first_gwp', 'name': 'First order with a free item', 'status': 'proposed',
+         'note': 'Average list-price order at full price, one item added to the box, paid media per new customer.',
+         **model.waterfall(rd, g, 0, cogs, units, extra_item=ic or 0, extra_units=1, media=cac)},
+    ]
+    if thr and cr.get('ratio') is not None:
+        out.append({'key': 'at_line', 'name': f'An order at the ${thr:,.0f} free shipping line', 'status': 'live',
+                    'note': 'An order of exactly the line value, shipping free, average discount share and paid media per order.',
+                    **model.waterfall(rd, thr * g / po['net'], thr * g / po['net'] - thr, cr['ratio'] * thr, units, media=media_all)})
+    wear = next((r for r in (objections or []) if r['claim'] == 'replacement' and r['planned_rate'] is not None and r['cost_per_claim']), None)
+    if wear:
+        out.append({'key': 'promise', 'name': f'The average order with the {wear["offer"].split(":")[0].lower()}', 'status': 'proposed',
+                    'note': f'Adds claims at the planned {wear["planned_rate"] * 100:.1f} percent rate on top of the modelled returns.',
+                    **model.waterfall(rd, g, po['discount'], cogs, units, ships_free=False, shipping_charged=po['shipping_charged'],
+                                      media=media_all, claim=(wear['planned_rate'], wear['cost_per_claim']))})
+    for w in out:
+        first = w['key'].startswith('first_')
+        line = pb.RED_LINE_FIRST_ORDER if first else w['red_line']
+        w['red_line_kind'] = 'first order pays its own media' if first else 'target contribution margin'
+        w['red_line'] = line
+        w['clears'] = None if line is None or w['contribution'] is None else (
+            w['contribution'] >= line * w['price_paid'] if not first else w['contribution'] >= line)
+    return out
+
+
+
+def rule_red_line(rd):
+    end = rd.ends_on
+    out = []
+    for w in offer_waterfalls(rd):
+        if w['status'] != 'live' or w['clears'] is not False:
+            continue
+        entity = {'type': 'offer', 'id': w['key'], 'label': w['name']}
+        first = w['key'].startswith('first_')
+        line_text = (f'${w["red_line"]:,.2f} after media' if first else f'{w["red_line"] * 100:.0f} percent of the price paid')
+        evidence = [_ev('contribution_after_media', w['contribution'], 'usd', end, baseline=(w['red_line'] if first else
+                        round(w['red_line'] * w['price_paid'], 2)), baseline_kind='red_line', source='daily, finance_inputs'),
+                    _ev('contribution_before_media', w['before_media'], 'usd', end, source='daily, finance_inputs')]
+        kept = (f'loses ${-w["contribution"]:,.2f}' if w['contribution'] < 0 else f'keeps ${w["contribution"]:,.2f}')
+        sentence = f'{w["name"]} {kept} after paid media, under the red line of {line_text}.'
+        out.append(_finding('OFFER-R10', entity, 'high', evidence, sentence, None, 0.6, [], end,
+                            money_reason='the share of orders on this offer needs order rows'))
+    return out
+
+
 def rule_ladder(rd):
     end = rd.ends_on
     pb = _playbook()
@@ -652,7 +728,7 @@ def run(brand, window=None, data=None):
     """Findings for one brand, sorted by severity then money at stake. `window` is {ends_on} or None."""
     ends_on = date.fromisoformat(window['ends_on']) if window and window.get('ends_on') else last_full_day(data, brand)
     rd = Reader(data, brand, ends_on)
-    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
+    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
            rule_unanswered(rd))
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f.get('money_at_stake') or {}).get('usd') or -1), f['id']))
     return out

@@ -97,3 +97,7 @@ FIRST_ORDER_OPTIONS = [
     {'key': 'pack', 'name': 'First-order price on the best-selling pack', 'keeps_price': False, 'answers': 'value, and moves shoppers up the ladder'},
 ]
 CODE_ADS_SHARE = 0.5      # a percent code in more than half the active ads is the default way in: check what it costs
+
+# Margin red line (screen 04, OFFER-R10). A first order must at least pay its own paid media (contribution after
+# media per first order >= this many dollars); every other order is held to finance_inputs target_contribution_margin.
+RED_LINE_FIRST_ORDER = 0.0

@@ -241,6 +241,34 @@
       actionLine(best ? 'Test ' + best.name.toLowerCase() + ' against the code. It keeps ' + fmt.money(fo.best_gain) + ' more per first order.' : 'No price-keeping offer beats the code today.', a));
   }
 
+  function waterfallBlock(falls) {
+    const head = { title: 'What does each offer keep, from price to contribution?', sub: 'One order per offer, 28 days. Costs from finance inputs, returns at the brain model rates, paid media per order or per new customer. A first order must pay its own media; any other order must keep the target contribution margin.' };
+    if (!falls || !falls.length) return section('desk-waterfall', head, UI.emptyState({ screen: SLUG, title: 'Margin waterfall unavailable', text: 'Finance inputs or the daily aggregate are missing.' }));
+    const chartBox = el('div', { class: 'card' });
+    const draw = (key) => {
+      const w = falls.find((x) => x.key === key) || falls[0];
+      mount(chartBox, Charts.waterfall({ unit: '$', width: 900, height: 260, title: w.name + (w.status === 'proposed' ? ' (proposed)' : ''),
+        steps: w.steps.map((st) => ({ label: st.label, value: st.value, kind: st.kind })),
+        note: w.note + (w.missing.length ? ' Unavailable: ' + w.missing.join(', ') + '.' : '') + ' Red line: ' + w.red_line_kind + '.' }));
+    };
+    const pills = UI.pills({ items: falls.map((w) => ({ key: w.key, label: w.name })), current: falls[0].key, onChange: draw });
+    draw(falls[0].key);
+    const table = UI.verdictTable({
+      columns: [
+        { key: 'name', label: 'Offer' }, { key: 'status', label: 'Status' },
+        { key: 'price_paid', label: 'Price paid', unit: '$' }, { key: 'before_media', label: 'Before media', unit: '$' },
+        { key: 'contribution', label: 'After media', unit: '$' }, { key: 'contribution_share', label: 'Share of price', unit: '%' },
+      ],
+      rows: falls, verdict: { at: 1, kind: (r) => r.clears == null ? 'na' : r.clears ? 'keep' : 'stop', text: (r) => r.clears == null ? NA : r.clears ? 'Clears' : 'Under the line', reason: (r) => r.red_line_kind },
+      reason: { key: 'rl', label: 'Red line', text: (r) => r.red_line == null ? NA : r.red_line_kind === 'target contribution margin' ? pct(r.red_line, 0) + ' of price' : fmt.money(r.red_line) + ' after media' },
+      sort: false,
+    });
+    const under = falls.filter((w) => w.clears === false && w.status === 'live');
+    const a = ACTIONS.find((x) => (x.finding_ids || []).some((id) => id.indexOf('OFFER-R10') >= 0));
+    return section('desk-waterfall', head, pills, chartBox, el('div', { class: 'card tight' }, table),
+      actionLine(under.length ? under.map((w) => w.name).join(', ') + ' is under the red line. A proposed offer under it cannot be approved.' : 'Every live offer clears its red line.', a));
+  }
+
   function returnsChart(r) {
     if (!r || !r.groups || !r.groups.length) return el('p', { class: 'muted small', text: 'Returns by reason ' + NA + '.' });
     const rows = r.groups.slice().sort((a, b) => b.per_1000 - a.per_1000);
@@ -295,7 +323,7 @@
     wrong(d);
     actionsList(d);
     mount('#desk', el('div', { class: 'desk-kicker' }, el('h3', { text: 'The desk' })),
-      stackBlock(d.stack || []), thresholdBlock(d.threshold), firstOrderBlock(d.first_order), discountBlock(d), ladderBlock(d.ladder), objectionBlock(d.objections || [], d.returns));
+      stackBlock(d.stack || []), thresholdBlock(d.threshold), firstOrderBlock(d.first_order), waterfallBlock(d.waterfalls), discountBlock(d), ladderBlock(d.ladder), objectionBlock(d.objections || [], d.returns));
     auditBlock(d);
   }
 
