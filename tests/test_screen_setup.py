@@ -57,7 +57,7 @@ class SetupApiTest(unittest.TestCase):
         s = self.call('GET', ['state'])
         self.assertTrue(s['simulated'])
         self.assertGreater(len(s['sections']['rows']), 10)
-        self.assertIn('diagnosis', s['sections']['empty'])
+        self.assertIn('plans', s['sections']['empty'])  # fills during operation, never at onboarding
         self.assertTrue(any(c['category'] == 'store' for c in s['categories']))
         self.assertTrue(s['finance']['fields'])
 

@@ -163,7 +163,9 @@ def rule_claims(brain: Brain, ends_on: str) -> list[dict]:
     claims = {r["id"]: r for r in brain.records("claims")}
     out = []
     for lad in brain.records("objection_ladders"):
-        v = lad.get("value") or {}
+        v = lad.get("value")
+        if not isinstance(v, dict):
+            continue  # founder answers to ladder questions live here too; only ladders have rungs
         theme = v.get("theme") or lad.get("field")
         for rung in v.get("rungs") or []:
             if "copy" not in (rung.get("uses") or []):

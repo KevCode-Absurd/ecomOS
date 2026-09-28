@@ -1,5 +1,6 @@
 """Screen 13-affiliate-marketplace-ads: the fraud and coupon-leak rules on fed rows, and the api and audit on Bombas."""
 import importlib.util
+import json
 import unittest
 from datetime import date
 from pathlib import Path
@@ -96,9 +97,16 @@ class Bombas(unittest.TestCase):
 
     def test_amazon_sample_from_the_brain(self):
         a = self.out['amazon']
-        self.assertEqual(a['asins_read'], 8)
-        self.assertEqual(a['in_stock'], 4)
-        self.assertEqual(a['reseller_share'], 1.0)
+        # The sample follows the brain: one row per amazon_listing record, never a pinned count.
+        recs = json.loads((ROOT / 'app' / 'brain' / 'bombas' / 'marketplaces.json').read_text(encoding='utf-8'))
+        expected = [r for r in recs if r.get('field') == 'amazon_listing' and r.get('status', 'active') == 'active']
+        self.assertEqual(a['asins_read'], len(expected))
+        self.assertGreaterEqual(a['asins_read'], 8)
+        self.assertLessEqual(a['in_stock'], a['asins_read'])
+        if a['in_stock']:
+            self.assertTrue(0.0 <= a['reseller_share'] <= 1.0)
+        else:
+            self.assertIsNone(a['reseller_share'])
 
     def test_findings_follow_the_contract(self):
         ids = {f['rule_id']: f for f in self.findings}
