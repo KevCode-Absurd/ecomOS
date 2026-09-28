@@ -7,6 +7,7 @@ import importlib.util
 import json
 import sys
 import unittest
+import statistics
 from datetime import date, timedelta
 from pathlib import Path
 
@@ -2410,6 +2411,28 @@ class FloorsTest(unittest.TestCase):
             self.assertEqual((op['weights']['demand'], op['strong']), (100, 90))
         finally:
             audit.brain, audit.PIPELINE_PATH, audit.listing_pull = saved
+
+    def test_proposed_floors_come_from_measured_numbers(self):
+        br = audit.brain('bombas')
+        data = audit.brand_data('bombas')
+        D = audit.last_full_day(data, 'bombas')
+        rd = audit.Reader(data, 'bombas', D)
+        prods = api.products(data, 'bombas')
+        pr = audit.propose_floors(br, prods, rd)
+        by = {r['key']: r for r in pr['rows']}
+        self.assertEqual(set(by), {'price_target_low'})                        # Bombas has orders but no products table: only the order-value floor is proposed
+        self.assertEqual(by['price_target_low']['proposed'], round(audit.aov_28d(rd), 2))
+        self.assertTrue(by['price_target_low']['differs'])
+        self.assertTrue(all(r['simulated'] for r in pr['rows']))
+        sd = api.sample_data()
+        prods = api.products(sd, None)
+        per_unit = sorted(round(p['price'] / (p.get('items_per_unit') or 1), 2) for p in prods if p.get('price'))
+        pr2 = audit.propose_floors(None, prods, audit.Reader(sd, None, audit.last_full_day(sd, None)))
+        by2 = {r['key']: r for r in pr2['rows']}
+        self.assertEqual(by2['price_reject_max']['proposed'], per_unit[0])     # the sample brand has a catalogue: the cheapest and the median unit price
+        self.assertEqual(by2['price_caution_high']['proposed'], round(statistics.median(per_unit), 2))
+        self.assertEqual(by2['price_reject_max']['in_force'], 9.99)
+        self.assertEqual(audit.propose_floors(None, [], None)['rows'], [])
 
     def test_set_floors_writes_a_founder_record(self):
         import tempfile, sys

@@ -949,7 +949,17 @@
       rows: vrows,
       verdict: { at: 1, kind: (r) => r.source === 'brand' ? 'keep' : r.source === 'default' ? 'na' : 'fix', text: (r) => r.source === 'brand' ? 'Brand value' : r.source === 'default' ? 'Default' : 'Invalid, default used', reason: () => fl.rule },
       actions: { label: 'Do', onClick: () => {} }, sort: false });
+    const pr = fl.proposals || { rows: [] };
+    const fmtu = (v, unit) => unit === 'usd' ? fmt.money(v) : unit === 'ratio' ? Math.round(v * 100) + ' percent' : v + ' ' + unit;
+    const approve = async (keys) => { if (brand === 'sample') { alert('The sample brand has no brain to write to.'); return; } const body = { who: 'person' }; pr.rows.filter((r) => keys.indexOf(r.key) >= 0).forEach((r) => { body[r.key] = r.proposed; }); try { await api(BASE + 'floors' + Q, { method: 'POST', body }); load(); } catch (e) { alert('Not set: ' + e.message); } };
+    const prows = pr.rows.map((r) => Object.assign({}, r, { propText: fmtu(r.proposed, r.unit), curText: fmtu(r.in_force, r.unit) + ' (' + r.in_force_source + ')', actions: [r.differs ? { label: 'Approve this one', onClick: () => approve([r.key]) } : { label: 'Same as in force', cls: 'quiet', onClick: () => {} }] }));
+    const ptable = pr.rows.length ? UI.verdictTable({ columns: [{ key: 'label', label: 'Floor' }, { key: 'propText', label: 'Proposed from our numbers' }, { key: 'curText', label: 'In force' }, { key: 'formula', label: 'Formula' }], rows: prows,
+      verdict: { at: 1, kind: (r) => r.differs ? 'watch' : 'keep', text: (r) => r.differs ? 'Differs' : 'Matches', reason: () => pr.rule }, actions: { label: 'Do', onClick: () => {} }, sort: false }) : el('p', { class: 'muted small', text: 'No proposal: the brand has no catalogue prices or 28-day orders to measure from yet.' });
+    const differing = pr.rows.filter((r) => r.differs).map((r) => r.key);
     return el('div', { class: 'stack' }, el('div', { class: 'card scroll' }, tbl),
+      el('h4', { text: 'Proposed from the brand\'s own numbers (simulated until a store connects)' }), el('div', { class: 'card scroll' }, ptable),
+      el('p', { class: 'micro faint', text: 'Rule: ' + pr.rule + '.' }),
+      gapLine(differing.length ? differing.length + ' proposed floor' + (differing.length === 1 ? ' differs' : 's differ') + ' from the value in force. Approve them and every rule reads the brand\'s numbers on the next run.' : 'Every proposed floor matches the value in force.', differing.length ? { label: 'Approve all ' + differing.length, onClick: () => approve(differing) } : null),
       el('p', { class: 'micro faint', text: 'Rule: ' + fl.rule + (fl.record ? ' Record: ' + fl.record + '.' : ' The sample brand has no brain, so every floor is the default.') }),
       gapLine(fl.brand_set ? fl.brand_set + ' floor' + (fl.brand_set === 1 ? ' is' : 's are') + ' the brand\'s own; the rest read the bank\'s defaults.' : 'Every floor reads the bank\'s default. Set the brand\'s own where the founder knows better (the price band for this category first).', null));
   }

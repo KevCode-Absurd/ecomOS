@@ -3842,6 +3842,35 @@ def floors_for(x):
     return out
 
 
+
+def aov_28d(rd):
+    r = metrics().compute('aov', rd.data, window='28d', end=rd.ends_on.isoformat(), **({'brand': rd.brand} if rd.brand else {}))
+    return r.get('value') if not r.get('unavailable') else None
+
+
+def propose_floors(x, prods, rd):
+    """Floors proposed from the brand's own numbers, for the founder to approve (bank idea PRD-117): the price reject line
+    from the cheapest unit price in the catalogue, the caution band's high end from the median unit price, the target band's
+    low end from the 28-day average order value. A floor with no measured number behind it is not proposed. Each proposal
+    names its formula and whether it differs from the value in force."""
+    fl = floors_for(x)
+    per_unit = sorted(round(p['price'] / (p.get('items_per_unit') or 1), 2) for p in prods or [] if isinstance(p.get('price'), (int, float)) and p['price'] > 0)   # a product with no pack size is one unit
+    aov = aov_28d(rd) if rd is not None else None
+    cands = []
+    if per_unit:
+        cands.append(('price_reject_max', per_unit[0], f'the cheapest unit price in the catalogue ({len(per_unit)} products): a candidate priced under the cheapest thing we sell is off-brand for paid acquisition', 'products'))
+        cands.append(('price_caution_high', round(statistics.median(per_unit), 2), f'the median unit price in the catalogue ({len(per_unit)} products): under it, check the band before trusting the margin gate', 'products'))
+    if aov:
+        cands.append(('price_target_low', round(aov, 2), 'the 28-day average order value: a launch checkout price at or above what an order already brings', 'orders'))
+    rows = []
+    for key, val, formula, source in cands:
+        cur = fl[key]['value']
+        rows.append({'key': key, 'label': fl[key]['label'], 'unit': fl[key]['unit'], 'proposed': val, 'in_force': cur, 'in_force_source': fl[key]['source'], 'formula': formula, 'source': source,
+                     'differs': abs(val - cur) > 0.005, 'simulated': True})
+    return {'rows': rows, 'proposed': sum(1 for r in rows if r['differs']),
+            'rule': 'a floor is proposed only where the brand has a measured number behind it (catalogue prices, 28-day orders); the founder approves and the record is written; the rest keep the bank\'s default until a number exists (bank idea PRD-117)'}
+
+
 def floors_read(x):
     """The floors as a table for the desk: rows with key, label, value, default, unit, source; the record id; the rule."""
     fl = floors_for(x)

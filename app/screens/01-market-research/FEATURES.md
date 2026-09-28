@@ -277,6 +277,23 @@ Picked from the round 8 note and the idea pass (PRD-101 re-quote thresholds, PRD
 | 9.9 | Second brand pass: every route (15, including the launch plan and the candidate report) answers on Tallgrass Goods and Bombas, the floors, re-quote and launch blocks render their honest empty states on the sample brand (no brain, so every floor is the default and the set action says so), no page errors | done |
 | 9.10 | Recipes for R56 and R57, 137 tests green on both suites, round9.png to round9d.png (Bombas) and round9s.png (Tallgrass Goods), founder note | done |
 
+## Round 10: the brand's own numbers and the post-launch read (from 28 Sep 2026)
+
+Picked from the round 9 note and the idea pass (`scripts/ideas.py --domain 01-PRD --bottleneck team_capacity measurement_data trust_brand`): PRD-117 (replace defaults with the brand's own numbers), PRD-125 (the post-launch metric and date before the test), PRD-120 (the quick screen before research time), PRD-111 (pass, caution or red flag), PRD-102 (a supplier verified reachable). The registry route and the live listing pull stay as they were: a contract ask and a person's approval.
+
+| # | Feature | Status |
+|---|---|---|
+| 10.1 | Floors proposed from the brand's own numbers (bank idea PRD-117): the price reject line from the cheapest unit price in the catalogue, the caution band's high end from the median unit price, the target band's low end from the 28-day average order value, each with its formula and whether it differs from the value in force; approve one or all from the floors block and the record is written | done |
+| 10.2 | The post-launch metric and date before the test (bank idea PRD-125): `post_launch` (metric, floor, read on, owner) on the candidate; rule PROD-R58 a launch target or a go with no post-launch metric and floor; the launch plan's first read and the proposed test read it | todo |
+| 10.3 | The quick 10-point screen before research time (bank idea PRD-120): 10 yes-or-no points on the candidate (felt problem or passionate community, not a novelty, business model fit, offline scarcity, weight and size, content or demo feasible, no fandom or licensing flag, no regulatory flag, price room, repeat or gift use); rule PROD-R59 hours logged or a stage past screened with the quick screen incomplete | todo |
+| 10.4 | Pass, caution or red flag (bank idea PRD-111): the 3 fast checks accept caution; the demand screen rule counts red flags only, the scorecard scores caution at half, the readiness item and the fast-check text say which check is a caution and why | todo |
+| 10.5 | A supplier verified reachable (bank idea PRD-102): `verified` (platform, date) on a sourcing option; rule PROD-R60 a first run decided on a chosen channel whose supplier is not verified reachable on the platform named | todo |
+| 10.6 | Launch steps as decisions: marking the order, the stock or the launch on a candidate writes a row to the shared decisions log (this screen, capability PROD-C10, choice person, the step as the reason), so the decisions table and 00-today see them | todo |
+| 10.7 | Kill memory on the opportunity read: the last kill in each lane with its reason and date on the opportunity row and in the screen-in prompt | todo |
+| 10.8 | Owner load in the week plan: open launch steps, hand-offs waiting and hours left per owner, and the owner with the most open steps named | todo |
+| 10.9 | Second brand pass; every new block and route on Tallgrass Goods | todo |
+| 10.10 | Recipes, tests, round10.png, founder note | todo |
+
 ## Round 9 note for the founder (28 Sep 2026)
 
 1. Go-live now reads from one place. The launch checklist takes the status each team sets on the shared hand-off log (listing copy, launch page) as its last two items, and a candidate is launch-ready only when every hard stop passed and both teams are done; that verdict rides on the product_candidates hand-off. A launch plan per candidate works every dated step back from the launch target (quote, sample, sourcing, order, copy, page, ad brief, stock, launch, first read) with owner and state; the steps sit on the calendar and in the week plan, and a step with no target or lead time says so instead of guessing a date.
