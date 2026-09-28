@@ -6,9 +6,31 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | # | Feature | Status |
 |---|---|---|
-| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | todo |
-| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | todo |
-| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | todo |
+| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | done |
+| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | done |
+| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | done |
+| 0.4 | `audit.py`: 16 rules (ORG-R01 to R16) in the audit contract shape | done |
+
+## JTBD table (room jobs, capability, audit rule)
+
+| Job | Question | Capability | Rule | Readable on Bombas |
+|---|---|---|---|---|
+| Hold the posting floor, cover the next holiday | did we post what we planned and is the next holiday slot covered | ORG-C02 | ORG-R01, R02, R03 (IN only) | no: needs `content_calendar` |
+| Founder on-camera budget | how much of what worked needed the founder's face | ORG-C03 | ORG-R15 | no: needs a founder tag and a target |
+| Shootable script with a named SKU | what do we say, to whom, in which language variant | ORG-C04 | none yet | no |
+| One-off winner into a series | which post should become a repeatable format | ORG-C05 | none yet (reads ORG-R16) | partly |
+| Plan the shoot day | what do we film this batch | ORG-C06 | none yet | no |
+| Keep the idea pipeline full | what next, and what are competitors doing | ORG-C07 | insight `creator_style` | yes: brain content |
+| Draft that clears the claims gate | is this draft ready, does it clear the gate | CREA-C21, LOOP-C12 | ORG-R08 | no: needs `claims_gate_log` |
+| Reply fast, capture a lead | which messages need a human, does the funnel capture | ORG-C09, ORG-C10 | ORG-R12, ORG-R10 | no: needs `inbox_log`, `dm_funnel` |
+| Use UGC before it expires | what UGC is unused, what retires unused | ORG-C11, ORG-C13 | ORG-R06, ORG-R07 | no: needs `ugc_assets`, `asset_library` |
+| No dead or untagged links | does every live link work and match | ORG-C12 | ORG-R11 | no: needs `link_check_log` |
+| Creator seeding and rights | who gets product, did rights come back | ORG-C14 | ORG-R09 | no: needs `creator_seeding` |
+| Which SKU and hook sold | which content made money, which viral post never sold | ORG-C16 | ORG-R04, R05, R16 | R05 and R16 yes; R04 needs sku and cta tags |
+| YouTube as its own surface | are videos found in YouTube search | ORG-C38 | ORG-R14 | no: needs `youtube_studio_export` |
+| Community worth the time | is the community active, do members buy | LIFE-C53 | ORG-R13 | no: needs `community_roster` |
+
+Metrics to propose in a contract session (computed in `audit.py` for now, from `content_posts`): posts per window, views, matched orders, orders per 1,000 views by hook.
 
 ## Candidates from the room spec (pick 10 per round)
 
@@ -107,3 +129,13 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
+| 0 | skeleton, audit | 2026-09-28 | Bombas, simulated, data.sqlite at scale 0.1 |
+
+## Round 0 status
+
+1. Shell (`index.html`, `screen.js`), `api.py` (`overview`, `findings`) and `audit.py` built on Bombas; `round0.png` at 1280 wide.
+2. Tiles: posts published (30d), orders per 1,000 views (30d, matched by link or code), Organic Social sessions (28d, GA4).
+3. Insights as rules: hook yield (ORG-R16, ORG-C16) and creator-style gap against the Ad Library (brain content, ORG-C07, signal only).
+4. Chart: orders per 1,000 views by hook, 90 days against the 90 before, median hook as the line.
+5. Audit: 16 rules; R16 ($116, Fit check) and R05 fire on Bombas, 12 are unavailable until their tables connect, R03 is IN only.
+6. Tests in `tests/test_screen_organic_content.py` pass; content metrics wait for a contract session to move into `app/metrics.py`.
