@@ -181,6 +181,28 @@
    ]
   },
   {
+   "id": "S1.3h",
+   "title": "Bombas extractor: Reddit mentions and category threads",
+   "stage": 1,
+   "model": "sonnet",
+   "reads": [
+    "app/contracts/brand-brain.md#3,4",
+    "app/brain/schema.json",
+    "app/brain/extract/README.md (the Reddit row)"
+   ],
+   "writes": [
+    "app/brain/bombas/raw/h-reddit/<section>.json",
+    "app/brain/bombas/raw/h-reddit/sources.json"
+   ],
+   "done_when": "validator passes; every record carries permalink, subreddit, upvotes and date; both lanes represented (brand mentions and category threads); no usernames anywhere; phrases grouped by theme with upvote weight",
+   "first_line": "Work in app/brain/bombas/raw. Session S1.3h per sessions/SESSIONS.md: run the Reddit extractor for Bombas, two lanes: brand mentions across subreddits, and category threads about socks. Public threads only, low rate, through a sub-agent that returns records, not pages.",
+   "budget_tokens": 18000,
+   "parallel_group": null,
+   "needs": [
+    "S1.2a"
+   ]
+  },
+  {
    "id": "S1.3g",
    "title": "Objection ladders and re-merge",
    "stage": 1,
@@ -189,7 +211,8 @@
     "app/contracts/brand-brain.md#6.2",
     "app/brain/merge.py (docstring)",
     "app/brain/bombas/raw/f-reviews/",
-    "app/brain/bombas/{objections,avatars,language_bank}.json"
+    "app/brain/bombas/{objections,avatars,language_bank}.json",
+    "app/brain/bombas/raw/h-reddit/"
    ],
    "writes": [
     "app/brain/ladders.py",
@@ -203,7 +226,8 @@
    "parallel_group": null,
    "needs": [
     "S1.3f",
-    "S1.3m"
+    "S1.3m",
+    "S1.3h"
    ]
   },
   {

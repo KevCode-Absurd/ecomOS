@@ -185,7 +185,8 @@ Extractors, each a small task agent or a script with the same output shape:
 | ad library | brand's own page and competitor pages | competitors, offers, learnings (public), story_bank |
 | own-site reviews | the brand's review widget pages or JSON | avatars, objections, language_bank, products (issues). Default for every brand. |
 | Amazon listings and reviews | listing pages for the brand's ASINs (public, small sample), the brand's Seller Central reviews export (document), a licensed provider (paid, optional) | marketplaces (listing content, rating split, review count), products, objections, language_bank. Default for every brand on Amazon. No review API exists and bulk scraping is against Amazon's terms, so the public lane stays a sample. |
-| retailer reviews and tickets | retailer product pages, Reddit, Trustpilot, support desk | avatars, objections, language_bank, products (issues) |
+| retailer reviews and tickets | retailer product pages, Trustpilot, support desk | avatars, objections, language_bank, products (issues) |
+| Reddit | brand mentions across subreddits and category threads (best X, X that does not Y, is X worth it) | language_bank (upvote-weighted phrases), objections, avatars, competitors (who threads recommend instead), positioning (the frames people compare with), seo_facts (questions asked), content (thread topics). Default for every brand. Permalink, subreddit, upvotes and date on every record; no usernames; never quoted as a testimonial in an ad. |
 | objection ladders | every review and ticket record in the brain | `objection_ladders`, derived; rebuilt when reviews change |
 | connectors | Shopify, Meta, Google, GA4, Klaviyo, Gorgias, GSC, Amazon | channels, stack, products (hero flags, status), marketplaces, learnings (winners with metric pointers). Numbers themselves stay in the data layer. |
 | documents | uploads, Drive folder, Notion, brand book, decks, research PDFs | any section, `source.type` document, page ref |
@@ -284,6 +285,7 @@ Made by Kevin on 28 Sep 2026:
 - One small `BRAIN.md` per brand routes to sections, skills, agent files and the data layer. It does not hold everything.
 - Founders and teams can add context at any time, from anywhere, and it refines the brain.
 - A weekly job audits the brain and the skills it links to, and proposes improvements, alongside at most 5 questions.
+- Reddit brand mentions and category threads are read on day one for every brand and feed the language bank, objections, positioning, the question map and content topics, upvote-weighted. Reddit language shapes copy; Reddit users are never quoted as testimonials.
 - Reviews are read from the brand's own site, Amazon and retailers on day one for every new brand, 5-star and 1-star first, and turned into objection ladders that feed avatars, offers, copy and the Amazon listing. Amazon is a public sample plus the brand's export, never bulk scraping.
 - Sources are a registry of many, not 3 integrations. Pull everything connected first, then ask only what no connected source can answer, ranked by how much it helps the customer.
 

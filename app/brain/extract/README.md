@@ -10,6 +10,7 @@ One module per source type, same shape: `run(brand, config) -> list[record]` wri
 | own-site reviews | the brand's review widget pages or JSON (Judge.me, Yotpo, Okendo, Stamped, Loox) | avatars, objections, language_bank, products | default for every brand; pull 5-star and 1-star first, then the middle; keep star, product, date, verified flag, url |
 | Amazon listings and reviews (public sample) | listing pages for the brand's ASINs: title, bullets, A+ content, rating split, review count, visible top reviews | marketplaces, products, objections, language_bank | default for every brand that sells on Amazon; low volume through a sub-agent; no review API and no bulk scraping, so volume comes from the brand's Seller Central export (a document) or a licensed provider |
 | retailer and forum reviews | Nordstrom, Dick's, Target, Walmart product pages, Reddit, Trustpilot | avatars, objections, language_bank | verbatim quotes only, with the url; no invented quotes; Trustpilot skews to complaints, say so in the record |
+| Reddit | brand mentions across subreddits, and category threads (best socks, no-shows that stay up, merino worth it, buy it for life) | language_bank, objections, avatars, competitors (who threads recommend instead), positioning (the frames people use), seo_facts (questions asked), content (thread topics), learnings | default for every brand; verbatim quotes with permalink, subreddit, upvotes and date; no usernames; upvotes weight the phrase; a Reddit user is never quoted as a testimonial in an ad |
 | objection ladders (derived) | every review record in the brain, 5-star and 1-star first | objection_ladders, then avatars, offers, copy, marketplaces | built after the review extractors; see the ladder shape in the contract section 6.2 |
 | job postings and stack | careers page, job boards | team, stack, channels | tools and agencies named in postings |
 | documents | uploads, Drive, Notion, Slack | any, proposed through the review queue | never required; a document is useful unextracted |
@@ -17,6 +18,6 @@ One module per source type, same shape: `run(brand, config) -> list[record]` wri
 
 ## Default extractors for any new brand
 
-Run in this order on day one, before any question is asked: site crawl, own-site reviews, Amazon listings and reviews (when the brand has ASINs), retailer and forum reviews, Meta Ad Library, press and interviews, job postings and stack, then the objection ladders. The list lives in `app/brain/extract/defaults.json` so onboarding and the keeper read the same thing.
+Run in this order on day one, before any question is asked: site crawl, own-site reviews, Amazon listings and reviews (when the brand has ASINs), retailer reviews, Reddit, Meta Ad Library, press and interviews, job postings and stack, then the objection ladders. The list lives in `app/brain/extract/defaults.json` so onboarding and the keeper read the same thing.
 
 Raw output for the Bombas build goes to `app/brain/bombas/raw/<extractor>/`, merged by S1.3m.
