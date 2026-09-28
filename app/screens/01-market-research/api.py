@@ -2509,6 +2509,19 @@ def desk_report(data, brand):
         L += ['', '## Parked'] + [f'- {a["title"]} (back {a.get("returns_on")}; {(a.get("decision") or {}).get("reason") or "no note"})' for a in r['parked']]
     L += ['', f'## Due: {cal["overdue"]} overdue, {cal["this_week"]} in 7 days, {len(cal["items"])} in {cal["horizon_days"]} days']
     L += [f'- {i["when"]}: {i["title"]}' for i in cal['items'][:12]]
+    plans = []
+    for c in launch_candidates(brand):
+        try:
+            lp = launch_plan(data if data is not None else sample_data(), brand, c.get('candidate_id'))
+        except ValueError:
+            continue
+        nxt = next((x for x in lp['steps'] if x['state'] in ('due', 'overdue', 'no_date')), None)
+        plans.append(f'- {lp["name"]} ({lp["stage"]}): target {lp["target"] or "not set"}, {lp["open"]} steps open, {lp["overdue"]} overdue' + (f'; next: {nxt["label"]} by {nxt["due"] or "no date"} ({nxt["owner"]})' if nxt else '; every step done') + (' ; launch-ready' if lp['launch_ready'] else ''))
+    if plans:
+        L += ['', '## Launch plans'] + plans
+    sent = handoffs_sent(brand)
+    if sent['rows']:
+        L += ['', f'## Hand-offs sent ({", ".join(f"{v} {k}" for k, v in sorted((sent.get("shared") or {}).get("by_status", {}).items())) or "none in the shared log"})'] + [f'- {h.get("sent_on")}: {h.get("title")} to {h.get("to")}, {h.get("shared_status")}' for h in sent['rows'][:10]]
     L += ['', '## The desk, block by block']
     rows = lambda k, key='rows': ((d.get(k) or {}).get(key) if isinstance(d.get(k), dict) else d.get(k)) or []   # noqa: E731
     lines = [
@@ -2532,6 +2545,15 @@ def desk_report(data, brand):
         ('Tech packs', f'{_n(rows("tech_packs"), lambda x: x.get("needs_spec") and x.get("status") != "current")} candidates need a spec'),
         ('Hours', f'{_n(rows("hours"), lambda x: (x.get("over_by") or 0) > 0)} candidates over their hours budget'),
         ('Video signals', f'{_n(rows("video"), lambda x: x.get("verdict") == "single")} candidate lanes on one platform only'),
+        ('Launch readiness', f'{_n(rows("readiness"), lambda x: x.get("verdict") == "not_ready")} candidates with a hard stop open, {_n(rows("readiness"), lambda x: x.get("launch_ready"))} launch-ready of {len(rows("readiness"))}'),
+        ('Price band', f'{_n(rows("price_bands"), lambda x: x.get("verdict") in ("reject", "caution"))} candidates in the reject or caution band without a note'),
+        ('Margin points', f'{_n(rows("margin_points"), lambda x: x.get("points_verdict") == "one_price")} one-point margins, {_n(rows("margin_points"), lambda x: x.get("cost_verdict") == "not_quote")} costs not our quote'),
+        ('Cost floors', f'{_n(rows("cost_floors"), lambda x: x.get("verdict") == "above")} costs above twice the floor seen, {_n(rows("cost_floors"), lambda x: x.get("verdict") == "no_check")} unchecked'),
+        ('Identical sellers', f'{_n(rows("identical_sellers"), lambda x: x.get("verdict") == "cash_test")} candidates read as a cash test' + ('' if ((d.get("identical_sellers") or {}).get("pull") or {}).get("mode") == "live" else ' (no live pull: not read)')),
+        ('Opportunity', ', '.join(f'{x.get("label")} {x.get("score")}' for x in rows("opportunity")[:3]) + (f'; best with no candidate: {next((x.get("label") for x in rows("opportunity") if x.get("verdict") == "strong_no_candidate"), "none")}' if rows("opportunity") else 'no lanes')),
+        ('Sourcing', f'{_n(rows("sourcing"), lambda x: x.get("verdict") != "compared")} first runs with no sourcing comparison of {len(rows("sourcing"))}'),
+        ('Re-quote', f'{_n(rows("requotes"), lambda x: x.get("verdict") == "requote_due")} candidates past a re-quote step on an old quote'),
+        ('Floors', f'{(d.get("floors") or {}).get("brand_set", 0)} of {len(rows("floors"))} floors are the brand\'s own'),
         ('Trend checks', f'{_n(rows("trend_checks"), lambda x: x.get("candidates") and x.get("verdict") != "steady")} candidate lanes on a forecast or a spike'),
         ('Marketplace', (('the brand is not the seller of record; ' if ((d.get("marketplace") or {}).get("presence") or {}).get("sold_by_brand") is False else '') + f'{((d.get("marketplace") or {}).get("summary") or {}).get("spread_listings", 0)} listings off the site price') if (d.get('marketplace') or {}).get('presence') else 'no marketplace read'),
         ('Pulls', f'{_n(rows("pulls"), lambda x: x.get("verdict") != "fresh")} pulls not fresh of {len(rows("pulls"))}'),
@@ -2681,7 +2703,13 @@ def week_plan(data, brand):
     lines += ['', 'HOURS LEFT IN THE RESEARCH BUDGET'] + ([f'- {h["name"]} ({h["stage"]}): {h["left"]} h' + (' (over)' if h['left'] < 0 else '') for h in hrs] or ['- no open candidate'])
     lines += ['', 'SPEND THIS WEEK'] + [(f'- ${spent:,.2f} of ${cap:,.2f} spent, ${left:,.2f} left' if left is not None else '- ledger or cap unavailable') + (f'; {lg.get("over_bound_week")} run(s) settled over their bound' if lg.get('over_bound_week') else '')]
     lines += ['', 'PULLS A PERSON CAN APPROVE THIS WEEK'] + ([f'- {p["label"]}: {p["verdict"]}' + (f', about ${p["estimate_usd"]:,.2f}' if p.get('estimate_usd') is not None else ', no price on file') + ({True: ' (fits the cap)', False: ' (does not fit this week)', None: ''}[p['fits']]) + (f'; {p["command"]}' if p.get('command') else '') for p in affordable] or ['- every pull is fresh'])
-    return {'brand': brand or 'sample', 'from': ends_on, 'text': '\n'.join(lines), 'due': cal['items'], 'hours': hrs, 'spend': {'cap': cap, 'spent': spent, 'left': left}, 'pulls': [{k: p.get(k) for k in ('key', 'label', 'verdict', 'estimate_usd', 'fits')} for p in affordable], 'top': [a['title'] for a in top]}
+    launch = [i for i in cal['items'] if i['kind'] == 'launch']
+    lines += ['', 'LAUNCH STEPS THIS WEEK'] + ([f'- {i["when"]}: {i["title"]} ({i["text"]})' for i in launch] or ['- none due; the launch plan on each candidate brief has the dates'])
+    sent = handoffs_sent(brand)
+    waiting = [h for h in sent['rows'] if h.get('shared_status') in ('proposed', 'decided')]
+    lines += ['', 'HAND-OFFS OUT'] + ([f'- {h.get("sent_on")}: {h.get("title")} to {h.get("to")}, {h.get("shared_status")}' for h in sent['rows'][:8]] or ['- nothing sent yet']) + ([f'- {len(waiting)} waiting on a team; the checklist reads their status'] if waiting else [])
+    return {'brand': brand or 'sample', 'from': ends_on, 'text': '\n'.join(lines), 'due': cal['items'], 'hours': hrs, 'spend': {'cap': cap, 'spent': spent, 'left': left}, 'pulls': [{k: p.get(k) for k in ('key', 'label', 'verdict', 'estimate_usd', 'fits')} for p in affordable], 'top': [a['title'] for a in top],
+            'launch': launch, 'handoffs': [{k: h.get(k) for k in ('sent_on', 'title', 'to', 'shared_status')} for h in sent['rows']]}
 
 
 # ---------------------------------------------------------------- decisions on this desk (round 7.4)

@@ -2179,6 +2179,31 @@ class HandoffCreativeTest(unittest.TestCase):
         finally:
             audit.SHARED_HANDOFFS_PATH, audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH = saved
 
+    def test_launch_steps_and_handoffs_in_week_plan_and_report(self):
+        import tempfile
+        saved = (audit.SHARED_HANDOFFS_PATH, audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH, api.HANDOFFS_DIR, api.HANDOFFS_PATH)
+        tmp = Path(tempfile.mkdtemp())
+        audit.SHARED_HANDOFFS_PATH, audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH, api.HANDOFFS_DIR, api.HANDOFFS_PATH = tmp / 'handoffs.json', tmp / 'pipeline.json', tmp / 'pc.json', tmp / 'pt.json', tmp / 'ho', tmp / 'ch.json'
+        try:
+            data = api.sample_data()
+            D = audit.last_full_day(data, None)
+            audit.PIPELINE_PATH.write_text(json.dumps({'rows': [{'candidate_id': 'g1', 'brand': 'sample', 'name': 'G', 'category': 'socks', 'stage': 'go', 'launch_target': (D + timedelta(days=12)).isoformat(), 'lead_time_days': 5, 'angle_text': 'a', 'angle_source': 'review gap', 'planned_price': 20}]}), encoding='utf-8')
+            api.handle(Req(['candidates', 'g1', 'handoff', 'copy'], brand='sample', method='POST'))
+            wp = api.week_plan(data, None)
+            self.assertIn('LAUNCH STEPS THIS WEEK', wp['text'])
+            self.assertTrue(any(i['kind'] == 'launch' for i in wp['launch']))
+            self.assertIn('HAND-OFFS OUT', wp['text'])
+            self.assertIn('to copy, proposed', wp['text'])
+            self.assertIn('1 waiting on a team', wp['text'])
+            rp = api.desk_report(data, None)
+            self.assertIn('## Launch plans', rp['text'])
+            self.assertIn('- G (go): target ' + (D + timedelta(days=12)).isoformat(), rp['text'])
+            self.assertIn('## Hand-offs sent (1 proposed)', rp['text'])
+            for head in ('Launch readiness', 'Price band', 'Margin points', 'Cost floors', 'Identical sellers', 'Opportunity', 'Sourcing', 'Re-quote', 'Floors'):
+                self.assertIn(head, rp['text'])
+        finally:
+            audit.SHARED_HANDOFFS_PATH, audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH, api.HANDOFFS_DIR, api.HANDOFFS_PATH = saved
+
     def test_avatar_handoff_names_the_buyer(self):
         fid = next(f['id'] for f in audit.run('bombas', {'ends_on': '2026-09-27'}) if f['rule_id'] == 'PROD-R11')
         h = api.creative_handoff('bombas', fid)
