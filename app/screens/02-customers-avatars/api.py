@@ -330,6 +330,8 @@ def overview(brain: Brain) -> dict:
             "copy_gap": builds.copy_gap({sec: brain.records(sec) for sec in ("voice", "claims", "identity", "offers", "policies", "products", "visual", "story_bank")},
                                         brain.records("language_bank"), _brand_tokens(brain), audit.source_name),
             "paths": _paths(brain.brand), "gate": gate,
+            "claims_fire": builds.claims_fire(brain.records("claims"), brain.records("language_bank"), _brand_tokens(brain), audit.source_name,
+                                              audit.product_words(brain)),
             "perception": builds.perception(brain.records("positioning") + brain.records("identity"), brain.records("language_bank"),
                                             _brand_tokens(brain), audit.source_name), "survey": builds.survey(gate["rows"], lad["rows"], frc["rows"], srv["segments"], opd),
             "moments": _moments(brain.brand, avatars),

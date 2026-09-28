@@ -281,6 +281,19 @@
         why: m.draft.split('\n')[1] || '', artefact: { kind: m.kind, label: KIND_LABEL[m.kind] || m.kind, draft: m.draft } }, { compact: true, screen: SLUG })))));
   }
 
+  // ---------- desk: claims under fire ----------
+  function renderClaims(x) {
+    document.getElementById('claims-sub').textContent = 'Every site-backed or approved claim in the brain against ' + x.complaints +
+      ' one and two star reviews (Reddit left out). Under fire: 3 or more use the claim\'s own feature words, product names left out. ' + x.line;
+    const V = { under_fire: ['stop', 'Under fire'], watch: ['watch', 'Watch'], clear: ['keep', 'Clear'] };
+    mount('#claims', UI.verdictTable({
+      columns: [{ key: 'claim', label: 'Claim' }, { key: 'hits', label: '1 and 2 star', unit: 'n' }, { key: 'words_t', label: 'Words they throw back' }, { key: 'example_t', label: 'Example' }],
+      rows: x.rows.map((r) => Object.assign({}, r, { words_t: r.words.join(', ') || 'none', example_t: r.example ? '"' + r.example + '"' : '',
+        actions: r.action ? [{ label: 'Fix the claim', onClick: () => briefPanel(r.action) }] : [{ label: 'Keep', cls: 'quiet', onClick: () => {} }] })),
+      verdict: { at: 1, kind: (r) => V[r.verdict][0], text: (r) => V[r.verdict][1] }, actions: { label: 'Do' }, sort: false,
+    }), el('p', { class: 'micro faint', text: 'Word matches, not a legal review. A person decides whether a claim changes.' }));
+  }
+
   // ---------- desk: moments ----------
   function renderMoments(x) {
     document.getElementById('moments-sub').textContent = 'Moments named in avatar triggers, matched to US dates, 6 months ahead. Ads live 21 days before, emails 14 days before. Index: that month last year against the 12-month average, simulated. ' + x.line;
@@ -643,6 +656,7 @@
     renderServed(d.served, d.avatars);
     renderDrafts(d.drafts);
     renderMisreads(d.misreads);
+    renderClaims(d.claims_fire);
     renderMoments(d.moments);
     renderPaths(d.paths);
     renderCohorts(d.cohorts);

@@ -71,6 +71,7 @@ yet (`money_reason` says so). Confidence: one brain snapshot is one window (0.5)
 from __future__ import annotations
 
 import datetime as dt
+import re
 import sys
 from pathlib import Path
 from urllib.parse import urlparse
@@ -430,6 +431,18 @@ def competitor_names(brain: Brain) -> list[str]:
             for k in ("direct", "reddit_recommended_instead"):
                 names.update(x for x in v.get(k) or [] if isinstance(x, str))
     return sorted(names)
+
+
+def product_words(brain: Brain) -> set[str]:
+    """Words that name the brand's product lines, from the brain's product records."""
+    out = set()
+    for r in brain.records("products"):
+        v = r.get("value")
+        if r.get("field") == "lines" and isinstance(v, list):
+            out.update(w.lower() for x in v if isinstance(x, str) for w in re.findall(r"[A-Za-z]+", x))
+        if isinstance(v, dict) and isinstance(v.get("product_line"), str):
+            out.update(w for w in re.findall(r"[a-z]+", v["product_line"].lower()))
+    return out
 
 
 OUR_SECTIONS = ("voice", "claims", "identity", "offers", "policies", "products", "visual", "story_bank")

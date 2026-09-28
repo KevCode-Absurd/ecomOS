@@ -852,5 +852,25 @@ class Perception(TempBrain):
         self.assertTrue(words['slip']['in_positioning'])
 
 
+class ClaimsFire(TempBrain):
+    """Feature 3.2: claims whose feature words sit in 1 and 2 star reviews."""
+
+    def test_calf_claim_under_fire(self):
+        x = api.handle(Req(['overview']))['claims_fire']
+        rows = {r['id']: r for r in x['rows']}
+        calf = rows['bombas.claims.calf_socks_benefit']
+        self.assertEqual(calf['verdict'], 'under_fire')
+        self.assertIn('stay', calf['words'])
+        self.assertNotIn('calf', calf['words'])
+        self.assertEqual(calf['action']['capability']['id'], 'BRN-C03')
+        for r in x['rows']:
+            self.assertEqual(r['verdict'] == 'under_fire', r['hits'] >= 3)
+            self.assertEqual(r['action'] is not None, r['verdict'] == 'under_fire')
+
+    def test_forbidden_claims_skipped(self):
+        x = api.builds.claims_fire([{'id': 'b.claims.x', 'tier': 'forbidden', 'text': 'stay up heel'}], [], set(), audit.source_name)
+        self.assertEqual(x['rows'], [])
+
+
 if __name__ == '__main__':
     unittest.main()

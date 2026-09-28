@@ -1480,3 +1480,54 @@ def perception(position_records: list[dict], lang_records: list[dict], brand_tok
             "echoed": [{"word": w, "reviews": c} for w, c in echoed], "praise_reviews": n, "action": action,
             "line": f"{round((score or 0) * 100)} percent of the top {len(theirs)} buyer words appear in our positioning. "
                     f"{len(unechoed)} of our positioning words never show up in a praise review."}
+
+
+# ---------------------------------------------------------------- claims under fire
+
+CLAIM_HITS = 3            # 3 or more 1 and 2 star reviews use a claim's own feature words
+CLAIM_SKIP = {"describe", "described", "state", "states", "claim", "claims", "item", "items", "purchase", "purchased",
+              "technology", "system", "extra", "every", "always", "forever", "customer", "make", "right", "anything",
+              "additional", "trigger", "include", "includes", "products", "product", "sock", "socks", "pair", "pairs"}
+
+
+def claims_fire(claim_records: list[dict], lang_records: list[dict], brand_tokens: set[str], source_name,
+                product_words: set[str] | None = None) -> dict:
+    """Claims whose feature words show up in 1 and 2 star reviews: the promise buyers say we broke.
+    Product names (from the brain's product lines) are left out: naming the product is not a broken promise."""
+    skip = {_lemma(w) for w in CLAIM_SKIP} | {_lemma(w) for w in (product_words or set())}
+    comp = []
+    for rec in lang_records:
+        v = rec.get("value") if isinstance(rec.get("value"), dict) else {}
+        for i, rv in enumerate(v.get("reviews") or []):
+            if isinstance(rv.get("star"), int) and rv["star"] <= 2 and source_name(rv.get("source") or "") != "Reddit":
+                text = " ".join([v.get("phrase") or "", rv.get("quote") or ""])
+                comp.append({"id": f"{rec['id']}.{i}", "lemmas": _lemmas(text, brand_tokens), "text": text})
+    rows = []
+    for c in claim_records:
+        if c.get("tier") not in ("site_backed", "approved"):
+            continue
+        feats = {w for w in _lemmas(c.get("text") or "", brand_tokens) if w not in skip}
+        hits = [x for x in comp if x["lemmas"] & feats]
+        words = sorted({w for x in hits for w in x["lemmas"] & feats}, key=lambda w: -sum(1 for x in hits if w in x["lemmas"]))
+        verdict = "under_fire" if len(hits) >= CLAIM_HITS else ("watch" if hits else "clear")
+        ex = min((x["text"] for x in hits), key=len, default=None)
+        action = None
+        if verdict == "under_fire":
+            action = {"id": f"{SCREEN}.claim.{c['id'].split('.')[-1]}", "kind": "copy", "owner": "agent_drafts",
+                      "title": f"Back up or narrow the claim: {', '.join(words[:3])}",
+                      "capability": {"id": "BRN-C03", "autonomy": "founder_gate"},
+                      "draft": "\n".join([f"DRAFT claim fix", f"Claim: {c.get('text')}", f"1 and 2 star reviews on the same words: {len(hits)}",
+                                          f"Example: \"{_clip(ex)}\"" if ex else "",
+                                          "Option A: add the proof next to the claim (test result, guarantee terms).",
+                                          "Option B: narrow the words to what buyers confirm in five-star reviews.",
+                                          "A person picks one. The claim record changes only after that."]),
+                      "steps": [{"n": 1, "who": "agent", "text": "Pull every 1 and 2 star line on the claim's words."},
+                                {"n": 2, "who": "agent", "text": "Draft the proof line and a narrower claim."},
+                                {"n": 3, "who": "person", "text": "Pick one and approve the claim record."},
+                                {"n": 4, "who": "agent", "text": "Update every page and ad that carries the claim."}]}
+        rows.append({"id": c["id"], "claim": c.get("text"), "tier": c.get("tier"), "hits": len(hits), "words": words[:4],
+                     "example": _clip(ex) if ex else None, "verdict": verdict, "action": action})
+    rows.sort(key=lambda r: (-r["hits"], r["id"]))
+    fire = sum(1 for r in rows if r["verdict"] == "under_fire")
+    return {"rows": rows, "complaints": len(comp),
+            "line": f"{fire} of {len(rows)} live claims use words that 3 or more 1 and 2 star reviews throw back at us."}

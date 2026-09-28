@@ -60,7 +60,7 @@ Web pass: Peel, Triple Whale, Lifetimely, Klaviyo predictive, Daasity RFM, Thema
 | # | Feature | Status |
 |---|---|---|
 | 3.1 | Do buyers describe us the way we describe ourselves: the brain's positioning records (frame, category, price frame, proof points, pitch) against the top 20 words in praise reviews. Score = share of their top words our positioning uses; their words we lack in red; our words buyers never echo, and the ones they do. Brief it drafts 3 lead lines that keep the frame in buyer words, tested in 2 ads before a person approves a new positioning record. Bombas: 25 percent; soft, stay, wash, slip never appear; performance, engineered, extreme are never echoed | done |
-| 3.2 | Claims under fire: site claims whose words sit in one-star reviews, with the proof or copy fix | todo |
+| 3.2 | Which claims unhappy buyers throw back at us: every site-backed or approved claim against the 1 and 2 star reviews in the brain (Reddit left out); under fire when 3 or more use the claim's own feature words (product line names from the brain left out), watch for 1 or 2. Each claim under fire opens a fix: add the proof next to it or narrow the words; a person picks and the claim record changes only then (BRN-C03). Bombas: the calf sock stay-up and heel claim meets 12 reviews about sliding down at the heel | done |
 | 3.3 | Lookalike page watch: impostor pages from the Ad Library pull, with the report and customer warning steps | todo |
 | 3.4 | Which offer answers which avatar: offers in the brain against each avatar's doubts, gaps briefed | todo |
 | 3.5 | Messaging hierarchy: one lead line, 3 proof points and 1 doubt answer, ranked from buyer evidence, as a brain record to approve | todo |
