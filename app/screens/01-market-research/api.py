@@ -835,6 +835,23 @@ def recipe(f):
             'stop_rule': 'no report without the seller read', 'check_on': _check_on(f, 14), 'time_to_ship_hours': 1,
             'win_rule': 'seller read and a decision on the row',
         }
+    if rid == 'PROD-R33':
+        ent = f.get('entity') or {}
+        label = (ent.get('label') or 'the lane').lower()
+        nw = ent.get('newest') or {}
+        return {
+            'title': f'Answer the {label} launch cadence: brief the next SKU there before {nw.get("brand") or "the competitors"} own the lane',
+            'owner': 'agent',
+            'artefact': {'kind': 'research_note', 'label': f'a next-SKU brief for {label}: the {ent.get("theirs_24m") or 0} competitor launches with price and date, the gap they leave, the candidate spec and price, and the screen-in row for the pipeline'},
+            'steps': [
+                {'n': 1, 'who': 'agent', 'text': f'List the {ent.get("theirs_24m") or 0} competitor launches in {label} with price, channel and claim from the web pass; newest first.'},
+                {'n': 2, 'who': 'agent', 'text': 'Read the reviews on the newest one for the gap it leaves (fit, price, durability, style); that gap is the candidate angle.'},
+                {'n': 3, 'who': 'agent', 'text': 'Write the candidate into the pipeline at screened with the angle and its source; the margin gate and the time box start there.'},
+                {'n': 4, 'who': 'person', 'text': 'Approve the screen-in from the card, or mark the lane as one we hold with the current line.'}],
+            'size': {'text': f'{ent.get("theirs_12m") or 0} competitor launches in 12 months, {len(ent.get("brands") or [])} brands, ours none in 24', 'usd': None},
+            'stop_rule': 'no brief if the lane fails the demand screen', 'check_on': _check_on(f, 14), 'time_to_ship_hours': 3,
+            'win_rule': 'a screened candidate in the lane, or a founder note that the current line holds it',
+        }
     return None
 
 
@@ -843,11 +860,11 @@ def merge_lanes(actions):
     r06 = [a for a in actions if a.get('rule_id') == 'PROD-R06']
     keep = []
     for a in actions:
-        if a.get('rule_id') not in ('PROD-R05', 'PROD-R20'):
+        if a.get('rule_id') not in ('PROD-R05', 'PROD-R20', 'PROD-R33'):
             keep.append(a)
             continue
         key = (a.get('entity') or {}).get('id') or ''
-        if a.get('rule_id') == 'PROD-R20':
+        if a.get('rule_id') in ('PROD-R20', 'PROD-R33'):
             host = next((b for b in r06 if (b.get('entity') or {}).get('id') == key), None)
         else:
             words = set(audit.MARKET_WORDS.get(key, []))
@@ -986,6 +1003,9 @@ def rank(brand, window=None):
         if not rank_mod.validate_action(a):
             actions.append(a)
     actions = merge_marketplace(merge_surfaces(merge_candidates(merge_lanes(actions))))
+    for a in actions:   # a merge can lift the host's confidence; the total follows the rubric
+        r = a['rubric']
+        r['total'] = round(sum(rank_mod.WEIGHTS[k] * (r[k] if r[k] is not None else 2.5) / 5 for k in rank_mod.WEIGHTS), 1)
     actions.sort(key=rank_mod.sort_key)
     return {'screen': SCREEN, 'brand': brand, 'window': window, 'actions': actions, 'net_revenue_28d': nr}
 
@@ -1113,7 +1133,7 @@ def overview(data, brand):
                      'gates': gates_block(brand, data, br, rd, ends_on, findings), 'scorecard': scorecard_block(brand, data, br, rd, ends_on, findings),
                      'video': audit.video_signals(br, brand, ends_on), 'tech_packs': tech_pack_block(brand, findings),
                      'hours': dict(audit.hours_table(brand, br), findings={f['entity']['id']: f['id'] for f in findings if f['rule_id'] == 'PROD-R28'}),
-                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand))},
+                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on)},
             'audit': {'findings': findings, 'rules': audit.RULES}}
 
 

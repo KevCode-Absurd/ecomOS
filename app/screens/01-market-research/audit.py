@@ -126,6 +126,10 @@ Rules
   PROD-R32  Listing price spread: an Amazon listing with 20 or more ratings whose price per pair (listing price over the
             pairs named in the title) is 25 percent or more off the site per-pair price either way. Severity medium.
             Money null. Capability PROD-C46 (monitor reseller pricing and MAP, agent does). Owner: 01-market-research.
+  PROD-R33  Lane in play with none of ours: a lane we sell where competitors launched 2 or more times over 12 months (or
+            2 or more brands over 24) and nothing of ours launched there in 24 months, from the web pass launches (a url
+            and a date each). Severity medium. Money null. Capability PROD-C06 (extend the line, agent does). Owner:
+            01-market-research.
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -214,6 +218,8 @@ RULES = [
      'inputs': ['brain.marketplaces'], 'capability': 'PROD-C29', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R32', 'name': 'Amazon listing with 20 or more ratings priced 25 percent or more off the site per-pair price', 'entity_type': 'sku',
      'inputs': ['brain.marketplaces', 'brain.products', 'products'], 'capability': 'PROD-C46', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R33', 'name': 'Lane we sell where competitors launched 2 or more times in 12 months (or 2 brands in 24) and none of ours in 24 months', 'entity_type': 'metric',
+     'inputs': ['fixtures.market_trends', 'brain.products'], 'capability': 'PROD-C06', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -246,7 +252,8 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R29': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R30': {'id': 'PROD-C12', 'autonomy': 'human_assist'},
               'PROD-R31': {'id': 'PROD-C29', 'autonomy': 'human_assist'},
-              'PROD-R32': {'id': 'PROD-C46', 'autonomy': 'agent_does'}}
+              'PROD-R32': {'id': 'PROD-C46', 'autonomy': 'agent_does'},
+              'PROD-R33': {'id': 'PROD-C06', 'autonomy': 'agent_does'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -728,6 +735,7 @@ def run(brand, window=None, data=None):
     out += trend_check_findings(br, brand, ends_on)
     out += audience_findings(br, ends_on)
     out += marketplace_findings(br, prods_for_map, ends_on)
+    out += cadence_findings(br, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -2913,5 +2921,131 @@ def marketplace_findings(br, prods, ends_on):
         f = _finding('PROD-R32', l['asin'].lower(), ends_on, 'medium', ev, sentence, None, 0.6, [], money_reason='units sold on the listing are not visible; a price spread is a brand price integrity risk, not a measured loss')
         f['entity'] = {'type': 'sku', 'id': l['asin'], 'label': l['title'], 'url': l['url'], 'per_pair': l['per_pair'], 'site_per_pair': site_pp, 'spread': l['spread'], 'way': way, 'ratings': l['ratings'], 'seller': l['seller']}
         f['id'] = f'{SCREEN}.PROD-R32.{l["asin"].lower()}'
+        out.append(f)
+    return out
+
+
+# ---------------------------------------------------------------- competitor launch cadence (round 3.8)
+
+CADENCE_MIN_LAUNCHES_12M = 2     # competitor launches in a lane over 12 months that make it a lane in play
+CADENCE_MIN_BRANDS_24M = 2       # or distinct competitor brands launching in the lane over 24 months
+CADENCE_QUIET_MONTHS = 24        # our lane is quiet when we launched nothing in it for this long
+
+
+def launch_date(text):
+    """A launch date from the web pass (2026-09-24, 2026-09 or 2026) as a date: the 15th for a month, 1 July for a year, None otherwise."""
+    t = str(text or '').strip()
+    try:
+        if len(t) >= 10:
+            return date.fromisoformat(t[:10])
+        if len(t) == 7:
+            return date(int(t[:4]), int(t[5:7]), 15)
+        if len(t) == 4:
+            return date(int(t), 7, 1)
+    except ValueError:
+        return None
+    return None
+
+
+def months_between(a, b):
+    return (b.year - a.year) * 12 + (b.month - a.month) + (b.day - a.day) / 30.0
+
+
+def launch_cadence(br, ends_on):
+    """Who launches, how often, and in which lanes, from the web pass launches (a url and a date on each). Per brand: launches
+    in the last 12 and 24 months, months since the last, the lanes and channels, median price. Per lane: competitor launches
+    in 12 months and the brands behind them, ours in 24 months, whether we sell the lane, and the verdict: in play (competitors
+    launching, none of ours), matched (both), quiet (nobody), not sold."""
+    fx = market_trends() or {}
+    launches = fx.get('launches') or []
+    brand_name = (br.brand if br else '').lower()
+    words = brand_words(br)
+    rows = []
+    for l in launches:
+        d = launch_date(l.get('date'))
+        if d is None or d > ends_on:
+            continue
+        lanes = [k for k, _, terms in SUBCATS if l.get('sub_category') == k or any(t in (l.get('what') or '').lower() for t in terms)]
+        rows.append({'brand': l.get('brand'), 'self': (l.get('brand') or '').lower() == brand_name, 'what': l.get('what'), 'date': d, 'date_text': l.get('date'),
+                     'months_ago': months_between(d, ends_on), 'lanes': lanes or [l.get('sub_category') or 'other'], 'price_usd': l.get('price_usd'),
+                     'channel': l.get('channel'), 'url': (l.get('sources') or [{}])[0].get('url')})
+    brands = {}
+    for r in rows:
+        b = brands.setdefault(r['brand'], {'brand': r['brand'], 'self': r['self'], 'n_12m': 0, 'n_24m': 0, 'last': None, 'lanes': set(), 'channels': set(), 'prices': [], 'launches': []})
+        if r['months_ago'] <= 12:
+            b['n_12m'] += 1
+        if r['months_ago'] <= 24:
+            b['n_24m'] += 1
+        if b['last'] is None or r['date'] > b['last']:
+            b['last'] = r['date']
+        b['lanes'] |= set(r['lanes'])
+        if r['channel']:
+            b['channels'].add(r['channel'])
+        if r['price_usd']:
+            b['prices'].append(float(r['price_usd']))
+        b['launches'].append({'what': r['what'], 'date': r['date_text'], 'lanes': r['lanes'], 'price_usd': r['price_usd'], 'url': r['url']})
+    brand_rows = []
+    for b in brands.values():
+        brand_rows.append({'brand': b['brand'], 'self': b['self'], 'n_12m': b['n_12m'], 'n_24m': b['n_24m'], 'last': b['last'].isoformat(),
+                           'months_since_last': round(months_between(b['last'], ends_on), 1), 'lanes': sorted(b['lanes']), 'channels': sorted(b['channels']),
+                           'median_price': round(statistics.median(b['prices']), 2) if b['prices'] else None, 'launches': sorted(b['launches'], key=lambda x: x['date'] or '', reverse=True)})
+    brand_rows.sort(key=lambda b: (-b['n_12m'], -b['n_24m'], b['months_since_last']))
+    comp_n12 = [b['n_12m'] for b in brand_rows if not b['self']]
+    ours = next((b for b in brand_rows if b['self']), None)
+    lane_rows = []
+    for key, label, terms in SUBCATS:
+        theirs_12 = [r for r in rows if not r['self'] and key in r['lanes'] and r['months_ago'] <= 12]
+        theirs_24 = [r for r in rows if not r['self'] and key in r['lanes'] and r['months_ago'] <= 24]
+        ours_24 = [r for r in rows if r['self'] and key in r['lanes'] and r['months_ago'] <= CADENCE_QUIET_MONTHS]
+        ours_any = [r for r in rows if r['self'] and key in r['lanes']]
+        sold = (any(t in words for t in terms) or bool(ours_any)) if words else None
+        brands_24 = sorted({r['brand'] for r in theirs_24})
+        in_play = len(theirs_12) >= CADENCE_MIN_LAUNCHES_12M or len(brands_24) >= CADENCE_MIN_BRANDS_24M
+        newest = max(theirs_24, key=lambda r: r['date']) if theirs_24 else None
+        last_ours = max(ours_any, key=lambda r: r['date']) if ours_any else None
+        if key in PROOF_LANES:
+            verdict = 'proof'
+        elif sold is False:
+            verdict = 'not_sold'
+        elif in_play and not ours_24:
+            verdict = 'in_play'
+        elif theirs_24 and ours_24:
+            verdict = 'matched'
+        elif theirs_24 or ours_24:
+            verdict = 'watch'
+        else:
+            verdict = 'quiet'
+        lane_rows.append({'key': key, 'label': label, 'theirs_12m': len(theirs_12), 'theirs_24m': len(theirs_24), 'brands_24m': brands_24, 'ours_24m': len(ours_24), 'sold': sold,
+                          'newest': {'brand': newest['brand'], 'what': newest['what'], 'date': newest['date_text'], 'url': newest['url']} if newest else None,
+                          'our_last': {'what': last_ours['what'], 'date': last_ours['date_text']} if last_ours else None,
+                          'months_since_ours': round(months_between(last_ours['date'], ends_on), 1) if last_ours else None,
+                          'verdict': verdict, 'finding_id': f'{SCREEN}.PROD-R33.{key}'})
+    order = {'in_play': 0, 'matched': 1, 'watch': 2, 'quiet': 3, 'proof': 4, 'not_sold': 5}
+    lane_rows.sort(key=lambda r: (order[r['verdict']], -r['theirs_12m'], -r['theirs_24m']))
+    return {'brands': brand_rows, 'lanes': lane_rows, 'launches_read': len(rows),
+            'ours': {'n_12m': ours['n_12m'] if ours else 0, 'n_24m': ours['n_24m'] if ours else 0, 'months_since_last': ours['months_since_last'] if ours else None} if brand_name else None,
+            'competitor_median_12m': statistics.median(comp_n12) if comp_n12 else None, 'captured_at': fx.get('captured_at'),
+            'rule': f'a lane is in play when competitors launched {CADENCE_MIN_LAUNCHES_12M} or more times in it over 12 months, or {CADENCE_MIN_BRANDS_24M} or more brands launched in it over 24 months, and we sell it with nothing of ours launched there in {CADENCE_QUIET_MONTHS} months'}
+
+
+def cadence_findings(br, ends_on):
+    """PROD-R33: a lane we sell where competitors launched 2 or more times in 12 months (or 2 or more brands in 24) and nothing of ours launched in 24 months."""
+    out = []
+    if br is None:
+        return out
+    for r in launch_cadence(br, ends_on)['lanes']:
+        if r['verdict'] != 'in_play':
+            continue
+        ev = [_ev('competitor_launches_12m', r['theirs_12m'], 'count', ends_on.isoformat(), 'past 12 months', CADENCE_MIN_LAUNCHES_12M, 'threshold', source='fixtures.market_trends', simulated=False, freshness_days=0, brands=r['brands_24m']),
+              _ev('competitor_brands_24m', len(r['brands_24m']), 'count', ends_on.isoformat(), 'past 24 months', CADENCE_MIN_BRANDS_24M, 'threshold', source='fixtures.market_trends', simulated=False, freshness_days=0),
+              _ev('our_launches_24m', r['ours_24m'], 'count', ends_on.isoformat(), 'past 24 months', 1, 'threshold', source='fixtures.market_trends', simulated=False, freshness_days=0,
+                  months_since_ours=r['months_since_ours'])]
+        nw = r['newest'] or {}
+        last = f' Our last launch there was {r["months_since_ours"]:.0f} months ago.' if r['months_since_ours'] is not None else ' Nothing of ours launched there on file.'
+        sentence = (f'{", ".join(r["brands_24m"])} launched {r["theirs_24m"]} time{"s" if r["theirs_24m"] != 1 else ""} in {r["label"].lower()} over 24 months '
+                    f'({r["theirs_12m"]} in the last 12), newest {nw.get("brand")} {nw.get("date")}: {(nw.get("what") or "")[:90]}.{last}')
+        f = _finding('PROD-R33', r['key'], ends_on, 'medium', ev, sentence, None, 0.6, [], money_reason='an unlaunched SKU has no baseline; the lane\'s net sales are in the trend strip')
+        f['entity'] = {'type': 'metric', 'id': r['key'], 'label': r['label'], 'brands': r['brands_24m'], 'theirs_12m': r['theirs_12m'], 'theirs_24m': r['theirs_24m'], 'newest': nw, 'months_since_ours': r['months_since_ours']}
+        f['id'] = f'{SCREEN}.PROD-R33.{r["key"]}'
         out.append(f)
     return out

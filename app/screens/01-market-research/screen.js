@@ -802,12 +802,45 @@
         stance ? { label: 'Decide the stance', onClick: () => openAction(stance) } : spreads.length && actionFor(spreads[0].finding_id) ? { label: 'Check the first', onClick: () => openAction(actionFor(spreads[0].finding_id)) } : null));
   }
 
+  function cadenceBlock(c) {
+    if (!c || !c.brands.length) return UI.emptyState({ screen: SLUG, title: 'No launches on file', text: 'The web pass keeps competitor launches with a url and a date. Run it for this brand.', missing: ['web_pass'] });
+    const brands = c.brands;
+    const chart = Charts.bar({ title: 'Launches per brand, last 12 and 24 months', labels: brands.map((b) => b.brand.length > 12 ? b.brand.slice(0, 11) + '.' : b.brand), unit: 'n',
+      series: [{ name: 'last 12 months', values: brands.map((b) => b.n_12m) }, { name: 'last 24 months', values: brands.map((b) => b.n_24m) }],
+      note: 'Public launches from the web pass, ' + (c.launches_read || 0) + ' read, a url and a date on each. Press-covered launches, not a full catalogue; small brands under-count.' });
+    const ours = c.ours || {};
+    const line = ours.n_12m != null ? 'Our cadence: ' + ours.n_12m + ' launch' + (ours.n_12m === 1 ? '' : 'es') + ' in 12 months' + (c.competitor_median_12m != null ? ' against a competitor median of ' + c.competitor_median_12m : '') + (ours.months_since_last != null ? ', last one ' + ours.months_since_last.toFixed(0) + ' months ago.' : '.') : 'Our cadence: unavailable.';
+    const vt = { in_play: 'In play, none of ours', matched: 'Matched', watch: 'Watch', quiet: 'Quiet', proof: 'Proof lane', not_sold: 'Not sold' };
+    const vrows = c.lanes.map((r) => { const a = actionFor(r.finding_id) || actionFor(SLUG + '.PROD-R06.' + r.key); return Object.assign({}, r, {
+      theirs: r.theirs_24m ? r.theirs_12m + ' in 12 months, ' + r.theirs_24m + ' in 24 (' + r.brands_24m.join(', ') + ')' : 'none',
+      newestText: r.newest ? r.newest.brand + ' ' + r.newest.date + ': ' + (r.newest.what || '').slice(0, 70) : 'none',
+      oursText: r.our_last ? r.our_last.date + ': ' + (r.our_last.what || '').slice(0, 60) + (r.months_since_ours != null ? ' (' + r.months_since_ours.toFixed(0) + ' months ago)' : '') : 'none on file',
+      soldText: r.sold == null ? NA : r.sold ? 'yes' : 'no',
+      actions: [r.verdict === 'in_play' && a ? { label: 'Brief the next SKU', onClick: () => openAction(a) } : { label: r.verdict === 'matched' ? 'Holding' : r.verdict === 'not_sold' ? 'Not ours' : r.verdict === 'proof' ? 'Proof, not a SKU' : 'Watch', cls: 'quiet', onClick: () => {} }] }); });
+    const tbl = UI.verdictTable({
+      columns: [{ key: 'label', label: 'Lane' }, { key: 'theirs', label: 'Competitor launches' }, { key: 'newestText', label: 'Newest of theirs' }, { key: 'oursText', label: 'Our last launch there' }, { key: 'soldText', label: 'We sell it' }],
+      rows: vrows,
+      verdict: { at: 1, kind: (r) => r.verdict === 'in_play' ? 'fix' : r.verdict === 'matched' ? 'keep' : (r.verdict === 'not_sold' || r.verdict === 'proof') ? 'na' : 'watch', text: (r) => vt[r.verdict], reason: (r) => c.rule },
+      actions: { label: 'Do', onClick: () => {} }, sort: false });
+    const gaps = c.lanes.filter((r) => r.verdict === 'in_play');
+    const first = gaps.length ? (actionFor(gaps[0].finding_id) || actionFor(SLUG + '.PROD-R06.' + gaps[0].key)) : null;
+    return el('div', { class: 'stack' }, el('div', { class: 'grid two' }, el('div', { class: 'card' }, chart), el('div', { class: 'card flat scroll' }, el('h4', { text: 'Cadence by brand' }),
+      el('table', { class: 'small' }, el('thead', null, el('tr', null, ['Brand', '12 m', '24 m', 'Last', 'Lanes', 'Median price'].map((h) => el('th', { text: h })))),
+        el('tbody', null, brands.map((b) => el('tr', null, el('td', { text: b.brand + (b.self ? ' (us)' : '') }), el('td', { class: 'num', text: String(b.n_12m) }), el('td', { class: 'num', text: String(b.n_24m) }), el('td', { text: b.last + ' (' + b.months_since_last.toFixed(0) + ' mo)' }), el('td', { text: b.lanes.join(', ') }), el('td', { class: 'num', text: b.median_price == null ? NA : fmt.money(b.median_price) }))))),
+      el('p', { class: 'small', text: line }))),
+      el('div', { class: 'card scroll' }, tbl),
+      el('p', { class: 'micro faint', text: 'Rule: ' + c.rule + '. Proof lanes (guarantee, creator) are claims, not SKUs, and never read as in play. A month reads as its 15th, a bare year as 1 July.' }),
+      gapLine(gaps.length ? gaps.length + ' lane' + (gaps.length === 1 ? ' we sell is' : 's we sell are') + ' in play with nothing of ours launched there in 24 months: ' + gaps.map((r) => r.label.toLowerCase()).join(', ') + '.' : 'No lane we sell has competitor launches without one of ours.',
+        first ? { label: 'Brief the first', onClick: () => openAction(first) } : null));
+  }
+
   function loadDesk(o) {
     const d = o.desk || {};
     const w = (o.window || {}).trend;
     const parts = [];
     parts.push(section('desk-trends', 'Where is the category going, and which lane is under-advertised?', 'Public market sizes and growth from the web pass, a url and a date on every number, against our category mix over 12 whole months. Sales are simulated; markets are public.', trendsBlock(d.trends || { on_file: false }, d.mix || {})));
     parts.push(section('desk-lanes', 'Which lanes are competitors betting on, and what launched?', 'Competitor pages from the Ad Library pull in the brain, by lane: who pushes it, how long their ads have run, what launched in the last 24 months, and whether we sell and advertise it.', lanesBlock(d.lanes)));
+    parts.push(section('desk-cadence', 'Who launches, how often, and where are we quiet?', 'Competitor launches from the web pass by brand and by lane over 12 and 24 months, against our own cadence; a lane we sell where they keep launching and we have not is in play.', cadenceBlock(d.cadence)));
     parts.push(section('desk-conversation', 'What are people talking about, and what goes unanswered?', 'Themes across reviews (site, Amazon, Trustpilot, retailers), Reddit and an Instagram hashtag pull: volume, complaint against praise, the top doubt, and whether the site and the active ads answer it.', conversationBlock(d.conversation)));
     parts.push(section('desk-surfaces', 'Where do buyers talk, and where are we absent?', 'Each subreddit in the Reddit pull, each review source in the ladders and each social surface the brand names: reach on file, tone, the loudest theme, and whether any brand record shows us there. Counts only; no usernames.', surfacesBlock(d.surfaces)));
     parts.push(section('desk-preferences', 'Which preferences are shifting, and where do we stand on each?', 'Public survey numbers from the web pass against our own claims, our active ads, the competitors\' pitches and the category conversation.', preferencesBlock(d.preferences)));

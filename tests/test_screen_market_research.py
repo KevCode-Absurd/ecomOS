@@ -262,7 +262,7 @@ class RulesTest(ShapeMixin, unittest.TestCase):
             elif 'PROD-R32' in rules:
                 self.assertTrue(rules <= {'PROD-R31', 'PROD-R32'}, rules)   # one Amazon stance card
             else:
-                self.assertTrue(rules <= {'PROD-R05', 'PROD-R06', 'PROD-R20'}, rules)   # one brief per lane
+                self.assertTrue(rules <= {'PROD-R05', 'PROD-R06', 'PROD-R20', 'PROD-R33'}, rules)   # one brief per lane
         covered = [fid for a in acts for fid in a['finding_ids']]
         self.assertEqual(len(covered), len(set(covered)))   # one action per finding
 
@@ -880,6 +880,46 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
         for f in found:
             self.assertIsNone(f['money_at_stake'])
             self.check_shape(f)
+
+    def test_launch_cadence(self):
+        D = date(2026, 9, 27)
+        self.assertEqual(audit.launch_date('2026-09-24'), date(2026, 9, 24))
+        self.assertEqual(audit.launch_date('2026-09'), date(2026, 9, 15))
+        self.assertEqual(audit.launch_date('2025'), date(2025, 7, 1))
+        self.assertIsNone(audit.launch_date('soon'))
+        self.assertAlmostEqual(audit.months_between(date(2025, 9, 27), D), 12.0, places=2)
+        fx = {'captured_at': '2026-09-28', 'markets': [], 'preferences': [], 'launches': [
+            {'brand': 'Rival A', 'what': 'merino crew', 'sub_category': 'merino', 'date': '2026-08', 'price_usd': 25, 'channel': 'dtc', 'sources': [{'url': 'https://a'}]},
+            {'brand': 'Rival B', 'what': 'merino hiker', 'sub_category': 'merino', 'date': '2026-02-01', 'price_usd': 30, 'channel': 'dtc', 'sources': [{'url': 'https://b'}]},
+            {'brand': 'Rival A', 'what': 'compression calf', 'sub_category': 'compression', 'date': '2026-06', 'price_usd': None, 'channel': 'dtc', 'sources': []},
+            {'brand': 'Fake', 'what': 'compression calf of ours', 'sub_category': 'compression', 'date': '2025-12', 'price_usd': 20, 'channel': 'dtc', 'sources': []},
+            {'brand': 'Rival C', 'what': 'future thing', 'sub_category': 'merino', 'date': '2027-01', 'price_usd': None, 'channel': 'dtc', 'sources': []}]}
+
+        class FakeBrain:
+            brand = 'fake'
+
+            def records(self, sec):
+                if sec == 'products':
+                    return [{'text': 'We sell merino calf socks and compression socks.', 'value': {}}]
+                return []
+
+        saved = audit.market_trends
+        audit.market_trends = lambda: fx
+        try:
+            c = audit.launch_cadence(FakeBrain(), D)
+            self.assertEqual(c['launches_read'], 4)   # the future launch is dropped
+            self.assertEqual(c['ours'], {'n_12m': 1, 'n_24m': 1, 'months_since_last': 9.4})
+            self.assertEqual(c['competitor_median_12m'], 1.5)
+            lanes = {r['key']: r for r in c['lanes']}
+            self.assertEqual((lanes['merino']['verdict'], lanes['merino']['theirs_12m'], lanes['merino']['brands_24m']), ('in_play', 2, ['Rival A', 'Rival B']))
+            self.assertEqual(lanes['compression']['verdict'], 'matched')
+            self.assertEqual(lanes['guarantee']['verdict'], 'proof')
+            found = audit.cadence_findings(FakeBrain(), D)
+            self.assertEqual([f['id'] for f in found], [f'{audit.SCREEN}.PROD-R33.merino'])
+            self.assertIn('Rival A, Rival B launched 2 times', found[0]['sentence'])
+            self.check_shape(found[0])
+        finally:
+            audit.market_trends = saved
 
     def test_demand_pattern_tags(self):
         even = {'rows': [{'category': 'socks', 'series': [100] * 12}], 'months': [f'2026-{m:02d}' for m in range(1, 13)], 'last': '2026-12'}
