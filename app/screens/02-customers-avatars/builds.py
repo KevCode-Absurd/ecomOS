@@ -2926,6 +2926,12 @@ def avatar_page(a: dict, d: dict, forbidden: list[str], actions: list[dict], nam
                         (f". Size: {x['size']['text']}" if x.get("size") else "") + (f". Stop if {x['stop_rule']}" if x.get("stop_rule") else "") +
                         (f". Check on {x['check_on']}." if x.get("check_on") else ".") for i, x in enumerate(mine)]
               or [f"Next build: {a['next']['title']}."]})
+    decided = [x for x in actions if x.get("decision") and (a["name"] in x["title"] or key in str((x.get("entity") or {}).get("id"))
+                                                           or (x.get("entity") or {}).get("id") in rung_ids)]
+    said = {"agent": "the agent does it", "person": "sent to a person", "not_now": "not now"}
+    S.append({"title": "What we decided", "lines": [f"{x['title']}: {said.get(x['decision']['choice'], x['decision']['choice'])} on {str(x['decision']['time'])[:10]}"
+                                                   + (f", back on {x['decision']['back_on']}" if x["decision"].get("back_on") else "") + "."
+                                                   for x in decided] or ["Nothing decided on this avatar's moves yet."]})
     m = a.get("meta") or {}
     unknown = m.get("unknown") or []
     S.append({"title": "What we do not know yet", "lines": ([f"Checks not met: {', '.join(u.lower() for u in unknown)}."] if unknown else ["Every evidence check passes."]) +

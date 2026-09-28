@@ -1795,7 +1795,7 @@ class AvatarPage(TempBrain):
         r = api.handle(Req(['avatar', 'daily_compression_wearer', 'brief']))
         titles = [s['title'] for s in r['sections']]
         self.assertEqual(titles[0], 'At a glance')
-        self.assertEqual(len(titles), 8)
+        self.assertEqual(len(titles), 9)
         glance = ' '.join(r['sections'][0]['lines'])
         self.assertIn('Return risk, x median: 1.68x', glance)
         build = ' '.join(next(s for s in r['sections'] if s['title'] == 'What to build, in order')['lines'])
@@ -2075,7 +2075,7 @@ class BrowserSmoke(unittest.TestCase):
             for tab, n in out['tabs'].items():
                 self.assertGreater(n, 0, (brand, tab))
             self.assertGreaterEqual(out['report'], 6, brand)
-            self.assertEqual(out['avatar'], 8, brand)
+            self.assertEqual(out['avatar'], 9, brand)
             self.assertEqual(out['fold']['height'], 800)
             self.assertLessEqual(out['fold']['orient'], 800, brand)
             self.assertGreaterEqual(out['fold']['whole'], min(3, out['plan']), brand)
@@ -2201,3 +2201,29 @@ class WritingRulesEverywhere(TempBrain):
                 if len(sent.split()) >= 20:
                     bad.append(t)
         self.assertEqual(sorted(set(bad)), [])
+
+
+class DecisionsOnAvatarPage(TempBrain):
+    """Feature 9.3: the avatar page lists what was decided on this avatar's moves, with the date and the day a snooze ends."""
+
+    def setUp(self):
+        super().setUp()
+        self.dtmp = Path(tempfile.mkdtemp())
+        api.DECISIONS_PATH = self.dtmp / 'decisions.json'
+
+    def tearDown(self):
+        api.DECISIONS_PATH = None
+        shutil.rmtree(self.dtmp, ignore_errors=True)
+        super().tearDown()
+
+    def section(self):
+        r = api.handle(Req(['avatar', 'daily_compression_wearer', 'brief']))
+        return next(s for s in r['sections'] if s['title'] == 'What we decided')['lines']
+
+    def test_empty_then_listed(self):
+        self.assertEqual(self.section(), ["Nothing decided on this avatar's moves yet."])
+        a = next(x for x in api.rank('bombas', RANK_WINDOW)['actions'] if 'Daily Compression Wearer' in x['title'])
+        api.DECISIONS_PATH.write_text(json.dumps([{'finding_id': a['id'], 'choice': 'not_now', 'time': '2026-09-27T09:00:00Z'}]), encoding='utf-8')
+        lines = self.section()
+        self.assertEqual(len(lines), 1)
+        self.assertIn('not now on 2026-09-27, back on 2026-10-11', lines[0])
