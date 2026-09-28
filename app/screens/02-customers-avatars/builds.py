@@ -936,7 +936,7 @@ GAP_EXTRA_STOP = {"really", "just", "much", "well", "also", "even", "wear", "wor
                   "would", "could", "because", "these", "those", "there", "what", "when", "which", "while", "about", "other",
                   "brand", "brands", "product", "products", "item", "items", "order", "ordered", "time", "times", "feet", "foot",
                   "were", "your", "down", "made", "show", "long", "very", "best", "many", "still", "since", "first", "every",
-                  "been", "being", "didn", "doesn", "dont", "don", "wasn", "isn", "can", "get", "got", "make", "need", "want"}
+                  "most", "been", "being", "didn", "doesn", "dont", "don", "wasn", "isn", "can", "get", "got", "make", "need", "want"}
 
 
 def _lemma(w: str) -> str:
@@ -953,6 +953,14 @@ def _lemmas(text: str, brand_tokens: set[str]) -> set[str]:
                 any(len(b) >= 5 and w.startswith(b[:5]) for b in brand_tokens):
             continue
         out.add(_lemma(w))
+    return out
+
+
+def _surface(text: str) -> dict[str, str]:
+    """lemma to the first plain word it came from, for display."""
+    out = {}
+    for w in re.findall(r"[a-z]+", str(text or "").lower()):
+        out.setdefault(_lemma(w), w)
     return out
 
 
@@ -1422,3 +1430,53 @@ def paths(rows: list[dict] | None, reason: str | None = None) -> dict:
                                 {"n": 3, "who": "agent", "text": "Read the cell size next month."}]})
     return {"available": True, "products": prods, "median_repeat": med, "timing": timing, "rfm": rfm,
             "churn_move": round(churn_move, 4) if churn_move is not None else None, "moves": moves}
+
+
+# ---------------------------------------------------------------- perception gap: our words against theirs
+
+PERCEPTION_TOP = 20
+POSITIONING_FIELDS = ("frame", "category_frame", "price_frame", "proof_points", "one_line_pitch", "category")
+
+
+def perception(position_records: list[dict], lang_records: list[dict], brand_tokens: set[str], source_name) -> dict:
+    """Share of the top buyer words that our positioning also uses, and positioning words buyers never echo."""
+    def _val(r):
+        v = r.get("value")
+        return v if isinstance(v, str) else " ".join(x for x in v if isinstance(x, str)) if isinstance(v, list) else ""
+    ours_txt = " ".join(_val(r) for r in position_records if r.get("field") in POSITIONING_FIELDS)
+    ours = _lemmas(ours_txt, brand_tokens)
+    if not ours:
+        return {"available": False, "reason": "no positioning statement in the brain", "rows": []}
+    docs: dict[str, set] = {}
+    n = 0
+    for rec in lang_records:
+        v = rec.get("value") if isinstance(rec.get("value"), dict) else {}
+        for i, rv in enumerate(v.get("reviews") or []):
+            if source_name(rv.get("source") or "") == "Reddit" or not isinstance(rv.get("star"), int) or rv["star"] < 4:
+                continue
+            n += 1
+            for lm in _lemmas(" ".join([v.get("phrase") or "", rv.get("quote") or ""]), brand_tokens):
+                docs.setdefault(lm, set()).add(f"{rec['id']}.{i}")
+    top = sorted(docs.items(), key=lambda kv: (-len(kv[1]), kv[0]))[:PERCEPTION_TOP]
+    theirs = [{"word": w, "reviews": len(ids), "in_positioning": w in ours} for w, ids in top]
+    surf = _surface(ours_txt)
+    unechoed = sorted(surf.get(w, w) for w in ours if len(docs.get(w, ())) == 0)
+    echoed = sorted(((w, len(docs[w])) for w in ours if docs.get(w)), key=lambda x: -x[1])
+    score = sum(1 for t in theirs if t["in_positioning"]) / len(theirs) if theirs else None
+    missing = [t["word"] for t in theirs if not t["in_positioning"]][:5]
+    action = {"id": f"{SCREEN}.perception", "kind": "brain_record", "owner": "agent_drafts",
+              "title": "Rewrite the positioning line in the words buyers use",
+              "capability": {"id": "BRAND-C59", "autonomy": "agent_does"},
+              "draft": "\n".join(["DRAFT positioning check", f"Buyer words we do not use: {', '.join(missing) or 'none'}",
+                                  f"Our words buyers never say: {', '.join(unechoed[:8]) or 'none'}",
+                                  "Option A: keep the frame, add 1 buyer word to the lead line and test it in 2 ads.",
+                                  "Option B: move the unechoed words to proof points, not the lead line.",
+                                  "A person picks one. Nothing changes on the site before that."]),
+              "steps": [{"n": 1, "who": "agent", "text": "Draft 3 lead lines that keep the frame and use the buyer words."},
+                        {"n": 2, "who": "person", "text": "Pick one, or keep the current line."},
+                        {"n": 3, "who": "agent", "text": "Test the pick in 2 ads against the current line for 14 days."},
+                        {"n": 4, "who": "person", "text": "Approve the winner as a positioning record."}]}
+    return {"available": True, "score": round(score, 4) if score is not None else None, "theirs": theirs, "unechoed": unechoed,
+            "echoed": [{"word": w, "reviews": c} for w, c in echoed], "praise_reviews": n, "action": action,
+            "line": f"{round((score or 0) * 100)} percent of the top {len(theirs)} buyer words appear in our positioning. "
+                    f"{len(unechoed)} of our positioning words never show up in a praise review."}

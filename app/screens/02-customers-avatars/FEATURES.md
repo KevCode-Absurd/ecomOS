@@ -55,6 +55,21 @@ Web pass: Peel, Triple Whale, Lifetimely, Klaviyo predictive, Daasity RFM, Thema
 | 2.9 | Which first product brings buyers back and when to nudge them: gateway products (180-day repeat 1.3x the median first product or more, 100 or more first buyers) and dead ends (0.7x or less), the second-order path (next product at 15 percent or more of repeaters, email on its median day minus 5), win-back timing from the median order gap (due 1x, win-back 1.5x, lapsed 3x), and a save flow when the 3+ orders, 91 to 364 days cell grows 20 percent. Reads a `customer_paths` aggregate; tested on a fixture. Bombas shows the rules and an honest unavailable state until the aggregate exists (Contract asks) | done |
 | 2.10 | Six more audit rules (CUST-R11 review theme costs stars, R12 buyer words we never say, R13 provisional avatars with the survey as the fix, R14 under-researched avatar, R15 avatar moment within 45 days of its ads-live date, R16 order-level paths unavailable until the aggregate exists), all 16 firing on Bombas. `rank` pairs each with its drafted work; 38 actions pass `validate_action`. Helpers the page and the audit share moved into `audit.py`. Screenshot `round2.png` (gate, forces, survey) | done |
 
+## Round 3: brand side of the room (from 28 Sep 2026)
+
+| # | Feature | Status |
+|---|---|---|
+| 3.1 | Do buyers describe us the way we describe ourselves: the brain's positioning records (frame, category, price frame, proof points, pitch) against the top 20 words in praise reviews. Score = share of their top words our positioning uses; their words we lack in red; our words buyers never echo, and the ones they do. Brief it drafts 3 lead lines that keep the frame in buyer words, tested in 2 ads before a person approves a new positioning record. Bombas: 25 percent; soft, stay, wash, slip never appear; performance, engineered, extreme are never echoed | done |
+| 3.2 | Claims under fire: site claims whose words sit in one-star reviews, with the proof or copy fix | todo |
+| 3.3 | Lookalike page watch: impostor pages from the Ad Library pull, with the report and customer warning steps | todo |
+| 3.4 | Which offer answers which avatar: offers in the brain against each avatar's doubts, gaps briefed | todo |
+| 3.5 | Messaging hierarchy: one lead line, 3 proof points and 1 doubt answer, ranked from buyer evidence, as a brain record to approve | todo |
+| 3.6 | Does it sound like us: paste a line, get a pass or fail against the voice sheet, claims and writing rules | todo |
+| 3.7 | Brand health line: repeat, returning share and review signals by month, with the connect steps for the missing lines | todo |
+| 3.8 | Avatar one-pager: everything a creator or agency needs for one avatar, printable and copyable | todo |
+| 3.9 | Offer and doubt timing: which doubts peak in which months, from review dates, and what ships before | todo |
+| 3.10 | Audit rules and `rank` for round 3, screenshot `round3.png` | todo |
+
 ### Round 2 founder note (28 Sep 2026)
 
 1. You can now see which review themes cost stars (price and value, delivery, durability) and which earn them (comfort), each tied to its fix.

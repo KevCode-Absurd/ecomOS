@@ -382,6 +382,23 @@
     }));
   }
 
+  // ---------- desk: perception gap ----------
+  function renderPerception(x) {
+    if (!x.available) { mount('#perc-theirs', UI.emptyState({ screen: SLUG, title: 'Perception gap unavailable', text: x.reason })); return; }
+    document.getElementById('perc-sub').textContent = 'Our positioning records (frame, category, price frame, proof points, pitch) against the words in ' + x.praise_reviews +
+      ' praise reviews (4 and 5 star, Reddit left out). ' + x.line;
+    mount('#perc-tools', UI.orientation([{ label: 'buyer words we share', value: x.score, unit: '%', tone: x.score < 0.5 ? 'bad' : null }]),
+      el('button', { class: 'btn soft sm', type: 'button', text: 'Brief it', onclick: () => briefPanel(x.action) }));
+    mount('#perc-theirs', el('h4', { text: 'Their top words, and whether we use them' }),
+      el('div', { class: 'chips' }, ...x.theirs.map((t) => el('span', { class: 'chip ' + (t.in_positioning ? 'good' : 'bad'), text: t.word + ' ' + t.reviews }))),
+      el('p', { class: 'micro faint', text: 'Green: our positioning uses it. Red: buyers say it, our positioning does not.' }));
+    mount('#perc-ours', el('h4', { text: 'Our words buyers never echo' }),
+      el('div', { class: 'chips' }, ...x.unechoed.map((w) => el('span', { class: 'chip', text: w }))),
+      el('h4', { text: 'Our words buyers do echo' }),
+      el('div', { class: 'chips' }, ...x.echoed.slice(0, 12).map((e) => el('span', { class: 'chip good', text: e.word + ' ' + e.reviews }))),
+      el('p', { class: 'micro faint', text: 'Word stems, so read it as direction. Unechoed words can still be true; they belong in proof points, not the lead line.' }));
+  }
+
   // ---------- desk: hook bank ----------
   function renderHooks(h) {
     document.getElementById('hooks-sub').textContent = '2 to 4 word phrases in 3 or more distinct 4 and 5 star reviews, from ' + h.praise_reviews + ' praise reviews, Reddit left out. ' + h.line;
@@ -619,6 +636,7 @@
     renderCoverage(d.coverage, d.formats);
     renderLadders(d.ladders, d.avatars);
     renderGap(d.copy_gap);
+    renderPerception(d.perception);
     renderHooks(d.hooks);
     renderThemes(d.themes);
     renderWords(d.words, d.avatars);

@@ -828,5 +828,29 @@ class Round2Rules(TempBrain):
         self.assertFalse([x for x in f if x['rule_id'] == 'CUST-R15'])
 
 
+class Perception(TempBrain):
+    """Feature 3.1: positioning words against buyer praise words, both ways."""
+
+    def test_score_and_lists(self):
+        x = api.handle(Req(['overview']))['perception']
+        self.assertTrue(x['available'])
+        self.assertAlmostEqual(x['score'], sum(t['in_positioning'] for t in x['theirs']) / len(x['theirs']), places=3)
+        words = {t['word']: t for t in x['theirs']}
+        self.assertFalse(words['soft']['in_positioning'])
+        self.assertTrue(words['comfort']['in_positioning'])
+        self.assertIn('performance', x['unechoed'])
+        self.assertEqual(x['action']['steps'][-1]['who'], 'person')
+
+    def test_founder_frame_changes_score(self):
+        rows = self.section('positioning')
+        for r in rows:
+            if r['id'] == 'bombas.positioning.frame':
+                r['value'] = r['value'] + ', soft socks that stay in place and never slip'
+        self.write('positioning', rows)
+        words = {t['word']: t for t in api.handle(Req(['overview']))['perception']['theirs']}
+        self.assertTrue(words['soft']['in_positioning'])
+        self.assertTrue(words['slip']['in_positioning'])
+
+
 if __name__ == '__main__':
     unittest.main()
