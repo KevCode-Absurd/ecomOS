@@ -122,6 +122,21 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 | 1.9 | Files in, deeper (`ingest.py`, `POST documents`, `POST documents/extract`): a text or markdown file is read by rules (headings set the section, key: value lines, bullets, tried-and-failed sentences to learnings, never-say sentences to claims as forbidden, decided sentences to decisions) into proposed records with the file as source, the date and the line as evidence; nothing reaches the brain until accepted in the review queue; the files table shows waiting, accepted, sections and what each file changed; binary files and urls are kept as they are; no model call | done | Drop call notes or a brand book and see exactly which records it would add, then accept them one by one |
 | 1.10 | `rank(brand, window)` in `api.py` (`ranking.py`): real titles, steps, artefacts, sizes, stop rules and check dates for BRN-R01 to R12, drafts on the angle briefs, owners by what ships (briefs draft and you approve, refreshes run, conflicts and claims are yours), reputation overrides as documented in `audit.py`; picked up by `app/rank.py` for the rank route and the master list. Flow proof (`GET flows`): per profile section, which screens read it (code scan), which read the T0 card, approved count and last founder edit; last read is unavailable until reads are logged | done | The master list now reads as work: "Brief the durability angle: 3 competitor pages run it, we run 0" with the brief attached; an edit's reach is visible |
 
+## Round 3 (manager, 28 Sep 2026): 10 features, one commit each
+
+| # | Feature | Status | What a founder can do |
+|---|---|---|---|
+| 3.1 | What changed this week (`changes.py`, `GET changes`): every write through this screen (edit, answer, approve, forbid, file, proposal accepted or ignored, conflict, contract, permission, snippet, example, page id) and every site snapshot and site change lands as a `changes` record with the value before and after; the timeline for the week; version steps (brain hash before and after each write) in `review/versions.json` | done | Read one list after a week away and know what moved and who moved it |
+| 3.2 | Where is it used (`GET dependents`): the fact-to-asset trace from records only: other records carrying the same number or code next to the same words, ladder rungs citing it as proof, questions it answered, snippets built on it, and the brand's own ads that carry the code; a site change logs its dependents; trace buttons on the profile | done | See that the first order code sits in 21 of 23 active ads before changing it |
+| 3.3 | Assumptions register | todo | |
+| 3.4 | Store facts for shopping agents | todo | |
+| 3.5 | Channel rule sets in the scanner | todo | |
+| 3.6 | T1 summaries and the package an agent reads | todo | |
+| 3.7 | Edit-to-voice learning | todo | |
+| 3.8 | Weekly brain report | todo | |
+| 3.9 | Review queue with before and after, grouped, bulk | todo | |
+| 3.10 | Founder round digest | todo | |
+
 ### Round 2 status for Kevin (28 Sep 2026)
 
 1. What you can do now: decide what we can say and check any draft before it ships (forbidden phrases and stale numbers block); see the day a price, policy or claim moved on the site and what to update; set your MAP and seller names and get the notice drafted for every Amazon listing that breaks them; put vendor contracts on file and get the renegotiation brief before the notice deadline; gate an email, ad or page for US disclosures; teach agents your voice with examples and lock the 6 lines that must never drift; hand CX and copy a battlecard per competitor; ask the brain a plain question and get a sourced answer; set who sees which section and export the whole brain.

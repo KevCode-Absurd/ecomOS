@@ -1130,3 +1130,46 @@ class Round2PermissionsExport(TempBrain):
         self.assertTrue(b['router_md'].startswith('#') or b['router_md'] == '')
         self.assertEqual(b['version'], api.Brain('bombas', self.tmp, dt.date.fromisoformat(DAY)).version())
         self.assertIn('revoke', b['note'])
+
+
+class Round3ChangesTrace(TempBrain):
+    """Round 3 features 1 and 2: the changes log with versions, and the fact-to-asset trace."""
+
+    def test_every_write_logs_a_change_with_before(self):
+        self.assertEqual(api.handle(Req(['changes']))['counts']['total'], 0)
+        api.handle(Req(['profile', 'offers', 'free_shipping_threshold_usd'], 'POST', body={'text': '80'}))
+        api.handle(Req(['approve', 'bombas.positioning.frame'], 'POST', body={'choice': 'approve'}))
+        api.handle(Req(['documents'], 'POST', body={'name': 'n.md', 'text': '# Offers\nBundle: 4 pack saves 10 percent'}))
+        ch = api.handle(Req(['changes']))
+        kinds = [x['kind'] for x in ch['changes']]
+        self.assertIn('founder_edit', kinds)
+        self.assertIn('approve', kinds)
+        self.assertIn('document', kinds)
+        edit = next(x for x in ch['changes'] if x['kind'] == 'founder_edit')
+        self.assertEqual((edit['before'], edit['after'], edit['section']), ('75', '80.0', 'offers'))
+        self.assertGreaterEqual(ch['counts']['week'], 3)
+        self.assertGreaterEqual(len(ch['versions']), 2)
+        self.assertNotEqual(ch['versions'][0]['before'], ch['versions'][0]['after'])
+        self.assertTrue((self.tmp / 'bombas' / 'changes.json').is_file())
+
+    def test_site_change_logs_with_dependents(self):
+        api.handle(Req(['site', 'diff']))
+        Round2SiteDiff.second_crawl(self)
+        api.handle(Req(['site', 'snapshot'], 'POST', body={}))
+        ch = api.handle(Req(['changes']))
+        site = next(x for x in ch['changes'] if x['kind'] == 'site')
+        self.assertIn('75 to 80', site['what'])
+        self.assertIn('Depends on it', site['what'])
+        self.assertEqual(site['source'], 'site crawl')
+
+    def test_dependents_find_ads_rungs_and_snippets(self):
+        d = api.handle(Req(['dependents'], query={'record': ['bombas.offers.first_order_code_confirmed']}))
+        self.assertEqual(d['ads'], 23)
+        self.assertTrue(any(x['kind'] == 'ads' and '21 active ads' in x['surfaces'] for x in d['dependents']))
+        d = api.handle(Req(['dependents'], query={'record': ['bombas.claims.calf_socks_benefit']}))
+        self.assertEqual(d['counts'].get('rung'), 2)
+        api.handle(Req(['voice', 'snippet', 'free_shipping'], 'POST', body={'text': 'Free shipping on orders over $75.'}))
+        d = api.handle(Req(['dependents'], query={'record': ['bombas.offers.free_shipping_threshold_usd']}))
+        self.assertIn('snippet', d['counts'])
+        self.assertEqual(api.handle(Req(['dependents'], query={'record': ['nope']}))[0], 400)
+        self.assertIn('reason', api.handle(Req(['dependents'], query={'record': ['bombas.offers.nope']})))

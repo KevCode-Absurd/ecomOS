@@ -72,6 +72,9 @@ question, and accept or ignore on a proposed record. Nothing external.
   GET  permissions              sections by role (founder, in-house, agency, specialist), restricted by default
   POST permissions/<section>    {roles: {role: full | read | none}}: a founder record team.permission_<section>
   GET  export                   the whole brain as one portable JSON (records, manifest, router, conflicts)
+  GET  changes                  the changes log (every write through this screen and every site change), newest
+                                first, with counts for the week and the version steps
+  GET  dependents?record=<id>   what depends on one fact: records, ladder rungs, questions, snippets, ads
   GET  records?section=<name>   one section's records with tier, date, source and evidence
   GET  audit                    findings from audit.py (app/contracts/audit.md shape)
   POST questions/<field>        {answer}: writes a founder record, marks the question answered
@@ -113,6 +116,9 @@ _spec.loader.exec_module(audit)
 _hspec = importlib.util.spec_from_file_location("brand_brain_health", HERE / "health.py")
 health = importlib.util.module_from_spec(_hspec)
 _hspec.loader.exec_module(health)
+_gspec = importlib.util.spec_from_file_location("brand_brain_changes", HERE / "changes.py")
+changes = importlib.util.module_from_spec(_gspec)
+_gspec.loader.exec_module(changes)
 _bspec = importlib.util.spec_from_file_location("brand_brain_battlecards", HERE / "battlecards.py")
 battlecards = importlib.util.module_from_spec(_bspec)
 _bspec.loader.exec_module(battlecards)
@@ -375,7 +381,7 @@ def conflict_resolve(brain: Brain, cid: str, body: dict):
     rec = {"id": rid, "brand": brain.brand, "section": section, "field": field, "value": value, "text": rec_text,
            "tier": "approved", "confidence": 1.0, "visibility": "private",
            "source": {"type": "founder", "ref": f"05-brand-brain conflict decision on {cid}", "captured_at": brain.today.isoformat()}}
-    errs = founder_put(brain, rec)
+    errs = founder_put(brain, rec, kind="conflict", what=f"{section} {field}: kept {str(rec_text)[:80]}")
     if errs:
         return 400, {"error": "record not valid", "details": errs}
     c.update(status="resolved_by_founder", kept=rid, needs_founder=False, resolved_at=brain.today.isoformat(),
@@ -486,11 +492,17 @@ def overview(brain: Brain) -> dict:
 FOUNDER_LANE = "z-founder"
 
 
-def founder_put(brain: Brain, rec: dict) -> list[str]:
-    """Write a founder record to its section file and to raw/z-founder/<section>.json, so merge.py keeps it on a re-merge."""
+def founder_put(brain: Brain, rec: dict, kind: str = "founder_edit", what: str | None = None) -> list[str]:
+    """Write a founder record to its section file and to raw/z-founder/<section>.json, so merge.py keeps it on a re-merge.
+    Logs one changes record (with the value before, when the record existed) and a version step."""
+    before_v = brain.version()
+    old = next((r for r in brain.raw(rec["section"]) if r.get("id") == rec["id"]), None)
     errs = brain.put(rec)
     if errs:
         return errs
+    changes.log(brain, kind, rec["section"], rec["id"], what or f"{rec['section'].replace('_', ' ')} {(rec.get('field') or '').replace('_', ' ')}: {str(rec.get('text') or rec.get('value'))[:120]}",
+                before=(old.get("value") if old else None), after=rec.get("value"))
+    changes.version_step(brain, before_v, what or f"{kind} {rec['id']}")
     lane = brain.dir / "raw" / FOUNDER_LANE
     try:
         lane.mkdir(parents=True, exist_ok=True)
@@ -525,7 +537,7 @@ def answer(brain: Brain, field: str, body: dict):
            "text": text, "tier": "approved", "confidence": 1.0, "visibility": "private",
            "source": {"type": "founder", "ref": f"05-brand-brain answer to {oq['id']}",
                       "captured_at": brain.today.isoformat()}}
-    errs = founder_put(brain, rec)
+    errs = founder_put(brain, rec, kind="answer", what=f"answered {oq['id']}: {text[:100]}")
     if errs:
         return 400, {"error": "record not valid", "details": errs}
     v.update(answered_on=brain.today.isoformat(), answer_record=rid)
@@ -547,10 +559,12 @@ def review(brain: Brain, rid: str, body: dict):
         return 404, {"error": "no proposed record", "id": rid}
     if choice == "ignore":
         brain.retire(rid)
+        changes.log(brain, "ignored", parts[1], rid, f"ignored {rid}")
         return {"ok": True, "id": rid, "status": "retired"}
     errs = brain.put(dict(rec, status="active"))
     if errs:
         return 400, {"error": "record not valid", "details": errs}
+    changes.log(brain, "accepted", parts[1], rid, f"accepted {rid}: {str(rec.get('text') or rec.get('value'))[:100]}", after=rec.get("value"))
     return {"ok": True, "id": rid, "status": "active"}
 
 
@@ -696,6 +710,7 @@ def document_add(brain: Brain, body: dict):
         result = extract_document(brain, line, data)
     manifest.append(line)
     (ddir / "manifest.json").write_text(json.dumps(manifest, indent=1), encoding="utf-8")
+    changes.log(brain, "document", None, None, f"{target.name} ({len(data)} bytes)" + (f", {result['proposed']} records proposed" if result else ""))
     if result:
         nxt = (f"Read it: {result['proposed']} records proposed into the review queue ({', '.join(result['sections']) or 'none'}). "
                f"{result['forbidden']} marked forbidden. Nothing reaches the brain until you accept it.") if result["proposed"] else "Read it: nothing to propose. Kept as a file."
@@ -766,7 +781,7 @@ def approve(brain: Brain, rid: str, body: dict):
     new = dict(rec, tier="approved" if choice == "approve" else "forbidden", confidence=1.0, status="active", history=hist,
                source={"type": "founder", "ref": f"05-brand-brain {choice} of {rid}", "captured_at": brain.today.isoformat(), "was": was})
     new.pop("expires_at", None)
-    errs = founder_put(brain, new)
+    errs = founder_put(brain, new, kind=choice, what=f"{rid} {choice}d: {rec.get('tier')} to {new['tier']}")
     if errs:
         return 400, {"error": "record not valid", "details": errs}
     return 201, {"ok": True, "record": rid, "tier": new["tier"], "was": rec.get("tier"), "version": brain.version()}
@@ -1012,6 +1027,15 @@ def handle(req):
         ends = (brain.today - dt.timedelta(days=1)).isoformat()
         findings = audit.run(brain.brand, {"ends_on": ends, "days": 1, "trailing": 0}, BRAIN_ROOT)
         return {"findings": findings, "rules": audit.RULES, "brain_version": brain.version()}
+    if req.method == "GET" and parts == ["changes"]:
+        ch = changes.recent(brain)
+        ch.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())
+        return ch
+    if req.method == "GET" and parts == ["dependents"]:
+        rid = req.arg("record", "") or ""
+        if not re.fullmatch(r"[a-z0-9_-]+\.[a-z_]+\.[A-Za-z0-9_.-]{1,120}", rid):
+            return 400, {"error": "record must be a record id"}
+        return changes.dependents(brain, rid)
     if req.method == "GET" and parts == ["permissions"]:
         pm = health.permissions(brain)
         pm.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())
@@ -1069,6 +1093,13 @@ def handle(req):
         return sd
     if req.method == "POST" and parts == ["site", "snapshot"]:
         res = sitediff.take(brain, (req.body or {}).get("date") or None)
+        if res.get("ok"):
+            sd = sitediff.diff(brain)
+            changes.log(brain, "snapshot", "site_map", None, f"snapshot {res['date']}, {res['records']} records" + (f", {sd['counts']['changes']} changes since {sd['old']}" if sd.get("pair") else ""))
+            for c in (sd.get("changes") or []):
+                if not c.get("reviewed"):
+                    dep = changes.dependents(brain, c["id"])
+                    changes.log(brain, "site", c["section"], c["id"], f"{c['section']} {c.get('field') or ''} {c['change']}: {c['old_text']} to {c['new_text']}. Depends on it: {dep['summary']}", source="site crawl", before=c["old"], after=c["new"])
         return (201, res) if res.get("ok") else (400, res)
     if req.method == "POST" and parts == ["site", "reviewed"]:
         ids = [str(i) for i in ((req.body or {}).get("ids") or []) if isinstance(i, str)]

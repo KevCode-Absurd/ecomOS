@@ -52,6 +52,7 @@
         el('div', { class: 'grid' }, ...inProgress.slice(0, 10).map((a) => UI.actionCard(a, { compact: true, screen: SCREEN, showScreen: true, onDecision: () => loadPlan(prof) }))));
     } else pw.hidden = true;
     loadDecisions(m);
+    loadChanges();
     const con = m.connect || [];
     const cw = document.getElementById('connect-wrap');
     if (con.length) {
@@ -171,6 +172,29 @@
     mount('#decisions', UI.timeline(items.slice(0, 30)), items.length > 30 ? el('div', { class: 'micro faint', text: (items.length - 30) + ' older entries not shown.' }) : null);
   }
 
+  // ---------- 1c. what changed this week ----------
+  const KIND_TONE = { site: 'warn', founder_edit: 'good', answer: 'good', approve: 'good', forbid: 'bad', conflict: 'accent', document: 'info', proposed: 'info', accepted: 'good', ignored: null, snapshot: 'info' };
+  async function loadChanges() {
+    let ch;
+    try { ch = await api(BASE + 'changes'); } catch (e) { mount('#changes', el('p', { class: 'muted', text: 'Changes unavailable: ' + e.message })); return; }
+    const c = ch.counts;
+    mount('#changes-tools', UI.orientation([{ label: 'this week', value: c.week, unit: 'n' }, { label: 'site changes', value: c.by_kind.site || 0, unit: 'n', tone: c.by_kind.site ? 'bad' : null }, { label: 'your edits', value: (c.by_kind.founder_edit || 0) + (c.by_kind.answer || 0) + (c.by_kind.approve || 0), unit: 'n' }, { label: 'all time', value: c.total, unit: 'n' }, { label: 'versions', value: ch.versions.length, unit: 'n', title: 'version steps logged' }]));
+    const items = ch.week.length ? ch.week : ch.changes.slice(0, 20);
+    mount('#changes', ch.changes.length ? UI.timeline(items.map((x) => ({ when: x.date, who: x.source, tone: KIND_TONE[x.kind] || null, title: x.label, text: x.what + (x.before != null && x.after != null ? ' (before: ' + x.before + ')' : '') })))
+      : el('p', { class: 'muted', text: 'No change logged yet. Every edit, answer, approval, file and site snapshot lands here.' }),
+      !ch.week.length && ch.changes.length ? el('div', { class: 'micro faint', text: 'Nothing in the last ' + ch.days + ' days; showing the latest 20.' }) : null);
+  }
+  function tracePanel(rid) {
+    const body = el('div', { class: 'stack' }, el('p', { class: 'muted small', text: 'Loading.' }));
+    const panel = UI.panel({ title: 'Where ' + rid + ' is used', body });
+    api(BASE + 'dependents?record=' + encodeURIComponent(rid)).then((d) => {
+      mount(body, el('div', null, el('b', { text: d.summary + '. ' }), 'Value: ' + (d.value || NA)),
+        d.dependents.length ? UI.table({ columns: [{ key: 'kind', label: 'Kind' }, { key: 'label', label: 'What' }, { key: 'why', label: 'Why' }, { key: 'surf', label: 'Surfaces', format: (v, r) => (r.surfaces || []).map(pretty).join(', ') }, { key: 'id', label: 'Record' }], rows: d.dependents, sort: false }) : null,
+        el('div', { class: 'micro faint', text: d.note }));
+    }).catch((e) => mount(body, el('p', { class: 'muted', text: 'Could not trace: ' + e.message })));
+    return panel;
+  }
+
   // ---------- 2. the profile, editable ----------
   function profileSection(sec) {
     const wrap = el('div', { class: 'profile-sec' });
@@ -184,6 +208,8 @@
         onSave: async (text) => api(BASE + 'profile/' + sec.section + '/' + encodeURIComponent(f.key), { method: 'POST', body: { text } }),
       }));
     }
+    const withRecord = sec.fields.filter((f) => f.record_id);
+    if (withRecord.length) wrap.append(el('div', { class: 'row trace' }, el('span', { class: 'micro faint', text: 'Where is it used?' }), ...withRecord.map((f) => el('button', { class: 'btn xs soft', type: 'button', text: pretty(f.key), onclick: () => tracePanel(f.record_id) }))));
     const addKey = el('input', { class: 'text sm', placeholder: 'new field, like target_customer', style: { maxWidth: '240px' } });
     const addVal = el('input', { class: 'text sm', placeholder: 'value', style: { flex: '1 1 200px' } });
     const addBtn = el('button', { class: 'btn sm', type: 'button', text: 'Add field' });
