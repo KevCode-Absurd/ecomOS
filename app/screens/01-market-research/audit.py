@@ -214,6 +214,9 @@ Rules
   PROD-R59  Quick screen skipped: an open candidate with research hours logged, or past screened, whose 10-point quick screen
             is not complete (bank idea PRD-120: minutes on the quick screen before any tool time or deep research).
             Money: null. Capability PROD-C01
+  PROD-R60  Supplier not verified: a candidate with a first run decided whose chosen sourcing channel names a supplier that is
+            not verified reachable on the platform named (bank idea PRD-102: a shortlist can name a supplier that is not
+            listed where claimed). Money: null. Capability PROD-C13
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -346,6 +349,7 @@ RULES = [
     {'rule_id': 'PROD-R57', 'name': 'Candidate at gated or later with no cost floor check, or a landed cost more than twice the floor seen', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline', 'finance_inputs'], 'capability': 'PROD-C08', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R58', 'name': 'Candidate at go or with a launch target and no post-launch metric, floor, read date and owner', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C11', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R59', 'name': 'Candidate with hours logged or past screened whose 10-point quick screen is incomplete', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C01', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R60', 'name': 'First run decided on a chosen channel whose supplier is not verified reachable on the platform named', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C13', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -405,7 +409,8 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R56': {'id': 'PROD-C13', 'autonomy': 'agent_does'},
               'PROD-R57': {'id': 'PROD-C08', 'autonomy': 'agent_does'},
               'PROD-R58': {'id': 'PROD-C11', 'autonomy': 'founder_gate'},
-              'PROD-R59': {'id': 'PROD-C01', 'autonomy': 'agent_does'}}
+              'PROD-R59': {'id': 'PROD-C01', 'autonomy': 'agent_does'},
+              'PROD-R60': {'id': 'PROD-C13', 'autonomy': 'agent_does'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -727,6 +732,7 @@ SHARED_HANDOFFS_PATH = APP / 'data' / 'handoffs.json'   # the shared append-only
 STAGES = ['screened', 'researched', 'gated', 'shortlisted', 'go']
 CLOSED_STAGES = ('go', 'killed', 'kill')
 SCREEN_CHECKS = ('demand', 'competition', 'store_fit')
+CHECK_VALUES = ('pass', 'caution', 'fail')   # bank idea PRD-111: a caution is a fixable concern (branding, formula), a fail is a red flag; only fails count toward the demand screen rule
 SCREEN_FAIL_AT = 2
 
 
@@ -746,8 +752,9 @@ def candidate_view(r, ends_on):
     box = r.get('time_box_days')
     checks = r.get('screen_result') or {}
     failed = [k for k in SCREEN_CHECKS if checks.get(k) == 'fail']
-    unchecked = [k for k in SCREEN_CHECKS if checks.get(k) not in ('pass', 'fail')]
-    return dict(r, age_days=age, days_left=(box - age) if box is not None and age is not None else None,
+    cautions = [k for k in SCREEN_CHECKS if checks.get(k) == 'caution']
+    unchecked = [k for k in SCREEN_CHECKS if checks.get(k) not in CHECK_VALUES]
+    return dict(r, age_days=age, days_left=(box - age) if box is not None and age is not None else None, caution_checks=cautions,
                 over_box=bool(box is not None and age is not None and age > box and r.get('stage') not in CLOSED_STAGES),
                 failed_checks=failed, unchecked_checks=unchecked, stage_index=STAGES.index(r['stage']) if r.get('stage') in STAGES else None,
                 closed=r.get('stage') in CLOSED_STAGES)
@@ -1003,6 +1010,7 @@ def _run_audit(brand, ends_on, data):
     out += cost_floor_findings(brand, data, br, rd, ends_on)
     out += post_launch_findings(brand, ends_on)
     out += quick_screen_findings(brand, ends_on)
+    out += supplier_findings(brand, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -2687,11 +2695,14 @@ def shortlist_weights(br):
 def score_candidate(cand, gates_row, gate, pattern, spend_rows):
     """Each criterion 0 to 5 from fields that already exist, None when its input is missing (scored at the neutral 2.5, written down)."""
     checks = cand.get('screen_result') or {}
-    passed = sum(1 for k in SCREEN_CHECKS if checks.get(k) == 'pass')
-    ran = sum(1 for k in SCREEN_CHECKS if checks.get(k) in ('pass', 'fail'))
+    passed = sum(1 for k in SCREEN_CHECKS if checks.get(k) == 'pass') + 0.5 * sum(1 for k in SCREEN_CHECKS if checks.get(k) == 'caution')   # a caution scores half a pass (bank idea PRD-111)
+    ran = sum(1 for k in SCREEN_CHECKS if checks.get(k) in CHECK_VALUES)
     lanes = [r for r in spend_rows if cand.get('name') in r.get('candidates', [])]
     funded = any(r['verdict'] == 'funded' for r in lanes)
-    demand = None if ran == 0 else min(5, {0: 0, 1: 1, 2: 3, 3: 4}[passed] + (1 if funded else 0))
+    ladder = {0: 0, 1: 1, 2: 3, 3: 4}
+    lo = int(passed)
+    base = ladder[lo] if passed == lo else (ladder[lo] + ladder[min(3, lo + 1)]) / 2
+    demand = None if ran == 0 else min(5, round(base) + (1 if funded else 0))
     if gate.get('unavailable') or gate.get('floor_pct') is None:
         margin = None
     else:
@@ -4806,7 +4817,7 @@ def launch_readiness(brand, data, br, rd, ends_on):
         elif len(v['failed_checks']) >= 2:
             items['demand_screen'] = ('open', 'failed ' + ', '.join(v['failed_checks']))
         else:
-            items['demand_screen'] = ('pass', 'all 3 checks run' + (', ' + v['failed_checks'][0] + ' failed and overridden' if v['failed_checks'] else ''))
+            items['demand_screen'] = ('pass', 'all 3 checks run' + (', ' + v['failed_checks'][0] + ' failed and overridden' if v['failed_checks'] else '') + (', caution on ' + ', '.join(v['caution_checks']) if v['caution_checks'] else ''))
         ang = g.get('angle') or {}
         items['angle'] = ('pass', 'filled and sourced') if ang.get('sourced') else ('open', 'no angle' if not ang.get('filled') else 'the angle names no source')
         cm = gg.get('contribution_margin') or {}
@@ -5165,8 +5176,10 @@ def _option(o):
     o = o or {}
     ch = str(o.get('channel') or '').strip().lower()
     cost, days = o.get('cost_usd'), o.get('days')
+    ver = o.get('verified') if isinstance(o.get('verified'), dict) else {}
     return {'channel': ch if ch in SOURCING_CHANNELS else ('other' if ch else None), 'label': SOURCING_LABEL.get(ch, ch or None), 'cost_usd': cost if isinstance(cost, (int, float)) else None,
             'days': int(days) if isinstance(days, (int, float)) else None, 'branding': str(o.get('branding') or '').strip() or None, 'note': str(o.get('note') or '').strip() or None,
+            'supplier': str(o.get('supplier') or '').strip() or None, 'verified': {'platform': ver.get('platform'), 'on': ver.get('on')} if ver.get('platform') else None,
             'compared': isinstance(cost, (int, float)) and isinstance(days, (int, float))}
 
 
@@ -5189,22 +5202,24 @@ def sourcing_read(brand):
             verdict = 'one_channel'
         else:
             verdict = 'compared'
+        if chosen and chosen.get('channel') and not chosen.get('verified') and verdict == 'compared':
+            verdict = 'unverified'
         pool = [o for o in ([chosen] if chosen and chosen['compared'] else []) + compared]
         cheapest = min(pool, key=lambda o: o['cost_usd'])['label'] if pool else None
         fastest = min(pool, key=lambda o: o['days'])['label'] if pool else None
         rows.append({'candidate_id': c.get('candidate_id'), 'name': c.get('name'), 'stage': st, 'chosen': chosen, 'alternatives': alts, 'compared_n': len(compared), 'cheapest': cheapest, 'fastest': fastest,
                      'verdict': verdict, 'finding_id': f'{SCREEN}.PROD-R55.{c.get("candidate_id")}'})
-    order = {'no_channel': 0, 'one_channel': 1, 'compared': 2}
+    order = {'no_channel': 0, 'one_channel': 1, 'unverified': 2, 'compared': 3}
     rows.sort(key=lambda r: (order[r['verdict']], r['name'] or ''))
     return {'rows': rows, 'channels': [{'key': k, 'label': SOURCING_LABEL[k]} for k in SOURCING_CHANNELS],
-            'rule': 'once a first run is decided, the sourcing channel is on file with its landed cost a unit, days to stock and branding options, and at least one alternative is compared on the same three numbers before the order goes in (bank idea PRD-099)'}
+            'rule': 'once a first run is decided, the sourcing channel is on file with its landed cost a unit, days to stock and branding options, and at least one alternative is compared on the same three numbers before the order goes in (bank idea PRD-099); the chosen supplier is verified reachable on the platform named before the order (bank idea PRD-102)'}
 
 
 def sourcing_findings(brand, ends_on):
     """PROD-R55: a candidate with a first run decided and no sourcing channel, or one channel with no alternative compared."""
     out = []
     for r in sourcing_read(brand)['rows']:
-        if r['verdict'] == 'compared':
+        if r['verdict'] in ('compared', 'unverified'):
             continue
         cid = r['candidate_id']
         ev = [_ev('sourcing_alternatives_compared', r['compared_n'], 'count', ends_on.isoformat(), 'candidate now', 1, 'threshold', source='fixtures.pipeline', simulated=False, freshness_days=0,
@@ -5214,6 +5229,23 @@ def sourcing_findings(brand, ends_on):
         f = _finding('PROD-R55', cid, ends_on, 'medium', ev, sentence, None, 0.8, [], money_reason='the bet is the first run cash, priced on the first-run card')
         f['entity'] = {'type': 'sku', 'id': cid, 'label': r['name'], 'candidate': True, 'stage': r['stage'], 'verdict': r['verdict'], 'channel': (r['chosen'] or {}).get('label')}
         f['id'] = f'{SCREEN}.PROD-R55.{cid}'
+        out.append(f)
+    return out
+
+
+def supplier_findings(brand, ends_on):
+    """PROD-R60: a first run decided on a chosen channel whose supplier is not verified reachable on the platform named (bank idea PRD-102)."""
+    out = []
+    for r in sourcing_read(brand)['rows']:
+        ch = r['chosen']
+        if not ch or not ch.get('channel') or ch.get('verified'):
+            continue
+        cid = r['candidate_id']
+        ev = [_ev('supplier_verified_reachable', 0, 'flag', ends_on.isoformat(), 'candidate now', 1, 'threshold', source='fixtures.pipeline', simulated=False, freshness_days=0, channel=ch['channel'], supplier=ch.get('supplier'))]
+        sentence = f'{r["name"]} sources through {ch["label"]}' + (f' ({ch["supplier"]})' if ch.get('supplier') else ' with no supplier named') + '; nobody has confirmed the supplier is listed and reachable on that platform, so the first order could go to a name that does not answer.'
+        f = _finding('PROD-R60', cid, ends_on, 'medium', ev, sentence, None, 0.8, [], money_reason='the bet is the first run cash, priced on the first-run card')
+        f['entity'] = {'type': 'sku', 'id': cid, 'label': r['name'], 'candidate': True, 'stage': r['stage'], 'channel': ch['label'], 'supplier': ch.get('supplier')}
+        f['id'] = f'{SCREEN}.PROD-R60.{cid}'
         out.append(f)
     return out
 

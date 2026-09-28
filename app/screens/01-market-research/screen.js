@@ -328,11 +328,12 @@
     const stageNext = (r) => { const i = (p.stages || []).indexOf(r.stage); return i >= 0 && i < p.stages.length - 1 ? p.stages[i + 1] : null; };
     const vrows = rows.map((r) => { const acts = (r.finding_ids || []).map(actionFor).filter(Boolean); const nx = stageNext(r); return Object.assign({}, r, {
       stageText: r.stage + (r.closed ? '' : r.days_left != null ? (r.days_left < 0 ? ', ' + Math.abs(r.days_left) + ' d over the box' : ', ' + r.days_left + ' d left') : ''),
-      checks: (qsBy[r.candidate_id] ? 'quick screen ' + qsBy[r.candidate_id].answered + ' of ' + qsBy[r.candidate_id].of + (qsBy[r.candidate_id].no.length ? ' (no on ' + qsBy[r.candidate_id].no.map(pretty).join(', ') + ')' : '') + '; ' : '') + (p.checks || []).map((c) => pretty(c) + ' ' + ((r.screen_result || {})[c] || 'not run')).join(', '),
+      checks: (qsBy[r.candidate_id] ? 'quick screen ' + qsBy[r.candidate_id].answered + ' of ' + qsBy[r.candidate_id].of + (qsBy[r.candidate_id].no.length ? ' (no on ' + qsBy[r.candidate_id].no.map(pretty).join(', ') + ')' : '') + '; ' : '') + (p.checks || []).map((c) => pretty(c) + ' ' + ((r.screen_result || {})[c] || 'not run') + ((r.check_reasons || {})[c] ? ' (' + r.check_reasons[c] + ')' : '')).join(', '),
       angle: r.angle_text || 'no angle yet', price: r.planned_price, hours: r.hours_logged, laneText: r.lane ? ((p.lanes || []).find((l) => l.key === r.lane) || { label: r.lane }).label : 'none',
       actions: [].concat(acts.length ? [{ label: acts[0].rule_id === 'PROD-R15' ? 'Kill or fix' : 'Decide', onClick: () => openAction(acts[0]) }] : [],
         [{ label: 'Brief', cls: 'quiet', onClick: () => openBrief(r.candidate_id) }],
         !r.closed ? [{ label: 'Quick screen' + (qsBy[r.candidate_id] ? ' ' + qsBy[r.candidate_id].answered + '/' + qsBy[r.candidate_id].of : ''), cls: 'quiet', onClick: () => quickScreen(r) }] : [],
+        !r.closed ? [{ label: 'Fast checks', cls: 'quiet', onClick: () => { const sr = {}; const reasons = {}; for (const c of (p.checks || [])) { const v = prompt(pretty(c) + ' for ' + r.name + ': pass, caution or fail (empty keeps ' + ((r.screen_result || {})[c] || 'not run') + ')', ''); if (v == null) return; const w = v.trim().toLowerCase(); if (w.startsWith('p')) sr[c] = 'pass'; else if (w.startsWith('c')) sr[c] = 'caution'; else if (w.startsWith('f')) sr[c] = 'fail'; if (sr[c] && sr[c] !== 'pass') { const why = prompt('Why is ' + pretty(c) + ' a ' + sr[c] + '? Is it fixable (branding, formula) or market-bound?', ''); if (why == null) return; if (why.trim()) reasons[c] = why.trim(); } } if (Object.keys(sr).length) candidatePost('candidates/' + r.candidate_id, { screen_result: sr, check_reasons: reasons, who: 'person' }); } }] : [],
         !r.closed ? [{ label: r.owner ? 'Owner: ' + r.owner : 'Owner', cls: 'quiet', onClick: () => { const v = prompt('Who owns ' + r.name + ' (reads the test and runs the diagnosis)?', r.owner || ''); if (v != null) candidatePost('candidates/' + r.candidate_id, { owner: v, who: 'person' }); } }] : [],
         !r.closed && (r.failed_checks || []).length ? [{ label: 'Log override', cls: 'quiet', onClick: () => { const v = prompt('Why does ' + r.name + ' move on with ' + r.failed_checks.join(', ') + ' failed? Name the signal.'); if (v != null && v.trim()) candidatePost('candidates/' + r.candidate_id, { override_reason: v, who: 'person' }); } }] : [],
         !r.closed && nx ? [{ label: 'Advance to ' + nx, cls: 'quiet', onClick: () => candidatePost('candidates/' + r.candidate_id, { stage: nx, who: 'person' }) }] : [],
@@ -920,8 +921,9 @@
   function sourcingBlock(sr) {
     const rows = (sr && sr.rows) || [];
     if (!rows.length) return UI.emptyState({ screen: SLUG, title: 'No first run decided yet', text: 'Once a first run is decided on a candidate, its sourcing channel is compared here.', missing: ['pipeline'] });
-    const vt = { no_channel: 'No channel', one_channel: 'One channel, nothing compared', compared: 'Compared' };
-    const optText = (o) => !o || !o.channel ? 'none' : o.label + (o.cost_usd != null ? ', ' + fmt.money(o.cost_usd) + ' a unit' : ', cost not entered') + (o.days != null ? ', ' + o.days + ' days' : ', days not entered') + (o.branding ? ', ' + o.branding : '');
+    const vt = { no_channel: 'No channel', one_channel: 'One channel, nothing compared', unverified: 'Compared, supplier not verified', compared: 'Compared and verified' };
+    const optText = (o) => !o || !o.channel ? 'none' : o.label + (o.supplier ? ' (' + o.supplier + ')' : '') + (o.cost_usd != null ? ', ' + fmt.money(o.cost_usd) + ' a unit' : ', cost not entered') + (o.days != null ? ', ' + o.days + ' days' : ', days not entered') + (o.branding ? ', ' + o.branding : '') + (o.verified ? ', verified on ' + o.verified.platform + ' ' + fmt.date(o.verified.on) : '');
+    const verify = (r) => { const supplier = prompt('Supplier name on the chosen channel for ' + r.name, (r.chosen && r.chosen.supplier) || ''); if (supplier == null) return; const platform = prompt('Platform it was found and reached on (the marketplace or directory)', ''); if (platform == null || !platform.trim()) return; candidatePost('candidates/' + r.candidate_id, { supplier_verified: { supplier, platform }, who: 'person' }); };
     const enter = (r) => { const chans = (sr.channels || []).map((c) => c.key).join(', ');
       const ask = (label, cur) => { const ch = prompt(label + ' channel (' + chans + ')', (cur && cur.channel) || ''); if (ch == null) return undefined; if (!ch.trim()) return null;
         const cost = prompt(label + ': landed cost a unit at the first run, USD', (cur && cur.cost_usd) || ''); if (cost == null) return undefined;
@@ -933,11 +935,11 @@
       candidatePost('candidates/' + r.candidate_id, { sourcing: Object.assign({}, chosen, { alternatives: alts }), who: 'person' }); };
     const vrows = rows.map((r) => { const a = actionFor(r.finding_id); return Object.assign({}, r, {
       chosenText: optText(r.chosen), altText: (r.alternatives || []).length ? r.alternatives.map(optText).join('; ') : 'none', pickText: r.cheapest ? 'cheapest ' + r.cheapest + ', fastest ' + r.fastest : NA,
-      actions: [a ? { label: r.verdict === 'no_channel' ? 'Set the channel' : 'Compare one', onClick: () => openAction(a) } : null, { label: r.verdict === 'no_channel' ? 'Enter it' : 'Edit', cls: 'quiet', onClick: () => enter(r) }].filter(Boolean) }); });
+      actions: [a ? { label: r.verdict === 'no_channel' ? 'Set the channel' : r.verdict === 'unverified' ? 'Verify the supplier' : 'Compare one', onClick: () => openAction(a) } : null, { label: r.verdict === 'no_channel' ? 'Enter it' : 'Edit', cls: 'quiet', onClick: () => enter(r) }, r.chosen && r.chosen.channel ? { label: 'Supplier verified', cls: 'quiet', onClick: () => verify(r) } : null].filter(Boolean) }); });
     const tbl = UI.verdictTable({
       columns: [{ key: 'name', label: 'Candidate' }, { key: 'stage', label: 'Stage' }, { key: 'chosenText', label: 'Chosen channel' }, { key: 'altText', label: 'Alternatives compared' }, { key: 'pickText', label: 'Cheapest, fastest' }],
       rows: vrows,
-      verdict: { at: 1, kind: (r) => r.verdict === 'compared' ? 'keep' : r.verdict === 'one_channel' ? 'watch' : 'fix', text: (r) => vt[r.verdict], reason: (r) => sr.rule },
+      verdict: { at: 1, kind: (r) => r.verdict === 'compared' ? 'keep' : r.verdict === 'one_channel' || r.verdict === 'unverified' ? 'watch' : 'fix', text: (r) => vt[r.verdict], reason: (r) => sr.rule },
       actions: { label: 'Do', onClick: () => {} }, sort: false });
     const open = rows.filter((r) => r.verdict !== 'compared');
     return el('div', { class: 'stack' }, el('div', { class: 'card scroll' }, tbl), el('p', { class: 'micro faint', text: 'Rule: ' + sr.rule + '.' }),

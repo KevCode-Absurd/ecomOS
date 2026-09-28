@@ -1613,7 +1613,7 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
             audit.PIPELINE_PATH = self.tmp
             self.tmp.write_text(json.dumps({'rows': [{'candidate_id': 'a', 'brand': 'fake', 'name': 'A', 'stage': 'gated', 'first_run': {'units': 500}},
                                                      {'candidate_id': 'b', 'brand': 'fake', 'name': 'B', 'stage': 'gated', 'first_run': {'units': 500}, 'sourcing': {'channel': 'agent', 'cost_usd': 4.0, 'days': 45}},
-                                                     {'candidate_id': 'c', 'brand': 'fake', 'name': 'C', 'stage': 'go', 'first_run': {'units': 500}, 'sourcing': {'channel': 'agent', 'cost_usd': 4.0, 'days': 45, 'alternatives': [{'channel': 'domestic', 'cost_usd': 6.5, 'days': 12, 'branding': 'label only'}]}},
+                                                     {'candidate_id': 'c', 'brand': 'fake', 'name': 'C', 'stage': 'go', 'first_run': {'units': 500}, 'sourcing': {'channel': 'agent', 'cost_usd': 4.0, 'days': 45, 'verified': {'platform': 'Alibaba', 'on': '2026-09-01'}, 'alternatives': [{'channel': 'domestic', 'cost_usd': 6.5, 'days': 12, 'branding': 'label only'}]}},
                                                      {'candidate_id': 'd', 'brand': 'fake', 'name': 'D', 'stage': 'gated'}]}), encoding='utf-8')
             read = audit.sourcing_read('fake')
             by = {r['candidate_id']: r for r in read['rows']}
@@ -1631,7 +1631,7 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
             self.assertEqual(api.candidate_update('fake', 'a', {'sourcing': {'channel': 'moon'}, 'who': 'person'}, D)[0], 400)
             r = api.candidate_update('fake', 'a', {'sourcing': {'channel': 'marketplace_direct', 'cost_usd': '3.8', 'days': '60', 'alternatives': [{'channel': 'domestic', 'cost_usd': '6', 'days': '10'}, {'channel': ''}]}, 'who': 'person'}, D)
             self.assertEqual(r['changes'], ['sourcing marketplace_direct, 1 alternative'])
-            self.assertEqual(audit.sourcing_read('fake')['rows'][-1]['verdict'], 'compared')
+            self.assertEqual({x['candidate_id']: x['verdict'] for x in audit.sourcing_read('fake')['rows']}['a'], 'unverified')   # compared, and the supplier still to verify (round 10.5)
             self.assertEqual([f['id'].split('.')[-1] for f in audit.sourcing_findings('fake', D)], ['b'])
         finally:
             audit.PIPELINE_PATH = self.real2
@@ -1766,6 +1766,60 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
             r = api.candidate_update('fake', 'a', {'quick_screen': {k: 'yes' for k, _ in audit.QUICK_SCREEN_POINTS}, 'who': 'person'}, D)
             self.assertEqual(audit.quick_screen_of(r['candidate'])['verdict'], 'clear')
             self.assertEqual(sorted(f['id'].split('.')[-1] for f in audit.quick_screen_findings('fake', D)), ['e'])
+        finally:
+            audit.PIPELINE_PATH = self.real2
+
+    def test_caution_is_half_a_pass_and_never_a_red_flag(self):
+        D = date(2026, 9, 27)
+        self.real2 = audit.PIPELINE_PATH
+        try:
+            audit.PIPELINE_PATH = self.tmp
+            self.tmp.write_text(json.dumps({'rows': [{'candidate_id': 'a', 'brand': 'fake', 'name': 'A', 'stage': 'researched', 'screen_result': {'demand': 'pass', 'competition': 'caution', 'store_fit': 'caution'}, 'check_reasons': {'competition': 'crowded, fixable by branding'}},
+                                                     {'candidate_id': 'b', 'brand': 'fake', 'name': 'B', 'stage': 'researched', 'screen_result': {'demand': 'pass', 'competition': 'fail', 'store_fit': 'fail'}}]}), encoding='utf-8')
+            va = audit.candidate_view(next(c for c in audit.pipeline('fake') if c['candidate_id'] == 'a'), D)
+            self.assertEqual((va['failed_checks'], va['caution_checks'], va['unchecked_checks']), ([], ['competition', 'store_fit'], []))
+            self.assertEqual([f['id'].split('.')[-1] for f in audit.pipeline_findings('fake', D) if f['rule_id'] == 'PROD-R15'], ['b'])     # cautions never trip the demand screen
+            gates_row = {'angle': {'score': 0}, 'compliance': 'unavailable'}
+            sc = audit.score_candidate({'screen_result': {'demand': 'pass', 'competition': 'caution', 'store_fit': 'caution'}}, gates_row, {'unavailable': True}, {}, [])
+            self.assertEqual(sc['demand'], 3)                                                                   # 2 half-passes on top of one pass sit between 1 and 3 on the ladder, rounded
+            sc3 = audit.score_candidate({'screen_result': {'demand': 'pass', 'competition': 'pass', 'store_fit': 'pass'}}, gates_row, {'unavailable': True}, {}, [])
+            self.assertEqual(sc3['demand'], 4)
+            data = api.sample_data()
+            E = audit.last_full_day(data, None)
+            self.tmp.write_text(json.dumps({'rows': [{'candidate_id': 'a', 'brand': 'fake', 'name': 'A', 'stage': 'shortlisted', 'screen_result': {'demand': 'pass', 'competition': 'caution', 'store_fit': 'pass'}}]}), encoding='utf-8')
+            items = {i['key']: i for i in audit.launch_readiness('fake', data, None, audit.Reader(data, None, E), E)['rows'][0]['checklist']}
+            self.assertEqual(items['demand_screen']['status'], 'pass')
+            self.assertIn('caution on competition', items['demand_screen']['why'])
+            r = api.candidate_update('fake', 'a', {'screen_result': {'demand': 'caution', 'competition': 'sideways'}, 'check_reasons': {'demand': 'thin signal, one platform'}, 'who': 'person'}, D)
+            self.assertEqual(r['candidate']['screen_result'], {'demand': 'caution', 'competition': 'caution', 'store_fit': 'pass'})   # an unknown value keeps the old one
+            self.assertEqual(r['candidate']['check_reasons'], {'demand': 'thin signal, one platform'})
+            self.assertIn('checks set: demand caution', r['changes'][0])
+        finally:
+            audit.PIPELINE_PATH = self.real2
+
+    def test_supplier_verified_before_the_order(self):
+        D = date(2026, 9, 27)
+        self.real2 = audit.PIPELINE_PATH
+        try:
+            audit.PIPELINE_PATH = self.tmp
+            alt = [{'channel': 'domestic', 'cost_usd': 6.5, 'days': 12}]
+            self.tmp.write_text(json.dumps({'rows': [{'candidate_id': 'a', 'brand': 'fake', 'name': 'A', 'stage': 'gated', 'first_run': {'units': 500}, 'sourcing': {'channel': 'agent', 'supplier': 'Ningbo Sock Co', 'cost_usd': 4.0, 'days': 45, 'alternatives': alt}},
+                                                     {'candidate_id': 'b', 'brand': 'fake', 'name': 'B', 'stage': 'gated', 'first_run': {'units': 500}, 'sourcing': {'channel': 'agent', 'cost_usd': 4.0, 'days': 45, 'alternatives': alt, 'verified': {'platform': 'Alibaba', 'on': '2026-09-20'}}},
+                                                     {'candidate_id': 'c', 'brand': 'fake', 'name': 'C', 'stage': 'gated', 'first_run': {'units': 500}}]}), encoding='utf-8')
+            by = {r['candidate_id']: r for r in audit.sourcing_read('fake')['rows']}
+            self.assertEqual((by['a']['verdict'], by['b']['verdict'], by['c']['verdict']), ('unverified', 'compared', 'no_channel'))
+            found = audit.supplier_findings('fake', D)
+            self.assertEqual([f['id'].split('.')[-1] for f in found], ['a'])
+            self.assertIn('Ningbo Sock Co', found[0]['sentence'])
+            self.check_shape(found[0])
+            self.assertIn('Verify the supplier', api.recipe(found[0])['title'])
+            self.assertIn('PROD-R60', api.CANDIDATE_RULES)
+            self.assertEqual([f['id'].split('.')[-1] for f in audit.sourcing_findings('fake', D)], ['c'])      # the comparison rule leaves the verified question to R60
+            self.assertEqual(api.candidate_update('fake', 'a', {'supplier_verified': {'platform': ''}, 'who': 'person'}, D)[0], 400)
+            r = api.candidate_update('fake', 'a', {'supplier_verified': {'platform': 'Alibaba'}, 'who': 'person'}, D)
+            self.assertEqual(r['changes'], ['supplier verified on Alibaba'])
+            self.assertEqual(audit.supplier_findings('fake', D), [])
+            self.assertEqual({x['candidate_id']: x['verdict'] for x in audit.sourcing_read('fake')['rows']}['a'], 'compared')
         finally:
             audit.PIPELINE_PATH = self.real2
 

@@ -1105,6 +1105,18 @@ def recipe(f):
             'size': {'text': f'{ent.get("variants")} variants planned', 'usd': None}, 'stop_rule': 'no MOQ per variant before the core product sells', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 1,
             'win_rule': 'one variant in the first run, the rest queued behind a sell-through read',
         }
+    if rid == 'PROD-R60':
+        ent = f.get('entity') or {}
+        return {
+            'title': f'Verify the supplier for {ent.get("label") or "the candidate"} is listed and reachable on {ent.get("channel") or "the channel named"} before the order',
+            'owner': 'agent',
+            'artefact': {'kind': 'research_note', 'label': f'the reachability check for {ent.get("label")}: the supplier name, the platform it is claimed on, the listing found there (or not), the reply to a first message, and the verified flag with its date written on the sourcing option (bank idea PRD-102)'},
+            'steps': [{'n': 1, 'who': 'agent', 'text': 'Search the named platform directly for the supplier and record the listing, or that none exists.'},
+                      {'n': 2, 'who': 'person', 'text': 'Send one message through the platform; a reply inside 3 working days is reachable.'},
+                      {'n': 3, 'who': 'agent', 'text': 'Write verified (platform, date) on the sourcing option; with no listing or no reply, the alternative channel takes the order.'}],
+            'size': {'text': (ent.get('supplier') or 'no supplier named') + ' on ' + (ent.get('channel') or 'the channel'), 'usd': None}, 'stop_rule': 'no first order to a supplier not verified reachable on the platform named', 'check_on': _check_on(f, 5), 'time_to_ship_hours': 0.5,
+            'win_rule': 'the chosen sourcing option carries verified with a platform and a date',
+        }
     if rid == 'PROD-R59':
         ent = f.get('entity') or {}
         return {
@@ -1401,7 +1413,7 @@ def merge_strength(actions):
 
 
 LANE_RULES = ('PROD-R06', 'PROD-R19', 'PROD-R20', 'PROD-R33', 'PROD-R26', 'PROD-R29')
-CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28', 'PROD-R37', 'PROD-R38', 'PROD-R39', 'PROD-R40', 'PROD-R45', 'PROD-R46', 'PROD-R47', 'PROD-R48', 'PROD-R49', 'PROD-R50', 'PROD-R51', 'PROD-R52', 'PROD-R53', 'PROD-R54', 'PROD-R55', 'PROD-R56', 'PROD-R57', 'PROD-R58', 'PROD-R59')
+CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28', 'PROD-R37', 'PROD-R38', 'PROD-R39', 'PROD-R40', 'PROD-R45', 'PROD-R46', 'PROD-R47', 'PROD-R48', 'PROD-R49', 'PROD-R50', 'PROD-R51', 'PROD-R52', 'PROD-R53', 'PROD-R54', 'PROD-R55', 'PROD-R56', 'PROD-R57', 'PROD-R58', 'PROD-R59', 'PROD-R60')
 
 
 def merge_candidates(actions):
@@ -1705,7 +1717,7 @@ def candidate_add(brand, body, today):
     if lane and lane not in lane_keys:
         return 400, {'error': 'lane must be one of ' + ', '.join(lane_keys) if lane_keys else 'this brand has no lanes on file'}
     row = {'candidate_id': f'cand-{n:03d}', 'brand': brand, 'name': name, 'category': str(body.get('category') or 'socks')[:40], 'lane': lane, 'stage': 'screened',
-           'screen_result': {k: (body.get('screen_result') or {}).get(k) if (body.get('screen_result') or {}).get(k) in ('pass', 'fail') else None for k in audit.SCREEN_CHECKS},
+           'screen_result': {k: (body.get('screen_result') or {}).get(k) if (body.get('screen_result') or {}).get(k) in audit.CHECK_VALUES else None for k in audit.SCREEN_CHECKS},
            'time_box_days': int(_num(body.get('time_box_days'), 1) or 10), 'hours_logged': _num(body.get('hours_logged')) or 0.0,
            'angle_text': (str(body.get('angle_text') or '').strip()[:300] or None), 'angle_source': (str(body.get('angle_source') or '').strip()[:300] or None),
            'screen_in_date': today.isoformat(), 'planned_price': _num(body.get('planned_price')), 'cogs_estimate': _num(body.get('cogs_estimate')),
@@ -1766,13 +1778,23 @@ def candidate_update(brand, cid, body, today):
         if body.get(k) is not None:
             row[k] = _num(body[k])
             changes.append(k.replace('_', ' ') + (' set' if row[k] is not None else ' cleared'))
+    if isinstance(body.get('supplier_verified'), dict) and isinstance(row.get('sourcing'), dict):
+        platform = str(body['supplier_verified'].get('platform') or '').strip()[:60]
+        if not platform:
+            return 400, {'error': 'supplier_verified.platform names the platform the supplier was found on'}
+        row['sourcing']['verified'] = {'platform': platform, 'on': today.isoformat()}
+        if body['supplier_verified'].get('supplier'):
+            row['sourcing']['supplier'] = str(body['supplier_verified']['supplier']).strip()[:120]
+        changes.append(f'supplier verified on {platform}')
     if isinstance(body.get('sourcing'), dict):
         sc = body['sourcing']
         def opt(o):
             ch = str(o.get('channel') or '').strip().lower()
             if ch and ch not in audit.SOURCING_CHANNELS:
                 raise ValueError('channel must be one of ' + ', '.join(audit.SOURCING_CHANNELS))
-            return {'channel': ch or None, 'cost_usd': _num(o.get('cost_usd')), 'days': int(_num(o.get('days')) or 0) or None, 'branding': str(o.get('branding') or '').strip()[:120] or None, 'note': str(o.get('note') or '').strip()[:200] or None}
+            ver = o.get('verified') if isinstance(o.get('verified'), dict) else {}
+            return {'channel': ch or None, 'cost_usd': _num(o.get('cost_usd')), 'days': int(_num(o.get('days')) or 0) or None, 'branding': str(o.get('branding') or '').strip()[:120] or None, 'note': str(o.get('note') or '').strip()[:200] or None,
+                    'supplier': str(o.get('supplier') or '').strip()[:120] or None, 'verified': {'platform': str(ver.get('platform') or '').strip()[:60], 'on': today.isoformat()} if str(ver.get('platform') or '').strip() else None}
         try:
             alts = [opt(a) for a in (sc.get('alternatives') or []) if isinstance(a, dict)]
             row['sourcing'] = dict(opt(sc), alternatives=[a for a in alts if a['channel']], decided_on=today.isoformat())
@@ -1888,8 +1910,10 @@ def candidate_update(brand, cid, body, today):
         q = audit.quick_screen_of(row)
         changes.append(f'quick screen {q["answered"]} of {q["of"]}' + (f', no on {", ".join(q["no"])}' if q['no'] else ''))
     if isinstance(body.get('screen_result'), dict):
-        row['screen_result'] = {k: body['screen_result'].get(k) if body['screen_result'].get(k) in ('pass', 'fail') else (row.get('screen_result') or {}).get(k) for k in audit.SCREEN_CHECKS}
-        changes.append('checks set')
+        row['screen_result'] = {k: body['screen_result'].get(k) if body['screen_result'].get(k) in audit.CHECK_VALUES else (row.get('screen_result') or {}).get(k) for k in audit.SCREEN_CHECKS}
+        if isinstance(body.get('check_reasons'), dict):
+            row['check_reasons'] = {k: str(v).strip()[:200] for k, v in body['check_reasons'].items() if k in audit.SCREEN_CHECKS and str(v).strip()}
+        changes.append('checks set: ' + ', '.join(f'{k} {v}' for k, v in row['screen_result'].items() if v))
     if isinstance(body.get('compliance'), dict):
         row['compliance'] = dict(row.get('compliance') or {}, **{k: v for k, v in body['compliance'].items() if v in ('pass', 'fail', None)})
         changes.append('compliance set')
