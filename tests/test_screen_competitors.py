@@ -371,6 +371,41 @@ class TestMix(TempBrain):
         self.assertEqual(r6['title'], 'Write 6 question first lines and test the best 2')
 
 
+class TestReferences(TempBrain):
+    """1.5: longest running ads as signals; relevance from rules; a brief that says what to borrow and never copy."""
+    def setUp(self):
+        super().setUp()
+        api.BRAIN_ROOT = self.tmp
+        self.r = api.handle(Req(['overview']))['references']
+
+    def test_refs(self):
+        refs = self.r['refs']
+        self.assertEqual(len(refs), 11)
+        scores = [x['score'] for x in refs]
+        self.assertEqual(scores, sorted(scores, reverse=True))
+        for x in refs:
+            self.assertEqual(x['rights'], 'reference_only')
+            self.assertLessEqual(x['score'], 1.0)
+            self.assertIn('Never copy', x['brief'])
+            self.assertIn('never passed', x['brief'])
+            if x['days'] < audit.refmod.WATCH_DAYS:
+                self.assertFalse(x['suggested'])
+                self.assertEqual(x['verdict']['text'], 'Too new')
+            self.assertIsNone(x['versions'])
+
+    def test_score_is_sum_of_reasons(self):
+        w = audit.refmod.WEIGHTS
+        comrad = next(x for x in self.r['refs'] if x['page'] == 'Comrad Socks')
+        self.assertEqual(comrad['score'], 1.0)
+        self.assertEqual(len(comrad['reasons']), 4)
+        quince = next(x for x in self.r['refs'] if x['page'] == 'Quince')
+        self.assertEqual(quince['score'], w['long'])
+
+    def test_ours(self):
+        self.assertEqual(self.r['ours'][0]['days'], 193)
+        self.assertEqual(self.r['ours'][0]['rights'], 'own_brand')
+
+
 class TestRank(TempBrain):
     """Depth contract rules 2, 3 and 13: owner, steps and artefact on every action; every finding ends in one."""
     W = {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4}

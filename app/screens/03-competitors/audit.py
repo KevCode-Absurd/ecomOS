@@ -98,6 +98,7 @@ snap = _local("snapshot")
 pagemod = _local("pages")
 covmod = _local("coverage")
 mixmod = _local("mix")
+refmod = _local("references")
 
 SCREEN = "03-competitors"
 SEVERITY_ORDER = {"critical": 0, "high": 1, "medium": 2, "low": 3}
@@ -341,9 +342,12 @@ def market(brand: str, today: dt.date, root: Path | None = None) -> dict:
     for p in pages:
         if p["role"] != "self":
             p["verdict"] = pagemod.verdict(p, us, top)
+    cov = covmod.matrix(pages, snap.ANGLES, snapshot, brain)
+    points = covmod.proof_points(brain)
+    refs = refmod.build(pages, top, snap.FORMAT_LABEL, lambda a: covmod.proof_for(points, a))
     return {"brand": brand, "brain": brain, "competitors": comps, "profile": prof, "packs": packs,
-            "mix": mixmod.build(pages, brain, snap),
-            "coverage": covmod.matrix(pages, snap.ANGLES, snapshot, brain),
+            "references": refs, "mix": mixmod.build(pages, brain, snap),
+            "coverage": cov,
             "coverage_direct": covmod.matrix(pages, snap.ANGLES, snapshot, brain, direct_only=True),
             "pages": pages, "snapshot": {k: v for k, v in (snapshot or {}).items() if k != "ads"} or None,
             "our_top_angles": top,

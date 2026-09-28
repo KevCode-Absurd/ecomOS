@@ -188,7 +188,7 @@ def self_row(brain, profile: dict, snap_mod, snapshot, snap_rows, self_id: str |
            "formats": _norm_formats(fm.get("formats")) or snapf,
            "median_days": fm.get("median_run_days"), "long_runners_30d": fm.get("long_runners_30d"),
            "longest_days": longest.get("days_running"), "longest_start": longest.get("start_date"),
-           "longest_url": longest.get("ad_url"),
+           "longest_url": longest.get("ad_url"), "long_ads": long if isinstance(long, list) else [],
            "offers_seen": [v["promo"] for r in brain.records("offers") if isinstance(v := r.get("value"), dict) and v.get("promo")],
            "offer_share": round(share["ads_with_code"] / share["active_ads"], 3)
            if isinstance(share.get("ads_with_code"), int) and share.get("active_ads") else None,

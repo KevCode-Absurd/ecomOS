@@ -302,6 +302,33 @@
       el('p', { class: 'micro faint', text: mx.rules + ' Kinds and types only. Never their lines.' }));
   }
 
+  // ---------- 5d. longest running ads as signals ----------
+  function refPanel(r) {
+    UI.panel({ title: 'Use as reference: ' + r.page, body: el('div', { class: 'stack' },
+      el('div', { class: 'row' }, UI.verdict(r.verdict.kind, r.verdict.text), el('span', { class: 'chip', text: 'reference only' }), el('span', { class: 'small', text: 'relevance ' + r.score })),
+      el('pre', { class: 'card sunken bc', text: r.brief }),
+      el('div', { class: 'row' }, UI.copyButton({ label: 'Copy reference brief', text: () => r.brief }), r.url ? el('a', { class: 'btn sm', href: r.url, target: '_blank', rel: 'noopener', text: 'Open in the Ad Library' }) : null),
+      el('div', { class: 'micro faint', text: 'File it in the reference library with its signals and the reason. It never becomes an asset in a brief or a generation call.' }),
+      UI.decisionRow({ capability: 'SCT-C04', autonomy: 'agent_does', screen: SCREEN, finding_id: SCREEN + '.reference.' + r.key })) });
+  }
+  function refsSection(rf) {
+    const ours = rf.ours.length ? el('div', { class: 'card flat ours' }, el('b', { text: 'Our longest runners: ' }),
+      rf.ours.map((o) => o.days + ' days, ' + o.format + ', ' + o.hook).join('; ') + '. Our median ad lives ' + (rf.our_median == null ? NA : rf.our_median + ' days') + '.',
+      el('div', { class: 'row' }, el('span', { class: 'micro faint', text: 'Tag and file our own winners by angle, format and mood so briefs start from them.' }),
+        UI.decisionRow({ capability: 'SCT-C02', autonomy: 'agent_does', screen: SCREEN, compact: true, finding_id: SCREEN + '.reference.own_winners' }))) : null;
+    const table = UI.verdictTable({
+      columns: [
+        { key: 'page', label: 'Page', format: (v, r) => v + (r.frame === 'direct' ? '' : ' (basics)') },
+        { key: 'days', label: 'Longest, days live', unit: 'n' },
+        { key: 'start', label: 'Since', format: (v) => v ? fmt.date(v) : NA },
+        { key: 'keep_rate', label: 'Ads live 30 days+', format: (v, r) => v == null ? NA : Math.round(v * 100) + '% (' + r.long_runners + ')' },
+        { key: 'score', label: 'Relevance', format: (v) => v == null ? NA : v.toFixed(1) }],
+      rows: rf.refs, verdict: { at: 1, kind: (r) => r.verdict.kind, text: (r) => r.verdict.text, reason: (r) => r.reasons.join('; ') },
+      reason: { key: 'why', label: 'Why it matters to us', text: (r) => r.reasons.join('; ') || 'no rule fired' },
+      actions: { label: (r) => r.suggested ? 'Use as reference' : 'Open', cls: 'soft', onClick: refPanel }, sort: false, onRow: refPanel });
+    mount('#refs', ours, table, el('p', { class: 'micro faint', text: rf.rule + ' Run length is a signal, not a result. Versions per ad need an ad-level snapshot.' }));
+  }
+
   // ---------- 6. the audit ----------
   function rulesTable(rules) {
     return UI.table({ columns: [{ key: 'rule_id', label: 'Rule' }, { key: 'name', label: 'What it checks' }, { key: 'inputs', label: 'Reads', format: (v) => (v || []).join(', ') }, { key: 'capability', label: 'Capability' }],
@@ -325,6 +352,7 @@
     pagesSection(d.pages);
     coverageSection(d.coverage);
     mixSection(d.mix, byId);
+    refsSection(d.references);
     document.getElementById('audit-sub').textContent = p.findings.length + ' findings from ' + p.rules.length + ' rules. Public signals, one capture.';
     mount('#audit', auditTable(p.findings));
     mount('#rules', el('h4', { text: 'Rules' }), rulesTable(p.rules));
