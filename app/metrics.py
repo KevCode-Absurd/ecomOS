@@ -1226,6 +1226,71 @@ def m_sales_tax(ctx, name, kw):
                   by_jurisdiction=[{'jurisdiction': j, 'amount': money(v)} for j, v in sorted(by.items(), key=lambda kv: -kv[1])])
 
 
+# ---------------------------------------------------------------- products (01)
+
+PRODUCT_BY = ('sku', 'line', 'month', 'line_month')
+
+
+def product_line(title):
+    """The line a SKU belongs to: its title without the pack size ("Ankle Sock 4-Pack" is "Ankle Sock")."""
+    return re.sub(r'\s+\d+-Pack$', '', str(title or '').strip()) or None
+
+
+def product_lines(ctx):
+    """sku -> line from the products table. Falls back to the SKU's category when the table is missing."""
+    try:
+        rows = ctx.rows('products')
+    except Unavailable:
+        ctx.notes.append('No products table, so lines are the SKU category.')
+        return None
+    return {r['sku']: product_line(r.get('title')) for r in rows if r.get('sku')}
+
+
+@metric('units', 'product_net_sales', filters=('by',))
+def m_product_sales(ctx, name, kw):
+    """Units and net sales from products_monthly. Only whole months inside the window count."""
+    rows = ctx.rows('products_monthly')
+    need(rows, ('month', 'sku', 'units', 'net_sales'), 'products_monthly')
+    by = kw.get('by')
+    if by and by not in PRODUCT_BY:
+        raise ValueError(f'by must be one of {", ".join(PRODUCT_BY)} for {name}')
+    months = sorted({r['month'] for r in rows})
+    inside = [m for m in months if ctx.win.s <= m + '-01' and month_end(m).isoformat() <= ctx.win.e]
+    if not inside:
+        raise Unavailable('no whole month of product sales inside this window', fix='shopify')
+    lines = product_lines(ctx) if by in ('line', 'line_month') else None
+    field = 'units' if name == 'units' else 'net_sales'
+    keep = set(inside)
+    total, units, net, groups = 0, 0, 0.0, {}
+    for r in rows:
+        if r['month'] not in keep:
+            continue
+        if r.get(field) is None:
+            raise Unavailable(f'products_monthly has a blank {field} for {r["sku"]} in {r["month"]}', fix='shopify')
+        units += r.get('units') or 0
+        net += r.get('net_sales') or 0
+        total += r[field]
+        if not by:
+            continue
+        line = (lines or {}).get(r['sku']) or r.get('category') if by in ('line', 'line_month') else None
+        key = {'sku': (r['sku'],), 'line': (line,), 'month': (r['month'],), 'line_month': (line, r['month'])}[by]
+        g = groups.setdefault(key, {'units': 0, 'net_sales': 0.0, 'skus': set()})
+        g['units'] += r.get('units') or 0
+        g['net_sales'] += r.get('net_sales') or 0
+        g['skus'].add(r['sku'])
+    if len(inside) < len({m for m in months if ctx.win.s[:7] <= m <= ctx.win.e[:7]}):
+        ctx.notes.append('Part months at either end of the window are left out.')
+    extra = {'months': inside}
+    if by:
+        names = {'sku': ('sku',), 'line': ('line',), 'month': ('month',), 'line_month': ('line', 'month')}[by]
+        extra['groups'] = [dict(zip(names, k), units=g['units'], net_sales=money(g['net_sales']),
+                                skus=sorted(g['skus']), net_per_unit=money(g['net_sales'] / g['units']) if g['units'] else None)
+                           for k, g in sorted(groups.items(), key=lambda kv: tuple(str(x) for x in kv[0]))]
+    unit = 'count' if name == 'units' else 'usd'
+    return ctx.ok(total if name == 'units' else money(total), unit,
+                  {'units': units, 'net_sales': money(net), 'months': len(inside)}, **extra)
+
+
 # ---------------------------------------------------------------- speed
 
 @metric(*SPEED, filters=('page', 'device', 'variant'))

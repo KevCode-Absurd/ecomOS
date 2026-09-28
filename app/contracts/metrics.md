@@ -56,6 +56,14 @@ Google rows (28 Sep 2026, S3.5): paid sums read `google_rows` campaign rows only
 
 A brand folder that keeps `finance_inputs.json` beside its aggregates (S2.4) is read when the data layer has no `finance_inputs` table. Margin metrics that need order rows (`break_even_roas`, `contribution_margin`) stay unavailable for a brand read through aggregates.
 
+## Products (01)
+| Metric | Formula | Source | Window |
+|---|---|---|---|
+| units | sum of units | `products_monthly` | whole months inside the window; part months left out |
+| product_net_sales | sum of net sales (line subtotal minus discounts) | `products_monthly` | same |
+
+Both take `by=sku`, `by=line`, `by=month` or `by=line_month` and return `groups` with units, net sales, SKUs and net per unit. A line is the SKU title without its pack size ("Ankle Sock 4-Pack" is "Ankle Sock"), read from `products`; without that table the line is the SKU category. Added 28 Sep 2026 for 01-market-research.
+
 ## Speed (08)
 Median of the lab's runs in the window from `speed_runs`, for one page, device and variant (default pdp, mobile, baseline).
 | Metric | Formula |
