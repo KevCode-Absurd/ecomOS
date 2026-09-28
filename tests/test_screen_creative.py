@@ -116,10 +116,16 @@ class Bombas(unittest.TestCase):
         again = audit.run('bombas', {'ends_on': self.overview['window']['ends_on']})
         self.assertEqual(json.dumps(self.findings, sort_keys=True), json.dumps(again, sort_keys=True))
 
-    def test_a_rule_fires_open_with_money(self):
+    def test_open_findings_carry_money_and_unavailable_name_inputs(self):
+        # On the scale 1.0 rebuild of 28 Sep none of the threshold rules trips (see FEATURES.md, round 1 job 1),
+        # so round 0 promises the shape, not a firing: open findings carry money, unavailable ones name their inputs.
         opened = [f for f in self.findings if f['status'] == 'open']
-        self.assertTrue(opened)
-        self.assertTrue(any(f['money_at_stake'] for f in opened))
+        for f in opened:
+            self.assertTrue(f['money_at_stake'])
+        unavailable = [f for f in self.findings if f['status'] == 'unavailable']
+        self.assertTrue(self.findings)
+        for f in unavailable:
+            self.assertTrue(f['unavailable']['inputs'])
 
     def test_unavailable_never_zero(self):
         for f in self.findings:

@@ -129,3 +129,8 @@ Rules live in `audit.py` (docstring has thresholds). A job with no rule yet name
 - Insights: format winners (CREA-R01) and Ad Library run length, own 12 days against 3 competitors at 13 to 80 (brain learnings, signal only).
 - Tests: tests/test_screen_creative.py, 11 passing. Screen suite: only the known test_screen_today tolerance failure with the mixed-scale sqlite.
 - Next: hook and angle tags on ad_rows, 3-second plays in the Meta pull, then the brief and pipeline logs. Screenshot: round0.png.
+
+
+## Round 1 job 1 (added 28 Sep 2026 by the lead session)
+
+On the full-scale rebuild (fixes 1 to 14, founder calibration) no creative rule fires: CREA-R01 (format ROAS under its 4-window median), CREA-R02 (starved winner) and CREA-R05 (new ad launch rate) stay inside their thresholds, and CREA-R06 (competitor format gap) does not fire because the simulated account already runs dynamic creative while 9 of 12 competitor pages run dco at volume. Tune the thresholds on the 1.0 data (R01 to a 7 percent gap over 2 windows, R05 to a 15 percent drop) and add a rule on hook mix: 30 of 31 own Ad Library ads are statement hooks, competitors run creator-style video (Comrad 43 percent video). Tests then assert a firing again.
