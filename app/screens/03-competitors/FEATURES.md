@@ -34,6 +34,12 @@ Round 0 notes (28 Sep 2026): brand price per pair is simulated net sales per uni
 
 Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `app/connectors/apify.py` (12 pages with ids, 1,800 items cap, estimate $2.08, inside the $4 run and $30 week caps). The live run was blocked by the session's permission check on 28 Sep, so round 1 builds on the brain's 28 Sep pulls (page-level formats, hook types, offers, run lengths and 3 quoted ads a page) and the page says so.
 
+## Round 4: the rest of the room, and a depth pass on the screen
+
+| # | Feature | Status |
+|---|---|---|
+| 4.1 | Where they run their ads: Meta placements per page (Facebook, Instagram, Threads, WhatsApp, Messenger, Audience Network) as a heatmap against ours, a gap line (a placement most direct pages run and we do not), ours unavailable until the pull fills them; captures now keep placements and threat points, and a rival on a new placement is a change (the room's "entered a new channel" rule) | done |
+
 ## Round 3: watching over time, reports and the rest of the room
 
 | # | Feature | Status |
@@ -200,6 +206,7 @@ Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permi
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
+| 4 | 4.1 | 2026-09-28 | Placements and new channel alerts |
 | 3 | 3.1 to 3.10 | 2026-09-28 | Page-summary captures and diffs; price moves; landing page tracking; printable report; battlecards; positioning test; win-loss kit; tunable thresholds; second brand. Screenshot `round3.png` |
 | 2 | 2.1 to 2.10 | 2026-09-28 | Lost by name; category ladder; review themes; Amazon against our site; creative velocity; weekly brief; niche sizing; premium signals; search seeds; desk tabs. Screenshot `round2.png` |
 | 1 | 1.1 to 1.10 | 2026-09-28 | Plan first; rank override; 12 pages side by side; coverage matrix; hook and offer mix; references; price and pack ladder; positioning map with moves; changes timeline; freshness and re-pull; rank for all 14 rules. Screenshot `round1.png` |

@@ -13,6 +13,8 @@ Diff rules between the latest two captures, per page (constants below):
   new_offer    an offer seen that was not seen before
   dropped_offer an offer no longer seen
   new_angle    an angle tag not seen before
+  new_channel  a placement (Instagram, Threads, WhatsApp, Audience Network) not seen before: the room's
+               "competitor entered a new channel" rule
   new_flight   the longest running ad started after the previous capture: every ad is new
 With an ad-level snapshot the same alerts come from snapshot.py rows instead (changes.diff).
 """
@@ -38,7 +40,8 @@ def summary(pages: list[dict]) -> dict:
         out[p["key"]] = {"name": p["name"], "role": p["role"], "frame": p["frame"], "active_ads": p["active_ads"],
                          "formats": p["formats"], "offers": sorted(p.get("offers_seen") or []),
                          "angles": sorted({a["tag"] for a in p.get("angles") or []}), "median_days": p.get("median_days"),
-                         "longest_start": p.get("longest_start"), "price_text": p.get("price_text")}
+                         "longest_start": p.get("longest_start"), "price_text": p.get("price_text"),
+                         "platforms": p.get("platforms") or [], "points": (p.get("verdict") or {}).get("points")}
     return out
 
 
@@ -88,6 +91,9 @@ def diff(prev: dict | None, cur: dict | None) -> list[dict]:
             ev("new_offer", f"new offer seen: {o}", o)
         for o in sorted(set(a.get("offers") or []) - set(b.get("offers") or [])):
             ev("dropped_offer", f"offer no longer seen: {o}", o)
+        if a.get("platforms"):   # an older capture without platforms cannot say what is new
+            for pl in sorted(set(b.get("platforms") or []) - set(a.get("platforms") or [])):
+                ev("new_channel", f"now running on {pl.replace('_', ' ')}", pl)
         for g in sorted(set(b.get("angles") or []) - set(a.get("angles") or [])):
             ev("new_angle", f"new angle: {g}", g)
         if b.get("longest_start") and b["longest_start"] > prev["captured_at"]:

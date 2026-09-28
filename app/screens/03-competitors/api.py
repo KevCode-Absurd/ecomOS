@@ -275,6 +275,19 @@ def battlecards(m: dict, pages: dict) -> dict:
             "rule": f"A battlecard is stale when its facts were last checked more than {STALE_CARD_DAYS} days ago."}
 
 
+def placements(m: dict) -> dict:
+    """Where each page runs its ads (Meta placements from the pull), against ours. Gap: a placement most direct pages use."""
+    rows = [{"name": p["name"], "role": p["role"], "frame": p["frame"], "platforms": p.get("platforms") or []}
+            for p in m["pages"] if p["source"] != "none"]
+    allp = sorted({x for r in rows for x in r["platforms"]})
+    direct = [r for r in rows if r["frame"] == "direct" and r["platforms"]]
+    us = next((r for r in rows if r["role"] == "self"), None)
+    counts = {pl: sum(pl in r["platforms"] for r in direct) for pl in allp}
+    gaps = [pl for pl in allp if direct and counts[pl] >= max(2, len(direct) // 2 + 1) and us and us["platforms"] and pl not in us["platforms"]]
+    return {"rows": rows, "platforms": allp, "direct_counts": counts, "ours_known": bool(us and us["platforms"]), "gaps": gaps,
+            "rule": "A placement most direct pages run and we do not is a gap. Our placements need the ad-level pull when the brain lacks them."}
+
+
 def overview(brand: str, today: dt.date) -> dict:
     m = audit.market_full(brand, today, BRAIN_ROOT)
     brain = m.pop("brain")
@@ -286,7 +299,7 @@ def overview(brand: str, today: dt.date) -> dict:
             "competitors": [_public(c) for c in m["competitors"]], "angles": m["angles"],
             "positioning": pos,
             "lookalike": m["lookalike"], "gap": gaps(m), "pages": (pr := page_rows(m)), "battlecards": battlecards(m, pr),
-            "coverage": {"all": m["coverage"], "direct": m["coverage_direct"]}, "mix": m["mix"], "references": m["references"], "ladder": m["ladder"], "changes": m["changes"], "freshness": freshness(m, brand), "losses": m["losses"], "category": m["category"], "reviews": m["reviews"], "presence": m["presence"], "velocity": m["velocity"], "niche": m["niche"], "premium": m["premium"], "search": m["search"], "price_moves": m["price_moves"], "landing": m["landing"],
+            "coverage": {"all": m["coverage"], "direct": m["coverage_direct"]}, "mix": m["mix"], "references": m["references"], "ladder": m["ladder"], "changes": m["changes"], "freshness": freshness(m, brand), "losses": m["losses"], "category": m["category"], "reviews": m["reviews"], "presence": m["presence"], "velocity": m["velocity"], "niche": m["niche"], "premium": m["premium"], "search": m["search"], "price_moves": m["price_moves"], "landing": m["landing"], "placements": placements(m),
             "frames": audit.framemod.build(m, brain, moves),
             "category_median": m["category_median"], "price_position_index": m["price_position_index"]}
 

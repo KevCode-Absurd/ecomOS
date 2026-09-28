@@ -133,7 +133,7 @@ def build(brain, frame: dict | None, snap_mod, snapshot: dict | None, profile: d
                "median_days": lv.get("median_run_days"), "long_runners_30d": lv.get("long_runners_30d"),
                "longest_days": longest.get("days_running") or av.get("longest_run_days"),
                "longest_start": longest.get("start_date"), "longest_url": longest.get("ad_url"),
-               "offers_seen": list(av.get("offers_seen") or []), "offer_share": None, "main_cta": None, "new_14d": None,
+               "offers_seen": list(av.get("offers_seen") or []), "platforms": sorted(av.get("platforms") or []), "offer_share": None, "main_cta": None, "new_14d": None,
                "first_lines": {LINE_KEYS.get(k, "statement"): v for k, v in (av.get("hook_types") or {}).items()},
                "hook_labels": list(dv.get("hook_types") or []),
                "quotes": [e.get("quote") for e in ((a or {}).get("evidence") or []) if e.get("quote")],
@@ -192,7 +192,7 @@ def self_row(brain, profile: dict, snap_mod, snapshot, snap_rows, self_id: str |
            "offers_seen": [v["promo"] for r in brain.records("offers") if isinstance(v := r.get("value"), dict) and v.get("promo")],
            "offer_share": round(share["ads_with_code"] / share["active_ads"], 3)
            if isinstance(share.get("ads_with_code"), int) and share.get("active_ads") else None,
-           "main_cta": None, "new_14d": None,
+           "main_cta": None, "new_14d": None, "platforms": sorted(fm.get("platforms") or []),
            "first_lines": {LINE_KEYS.get(k, "statement"): v for k, v in (fm.get("hook_types") or {}).items()},
            "hook_labels": list(hooks), "quotes": [], "reddit": None,
            "captured_at": (brain.get(f"{brand}.learnings.hook_types") or {}).get("date"),

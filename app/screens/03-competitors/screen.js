@@ -519,10 +519,20 @@
       el('p', { class: 'micro faint', text: fr.rule + ' Reddit is a signal; never quoted.' }));
   }
 
+  // ---------- 5u. placements ----------
+  function placementSection(pl) {
+    const rows = pl.rows.map((r) => ({ key: r.name, label: r.name + (r.role === 'self' ? ' (us)' : ''), sub: r.platforms.length ? r.platforms.length + ' placements' : 'placements unavailable' }));
+    const cells = {};
+    for (const r of pl.rows) { cells[r.name] = {}; for (const p of pl.platforms) cells[r.name][p] = r.platforms.length ? { us: r.platforms.includes(p) ? 1 : 0, unit: 'n' } : null; }
+    mount('#placements', UI.coverageMatrix({ rows, cols: pl.platforms.map((p) => ({ key: p, label: pretty(p) })), cells, single: true, max: 1, unit: 'n', corner: 'Page', note: '1 = runs ads there. n/a = not in the capture.' }),
+      el('p', { class: 'small' }, el('b', { text: 'Gap: ' }), pl.ours_known ? (pl.gaps.length ? pl.gaps.map(pretty).join(', ') + ': most direct pages run there and we do not. Brief a test in the paid social screen.' : 'none; we run where most direct pages run.') : 'our placements are not in the brain yet; the ad-level pull fills them.'),
+      el('p', { class: 'micro faint', text: pl.rule + ' A new placement on a rival page shows as a change once two captures exist.' }));
+  }
+
   // ---------- 5z. desk tabs: each job holds its sections ----------
   const DESK = [
     { key: 'rivals', label: 'Rivals', ids: ['pages', 'cards', 'landing', 'losses', 'category', 'reviews'] },
-    { key: 'creative', label: 'Ads', ids: ['coverage', 'velocity', 'mix', 'refs', 'changes'] },
+    { key: 'creative', label: 'Ads', ids: ['coverage', 'velocity', 'mix', 'placements', 'refs', 'changes'] },
     { key: 'price', label: 'Price and position', ids: ['map', 'frames', 'premium', 'prices', 'presence'] },
     { key: 'market', label: 'Market and data', ids: ['niche', 'search', 'fresh'] },
   ];
@@ -606,6 +616,7 @@
     landingSection(d.landing);
     cardsSection(d.battlecards);
     framesSection(d.frames);
+    placementSection(d.placements);
     document.getElementById('audit-sub').textContent = p.findings.length + ' findings from ' + p.rules.length + ' rules. Public signals, one capture.';
     mount('#audit', auditTable(p.findings));
     deskTabs();

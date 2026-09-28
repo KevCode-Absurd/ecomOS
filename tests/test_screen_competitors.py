@@ -967,6 +967,23 @@ class TestSecondBrand(unittest.TestCase):
             self.assertEqual(api.actions.ranker.validate_action(a), [])
 
 
+class TestPlacements(TempBrain):
+    """4.1: placements per page; a rival on a new placement is a change; our placements unavailable, not zero."""
+    def test_placements_and_new_channel(self):
+        api.BRAIN_ROOT = self.tmp
+        pl = api.handle(Req(['overview']))['placements']
+        self.assertIn('threads', pl['platforms'])
+        self.assertFalse(pl['ours_known'])
+        self.assertEqual(pl['gaps'], [])
+        m = audit.market('bombas', dt.date(2026, 9, 28), self.tmp)
+        prev = {'captured_at': '2026-09-14', 'pages': audit.capmod.summary(m['pages'])}
+        cur = json.loads(json.dumps(prev))
+        cur['captured_at'] = '2026-09-28'
+        prev['pages']['stance']['platforms'] = [x for x in prev['pages']['stance']['platforms'] if x != 'threads']
+        ev = [e for e in audit.capmod.diff(prev, cur) if e['kind'] == 'new_channel']
+        self.assertEqual([e['value'] for e in ev], ['threads'])
+
+
 class TestRank(TempBrain):
     """Depth contract rules 2, 3 and 13: owner, steps and artefact on every action; every finding ends in one."""
     W = {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4}
@@ -1060,7 +1077,7 @@ class TestPage(unittest.TestCase):
         js = (SCREEN / 'screen.js').read_text(encoding='utf-8')
         html = (SCREEN / 'index.html').read_text(encoding='utf-8')
         desk = html.split('id="desk-src"', 1)[1].split('<!-- 6. The audit -->', 1)[0]
-        for sec_id in ('pages', 'cards', 'landing', 'losses', 'category', 'reviews', 'coverage', 'velocity', 'mix', 'refs', 'changes',
+        for sec_id in ('pages', 'cards', 'landing', 'losses', 'category', 'reviews', 'coverage', 'velocity', 'mix', 'placements', 'refs', 'changes',
                        'map', 'frames', 'premium', 'prices', 'presence', 'niche', 'search', 'fresh'):
             self.assertIn(f'id="{sec_id}"', desk)
             self.assertIn(f"'{sec_id}'", js)

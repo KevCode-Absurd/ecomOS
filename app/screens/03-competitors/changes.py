@@ -70,7 +70,7 @@ def build(m: dict, brain, prev: dict | None, cur: dict | None, today: dt.date, p
         direct = frame.get(e["page"]) == "direct"
         if e["kind"] in ("new_offer", "new_angle") and direct:
             v = ("follow", "Follow", "Answer it: brief our counter this week.")
-        elif e["kind"] in ("ads_up", "new_format", "new_flight") and direct:
+        elif e["kind"] in ("ads_up", "new_format", "new_flight", "new_channel") and direct:
             v = ("watch", "Watch", "Read what they pushed; brief an answer if it overlaps our angles.")
         else:
             v = ("ignore", "Ignore", "No overlap with our frame.")
