@@ -42,6 +42,7 @@ Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `a
 | 5.2 | Action lanes: the action cards filter by owner (agent does it, agent drafts and you approve, a person does it) with counts, hours of work per lane and how many are decided or waiting on the founder; each card shows the founder's logged decision from the decisions table | done |
 | 5.3 | The holiday season against them (`season.py`): US dates computed in code (Black Friday 27 Nov, Cyber Monday 30 Nov, last gift order 17 Dec), the season's weight from the brain (26 percent of the year), 5 dated phases (watch, build, defend, gift window, read) with who and the moves; rule COMP-R30 (high inside 60 days) puts 3 gifting ad briefs on the plan because Darn Tough and Smartwool run a gifting angle and we run none | done |
 | 5.4 | What the founder decides this quarter: a positioning review built in code (where we sit on both map axes, the threats, how shoppers frame the category and whether our line says it, pack ladder and price index) ending in 3 decisions: test the buy it for life line or keep ours, contest the durability corner or hold, hold the price index or move it; copy and a BRAND-C19 decision | done |
+| 5.5 | Exports (depth section 7): CSV of 7 desk tables (pages, coverage matrix, first lines and offers, references, pack ladder, search seeds, room metrics), unavailable cells empty, never 0. Also fixes a fault 5.4 shipped: its new review function reused the name of the review-themes function, the page stopped loading at the desk; renamed, and a test now fails on any duplicate function name in screen.js | done |
 
 ## Round 4: the rest of the room, and a depth pass on the screen
 
@@ -235,7 +236,7 @@ Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permi
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
-| 5 | 5.1 to 5.4 | 2026-09-28 | Hand-offs; action lanes; season plan; quarterly review |
+| 5 | 5.1 to 5.5 | 2026-09-28 | Hand-offs; action lanes; season plan; quarterly review; exports (and the 5.4 load fix) |
 | 4 | 4.1 to 4.10 | 2026-09-28 | Placements and new channel alerts; gap lines; stop rules; unit from the brain; never zero; phone width; threat history; support answers; room metrics. Screenshot `round4.png` |
 | 3 | 3.1 to 3.10 | 2026-09-28 | Page-summary captures and diffs; price moves; landing page tracking; printable report; battlecards; positioning test; win-loss kit; tunable thresholds; second brand. Screenshot `round3.png` |
 | 2 | 2.1 to 2.10 | 2026-09-28 | Lost by name; category ladder; review themes; Amazon against our site; creative velocity; weekly brief; niche sizing; premium signals; search seeds; desk tabs. Screenshot `round2.png` |

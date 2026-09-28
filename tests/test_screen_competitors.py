@@ -1236,6 +1236,13 @@ class TestPage(unittest.TestCase):
         self.assertNotIn('a pair', js)
         self.assertNotIn('per pair', js)
 
+    def test_no_duplicate_functions(self):
+        import re as _re
+        js = (SCREEN / 'screen.js').read_text(encoding='utf-8')
+        names = _re.findall(r'^\s*(?:async )?function (\w+)\(', js, _re.M)
+        dup = sorted({n for n in names if names.count(n) > 1})
+        self.assertEqual(dup, [])
+
     def test_action_lanes(self):
         js = (SCREEN / 'screen.js').read_text(encoding='utf-8')
         self.assertIn("api('/api/decisions?screen=' + SCREEN)", js)

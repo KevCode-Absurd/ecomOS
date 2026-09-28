@@ -584,11 +584,28 @@
   }
 
   // ---------- 5aa. the quarterly positioning review ----------
-  function reviewSection(rv) {
+  function quarterSection(rv) {
     mount('#review', el('pre', { class: 'card sunken bc', text: rv.text }),
       el('div', { class: 'row' }, UI.copyButton({ label: 'Copy the review', text: () => rv.text }),
         UI.decisionRow({ capability: 'BRAND-C19', autonomy: 'agent_does', screen: SCREEN, compact: true, finding_id: SCREEN + '.review.' + rv.quarter.replace(' ', '_') })),
       el('p', { class: 'micro faint', text: 'Built in code from the map, the threats, the shopper frames and the price model. The founder decides; the agent logs each decision to the brain.' }));
+  }
+
+  // ---------- 7. exports ----------
+  function exportsSection(d) {
+    const cov = [];
+    for (const r of d.coverage.all.rows) for (const c of d.coverage.all.cols) { const x = d.coverage.all.cells[r.key][c.key]; cov.push({ angle: r.label, format: c.label, ours: x.us, theirs: x.them, pages: x.n, kind: x.kind }); }
+    const sets = [
+      ['pages', 'competitor-pages.csv', d.pages.rows.map((r) => ({ page: r.name, frame: r.frame, verdict: r.verdict ? r.verdict.text : 'us', points: r.verdict ? r.verdict.points : null, active_ads: r.active_ads, median_days: r.median_days, offers: (r.offers_seen || []).join('; ') }))],
+      ['coverage', 'coverage-matrix.csv', cov],
+      ['first lines and offers', 'hook-offer-mix.csv', d.mix.rows.map((r) => Object.assign({ page: r.name, ads: r.n, offers: r.offers.join('; ') }, r.shares))],
+      ['references', 'references.csv', d.references.refs.map((r) => ({ page: r.page, days: r.days, since: r.start, keep_rate: r.keep_rate, relevance: r.score, url: r.url }))],
+      ['pack ladder', 'pack-ladder.csv', d.ladder.ladders.map((r) => ({ style: r.style, single: r.single, biggest: r.biggest, biggest_units: r.biggest_pairs, saving: r.saving }))],
+      ['search seeds', 'search-seeds.csv', d.search.rows.map((r) => ({ term: r.term, kind: r.kind, pages: r.pages.join('; ') }))],
+      ['room metrics', 'room-metrics.csv', d.room_metrics.map((r) => ({ metric: r.key, value: r.value, formula: r.formula, unavailable: r.unavailable }))],
+    ];
+    mount('#exports', el('h4', { text: 'Exports' }), el('div', { class: 'row' }, ...sets.map(([label, file, rows]) => el('button', { class: 'btn sm', type: 'button', text: label + ' (' + rows.length + ')', onclick: () => UI.csv(rows, null, file) }))),
+      el('p', { class: 'micro faint', text: 'CSV of each desk table as it stands on this capture. Unavailable cells export empty, never 0.' }));
   }
 
   // ---------- 5z. desk tabs: each job holds its sections ----------
@@ -714,12 +731,13 @@
     placementSection(d.placements);
     historySection(d.history);
     seasonSection(d.season);
-    reviewSection(d.review);
+    quarterSection(d.review);
     macrosSection(d.macros);
     handoffSection();
     document.getElementById('audit-sub').textContent = p.findings.length + ' findings from ' + p.rules.length + ' rules. Public signals, one capture.';
     mount('#audit', auditTable(p.findings));
     gapLines(d.gap_lines);
+    exportsSection(d);
     deskTabs();
     const fmtM = (r) => r.value == null ? NA : r.unit === '%' ? fmt.pct(r.value) : fmt.num(r.value) + (r.unit === 'days' ? ' days' : r.unit === 'points' ? ' points' : '');
     mount('#metrics', el('h4', { text: 'Room metrics' }), UI.table({ columns: [{ key: 'key', label: 'Metric', format: (v) => pretty(v) }, { key: 'v', label: 'Value' },
