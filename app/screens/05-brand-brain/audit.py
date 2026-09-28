@@ -73,6 +73,17 @@ BRN-R14 site changed unnoticed. A record in the site crawl differs between
     reviewed. Severity from the section: offers, policies, claims and product
     prices high, identity and stack medium, else low. Capability BRN-C01.
     Reputation override 5 for a claim or policy change. Owner: 05-brand-brain.
+BRN-R15 marketplace price below MAP. A marketplace listing's price per
+    pair (parity.py) sits below the founder's minimum advertised price. Fires
+    only when offers.map_usd_per_pair is set; otherwise one unavailable
+    finding names the founder record that fills it. Severity high.
+    Capability PROD-C46. Reputation override 5. Owner: 05-brand-brain.
+BRN-R16 unrecognised marketplace seller. A listing's seller is not in the
+    founder's list (offers.marketplace_seller_names). Fires only when the
+    pull carried the seller and the list exists; when the seller is missing
+    from every listing, one unavailable finding names the connector that
+    fills it (Amazon Selling Partner API, or a listing pull with the seller
+    field). Severity high. Capability PROD-C46. Owner: 05-brand-brain.
 BRN-R07 competitor snapshot stale. A configured Ad Library page was captured
     more than SNAPSHOT_STALE_DAYS (7) ago, or never. Severity low. Capability
     BRN-C11 (competitor snapshot, signals only). Owner: 05-brand-brain.
@@ -133,11 +144,18 @@ RULES = [
      "inputs": ["claims", "objection_ladders"], "capability": "BRN-C03", "owner_screen": SCREEN},
     {"rule_id": "BRN-R14", "name": "site changed unnoticed", "entity_type": "brand",
      "inputs": ["snapshots/site", "raw/a-site"], "capability": "BRN-C01", "owner_screen": SCREEN},
+    {"rule_id": "BRN-R15", "name": "marketplace price below MAP", "entity_type": "sku",
+     "inputs": ["marketplaces", "offers.map_usd_per_pair"], "capability": "PROD-C46", "owner_screen": SCREEN},
+    {"rule_id": "BRN-R16", "name": "unrecognised marketplace seller", "entity_type": "sku",
+     "inputs": ["marketplaces", "offers.marketplace_seller_names"], "capability": "PROD-C46", "owner_screen": SCREEN},
 ]
 AUTONOMY = {"BRN-C12": "agent_does", "BRN-C07": "founder_gate", "BRN-C03": "agent_does",
             "CREA-C19": "agent_does", "CREA-C04": "agent_does", "BRN-C11": "agent_does", "CREA-C06": "agent_does",
-            "BRAND-C57": "agent_does", "CREA-C03": "agent_does", "BRN-C05": "founder_gate", "BRN-C01": "agent_does"}
+            "BRAND-C57": "agent_does", "CREA-C03": "agent_does", "BRN-C05": "founder_gate", "BRN-C01": "agent_does", "PROD-C46": "agent_does"}
 
+_pspec = importlib.util.spec_from_file_location("brand_brain_parity", Path(__file__).resolve().parent / "parity.py")
+parity = importlib.util.module_from_spec(_pspec)
+_pspec.loader.exec_module(parity)
 _sspec = importlib.util.spec_from_file_location("brand_brain_sitediff", Path(__file__).resolve().parent / "sitediff.py")
 sitediff = importlib.util.module_from_spec(_sspec)
 _sspec.loader.exec_module(sitediff)
@@ -444,6 +462,50 @@ def rule_site_changes(brain: Brain, ends_on: str) -> list[dict]:
     return out
 
 
+def rule_parity(brain: Brain, ends_on: str) -> list[dict]:
+    out = []
+    pv = parity.strip(brain)
+    if not pv["listings"]:
+        return out
+    if pv["map_usd_per_pair"] is None:
+        f = _finding("BRN-R15", "high", {"type": "brand", "id": "map_unset", "label": "minimum advertised price"}, [],
+                     "No minimum advertised price is on file, so no listing can be checked against it.", [], ends_on, 0.5)
+        f.update(status="unavailable", unavailable={"inputs": ["offers.map_usd_per_pair"], "connector": "a founder record on the brand brain screen",
+                                                    "fix": "Type the MAP per pair in the marketplace parity block. It saves as an approved record."})
+        out.append(f)
+    else:
+        for l in pv["listings"]:
+            fl = next((x for x in l["flags"] if x["key"] == "below_map"), None)
+            if not fl:
+                continue
+            ev = [_row("price_per_pair_usd", l["per_pair_usd"], "$", ends_on, None, pv["map_usd_per_pair"], "marketplaces"),
+                  _row("listing_price_usd", l["price_usd"], "$", ends_on, None, None, "marketplaces")]
+            out.append(_finding("BRN-R15", "high", {"type": "sku", "id": l["asin"], "label": l["title"][:60]}, ev,
+                                f"Amazon lists {l['title'][:50]} at ${l['per_pair_usd']:,.2f} a pair, below your ${pv['map_usd_per_pair']:,.2f} minimum.",
+                                [l["record"], pv["map_record"]], ends_on, 0.7))
+    if pv["counts"]["seller_unknown"] == len(pv["listings"]):
+        f = _finding("BRN-R16", "high", {"type": "brand", "id": "seller_unknown", "label": "marketplace sellers"}, [],
+                     f"The seller is missing on all {len(pv['listings'])} listings, so an unrecognised seller cannot be seen.", [], ends_on, 0.5)
+        f.update(status="unavailable", unavailable={"inputs": ["marketplaces.amazon_listing.seller"], "connector": "Amazon Selling Partner API, or a listing pull with the seller field",
+                                                    "fix": "Connect Amazon SP-API in Setup, or re-pull the listings with an actor that returns the seller."})
+        out.append(f)
+    elif pv["our_sellers"] is None and any(l["seller"] for l in pv["listings"]):
+        f = _finding("BRN-R16", "high", {"type": "brand", "id": "sellers_unset", "label": "our seller names"}, [],
+                     "Listings carry a seller name but the brain has no list of ours to check against.", [], ends_on, 0.5)
+        f.update(status="unavailable", unavailable={"inputs": ["offers.marketplace_seller_names"], "connector": "a founder record on the brand brain screen",
+                                                    "fix": "Type your marketplace seller names in the parity block."})
+        out.append(f)
+    else:
+        for l in pv["listings"]:
+            fl = next((x for x in l["flags"] if x["key"] == "unrecognised"), None)
+            if not fl:
+                continue
+            ev = [_row("seller_recognised", 0, "flag", ends_on, None, 1, "marketplaces")]
+            out.append(_finding("BRN-R16", "high", {"type": "sku", "id": l["asin"], "label": l["title"][:60]}, ev,
+                                f"An unrecognised seller, {l['seller']}, is listing {l['title'][:50]} on Amazon.", [l["record"], pv["sellers_record"]], ends_on, 0.7))
+    return out
+
+
 def rule_snapshot_stale(brain: Brain, ends_on: str) -> list[dict]:
     out = []
     d = market.pages(brain)
@@ -471,7 +533,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
         bank = keeper.load_bank()
     except (OSError, ValueError, KeyError):
         bank = None
-    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_untiered_claims(brain, ends_on) + rule_site_changes(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
+    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_untiered_claims(brain, ends_on) + rule_site_changes(brain, ends_on) + rule_parity(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
     if bank is None:
         for rid, sev in (("BRN-R02", "medium"), ("BRN-R03", "medium")):
             f = _finding(rid, sev, {"type": "brand", "id": "question_bank", "label": "question bank"},

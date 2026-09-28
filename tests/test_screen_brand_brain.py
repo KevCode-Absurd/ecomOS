@@ -90,7 +90,7 @@ class AuditShape(unittest.TestCase):
         self.assertIn('05-brand-brain.BRN-R02.section_economics', ids)
         self.assertIn('05-brand-brain.BRN-R04.mission_trust.rung_1.donation_pledge', ids)
         rules = {r['rule_id'] for r in audit.RULES}
-        self.assertLessEqual({'BRN-R01', 'BRN-R02', 'BRN-R03', 'BRN-R04', 'BRN-R05', 'BRN-R06', 'BRN-R07', 'BRN-R08', 'BRN-R09', 'BRN-R10', 'BRN-R11', 'BRN-R12', 'BRN-R13', 'BRN-R14'}, rules)
+        self.assertLessEqual({'BRN-R01', 'BRN-R02', 'BRN-R03', 'BRN-R04', 'BRN-R05', 'BRN-R06', 'BRN-R07', 'BRN-R08', 'BRN-R09', 'BRN-R10', 'BRN-R11', 'BRN-R12', 'BRN-R13', 'BRN-R14', 'BRN-R15', 'BRN-R16'}, rules)
 
 
 class AuditRules(TempBrain):
@@ -882,3 +882,50 @@ class Round2SiteDiff(TempBrain):
         self.assertEqual(sd['counts']['open'], 0)
         self.assertTrue(sd['changes'][0]['reviewed'])
         self.assertFalse([f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R14'])
+
+
+class Round2Parity(TempBrain):
+    """Round 2 feature 3: marketplace listings against the site, MAP and seller checks, unavailable until set."""
+
+    def test_strip_reads_pack_price_and_floor(self):
+        pv = api.handle(Req(['parity']))
+        self.assertEqual(pv['counts']['listings'], 34)
+        self.assertIsNone(pv['counts']['below_map'])       # MAP unset: unavailable, not 0
+        self.assertIsNone(pv['counts']['unrecognised'])
+        self.assertEqual(pv['counts']['seller_unknown'], 34)
+        four = next(l for l in pv['listings'] if l['asin'] == 'B0CVLKH8M2')
+        self.assertEqual((four['pack'], four['line'], four['site_floor_usd']), (4, 'socks', 13.0))
+        self.assertAlmostEqual(four['per_pair_usd'], round(four['price_usd'] / 4, 2))
+        self.assertEqual(api.parity.pack_count("Women's Solids Ankle White Socks Medium (4 Pack)"), 4)
+        self.assertEqual(api.parity.pack_count('Single sock'), 1)
+        kinds = {f['entity']['id']: f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] in ('BRN-R15', 'BRN-R16')}
+        self.assertEqual(kinds['map_unset']['status'], 'unavailable')
+        self.assertEqual(kinds['seller_unknown']['status'], 'unavailable')
+        self.assertIn('Selling Partner', kinds['seller_unknown']['unavailable']['connector'])
+
+    def test_map_and_sellers_turn_checks_on(self):
+        status, res = api.handle(Req(['parity', 'map'], 'POST', body={'usd': '9.00'}))
+        self.assertEqual((status, res['record']), (201, 'bombas.offers.map_usd_per_pair'))
+        pv = api.handle(Req(['parity']))
+        self.assertEqual(pv['map_usd_per_pair'], 9.0)
+        self.assertGreater(pv['counts']['below_map'], 0)
+        worst = pv['listings'][0]
+        self.assertEqual(worst['verdict']['kind'], 'stop')
+        f = next(f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R15' and f['status'] == 'open')
+        self.assertEqual(f['entity']['type'], 'sku')
+        self.assertIn('below your $9.00 minimum', f['sentence'])
+        a = next(a for a in api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions'] if a['rule_id'] == 'BRN-R15' and a['status'] == 'open')
+        self.assertTrue(a['title'].startswith('Send a MAP notice'))
+        self.assertEqual(a['rubric']['reputation'], 5)
+        # sellers: set the list, then a listing with a foreign seller is unrecognised
+        rows = self.section('marketplaces')
+        rows[0]['value']['seller'] = 'SockDealsUSA'
+        self.write('marketplaces', rows)
+        status, res = api.handle(Req(['parity', 'sellers'], 'POST', body={'names': 'Bombas, Bombas LLC'}))
+        self.assertEqual(status, 201)
+        pv = api.handle(Req(['parity']))
+        self.assertEqual(pv['counts']['unrecognised'], 1)
+        f = next(f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R16' and f['status'] == 'open')
+        self.assertIn('SockDealsUSA', f['sentence'])
+        self.assertEqual(api.handle(Req(['parity', 'map'], 'POST', body={'usd': 'abc'}))[0], 400)
+        self.assertEqual(api.handle(Req(['parity', 'nope'], 'POST', body={}))[0], 404)

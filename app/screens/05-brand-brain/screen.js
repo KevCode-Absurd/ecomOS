@@ -683,6 +683,39 @@
     return card;
   }
 
+  // ---------- 5c0. marketplace parity ----------
+  function parityInputs(pv, reload) {
+    const map = el('input', { class: 'text sm', placeholder: pv.map_usd_per_pair != null ? '$' + pv.map_usd_per_pair + ' a pair' : 'MAP per pair, like 12.50', style: { maxWidth: '180px' } });
+    const sellers = el('input', { class: 'text sm', placeholder: pv.our_sellers ? pv.our_sellers.join(', ') : 'Your seller names, comma separated', style: { flex: '1 1 260px' } });
+    const status = el('span', { class: 'micro muted' });
+    const save = (what, body) => async () => { try { const r = await api(BASE + 'parity/' + what, { method: 'POST', body }); status.textContent = 'Saved ' + r.record + '.'; reload(); } catch (e) { status.textContent = 'Could not save: ' + e.message; } };
+    return el('div', { class: 'row add-field' }, map, el('button', { class: 'btn sm primary', type: 'button', text: 'Set MAP', onclick: () => save('map', { usd: map.value })() }),
+      sellers, el('button', { class: 'btn sm', type: 'button', text: 'Set seller names', onclick: () => save('sellers', { names: sellers.value })() }), status);
+  }
+  function parityTable(pv, byAct) {
+    const rows = pv.listings.map((l) => Object.assign({}, l, { flags_text: l.flags.map((f) => f.text).join('; '), title_short: l.title.length > 60 ? l.title.slice(0, 57) + '...' : l.title }));
+    return UI.verdictTable({
+      columns: [
+        { key: 'title_short', label: 'Listing' }, { key: 'asin', label: 'ASIN' }, { key: 'line', label: 'Line', format: (v) => v ? pretty(v) : NA }, { key: 'pack', label: 'Pack', unit: 'n', align: 'right' },
+        { key: 'price_usd', label: 'Price', unit: '$', align: 'right' }, { key: 'per_pair_usd', label: 'Per pair', unit: '$', align: 'right' }, { key: 'site_floor_usd', label: 'Site floor', unit: '$', align: 'right' },
+        { key: 'gap_pct', label: 'Gap', unit: '%', align: 'right', format: (v) => v == null ? NA : (v > 0 ? '+' : '') + v + '%' }, { key: 'seller', label: 'Seller', format: (v) => v || NA }, { key: 'stars', label: 'Stars', align: 'right' }, { key: 'reviews', label: 'Reviews', unit: 'n', align: 'right' },
+      ],
+      verdict: { at: 1, kind: (r) => r.verdict.kind, text: (r) => r.verdict.text, reason: (r) => r.verdict.reason },
+      actions: { label: (r) => byAct[r.asin] ? 'Act' : 'Open', onClick: (r) => { const a = byAct[r.asin]; if (a) UI.panel({ title: r.title, body: UI.actionCard(a, { screen: SCREEN, expanded: true }) }); else window.open(r.url, '_blank', 'noopener'); } },
+      rows, sort: false, maxRows: 60, empty: 'No marketplace listings in the brain yet.',
+    });
+  }
+  async function loadParity() {
+    let pv, actions = [];
+    try { pv = await api(BASE + 'parity'); } catch (e) { mount('#parity', el('p', { class: 'muted', text: 'Parity unavailable: ' + e.message })); return; }
+    try { const r = await api(BASE + 'rank'); actions = (r.actions || []).filter((a) => /BRN-R1[56]/.test(a.rule_id || '')); } catch (e) { actions = []; }
+    const byAct = {}; for (const a of actions) if (a.entity && a.entity.type === 'sku') byAct[a.entity.id] = a;
+    const c = pv.counts;
+    mount('#parity-tools', UI.orientation([{ label: 'listings', value: c.listings, unit: 'n' }, { label: 'under the site', value: c.under_site, unit: 'n', tone: c.under_site ? 'bad' : 'good' }, { label: 'below MAP', value: c.below_map, unit: 'n' }, { label: 'seller unknown', value: c.seller_unknown, unit: 'n' }, { label: 'unrecognised seller', value: c.unrecognised, unit: 'n' }, { label: 'MAP', value: pv.map_usd_per_pair, unit: '$' }]));
+    const connect = actions.filter((a) => a.status === 'unavailable').map((a) => UI.actionCard(a, { screen: SCREEN, compact: true }));
+    mount('#parity', parityTable(pv, byAct), parityInputs(pv, loadParity), ...connect, el('div', { class: 'micro faint', text: pv.note }));
+  }
+
   // ---------- 5c1. site diff between crawls ----------
   function changeCard(c, reload, byAct) {
     const a = byAct['change_' + c.section + '_' + (c.field || 'x')];
@@ -892,6 +925,7 @@
     loadQuestions();
     loadClaims();
     loadSite();
+    loadParity();
     const [prof] = await Promise.all([loadProfile(), loadDesk()]);
     await loadPlan(prof);
   }

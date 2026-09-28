@@ -51,6 +51,10 @@ question, and accept or ignore on a proposed record. Nothing external.
                                 reads unavailable with the reason
   POST site/snapshot            store the crawl on file as a snapshot (after each site crawl)
   POST site/reviewed            {ids}: mark changes reviewed for the current pair
+  GET  parity                   marketplace listings against the site: price per pair, site floor, MAP, seller,
+                                flags with actions; MAP and seller names unavailable until the founder sets them
+  POST parity/map               {usd}: the minimum advertised price per pair, an approved founder record in offers
+  POST parity/sellers           {names}: the seller names that are ours, an approved founder record in offers
   GET  records?section=<name>   one section's records with tier, date, source and evidence
   GET  audit                    findings from audit.py (app/contracts/audit.md shape)
   POST questions/<field>        {answer}: writes a founder record, marks the question answered
@@ -92,6 +96,9 @@ _spec.loader.exec_module(audit)
 _hspec = importlib.util.spec_from_file_location("brand_brain_health", HERE / "health.py")
 health = importlib.util.module_from_spec(_hspec)
 _hspec.loader.exec_module(health)
+_pspec = importlib.util.spec_from_file_location("brand_brain_parity", HERE / "parity.py")
+parity = importlib.util.module_from_spec(_pspec)
+_pspec.loader.exec_module(parity)
 _sspec = importlib.util.spec_from_file_location("brand_brain_sitediff", HERE / "sitediff.py")
 sitediff = importlib.util.module_from_spec(_sspec)
 _sspec.loader.exec_module(sitediff)
@@ -753,6 +760,33 @@ def claim_add(brain: Brain, body: dict):
     return 201, {"ok": True, "record": rid, "tier": tier, "flows_to": FLOWS_TO.get("claims", ""), "version": brain.version()}
 
 
+def parity_set(brain: Brain, what: str, body: dict):
+    body = body or {}
+    if what == "map":
+        try:
+            usd = float(str(body.get("usd") or "").replace("$", "").replace(",", ""))
+        except ValueError:
+            return 400, {"error": "usd must be a number"}
+        if usd <= 0 or usd > 10000:
+            return 400, {"error": "usd out of range"}
+        rec = {"id": f"{brain.brand}.offers.map_usd_per_pair", "brand": brain.brand, "section": "offers", "field": "map_usd_per_pair", "value": usd,
+               "text": f"Minimum advertised price is ${usd:,.2f} a pair on every marketplace.", "tier": "approved", "confidence": 1.0, "visibility": "private",
+               "source": {"type": "founder", "ref": "05-brand-brain marketplace parity", "captured_at": brain.today.isoformat()}}
+    elif what == "sellers":
+        names = [str(n).strip() for n in (body.get("names") if isinstance(body.get("names"), list) else str(body.get("names") or "").split(",")) if str(n).strip()]
+        if not names:
+            return 400, {"error": "names is empty"}
+        rec = {"id": f"{brain.brand}.offers.marketplace_seller_names", "brand": brain.brand, "section": "offers", "field": "marketplace_seller_names", "value": names,
+               "text": "Our marketplace seller names: " + ", ".join(names) + ".", "tier": "approved", "confidence": 1.0, "visibility": "private",
+               "source": {"type": "founder", "ref": "05-brand-brain marketplace parity", "captured_at": brain.today.isoformat()}}
+    else:
+        return 404, {"error": "set map or sellers"}
+    errs = founder_put(brain, rec)
+    if errs:
+        return 400, {"error": "record not valid", "details": errs}
+    return 201, {"ok": True, "record": rec["id"], "version": brain.version()}
+
+
 def rank(brand: str = "bombas", window: dict | None = None) -> dict:
     """The screen's own ranked actions (depth.md section 5): real titles, steps, artefacts and drafts for BRN-R01 to R12.
     app/rank.py picks this up for GET /api/05-brand-brain/rank and for the master list."""
@@ -855,6 +889,12 @@ def handle(req):
         ends = (brain.today - dt.timedelta(days=1)).isoformat()
         findings = audit.run(brain.brand, {"ends_on": ends, "days": 1, "trailing": 0}, BRAIN_ROOT)
         return {"findings": findings, "rules": audit.RULES, "brain_version": brain.version()}
+    if req.method == "GET" and parts == ["parity"]:
+        pv = parity.strip(brain)
+        pv.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())
+        return pv
+    if req.method == "POST" and len(parts) == 2 and parts[0] == "parity":
+        return parity_set(brain, parts[1], req.body)
     if req.method == "GET" and parts == ["site", "diff"]:
         sd = sitediff.diff(brain)
         sd.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())

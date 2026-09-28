@@ -21,7 +21,7 @@ rank_mod = importlib.util.module_from_spec(_r)
 sys.modules["ecomos_rank_for_bb"] = rank_mod
 _r.loader.exec_module(rank_mod)
 
-REPUTATION_OVERRIDE = {"BRN-R05": 3, "BRN-R06": 3, "BRN-R08": 3, "BRN-R09": 5, "BRN-R10": 3, "BRN-R04": 5, "BRN-R13": 5}
+REPUTATION_OVERRIDE = {"BRN-R05": 3, "BRN-R06": 3, "BRN-R08": 3, "BRN-R09": 5, "BRN-R10": 3, "BRN-R04": 5, "BRN-R13": 5, "BRN-R15": 5, "BRN-R16": 5}
 CHECK_DAYS = {"BRN-R05": 14, "BRN-R06": 14, "BRN-R08": 14, "BRN-R07": 7, "BRN-R09": 14, "BRN-R10": 14}
 TEST_BUDGET_USD = 300
 
@@ -139,6 +139,21 @@ def build(f: dict, nr: float | None) -> dict:
         a.update(title=f"Settle {label.replace('_', ' ')}: {_pct(_ev(f, 'weak_share'))} of it is inferred", owner="agent_drafts",
                  artefact={"kind": "brain_record", "label": "approved records in place of inferred ones", "draft": None},
                  steps=f.get("steps") or a["steps"], check_on=_check_on(f, 7), time_to_ship_hours=1)
+    elif rid == "BRN-R15":
+        a.update(title=f"Send a MAP notice for {label}", owner="agent_drafts",
+                 artefact={"kind": "ticket", "label": "a MAP violation notice with the proof (listing, price, date)", "draft": None},
+                 steps=[{"n": 1, "who": "agent", "text": "Capture the proof: listing url, price per pair, pack count, date, seller if known."},
+                        {"n": 2, "who": "agent", "text": "Draft the notice from the brand's template with the proof attached."},
+                        {"n": 3, "who": "person", "text": "Send it, or raise the price on our own listing if the seller is us."},
+                        {"n": 4, "who": "agent", "text": "Re-pull the listing in 7 days and close the finding when the price is at or above MAP."}],
+                 check_on=_check_on(f, 7), time_to_ship_hours=1)
+    elif rid == "BRN-R16":
+        a.update(title=f"Check the seller on {label}", owner="agent_drafts",
+                 artefact={"kind": "ticket", "label": "an unauthorised seller report with the listing and the seller name", "draft": None},
+                 steps=[{"n": 1, "who": "agent", "text": "Record the seller name, the listing and the price. Compare with the founder's seller list."},
+                        {"n": 2, "who": "person", "text": "Confirm it is not a retail partner. If it is, add the name to the list."},
+                        {"n": 3, "who": "agent", "text": "Draft the report for Amazon Brand Registry. You send it."}],
+                 check_on=_check_on(f, 7), time_to_ship_hours=1)
     elif rid == "BRN-R14":
         sc = f.get("site_change") or {}
         act = sc.get("action") or {}
