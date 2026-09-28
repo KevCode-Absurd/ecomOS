@@ -134,6 +134,44 @@
     show('all');
   }
 
+  // ---------- desk: language bank to copy ----------
+  function wordList(label, items, picked) {
+    const box = el('div', { class: 'wl' }, el('span', { class: 'kicker', text: label }));
+    if (!items.length) box.append(el('div', { class: 'na small', text: 'none banked yet' }));
+    for (const w of items) {
+      const cb = el('input', { type: 'checkbox', checked: !w.language_only });
+      if (!w.language_only) picked.add(w);
+      cb.addEventListener('change', () => { if (cb.checked) picked.add(w); else picked.delete(w); });
+      box.append(el('label', { class: 'w' }, cb, el('span', null, '"' + w.text + '" ',
+        el('span', { class: 'chip' + (w.language_only ? ' warn' : ''), text: w.language_only ? 'language only' : (w.source + (w.star ? ', ' + w.star + ' star' : '')) }))));
+    }
+    return box;
+  }
+  function wordsCard(r) {
+    const picked = new Set();
+    const card = el('article', { class: 'card words', dataset: { rung: r.id } });
+    card.append(el('div', { class: 'row between' }, el('b', { text: '"' + r.doubt + '"' }),
+      el('span', { class: 'chip ' + (r.proof ? 'good' : 'bad'), text: r.proof ? 'proof on file' : 'no proof' })));
+    card.append(el('div', { class: 'micro muted', text: pretty(r.theme) + ', rung ' + r.level }));
+    card.append(el('div', { class: 'wcols' }, wordList('How they say the doubt', r.doubt_words, picked), wordList('How they say the win', r.win_words, picked)));
+    const use = el('button', { class: 'btn soft sm', type: 'button', text: 'Use in brief' });
+    use.addEventListener('click', () => {
+      const ws = Array.from(picked);
+      const lines = r.brief.head.concat(['', 'Doubt in their words:'], ws.filter((w) => r.doubt_words.includes(w)).map((w) => '- "' + w.text + '"' + (w.language_only ? ' (language only)' : '')),
+        ['', 'Win in their words:'], ws.filter((w) => r.win_words.includes(w)).map((w) => '- "' + w.text + '"' + (w.language_only ? ' (language only)' : '')));
+      briefPanel(Object.assign({}, r.brief, { draft: lines.join('\n') }));
+    });
+    card.append(el('div', { class: 'row' }, use, el('span', { class: 'micro faint', text: 'Ticked lines go into the brief.' })));
+    return card;
+  }
+  function renderWords(W, avatars) {
+    document.getElementById('words-sub').textContent = 'Their words per doubt, from reviews linked to each rung. ' + W.line + ' Reddit lines are language only, never a testimonial.';
+    const show = (key) => mount('#words', ...W.rows.filter((r) => key === 'all' || r.avatars.includes(key)).map(wordsCard));
+    mount('#words-pills', UI.pills({ items: [{ key: 'all', label: 'All avatars', n: W.rows.length }].concat(avatars.filter((a) => W.rows.some((r) => r.avatars.includes(a.key)))
+      .map((a) => ({ key: a.key, label: a.name, n: W.rows.filter((r) => r.avatars.includes(a.key)).length }))), current: 'all', onChange: show }));
+    show('all');
+  }
+
   function objectionTable(rows) {
     return UI.table({
       columns: [
@@ -328,6 +366,7 @@
     renderActions(r);
     renderCoverage(d.coverage, d.formats);
     renderLadders(d.ladders, d.avatars);
+    renderWords(d.words, d.avatars);
     mount('#avatars', ...(d.avatars.length ? d.avatars.map(avatarCard) : [el('p', { class: 'muted', text: 'No avatar records yet.' })]));
     document.getElementById('obj-note').textContent = 'Avatars come from the objection ladders. Ad coverage: ' +
       (d.angles.available ? 'counted from the ad table.' : d.angles.reason + '.') + ' Page coverage needs a live page scan.';

@@ -18,6 +18,8 @@ An avatar that rests on 1 source keeps its build and carries a "provisional" fla
 """
 from __future__ import annotations
 
+from urllib.parse import urlparse
+
 SCREEN = "02-customers-avatars"
 CHANNEL_OF_SOURCE = {"Bombas site": "our site", "Trustpilot": "review sites", "Sitejabber": "review sites",
                      "Amazon": "Amazon", "Target": "retail stores", "Nordstrom": "retail stores",
@@ -328,3 +330,93 @@ def ladders(all_rungs: list[dict], avatars: list[dict]) -> dict:
     return {"rows": rows, "counts": counts,
             "line": f"{counts['answer']} rungs have no proof. {counts['not_landing']} have proof that is not landing. "
                     f"{counts['lead']} are strengths to lead with."}
+
+
+# ---------------------------------------------------------------- language bank by rung
+
+WORDS_PER_SIDE = 6
+MAX_WORDS = 14
+GENERIC = {"great", "good", "love", "loved", "socks", "sock", "product", "these", "this", "very", "the", "are", "is", "best",
+           "nice", "awesome", "amazing", "item", "a", "and", "it", "they", "them", "my", "i", "so", "pair", "pairs", "ever",
+           "will", "buy", "again", "more", "from", "vendor", "excellent", "perfect", "star", "stars", "five", "one"}
+WIN_THEMES = {"praise", "result", "gift", "surprise"}
+
+
+def _clip(text: str) -> str:
+    words = str(text or "").split()
+    return " ".join(words[:MAX_WORDS]) + ("..." if len(words) > MAX_WORDS else "")
+
+
+def _generic(text: str, brand_tokens: set[str]) -> bool:
+    toks = [t.strip(".,!?'\"’()").lower() for t in str(text or "").split()]
+    return not [t for t in toks if t and t not in GENERIC and t not in brand_tokens]
+
+
+def phrase_row(rec: dict, source_name) -> dict | None:
+    v = rec.get("value") if isinstance(rec.get("value"), dict) else {}
+    revs = v.get("reviews") or []
+    first = revs[0] if revs else {}
+    star = first.get("star")
+    theme = v.get("theme")
+    if theme == "complaint" or (isinstance(star, int) and star <= 2):
+        side = "doubt"
+    elif theme in WIN_THEMES or (isinstance(star, int) and star >= 4):
+        side = "win"
+    else:
+        return None
+    raw = first.get("source") or v.get("source")
+    if not raw:
+        ref = first.get("url") or (rec.get("source") or {}).get("ref") or ""
+        url = ref[ref.find("http"):] if "http" in ref else ""
+        host = urlparse(url).netloc
+        raw = host[4:] if host.startswith("www.") else host
+    src = source_name(raw or "") if raw else "summary"
+    reddit = src == "Reddit" or bool(v.get("subreddit"))
+    return {"id": rec["id"], "text": _clip(v.get("phrase") or rec.get("text")), "side": side, "star": star,
+            "source": "Reddit" if reddit else src, "language_only": reddit,
+            "weight": (len(revs), 1 if first.get("verified") else 0, first.get("helpful") or first.get("upvotes") or 0)}
+
+
+def words(lang_records: list[dict], all_rungs: list[dict], avatars: list[dict], brand_tokens: set[str], source_name) -> dict:
+    """Customers' own words per rung, split into how they say the doubt and how they say the win."""
+    by_id = {r["id"]: r for r in lang_records}
+    names = {a["id"]: a["name"] for a in avatars}
+    keys = {a["id"]: a["key"] for a in avatars}
+    rows, used = [], set()
+    for r in all_rungs:
+        phrases = []
+        for pid in r["derived_from"]:
+            rec = by_id.get(pid)
+            if rec is None:
+                continue
+            p = phrase_row(rec, source_name)
+            if p and not _generic(p["text"], brand_tokens):
+                phrases.append(p)
+        seen, sides = set(), {"doubt": [], "win": []}
+        for p in sorted(phrases, key=lambda x: (x["language_only"], -x["weight"][0], -x["weight"][1], -x["weight"][2], len(x["text"]), x["id"])):
+            k = p["text"].lower()
+            if k in seen:
+                continue
+            seen.add(k)
+            if len(sides[p["side"]]) < WORDS_PER_SIDE:
+                sides[p["side"]].append({x: p[x] for x in ("id", "text", "star", "source", "language_only")})
+        if not sides["doubt"] and not sides["win"]:
+            continue
+        used.update(x["id"] for s in sides.values() for x in s)
+        who = [names[x] for x in r["avatars"] if x in names]
+        head = [f"COPY BRIEF: answer \"{r['doubt']}\"", f"For: {', '.join(who) if who else 'every buyer'}",
+                f"Proof: {r['proof']}" if r["proof_ids"] else "Proof: none on file. A person adds it before this ships.",
+                "Rule: use their words as written. Lines marked language only are never quoted as a review."]
+        rows.append({"id": r["id"], "doubt": r["doubt"], "theme": r["theme"], "level": r["level"],
+                     "avatars": [keys[x] for x in r["avatars"] if x in keys], "doubt_words": sides["doubt"], "win_words": sides["win"],
+                     "proof": bool(r["proof_ids"]),
+                     "brief": {"id": f"{SCREEN}.words.{r['id']}", "title": f"Copy brief in their words: \"{r['doubt']}\"",
+                               "head": head, "owner": "agent_drafts", "kind": "copy",
+                               "capability": {"id": "BRAND-C14", "autonomy": "agent_does"},
+                               "steps": [{"n": 1, "who": "agent", "text": "Write 5 headlines and 3 ad first lines from the picked words."},
+                                         {"n": 2, "who": "person", "text": "Approve the lines. Nothing ships before that."},
+                                         {"n": 3, "who": "agent", "text": "Log which banked phrases went live, so reuse can be counted."}]}})
+    rows.sort(key=lambda x: (x["proof"], -(len(x["doubt_words"]) + len(x["win_words"])), x["id"]))
+    lang = sum(1 for rec in lang_records if phrase_row(rec, source_name))
+    return {"rows": rows, "phrases_used": len(used), "phrases_total": len(lang_records), "phrases_sided": lang,
+            "line": f"{len(used)} of {len(lang_records)} banked phrases sit on a rung. Pick lines and make a copy brief."}

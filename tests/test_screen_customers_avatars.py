@@ -356,5 +356,31 @@ class Ladders(TempBrain):
                 self.assertNotIn('—', a['draft'])
 
 
+class Words(TempBrain):
+    """Feature 1.5: their words per rung, split doubt and win, Reddit marked language only, a copy brief per rung."""
+
+    def test_words_link_to_rungs_and_split(self):
+        W = api.handle(Req(['overview']))['words']
+        self.assertTrue(W['rows'])
+        rungs = {r['id']: r for r in audit.rungs(api._brain(Req(['overview'])))}
+        for row in W['rows']:
+            derived = set(rungs[row['id']]['derived_from'])
+            for w in row['doubt_words'] + row['win_words']:
+                self.assertIn(w['id'], derived)
+                self.assertLessEqual(len(w['text'].split()), 15)
+                self.assertEqual(w['language_only'], w['source'] == 'Reddit')
+            self.assertLessEqual(len(row['doubt_words']), 6)
+            self.assertTrue(row['brief']['head'][0].startswith('COPY BRIEF'))
+            self.assertEqual(row['brief']['owner'], 'agent_drafts')
+        stars = [w['star'] for r in W['rows'] for w in r['doubt_words'] if isinstance(w['star'], int)]
+        self.assertTrue(stars and max(stars) <= 2)
+
+    def test_generic_phrases_dropped(self):
+        builds = api.builds
+        self.assertTrue(builds._generic('Great socks!', {'bombas'}))
+        self.assertTrue(builds._generic('Bombas socks', {'bombas'}))
+        self.assertFalse(builds._generic('No slipping', {'bombas'}))
+
+
 if __name__ == '__main__':
     unittest.main()

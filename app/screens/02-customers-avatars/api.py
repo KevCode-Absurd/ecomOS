@@ -221,6 +221,15 @@ def orientation(brain: Brain, avatars: list[dict], all_rungs: list[dict], chart:
     ]
 
 
+def _brand_tokens(brain: Brain) -> set[str]:
+    """Words of the brand's own name, from the brain identity, so a phrase that only names the brand counts as generic."""
+    toks = {brain.brand.lower()}
+    for r in brain.records("identity"):
+        if r.get("field") in ("name", "brand_name", "legal_name") and isinstance(r.get("value"), str):
+            toks.update(t.lower().strip(".,") for t in r["value"].split())
+    return toks
+
+
 def _formats(brain: Brain, avatars: list[dict]) -> dict:
     f = builds.format_mix(brain.records("learnings"))
     for r in f.get("rows") or []:
@@ -250,7 +259,8 @@ def overview(brain: Brain) -> dict:
             "avatars": avatars,
             "objections": objections, "angles": {k: angles[k] for k in ("available", "reason", "ads")},
             "language": audit.language_rows(brain), "voice": voice_sheet(brain),
-            "coverage": builds.coverage(avatars, all_rungs), "ladders": builds.ladders(all_rungs, avatars), "formats": _formats(brain, avatars)}
+            "coverage": builds.coverage(avatars, all_rungs), "ladders": builds.ladders(all_rungs, avatars),
+            "words": builds.words(brain.records("language_bank"), all_rungs, avatars, _brand_tokens(brain), audit.source_name), "formats": _formats(brain, avatars)}
 
 
 def handle(req):
