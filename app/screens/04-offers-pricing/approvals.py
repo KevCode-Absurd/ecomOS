@@ -179,6 +179,15 @@ HANDOFF_TO = {'page_section': 'landing pages', 'landing_page': 'landing pages', 
               'research_note': 'founder'}
 
 
+def file_text(pf):
+    """A move's build file as a titled CSV block, or None."""
+    if not pf or not pf.get('rows'):
+        return None
+    cols = list(pf['rows'][0])
+    rows = [','.join(cols)] + [','.join(str(r.get(c, '')).replace(',', ' ') for c in cols) for r in pf['rows']]
+    return f'File {pf["name"]} ({pf.get("note", "")}):\n' + '\n'.join(rows)
+
+
 def handoff_row(action):
     """The hand-off row for an approved move, in the events.md shape; the page posts it to /api/handoffs once."""
     art = action.get('artefact') or {}
@@ -186,11 +195,9 @@ def handoff_row(action):
     if not to:
         return None
     draft = art.get('draft') or ''
-    pf = action.get('price_file')
-    if pf and pf.get('rows'):   # the build file travels with the brief, as CSV text
-        cols = list(pf['rows'][0])
-        csv_text = '\n'.join([','.join(cols)] + [','.join(str(r.get(c, '')).replace(',', ' ') for c in cols) for r in pf['rows']])
-        draft = (draft + f'\n\nFile {pf["name"]} ({pf.get("note", "")}):\n' + csv_text)[:20000]
+    ft = file_text(action.get('price_file'))
+    if ft:   # the build file travels with the brief, as CSV text
+        draft = (draft + '\n\n' + ft)[:20000]
     return {'from_screen': SCREEN, 'to': to, 'kind': art['kind'], 'title': action['title'], 'why': action.get('why'),
             'draft': draft or None, 'win_rule': action.get('win_rule'), 'stop_rule': action.get('stop_rule'),
             'check_on': action.get('check_on'), 'capability': (action.get('capability') or {}).get('id'),

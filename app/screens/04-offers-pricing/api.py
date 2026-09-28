@@ -556,6 +556,9 @@ def brief_pack(brand, data=None):
         parts += [f'Artefact: {art.get("label") or art.get("kind")}']
         if art.get('draft'):
             parts += ['  ' + line for line in art['draft'].splitlines()]
+        ft = approvals.file_text(a.get('price_file'))
+        if ft:
+            parts += ['  ' + line for line in ft.splitlines()]
         parts += [f'Win if: {a.get("win_rule") or "not set"}', f'Stop if: {a.get("stop_rule") or "not set"}',
                   f'Check on: {a.get("check_on") or "not set"}', '']
     return {'moves': n, 'text': '\n'.join(parts)}

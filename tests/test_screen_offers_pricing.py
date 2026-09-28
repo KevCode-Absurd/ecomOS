@@ -2376,5 +2376,14 @@ class HandoffFileTest(unittest.TestCase):
         self.assertLessEqual(len(row['draft']), 20000)
 
 
+class BriefPackFileTest(unittest.TestCase):
+    """Round 10 feature 6: the exported brief pack carries each move's build file."""
+
+    def test_pack(self):
+        text = api.brief_pack('bombas')['text']
+        self.assertIn('File offer-r22-arm-b-prices.csv', text)
+        self.assertIn('  sku,price_now,price_b,change', text)
+
+
 if __name__ == '__main__':
     unittest.main()
