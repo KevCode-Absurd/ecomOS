@@ -1678,6 +1678,121 @@ def calendar_items(data, brand, horizon_days=CALENDAR_DAYS):
     return {'ends_on': ends_on.isoformat(), 'horizon_days': horizon_days, 'items': items, 'overdue': sum(1 for i in items if i['days'] < 0), 'this_week': sum(1 for i in items if 0 <= i['days'] <= 7)}
 
 
+# ---------------------------------------------------------------- the creative hand-off (round 5.4, room job: hand a validated angle and avatar to creative)
+
+CREATIVE_RULES = ('PROD-R07', 'PROD-R08', 'PROD-R09', 'PROD-R10', 'PROD-R11', 'PROD-R35')
+FRAME_THEME = {'buy it for life': 'durability', 'durab': 'durability', 'comfort': 'comfort', 'worth': 'price_value', 'value': 'price_value', 'fit': 'fit_sizing'}
+PREFERENCE_THEME = {'durability': 'durability', 'natural_fibres': 'comfort', 'sustainability': 'mission', 'made_in_usa': 'mission', 'gifting': None, 'comfort': 'comfort', 'price_value': 'price_value'}
+REVIEW_SOURCES = ('amazon', 'own_site', 'own_site_yotpo', 'trustpilot', 'retailer', 'amazon_customers_say')
+
+
+def _theme_of(f, br):
+    ent = f.get('entity') or {}
+    rid = f.get('rule_id')
+    if rid in ('PROD-R07', 'PROD-R35'):
+        return ent.get('id') if ent.get('id') in audit.THEME_LABEL else None
+    if rid == 'PROD-R11':
+        return ent.get('theme')
+    if rid == 'PROD-R10':
+        rec = br.get((f.get('brain_refs') or [None])[0]) if br else None
+        return audit.avatar_theme((rec or {}).get('value') or {}) if rec else None
+    if rid == 'PROD-R09':
+        frame = str(ent.get('frame') or '').lower()
+        return next((th for k, th in FRAME_THEME.items() if k in frame), None)
+    if rid == 'PROD-R08':
+        return PREFERENCE_THEME.get(ent.get('id'))
+    return None
+
+
+def creative_handoff(brand, finding_id):
+    """The angle brief creative builds on, for a buyer, theme, positioning or preference card: the angle, the buyer, the doubt,
+    the proof on file, what buyers say (review sources only, never Reddit), the words to use, the do-not list, and the hand-off
+    terms. Every line comes from the brain and this desk; nothing is invented."""
+    r = rank(brand or 'sample', None)
+    findings = {f['id']: f for f in audit.run(brand, {'ends_on': r['window']['ends_on']}, data=None if brand else sample_data())}
+    f = findings.get(finding_id)
+    if f is None:
+        raise ValueError(f'no finding {finding_id}')
+    if f.get('rule_id') not in CREATIVE_RULES:
+        raise ValueError(f'{f.get("rule_id")} is not a creative hand-off rule; use the action brief')
+    a = next((x for x in r['actions'] if finding_id in (x.get('finding_ids') or [])), None)
+    br = audit.brain(brand) if brand else None
+    theme = _theme_of(f, br)
+    ent = f.get('entity') or {}
+    na = 'unavailable'
+    lines = [f'CREATIVE HAND-OFF: {(a or {}).get("title") or f["sentence"][:80]}', f'{brand or "sample"}, {r["window"]["ends_on"]}. From {finding_id}. Owner: {(a or {}).get("owner") or na}.', '',
+             'THE ANGLE', f['sentence'], ((a or {}).get('why') or '') if not ((a or {}).get('why') or '').startswith(f['sentence'][:40]) else '', '', 'THE BUYER']
+    avatars = []
+    if br is not None:
+        for rec in br.records('avatars'):
+            v = rec.get('value') or {}
+            if not v.get('name'):
+                continue
+            hit = (f.get('rule_id') in ('PROD-R10', 'PROD-R11') and (ent.get('label') == v['name'] or ent.get('id') == rec.get('field'))) or (theme and audit.avatar_theme(v) == theme)
+            if hit:
+                avatars.append(v)
+    for v in avatars[:3]:
+        lines.append(f'{v["name"]}' + (f' ({round((v.get("share_estimate") or 0) * 100)} percent of buyers, {v.get("intensity") or na} intensity)' if v.get('share_estimate') is not None else '') + f': {v.get("job") or na}.')
+        lines.append(f'  Triggers: {", ".join(v.get("triggers") or []) or na}. Pains: {", ".join(v.get("pains") or []) or na}. Driver: {v.get("emotional_driver") or na}.')
+    if not avatars:
+        lines.append('No avatar in the brain carries this theme; creative builds on the doubt below.')
+    lines += ['', 'THE DOUBT']
+    rung = None
+    if br is not None and theme:
+        for rec in br.records('objection_ladders'):
+            v = rec.get('value') or {}
+            if audit.LADDER_THEME.get(v.get('theme')) != theme:
+                continue
+            rungs = v.get('rungs') or []
+            rung = max(rungs, key=lambda g: ((g.get('counts') or {}).get('one_star') or 0)) if rungs else None
+            lines.append(f'Theme: {audit.THEME_LABEL.get(theme, theme)}. Complaint quotes {(v.get("counts") or {}).get("one_star") or 0}, praise {(v.get("counts") or {}).get("five_star") or 0}.')
+            for g in rungs:
+                lines.append(f'  Rung {g.get("level")}: "{g.get("doubt")}" ({(g.get("counts") or {}).get("one_star") or 0} one-star) ' + ('proof on file' if g.get('proof') else 'no proof on file'))
+            what_fails = v.get('what_fails') or []
+            if what_fails:
+                lines.append('  What fails: ' + '; '.join(str(x) for x in what_fails[:4]))
+    if ent.get('doubt') and not rung:
+        lines.append(f'"{ent["doubt"]}"')
+    if len(lines) and lines[-1] == 'THE DOUBT':
+        lines.append('No ladder maps to this card; the sentence above is the doubt.')
+    lines += ['', 'THE PROOF ON FILE']
+    proof = []
+    if rung and rung.get('proof'):
+        proof.append(f'Ladder proof: {rung["proof"]}')
+    if br is not None:
+        words = audit.ANSWER_WORDS.get(theme, []) if theme else []
+        for sec in ('claims', 'identity', 'offers', 'policies'):
+            for rec in br.records(sec):
+                text = str(rec.get('text') or '')
+                if words and any(w in text.lower() for w in words):
+                    proof.append(f'{sec}, {rec.get("tier") or "tier unknown"}: {text}')
+    lines += proof[:8] or ['No claim, policy or offer on file answers this theme. Ask the founder before any claim goes into copy.']
+    lines += ['', 'WHAT BUYERS SAY (reviews only, never Reddit)']
+    praise, complaint = [], []
+    if br is not None:
+        for rec in br.records('language_bank'):
+            v = rec.get('value') or {}
+            if v.get('subreddit'):
+                continue
+            revs = [x for x in v.get('reviews') or [] if x.get('source') in REVIEW_SOURCES]
+            if not revs or (theme and theme not in (v.get('themes') or [])):
+                continue
+            q = (revs[0].get('quote') or v.get('phrase') or '').strip()
+            if not q:
+                continue
+            item = f'"{q[:160]}" ({revs[0].get("source")}, {revs[0].get("star") or "star unknown"} star)'
+            (praise if v.get('theme') == 'praise' else complaint).append(item)
+    lines += ['Praise:'] + (praise[:4] or ['  none on file']) + ['Complaints:'] + (complaint[:4] or ['  none on file'])
+    lines += ['', 'THE WORDS TO USE', 'Buyers say: ' + ('; '.join(p.split('"')[1][:60] for p in praise[:5]) if praise else na) + '.',
+              'Answer words on this theme: ' + (', '.join(audit.ANSWER_WORDS.get(theme, [])) if theme else na) + '.',
+              '', 'DO NOT', '- Quote a Reddit user, or any forum post, as a testimonial.', '- Name, show or copy a competitor: no logos, products, faces or text.',
+              '- Make a claim that is not in the proof above; a doubt with no proof goes back to the founder.', '- Invent a number. Digits, short sentences, no jargon.',
+              '', 'HAND-OFF']
+    if a:
+        lines += [f'Owner: {a.get("owner")}. Artefact: {(a.get("artefact") or {}).get("label") or (a.get("artefact") or {}).get("kind")}.', f'Win rule: {a.get("win_rule") or na}. Check on: {a.get("check_on") or na}.']
+    return {'finding_id': finding_id, 'rule_id': f.get('rule_id'), 'theme': theme, 'title': (a or {}).get('title'), 'text': '\n'.join(lines), 'avatars': [v['name'] for v in avatars], 'quotes': len(praise) + len(complaint)}
+
+
 def _brand(req):
     brand = req.arg('brand', DEFAULT_BRAND)
     if brand in ('', 'sample'):
@@ -1710,6 +1825,8 @@ def handle(req):
             return {'table': 'product_candidates', 'brand': brand or 'sample', 'rows': handoff_rows(brand or 'sample'), 'file': str(HANDOFF_PATH.relative_to(APP.parent))}
         if req.path == ['tests']:
             return {'rows': proposed_tests(brand or 'sample'), 'file': str(TESTS_PATH.relative_to(APP.parent))}
+        if len(req.path) == 2 and req.path[0] == 'handoff':
+            return creative_handoff(brand, req.path[1])
         if req.path == ['calendar']:
             return calendar_items(data, brand)
         if req.path == ['parked']:
@@ -1717,4 +1834,4 @@ def handle(req):
             return {'parked': r['parked'], 'decided': r['decided'], 'snooze_days': rank_mod.SNOOZE_DAYS, 'window': r['window']}
     except ValueError as exc:
         return 400, {'error': str(exc)}
-    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank', 'parked', 'calendar', 'candidates/<id>/brief', 'product_candidates', 'tests']}
+    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank', 'parked', 'calendar', 'candidates/<id>/brief', 'handoff/<finding_id>', 'product_candidates', 'tests']}

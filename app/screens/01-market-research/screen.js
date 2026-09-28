@@ -31,8 +31,18 @@
       el('div', { class: 'micro muted', text: 'This card covers ' + c.length + ' finding' + (c.length === 1 ? '' : 's') + '; each one closes on its own rule.' }),
       el('ul', { class: 'small', style: { margin: '4px 0 0', paddingLeft: '18px' } }, c.map((f) => el('li', null, UI.verdict(sev(f.severity), f.severity || ''), ' ', el('span', { class: 'mono micro faint', text: f.rule_id }), ' ', f.sentence || f.rule, f.stake_usd != null ? el('span', { class: 'muted', text: ' (' + fmt.money(f.stake_usd) + ')' }) : null))));
   }
+  const CREATIVE_RULES = ['PROD-R07', 'PROD-R08', 'PROD-R09', 'PROD-R10', 'PROD-R11', 'PROD-R35'];
+  async function openHandoff(a) {
+    const fid = (a.finding_ids || [])[0];
+    let h;
+    try { h = await api(BASE + 'handoff/' + encodeURIComponent(fid) + Q); } catch (e) { alert('Hand-off unavailable: ' + e.message); return; }
+    UI.panel({ title: 'Creative hand-off: ' + (h.title || a.title), tools: [UI.copyButton({ label: 'Copy hand-off', text: () => h.text })],
+      body: el('div', { class: 'stack' }, el('p', { class: 'micro muted', text: 'The angle, the buyer, the doubt, the proof on file, what buyers say (reviews only, never Reddit), the words to use and the do-not list. Every line comes from the brain and this desk.' }),
+        el('pre', { class: 'small', style: { whiteSpace: 'pre-wrap', margin: 0 }, text: h.text })) });
+  }
   function openAction(a) {
-    UI.panel({ title: a.title, body: el('div', { class: 'stack' }, UI.actionCard(a, { expanded: true, screen: SLUG }), coversList(a, false)) });
+    const tools = CREATIVE_RULES.includes(a.rule_id) ? [el('button', { class: 'btn sm', type: 'button', text: 'Creative hand-off', onclick: () => openHandoff(a) })] : null;
+    UI.panel({ title: a.title, tools, body: el('div', { class: 'stack' }, UI.actionCard(a, { expanded: true, screen: SLUG }), coversList(a, false)) });
   }
   const state = { actions: [], byFinding: {} };
   function actionFor(findingId) { return state.byFinding[findingId] || null; }

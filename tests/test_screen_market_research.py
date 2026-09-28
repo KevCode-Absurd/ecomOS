@@ -1234,6 +1234,36 @@ class HandoffTest(unittest.TestCase):
                 p.unlink(missing_ok=True)
 
 
+class HandoffCreativeTest(unittest.TestCase):
+    def test_theme_handoff_reads_reviews_never_reddit(self):
+        h = api.handle(Req(['handoff', f'{audit.SCREEN}.PROD-R07.durability']))
+        self.assertEqual(h['theme'], 'durability')
+        t = h['text']
+        for head in ('CREATIVE HAND-OFF', 'THE ANGLE', 'THE BUYER', 'THE DOUBT', 'THE PROOF ON FILE', 'WHAT BUYERS SAY', 'THE WORDS TO USE', 'DO NOT', 'HAND-OFF'):
+            self.assertIn(head, t)
+        self.assertIn('Rung 1:', t)
+        self.assertIn('Happiness Guarantee', t)
+        br = audit.brain('bombas')
+        reddit = {str((r.get('value') or {}).get('phrase') or '')[:60] for r in br.records('language_bank') if (r.get('value') or {}).get('subreddit')}
+        quoted = [l for l in t.splitlines() if l.startswith('"')]
+        self.assertTrue(quoted)
+        for q in quoted:
+            self.assertNotIn('reddit', q)
+            self.assertFalse(any(rp and rp in q for rp in reddit), q)
+        self.assertNotIn('—', t)
+
+    def test_avatar_handoff_names_the_buyer(self):
+        fid = next(f['id'] for f in audit.run('bombas', {'ends_on': '2026-09-27'}) if f['rule_id'] == 'PROD-R11')
+        h = api.creative_handoff('bombas', fid)
+        self.assertTrue(h['avatars'])
+        self.assertIn('Triggers:', h['text'])
+
+    def test_handoff_refuses_a_candidate_rule(self):
+        fid = next(f['id'] for f in audit.run('bombas', {'ends_on': '2026-09-27'}) if f['rule_id'] == 'PROD-R14')
+        self.assertEqual(api.handle(Req(['handoff', fid]))[0], 400)
+        self.assertEqual(api.handle(Req(['handoff', 'nope']))[0], 400)
+
+
 class BriefTest(unittest.TestCase):
     def test_candidate_brief_reads_every_block(self):
         b = api.handle(Req(['candidates', 'cand-003', 'brief']))
