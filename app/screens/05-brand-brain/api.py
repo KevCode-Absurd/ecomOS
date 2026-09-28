@@ -434,6 +434,14 @@ def review_queue(brain: Brain) -> list[dict]:
             for r in brain.records(include_retired=True) if r["status"] == "proposed"]
 
 
+def _same_value(a, b) -> bool:
+    if isinstance(a, (int, float)) and isinstance(b, (int, float)) and not isinstance(a, bool) and not isinstance(b, bool):
+        return abs(float(a) - float(b)) < 1e-9
+    if isinstance(a, str) and isinstance(b, str):
+        return a.strip().lower() == b.strip().lower()
+    return json.dumps(a, sort_keys=True) == json.dumps(b, sort_keys=True)
+
+
 def review_view(brain: Brain) -> dict:
     """Proposed records grouped by where they came from, each with the current winning record for the same field as the before."""
     active = {}
@@ -469,7 +477,7 @@ def review_view(brain: Brain) -> dict:
                     break
         item = dict(record_view(r), section=r["section"])
         item["before"] = None if before is None else {"id": before["id"], "text": before.get("text") or (before["value"] if isinstance(before.get("value"), str) else json.dumps(before.get("value"))[:200]), "tier": before["tier"], "date": None if before["date"] == "undated" else before["date"]}
-        item["change"] = "new field" if before is None else ("same value" if json.dumps(before.get("value"), sort_keys=True) == json.dumps(r.get("value"), sort_keys=True) else "replaces")
+        item["change"] = "new field" if before is None else ("same value" if _same_value(before.get("value"), r.get("value")) else "replaces")
         g["records"].append(item)
     out = sorted(groups.values(), key=lambda g: (-(len(g["records"])), g["source"]))
     total = sum(len(g["records"]) for g in out)
