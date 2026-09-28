@@ -636,6 +636,23 @@ def load_line_sales(brain: Brain, lines: set[str]) -> dict:
     return builds.line_sales(rows, codes, lines, as_of)
 
 
+def load_survey_answers(brain: Brain) -> dict | None:
+    """The situation question's answers: the data layer's survey_answers table when it exists, else a local fixture.
+    None when neither exists."""
+    import json
+    try:
+        from tables import brand_data
+        t = brand_data(brain.brand).table("survey_answers")
+        if isinstance(t, dict):
+            return t
+    except (ImportError, ValueError, KeyError, FileNotFoundError):
+        pass
+    try:
+        return json.loads((FIXTURES / "survey_answers" / f"{brain.brand}.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+
+
 def load_sales_share(brain: Brain, avatars: list[dict], all_rungs: list[dict]) -> dict:
     """Share of sales per avatar through the lines it buys, next to its share from reviews."""
     mis = builds.misreads(brain.records("avatars"), avatars, all_rungs, brain.records("language_bank"), brain.records("products"))

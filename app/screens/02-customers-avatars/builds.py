@@ -2189,7 +2189,8 @@ def ad_voice(avatars: list[dict], learnings: list[dict]) -> dict:
 FOCUS_W = {"share": 0.4, "unserved": 0.3, "ad_gap": 0.2, "open_doubts": 0.1}
 
 
-def focus(avatars: list[dict], served_x: dict, ad_voice_x: dict, ladders_rows: list[dict], sales_x: dict | None = None) -> dict:
+def focus(avatars: list[dict], served_x: dict, ad_voice_x: dict, ladders_rows: list[dict], sales_x: dict | None = None,
+          survey_x: dict | None = None) -> dict:
     """One score per avatar: share of buyers, how poorly we serve them, how little our ads speak to them, open doubts.
     Weights are fixed and shown; inputs come from the page's own builders. The share is the review estimate; when
     reviews give none, the share of sales by line (8.3), labelled, with served read from the ladders the same way.
@@ -2198,14 +2199,18 @@ def focus(avatars: list[dict], served_x: dict, ad_voice_x: dict, ladders_rows: l
     ads = {r["key"]: r for r in ad_voice_x.get("rows", [])}
     by_sales = {r["key"]: r["sales_share"] for r in (sales_x or {}).get("rows", []) if r.get("sales_share") is not None}
     share_of, source = {}, {}
+    by_survey = {r["key"]: r["share"] for r in (survey_x or {}).get("rows", [])} if (survey_x or {}).get("trusted") else {}
     for a in avatars:
-        if a["share_estimate"] is not None:
+        if a["key"] in by_survey:
+            share_of[a["key"]], source[a["key"]] = by_survey[a["key"]], "survey"
+        elif a["share_estimate"] is not None:
             share_of[a["key"]], source[a["key"]] = a["share_estimate"], "reviews"
         elif a["key"] in by_sales:
             share_of[a["key"]], source[a["key"]] = by_sales[a["key"]], "sales"
+        if a["key"] in share_of and a["key"] not in served:
             mine = [r for r in ladders_rows if a["key"] in r["avatars"]]
             one, five = sum(r["one_star"] or 0 for r in mine), sum(r["five_star"] or 0 for r in mine)
-            if one + five and a["key"] not in served:
+            if one + five:
                 served[a["key"]] = round(five / (one + five), 4)
     max_share = max(share_of.values(), default=0) or 1
     rows = []
@@ -3089,3 +3094,29 @@ def stake_tile(actions: list[dict], cohorts: dict) -> dict:
                 "reason": "no move here has an own-history baseline gap yet", "title": "Summed from open moves with a stake." + note}
     return {"label": "money at stake", "value": round(sum(a["money_at_stake"]["usd"] for a in priced)), "unit": "usd",
             "suffix": f" on {len(priced)} of {len(open_)} moves", "title": "Summed from open moves with a stake, each against the brand's own history." + note}
+
+
+# ---------------------------------------------------------------- survey answers back into avatar shares
+
+def survey_shares(avatars: list[dict], answers: dict | None) -> dict:
+    """Shares of buyers from the situation question's answers, when a survey table exists. An option counts for the
+    avatar whose name it is; "None of these" and unserved situations stay in the total. With SURVEY_N answers or more
+    the share from answers is trusted (focus prefers it); under that it is shown and not used. Margin: 95 percent."""
+    if not answers or not isinstance(answers.get("answers"), dict):
+        return {"available": False, "reason": "no survey answers yet; the situation question in the survey block collects them", "rows": []}
+    counts = {str(k): v for k, v in answers["answers"].items() if isinstance(v, (int, float)) and v >= 0}
+    n = sum(counts.values())
+    if not n:
+        return {"available": False, "reason": "the survey has no answers yet", "rows": []}
+    trusted = n >= SURVEY_N
+    rows = []
+    for a in avatars:
+        c = counts.get(a["name"])
+        if c is None:
+            continue
+        p = c / n
+        rows.append({"key": a["key"], "name": a["name"], "answers": c, "share": round(p, 4),
+                     "margin": round(1.96 * (p * (1 - p) / n) ** 0.5, 4), "review_share": a.get("share_estimate")})
+    rows.sort(key=lambda r: -r["share"])
+    return {"available": True, "n": n, "trusted": trusted, "window": answers.get("window"), "rows": rows,
+            "line": (f"{n:,} answers" + (", enough to set shares." if trusted else f", under the {SURVEY_N} needed; shown, not used."))}

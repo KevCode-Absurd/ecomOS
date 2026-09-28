@@ -571,11 +571,11 @@
   function renderFocus(x) {
     const w = x.weights;
     document.getElementById('focus-sub').textContent = 'Score out of 100: share of buyers ' + Math.round(w.share * 100) + ', how poorly we serve them ' + Math.round(w.unserved * 100) +
-      ', how little our ads speak to them ' + Math.round(w.ad_gap * 100) + ', share of their doubts still open ' + Math.round(w.open_doubts * 100) + '. Share is from reviews; marked "sales" where reviews give none and the share of sales by line stands in. ' + x.line;
+      ', how little our ads speak to them ' + Math.round(w.ad_gap * 100) + ', share of their doubts still open ' + Math.round(w.open_doubts * 100) + '. Share is from reviews; from the survey once 385 answers are in; marked "sales" where neither gives one and the share of sales by line stands in. ' + x.line;
     mount('#focus', UI.verdictTable({
       columns: [{ key: 'name', label: 'Avatar' }, { key: 'score', label: 'Score', unit: 'n' }, { key: 'share', label: 'Buyers', unit: '%' },
         { key: 'served', label: 'Served', unit: '%' }, { key: 'open_doubts', label: 'Open doubts', unit: 'n' }, { key: 'next_t', label: 'Next build' }],
-      rows: x.rows.map((r, i) => Object.assign({}, r, { rank: i, next_t: r.next.title, name: r.share_source === 'sales' ? r.name + ' (share from sales)' : r.name,
+      rows: x.rows.map((r, i) => Object.assign({}, r, { rank: i, next_t: r.next.title, name: r.share_source === 'reviews' ? r.name : r.name + ' (share from ' + r.share_source + ')',
         actions: [{ label: 'Brief it', onClick: () => briefPanel(r.next) }] })),
       verdict: { at: 1, kind: (r) => r.rank === 0 ? 'scale' : r.score >= 60 ? 'fix' : 'keep', text: (r) => r.rank === 0 ? 'Next' : r.score >= 60 ? 'Soon' : 'Later' },
       actions: { label: 'Do' }, sort: false,
@@ -611,8 +611,9 @@
   }
 
   // ---------- desk: do reviews and sales agree on who buys ----------
-  function renderSalesShare(x) {
-    document.getElementById('salesshare-sub').textContent = 'Each line\'s store sales over 12 full months, split across avatars by their share of that line\'s linked reviews, against each avatar\'s share from reviews. Differ: 1.5x either way. ' + (x.line || x.reason || '');
+  function renderSalesShare(x, survey) {
+    const sv = survey || {};
+    document.getElementById('salesshare-sub').textContent = 'Survey answers: ' + (sv.available ? sv.line : sv.reason || 'unavailable') + '. Each line\'s store sales over 12 full months, split across avatars by their share of that line\'s linked reviews, against each avatar\'s share from reviews. Differ: 1.5x either way. ' + (x.line || x.reason || '');
     if (!x.available) { mount('#salesshare', el('p', { class: 'muted', text: 'Unavailable: ' + x.reason + '.' })); return; }
     const V = { agree: ['keep', 'Agree'], sales_higher: ['watch', 'Sales higher'], reviews_higher: ['fix', 'Reviews higher'], sales_only: ['watch', 'Sales only'], unavailable: ['wait', 'Unavailable'] };
     const pct = (v) => v == null ? 'unavailable' : Math.round(v * 1000) / 10 + ' percent';
@@ -1144,7 +1145,7 @@
     renderFocus(d.focus);
     renderCompare(d.compare);
     renderAdVoice(d.ad_voice);
-    renderSalesShare(d.sales_share);
+    renderSalesShare(d.sales_share, d.survey_shares);
     renderSplit(d.split);
     renderGate(d.gate);
     renderStrength(d.strength);

@@ -2227,3 +2227,45 @@ class DecisionsOnAvatarPage(TempBrain):
         lines = self.section()
         self.assertEqual(len(lines), 1)
         self.assertIn('not now on 2026-09-27, back on 2026-10-11', lines[0])
+
+
+class SurveyBack(TempBrain):
+    """Feature 9.4: survey answers back into avatar shares; trusted at 385 answers, then preferred by the focus score."""
+
+    def test_unavailable_without_answers(self):
+        x = api.handle(Req(['overview']))['survey_shares']
+        self.assertFalse(x['available'])
+        self.assertIn('situation question', x['reason'])
+
+    def test_shares_margin_and_trust(self):
+        av = [{'key': 'a', 'name': 'Avatar A', 'share_estimate': 0.2}, {'key': 'b', 'name': 'Avatar B', 'share_estimate': None}]
+        small = api.builds.survey_shares(av, {'answers': {'Avatar A': 30, 'Avatar B': 10, 'None of these': 60}})
+        self.assertFalse(small['trusted'])
+        self.assertEqual(small['rows'][0]['share'], 0.3)
+        self.assertAlmostEqual(small['rows'][0]['margin'], round(1.96 * (0.3 * 0.7 / 100) ** 0.5, 4))
+        big = api.builds.survey_shares(av, {'answers': {'Avatar A': 120, 'Avatar B': 80, 'None of these': 200}})
+        self.assertTrue(big['trusted'])
+        ladders = [{'avatars': ['a', 'b'], 'one_star': 2, 'five_star': 8, 'verdict': 'keep'}]
+        for a in av:
+            a['next'] = {'title': 'x'}
+        f = api.builds.focus(av, {'points': []}, {'rows': []}, ladders, None, big)
+        self.assertEqual({r['key']: r['share_source'] for r in f['rows']}, {'a': 'survey', 'b': 'survey'})
+        f2 = api.builds.focus(av, {'points': []}, {'rows': []}, ladders, None, small)
+        self.assertEqual({r['key']: r['share_source'] for r in f2['rows']}, {'a': 'reviews'})
+
+    def test_fixture_is_read(self):
+        folder = api.audit.FIXTURES / 'survey_answers'
+        made = not folder.exists()
+        folder.mkdir(exist_ok=True)
+        f = folder / 'bombas.json'
+        try:
+            f.write_text(json.dumps({'answers': {'Daily Compression Wearer': 50, 'None of these': 350}, 'window': '2026-09'}), encoding='utf-8')
+            api._OVERVIEW_CACHE.clear()
+            x = api.handle(Req(['overview']))['survey_shares']
+            self.assertTrue(x['trusted'])
+            self.assertEqual(x['rows'][0]['share'], 0.125)
+        finally:
+            f.unlink()
+            if made:
+                folder.rmdir()
+            api._OVERVIEW_CACHE.clear()

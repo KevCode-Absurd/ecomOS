@@ -154,7 +154,7 @@ Lead's review: rounds 1 to 4 passed. Focus: returns and tickets by avatar, depth
 | 9.1 | The first screen: at 1280 by 800 the orientation numbers and at least 3 whole plan items sit above the fold (depth.md section 2), checked by the browser smoke test for both brands. Bombas: orientation ends at 262 px, 4 whole plan items fit | done |
 | 9.2 | Writing rules on every sentence the screen writes, across overview, rank, audit, report and an avatar page (678 distinct strings): no em dash, no "should", "consider" or "leverage", sentences under 20 words, customer quotes masked, brain record text copied word for word exempt. 12 of ours failed and were rewritten: the misread why no longer pastes the whole job, the macros, forces, hierarchy, claims, survey and sales-share lines split, the silent-avatar sentence splits, the R25 title reads "Give X an ad of their own", the January reason splits, a test hypothesis shortened. Now a test | done |
 | 9.3 | Decisions on the avatar page: a ninth section, "What we decided", lists every decision on this avatar's moves (matched by name, key or its own doubts) with what was chosen, the date and, for "Not now", the day it comes back; "Nothing decided" when the log has none. Read fresh from the decisions log through `rank`. Tested on a temp log | done |
-| 9.4 | Survey answers back into shares: a fixture path for answers by avatar; when present, the share from answers replaces the estimate with its count and source; unavailable until a survey table exists | todo |
+| 9.4 | Survey answers back into shares: the situation question's answers, from a `survey_answers` table when the data layer has one or a local fixture, become a share per avatar with its 95 percent margin. At 385 answers or more the focus score prefers them over reviews and sales (marked "share from survey"); under that they are shown, not used. Bombas: unavailable until the survey runs, said in the sales and reviews block. Contract ask: a `survey_answers` table | done |
 | 9.5 | A faster cold overview: find and trim the slow builders | todo |
 | 9.6 | Depth rule 4: every finding shows the metric, value, baseline or threshold and window in its evidence | todo |
 | 9.7 | Depth rule 6: every desk row with a verdict has a button that does something | todo |
@@ -236,6 +236,7 @@ Lead's review: rounds 1 to 4 passed. Focus: returns and tickets by avatar, depth
 
 ## Contract asks
 
+- A `survey_answers` table in the data layer (the post-purchase survey tool, read-only): per question, answer counts by option and the window. 9.4 reads it by that name, falls back to `fixtures/survey_answers/<brand>.json`, and shows unavailable until either exists.
 - A `last_year` value for `baseline_kind` in `audit.md` (same period a year earlier). 8.2 uses it for the January cliff and writes `threshold` until the contract has it.
 - Pack prices in the brain offers (price per pack size and line), so 5.9 can show the per-pair price at each pack. Fallback: unavailable, with the free shipping facts.
 
