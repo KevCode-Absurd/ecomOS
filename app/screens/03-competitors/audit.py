@@ -115,6 +115,10 @@ COMP-R22 search terms they go after that we never say. 3 or more seed terms
 COMP-R23 search overlap unknown. Rankings, bids and volumes need a keyword
     source, so the overlap reads unavailable: a connect action. Capability
     BRAND-C07. Owner: 03-competitors.
+COMP-R24 a direct competitor started a new offer or angle. Between the latest
+    two page-summary captures (capture.py), a direct page shows an offer or an
+    angle it did not show before. Severity medium. Capability CREA-C06 (brief
+    our counter). Owner: 03-competitors.
 
 Rubric overrides (depth.md section 4 allows reputation and satisfaction per rule):
 COMP-R01 reputation 5: an unclaimed angle is a competitor position gap named in
@@ -165,6 +169,7 @@ laddermod = _local("ladder")
 mixmod = _local("mix")
 refmod = _local("references")
 changemod = _local("changes")
+capmod = _local("capture")
 lossmod = _local("losses")
 catmod = _local("category")
 revmod = _local("reviews")
@@ -253,6 +258,8 @@ RULES = [
      "owner_screen": SCREEN},
     {"rule_id": "COMP-R23", "name": "search overlap: rankings and bids", "entity_type": "brand",
      "inputs": ["keyword rankings and bids"], "capability": "BRAND-C07", "owner_screen": SCREEN},
+    {"rule_id": "COMP-R24", "name": "a direct competitor started a new offer or angle", "entity_type": "page",
+     "inputs": ["page-summary captures", "Ad Library snapshot"], "capability": "CREA-C06", "owner_screen": SCREEN},
     {"rule_id": "COMP-R08", "name": "discount on most ads while direct peers run none", "entity_type": "offer",
      "inputs": ["brain offers.promo_share_active_ads", "brain competitors offers_seen"], "capability": "LIFE-C38",
      "owner_screen": SCREEN},
@@ -260,7 +267,7 @@ RULES = [
 # what a strategist groups the findings by on the page (depth.md section 2: grouped by bottleneck)
 RULE_GROUP = {"COMP-R01": "creative", "COMP-R05": "creative", "COMP-R06": "creative", "COMP-R03": "offer", "COMP-R07": "offer",
               "COMP-R08": "offer", "COMP-R09": "offer", "COMP-R02": "price", "COMP-R10": "price", "COMP-R11": "position",
-              "COMP-R04": "watch", "COMP-R12": "watch", "COMP-R13": "watch", "COMP-R14": "watch", "COMP-R15": "lost", "COMP-R16": "lost", "COMP-R17": "lost", "COMP-R18": "price", "COMP-R19": "creative", "COMP-R20": "position", "COMP-R21": "offer", "COMP-R22": "position", "COMP-R23": "position"}
+              "COMP-R04": "watch", "COMP-R12": "watch", "COMP-R13": "watch", "COMP-R14": "watch", "COMP-R15": "lost", "COMP-R16": "lost", "COMP-R17": "lost", "COMP-R18": "price", "COMP-R19": "creative", "COMP-R20": "position", "COMP-R21": "offer", "COMP-R22": "position", "COMP-R23": "position", "COMP-R24": "watch"}
 GROUP_LABEL = {"lost": "Shoppers we lose, by name", "creative": "Ads they run that we do not", "offer": "Offers they say that we do not",
                "price": "Price against theirs", "position": "Corners of the map", "watch": "Watch and protect"}
 RUBRIC_OVERRIDES = {"COMP-R01": {"reputation": 5}, "COMP-R02": {"reputation": 3}, "COMP-R04": {"reputation": 5, "satisfaction": 4},
@@ -497,7 +504,8 @@ def market_full(brand: str, today: dt.date, root: Path | None = None) -> dict:
     m["ladder"] = laddermod.build(m, m["brain"])
     cur = snap.load(brand)
     prev = snap.load(brand, before=cur["captured_at"]) if cur else None
-    m["changes"] = changemod.build(m, m["brain"], prev, cur, today)
+    cprev, ccur = capmod.latest_two(brand)
+    m["changes"] = changemod.build(m, m["brain"], prev, cur, today, capmod.diff(cprev, ccur), len(capmod.captures(brand)))
     m["losses"] = lossmod.build(m, m["brain"])
     m["category"] = catmod.build(m, m["brain"])
     m["velocity"] = velmod.build(m, m["brain"])
@@ -937,6 +945,22 @@ def rule_search(m, ends_on):
     return out
 
 
+def rule_new_move(m, ends_on):
+    out = []
+    for e in (m.get("changes") or {}).get("events", []):
+        if e.get("source") not in ("page summary diff", "snapshot diff") or e["verdict"] != "follow":
+            continue
+        p = next((x for x in m["pages"] if x["name"] == e["page"]), None)
+        ev = [_row("new_" + ("offer" if e["kind"] == "new_offer" else "angle"), 1, "n", f"since {e.get('since', 'last capture')}", ends_on,
+                   None, 0, "threshold", e["source"])]
+        sentence = f"{e['page']} {e['text']}, first seen {e['when']}."
+        ent = {"type": "page", "id": f"move_{pagemod.slug(e['page'])}_{e['kind']}_{pagemod.slug(str(e.get('value')))}",
+               "label": f"{e['page']}: {e['text']}"}
+        out.append(_finding("COMP-R24", "medium", ent, ev, sentence, (p or {}).get("record_ids") or [], ends_on, 0.5,
+                            "no baseline: a new competitor move has no cost to us until it takes share"))
+    return out
+
+
 def packs_month_end(packs):
     if not packs.get("available"):
         return None
@@ -963,7 +987,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
         out += [_unavailable("COMP-R16", "low", {"type": "ladder_rung", "id": "lower_rungs", "label": "lower rungs of the ladder"},
                              ["search trends by rung"], "a search trends source (read only)",
                              "Connect a search trends source for the category and each lower rung.", ends_on)]
-        out += rule_ladder(m, ends_on) + rule_corners(m, ends_on) + rule_refresh(m, ends_on) + rule_freshness(m, ends_on) + rule_losses(m, ends_on) + rule_attack(m, ends_on) + rule_presence(m, ends_on) + rule_velocity(m, ends_on) + rule_niche(m, ends_on) + rule_premium(m, ends_on) + rule_search(m, ends_on)
+        out += rule_ladder(m, ends_on) + rule_corners(m, ends_on) + rule_refresh(m, ends_on) + rule_freshness(m, ends_on) + rule_losses(m, ends_on) + rule_attack(m, ends_on) + rule_presence(m, ends_on) + rule_velocity(m, ends_on) + rule_niche(m, ends_on) + rule_premium(m, ends_on) + rule_search(m, ends_on) + rule_new_move(m, ends_on)
     out += rule_price(m, ends_on) + rule_lookalike(m, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f["severity"]], f["id"]))
     return out

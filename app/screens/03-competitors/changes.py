@@ -61,10 +61,20 @@ def diff(prev: dict | None, cur: dict | None) -> list[dict]:
     return out
 
 
-def build(m: dict, brain, prev: dict | None, cur: dict | None, today: dt.date) -> dict:
+def build(m: dict, brain, prev: dict | None, cur: dict | None, today: dt.date, page_diffs: list[dict] | None = None,
+          captures: int = 0) -> dict:
     top = set(m["our_top_angles"])
     frame = {p["name"]: p["frame"] for p in m["pages"]}
     events = []
+    for e in page_diffs or []:
+        direct = frame.get(e["page"]) == "direct"
+        if e["kind"] in ("new_offer", "new_angle") and direct:
+            v = ("follow", "Follow", "Answer it: brief our counter this week.")
+        elif e["kind"] in ("ads_up", "new_format", "new_flight") and direct:
+            v = ("watch", "Watch", "Read what they pushed; brief an answer if it overlaps our angles.")
+        else:
+            v = ("ignore", "Ignore", "No overlap with our frame.")
+        events.append(dict(e, verdict=v[0], verdict_text=v[1], action=v[2], source="page summary diff", direct=direct))
     for e in diff(prev, cur):
         direct = frame.get(e["page"]) == "direct"
         if e["kind"] in ("new_offer", "new_angle") and direct:
@@ -114,7 +124,7 @@ def build(m: dict, brain, prev: dict | None, cur: dict | None, today: dt.date) -
     window_start = (today - dt.timedelta(days=28)).isoformat()
     inwin = [e for e in events if (e["when"] or "") >= window_start]
     return {"events": inwin, "older": len(events) - len(inwin), "window_start": window_start,
-            "snapshots": 2 if prev and cur else (1 if cur else 0),
+            "snapshots": 2 if prev and cur else (1 if cur else 0), "captures": captures,
             "counts": {k: sum(1 for e in inwin if e["verdict"] == k) for k in ("follow", "watch", "ignore", "ours")},
             "rule": f"A page whose oldest active ad is under {REFRESH_DAYS} days old has replaced every ad. Follow: a new offer or angle "
                     "on a direct competitor, or a lookalike page. Watch: a direct refresh or new format. Ignore: basics pages."}

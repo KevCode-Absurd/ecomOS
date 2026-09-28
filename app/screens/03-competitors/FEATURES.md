@@ -34,6 +34,12 @@ Round 0 notes (28 Sep 2026): brand price per pair is simulated net sales per uni
 
 Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `app/connectors/apify.py` (12 pages with ids, 1,800 items cap, estimate $2.08, inside the $4 run and $30 week caps). The live run was blocked by the session's permission check on 28 Sep, so round 1 builds on the brain's 28 Sep pulls (page-level formats, hook types, offers, run lengths and 3 quoted ads a page) and the page says so.
 
+## Round 3: watching over time, reports and the rest of the room
+
+| # | Feature | Status |
+|---|---|---|
+| 3.1 | Dated page-summary captures (`capture.py`, brain only, no spend) and their diff: active ads up or down 25 percent, a new format, a new or dropped offer, a new angle, a new flight; the alerts flow into the changes timeline (follow, watch, ignore) and rule COMP-R24 puts a direct competitor's new offer or angle on the plan as a counter brief; first capture on file for 28 Sep, so alerts light with the next brain refresh | done |
+
 ## Round 2: who we lose to, the market around us, and counted signals
 
 | # | Feature | Status |
@@ -174,5 +180,6 @@ Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permi
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
+| 3 | 3.1 | 2026-09-28 | Page-summary captures and diffs |
 | 2 | 2.1 to 2.10 | 2026-09-28 | Lost by name; category ladder; review themes; Amazon against our site; creative velocity; weekly brief; niche sizing; premium signals; search seeds; desk tabs. Screenshot `round2.png` |
 | 1 | 1.1 to 1.10 | 2026-09-28 | Plan first; rank override; 12 pages side by side; coverage matrix; hook and offer mix; references; price and pack ladder; positioning map with moves; changes timeline; freshness and re-pull; rank for all 14 rules. Screenshot `round1.png` |

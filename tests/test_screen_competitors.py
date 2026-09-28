@@ -790,6 +790,40 @@ class TestSearch(TempBrain):
         self.assertTrue([f for f in out if f['rule_id'] == 'COMP-R22'])
 
 
+class TestCaptures(TempBrain):
+    """3.1: dated page-summary captures; their diff lights launch alerts before any ad-level snapshot."""
+    def test_capture_file_on_record(self):
+        paths = audit.capmod.captures('bombas')
+        self.assertTrue(paths)
+        cap = json.loads(paths[0].read_text())
+        self.assertEqual(cap['source'], 'brain page summaries')
+        self.assertIn('stance', cap['pages'])
+        self.assertNotIn('allbirds', cap['pages'])
+
+    def test_diff_rules(self):
+        m = audit.market('bombas', dt.date(2026, 9, 28), self.tmp)
+        prev = {'captured_at': '2026-09-14', 'pages': audit.capmod.summary(m['pages'])}
+        cur = json.loads(json.dumps(prev))
+        cur['captured_at'] = '2026-09-28'
+        st = cur['pages']['stance']
+        st['active_ads'] = 100
+        st['offers'] = ['20% off']
+        st['angles'] = st['angles'] + ['gifting']
+        st['formats'] = dict(st['formats'], carousel=20)
+        prev['pages']['stance']['formats'] = {k: v for k, v in prev['pages']['stance']['formats'].items() if k != 'carousel'}
+        kinds = {e['kind'] for e in audit.capmod.diff(prev, cur)}
+        self.assertEqual(kinds, {'ads_up', 'new_offer', 'new_angle', 'new_format', 'new_flight'})
+        self.assertEqual(audit.capmod.diff(None, cur), [])
+        ch = audit.changemod.build(m, m['brain'], None, None, dt.date(2026, 9, 28), audit.capmod.diff(prev, cur), 2)
+        offer = next(e for e in ch['events'] if e['kind'] == 'new_offer')
+        self.assertEqual(offer['verdict'], 'follow')
+        m['changes'] = ch
+        r24 = audit.rule_new_move(m, '2026-09-27')
+        self.assertEqual(len(r24), 2)
+        a = api.actions.action(r24[0], m, None)
+        self.assertEqual(api.actions.ranker.validate_action(a), [])
+
+
 class TestRank(TempBrain):
     """Depth contract rules 2, 3 and 13: owner, steps and artefact on every action; every finding ends in one."""
     W = {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4}

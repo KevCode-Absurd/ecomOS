@@ -325,7 +325,7 @@
     });
     const c = ch.counts;
     mount('#changes', UI.orientation([{ label: 'follow', value: c.follow, unit: 'n', tone: c.follow ? 'bad' : null }, { label: 'watch', value: c.watch, unit: 'n' }, { label: 'ignore', value: c.ignore, unit: 'n' }, { label: 'ours', value: c.ours, unit: 'n' }]),
-      tl, el('p', { class: 'micro faint', text: ch.rule + ' ' + (ch.snapshots < 2 ? 'Ad-level diffs (new ads, formats, offers, angles) start when a second snapshot lands; until then changes come from the brain.' : '') + (ch.older ? ' ' + ch.older + ' older events hidden.' : '') }));
+      tl, el('p', { class: 'micro faint', text: ch.rule + ' ' + (ch.captures < 2 ? 'Page-summary diffs start with the second dated capture (' + ch.captures + ' on file). ' : '') + (ch.snapshots < 2 ? 'Ad-level diffs start when a second snapshot lands.' : '') + (ch.older ? ' ' + ch.older + ' older events hidden.' : '') }));
   }
 
   // ---------- 5h. snapshot freshness and the re-pull ----------

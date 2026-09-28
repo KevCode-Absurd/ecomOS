@@ -497,6 +497,23 @@ def act_search(f: dict, m: dict) -> dict:
             "win_rule": None, "stop_rule": None, "check_on": _plus(f["last_seen"], 14), "time_to_ship_hours": 1}
 
 
+def act_new_move(f: dict, m: dict) -> dict:
+    """COMP-R24: a direct competitor started a new offer or angle. Brief our counter from our own proof."""
+    what = f["entity"]["label"]
+    draft = "\n".join([f"Counter brief: {what}.", f"Seen: {f['sentence']}",
+                       f"Our top angles: {', '.join(m['our_top_angles'])}. Our proof: {', '.join(audit.covmod.proof_points(m['brain'])[:2]) or 'none on file'}.",
+                       "Answer in 2 ads within 7 days if it overlaps our angles; otherwise log it and watch the next capture.",
+                       NEVER_COPY])
+    return {"title": f"Brief our counter: {what}", "owner": "agent_drafts",
+            "artefact": {"kind": "ad_brief", "label": "a counter brief: 2 ads", "draft": draft},
+            "steps": _steps(("agent", "Read the new move by page id at the next capture."),
+                            ("agent", "Decide overlap with our angles by rule; draft 2 counter ads if it overlaps."),
+                            ("person", "Approve the counter."),
+                            ("agent", f"Check their move is still live on {_plus(f['last_seen'], 14)}.")),
+            "size": {"text": "2 counter ads", "count": 2}, "win_rule": None, "stop_rule": None,
+            "check_on": _plus(f["last_seen"], 14), "time_to_ship_hours": 4}
+
+
 def act_connect(f: dict, m: dict) -> dict:
     un = f.get("unavailable") or {}
     con = un.get("connector") or "the missing source"
@@ -516,7 +533,8 @@ BUILDERS = {"COMP-R01": act_angle, "COMP-R02": act_price, "COMP-R03": act_offer_
             "COMP-R15": act_lost, "COMP-R16": act_connect,
             "COMP-R17": act_attack, "COMP-R18": act_undercut,
             "COMP-R19": act_velocity, "COMP-R20": act_niche,
-            "COMP-R21": act_premium, "COMP-R22": act_search, "COMP-R23": act_connect}   # R16 has no data source yet: always a connect action
+            "COMP-R21": act_premium, "COMP-R22": act_search, "COMP-R23": act_connect,
+            "COMP-R24": act_new_move}   # R16 has no data source yet: always a connect action
 
 
 def action(f: dict, m: dict, net_revenue: float | None) -> dict:
