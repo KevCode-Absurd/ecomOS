@@ -1006,6 +1006,18 @@ def pair_window_text(bp):
     return f'{bp["window"]["start"]} to {bp["window"]["end"]}'
 
 
+def tier_line(o):
+    """The cart tier read for a launched offer (LIFE-C40): did more orders clear the tier, and at what margin."""
+    tr = o.get('tier_read')
+    if not o.get('tier'):
+        return 'No cart tier in this offer.'
+    if not tr or tr.get('unavailable'):
+        return f'Orders over the {money(o["tier"])} tier: unavailable, {(tr or {}).get("reason") or "no order rows"}.'
+    b, af = tr['before'], tr['after']
+    return (f'Orders over the {money(tr["tier"])} tier: {pct(af["share_over"])} since launch against {pct(b["share_over"])} before '
+            f'({tr["lift_points"]:+.1f} points). Margin per order {money(af["margin_per_order"])} against {money(b["margin_per_order"])}.')
+
+
 def launched_action(f, a, ctx):
     o = next((x for x in ctx.launched if 'launched_' + x['id'].split('.')[-1] == f['entity']['id']), None)
     if not o:
@@ -1015,6 +1027,7 @@ def launched_action(f, a, ctx):
              (f'Net sales per day {money(af.get("net_per_day"))} against {money(b.get("net_per_day"))} in the 28 days before; '
               f'AOV {money(af.get("aov"))} against {money(b.get("aov"))}; discounts {pct(af.get("discount_share"))} of gross against {pct(b.get("discount_share"))}.'
               if b and af else 'Before and after numbers are unavailable for these dates.'),
+             tier_line(o),
              'These are store-wide numbers. The test result, when there is one, is in the registry.',
              f'Stop rule from the plan: {o["stop_rule"] or "none written"}.',
              'Decide: keep it live, change it, or end it. Mark the offer record accordingly on the brand brain screen.']

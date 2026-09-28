@@ -1386,3 +1386,36 @@ def price_moves(rd, move):
     moves = sorted([o for o in paired if abs(o['change']) >= move], key=lambda o: o['change'])
     return {'unavailable': False, 'prices': len(obs), 'paired': len(paired), 'moves': moves, 'move': move,
             'basis': f'current capture against the last value in each brain record\'s history; {move * 100:.0f} percent or more either way is a move'}
+
+
+# ---------------------------------------------------------------- is the gift lifting the tier we want?
+
+def tier_lift(orders, tier, start, end, days=28):
+    """Orders at or over a cart tier (a gift or a free shipping line) in the `days` before a launch against the days
+    since, up to `days`: the share over the tier, AOV and margin per order (subtotal minus discount minus cogs, when
+    every order carries cogs). Unavailable without order rows or before a full week has passed."""
+    if not isinstance(orders, list) or not orders:
+        return {'unavailable': True, 'reason': 'the orders table is not connected'}
+    after_end = min(end, start + timedelta(days=days - 1))
+    if (after_end - start).days + 1 < 7:
+        return {'unavailable': True, 'reason': 'less than 7 days since launch'}
+
+    def read(d0, d1):
+        rows = [o for o in orders if d0.isoformat() <= str(o.get('created_at'))[:10] <= d1.isoformat() and not o.get('cancelled_at')]
+        if not rows:
+            return None
+        sub = [float(o.get('subtotal') or 0) for o in rows]
+        cogs_ok = all(o.get('cogs') is not None for o in rows)
+        margin = (sum(float(o.get('subtotal') or 0) - float((o.get('discount') or {}).get('amount') or 0) - float(o['cogs']) for o in rows)
+                  if cogs_ok else None)
+        return {'orders': len(rows), 'share_over': round(sum(1 for v in sub if v >= tier) / len(rows), 4),
+                'aov': round(sum(sub) / len(rows), 2), 'margin_per_order': round(margin / len(rows), 2) if margin is not None else None,
+                'from': d0.isoformat(), 'to': d1.isoformat()}
+    before = read(start - timedelta(days=days), start - timedelta(days=1))
+    after = read(start, after_end)
+    if not before or not after:
+        return {'unavailable': True, 'reason': 'no orders on one side of the launch'}
+    return {'unavailable': False, 'tier': tier, 'before': before, 'after': after,
+            'lift_points': round((after['share_over'] - before['share_over']) * 100, 1),
+            'margin_change': round(after['margin_per_order'] - before['margin_per_order'], 2)
+            if after['margin_per_order'] is not None and before['margin_per_order'] is not None else None}

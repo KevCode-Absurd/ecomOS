@@ -111,7 +111,10 @@ Rules
   OFFER-R27  Launched offer past its check date: an offers record this screen wrote (value.state live, valid_from)
              whose plan's check_on has passed. Evidence: net sales per day, AOV and discount share of gross from the
              daily aggregate since launch against the 28 days before. Store-wide numbers, so the read is a
-             signal, not the test result; the registry holds the result. Capability LIFE-C47.
+             signal, not the test result; the registry holds the result. A live offer with a cart tier in its label
+             or terms (a gift tier or a free shipping line) also gets the share of orders over the tier and margin
+             per order from order rows, 28 days before against up to 28 since (model.tier_lift; room job LIFE-C40,
+             is the gift lifting the tier we want). Capability LIFE-C47.
   OFFER-R28  Upsell take rate by placement (room spec upsell_take_rate): orders that took an upsell over orders shown
              it, by placement (cart, checkout, post-purchase). Needs an upsell_events table from the upsell app the
              brain names (stack.upsell_app); unavailable until it connects, and silent when no app is named.
@@ -1144,9 +1147,13 @@ def launched_offers(rd):
                     'discount_share': round(sum(r['discounts'] for r in rs) / gross, 4) if gross else None, 'days': len(rs)}
         after = agg(start, rd.ends_on) if start <= rd.ends_on else None
         before = agg(start - timedelta(days=28), start - timedelta(days=1))
+        # a cart tier in the label or terms (a gift tier or a free shipping line): read orders over it, before and since
+        m = re.search(r'\$(\d+(?:\.\d+)?)', ' '.join([str(v.get('label') or ''), str(v.get('terms') or '')]))
+        tier = float(m.group(1)) if m and v.get('kind') in ('offer', 'price_change', 'landing_page', None) else None
+        tier_read = _model().tier_lift(rd.table('orders'), tier, start, rd.ends_on) if tier else None
         out.append({'id': rec['id'], 'label': v.get('label'), 'plan': v.get('plan'), 'valid_from': rec['valid_from'],
                     'check_on': check, 'due': bool(check and check <= rd.ends_on.isoformat()), 'before': before, 'after': after,
-                    'stop_rule': v.get('stop_rule')})
+                    'stop_rule': v.get('stop_rule'), 'tier': tier, 'tier_read': tier_read})
     return out
 
 
@@ -1162,6 +1169,13 @@ def rule_launched(rd):
                       baseline_kind='28d_before_launch', window=f'since {o["valid_from"]}', source='daily'),
                   _ev('discount_share_of_gross', o['after']['discount_share'], 'ratio', end, baseline=o['before']['discount_share'],
                       baseline_kind='28d_before_launch', window=f'since {o["valid_from"]}', source='daily')]
+        tr = o.get('tier_read') or {}
+        if tr and not tr.get('unavailable'):
+            ev.append(_ev('share_of_orders_over_tier', tr['after']['share_over'], 'ratio', end, baseline=tr['before']['share_over'],
+                          baseline_kind='28d_before_launch', window=f'{tr["after"]["from"]} to {tr["after"]["to"]}', source='orders'))
+            if tr['margin_change'] is not None:
+                ev.append(_ev('margin_per_order', tr['after']['margin_per_order'], 'usd_per_order', end, baseline=tr['before']['margin_per_order'],
+                              baseline_kind='28d_before_launch', window=f'{tr["after"]["from"]} to {tr["after"]["to"]}', source='orders'))
         out.append(_finding('OFFER-R27', {'type': 'offer', 'id': 'launched_' + o['id'].split('.')[-1], 'label': o['label'] or o['id']},
                             'medium', ev, f'{o["label"] or o["id"]} launched {o["valid_from"]} and passed its check date {o["check_on"]}. Read it.',
                             None, 0.6, [o['id'], o['plan']] if o['plan'] else [o['id']], end,

@@ -1305,6 +1305,10 @@ class LaunchedReadTest(unittest.TestCase):
                 a = next(a for a in api.actions.rank('bombas')['actions'] if a['rule_id'] == 'OFFER-R27')
                 self.assertEqual(a['artefact']['kind'], 'report')
                 self.assertIn('store-wide', a['artefact']['draft'])
+                self.assertIn('tier', lo[0])      # round 6 feature 9: a tier offer reads unavailable without order rows
+                if lo[0]['tier']:
+                    self.assertTrue(lo[0]['tier_read']['unavailable'])
+                    self.assertIn('unavailable', a['artefact']['draft'])
             finally:
                 audit.BRAIN_ROOT = None
         finally:
@@ -1675,6 +1679,31 @@ class PriceMovesTest(unittest.TestCase):
         a = next(x for x in api.actions.rank('bombas')['actions'] if any('OFFER-R34' in f for f in x['finding_ids']))
         self.assertEqual((a['status'], a['owner'], a['artefact']['kind']), ('unavailable', 'person', 'connector_setup'))
         self.assertIn('again on', a['title'])
+
+
+class TierLiftTest(unittest.TestCase):
+    """Round 6 feature 9: room job LIFE-C40, is the gift lifting the tier we want. model.tier_lift."""
+
+    def orders(self, day0, n, value, cogs=30):
+        from datetime import timedelta
+        return [{'created_at': (day0 + timedelta(days=i % 28)).isoformat() + 'T10:00:00Z', 'subtotal': value, 'cogs': cogs,
+                 'discount': None} for i in range(n)]
+
+    def test_lift(self):
+        from datetime import date
+        start = date(2026, 9, 1)
+        before = self.orders(date(2026, 8, 4), 10, 60) + self.orders(date(2026, 8, 4), 10, 100)   # half over $90
+        after = self.orders(start, 5, 60) + self.orders(start, 15, 100)                            # 75 percent over
+        t = api.model.tier_lift(before + after, 90, start, date(2026, 9, 28))
+        self.assertEqual((t['before']['share_over'], t['after']['share_over'], t['lift_points']), (0.5, 0.75, 25.0))
+        self.assertEqual(t['before']['margin_per_order'], 50.0)
+        self.assertEqual(t['margin_change'], 10.0)
+
+    def test_too_soon_and_no_rows(self):
+        from datetime import date
+        self.assertTrue(api.model.tier_lift([], 90, date(2026, 9, 1), date(2026, 9, 28))['unavailable'])
+        o = self.orders(date(2026, 8, 4), 5, 100)
+        self.assertEqual(api.model.tier_lift(o, 90, date(2026, 9, 25), date(2026, 9, 28))['reason'], 'less than 7 days since launch')
 
 
 if __name__ == '__main__':

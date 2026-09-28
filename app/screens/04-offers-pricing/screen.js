@@ -398,7 +398,9 @@
     const trustList = flagged.length ? el('div', null, el('h4', { text: 'Can we trust each read? ' + flagged.length + ' of ' + trust.checked + ' tests, no' }),
       el('ul', { class: 'small' }, flagged.map((r) => el('li', null, el('b', { text: r.id + ': ' }), r.problems.map((p) => p.text + ' ' + p.fix).join(' '))))) : null;
     const prop = (proposed || []).length ? el('p', { class: 'small', text: 'Proposed by this screen, waiting for the experiments screen to register: ' + proposed.map((x) => x.id + ' (' + x.hypothesis.split('.')[0] + ')').join('; ') + '.' }) : null;
-    const live = (launched || []).length ? el('p', { class: 'small', text: 'Live offers launched from this screen: ' + launched.map((o) => (o.label || o.id) + ' since ' + fmt.date(o.valid_from) + (o.due ? ', past its check date' : '')).join('; ') + '.' }) : null;
+    const live = (launched || []).length ? el('p', { class: 'small', text: 'Live offers launched from this screen: ' + launched.map((o) => (o.label || o.id) + ' since ' + fmt.date(o.valid_from) + (o.due ? ', past its check date' : '')
+      + (o.tier ? (o.tier_read && !o.tier_read.unavailable ? ', orders over ' + fmt.money(o.tier) + ' ' + pct(o.tier_read.before.share_over, 0) + ' to ' + pct(o.tier_read.after.share_over, 0)
+        : ', tier read ' + NA + (o.tier_read ? ' (' + o.tier_read.reason + ')' : '')) : '')).join('; ') + '.' }) : null;
     return section('desk-registry', head, el('div', { class: 'card tight' }, table, trustList, prop, live,
       el('p', { class: 'micro faint', text: 'Source: ' + reg.source + '. Price elasticity: ' + (reg.elasticity ? reg.elasticity.reads.map((x) => x.id + ' ' + pct(x.lift, 1)).join(', ') : NA + ', ' + reg.elasticity_reason) + '.' })),
       ta ? actionLine(ta.title + '. A read we cannot trust must not decide an offer.', ta) : actionLine(covered.length ? covered.length + ' proposed moves are already running as tests: read them before building anything new. ' + (reg.elasticity ? '' : 'The cost pass-through price test would be the first price read.') : 'No proposed move duplicates a running test.', covered[0] || ACTIONS.find((a) => a.rule_id === 'OFFER-R22')));
