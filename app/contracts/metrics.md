@@ -34,6 +34,9 @@ Round 0 lifts the metrics the first screens need. Each screen's `FEATURES.md` li
 | mer | total revenue / total marketing spend, all channels |
 | cpa | spend / purchases |
 | frequency | impressions / reach |
+| ctr | clicks / impressions (all clicks, as the platform reports them) |
+
+Paid metrics take `by=campaign`, `by=adset`, `by=ad` (Meta only) or `by=day` and return `groups`. Ad groups carry ad set, campaign, format, reach, frequency, ctr, first and last day, `dynamic_creative` (from `is_dynamic` or `is_dynamic_creative`, flagged, never split) and `shared_creative` (another ad runs the same image or video; `creative_id` when the table has no image or video field). Reach is summed from daily rows, so frequency here is approximate. Added 28 Sep 2026 for 11-paid-social.
 
 Google rows (28 Sep 2026, S3.5): paid sums read `google_rows` campaign rows only (`row_kind = campaign`); search term and asset group rows are never added to them. The v2 tables name cost `spend`, the sample brand `cost`; both are read.
 
@@ -50,6 +53,8 @@ Google rows (28 Sep 2026, S3.5): paid sums read `google_rows` campaign rows only
 | contribution_margin | net revenue minus COGS, shipping, payment fees, returns cost, marketing spend |
 | cash_runway_weeks | cash on hand / average weekly net burn |
 | sales_tax_collected | sum by jurisdiction from `orders` |
+
+A brand folder that keeps `finance_inputs.json` beside its aggregates (S2.4) is read when the data layer has no `finance_inputs` table. Margin metrics that need order rows (`break_even_roas`, `contribution_margin`) stay unavailable for a brand read through aggregates.
 
 ## Speed (08)
 Median of the lab's runs in the window from `speed_runs`, for one page, device and variant (default pdp, mobile, baseline).

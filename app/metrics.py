@@ -21,6 +21,7 @@ Words used by more than one metric
   day          the date of `created_at` for orders, `date` for daily tables
 """
 import importlib.util
+import json
 import re
 import statistics
 from datetime import date, datetime, timedelta
@@ -625,12 +626,23 @@ def paid_rows(spec, rows):
     return rows, fields
 
 
+def shared_key(r):
+    """Ads share a creative when they run the same image or video (census shape), else the same creative id."""
+    return r.get('image_hash') or r.get('video_id') or r.get('creative_id')
+
+
+GROUP_KEYS = {'campaign': lambda r: r.get('campaign_name') or r.get('campaign'),
+              'adset': lambda r: r.get('adset_id'),
+              'ad': lambda r: r.get('ad_id'),
+              'day': lambda r: str(r['date'])}
+
+
 def paid_totals(ctx, kw, by=None):
     chans = paid_channels(ctx, kw)
     if not chans:
         raise Unavailable('brand.json lists no paid channel')
-    if by == 'ad' and chans != ['meta']:
-        raise ValueError('by=ad needs channel=meta; Google rows are by campaign and search term')
+    if by in ('ad', 'adset') and chans != ['meta']:
+        raise ValueError(f'by={by} needs channel=meta; Google rows are by campaign and search term')
     tot = {f: 0.0 for f in PAID_UNITS}
     tot['reach'] = None
     by_channel, groups, creatives = {}, {}, {}
@@ -638,27 +650,42 @@ def paid_totals(ctx, kw, by=None):
         spec = PAID[c]
         rows, fields = paid_rows(spec, ctx.rows(spec['table']))
         spec = dict(spec, fields=fields)
-        need(rows, ('date',) + tuple(spec['fields'].values()), spec['table'])
+        need(rows, ('date',) + tuple(fields.values()), spec['table'])
         first, last = prep(spec['table'] + ':span', rows, _build_span)
         cover(ctx.win, first, last, spec['table'])
-        ch = {f: 0.0 for f in spec['fields']}
+        ch = {f: 0.0 for f in fields}
         for r in rows:
             if not ctx.win.has(str(r['date'])):
                 continue
-            for f, col in spec['fields'].items():
+            for f, col in fields.items():
                 if r.get(col) is None:
                     raise Unavailable(f'{spec["table"]} has blank {col} cells in this window', fix=CONNECTOR[spec['table']])
                 ch[f] += r[col]
             if by:
-                key = r.get('ad_id') if by == 'ad' else (r.get('campaign_name') or r.get('campaign'))
-                g = groups.setdefault((c, key), {'channel': c, by: key, **{f: 0.0 for f in PAID_UNITS}})
+                key = GROUP_KEYS[by](r)
+                g = groups.get((c, key))
+                if g is None:
+                    g = groups[(c, key)] = {'channel': c, by: key, **{f: 0.0 for f in PAID_UNITS}}
+                    if 'reach' in fields:
+                        g['reach'] = 0.0
                 for f in PAID_UNITS:
-                    g[f] += r[spec['fields'][f]]
+                    g[f] += r[fields[f]]
+                if 'reach' in g:
+                    g['reach'] += r[fields['reach']]
+                if by in ('ad', 'adset'):
+                    g['campaign_id'] = r.get('campaign_id')
+                    g['campaign_name'] = r.get('campaign_name')
+                    g['adset_name'] = r.get('adset_name')
                 if by == 'ad':
+                    g['adset_id'] = r.get('adset_id')
                     g['ad_name'] = r.get('ad_name')
                     g['creative_id'] = r.get('creative_id')
-                    g['dynamic_creative'] = g.get('dynamic_creative', False) or bool(r.get('is_dynamic_creative'))
-                    creatives.setdefault(r.get('creative_id'), set()).add(key)
+                    g['format'] = r.get('format')
+                    g['shared_key'] = shared_key(r)
+                    g['dynamic_creative'] = g.get('dynamic_creative', False) or bool(r.get('is_dynamic_creative') or r.get('is_dynamic'))
+                    g['first_day'] = min(g.get('first_day') or str(r['date']), str(r['date']))
+                    g['last_day'] = max(g.get('last_day') or str(r['date']), str(r['date']))
+                    creatives.setdefault(shared_key(r), set()).add(key)
         for f in PAID_UNITS:
             tot[f] += ch[f]
         if 'reach' in ch:
@@ -672,17 +699,24 @@ def paid_totals(ctx, kw, by=None):
                 g[f] = money(g[f]) if PAID_UNITS[f] == 'usd' else int(round(g[f]))
             g['roas'] = round(g['purchase_value'] / g['spend'], 4) if g['spend'] else None
             g['cpa'] = money(g['spend'] / g['purchases']) if g['purchases'] else None
+            g['ctr'] = round(g['clicks'] / g['impressions'], 6) if g['impressions'] else None
+            if 'reach' in g:
+                g['reach'] = int(round(g['reach']))
+                g['frequency'] = round(g['impressions'] / g['reach'], 4) if g['reach'] else None
             if by == 'ad':
-                g['shared_creative'] = len(creatives.get(g['creative_id'], ())) > 1
+                g['shared_creative'] = len(creatives.get(g['shared_key'], ())) > 1
             out_groups.append(g)
-        out_groups.sort(key=lambda g: -g['spend'])
+        if by == 'day':
+            out_groups.sort(key=lambda g: g['day'])
+        else:
+            out_groups.sort(key=lambda g: -g['spend'])
     return tot, by_channel, out_groups
 
 
 def paid_by(ctx, kw):
     by = kw.get('by') or None
-    if by and by not in ('campaign', 'ad'):
-        raise ValueError('by must be campaign or ad')
+    if by and by not in GROUP_KEYS:
+        raise ValueError('by must be one of ' + ', '.join(GROUP_KEYS))
     if by:
         ctx.filters['by'] = by
     return by
@@ -741,6 +775,19 @@ def m_frequency(ctx, name, kw):
                      'so true period frequency is higher. A period pull from Meta gives the exact number.')
     return ctx.ok(round(ratio(tot['impressions'], tot['reach'], 'reach'), 4), 'x',
                   {'impressions': int(tot['impressions']), 'reach_daily_sum': int(tot['reach'])}, approximate=True)
+
+
+@metric('ctr', filters=('channel', 'by'))
+def m_ctr(ctx, name, kw):
+    by = paid_by(ctx, kw)
+    tot, by_channel, groups = paid_totals(ctx, kw, by)
+    extra = {'by_channel': {c: (round(v['clicks'] / v['impressions'], 6) if v['impressions'] else None)
+                            for c, v in by_channel.items()}}
+    if groups is not None:
+        extra['groups'] = groups
+    ctx.notes.append('All clicks over impressions, as the platforms report them. Link clicks are not split out.')
+    return ctx.ok(ratio(tot['clicks'], tot['impressions'], 'impressions'), 'ratio',
+                  {'clicks': int(tot['clicks']), 'impressions': int(tot['impressions'])}, **extra)
 
 
 @metric('mer')
@@ -859,12 +906,36 @@ def _finance_module():
 finance = _finance_module()
 
 
+_FOLDER_TABLES = {}
+
+
+def brand_folder_table(ctx, name):
+    """A brand folder keeps some tables beside its aggregates (finance_inputs.json, S2.4). None when absent."""
+    folder = getattr(ctx.data, 'folder', None)
+    path = Path(folder) / f'{name}.json' if folder else None
+    if path is None or not path.is_file():
+        return None
+    key = (str(path), path.stat().st_mtime)
+    if _FOLDER_TABLES.get(name, (None,))[0] != key:
+        doc = json.loads(path.read_text(encoding='utf-8'))
+        rows = doc.get('rows') if isinstance(doc, dict) else doc
+        _FOLDER_TABLES[name] = (key, rows if isinstance(rows, list) else None)
+    rows = _FOLDER_TABLES[name][1]
+    if rows is None:
+        return None
+    if name not in ctx.used:
+        ctx.used.append(name)
+    return rows
+
+
 def fin(ctx, *groups):
     """The Finance resolver, once every field the metric lists has at least one row."""
     fields = [f for g in groups for f in MARGIN_FIELDS[g]]
     try:
         rows = ctx.rows('finance_inputs')
     except Unavailable:
+        rows = brand_folder_table(ctx, 'finance_inputs')
+    if rows is None:
         raise Unavailable('the brand has not supplied its costs yet, so there is nothing to take from revenue',
                           fix=f'finance_inputs.{fields[0]}', waiting_for=fields)
     f = prep('finance_inputs', rows, finance.Finance)
