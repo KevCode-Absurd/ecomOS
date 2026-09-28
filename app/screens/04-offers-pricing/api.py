@@ -1,8 +1,9 @@
 """Offers and pricing API: /api/04-offers-pricing/...
 
-  GET overview?brand=bombas   offer stack, threshold economics, discount policy, pack ladder, guarantee table,
-                              tiles, insights, chart, findings
+  GET overview?brand=bombas   the plan (ranked actions) with orientation numbers, then the desk: offer stack,
+                              threshold economics, discount policy, pack ladder, guarantee table, findings, rules
   GET findings?brand=bombas   the audit findings only (audit.py, contract shape)
+  GET rank?brand=bombas       ranked actions (depth.md section 5), from actions.rank; app/rank.py calls rank() too
 
 Numbers come from app/metrics.py, the brand's aggregates (monthly, daily, products_monthly), finance_inputs and the
 brain, all through audit.Reader. Insights are rules in `insights()`, each with the sentence it produces and the
@@ -13,20 +14,27 @@ import importlib.util
 import math
 import re
 import statistics
+import sys
 from datetime import date, timedelta
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 
 
-def _audit():
-    spec = importlib.util.spec_from_file_location('offers_pricing_audit', HERE / 'audit.py')
+def _actions():
+    name = 'offers_pricing_actions'
+    if name in sys.modules:
+        return sys.modules[name]
+    spec = importlib.util.spec_from_file_location(name, HERE / 'actions.py')
     mod = importlib.util.module_from_spec(spec)
+    sys.modules[name] = mod
     spec.loader.exec_module(mod)
     return mod
 
 
-audit = _audit()
+actions = _actions()
+audit = actions.audit
+model = actions.model
 DEFAULT_BRAND = 'bombas'
 CHART_MONTHS = 24
 CREEP_POINTS = 5          # room spec: discount share up more than 5 points over 3 months is creep
@@ -249,39 +257,7 @@ def guarantee_table(rd):
     return out
 
 
-# ---------------------------------------------------------------- tiles, insights, chart
-
-def tiles(rd, th, months, lad):
-    fresh = rd.ends_on.isoformat()
-    if th['unavailable']:
-        t1 = _tile('Free shipping threshold', 'Order value where shipping turns free.', None, '$',
-                   reason=th.get('reason'), fix=th.get('fix'))
-    else:
-        t1 = _tile('Free shipping threshold', (f'AOV is ${th["break_even_inputs"]["aov"]:,.2f}, so the line sits '
-                   f'{th["above_aov"] * 100:.0f} percent above it. Break-even is ${th["break_even"]:,.2f}.'),
-                   th['threshold'], '$', window='28d', freshness=fresh,
-                   sources=[{'table': 'brain.offers'}, {'table': 'daily'}, {'table': 'finance_inputs'}],
-                   tone='bad' if th['threshold'] < th['break_even'] else None)
-    full = [m for m in (months or []) if m['full'] and m['discount_share'] is not None]
-    if not full:
-        t2 = _tile('Discount share of gross', 'Discounts over gross sales, last full month.', None, '%',
-                   reason='the monthly aggregate is missing', fix='shopify')
-    else:
-        last = full[-1]
-        year_ago = next((m for m in full if m['month'] == f'{int(last["month"][:4]) - 1}{last["month"][4:]}'), None)
-        t2 = _tile('Discount share of gross', f'Discounts over gross sales in {last["month"]}. Delta is against the same month last year.',
-                   last['discount_share'], '%', window=last['month'], freshness=fresh, sources=[{'table': 'monthly'}],
-                   delta=round(last['discount_share'] / year_ago['discount_share'] - 1, 4) if year_ago else None,
-                   higher_is_better=False)
-    if lad.get('unavailable'):
-        t3 = _tile('Multi-pack share', 'Share of product revenue from packs of 2 or more.', None, '%',
-                   reason=lad.get('reason'), fix=lad.get('fix'))
-    else:
-        t3 = _tile('Multi-pack share', f'Share of product revenue from packs of 2 or more, {lad["months"]}.',
-                   lad['multi_share'], '%', window='12 full months', freshness=fresh,
-                   sources=[{'table': 'products_monthly'}])
-    return {'threshold': t1, 'discount': t2, 'multipack': t3}
-
+# ---------------------------------------------------------------- rules behind the desk lines, chart
 
 def insights(th, months, findings):
     """The rules behind the insight cards. Each returns the sentence it produces and its capability."""
@@ -337,21 +313,61 @@ def chart(months):
             'basis': 'AOV is net sales over orders; discount share is discounts over gross sales'}
 
 
+def orientation(rd, th):
+    """3 to 6 small numbers beside the plan (depth.md section 2). Null is unavailable with its reason."""
+    aov = rd.m('aov', audit.WINDOW)
+    code, _ = model.brain_value(rd, 'offers.promo_share_active_ads')
+    code = code if isinstance(code, dict) else {}
+    cm = model.contribution_28d(rd)
+    months = [m for m in (discount_months(rd) or []) if m['full']]
+    last = next((r for r in reversed(rd.table('monthly') or []) if r['month'] == months[-1]['month']), None) if months else None
+    refunds = (round(last['refunds_on_orders'] / last['net_sales'], 6)
+               if last and last.get('net_sales') and last.get('refunds_on_orders') is not None else None)
+    return [
+        {'label': 'AOV, 28 days', 'value': None if aov.get('unavailable') else aov['value'], 'unit': '$',
+         'title': aov.get('reason') or 'net sales over orders, 28 days'},
+        {'label': 'free shipping from', 'value': th.get('threshold'), 'unit': '$', 'title': 'brain offers record'},
+        {'label': 'orders under it', 'value': th.get('share_below'), 'unit': '%',
+         'title': 'share of orders below the threshold' if th.get('share_below') is not None else
+         'unavailable: ' + str(th.get('reason') or 'order value bins need the orders table')},
+        {'label': 'refunds, share of net', 'value': refunds, 'unit': '%',
+         'title': f'refunds on orders over net sales, {months[-1]["month"]}' if refunds is not None else 'monthly aggregate missing'},
+        {'label': 'ads with the code', 'value': (round(code['ads_with_code'] / code['active_ads'], 4)
+                                                 if code.get('active_ads') else None), 'unit': '%',
+         'title': f'{code.get("ads_with_code")} of {code.get("active_ads")} active ads carry the first-order code'
+                  if code.get('active_ads') else 'no ad library record in the brain'},
+        {'label': 'contribution margin', 'value': cm.get('value'), 'unit': '%',
+         'tone': 'bad' if cm.get('value') is not None and cm.get('target') and cm['value'] * 100 < cm['target'] else None,
+         'title': (f'after landed cost, fulfilment, fees and paid media, 28 days; target {cm["target"]:.0f} percent'
+                   if cm.get('value') is not None and cm.get('target') else 'unavailable: ' + str(cm.get('reason')))},
+    ]
+
+
 def overview(data, brand):
     ends_on = audit.last_full_day(data, brand)
     rd = audit.Reader(data, brand, ends_on)
     b = rd.source.brand
     head = {'brand': b.get('brand'), 'name': b.get('name'), 'as_of': b.get('as_of'),
             'simulated': bool(b.get('simulated') or b.get('fictional')), 'market': b.get('market')}
-    findings = audit.run(brand, {'ends_on': ends_on.isoformat()}, data=data)
+    if brand:
+        ranked = actions.rank(brand, {'ends_on': ends_on.isoformat()})
+        findings, plan = ranked['findings'], ranked['actions']
+    else:
+        findings, plan = audit.run(brand, {'ends_on': ends_on.isoformat()}, data=data), []
     months = discount_months(rd)
     th = threshold(rd)
-    lad = ladder(rd)
     return {'brand': head, 'window': {'ends_on': ends_on.isoformat(), 'days': audit.WINDOW},
-            'stack': offer_stack(rd), 'threshold': th, 'bfcm': bfcm(rd), 'ladder': lad,
-            'guarantee': guarantee_table(rd), 'tiles': tiles(rd, th, months, lad),
-            'insights': insights(th, months, findings), 'chart': chart(months), 'findings': findings,
-            'rules': audit.RULES, 'sku_margin': 'unavailable: finance_inputs cost codes do not match store SKUs yet'}
+            'orientation': orientation(rd, th), 'plan': plan,
+            'stack': offer_stack(rd), 'threshold': th, 'bfcm': bfcm(rd), 'ladder': ladder(rd),
+            'guarantee': guarantee_table(rd), 'creep': insights(th, months, findings)[1], 'chart': chart(months),
+            'findings': findings, 'rules': audit.RULES}
+
+
+def rank(brand='bombas', window=None):
+    """Ranked actions for app/rank.py and the master list (depth.md section 5)."""
+    out = actions.rank(brand, window)
+    out.pop('findings', None)
+    return out
 
 
 def _brand(req):
@@ -373,8 +389,10 @@ def handle(req):
             audit.brand_data(brand)  # ValueError for an unknown brand
         if req.path == ['overview']:
             return overview(data, brand)
+        if req.path == ['rank'] and brand:
+            return rank(brand, {'ends_on': req.arg('ends_on')} if req.arg('ends_on') else None)
         if req.path == ['findings']:
             return {'findings': audit.run(brand, None, data=data), 'rules': audit.RULES}
     except ValueError as exc:
         return 400, {'error': str(exc)}
-    return 404, {'error': 'not found', 'routes': ['overview', 'findings']}
+    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank']}

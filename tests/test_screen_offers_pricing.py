@@ -137,10 +137,6 @@ class BombasTest(unittest.TestCase):
         code_or_body = api.handle(Req(['overview']))
         d = code_or_body
         self.assertTrue(d['brand']['simulated'])
-        self.assertEqual(set(d['tiles']), {'threshold', 'discount', 'multipack'})
-        self.assertEqual(len(d['insights']), 2)
-        for i in d['insights']:
-            self.assertTrue(i['sentence'] and i['rule'])
         self.assertEqual(len(d['chart']['labels']), 24)
         th = d['threshold']
         self.assertFalse(th['unavailable'])
@@ -161,8 +157,85 @@ class BombasTest(unittest.TestCase):
         import server
         req.data = server.Data()
         d = api.handle(req)
-        self.assertIsNone(d['tiles']['threshold']['value'])
-        self.assertTrue(d['tiles']['threshold']['unavailable_reason'])
+        self.assertIsNone(d['threshold']['threshold'])
+        self.assertTrue(d['threshold']['reason'])
+        self.assertEqual(d['plan'], [])
+        o = {x['label']: x for x in d['orientation']}
+        self.assertIsNone(o['free shipping from']['value'])
+
+
+class PlanFirstTest(unittest.TestCase):
+    """Round 1 feature 1: the plan is the top of the page, every finding ends in an action (depth.md rules 1 to 3, 7, 11)."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.rank_mod = load('ecomos_rank', ROOT / 'app' / 'rank.py')
+        cls.ranked = api.rank('bombas')
+        cls.findings = audit.run('bombas')
+        cls.overview = api.handle(Req(['overview']))
+
+    def test_every_action_valid(self):
+        self.assertTrue(self.ranked['actions'])
+        for a in self.ranked['actions']:
+            self.assertEqual(self.rank_mod.validate_action(a), [], a['id'])
+            self.assertIn(a['owner'], ('agent', 'agent_drafts', 'person'))
+            self.assertTrue(2 <= len(a['steps']) <= 8)
+            self.assertTrue(all(s['who'] in ('agent', 'person') for s in a['steps']))
+            self.assertIn(a['artefact']['kind'], self.rank_mod.ARTEFACT_KINDS)
+            self.assertNotIn('—', a['title'] + a['why'])
+
+    def test_every_finding_maps_to_an_action(self):
+        covered = {fid for a in self.ranked['actions'] for fid in a['finding_ids']}
+        for f in self.findings:
+            if f['status'] in ('open', 'unavailable'):
+                self.assertIn(f['id'], covered)
+        for a in self.ranked['actions']:
+            if a['status'] == 'unavailable':
+                self.assertEqual(a['owner'], 'person')
+                self.assertEqual(a['artefact']['kind'], 'connector_setup')
+
+    def test_rank_route_uses_the_override_and_is_deterministic(self):
+        out = self.rank_mod.rank('04-offers-pricing', 'bombas', self.rank_mod.default_window(28, '2026-09-27'))
+        self.assertEqual(out['source'], 'screen')
+        again = api.rank('bombas')
+        self.assertEqual([a['id'] for a in again['actions']], [a['id'] for a in self.ranked['actions']])
+        self.assertEqual([a['id'] for a in out['actions']], [a['id'] for a in self.ranked['actions']])
+
+    def test_threshold_fires_from_aggregates(self):
+        f = next(f for f in self.findings if f['rule_id'] == 'OFFER-R01')
+        self.assertEqual(f['status'], 'open')
+        be = next(e for e in f['evidence'] if e['metric'] == 'free_shipping_threshold_breakeven')
+        self.assertGreater(be['value'], be['baseline'])
+        a = next(a for a in self.ranked['actions'] if a['rule_id'] == 'OFFER-R01')
+        self.assertEqual(a['artefact']['kind'], 'test_brief')
+        self.assertTrue(a['artefact']['draft'] and a['stop_rule'] and a['win_rule'] and a['check_on'])
+        if f['money_at_stake'] is None:
+            self.assertTrue(f['money_reason'])
+
+    def test_overview_puts_the_plan_first(self):
+        d = self.overview
+        self.assertNotIn('tiles', d)
+        self.assertNotIn('insights', d)
+        self.assertEqual([a['id'] for a in d['plan']], [a['id'] for a in self.ranked['actions']])
+        self.assertTrue(3 <= len(d['orientation']) <= 6)
+        for o in d['orientation']:
+            if o['value'] is None:
+                self.assertTrue(o['title'])  # unavailable carries its reason
+        html = (SCREEN / 'index.html').read_text(encoding='utf-8')
+        body = html[html.index('<body'):]
+        self.assertLess(body.index('id="plan"'), body.index('id="wrong"'))
+        self.assertLess(body.index('id="wrong"'), body.index('id="desk"'))
+        self.assertLess(body.index('id="desk"'), body.index('id="audit"'))
+
+    def test_no_hex_colours_or_brand_facts_in_js(self):
+        import re
+        js = (SCREEN / 'screen.js').read_text(encoding='utf-8')
+        css = (SCREEN / 'screen.css').read_text(encoding='utf-8')
+        self.assertFalse(re.search(r'#[0-9a-fA-F]{3,6}\b', css))
+        self.assertFalse(re.search(r"'#[0-9a-fA-F]{3,6}'", js))
+        for fact in ('Bombas', 'COMFORT20', '$75', 'Happiness'):
+            self.assertNotIn(fact, js)
+        self.assertNotIn('—', js)
 
 
 if __name__ == '__main__':

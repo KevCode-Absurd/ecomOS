@@ -5,32 +5,29 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Offers and pricing</title>
 <link rel="stylesheet" href="/web/ui-kit.css">
-<style>
-  .sim { padding: 8px 12px; border-radius: var(--r-md); background: var(--accent-soft); border: 1px solid var(--accent-line); font-size: 13px; }
-  .grid.tiles.three { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
-  .wrap table.kit td { white-space: normal; min-width: 90px; }
-  .wrap table.kit td:nth-child(2), .wrap table.kit td:nth-child(5) { min-width: 240px; }
-  .wrap .table-wrap { max-height: none; }
-  .th { color: var(--muted); font-size: 12.5px; margin: 0 0 10px; }
-  .kv { display: grid; gap: 4px 16px; grid-template-columns: max-content 1fr; font-size: 13px; margin: 10px 0 0; }
-  .kv dt { color: var(--muted); }
-  .kv dd { margin: 0; font-variant-numeric: tabular-nums; }
-  .chart-pair { display: grid; gap: 8px; grid-template-columns: 1fr; }
-  .chart-pair > * { min-width: 0; }
-  @media (min-width: 900px) { .chart-pair { grid-template-columns: 1fr 1fr; } }
-  .screen { min-width: 0; overflow-x: hidden; }
-  .section, .card { min-width: 0; }
-  .finding { border-top: 1px solid var(--line); padding: 10px 0; display: grid; gap: 4px; }
-  .finding:first-child { border-top: 0; }
-  .finding .money { font-family: var(--mono); font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
-  .table-wrap { overflow-x: auto; }
-</style>
+<link rel="stylesheet" href="screen.css">
 </head>
 <body data-screen="04-offers-pricing">
-<main class="screen" id="app">
-  <header class="screen-head"><h1>Offers and pricing</h1></header>
-  <p>Loading.</p>
-</main>
+<div class="screen" id="app">
+  <div class="sample-badge" role="note" id="badge">Loading offers and pricing.</div>
+  <div class="screen-head"><h1>Offers and pricing</h1><p id="head-line">Which offers to launch, which prices and packs to change, which doubt each offer answers, and the margin each move keeps.</p></div>
+
+  <!-- 1. The plan -->
+  <section class="section" id="plan-wrap"><div id="plan"></div></section>
+  <section class="section" id="connect-wrap" hidden><div id="connect"></div></section>
+
+  <!-- 2. What is wrong, ranked -->
+  <section class="section" id="wrong-wrap"><div id="wrong"></div></section>
+
+  <!-- 3 and 4. Actions with their implementation -->
+  <section class="section" id="actions-wrap"><div id="actions"></div></section>
+
+  <!-- 5. The desk -->
+  <div id="desk"></div>
+
+  <!-- 6. The audit, 7. exports -->
+  <section class="section" id="audit-wrap"><div id="audit"></div></section>
+</div>
 <script src="/web/ui-kit.js"></script>
 <script src="/web/charts.js"></script>
 <script src="screen.js"></script>

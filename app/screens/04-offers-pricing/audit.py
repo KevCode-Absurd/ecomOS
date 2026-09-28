@@ -12,6 +12,8 @@ Rules
              that shipped free with a value from the threshold up to break-even, 28 days, times the average label.
              Their share comes from `order_value_distribution`, their count from the 28-day order total.
              Windows agree = how many of the 4 trailing 28-day windows also put break-even over the threshold.
+             Without order rows the rule still fires from the aggregates and finance_inputs (break-even needs
+             no order rows); money is null and names the orders table it waits on.
              Capability MONEY-C05 (founder gate). Owner: 04-offers-pricing.
   OFFER-R03  Margin after discount per SKU. Needs cogs_landed keyed by the store's SKUs. Unavailable while no
              finance_inputs SKU key matches a product SKU. Capability MONEY-C05 (founder gate). Owner: 04.
@@ -240,12 +242,11 @@ def rule_threshold(rd):
                                       'fix': 'Add the free shipping threshold to the brain offers section.'})]
     be = break_even(rd, end)
     dist = rd.m('order_value_distribution', WINDOW, end, step=5)
-    if be['value'] is None or dist.get('unavailable'):
-        miss = be if be['value'] is None else dist
+    if be['value'] is None:
         return [_finding('OFFER-R01', entity, 'medium', [], 'Break-even for free shipping cannot be computed yet.', None,
                          0.1, refs, end, status='unavailable', money_reason='inputs missing',
-                         unavailable={'inputs': [miss.get('fix') or 'orders'], 'connector': miss.get('fix'),
-                                      'fix': miss.get('reason')})]
+                         unavailable={'inputs': [be.get('fix') or 'orders'], 'connector': be.get('fix'),
+                                      'fix': be.get('reason')})]
     if t >= be['value']:
         return []
     agree = 1
@@ -254,12 +255,6 @@ def rule_threshold(rd):
         if prev['value'] is not None and prev['value'] > t:
             agree += 1
     top = math.floor(be['value'] / 5) * 5  # bins are $5; the stake counts whole bins under break-even
-    share = band_share(dist['groups'], t, top)
-    free_orders = round(share * be['orders'])
-    stake = round(free_orders * be['label'], 2)
-    money = {'usd': stake, 'formula': 'orders_28d x share_threshold_to_break_even x average_label',
-             'inputs': {'orders_28d': be['orders'], 'share_threshold_to_break_even': share,
-                        'band': f'${t:,.0f} to ${top:,.0f}', 'average_label': be['label']}, 'window': '28d'}
     evidence = [
         _ev('free_shipping_threshold', t, 'usd', end, source='brain.offers', window='current'),
         _ev('free_shipping_threshold_breakeven', be['value'], 'usd', end, baseline=t, baseline_kind='threshold',
@@ -267,8 +262,21 @@ def rule_threshold(rd):
         _ev('aov', be['aov'], 'usd', end, source='daily'),
         _ev('average_label', be['label'], 'usd_per_order', end, source='finance_inputs.shipping_label', window='in force'),
         _ev('gross_margin', be['gross_margin'], 'ratio', end, source='finance_inputs.target_gross_margin', window='in force'),
-        _ev('share_threshold_to_break_even', share, 'ratio', end),
     ]
+    if dist.get('unavailable'):
+        # break-even is known from the aggregates; the orders it costs need order rows, so money waits on them
+        sentence = (f'Free shipping starts at ${t:,.0f}, under the ${be["value"]:,.2f} break-even. '
+                    f'Orders from ${t:,.0f} to ${be["value"]:,.2f} ship free without covering the label.')
+        return [_finding('OFFER-R01', entity, 'high' if agree >= 2 else 'medium', evidence, sentence, None,
+                         0.5 if agree >= 2 else 0.3, refs, end,
+                         money_reason='order value bins need the orders table: ' + str(dist.get('reason')))]
+    share = band_share(dist['groups'], t, top)
+    free_orders = round(share * be['orders'])
+    stake = round(free_orders * be['label'], 2)
+    money = {'usd': stake, 'formula': 'orders_28d x share_threshold_to_break_even x average_label',
+             'inputs': {'orders_28d': be['orders'], 'share_threshold_to_break_even': share,
+                        'band': f'${t:,.0f} to ${top:,.0f}', 'average_label': be['label']}, 'window': '28d'}
+    evidence.append(_ev('share_threshold_to_break_even', share, 'ratio', end))
     sentence = (f'Free shipping starts at ${t:,.0f}, under the ${be["value"]:,.2f} break-even. '
                 f'{share * 100:.1f} percent of orders ship free between ${t:,.0f} and ${top:,.0f}.')
     return [_finding('OFFER-R01', entity, _severity(stake, be['net_revenue'], agree), evidence, sentence, money,

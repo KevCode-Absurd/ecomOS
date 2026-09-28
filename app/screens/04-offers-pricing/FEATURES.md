@@ -24,6 +24,12 @@ Known gaps from round 0:
 - Simulated orders charge $5.99 under the line and use their own codes; the brain's public values ($7.95, COMFORT20) are shown beside them.
 - The brain lists 7 and 12 packs; the simulated catalogue has 1, 3, 4, 6 and 8. The 6-pack ankle sock gives no per-pair drop over the 4-pack (a LIFE-C39 candidate).
 
+## Round 1: the execution surface (from 28 Sep 2026, depth contract)
+
+| # | Feature | Status |
+|---|---|---|
+| 1.1 | Plan first: round 0 tiles, insight cards and the AOV chart removed; plan board from `rank` with 6 orientation numbers (AOV, threshold, orders under it, refunds share, ads with the code, contribution margin); what is wrong ranked; action cards with owner, steps and artefact; desk; audit at the bottom. `actions.py` (rank override), `model.py` (offer economics), `screen.css`. OFFER-R01 now fires from the aggregates and finance inputs when order rows are absent (money null with its reason) | done |
+
 ## Room jobs
 
 | Job | Question | Capability | Status |
@@ -140,6 +146,7 @@ Known gaps from round 0:
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.9 | 2026-09-28 | S3.9; screenshot round0.png |
+| 1 | 1.1 plan first | 2026-09-28 | manager session; screenshot round1.png (updated as the round lands) |
 
 
 ## Round 1 candidates (ranked 28 Sep 2026 by the lead session)
