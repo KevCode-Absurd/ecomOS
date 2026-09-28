@@ -9,6 +9,6 @@
 5. New fixtures: `marketplace_sales` (brain marketplace share), `paid_other_spend` (YouTube creators, TikTok, Pinterest, other); new aggregates `marketplace_monthly`, `paid_media_monthly`.
 6. Assumed (marked in `manifest.json`): `site_sessions_monthly` 15,000,000 (brain question stays open); 30 percent of returns open a ticket; marketplaces split Amazon 80, TikTok Shop 20; Google CPAs carry one scale (0.79) so Meta to Google is 60 to 20; list prices for the 25 SKUs.
 7. Tests: `tests/test_generate_v2.py` (22) and `tests/test_app_metrics.py` (28) pass; 4 new generator tests and 2 new margin tests. Two screen tests updated to the new catalog (offers R03 now quiet, market research 19 lines).
-8. Full suite: 528 tests, 7 failures, all pre-existing and reproduced on a clean checkout: meta_gallery access_token, setup connect_skip_declined and state_has_every_step, brand_brain x3, affiliate Amazon sample.
+8. Full suite after merging the branch: 548 tests, 2 failures, neither from this change: meta_gallery access_token (known); test_screen_creative R01 expects an open rule that only fired on scale 0.1 noise (the old generator at scale 1.0 opens none either).
 9. Left: gross margin near 74 percent against the 62 target (S2.4 costs or list prices need a look); year 2 repeat at 28 percent of year 1 (band 40 to 60); YoY growth 25.6 to 41.7 percent on this seed.
 10. Left: `brands/bombas/review/build_review.py` still reads the old BB- keys and the review charts were not redrawn.
