@@ -137,6 +137,10 @@ Rules
   PROD-R35  Open question for the founder (brain open_questions) with 5 or more complaint quotes behind it, never asked or
             asked 14 or more days ago with no answer. Severity medium at 20 quotes, else low. Money null (priced on the
             theme card). Capability PROD-C12 (field research, human assist). Owner: 01-market-research.
+  PROD-R36  Pull due: a pull this desk reads (Reddit, Amazon reviews, Ad Library, listings, the seller of record, Instagram,
+            the web pass) whose last capture is older than its window, or that never ran, stands on a mock file, or has no
+            actor set. Severity medium for due or mock, else low. Money null. Every run is a paid call a person approves
+            under the brand's caps. Capability PROD-C04. Owner: 01-market-research.
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -231,6 +235,8 @@ RULES = [
      'inputs': ['orders', 'reversed_orders', 'products'], 'capability': 'PROD-C06', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R35', 'name': 'Open question for the founder with 5 or more complaint quotes behind it, never asked or unanswered 14 days', 'entity_type': 'ladder_rung',
      'inputs': ['brain.open_questions', 'brain.objection_ladders'], 'capability': 'PROD-C12', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R36', 'name': 'Pull the desk reads that is due, never run, mock, or has no actor set', 'entity_type': 'metric',
+     'inputs': ['brain.*.source', 'brain.config.apify', 'fixtures.market_trends', 'fixtures.social_pull'], 'capability': 'PROD-C04', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -266,7 +272,8 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R32': {'id': 'PROD-C46', 'autonomy': 'agent_does'},
               'PROD-R33': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
               'PROD-R34': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
-              'PROD-R35': {'id': 'PROD-C12', 'autonomy': 'human_assist'}}
+              'PROD-R35': {'id': 'PROD-C12', 'autonomy': 'human_assist'},
+              'PROD-R36': {'id': 'PROD-C04', 'autonomy': 'agent_does'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -752,6 +759,7 @@ def run(brand, window=None, data=None):
     out += cadence_findings(br, ends_on)
     out += return_findings(data, brand, ends_on, net)
     out += question_findings(br, ends_on)
+    out += pull_findings(br, brand, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -3306,6 +3314,150 @@ def question_findings(br, ends_on):
                      money_reason='a doubt with no proof is priced on its theme card, not twice')
         f['entity'] = {'type': 'ladder_rung', 'id': r['theme'] or r['id'], 'label': r['theme_label'] or 'question', 'doubt': r['doubt'], 'question': r['question'], 'quotes': r['quotes'],
                        'who': r['who'], 'why': r['why'], 'verdict': r['verdict'], 'record': r['id']}
+        f['id'] = r['finding_id']
+        out.append(f)
+    return out
+
+
+# ---------------------------------------------------------------- the pulls and their freshness (round 4.5)
+
+PULL_WINDOW_DAYS = {'reddit': 30, 'amazon_reviews': 60, 'ad_library': 30, 'ad_library_active': 7, 'amazon_listings': 30, 'instagram': 30, 'web_pass': 30, 'listing_seller': 30}
+PULL_SECTIONS = ('language_bank', 'objections', 'objection_ladders', 'avatars', 'competitors', 'positioning', 'seo_facts', 'content', 'learnings',
+                 'offers', 'story_bank', 'marketplaces', 'products')
+
+
+def _apify():
+    """The Apify connector module, read only: prices and the estimate. Never a client, never a run."""
+    if 'apify' not in _MODS:
+        import sys
+        if str(APP.parent) not in sys.path:
+            sys.path.insert(0, str(APP.parent))
+        from app.connectors import apify as mod
+        _MODS['apify'] = mod
+    return _MODS['apify']
+
+
+def _estimate(actor, items):
+    if not actor or not items:
+        return None
+    try:
+        return _apify().estimate_usd(actor, int(items))
+    except Exception:  # noqa: BLE001  no price on file
+        return None
+
+
+def brain_pulls(br):
+    """Per connector actor: how many brain records cite it and the newest capture date, from the records' source refs."""
+    out = {}
+    if br is None:
+        return out
+    for sec in PULL_SECTIONS:
+        for r in br.records(sec):
+            src = r.get('source') or {}
+            ref = str(src.get('ref') or '')
+            if not ref.startswith('apify:'):
+                continue
+            actor = ref.split(':')[1]
+            g = out.setdefault(actor, {'records': 0, 'newest': None, 'sections': set()})
+            g['records'] += 1
+            g['sections'].add(sec)
+            cap = str(src.get('captured_at') or '')[:10]
+            if cap and (g['newest'] is None or cap > g['newest']):
+                g['newest'] = cap
+    for g in out.values():
+        g['sections'] = sorted(g['sections'])
+    return out
+
+
+def pulls(br, brand, ends_on):
+    """Every pull this desk reads, with its last capture, age, refresh window, next due date, the estimate for the configured
+    size under the brand's caps, and the verdict: fresh, due, mock (a fixture stands in), never (no run on file), unset (no actor
+    named). Nothing here runs anything; a person approves each paid call from the card."""
+    if br is None:
+        return {'rows': [], 'caps': None, 'rule': None}
+    cfg_path = APP / 'brain' / br.brand / 'config' / 'apify.json'
+    cfg = json.loads(cfg_path.read_text(encoding='utf-8')) if cfg_path.is_file() else {}
+    caps = cfg.get('budget') or {}
+    had = brain_pulls(br)
+    open_cands = [c for c in pipeline(brand) if c.get('stage') not in CLOSED_STAGES]
+    rd, am, ad = cfg.get('reddit') or {}, cfg.get('amazon_reviews') or {}, cfg.get('meta_ad_library') or {}
+    fx = web_pass(br) or {}
+    sp = social_pull_for(br) or {}
+    rows = []
+
+    def add(key, label, actor, items, window, fills, feeds, captured, mode=None, command=None, note=None):
+        est = _estimate(actor, items)
+        cap_run = caps.get('max_usd_per_run')
+        cap_week = caps.get('max_usd_per_week')
+        age = max((ends_on - date.fromisoformat(captured)).days, 0) if captured else None
+        if actor is None and key != 'web_pass':
+            verdict = 'unset'
+        elif mode == 'mock':
+            verdict = 'mock'
+        elif captured is None:
+            verdict = 'never'
+        elif age >= window:
+            verdict = 'due'
+        else:
+            verdict = 'fresh'
+        rows.append({'key': key, 'label': label, 'actor': actor, 'items': items, 'window_days': window, 'fills': fills, 'feeds': feeds, 'captured_at': captured,
+                     'age_days': age, 'next_due': (date.fromisoformat(captured) + timedelta(days=window)).isoformat() if captured else None,
+                     'estimate_usd': est, 'over_run_cap': (est is not None and cap_run is not None and est > cap_run), 'mode': mode, 'command': command,
+                     'note': note, 'verdict': verdict, 'finding_id': f'{SCREEN}.PROD-R36.{key}'})
+
+    r = had.get(rd.get('actor') or '', {})
+    add('reddit', 'Reddit threads and comments', rd.get('actor'), rd.get('max_items'), PULL_WINDOW_DAYS['reddit'], rd.get('fills_sections') or [],
+        ['conversation', 'surfaces', 'positioning', 'video'], r.get('newest'), command=f'python3 app/brain/extract/apify_reddit.py --brand {br.brand}' if rd.get('actor') else None,
+        note=f'{r.get("records", 0)} records cite it' if r else 'no record cites it')
+    r = had.get(am.get('actor') or '', {})
+    add('amazon_reviews', 'Amazon reviews on our listings', am.get('actor'), len(am.get('asins') or []) * 2 * int(am.get('max_reviews_per_asin_per_star') or 100), PULL_WINDOW_DAYS['amazon_reviews'],
+        am.get('fills_sections') or [], ['conversation', 'complaints', 'price signal', 'reviews'], r.get('newest'), command=f'python3 app/brain/extract/apify_amazon.py --brand {br.brand}' if am.get('actor') else None,
+        note=f'{r.get("records", 0)} records cite it; {len(am.get("asins") or [])} ASINs, 1 and 5 star first' if r else 'no record cites it')
+    r = had.get(ad.get('actor') or '', {})
+    add('ad_library', 'Meta Ad Library, by page id', ad.get('actor'), len(ad.get('pages') or []) * int(ad.get('limit_per_source') or 150),
+        PULL_WINDOW_DAYS['ad_library_active'] if open_cands else PULL_WINDOW_DAYS['ad_library'], ad.get('fills_sections') or [],
+        ['lanes', 'spend', 'positioning map', 'video'], r.get('newest'), command=f'python3 app/brain/extract/apify_adlibrary.py --brand {br.brand}' if ad.get('actor') else None,
+        note=(f'{r.get("records", 0)} records cite it; {len(ad.get("pages") or [])} pages' if r else 'no record cites it') + (f'; {len(open_cands)} open candidates set the 7-day window' if open_cands else ''))
+    listing_actor = 'junglee~amazon-crawler'
+    r = had.get(listing_actor, {})
+    add('amazon_listings', 'Amazon listings (title, price, stars, ratings)', listing_actor, len(am.get('asins') or []) or None, PULL_WINDOW_DAYS['amazon_listings'], ['marketplaces'],
+        ['marketplace', 'complaints'], r.get('newest'), note=f'{r.get("records", 0)} records cite it; the search pull, expensive per result' if r else 'no record cites it')
+    add('listing_seller', 'Amazon seller of record per listing', am.get('listing_actor'), len(am.get('asins') or []) or None, PULL_WINDOW_DAYS['listing_seller'], ['marketplaces'],
+        ['marketplace'], None, note='no listing actor is set in the brand\'s apify.json; the seller column reads not read until one runs')
+    add('instagram', 'Instagram posts by hashtag', 'apify~instagram-hashtag-scraper', (sp.get('per_tag') or 25) * len(sp.get('hashtags') or ['x'] * 5), PULL_WINDOW_DAYS['instagram'], ['fixtures.social_pull'],
+        ['conversation', 'surfaces', 'video'], str(sp.get('captured_at') or '')[:10] or None, mode=sp.get('mode'),
+        command=f'python3 app/screens/01-market-research/social_pull.py --brand {br.brand} --mode live --per-tag {sp.get("per_tag") or 25}',
+        note='the mock file stands in; the live pull was refused by the build session\'s permission check' if sp.get('mode') == 'mock' else None)
+    add('web_pass', 'Public web pass (markets, preferences, launches, lanes)', None, None, PULL_WINDOW_DAYS['web_pass'], ['fixtures.market_trends'],
+        ['trends', 'lanes', 'lane map', 'cadence', 'trend checks', 'preferences'], str(fx.get('captured_at') or '')[:10] or None,
+        command=f'python3 app/screens/01-market-research/web_pass.py --brand {br.brand} --check', note='a session task with a url and a date per number; no actor')
+    order = {'due': 0, 'never': 1, 'mock': 2, 'unset': 3, 'fresh': 4}
+    rows.sort(key=lambda r: (order[r['verdict']], r['label']))
+    return {'rows': rows, 'caps': {'per_run_usd': caps.get('max_usd_per_run'), 'per_week_usd': caps.get('max_usd_per_week')},
+            'rule': 'a pull is due when its last capture is older than its window (Reddit 30 days, reviews 60, Ad Library 30 or 7 while a candidate is open, listings 30, Instagram 30, the web pass 30); a mock or a never-run pull that a block reads is a gap; every run is a paid call a person approves under the per-run and weekly caps'}
+
+
+def pull_findings(br, brand, ends_on):
+    """PROD-R36: a pull the desk reads that is due, never run, mock, or has no actor set."""
+    out = []
+    if br is None:
+        return out
+    p = pulls(br, brand, ends_on)
+    for r in p['rows']:
+        if r['verdict'] == 'fresh':
+            continue
+        ev = [_ev('pull_age_days', r['age_days'], 'days', ends_on.isoformat(), 'brain and fixtures now', r['window_days'], 'threshold', source=r['actor'] or 'fixture', simulated=False, freshness_days=0,
+                  captured_at=r['captured_at'], verdict=r['verdict'], mode=r['mode']),
+              _ev('estimate_usd', r['estimate_usd'], 'usd', ends_on.isoformat(), 'configured size', (p['caps'] or {}).get('per_run_usd'), 'threshold', source='app.connectors.apify', simulated=False, freshness_days=0,
+                  items=r['items'])]
+        what = {'due': f'last captured {r["captured_at"]}, {r["age_days"]} days ago against a {r["window_days"]}-day window',
+                'never': 'never run', 'mock': 'filled by a mock file, not a live run', 'unset': 'no actor set'}[r['verdict']]
+        est = f' A run at the configured size is about ${r["estimate_usd"]:,.2f}' + (' (over the per-run cap)' if r['over_run_cap'] else '') + '.' if r['estimate_usd'] is not None else ''
+        sentence = f'{r["label"]}: {what}. It feeds {", ".join(r["feeds"])}.{est}'
+        sev = 'medium' if r['verdict'] in ('due', 'mock') else 'low'
+        f = _finding('PROD-R36', r['key'], ends_on, sev, ev, sentence, None, 0.9, [], money_reason='a stale read has no order count; the blocks it feeds carry the stake')
+        f['entity'] = {'type': 'metric', 'id': r['key'], 'label': r['label'], 'actor': r['actor'], 'verdict': r['verdict'], 'command': r['command'], 'estimate_usd': r['estimate_usd'],
+                       'per_run_cap': (p['caps'] or {}).get('per_run_usd'), 'per_week_cap': (p['caps'] or {}).get('per_week_usd'), 'feeds': r['feeds'], 'note': r['note']}
         f['id'] = r['finding_id']
         out.append(f)
     return out

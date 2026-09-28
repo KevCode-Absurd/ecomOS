@@ -894,6 +894,28 @@
         open.length && actionFor(open[0].finding_id) ? { label: 'Ask the first', onClick: () => openAction(actionFor(open[0].finding_id)) } : null));
   }
 
+  function pullsBlock(p) {
+    const rows = (p && p.rows) || [];
+    if (!rows.length) return UI.emptyState({ screen: SLUG, title: 'No pulls configured', text: 'This brand has no connector config (apify.json) and no fixtures.', missing: ['apify'] });
+    const vt = { due: 'Due', never: 'Never run', mock: 'Mock stands in', unset: 'No actor set', fresh: 'Fresh' };
+    const vrows = rows.map((r) => { const a = actionFor(r.finding_id); return Object.assign({}, r, {
+      actorText: r.actor || (r.key === 'web_pass' ? 'session task' : 'not set'), last: r.captured_at ? fmt.date(r.captured_at) + (r.age_days != null ? ' (' + r.age_days + ' d)' : '') : 'never',
+      win: r.window_days + ' d' + (r.next_due ? ', next ' + fmt.date(r.next_due) : ''), feedsText: (r.feeds || []).join(', '),
+      est: r.estimate_usd == null ? (r.actor ? 'no price on file' : NA) : fmt.money(r.estimate_usd) + (r.over_run_cap ? ' (over the run cap)' : ''),
+      actions: [a ? { label: r.verdict === 'unset' ? 'Set the actor' : r.verdict === 'due' ? 'Approve the refresh' : 'Approve the live run', onClick: () => openAction(a) } : { label: 'Fresh', cls: 'quiet', onClick: () => {} }] }); });
+    const tbl = UI.verdictTable({
+      columns: [{ key: 'label', label: 'Pull' }, { key: 'actorText', label: 'Actor' }, { key: 'last', label: 'Last capture' }, { key: 'win', label: 'Window' }, { key: 'feedsText', label: 'Feeds' }, { key: 'est', label: 'Estimate a run' }, { key: 'note', label: 'Note', format: (v) => v || '' }],
+      rows: vrows,
+      verdict: { at: 1, kind: (r) => r.verdict === 'due' ? 'fix' : r.verdict === 'fresh' ? 'keep' : r.verdict === 'unset' ? 'na' : 'watch', text: (r) => vt[r.verdict], reason: (r) => p.rule },
+      actions: { label: 'Do', onClick: () => {} }, sort: false });
+    const open = rows.filter((r) => r.verdict !== 'fresh');
+    const caps = p.caps || {};
+    return el('div', { class: 'stack' }, el('div', { class: 'card scroll' }, tbl),
+      el('p', { class: 'micro faint', text: 'Caps: ' + (caps.per_run_usd != null ? fmt.money(caps.per_run_usd) + ' a run, ' + fmt.money(caps.per_week_usd) + ' a week' : 'none on file') + '. Estimates come from the connector price table at the configured size with its margin. Nothing on this page runs a pull; a person approves each one from the card. Rule: ' + p.rule + '.' }),
+      gapLine(open.length ? open.length + ' pull' + (open.length === 1 ? ' is' : 's are') + ' not fresh: ' + open.map((r) => r.label.toLowerCase() + ' (' + vt[r.verdict].toLowerCase() + ')').join(', ') + '.' : 'Every pull is inside its window.',
+        open.length && actionFor(open[0].finding_id) ? { label: 'Open the first', onClick: () => openAction(actionFor(open[0].finding_id)) } : null));
+  }
+
   function loadDesk(o) {
     const d = o.desk || {};
     const w = (o.window || {}).trend;
@@ -927,6 +949,7 @@
     parts.push(section('desk-trend-checks', 'Does each lane\'s trend rest on history, or on a forecast?', 'The 12-month rate against the multi-year rate per lane from the web pass series: a trend is trusted with 3 or more years of history on the exact term; a last year over twice the multi-year rate is a spike.', trendChecksBlock(d.trend_checks)));
     parts.push(section('desk-pattern', 'Is each candidate evergreen, seasonal or a trend, and when does cash move?', 'The demand pattern from our own 12-month series by category and the web pass, with the cash timing it implies and the cash plan attached to each candidate.', patternBlock(d.pattern)));
     parts.push(section('desk-pipeline', 'What is in the next-SKU pipeline, and what is past its time box?', 'Candidates screened in from the gaps above or by hand, their stage, fast checks, time box and hours. Advance, log hours or kill from the card; every write lands in the pipeline log.', pipelineBlock(d.pipeline || { rows: [] })));
+    parts.push(section('desk-pulls', 'How fresh is what this desk reads, and what would a refresh cost?', 'Every pull the desk depends on: its last capture, age against its window, the blocks it feeds and the estimate for a run under the brand\'s caps. A person approves each paid call; nothing runs from here.', pullsBlock(d.pulls)));
     const jumps = UI.pills({ items: parts.map((p) => ({ key: p.id, label: p.querySelector('h2').textContent.replace(/\?.*$/, '?').split(',')[0].slice(0, 42) })), onChange: (key) => { const t = document.getElementById(key); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); } });
     mount('#desk', el('section', { class: 'section' }, el('div', { class: 'sec-head' }, el('h2', { text: 'The desk: ' + parts.length + ' blocks' }), el('span', { class: 'sub', text: 'Each block ends in a gap line and an action. Jump to one:' })), jumps), ...parts);
   }

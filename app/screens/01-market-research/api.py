@@ -888,6 +888,34 @@ def recipe(f):
             'stop_rule': 'one ask per question; no re-ask inside 14 days', 'check_on': _check_on(f, 14), 'time_to_ship_hours': 1,
             'win_rule': 'answered_on set and a record that answers the doubt',
         }
+    if rid == 'PROD-R36':
+        ent = f.get('entity') or {}
+        label = ent.get('label') or 'the pull'
+        v = ent.get('verdict')
+        est = f'about ${ent["estimate_usd"]:,.2f}' if ent.get('estimate_usd') is not None else 'no price on file'
+        caps = f'${ent.get("per_run_cap") or 0:,.0f} a run and ${ent.get("per_week_cap") or 0:,.0f} a week'
+        if v == 'unset':
+            return {
+                'title': f'Set the actor for {label} so the seller of record can be read',
+                'owner': 'person',
+                'artefact': {'kind': 'connector_setup', 'label': 'the listing actor and its price per 1,000 results in the brand\'s apify.json and the connector price table (a contract ask)'},
+                'steps': [{'n': 1, 'who': 'person', 'text': 'Pick a listing details actor on the Apify Store that returns the seller of record and the offer count per ASIN; note its price per 1,000 results.'},
+                          {'n': 2, 'who': 'person', 'text': 'Set amazon_reviews.listing_actor in the brand\'s apify.json and ask for the price to be added to the connector table.'},
+                          {'n': 3, 'who': 'agent', 'text': 'Run it in mock mode against the fixture shape, then a person approves the live run under the caps.'}],
+                'size': {'text': 'one actor to name', 'usd': None}, 'stop_rule': 'no live run without a price on file', 'check_on': _check_on(f, 14), 'time_to_ship_hours': 1,
+                'win_rule': 'a listing actor named with a price, and the seller column filled on the next pull',
+            }
+        return {
+            'title': f'Approve the {"refresh" if v == "due" else "first live run"} of {label} ({est}, caps {caps})',
+            'owner': 'person',
+            'artefact': {'kind': 'connector_setup', 'label': f'a run of {label} under the caps, its rows extracted into the brain sections it fills, and the desk re-run'},
+            'steps': [{'n': 1, 'who': 'person', 'text': f'From a session that allows paid calls, run: {ent.get("command") or "the pull script for this brand"}. The connector reserves the estimate in the ledger and stops at the caps.'},
+                      {'n': 2, 'who': 'agent', 'text': 'Extract the rows into the brain sections the pull fills; usernames are never stored, quotes stay short.'},
+                      {'n': 3, 'who': 'agent', 'text': f'Re-run this desk; the blocks it feeds ({", ".join(ent.get("feeds") or [])}) read the new capture.'}],
+            'size': {'text': f'{(v or "due").replace("_", " ")}; {est}', 'usd': ent.get('estimate_usd')},
+            'stop_rule': 'stop at the per-run or weekly cap; never raise a cap from a run', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 1,
+            'win_rule': 'a live capture dated inside the window',
+        }
     return None
 
 
@@ -1216,7 +1244,7 @@ def overview(data, brand):
                      'gates': gates_block(brand, data, br, rd, ends_on, findings), 'scorecard': scorecard_block(brand, data, br, rd, ends_on, findings),
                      'video': audit.video_signals(br, brand, ends_on), 'tech_packs': tech_pack_block(brand, findings),
                      'hours': dict(audit.hours_table(brand, br), findings={f['entity']['id']: f['id'] for f in findings if f['rule_id'] == 'PROD-R28'}),
-                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on), 'returns': audit.return_rates(data, brand, ends_on), 'questions': audit.open_questions(br, ends_on)},
+                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on), 'returns': audit.return_rates(data, brand, ends_on), 'questions': audit.open_questions(br, ends_on), 'pulls': audit.pulls(br, brand, ends_on)},
             'audit': {'findings': findings, 'rules': audit.RULES}}
 
 

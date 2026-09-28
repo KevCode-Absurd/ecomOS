@@ -955,6 +955,30 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
         self.assertEqual(found[0]['entity']['id'], 'durability')
         self.check_shape(found[0])
 
+    def test_pulls_freshness(self):
+        D = date(2026, 9, 27)
+        self.assertEqual(audit.pulls(None, None, D)['rows'], [])
+        br = audit.brain('bombas')
+        p = audit.pulls(br, 'bombas', D)
+        rows = {r['key']: r for r in p['rows']}
+        self.assertEqual(set(rows), {'reddit', 'amazon_reviews', 'ad_library', 'amazon_listings', 'listing_seller', 'instagram', 'web_pass'})
+        self.assertEqual(rows['instagram']['verdict'], 'mock')
+        self.assertEqual(rows['listing_seller']['verdict'], 'unset')
+        self.assertEqual(rows['reddit']['verdict'], 'fresh')
+        self.assertEqual(rows['reddit']['age_days'], 0)                      # captured after the window end reads as 0 days, never negative
+        self.assertEqual(rows['reddit']['next_due'], '2026-10-28')
+        self.assertGreater(rows['reddit']['estimate_usd'], 0)
+        self.assertLessEqual(rows['reddit']['estimate_usd'], p['caps']['per_run_usd'])
+        self.assertEqual(rows['ad_library']['window_days'], 7 if audit.candidate_lanes('bombas') or [c for c in audit.pipeline('bombas') if c.get('stage') not in audit.CLOSED_STAGES] else 30)   # open candidates set the short window
+        late = audit.pulls(br, 'bombas', date(2026, 11, 30))
+        self.assertEqual({r['key']: r['verdict'] for r in late['rows'] if r['key'] in ('reddit', 'amazon_reviews')}, {'reddit': 'due', 'amazon_reviews': 'due'})
+        found = audit.pull_findings(br, 'bombas', D)
+        self.assertEqual(sorted(f['id'].split('.')[-1] for f in found), ['instagram', 'listing_seller'])
+        for f in found:
+            self.assertIsNone(f['money_at_stake'])
+            self.check_shape(f)
+        self.assertNotIn('APIFY', json.dumps(found))                        # no token, no key, ever
+
     def test_demand_pattern_tags(self):
         even = {'rows': [{'category': 'socks', 'series': [100] * 12}], 'months': [f'2026-{m:02d}' for m in range(1, 13)], 'last': '2026-12'}
         peaked = {'rows': [{'category': 'socks', 'series': [50] * 10 + [300, 400]}], 'months': even['months'], 'last': '2026-12'}
