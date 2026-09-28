@@ -101,6 +101,23 @@ def diff(prev: dict | None, cur: dict | None) -> list[dict]:
     return out
 
 
+def history(brand: str, folder: Path = FOLDER, last: int = 12) -> dict:
+    """Threat points and active ads per page across the dated captures, oldest first. A page missing from a capture reads None."""
+    caps = [json.loads(p.read_text(encoding="utf-8")) for p in captures(brand, folder)[-last:]]
+    dates = [c["captured_at"] for c in caps]
+    keys = []
+    for c in caps:
+        for k, v in c["pages"].items():
+            if v.get("role") != "self" and k not in keys:
+                keys.append(k)
+    rows = []
+    for k in keys:
+        name = next(c["pages"][k]["name"] for c in caps if k in c["pages"])
+        rows.append({"key": k, "name": name, "points": [(c["pages"].get(k) or {}).get("points") for c in caps],
+                     "active_ads": [(c["pages"].get(k) or {}).get("active_ads") for c in caps]})
+    return {"dates": dates, "rows": rows}
+
+
 def price_moves(prev: dict | None, cur: dict | None, parse) -> list[dict]:
     """Median price per pair per page between the latest two captures; a move of PRICE_MOVE or more is a price move."""
     if not prev or not cur:

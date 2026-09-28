@@ -535,9 +535,20 @@
       el('p', { class: 'micro faint', text: pl.rule + ' A new placement on a rival page shows as a change once two captures exist.' }));
   }
 
+  // ---------- 5v. threat score over time ----------
+  function historySection(h) {
+    const last = (r) => r.points[r.points.length - 1];
+    const rows = h.rows.slice().sort((a, b) => (last(b) == null ? -1 : last(b)) - (last(a) == null ? -1 : last(a))).map((r) => ({ label: r.name, sub: r.active_ads[r.active_ads.length - 1] == null ? 'ads unavailable' : r.active_ads[r.active_ads.length - 1] + ' ads now', values: r.points, unit: 'n', higher_is_better: false,
+      delta_label: r.points.length > 1 ? 'since ' + fmt.date(h.dates[0]) : 'one capture' }));
+    const rising = h.rows.filter((r) => r.points.length > 1 && r.points[r.points.length - 1] != null && r.points[0] != null && r.points[r.points.length - 1] > r.points[0]).map((r) => r.name);
+    mount('#history', Charts.trendStrip({ rows, title: 'Threat points per capture (0 to 6)' }),
+      el('p', { class: 'micro faint', text: h.dates.length + ' dated captures (' + (h.dates.length ? h.dates.map(fmt.date).join(', ') : 'none') + '). A trend needs 2 or more; each new brain refresh adds one.' }),
+      el('div', { class: 'gap-line row' + (rising.length ? '' : ' held') }, el('b', { text: rising.length ? 'Gap: ' : 'Holding: ' }), el('span', { text: rising.length ? 'Rising threat: ' + rising.join(', ') + '. Refresh their battlecards and read their new ads.' : (h.dates.length > 1 ? 'No page has gained threat points since the first capture.' : 'One capture on file; the trend starts with the next.') })));
+  }
+
   // ---------- 5z. desk tabs: each job holds its sections ----------
   const DESK = [
-    { key: 'rivals', label: 'Rivals', ids: ['pages', 'cards', 'landing', 'losses', 'category', 'reviews'] },
+    { key: 'rivals', label: 'Rivals', ids: ['pages', 'history', 'cards', 'landing', 'losses', 'category', 'reviews'] },
     { key: 'creative', label: 'Ads', ids: ['coverage', 'velocity', 'mix', 'placements', 'refs', 'changes'] },
     { key: 'price', label: 'Price and position', ids: ['map', 'frames', 'premium', 'prices', 'presence'] },
     { key: 'market', label: 'Market and data', ids: ['niche', 'search', 'fresh'] },
@@ -546,7 +557,7 @@
     for (const [id, g] of Object.entries(lines || {})) {
       const node = document.getElementById(id);
       const sec = node && node.closest('.section');
-      if (!sec) continue;
+      if (!sec || sec.querySelector('.gap-line')) continue;   // a block that writes its own live gap line keeps it
       const go = g.action_id ? el('button', { class: 'btn soft xs', type: 'button', text: g.status === 'unavailable' ? 'Go to the connect step' : 'Go to the action', onclick: () => {
         const n = document.querySelector('#actions [data-id="' + CSS.escape(g.action_id) + '"], #connect [data-id="' + CSS.escape(g.action_id) + '"]');
         if (n) { n.scrollIntoView({ behavior: 'smooth', block: 'center' }); n.classList.add('flash'); setTimeout(() => n.classList.remove('flash'), 1600); } } }) : null;
@@ -637,6 +648,7 @@
     cardsSection(d.battlecards);
     framesSection(d.frames);
     placementSection(d.placements);
+    historySection(d.history);
     document.getElementById('audit-sub').textContent = p.findings.length + ' findings from ' + p.rules.length + ' rules. Public signals, one capture.';
     mount('#audit', auditTable(p.findings));
     gapLines(d.gap_lines);

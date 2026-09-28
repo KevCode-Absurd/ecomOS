@@ -1011,6 +1011,24 @@ class TestGapLines(TempBrain):
         self.assertEqual(d['gap_lines']['reviews']['action_id'].split('.')[1], 'COMP-R17')
 
 
+class TestHistory(unittest.TestCase):
+    """4.7: threat points per page across dated captures; a page missing from a capture reads None."""
+    def test_history(self):
+        tmp = Path(tempfile.mkdtemp())
+        try:
+            (tmp / 'x').mkdir()
+            for day, pts in (('2026-09-14', 3), ('2026-09-28', 5)):
+                (tmp / 'x' / f'{day}.json').write_text(json.dumps({'captured_at': day, 'pages': {
+                    'a': {'name': 'A', 'role': 'competitor', 'points': pts, 'active_ads': 10},
+                    **({'b': {'name': 'B', 'role': 'competitor', 'points': 1, 'active_ads': 3}} if day == '2026-09-28' else {})}}))
+            h = audit.capmod.history('x', tmp)
+            self.assertEqual(h['dates'], ['2026-09-14', '2026-09-28'])
+            self.assertEqual(h['rows'][0]['points'], [3, 5])
+            self.assertEqual(h['rows'][1]['points'], [None, 1])
+        finally:
+            shutil.rmtree(tmp)
+
+
 class TestRank(TempBrain):
     """Depth contract rules 2, 3 and 13: owner, steps and artefact on every action; every finding ends in one."""
     W = {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4}
@@ -1124,7 +1142,7 @@ class TestPage(unittest.TestCase):
         js = (SCREEN / 'screen.js').read_text(encoding='utf-8')
         html = (SCREEN / 'index.html').read_text(encoding='utf-8')
         desk = html.split('id="desk-src"', 1)[1].split('<!-- 6. The audit -->', 1)[0]
-        for sec_id in ('pages', 'cards', 'landing', 'losses', 'category', 'reviews', 'coverage', 'velocity', 'mix', 'placements', 'refs', 'changes',
+        for sec_id in ('pages', 'history', 'cards', 'landing', 'losses', 'category', 'reviews', 'coverage', 'velocity', 'mix', 'placements', 'refs', 'changes',
                        'map', 'frames', 'premium', 'prices', 'presence', 'niche', 'search', 'fresh'):
             self.assertIn(f'id="{sec_id}"', desk)
             self.assertIn(f"'{sec_id}'", js)
