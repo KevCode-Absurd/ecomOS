@@ -173,7 +173,8 @@ class SampleBrandTest(unittest.TestCase):
         self.assertEqual(sorted(n for n in CONTRACT if n not in metrics.METRICS), [])
 
     def test_every_metric_answers(self):
-        expected_gaps = {'return_to_sender_rate', 'rto_rate', 'cash_runway_weeks', 'contribution_margin'}
+        expected_gaps = {'return_to_sender_rate', 'rto_rate', 'cash_runway_weeks', 'contribution_margin',
+                         'units', 'product_net_sales'}  # the sample brand has no products_monthly
         for name in CONTRACT:
             r = self.data.metric(name)
             if name in expected_gaps:
