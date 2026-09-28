@@ -2023,6 +2023,13 @@ const { chromium } = require(process.env.PW_MODULE);
   await p.waitForSelector('.panel .report', { timeout: 10000 });
   out.avatar = await p.$$eval('.panel .report section', (n) => n.length);
   await scan('avatar page');
+  await p.keyboard.press('Escape');
+  await p.setViewportSize({ width: 360, height: 780 });
+  out.phone = {};
+  for (const t of ['avatars', 'doubts', 'offers', 'retention', 'brand']) {
+    await p.goto(base + '#tab=' + t); await p.waitForTimeout(300);
+    out.phone[t] = await p.evaluate(() => document.documentElement.scrollWidth);
+  }
   out.errors = errs;
   out.bad = bad;
   console.log(JSON.stringify(out));
@@ -2079,6 +2086,8 @@ class BrowserSmoke(unittest.TestCase):
             self.assertEqual(out['fold']['height'], 800)
             self.assertLessEqual(out['fold']['orient'], 800, brand)
             self.assertGreaterEqual(out['fold']['whole'], min(3, out['plan']), brand)
+            for tab, w in out['phone'].items():
+                self.assertLessEqual(w, 360, (brand, tab))
         self.assertIn('Example is the sample brand', outs['example']['badge'])
         self.assertNotIn('Bombas', outs['example']['badge'])
 

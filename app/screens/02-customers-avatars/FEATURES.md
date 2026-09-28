@@ -159,7 +159,7 @@ Lead's review: rounds 1 to 4 passed. Focus: returns and tickets by avatar, depth
 | 9.6 | Depth rule 4 as a test: every open finding carries a baseline or threshold, and every number its sentence quotes is in its evidence (star labels, month labels and dates are labels). Fixed: R08 now carries its 40 percent fall line, R12 the 20 praise words read, R20 the 23 live ads, R21 the season's share of complaints against its share over the year, and R31 the median share of sales for avatars with a share from sales only | done |
 | 9.7 | Depth rule 6, no dead buttons: 14 row buttons (Keep, No gap, Nothing to do, Site-led and the like) did nothing when clicked. Each now opens why the row needs no move, in plain words with no threshold in page code, and says the row becomes a move when its rule fires. A theme with no ladder now says to add a rung in the brain. Tested: no empty click handler left | done |
 | 9.8 | Depth rule 13 as a test: two cold processes with different hash seeds give the same 67 actions (ids, order, totals, finding ids, sizes) and the same 69 findings with the same sentences, so no set or dict order leaks into the ranking; the screen's code imports nothing that could call a model or the network | done |
-| 9.9 | The page at phone width, re-checked with the round 7 and 8 blocks | todo |
+| 9.9 | The page at phone width, re-checked with the round 7 and 8 blocks (sales and reviews, gap lines, caveats, compare buttons): 360 px on all 5 tabs, nothing past the edge. The smoke test now checks page width at 360 px on every tab for both brands, so a wide block can no longer slip in | done |
 | 9.10 | Audit rules and `rank` for round 9, screenshot `round9.png` | todo |
 
 ### Round 8 founder note (28 Sep 2026)
