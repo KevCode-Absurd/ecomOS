@@ -1033,7 +1033,7 @@ class DeskTabs(unittest.TestCase):
         self.assertTrue(body[first:first + 60].startswith('<section class="section" id="plan-wrap">'))
         self.assertLess(body.index('id="actions-wrap"'), body.index('id="desk-wrap"'))
         ids = _re.findall(r'<section class="section" id="([a-z-]+)"', body)
-        above = {'plan-wrap', 'connect-wrap', 'wrong-wrap', 'actions-wrap', 'tests-wrap', 'desk-wrap', 'audit-wrap'}
+        above = {'plan-wrap', 'connect-wrap', 'wrong-wrap', 'actions-wrap', 'tests-wrap', 'handoff-wrap', 'desk-wrap', 'audit-wrap'}
         desk_block = js[js.index('const DESK = ['):js.index('let deskTabs')]
         grouped = _re.findall(r"'([a-z]+-wrap)'", desk_block)
         self.assertEqual(sorted(set(ids) - above), sorted(grouped))
@@ -1071,6 +1071,24 @@ class ProposedTests(TempBrain):
             self.assertLessEqual(r['metric']['registered_on'], r['start'])
             self.assertIsNone(r['id'])
         self.assertIn('02-customers-avatars.test.guarantee_vs_discount', [r['proposal_key'] for r in x['rows']])
+
+
+class Handoff(TempBrain):
+    """Feature 4.4: hand-off packs for the four reading screens in events.md."""
+
+    def test_packs(self):
+        x = api.handle(Req(['handoff']))
+        screens = [p['screen'] for p in x['packs']]
+        self.assertEqual(screens, ['09-creative', '10-copy', '07-landing-pages-cro', '14-email-messaging'])
+        events = (ROOT / 'app' / 'contracts' / 'events.md').read_text(encoding='utf-8')
+        row = next(l for l in events.splitlines() if l.startswith('| 02-customers-avatars'))
+        for sc in screens:
+            self.assertIn(sc, row)
+        for p in x['packs']:
+            self.assertTrue(p['items'])
+            for i in p['items']:
+                self.assertIn(i['kind'], rank_engine.ARTEFACT_KINDS)
+                self.assertNotIn('(language only)', i['draft'])
 
 
 if __name__ == '__main__':

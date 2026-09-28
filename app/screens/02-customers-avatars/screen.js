@@ -745,6 +745,21 @@
     }));
   }
 
+  // ---------- hand-off packs ----------
+  async function renderHandoff() {
+    let h;
+    try { h = await api(BASE + 'handoff'); } catch (e) { mount('#handoff', el('p', { class: 'muted', text: 'Hand-offs unavailable: ' + e.message })); return; }
+    document.getElementById('handoff-sub').textContent = 'Ready artefacts for the screens that read avatars, the language bank and the objection map (events.md). ' + h.note;
+    mount('#handoff', ...h.packs.map((p) => {
+      const text = () => [p.label.toUpperCase() + ' PACK, brain ' + String(h.brain_version).slice(0, 7), ''].concat(p.items.map((i, n) => (n + 1) + '. ' + i.title + '\n' + i.draft)).join('\n\n');
+      return el('article', { class: 'card flat pack' },
+        el('div', { class: 'row between' }, el('b', { text: p.label }), el('span', { class: 'chip mono', text: p.screen })),
+        el('div', { class: 'small', text: p.items.length + ' ready: ' + Object.entries(p.items.reduce((o, i) => { o[i.kind] = (o[i.kind] || 0) + 1; return o; }, {})).map(([k, n]) => n + ' ' + pretty(k)).join(', ') }),
+        el('ul', { class: 'small' }, ...p.items.slice(0, 4).map((i) => el('li', { text: i.title }))),
+        el('div', { class: 'row' }, UI.copyButton({ label: 'Copy the pack', text }), el('a', { class: 'btn quiet sm', href: '/screens/' + p.screen + '/', target: '_blank', rel: 'noopener', text: 'Open ' + p.label })));
+    }));
+  }
+
   // ---------- the desk, grouped into tabs by job ----------
   const DESK = [
     { key: 'avatars', label: 'Avatars', ids: ['avatars-wrap', 'gate-wrap', 'forces-wrap', 'survey-wrap', 'served-wrap', 'misread-wrap'] },
@@ -812,6 +827,7 @@
     mount('#voice', ...voiceCards(d.voice, load));
     if (!deskTabs) buildDesk(r.actions || []);
     renderTests();
+    renderHandoff();
     document.getElementById('audit-sub').textContent = a.findings.length + ' findings from ' + a.rules.length + ' rules. Brain version ' + String(a.brain_version || '').slice(0, 7) + '.';
     mount('#audit', auditTable(a.findings));
     mount('#rules', el('h4', { text: 'Rules' }), rulesTable(a.rules, a.findings));
