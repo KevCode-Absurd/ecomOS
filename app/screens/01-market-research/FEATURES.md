@@ -158,7 +158,7 @@ The candidate side of the desk: the pipeline with its gates, boxes and scorecard
 | # | Feature | Status |
 |---|---|---|
 | 2.1 | Candidate pipeline that works: `POST candidates` and `POST candidates/<id>` write `fixtures/pipeline.json` (screen in, advance, log hours, set checks, kill; every change in the row's log), seeded with 4 candidates from the round 1 findings; funnel by stage reached; a screen-in form and the actions on every card; rules PROD-R14 (candidate past its time box) and PROD-R15 (2 of 3 fast checks failed) with decide-or-kill recipes | done |
-| 2.2 | Margin gate with a waterfall per candidate | todo |
+| 2.2 | Margin gate per candidate: contribution margin modelled = (price - landed cost - donated item - fulfilment - payment fee) / price, every term from the candidate, the finance inputs (landed cost entered or the median of single-unit SKUs in the category times the pack, label, packaging, pick and pack over units an order, payment fees) or the brain (the donated item share); a waterfall per candidate with pills, the gate table against the brand floor and the bank's PRD-079 reference; rule PROD-R16 (modelled margin below the floor) with a price, cost or channel recipe; PROD-R17 actual margin by SKU unavailable until the store connects | done |
 | 2.3 | Demand pattern tag and cash timing | todo |
 | 2.4 | Trend against saturation map per lane | todo |
 | 2.5 | Ad library sustained spend signal | todo |
@@ -188,4 +188,4 @@ The candidate side of the desk: the pipeline with its gates, boxes and scorecard
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.11 | 28 Sep 2026 | S3.6, Bombas simulated set at scale 0.1 |
 | 1 | 1.1 to 1.10 | 28 Sep 2026 | plan first, 13 rules (PROD-R01 to R13), rank with a recipe per rule, web pass and social pull fixtures, round1.png and round1b.png |
-| 2 | 2.1 | 28 Sep 2026 | pipeline writes, PROD-R14 and R15; in progress |
+| 2 | 2.1, 2.2 | 28 Sep 2026 | pipeline writes, margin gate, PROD-R14 to R17; in progress |

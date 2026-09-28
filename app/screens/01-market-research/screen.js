@@ -432,6 +432,47 @@
         rows.length && actionFor(rows[0].finding_id) ? { label: 'Open the biggest gap', onClick: () => openAction(actionFor(rows[0].finding_id)) } : null));
   }
 
+  function marginBlock(m) {
+    const rows = (m && m.rows) || [];
+    if (!rows.length) return el('p', { class: 'muted', text: 'No candidate to gate. Screen one in above.' });
+    const open = rows.filter((r) => !r.closed);
+    const wrap = el('div', { class: 'stack' });
+    const chartHost = el('div', { class: 'card' });
+    const draw = (key) => {
+      const r = rows.find((x) => x.candidate_id === key); if (!r) return;
+      const g = r.gate || {};
+      const steps = (g.steps || []).map((s) => ({ label: s.label, value: s.value, kind: s.kind, sub: s.kind === 'down' && s.value != null && r.price ? Math.round(s.value / r.price * 100) + '%' : '' }));
+      mount(chartHost, Charts.waterfall({ title: r.name + ': from planned price to contribution a unit', steps, unit: '$',
+        note: g.unavailable ? 'Unavailable: ' + g.reason : (g.formula + '. Landed cost: ' + (g.cogs ? g.cogs.basis : NA) + '. Per-order costs are spread over ' + (m.units_per_order || 1) + ' units an order (last whole month).') }));
+    };
+    const pills = UI.pills({ items: rows.map((r) => ({ key: r.candidate_id, label: r.name.length > 34 ? r.name.slice(0, 32) + '..' : r.name })), current: (open[0] || rows[0]).candidate_id, onChange: draw });
+    draw((open[0] || rows[0]).candidate_id);
+    const vrows = rows.map((r) => { const g = r.gate || {}; const a = actionFor(r.finding_id); return Object.assign({}, r, {
+      margin: g.margin_pct, contribution: g.contribution_usd, cogs: g.cogs ? g.cogs.value : null, cogsBasis: g.cogs ? (g.cogs.estimated ? 'estimated' : 'entered') : NA,
+      multiple: g.multiple, bank: g.unavailable ? NA : (g.bank_rule_ok ? 'passes' : 'below'),
+      actions: [a ? { label: 'Close the gap', onClick: () => openAction(a) } : { label: g.unavailable ? 'Add the inputs' : 'Passes', cls: 'quiet', onClick: () => {} }] }); });
+    const t = UI.verdictTable({
+      columns: [{ key: 'name', label: 'Candidate' }, { key: 'price', label: 'Planned price', unit: '$' }, { key: 'pack_units', label: 'Units in pack', unit: 'n' }, { key: 'cogs', label: 'Landed cost', unit: '$' }, { key: 'cogsBasis', label: 'Cost basis' },
+        { key: 'contribution', label: 'Contribution a unit', unit: '$' }, { key: 'margin', label: 'Modelled margin', align: 'right', format: (v) => v == null ? NA : v.toFixed(1) + ' percent' },
+        { key: 'multiple', label: 'Price over cost', align: 'right', format: (v) => v == null ? NA : v.toFixed(1) + 'x' }, { key: 'bank', label: 'Bank rule PRD-079' }],
+      rows: vrows,
+      verdict: { at: 1, kind: (r) => (r.gate || {}).unavailable ? 'na' : r.gate.passes_floor === false ? 'stop' : r.gate.passes_floor ? 'keep' : 'watch',
+        text: (r) => (r.gate || {}).unavailable ? 'Inputs missing' : r.gate.passes_floor === false ? 'Below the floor' : r.gate.passes_floor ? 'Passes the gate' : 'No floor',
+        reason: (r) => (r.gate || {}).unavailable ? r.gate.reason : 'floor ' + (m.floor_pct == null ? NA : m.floor_pct + ' percent') },
+      actions: { label: 'Do', onClick: () => {} }, sort: false });
+    const below = rows.filter((r) => !r.closed && r.gate && r.gate.passes_floor === false);
+    const actual = m.actual_unavailable ? actionFor(m.actual_unavailable) : null;
+    wrap.append(pills, el('div', { class: 'grid two' }, chartHost, el('div', { class: 'card flat stack' },
+      el('h4', { text: 'The gate' }), el('div', { class: 'small', text: 'Contribution margin modelled = ' + m.formula + '.' }),
+      el('div', { class: 'small', text: 'Brand floor: ' + (m.floor_pct == null ? 'unavailable, enter target_contribution_margin in finance inputs' : m.floor_pct + ' percent from ' + m.floor_source) + '.' }),
+      el('div', { class: 'small muted', text: m.bank_rule + '.' }),
+      el('div', { class: 'small' }, el('b', { text: 'Actual against model: ' }), actual ? 'unavailable until the store connects. ' : 'available.', actual ? el('button', { class: 'btn soft xs', type: 'button', text: 'Connect the store', onclick: () => openAction(actual) }) : null))),
+      el('div', { class: 'card scroll' }, t),
+      gapLine(below.length ? below.length + ' open candidate' + (below.length === 1 ? '' : 's') + ' below the floor: ' + below.map((r) => r.name).join(', ') + '. Nothing moves to sourcing spend below the floor.' : 'Every open candidate with a price passes the gate.',
+        below.length && actionFor(below[0].finding_id) ? { label: 'Close the first gap', onClick: () => openAction(actionFor(below[0].finding_id)) } : null));
+    return wrap;
+  }
+
   function loadDesk(o) {
     const d = o.desk || {};
     const w = (o.window || {}).trend;
@@ -447,6 +488,7 @@
     parts.push(section('desk-demand', 'Which lines are losing share, and which reviews say why?', 'Last 3 whole months against the same months a year earlier. A line fires when units fall or growth trails the store by 1 point or more.', demandBlock(d, w || { months: [], year_ago: [] })));
     parts.push(section('desk-price', 'Where do our prices sit against the competitor band?', 'Per-pair list price by line against the band of competitor median prices from the brain. Socks only; other categories have no competitor price on file.', priceBlock(d.price_bands || {})));
     parts.push(section('desk-reviews', 'What do reviews praise and fail, line by line?', 'Public site review totals per line, with the objection ladder rungs built from them.', reviewBlock(d.reviews || [])));
+    parts.push(section('desk-margin', 'Does each candidate make money after real costs?', 'The margin gate per candidate: planned price stepping down through landed cost, the donated item, fulfilment and payment fees to contribution, every term from the finance inputs or the brain.', marginBlock(d.margin)));
     parts.push(section('desk-pipeline', 'What is in the next-SKU pipeline, and what is past its time box?', 'Candidates screened in from the gaps above or by hand, their stage, fast checks, time box and hours. Advance, log hours or kill from the card; every write lands in the pipeline log.', pipelineBlock(d.pipeline || { rows: [] })));
     mount('#desk', ...parts);
   }

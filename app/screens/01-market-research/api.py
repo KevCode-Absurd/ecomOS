@@ -550,6 +550,24 @@ def recipe(f):
             'stop_rule': 'a killed candidate stays killed for 90 days', 'check_on': _check_on(f, 3), 'time_to_ship_hours': 1,
             'win_rule': 'the candidate is killed or passes 2 of 3 checks',
         }
+    if rid == 'PROD-R16':
+        ent = f.get('entity') or {}
+        gap = (ent.get('floor_pct') or 0) - (ent.get('margin_pct') or 0)
+        price = ent.get('price') or 0
+        need = round(price * gap / 100, 2)
+        return {
+            'title': f'Close a {gap:g}-point margin gap on {ent.get("label")}: price, cost or channel',
+            'owner': 'agent',
+            'artefact': {'kind': 'price_change', 'label': f'the 3 ways to pass the gate for {ent.get("label")}: the price that passes at today\'s cost (about ${need:g} more a unit), the landed cost that passes at today\'s price, or a pack that spreads the per-order cost; with the recommendation'},
+            'steps': [
+                {'n': 1, 'who': 'agent', 'text': 'Re-run the gate with each lever alone: price up, landed cost down (a quote or a spec change), a bigger pack.'},
+                {'n': 2, 'who': 'agent', 'text': ('The landed cost is an estimate from the category median; ask sourcing for a quote before deciding.' if ent.get('estimated_cogs') else 'Check the entered landed cost against the latest quote.')},
+                {'n': 3, 'who': 'agent', 'text': 'Write the recommendation with the number each lever moves and the one the buyer will accept (review price signal, competitor band).'},
+                {'n': 4, 'who': 'person', 'text': 'Pick the lever or kill the candidate. The candidate\'s price or cost is updated from the card.'}],
+            'size': {'text': (f'{ent.get("margin_pct"):g} percent modelled against a {ent.get("floor_pct"):g} percent floor' if ent.get('margin_pct') is not None and ent.get('floor_pct') is not None else 'margin gap unavailable'), 'usd': None},
+            'stop_rule': 'no sourcing spend until the modelled margin passes the floor', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 2,
+            'win_rule': 'modelled contribution margin at or above the brand floor',
+        }
     return None
 
 
@@ -605,6 +623,11 @@ def rank(brand, window=None):
             continue
         a = rank_mod.action_from_finding(f, nr)
         r = recipe(f) if f.get('status') != 'unavailable' else None
+        if f.get('status') == 'unavailable' and f.get('rule_id') == 'PROD-R17':
+            a['title'] = 'Connect the store so actual margin by SKU can be read against the gate model'
+            a['steps'] = [{'n': 1, 'who': 'person', 'text': 'In Setup, connect the store (read only) so orders and order lines load.'},
+                          {'n': 2, 'who': 'agent', 'text': 'Join order lines to the landed costs on file and compute contribution margin by SKU for the window.'},
+                          {'n': 3, 'who': 'agent', 'text': 'Compare each launched SKU\'s actual margin with its gate model and report any 5-point shortfall here.'}]
         if f.get('status') == 'unavailable' and f.get('rule_id') == 'PROD-R12':
             a['title'] = 'Connect Search Console so search demand for the brand and the category can be read'
             a['steps'] = [{'n': 1, 'who': 'person', 'text': 'In Setup, add a read-only Search Console credential for the brand\'s property.'},
@@ -738,14 +761,14 @@ def overview(data, brand):
                      'demand': demand(tr, reviews), 'store_growth': tr.get('store_growth'),
                      'demand_unavailable': {'reason': tr.get('reason'), 'fix': tr.get('fix')} if tr.get('unavailable') else None,
                      'price_bands': bands, 'reviews': review_mining(reviews, lads),
-                     'pipeline': pipeline_block(brand, ends_on, findings, floor)},
+                     'pipeline': pipeline_block(brand, ends_on, findings, floor), 'margin': margin_block(brand, data, br, rd, ends_on, findings)},
             'audit': {'findings': findings, 'rules': audit.RULES}}
 
 
 # ---------------------------------------------------------------- the pipeline: the one thing this screen writes
 
 CANDIDATE_FIELDS = ('name', 'category', 'stage', 'time_box_days', 'hours_logged', 'angle_text', 'angle_source', 'planned_price', 'cogs_estimate',
-                    'cash_plan', 'compliance', 'review_date', 'screen_result', 'source_finding')
+                    'pack_units', 'cash_plan', 'compliance', 'review_date', 'screen_result', 'source_finding')
 
 
 def _pipeline_doc():
@@ -784,6 +807,7 @@ def candidate_add(brand, body, today):
            'time_box_days': int(_num(body.get('time_box_days'), 1) or 10), 'hours_logged': _num(body.get('hours_logged')) or 0.0,
            'angle_text': (str(body.get('angle_text') or '').strip()[:300] or None), 'angle_source': (str(body.get('angle_source') or '').strip()[:300] or None),
            'screen_in_date': today.isoformat(), 'planned_price': _num(body.get('planned_price')), 'cogs_estimate': _num(body.get('cogs_estimate')),
+           'pack_units': int(_num(body.get('pack_units'), 1) or 1),
            'cash_plan': (str(body.get('cash_plan') or '').strip()[:300] or None), 'compliance': {'labelling': None, 'category_certification': None},
            'review_date': None, 'source_finding': (str(body.get('source_finding') or '').strip()[:120] or None), 'simulated': True,
            'log': [{'on': today.isoformat(), 'who': str(body.get('who') or 'person')[:20], 'what': 'screened in from the research desk'}]}
@@ -822,6 +846,9 @@ def candidate_update(brand, cid, body, today):
         if body.get(k) is not None:
             row[k] = _num(body[k])
             changes.append(k.replace('_', ' ') + ' set')
+    if body.get('pack_units') is not None:
+        row['pack_units'] = int(_num(body['pack_units'], 1) or 1)
+        changes.append('pack units set')
     if body.get('time_box_days') is not None:
         row['time_box_days'] = int(_num(body['time_box_days'], 1) or row.get('time_box_days') or 10)
         row['screen_in_date'] = today.isoformat()
@@ -840,6 +867,24 @@ def candidate_update(brand, cid, body, today):
     row.setdefault('log', []).append({'on': today.isoformat(), 'who': str(body.get('who') or 'person')[:20], 'what': '; '.join(changes)})
     _write_pipeline(doc)
     return {'ok': True, 'candidate': row, 'changes': changes}
+
+
+def margin_block(brand, data, br, rd, ends_on, findings):
+    fin_rows = audit.finance_rows(data, brand)
+    fin = audit.metrics().finance.Finance(fin_rows) if fin_rows else None
+    floor = fin.value('target_contribution_margin', ends_on.isoformat()) if fin else None
+    upo = audit.units_per_order(data, brand, rd)
+    by_entity = {f['entity']['id']: f['id'] for f in findings if f['rule_id'] == 'PROD-R16'}
+    rows = []
+    for c in audit.pipeline(brand):
+        g = audit.margin_gate(c, fin, br, ends_on.isoformat(), upo, floor)
+        rows.append({'candidate_id': c.get('candidate_id'), 'name': c.get('name'), 'stage': c.get('stage'), 'closed': c.get('stage') in audit.CLOSED_STAGES,
+                     'price': c.get('planned_price'), 'pack_units': c.get('pack_units') or 1, 'gate': g, 'finding_id': by_entity.get(c.get('candidate_id'))})
+    actual = next((f for f in findings if f['rule_id'] == 'PROD-R17'), None)
+    return {'rows': rows, 'floor_pct': floor, 'floor_source': 'finance_inputs.target_contribution_margin' if floor is not None else None,
+            'units_per_order': upo, 'actual_unavailable': actual['id'] if actual else None,
+            'formula': '(price - landed cost - donated item - fulfilment - payment fee) / price',
+            'bank_rule': f'bank idea PRD-079: at least ${audit.BANK_DOLLAR_FLOOR:g} contribution a unit and {audit.BANK_MULTIPLE:g} times landed cost, shown as a reference, not the gate'}
 
 
 def pipeline_block(brand, ends_on, findings, floor):

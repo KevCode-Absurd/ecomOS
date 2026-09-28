@@ -69,6 +69,12 @@ Rules
             is not go or killed. Severity low (hygiene), confidence 0.9. Capability PROD-C04. Owner: 01-market-research.
   PROD-R15  Demand screen failed: a candidate with 2 or more of the 3 fast checks (demand, competition, store fit)
             failed and still open. Capability PROD-C01. Owner: 01-market-research.
+  PROD-R16  Margin gate failed: an open candidate with a planned price whose modelled contribution margin,
+            (price - landed cost - donated item - fulfilment - payment fee) / price, every term from the candidate,
+            the finance inputs or the brain, is below finance_inputs.target_contribution_margin. Landed cost is
+            the entered estimate, else the median of single-unit SKUs in the category. Capability PROD-C08.
+  PROD-R17  Actual margin unavailable: contribution_margin by SKU needs order rows joined to landed costs; one
+            connect finding while the store is not connected. Capability PROD-C08. Owner: 01-market-research.
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -125,6 +131,10 @@ RULES = [
      'entity_type': 'page', 'inputs': ['search_console', 'google_rows', 'brain.site_map', 'brain.objection_ladders'], 'capability': 'PROD-C05', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R14', 'name': 'Candidate past its research time box with no decision', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C04', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R15', 'name': 'Candidate that failed 2 or more of the 3 fast checks (demand, competition, store fit) and is still open', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C01', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R16', 'name': 'Open candidate whose modelled contribution margin is below the brand floor', 'entity_type': 'sku',
+     'inputs': ['fixtures.pipeline', 'finance_inputs', 'brain.economics', 'monthly'], 'capability': 'PROD-C08', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R17', 'name': 'Actual contribution margin by SKU unavailable (needs order rows joined to landed costs)', 'entity_type': 'metric',
+     'inputs': ['orders', 'order_lines', 'finance_inputs'], 'capability': 'PROD-C08', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -140,7 +150,9 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R12': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R13': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R14': {'id': 'PROD-C04', 'autonomy': 'agent_does'},
-              'PROD-R15': {'id': 'PROD-C01', 'autonomy': 'agent_does'}}
+              'PROD-R15': {'id': 'PROD-C01', 'autonomy': 'agent_does'},
+              'PROD-R16': {'id': 'PROD-C08', 'autonomy': 'agent_does'},
+              'PROD-R17': {'id': 'PROD-C08', 'autonomy': 'agent_does'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -608,6 +620,7 @@ def run(brand, window=None, data=None):
     out += avatar_findings(br, ends_on, net, prods_for_map)
     out += search_findings(br, data, brand, ends_on)
     out += pipeline_findings(brand, ends_on)
+    out += margin_findings(brand, data, br, rd, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -1542,4 +1555,162 @@ def search_findings(br, data, brand, ends_on):
             f['entity'] = {'type': 'page', 'id': g['key'], 'label': g['label'], 'terms': g['terms'][:5]}
             f['id'] = f'{SCREEN}.PROD-R13.{g["key"]}'
             out.append(f)
+    return out
+
+
+# ---------------------------------------------------------------- the margin gate per candidate
+
+CATEGORY_SKU_PREFIX = {'BMB-SK': 'socks', 'BMB-UW': 'underwear', 'BMB-TS': 'tshirts', 'BMB-SL': 'slippers', 'BMB-FW': 'footwear'}
+BANK_DOLLAR_FLOOR = 30.0     # idea PRD-079: at least 30 dollars a unit and 3 times landed cost, shown as the bank's reference, not the gate
+BANK_MULTIPLE = 3.0
+CHEAPEST_LABEL_KEYS = ('usps:zones_1_4', 'usps:zone_1_4')
+
+
+def finance_rows(data, brand):
+    source = brand_data(brand) if brand else data
+    try:
+        return source.table('finance_inputs')
+    except (KeyError, ValueError):
+        path = Path(getattr(source, 'folder', '') or '') / 'finance_inputs.json'
+        if path.is_file():
+            doc = json.loads(path.read_text(encoding='utf-8'))
+            return doc.get('rows') if isinstance(doc, dict) else doc
+    return None
+
+
+def units_per_order(data, brand, rd):
+    """Average units per order over the last whole month, from the monthly aggregate. None when absent."""
+    source = brand_data(brand) if brand else data
+    try:
+        rows = source.table('monthly')
+    except (KeyError, ValueError):
+        try:
+            rows = source.table('aggregates/monthly')
+        except (KeyError, ValueError):
+            return None
+    row = next((r for r in rows if r.get('month') == rd.last_month), None)
+    if not row or not row.get('orders') or row.get('units') is None:
+        return None
+    return round(row['units'] / row['orders'], 3)
+
+
+def cogs_estimate_for(cand, fin, day):
+    """The candidate's landed cost: the entered estimate, else the median landed cost of single-unit SKUs in its category."""
+    if cand.get('cogs_estimate') is not None:
+        return {'value': float(cand['cogs_estimate']), 'basis': 'entered on the candidate', 'estimated': False}
+    if fin is None:
+        return {'value': None, 'basis': 'no finance inputs', 'estimated': True}
+    vals = []
+    for r in fin.in_force('cogs_landed', day):
+        sku = str(r.get('scope_key') or '')
+        cat = next((c for p, c in CATEGORY_SKU_PREFIX.items() if sku.startswith(p)), None)
+        if cat == cand.get('category') and sku.endswith('-1') and isinstance(r.get('value'), (int, float)):
+            vals.append(float(r['value']))
+    if not vals:
+        return {'value': None, 'basis': f'no single-unit {cand.get("category")} SKU with a landed cost on file', 'estimated': True}
+    pack = int(cand.get('pack_units') or 1)
+    return {'value': round(statistics.median(vals) * pack, 2),
+            'basis': f'median landed cost of {len(vals)} single-unit {cand.get("category")} SKUs (finance inputs)' + (f' x {pack} units in the pack' if pack > 1 else ''), 'estimated': True}
+
+
+def margin_gate(cand, fin, br, day, upo, floor_pct):
+    """Contribution margin modelled = (price - landed cost - donated item - fulfilment - payment fee) / price, every term
+    from the candidate, the finance inputs or the brain, with the source named. Unavailable when a term is missing."""
+    price = cand.get('planned_price')
+    steps, missing = [], []
+    if not isinstance(price, (int, float)) or price <= 0:
+        return {'unavailable': True, 'reason': 'no planned price on the candidate', 'steps': [], 'margin_pct': None}
+    cogs = cogs_estimate_for(cand, fin, day)
+    steps.append({'label': 'planned price', 'value': round(price, 2), 'kind': 'total', 'source': 'candidate'})
+    if cogs['value'] is None:
+        missing.append('landed cost: ' + cogs['basis'])
+    steps.append({'label': 'landed cost', 'value': cogs['value'], 'kind': 'down', 'source': cogs['basis']})
+    give = brain_value_num_path(br, 'economics.gross_margin_model', 'donated_item_cost_pct')
+    if give is not None:
+        steps.append({'label': 'donated item', 'value': round(price * give / 100, 2), 'kind': 'down', 'source': f'brain economics.gross_margin_model, {give:g} percent of net price'})
+    if fin is None:
+        missing.append('fulfilment and payment: no finance inputs')
+        steps += [{'label': 'fulfilment', 'value': None, 'kind': 'down', 'source': 'finance inputs missing'}, {'label': 'payment fee', 'value': None, 'kind': 'down', 'source': 'finance inputs missing'}]
+    else:
+        per_order = 0.0
+        parts = []
+        label = next((fin.value('shipping_label', day, k) for k in CHEAPEST_LABEL_KEYS if fin.value('shipping_label', day, k) is not None), None)
+        if label is not None:
+            per_order += label
+            parts.append(f'label {label:g}')
+        pk = fin.value('packaging', day)
+        if pk is not None:
+            per_order += pk
+            parts.append(f'packaging {pk:g}')
+        pp = fin.value('threepl_pick_pack', day, unit='usd_per_order')
+        if pp is not None:
+            per_order += pp
+            parts.append(f'pick and pack {pp:g}')
+        pu = fin.value('threepl_pick_pack', day, unit='usd_per_unit') or 0.0
+        share = per_order / upo if upo else per_order
+        fulfil = round(share + pu, 2)
+        steps.append({'label': 'fulfilment', 'value': fulfil, 'kind': 'down',
+                      'source': f'per order ({", ".join(parts)}) over {upo if upo else 1:g} units an order, plus {pu:g} a unit'})
+        pct = fin.value('payment_fee_percent', day, 'online_store')
+        fixed = fin.value('payment_fee_fixed', day, 'online_store')
+        if pct is None:
+            missing.append('payment fee percent for online_store')
+            steps.append({'label': 'payment fee', 'value': None, 'kind': 'down', 'source': 'no payment_fee_percent for online_store'})
+        else:
+            fee = round(price * pct / 100 + ((fixed or 0) / upo if upo else (fixed or 0)), 2)
+            steps.append({'label': 'payment fee', 'value': fee, 'kind': 'down', 'source': f'{pct:g} percent plus {fixed or 0:g} an order'})
+    if missing:
+        return {'unavailable': True, 'reason': '; '.join(missing), 'steps': steps, 'margin_pct': None, 'cogs': cogs}
+    contribution = round(price - sum(s['value'] for s in steps if s['kind'] == 'down'), 2)
+    steps.append({'label': 'contribution', 'value': None, 'kind': 'sub', 'source': 'price minus the steps above'})
+    margin_pct = round(contribution / price * 100, 1)
+    multiple = round(price / cogs['value'], 2) if cogs['value'] else None
+    return {'unavailable': False, 'steps': steps, 'contribution_usd': contribution, 'margin_pct': margin_pct, 'floor_pct': floor_pct,
+            'passes_floor': (margin_pct >= floor_pct) if floor_pct is not None else None, 'cogs': cogs,
+            'multiple': multiple, 'bank_multiple': BANK_MULTIPLE, 'bank_dollar_floor': BANK_DOLLAR_FLOOR,
+            'bank_rule_ok': (contribution >= BANK_DOLLAR_FLOOR and (multiple or 0) >= BANK_MULTIPLE),
+            'formula': '(price - landed cost - donated item - fulfilment - payment fee) / price'}
+
+
+def brain_value_num_path(br, rid_tail, key):
+    r = br.get(f'{br.brand}.{rid_tail}') if br else None
+    v = (r or {}).get('value') if r else None
+    x = v.get(key) if isinstance(v, dict) else None
+    return float(x) if isinstance(x, (int, float)) else None
+
+
+def margin_findings(brand, data, br, rd, ends_on):
+    """PROD-R16: an open candidate with a planned price whose modelled margin is below the brand floor.
+    PROD-R17: actual margin by SKU unavailable (needs order rows), one connect finding."""
+    fin_rows = finance_rows(data, brand)
+    fin = metrics().finance.Finance(fin_rows) if fin_rows else None
+    floor = fin.value('target_contribution_margin', ends_on.isoformat()) if fin else None
+    upo = units_per_order(data, brand, rd)
+    out = []
+    for cand in pipeline(brand):
+        if cand.get('stage') in CLOSED_STAGES:
+            continue
+        g = margin_gate(cand, fin, br, ends_on.isoformat(), upo, floor)
+        if g.get('unavailable') or g.get('passes_floor') is not False:
+            continue
+        cid = cand.get('candidate_id') or slug(cand.get('name'))
+        ev = [_ev('contribution_margin_pct_modelled', g['margin_pct'], 'percent', ends_on.isoformat(), 'model now', floor, 'threshold', source='finance_inputs', simulated=True, freshness_days=0,
+                  formula=g['formula'], steps=[{s['label']: s['value']} for s in g['steps']]),
+              _ev('landed_cost', g['cogs']['value'], 'usd', ends_on.isoformat(), 'model now', source='finance_inputs', simulated=True, freshness_days=0, note=g['cogs']['basis']),
+              _ev('planned_price', cand.get('planned_price'), 'usd', ends_on.isoformat(), 'candidate', source='fixtures.pipeline', simulated=False, freshness_days=0)]
+        sentence = (f'{cand["name"]}: modelled margin is {g["margin_pct"]:g} percent at ${cand["planned_price"]:g}, below the {floor:g} percent floor. '
+                    f'It cannot move to sourcing spend without a price, cost or channel change.')
+        f = _finding('PROD-R16', cid, ends_on, 'medium', ev, sentence, None, 0.7, [f'{br.brand}.economics.gross_margin_model'] if br else [],
+                     money_reason='a candidate has no sales yet; the gap is per unit')
+        f['entity'] = {'type': 'sku', 'id': cid, 'label': cand['name'], 'candidate': True, 'margin_pct': g['margin_pct'], 'floor_pct': floor, 'price': cand.get('planned_price'),
+                       'contribution_usd': g.get('contribution_usd'), 'estimated_cogs': g['cogs']['estimated']}
+        f['id'] = f'{SCREEN}.PROD-R16.{cid}'
+        out.append(f)
+    r = metrics().compute('contribution_margin', data, window='28d', end=ends_on.isoformat(), **({'brand': brand} if brand else {}))
+    if r.get('unavailable'):
+        u = _unavailable('PROD-R17', ends_on, 'Actual contribution margin by SKU cannot be read: it needs order rows and landed costs together.',
+                         ['orders', 'order_lines', 'finance_inputs.cogs_landed'], r.get('fix') or 'shopify', 'Connect the store (read only) so orders join the landed costs on file.')
+        u['entity'] = {'type': 'metric', 'id': 'contribution_margin', 'label': 'Actual margin by SKU'}
+        u['sentence'] = u['sentence'] + (f' ({r.get("reason")})' if r.get('reason') else '')
+        out.append(u)
     return out

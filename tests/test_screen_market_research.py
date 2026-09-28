@@ -518,7 +518,7 @@ class RankTest(unittest.TestCase):
                  'capability': dict(audit.CAPABILITY[rule['rule_id']]), 'money_at_stake': None, 'money_reason': 'test', 'confidence': 0.5, 'brain_refs': [],
                  'first_seen': '2026-09-27', 'last_seen': '2026-09-27', 'status': 'open', 'unavailable': None}
             r = api.recipe(f)
-            if rule['rule_id'] == 'PROD-R12':
+            if rule['rule_id'] in ('PROD-R12', 'PROD-R17'):
                 self.assertIsNone(r)   # a connect rule: the engine's connect action, retitled in rank
                 continue
             self.assertIsNotNone(r, rule['rule_id'])
@@ -567,6 +567,35 @@ class PipelineTest(unittest.TestCase):
         self.assertEqual(audit.pipeline_findings('fake', date(2026, 10, 10)), [])
         self.assertEqual(api.candidate_update('fake', 'cand-999', {'stage': 'go'}, today)[0], 404)
         self.assertEqual(api.candidate_add('fake', {'name': ''}, today)[0], 400)
+
+    def test_margin_gate_arithmetic_and_floor(self):
+        """Every term named; the margin is the arithmetic of the steps; below the floor fires R16."""
+        rows = [{'field': 'cogs_landed', 'scope': 'sku', 'scope_key': 'BMB-SK-X-1', 'value': 4.0, 'unit': 'usd_per_unit', 'effective_from': '2025-01-01', 'effective_to': None},
+                {'field': 'cogs_landed', 'scope': 'sku', 'scope_key': 'BMB-SK-X-4', 'value': 14.0, 'unit': 'usd_per_unit', 'effective_from': '2025-01-01', 'effective_to': None},
+                {'field': 'shipping_label', 'scope': 'carrier_zone', 'scope_key': 'usps:zones_1_4', 'value': 4.0, 'unit': 'usd_per_order', 'effective_from': '2025-01-01', 'effective_to': None},
+                {'field': 'packaging', 'scope': 'global', 'scope_key': '', 'value': 1.0, 'unit': 'usd_per_order', 'effective_from': '2025-01-01', 'effective_to': None},
+                {'field': 'threepl_pick_pack', 'scope': 'global', 'scope_key': '', 'value': 3.0, 'unit': 'usd_per_order', 'effective_from': '2025-01-01', 'effective_to': None},
+                {'field': 'payment_fee_percent', 'scope': 'channel', 'scope_key': 'online_store', 'value': 3.0, 'unit': 'percent', 'effective_from': '2025-01-01', 'effective_to': None},
+                {'field': 'payment_fee_fixed', 'scope': 'channel', 'scope_key': 'online_store', 'value': 0.3, 'unit': 'usd_per_order', 'effective_from': '2025-01-01', 'effective_to': None},
+                {'field': 'target_contribution_margin', 'scope': 'global', 'scope_key': '', 'value': 25.0, 'unit': 'percent', 'effective_from': '2025-01-01', 'effective_to': None}]
+        fin = metrics.finance.Finance(rows)
+        cand = {'name': 'Test sock', 'category': 'socks', 'planned_price': 20.0, 'pack_units': 1}
+        g = audit.margin_gate(cand, fin, None, '2026-09-27', 2.0, 25.0)
+        self.assertFalse(g['unavailable'])
+        self.assertEqual(g['cogs']['value'], 4.0)          # the single-unit SKU, not the 4-pack
+        steps = {s['label']: s['value'] for s in g['steps']}
+        self.assertEqual(steps['fulfilment'], 4.0)          # (4 + 1 + 3) over 2 units an order
+        self.assertEqual(steps['payment fee'], 0.75)        # 3 percent of 20 plus 0.30 over 2 units
+        self.assertEqual(g['contribution_usd'], round(20 - 4 - 4 - 0.75, 2))
+        self.assertEqual(g['margin_pct'], round((20 - 4 - 4 - 0.75) / 20 * 100, 1))
+        self.assertTrue(g['passes_floor'])
+        g2 = audit.margin_gate(dict(cand, planned_price=10.0, cogs_estimate=5.0), fin, None, '2026-09-27', 2.0, 25.0)
+        self.assertFalse(g2['passes_floor'])
+        self.assertEqual(g2['cogs']['basis'], 'entered on the candidate')
+        g3 = audit.margin_gate(dict(cand, planned_price=None), fin, None, '2026-09-27', 2.0, 25.0)
+        self.assertTrue(g3['unavailable'])
+        g4 = audit.margin_gate(dict(cand, pack_units=4), fin, None, '2026-09-27', 2.0, 25.0)
+        self.assertEqual(g4['cogs']['value'], 16.0)
 
     def test_funnel_counts_stages_reached(self):
         rows = [audit.candidate_view(r, date(2026, 9, 27)) for r in [
