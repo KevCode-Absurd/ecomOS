@@ -201,7 +201,7 @@ Sources: round 6's candidates (the alert digest, notes on audience profiles, res
 | 7.7 | The founder round as a checklist | todo | |
 | 7.8 | Section trust, explained | todo | |
 | 7.9 | Restore from an export (`restore.py`, `POST export/restore`): after a dropped export's diff, name the sections and plan the restore (re-added, changed, retired per section), then apply: the export's records are written back through the store with the export named as their source, the current values go into history, records the export does not hold are retired; changes and freshness are never restored; one logged change per section | done | Undo a bad week in one section without losing the record of what happened since |
-| 7.10 | Change a number safely | todo | |
+| 7.10 | Change a number safely (`numbers.py`, `GET numbers`, `POST numbers/change`, `POST numbers/done`): change a scalar fact (a threshold, a price, a window, a code) in one place as a founder edit with the old value kept in history; the dependents trace (records, ladder rungs, snippets, facts, the ads that carry the code) becomes a plans record with a done flag per place; rule BRN-R37 keeps it on the master list (medium while an ad or a snippet is left) until every dependent is marked done and the plan retires itself | done | Change the free shipping threshold once and never leave an old $75 in a snippet, a fact or an ad |
 
 ### Round 6 status for Kevin (28 Sep 2026)
 

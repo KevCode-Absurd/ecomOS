@@ -2757,10 +2757,41 @@ class Round7Restore(TempBrain):
         self.assertEqual(api.handle(Req(['export', 'restore'], 'POST', body={'token': 'nope-token-1', 'sections': ['offers']}))[0], 404)
 
 
+class Round7Numbers(TempBrain):
+    """Round 7 feature 10: change a number safely; the dependents become a plan on the master list until each is marked done; rule BRN-R37."""
+
+    def test_change_plan_rule_and_done(self):
+        status, res = api.handle(Req(['numbers', 'change'], 'POST', body={'record': 'bombas.offers.free_shipping_threshold_usd', 'value': '80'}))
+        self.assertEqual((status, res['before'], res['after']), (201, 75, 80))
+        self.assertGreaterEqual(len(res['dependents']), 2)
+        self.assertEqual(res['plan'], 'bombas.plans.update_free_shipping_threshold_usd')
+        rec = next(r for r in self.section('offers') if r['id'] == 'bombas.offers.free_shipping_threshold_usd')
+        self.assertEqual((rec['value'], rec['tier'], rec['source']['type'], rec['history'][-1]['value']), (80, 'approved', 'founder', 75))
+        nb = api.handle(Req(['numbers']))
+        pl = nb['pending'][0]
+        self.assertEqual((pl['left'], pl['total']), (len(res['dependents']), len(res['dependents'])))
+        f = next(f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R37')
+        self.assertIn('75 to 80', f['sentence'])
+        a = next(a for a in api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions'] if a['rule_id'] == 'BRN-R37')
+        self.assertTrue(a['title'].startswith('Update ' + str(pl['left']) + ' place'))
+        self.assertEqual((a['owner'], a['artefact']['kind'], api.rank_mod.validate_action(a)), ('agent_drafts', 'copy', []))
+        for d in pl['dependents']:
+            status, r = api.handle(Req(['numbers', 'done'], 'POST', body={'plan': pl['plan'], 'dependent': d['id']}))
+            self.assertEqual(status, 201)
+        self.assertTrue(r['closed'])
+        self.assertFalse([f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R37'])
+        self.assertEqual(next(x['status'] for x in self.section('plans') if x['id'] == pl['plan']), 'retired')
+        self.assertEqual(api.handle(Req(['numbers', 'change'], 'POST', body={'record': 'bombas.offers.free_shipping_threshold_usd', 'value': '80'}))[0], 400)
+        self.assertEqual(api.handle(Req(['numbers', 'change'], 'POST', body={'record': 'bombas.policies.shipping_options', 'value': '1'}))[0], 400)
+        self.assertEqual(api.handle(Req(['numbers', 'change'], 'POST', body={'record': 'bombas.offers.nope', 'value': '1'}))[0], 404)
+        self.assertEqual(api.handle(Req(['numbers', 'done'], 'POST', body={'plan': pl['plan'], 'dependent': 'x'}))[0], 404)
+        self.assertIn('number', [c['kind'] for c in api.handle(Req(['changes']))['changes']])
+
+
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
-    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'], ['onepage'], ['brainmd', 'notes'], ['alerts'], ['glossary'], ['expiring'], ['feedback'],
+    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'], ['onepage'], ['brainmd', 'notes'], ['alerts'], ['glossary'], ['expiring'], ['feedback'], ['numbers'],
               ['decisions'], ['flows'], ['claims'], ['site', 'diff'], ['parity'], ['contracts'], ['legal'], ['voice'], ['battlecards'], ['permissions'],
               ['export'], ['assumptions'], ['facts'], ['summaries'], ['changes'], ['learn'], ['report'], ['digest'], ['review'], ['bottlenecks'], ['audit']]
 

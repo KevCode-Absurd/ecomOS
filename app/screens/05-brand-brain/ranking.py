@@ -159,6 +159,13 @@ def build(f: dict, nr: float | None) -> dict:
                         {"n": 3, "who": "person", "text": "Pick the record as proof, or approve the drafted fact as an approved record."},
                         {"n": 4, "who": "agent", "text": f"Attach it to the rung. The surfaces that use the rung ({surfaces or 'copy, page, listing, macro'}) read the proof on their next brief."}],
                  check_on=_check_on(f, 7), time_to_ship_hours=1)
+    elif rid == "BRN-R37":
+        up = f.get("update") or {}
+        left = up.get("left") or []
+        a.update(title=f"Update {len(left)} place{'s' if len(left) != 1 else ''} that still say {up.get('before')}: {str(up.get('field')).replace('_', ' ')} is now {up.get('after')}", owner="agent_drafts",
+                 artefact={"kind": "copy", "label": "every dependent rewritten with the new value, each marked done on the plan", "draft": "\n".join(f"- {d.get('kind')}: {d.get('label')} ({d['id']})" for d in left)},
+                 steps=[{"n": 1, "who": "agent", "text": "Rewrite each dependent with the new value: records in the review queue, snippets and facts regenerated, ad copy drafted."}, {"n": 2, "who": "person", "text": "Approve each rewrite; live ads and pages change only through their own screens."}, {"n": 3, "who": "agent", "text": "Mark each dependent done on the plan; the plan closes when none is left."}],
+                 check_on=_check_on(f, 3), time_to_ship_hours=1)
     elif rid == "BRN-R36":
         ex = f.get("expiring") or {}
         conf = ex.get("confirmable")

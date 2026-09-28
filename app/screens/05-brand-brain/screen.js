@@ -58,6 +58,7 @@
     loadDecisions(m);
     loadChanges();
     loadTrail();
+    loadNumbers(m.actions || []);
     loadReport();
     loadUnlocks();
     loadMoves();
@@ -704,6 +705,22 @@
       { key: 'alerts', label: 'Alerts', panel: () => { const box = el('div', { class: 'stack' }, el('p', { class: 'muted small', text: 'Loading.' })); api(BASE + 'alerts').then((al) => { const sent = el('button', { class: 'btn sm', type: 'button', text: 'Mark sent today' }); const st = el('span', { class: 'micro muted' }); sent.addEventListener('click', async () => { sent.disabled = true; try { const r = await api(BASE + 'alerts/sent', { method: 'POST' }); st.textContent = r.next; } catch (e) { sent.disabled = false; st.textContent = 'Could not mark: ' + e.message; } }); mount(box, el('div', { class: 'row' }, UI.copyButton({ label: 'Copy the digest', text: () => al.text }), sent, el('span', { class: 'chip', text: al.counts.total + ' alerts, ' + al.counts.new + ' new' + (al.since ? ' since ' + fmt.date(al.since) : '') }), el('span', { class: 'chip', text: 'Slack: ' + (al.delivery.slack || NA) }), st), al.items.length ? UI.table({ columns: [{ key: 'severity', label: 'Level' }, { key: 'kind', label: 'Kind', format: pretty }, { key: 'text', label: 'Alert' }, { key: 'due', label: 'Due', format: (v) => v ? fmt.date(v) : NA }, { key: 'new', label: 'New', format: (v) => v ? 'yes' : '' }, { key: 'block', label: 'Block', format: (v) => v } ], rows: al.items, sort: false, onRow: (r) => { const t = document.getElementById(r.block + '-wrap'); if (t) t.scrollIntoView({ behavior: 'smooth' }); } }) : el('p', { class: 'muted small', text: 'Nothing due or changed.' }), el('pre', { class: 'card sunken brief', text: al.text }), el('div', { class: 'micro faint', text: al.note })); }).catch((e) => mount(box, el('p', { class: 'muted', text: 'Alerts unavailable: ' + e.message }))); return box; } },
       { key: 'digest', label: 'Founder round', n: dg.questions, panel: () => dg.error ? el('p', { class: 'muted', text: 'Digest unavailable: ' + dg.error }) : el('div', { class: 'stack' }, el('div', { class: 'row' }, UI.copyButton({ label: 'Copy the digest', text: () => dg.text }), el('span', { class: 'chip', text: 'Slack: ' + (dg.delivery.slack || NA) }), el('span', { class: 'chip', text: 'email: ' + (dg.delivery.email || NA) }), el('span', { class: 'micro faint', text: dg.delivery.reason + '. ' + dg.note })), el('pre', { class: 'card sunken brief', text: dg.text })) },
     ] }));
+  }
+
+  // ---------- 1b1. change a number safely ----------
+  async function loadNumbers(actions) {
+    let nb;
+    try { nb = await api(BASE + 'numbers'); } catch (e) { mount('#numbers', el('p', { class: 'muted', text: 'Numbers unavailable: ' + e.message })); return; }
+    const byAct = {}; for (const a of actions || []) if (a.rule_id === 'BRN-R37' && a.entity) byAct[a.entity.id] = a;
+    mount('#numbers-tools', UI.orientation([{ label: 'open plans', value: nb.pending.filter((p) => p.left).length, unit: 'n' }, { label: 'places left', value: nb.pending.reduce((s, p) => s + p.left, 0), unit: 'n' }]));
+    const status = el('span', { class: 'micro muted' });
+    const rid = el('input', { class: 'text sm', placeholder: 'record, like bombas.offers.free_shipping_threshold_usd', style: { flex: '2 1 320px' } });
+    const val = el('input', { class: 'text sm', placeholder: 'new value, like 80', style: { maxWidth: '160px' } });
+    const go = el('button', { class: 'btn primary sm', type: 'button', text: 'Change it' });
+    const out = el('div', { class: 'stack' });
+    go.addEventListener('click', async () => { if (!rid.value.trim() || !val.value.trim()) return; go.disabled = true; try { const r = await api(BASE + 'numbers/change', { method: 'POST', body: { record: rid.value.trim(), value: val.value.trim() } }); status.textContent = r.next; loadNumbers(actions); loadProfile(); loadPlan(); loadChanges(); } catch (e) { status.textContent = 'Could not change: ' + e.message; } go.disabled = false; });
+    const plans = nb.pending.map((p) => { const act = byAct['update_' + p.field]; const rows = p.dependents.map((d) => { const b = el('button', { class: 'btn xs' + (d.done ? ' soft' : ''), type: 'button', text: d.done ? 'done' : 'Mark done', disabled: !!d.done }); b.addEventListener('click', async () => { b.disabled = true; try { const r = await api(BASE + 'numbers/done', { method: 'POST', body: { plan: p.plan, dependent: d.id } }); status.textContent = r.closed ? 'Every dependent updated; the plan closed.' : r.left + ' left.'; loadNumbers(actions); loadPlan(); } catch (e) { b.disabled = false; status.textContent = 'Could not mark: ' + e.message; } }); return el('div', { class: 'row small' }, el('span', { class: 'chip', text: pretty(d.kind || 'record') }), el('span', { class: 'chip mono', text: d.id }), el('span', { text: d.label }), b); }); return el('div', { class: 'card flat' }, el('div', { class: 'row' }, el('b', { text: pretty(p.field) + ': ' + p.before + ' to ' + p.after }), el('span', { class: 'chip ' + (p.left ? 'warn' : 'good'), text: p.left + ' of ' + p.total + ' left' }), act ? UI.decisionRow({ capability: 'BRN-C01', autonomy: 'agent_does', owner: act.owner, screen: SCREEN, compact: true, finding_id: act.id, current: act.decision, stub: act.title + '. ' + act.artefact.label + '.' }) : null), ...rows); });
+    mount('#numbers', el('div', { class: 'row' }, rid, val, go, status), out, ...(plans.length ? plans : [el('p', { class: 'muted small', text: 'No number change open. Every fact is in one place; change it here and the dependents follow.' })]), el('p', { class: 'micro faint', text: nb.note }));
   }
 
   // ---------- 1b2. who read what ----------

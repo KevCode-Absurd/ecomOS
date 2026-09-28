@@ -9,6 +9,9 @@ question, and accept or ignore on a proposed record. Nothing external.
   GET  agentfile/endpoints      this route table as JSON, for an agent or an MCP wrapper
   GET  brainmd                  the router BRAIN.md text
   GET|POST brainmd/notes        the founder notes block in BRAIN.md, read and set; kept across regeneration
+  GET  numbers                  open update plans after a number change, with the dependents left
+  POST numbers/change           {record, value}: change a scalar fact; the dependents become a plan on the master list
+  POST numbers/done             {plan, dependent}: mark one dependent updated; the plan closes when none is left
   GET  feedback                 what agents got wrong: the corrections on record, by capability and kind
   POST feedback                 {capability, kind, wrong, what, right, fact}: a correction as a learning; the misused fact's section goes to review
   GET  expiring                 records expiring within 7 days, by the source that refreshes them
@@ -222,6 +225,9 @@ _pspec.loader.exec_module(parity)
 _sspec = importlib.util.spec_from_file_location("brand_brain_sitediff", HERE / "sitediff.py")
 sitediff = importlib.util.module_from_spec(_sspec)
 _sspec.loader.exec_module(sitediff)
+_nmspec = importlib.util.spec_from_file_location("brand_brain_numbers", HERE / "numbers.py")
+numbers = importlib.util.module_from_spec(_nmspec)
+_nmspec.loader.exec_module(numbers)
 _rsspec = importlib.util.spec_from_file_location("brand_brain_restore", HERE / "restore.py")
 restore = importlib.util.module_from_spec(_rsspec)
 _rsspec.loader.exec_module(restore)
@@ -1987,6 +1993,40 @@ def handle(req):
         return cd
     if req.method == "POST" and parts == ["claims"]:
         return claim_add(brain, req.body)
+    if req.method == "GET" and parts == ["numbers"]:
+        return {"pending": numbers.pending(brain), "brand": brain.brand, "today": brain.today.isoformat(), "capability": {"id": "BRN-C01", "autonomy": "agent_does"},
+                "note": "Change a fact the brand quotes in one place; every place that carries the old value becomes work on the plan until each is marked done. Only scalar facts change here."}
+    if req.method == "POST" and parts == ["numbers", "change"]:
+        body = req.body or {}
+        rid = str(body.get("record") or "")
+        if not re.fullmatch(r"[a-z0-9_-]+\.[a-z_]+\.[A-Za-z0-9_.-]{1,120}", rid):
+            return 400, {"error": "record must be a record id"}
+        if str(body.get("value") or "").strip() == "":
+            return 400, {"error": "value is required"}
+        deps = changes.dependents(brain, rid)
+        res = numbers.change(brain, rid, str(body.get("value")), deps)
+        if isinstance(res, tuple):
+            return res
+        errs = founder_put(brain, res["record"], "number", f"{rid}: {res['before']} to {res['after']} ({len(res['dependents'])} dependents)")
+        if errs:
+            return 400, {"error": "; ".join(errs)}
+        if res["plan"]:
+            errs = founder_put(brain, res["plan"], "number", res["plan"]["text"][:160])
+            if errs:
+                return 400, {"error": "; ".join(errs)}
+        return 201, {"ok": True, "record": rid, "before": res["before"], "after": res["after"], "dependents": res["dependents"], "plan": res["plan"]["id"] if res["plan"] else None, "version": brain.version(),
+                     "next": (f"Changed. {len(res['dependents'])} places carry the old value; the plan holds them until each is marked done." if res["dependents"] else "Changed. Nothing else carries the old value.")}
+    if req.method == "POST" and parts == ["numbers", "done"]:
+        body = req.body or {}
+        res = numbers.mark_done(brain, str(body.get("plan") or ""), str(body.get("dependent") or ""))
+        if isinstance(res, tuple):
+            return res
+        errs = founder_put(brain, res["record"], "number", f"{body.get('dependent')} updated; {res['left']} left on {body.get('plan')}")
+        if errs:
+            return 400, {"error": "; ".join(errs)}
+        if not res["left"]:
+            brain.retire(res["record"]["id"])
+        return 201, {"ok": True, "left": res["left"], "closed": not res["left"], "version": brain.version()}
     if req.method == "GET" and parts == ["feedback"]:
         fb = feedback.summary(brain)
         fb.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "BRN-C12", "autonomy": "founder_gate"})

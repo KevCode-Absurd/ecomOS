@@ -180,6 +180,10 @@ BRN-R36 records expiring this week. Records whose expiry falls inside 7
     source: the agent re-pulls a public source read-only inside its caps, the
     founder confirms a founder or document record. Severity medium when any is
     past, else low. Capability BRN-C02. Owner: 05-brand-brain.
+BRN-R37 dependents pending after a number change. A plans record
+    `update_<field>` (numbers.py) with dependents not yet marked done: places
+    that still carry the old value. Severity medium while any dependent is an
+    ad or a snippet, else low. Capability BRN-C01. Owner: 05-brand-brain.
 BRN-R07 competitor snapshot stale. A configured Ad Library page was captured
     more than SNAPSHOT_STALE_DAYS (7) ago, or never. Severity low. Capability
     BRN-C11 (competitor snapshot, signals only). Owner: 05-brand-brain.
@@ -284,6 +288,8 @@ RULES = [
      "inputs": ["team.owner_*", "every section"], "capability": "BRN-C12", "owner_screen": SCREEN},
     {"rule_id": "BRN-R36", "name": "records expiring this week", "entity_type": "brand",
      "inputs": ["every section (expires_at)"], "capability": "BRN-C02", "owner_screen": SCREEN},
+    {"rule_id": "BRN-R37", "name": "dependents pending after a number change", "entity_type": "brand",
+     "inputs": ["plans.update_*"], "capability": "BRN-C01", "owner_screen": SCREEN},
 ]
 AUTONOMY = {"BRN-C12": "agent_does", "BRN-C07": "founder_gate", "BRN-C03": "agent_does",
             "CREA-C19": "agent_does", "CREA-C04": "agent_does", "BRN-C11": "agent_does", "CREA-C06": "agent_does",
@@ -301,6 +307,9 @@ _lspec.loader.exec_module(legal)
 _pspec = importlib.util.spec_from_file_location("brand_brain_parity", Path(__file__).resolve().parent / "parity.py")
 parity = importlib.util.module_from_spec(_pspec)
 _pspec.loader.exec_module(parity)
+_nmspec = importlib.util.spec_from_file_location("brand_brain_numbers", Path(__file__).resolve().parent / "numbers.py")
+numbers = importlib.util.module_from_spec(_nmspec)
+_nmspec.loader.exec_module(numbers)
 _exspec = importlib.util.spec_from_file_location("brand_brain_expiring", Path(__file__).resolve().parent / "expiring.py")
 expiring = importlib.util.module_from_spec(_exspec)
 _exspec.loader.exec_module(expiring)
@@ -857,6 +866,21 @@ def rule_self_audit(brain: Brain, ends_on: str) -> list[dict]:
     return out
 
 
+def rule_number_dependents(brain: Brain, ends_on: str) -> list[dict]:
+    out = []
+    for pl in numbers.pending(brain):
+        if not pl["left"]:
+            continue
+        left = [d for d in pl["dependents"] if not d.get("done")]
+        ev = [_row("dependents_left", pl["left"], "n", ends_on, None, 0, "plans"), _row("dependents_total", pl["total"], "n", ends_on, None, None, "plans")]
+        sev = "medium" if any(d.get("kind") in ("ad", "snippet") for d in left) else "low"
+        f = _finding("BRN-R37", sev, {"type": "brand", "id": f"update_{pl['field']}", "label": f"{pl['field'].replace('_', ' ')} dependents"}, ev,
+                     f"{pl['field'].replace('_', ' ')} changed from {pl['before']} to {pl['after']}; {pl['left']} of {pl['total']} places still carry the old value: " + ", ".join(str(d.get('label'))[:40] for d in left[:3]) + ("..." if len(left) > 3 else "") + ".", [pl["plan"], pl["record"]], ends_on, 0.95)
+        f["update"] = {"plan": pl["plan"], "field": pl["field"], "before": pl["before"], "after": pl["after"], "left": [{"id": d["id"], "kind": d.get("kind"), "label": d.get("label")} for d in left[:8]]}
+        out.append(f)
+    return out
+
+
 def rule_expiring(brain: Brain, ends_on: str) -> list[dict]:
     out = []
     ex = expiring.expiring(brain, health.SHELF_DAYS)
@@ -1008,7 +1032,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
         bank = keeper.load_bank()
     except (OSError, ValueError, KeyError):
         bank = None
-    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_untiered_claims(brain, ends_on) + rule_site_changes(brain, ends_on) + rule_parity(brain, ends_on) + rule_contracts(brain, ends_on) + rule_legal(brain, ends_on) + rule_picked_ideas(brain, ends_on) + rule_ladder_proof(brain, ends_on) + rule_self_audit(brain, ends_on) + rule_peaks(brain, ends_on) + rule_visual(brain, ends_on) + rule_visibility(brain, ends_on) + rule_rejected_due(brain, ends_on) + rule_assets(brain, ends_on) + rule_consents(brain, ends_on) + rule_drift(brain, ends_on) + rule_audiences(brain, ends_on) + rule_redlines(brain, ends_on) + rule_owners(brain, ends_on) + rule_expiring(brain, ends_on) + rule_permissions(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
+    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_untiered_claims(brain, ends_on) + rule_site_changes(brain, ends_on) + rule_parity(brain, ends_on) + rule_contracts(brain, ends_on) + rule_legal(brain, ends_on) + rule_picked_ideas(brain, ends_on) + rule_ladder_proof(brain, ends_on) + rule_self_audit(brain, ends_on) + rule_peaks(brain, ends_on) + rule_visual(brain, ends_on) + rule_visibility(brain, ends_on) + rule_rejected_due(brain, ends_on) + rule_assets(brain, ends_on) + rule_consents(brain, ends_on) + rule_drift(brain, ends_on) + rule_audiences(brain, ends_on) + rule_redlines(brain, ends_on) + rule_owners(brain, ends_on) + rule_expiring(brain, ends_on) + rule_number_dependents(brain, ends_on) + rule_permissions(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
     if bank is None:
         for rid, sev in (("BRN-R02", "medium"), ("BRN-R03", "medium")):
             f = _finding(rid, sev, {"type": "brand", "id": "question_bank", "label": "question bank"},
