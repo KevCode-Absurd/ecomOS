@@ -113,8 +113,8 @@
   async function openAvatarPage(key, btn) {
     let r;
     try { r = await api(BASE + 'avatar/' + encodeURIComponent(key) + '/brief'); } catch (e) { if (btn) btn.textContent = 'Could not load: ' + e.message; return; }
-    const body = el('div', { class: 'report' }, ...r.sections.map((s) => el('section', null, el('h3', { text: s.title }), el('ul', null, ...s.lines.map((l) => el('li', { text: l }))))),
-      el('p', { class: 'small muted', text: 'Simulated sales data; customer words are public reviews.' }));
+    const body = el('div', { class: 'report' }, el('p', { class: 'small muted print-head', text: r.header }),
+      ...r.sections.map((s) => el('section', null, el('h3', { text: s.title }), el('ul', null, ...s.lines.map((l) => el('li', { text: l }))))));
     UI.panel({ title: r.title, body,
       tools: [UI.copyButton({ label: 'Copy', text: () => r.title + '\n\n' + r.text }),
         el('button', { class: 'btn sm', type: 'button', text: 'Print', onclick: () => { document.body.classList.add('print-report'); window.print(); document.body.classList.remove('print-report'); } })],
@@ -999,10 +999,10 @@
   async function openReport() {
     let r;
     try { r = await api(BASE + 'report'); } catch (e) { UI.panel({ title: 'Report unavailable', body: el('p', { text: e.message }) }); return; }
-    const body = el('div', { class: 'report' }, el('p', { class: 'small muted', text: 'Window to ' + fmt.date(r.as_of) + '. Plain words, one page.' }),
+    const body = el('div', { class: 'report' }, el('p', { class: 'small muted print-head', text: r.header }),
       ...r.sections.map((s) => el('section', null, el('h3', { text: s.title }), el('ul', null, ...s.lines.map((l) => el('li', { text: l }))))));
     const pnl = UI.panel({ title: r.title, body,
-      tools: [UI.copyButton({ label: 'Copy', text: () => r.title + '\n\n' + r.text }),
+      tools: [UI.copyButton({ label: 'Copy', text: () => r.title + '\n' + r.header + '\n\n' + r.text }),
         el('button', { class: 'btn sm', type: 'button', text: 'Print', onclick: () => { document.body.classList.add('print-report'); window.print(); document.body.classList.remove('print-report'); } })],
       onClose: () => document.body.classList.remove('print-report') });
     return pnl;

@@ -2517,7 +2517,12 @@ def report(d: dict, actions: list[dict], agenda_x: dict, name: str) -> dict:
     pct = lambda v: f"{round(v * 100)} percent" if isinstance(v, (int, float)) else "unavailable"
     open_ = [a for a in actions if a.get("status") == "open"]
     S = []
-    S.append({"title": "The three moves to approve", "lines": [f"{i + 1}. {a['title']}. {a['why']}" for i, a in enumerate(open_[:3])] or ["No open move."]})
+    def sized(a):
+        m = a.get("money_at_stake") or {}
+        if isinstance(m.get("usd"), (int, float)):
+            return f" ${m['usd']:,.0f} at stake, {m.get('window')}."
+        return f" Size: {a['size']['text']}." if (a.get("size") or {}).get("text") else ""
+    S.append({"title": "The three moves to approve", "lines": [f"{i + 1}. {a['title']}. {a['why']}{sized(a)}" for i, a in enumerate(open_[:3])] or ["No open move."]})
     S.append({"title": "Who buys, and who to build for next",
               "lines": [f"{r['name']}: {pct(r['share'])} of buyers, served {pct(r['served'])}, score {r['score']}." for r in d["focus"]["rows"][:5]]
               or ["No avatar has a share yet."]})
@@ -2537,7 +2542,7 @@ def report(d: dict, actions: list[dict], agenda_x: dict, name: str) -> dict:
         ret.append(f"Most repeat buyers come back in month {coh['peak_month']}." + (f" Every cohort went quiet in {coh['calendar_break']['month']}." if coh.get("calendar_break") else ""))
     S.append({"title": "Who comes back", "lines": ret or ["Retention reads are unavailable until store data is connected."]})
     risks = [f"A lookalike page sends buyers to {r['links_to']}." for r in d["lookalikes"]["rows"]]
-    risks += [f"A claim is under fire: {', '.join(r['words'][:3])} ({r['hits']} 1 and 2 star reviews)." for r in d["claims_fire"]["rows"] if r["verdict"] == "under_fire"]
+    risks += [f"A claim is under fire: {', '.join(r['words'][:3])} ({r['hits']} reviews of 1 or 2 stars)." for r in d["claims_fire"]["rows"] if r["verdict"] == "under_fire"]
     risks += [f"{m['avatar']} is let down by {m['line'].replace('_', ' ')}: {m['hits'][0]}." for m in d["misreads"].get("rows", [])[:2]]
     S.append({"title": "Risks to the brand", "lines": risks or ["None found this month."]})
     S.append({"title": "Due in the next 30 days", "lines": [f"{i['date']}: {i['what']}" + (" (late)" if i["overdue"] else "") for i in agenda_x.get("items", [])[:8]] or ["Nothing dated."]})
@@ -2545,7 +2550,8 @@ def report(d: dict, actions: list[dict], agenda_x: dict, name: str) -> dict:
     S.append({"title": "What we do not know yet", "lines": [("Thin or unavailable reads: " + ", ".join(thin) + ".") if thin else "Every read rests on a fair sample.",
                                                             "Sales and repeat numbers are simulated until the store connects. Customer words are public reviews."]})
     text = "\n\n".join(s["title"].upper() + "\n" + "\n".join(s["lines"]) for s in S)
-    return {"title": f"{name}: customers this month", "as_of": d["ends_on"], "sections": S, "text": text}
+    return {"title": f"{name}: customers this month", "as_of": d["ends_on"], "sections": S, "text": text,
+            "header": f"{name}. Window to {d['ends_on']}. Simulated sales data; customer words are public reviews."}
 
 
 # ---------------------------------------------------------------- size and stop rule (depth.md section 3, rule 5)
@@ -2866,8 +2872,9 @@ def avatar_page(a: dict, d: dict, forbidden: list[str], actions: list[dict], nam
     for sec in S:   # a quote or record that ends in its own full stop gets no second one
         sec["lines"] = [re.sub(r'\."\.$', '."', re.sub(r'\.{2,}$', '.', ln)) for ln in sec["lines"]]
     title = f"{name}: {a['name']}"
-    text = "\n\n".join(s["title"].upper() + "\n" + "\n".join(s["lines"]) for s in S) + "\n\nSimulated sales data; customer words are public reviews."
-    return {"key": key, "name": a["name"], "title": title, "sections": S, "text": text}
+    header = f"{name}. Window to {d.get('ends_on')}. Simulated sales data; customer words are public reviews."
+    text = header + "\n\n" + "\n\n".join(s["title"].upper() + "\n" + "\n".join(s["lines"]) for s in S)
+    return {"key": key, "name": a["name"], "title": title, "sections": S, "text": text, "header": header}
 
 
 # ---------------------------------------------------------------- do reviews and sales agree on who buys

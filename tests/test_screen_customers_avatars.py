@@ -1842,3 +1842,22 @@ class SalesShare(TempBrain):
         x = api.handle(Req(['overview'], query={'brand': ['example']}))['sales_share']
         self.assertFalse(x['available'])
         self.assertTrue(x['reason'])
+
+
+class PrintPolish(TempBrain):
+    """Feature 7.9: the report and avatar pages print with the brand, the window and the simulated label once, sections whole."""
+
+    def test_header_once_and_moves_sized(self):
+        rep = api.handle(Req(['report']))
+        self.assertTrue(rep['header'].startswith('Bombas. Window to '))
+        self.assertEqual((rep['header'] + rep['text']).lower().count('simulated sales data'), 1)
+        self.assertIn('at stake', ' '.join(rep['sections'][0]['lines']))
+        self.assertNotIn('1 and 2 star reviews)', rep['text'])
+        av = api.handle(Req(['avatar', 'daily_compression_wearer', 'brief']))
+        self.assertEqual(av['text'].lower().count('simulated'), 1)
+        self.assertTrue(av['text'].startswith(av['header']))
+
+    def test_print_css_keeps_sections_whole(self):
+        css = (ROOT / 'app' / 'screens' / '02-customers-avatars' / 'screen.css').read_text(encoding='utf-8')
+        self.assertIn('break-inside: avoid', css)
+        self.assertIn('@page', css)
