@@ -178,6 +178,10 @@ Rules
             01-market-research.
   PROD-R48  One SKU first: a candidate with a first run decided, before go, whose first launch carries more than one variant
             (bank idea PRD-093). Severity medium. Money null. Capability PROD-C07. Owner: 01-market-research.
+  PROD-R49  Custom packaging after proof: a candidate with a first run decided, before go, whose first run format
+            reads as custom, printed, branded, embossed, bespoke or die-cut while no sample has passed a test through our
+            own chain and nothing has sold. Stock packaging first; the custom run comes after sell-through (bank idea
+            PRD-100). Money: null (the bet is the first run cash, priced on the first-run card). Capability PROD-C07
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -295,6 +299,7 @@ RULES = [
      'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C16', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R47', 'name': 'Open candidate that reads like one killed inside the 90-day hold', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C01', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R48', 'name': 'Candidate with a first run decided whose first launch carries more than one variant', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C07', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R49', 'name': 'Candidate with a first run decided in a custom or printed format before a passed sample and any sell-through', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C07', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -343,7 +348,8 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R45': {'id': 'PROD-C11', 'autonomy': 'founder_gate'},
               'PROD-R46': {'id': 'PROD-C16', 'autonomy': 'human_assist'},
               'PROD-R47': {'id': 'PROD-C01', 'autonomy': 'agent_does'},
-              'PROD-R48': {'id': 'PROD-C07', 'autonomy': 'agent_does'}}
+              'PROD-R48': {'id': 'PROD-C07', 'autonomy': 'agent_does'},
+              'PROD-R49': {'id': 'PROD-C07', 'autonomy': 'agent_does'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -842,6 +848,7 @@ def run(brand, window=None, data=None):
     out += sample_findings(brand, ends_on)
     out += kill_findings(brand, ends_on)
     out += variant_findings(brand, ends_on)
+    out += packaging_findings(brand, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -4426,5 +4433,66 @@ def variant_findings(brand, ends_on):
         f = _finding('PROD-R48', cid, ends_on, 'medium', ev, sentence, None, 0.8, [], money_reason='the bet is the first run cash, priced on the first-run card')
         f['entity'] = {'type': 'sku', 'id': cid, 'label': c.get('name'), 'candidate': True, 'stage': st, 'variants': n}
         f['id'] = f'{SCREEN}.PROD-R48.{cid}'
+        out.append(f)
+    return out
+
+
+CUSTOM_FORMAT_WORDS = ('custom', 'printed', 'branded', 'embossed', 'bespoke', 'die-cut', 'die cut', 'foil')
+
+
+def custom_format(fmt):
+    """The words in a first run format that mean the packaging is made for us (custom, printed, branded, embossed, bespoke,
+    die-cut, foil), in the order they appear; empty for a stock format."""
+    low = str(fmt or '').lower()
+    return [w for w in CUSTOM_FORMAT_WORDS if w in low]
+
+
+def packaging_read(brand, ends_on):
+    """Per open candidate with a first run decided, before go: the first run format, the custom words in it, the sample
+    verdict (from the sample read), whether anything has sold (only go counts as launched), and the verdict: stock (no
+    custom words), custom_after_proof (custom words, sample passed), custom_before_proof (custom words, no passed sample,
+    nothing sold). Bank idea PRD-100: custom packaging comes after the product has proven itself in stock packaging."""
+    samples = {r['candidate_id']: r['verdict'] for r in sample_read(brand, ends_on)['rows']}
+    rows = []
+    for c in pipeline(brand):
+        st = c.get('stage')
+        fr = c.get('first_run') or {}
+        if st in CLOSED_STAGES or not fr:
+            continue
+        words = custom_format(fr.get('format'))
+        sample = samples.get(c.get('candidate_id'), 'none')
+        sold = st == 'go'
+        if not words:
+            verdict = 'stock'
+        elif sample == 'tested_pass' or sold:
+            verdict = 'custom_after_proof'
+        else:
+            verdict = 'custom_before_proof'
+        rows.append({'candidate_id': c.get('candidate_id'), 'name': c.get('name'), 'stage': st, 'format': fr.get('format'), 'custom_words': words, 'sample_verdict': sample, 'sold': sold,
+                     'cash_usd': fr.get('cash_usd'), 'units': fr.get('units'), 'verdict': verdict, 'finding_id': f'{SCREEN}.PROD-R49.{c.get("candidate_id")}'})
+    order = {'custom_before_proof': 0, 'custom_after_proof': 1, 'stock': 2}
+    rows.sort(key=lambda r: (order[r['verdict']], r['name'] or ''))
+    return {'rows': rows, 'words': list(CUSTOM_FORMAT_WORDS),
+            'rule': 'a first run in a custom, printed, branded, embossed, bespoke, die-cut or foil format waits for a passed sample and a first sell-through; until then the run ships in stock packaging (bank idea PRD-100)'}
+
+
+def packaging_findings(brand, ends_on):
+    """PROD-R49: a candidate with a first run decided, before go, whose first run format is custom or printed while no sample
+    has passed a test through our own chain and nothing has sold."""
+    out = []
+    for r in packaging_read(brand, ends_on)['rows']:
+        if r['verdict'] != 'custom_before_proof':
+            continue
+        cid = r['candidate_id']
+        ev = [_ev('custom_format_words', len(r['custom_words']), 'count', ends_on.isoformat(), 'first run plan', 0, 'threshold', source='fixtures.pipeline', simulated=False, freshness_days=0,
+                  format=r['format'], words=r['custom_words'], stage=r['stage']),
+              _ev('sample_passed', 0, 'count', ends_on.isoformat(), 'first run plan', 1, 'threshold', source='fixtures.pipeline', simulated=False, freshness_days=0, sample_verdict=r['sample_verdict']),
+              _ev('units_sold', 0, 'count', ends_on.isoformat(), 'first run plan', 1, 'threshold', source='fixtures.pipeline', simulated=False, freshness_days=0, stage=r['stage'])]
+        sample = {'none': 'no sample is on file', 'ordered': 'the sample has not arrived', 'received': 'the sample has not been tested through our own chain', 'tested_fail': 'the sample failed its test'}.get(r['sample_verdict'], 'no sample has passed')
+        sentence = (f'{r["name"]} plans its first run in {r["format"]} ({", ".join(r["custom_words"])}) while {sample} and nothing has sold; '
+                    f'custom packaging locks the run to a design and a print MOQ before the product has proven itself.')
+        f = _finding('PROD-R49', cid, ends_on, 'medium', ev, sentence, None, 0.8, [], money_reason='the bet is the first run cash, priced on the first-run card')
+        f['entity'] = {'type': 'sku', 'id': cid, 'label': r['name'], 'candidate': True, 'stage': r['stage'], 'format': r['format'], 'custom_words': r['custom_words'], 'sample_verdict': r['sample_verdict']}
+        f['id'] = f'{SCREEN}.PROD-R49.{cid}'
         out.append(f)
     return out

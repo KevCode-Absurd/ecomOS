@@ -1105,6 +1105,20 @@ def recipe(f):
             'size': {'text': f'{ent.get("variants")} variants planned', 'usd': None}, 'stop_rule': 'no MOQ per variant before the core product sells', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 1,
             'win_rule': 'one variant in the first run, the rest queued behind a sell-through read',
         }
+    if rid == 'PROD-R49':
+        ent = f.get('entity') or {}
+        words = ', '.join(ent.get('custom_words') or []) or 'custom'
+        return {
+            'title': f'Ship the first run of {ent.get("label") or "the candidate"} in stock packaging; the {words} version comes after sell-through',
+            'owner': 'agent',
+            'artefact': {'kind': 'research_note', 'label': f'the packaging plan for {ent.get("label")}: the stock format for the first run (sleeve, poly bag or plain box with a printed label), the custom design parked with its print MOQ, and the sell-through read that unlocks it (bank idea PRD-100)'},
+            'steps': [{'n': 1, 'who': 'agent', 'text': f'Rewrite the first run format from "{ent.get("format")}" to a stock format and re-price the run without the print MOQ and tooling.'},
+                      {'n': 2, 'who': 'agent', 'text': 'Park the custom design as a note on the candidate with its print MOQ and lead time, so it is ready the day the read comes in.'},
+                      {'n': 3, 'who': 'person', 'text': 'Approve the stock-packaging first run, or name the reason the custom format must ship first (a retailer term, a compliance label).'},
+                      {'n': 4, 'who': 'agent', 'text': 'Set the unlock: the first run sold through at the planned price, plus a passed sample through our own chain.'}],
+            'size': {'text': f'first run in {ent.get("format")}', 'usd': None}, 'stop_rule': 'no print MOQ or tooling before a passed sample and a first sell-through', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 1,
+            'win_rule': 'the first run format on the candidate reads as a stock format, with the custom design parked',
+        }
     return None
 
 
@@ -1256,7 +1270,7 @@ def merge_strength(actions):
     return keep
 
 
-CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28', 'PROD-R37', 'PROD-R38', 'PROD-R39', 'PROD-R40', 'PROD-R45', 'PROD-R46', 'PROD-R47', 'PROD-R48')
+CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28', 'PROD-R37', 'PROD-R38', 'PROD-R39', 'PROD-R40', 'PROD-R45', 'PROD-R46', 'PROD-R47', 'PROD-R48', 'PROD-R49')
 
 
 def merge_candidates(actions):
@@ -1509,7 +1523,7 @@ def overview(data, brand):
                      'gates': gates_block(brand, data, br, rd, ends_on, findings), 'scorecard': scorecard_block(brand, data, br, rd, ends_on, findings),
                      'video': audit.video_signals(br, brand, ends_on), 'tech_packs': tech_pack_block(brand, findings),
                      'hours': dict(audit.hours_table(brand, br), findings={f['entity']['id']: f['id'] for f in findings if f['rule_id'] == 'PROD-R28'}),
-                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on), 'returns': audit.return_rates(data, brand, ends_on), 'questions': audit.open_questions(br, ends_on), 'pulls': audit.pulls(br, brand, ends_on), 'first_runs': audit.first_run_read(brand, ends_on, audit.net_28d(rd)), 'brain_freshness': audit.brain_freshness(br, ends_on), 'assumptions': audit.assumptions(br), 'strength': audit.read_strength(br, brand, data, rd, ends_on), 'line_themes': audit.line_theme_matrix(br), 'samples': audit.sample_read(brand or 'sample', ends_on), 'kills': audit.kill_memory(brand or 'sample', ends_on)},
+                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on), 'returns': audit.return_rates(data, brand, ends_on), 'questions': audit.open_questions(br, ends_on), 'pulls': audit.pulls(br, brand, ends_on), 'first_runs': audit.first_run_read(brand, ends_on, audit.net_28d(rd)), 'brain_freshness': audit.brain_freshness(br, ends_on), 'assumptions': audit.assumptions(br), 'strength': audit.read_strength(br, brand, data, rd, ends_on), 'line_themes': audit.line_theme_matrix(br), 'samples': audit.sample_read(brand or 'sample', ends_on), 'kills': audit.kill_memory(brand or 'sample', ends_on), 'packaging': audit.packaging_read(brand or 'sample', ends_on)},
             'audit': {'findings': findings, 'rules': audit.RULES}}
 
 

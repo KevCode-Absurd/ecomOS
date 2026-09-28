@@ -1374,6 +1374,34 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
         finally:
             audit.PIPELINE_PATH = self.real2
 
+    def test_custom_packaging_after_proof(self):
+        D = date(2026, 9, 27)
+        self.real2 = audit.PIPELINE_PATH
+        try:
+            audit.PIPELINE_PATH = self.tmp
+            self.tmp.write_text(json.dumps({'rows': [{'candidate_id': 'a', 'brand': 'fake', 'name': 'A', 'stage': 'gated', 'first_run': {'units': 500, 'format': 'Fully custom printed box, embossed lid'}},
+                                                     {'candidate_id': 'b', 'brand': 'fake', 'name': 'B', 'stage': 'gated', 'first_run': {'units': 500, 'format': 'Custom sleeve'}, 'sample': {'ordered_on': '2026-09-01', 'received_on': '2026-09-10', 'through_own_chain': True, 'result': 'pass'}},
+                                                     {'candidate_id': 'c', 'brand': 'fake', 'name': 'C', 'stage': 'gated', 'first_run': {'units': 500, 'format': 'Stock blank with a label'}},
+                                                     {'candidate_id': 'd', 'brand': 'fake', 'name': 'D', 'stage': 'go', 'first_run': {'units': 500, 'format': 'Custom box'}},
+                                                     {'candidate_id': 'e', 'brand': 'fake', 'name': 'E', 'stage': 'gated'}]}), encoding='utf-8')
+            self.assertEqual(audit.custom_format('Fully custom printed box, embossed lid'), ['custom', 'printed', 'embossed'])
+            self.assertEqual(audit.custom_format('Stock blank'), [])
+            read = audit.packaging_read('fake', D)
+            self.assertEqual({r['candidate_id']: r['verdict'] for r in read['rows']}, {'a': 'custom_before_proof', 'b': 'custom_after_proof', 'c': 'stock'})   # d is past go, e has no first run
+            found = audit.packaging_findings('fake', D)
+            self.assertEqual([f['id'].split('.')[-1] for f in found], ['a'])
+            self.assertIn('no sample is on file', found[0]['sentence'])
+            self.check_shape(found[0])
+            rec = api.recipe(found[0])
+            self.assertIn('stock packaging', rec['title'])
+            self.assertIn('custom, printed, embossed', rec['title'])
+            self.assertIn('PROD-R49', api.CANDIDATE_RULES)
+            r = api.candidate_update('fake', 'a', {'first_run': {'units': 500, 'format': 'Stock blank with a sleeve'}, 'who': 'person'}, D)
+            self.assertIn('first run', ' '.join(r['changes']))
+            self.assertEqual(audit.packaging_findings('fake', D), [])
+        finally:
+            audit.PIPELINE_PATH = self.real2
+
     def test_demand_pattern_tags(self):
         even = {'rows': [{'category': 'socks', 'series': [100] * 12}], 'months': [f'2026-{m:02d}' for m in range(1, 13)], 'last': '2026-12'}
         peaked = {'rows': [{'category': 'socks', 'series': [50] * 10 + [300, 400]}], 'months': even['months'], 'last': '2026-12'}
