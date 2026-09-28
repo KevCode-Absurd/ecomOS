@@ -1347,5 +1347,30 @@ class StaleInputsTest(unittest.TestCase):
         self.assertEqual([x['n'] for x in out['steps']], [1, 2, 3])
 
 
+class StackReadBackTest(unittest.TestCase):
+    def test_planned_and_live_offers_show_in_the_stack(self):
+        import shutil, tempfile
+        from datetime import date
+        tmp = Path(tempfile.mkdtemp())
+        shutil.copytree(ROOT / 'app' / 'brain' / 'bombas', tmp / 'bombas')
+        try:
+            acts = api.actions.rank('bombas')['actions']
+            offs = [a for a in acts if a['status'] == 'open' and a['artefact']['kind'] in api.approvals.OFFER_KINDS
+                    and (a.get('margin_check') or {}).get('clears') is not False][:2]
+            for a in offs:
+                api.approve('bombas', {'id': a['id'], 'mode': 'founder'}, brain_root=tmp, outbox=tmp / 'out', today=date(2026, 9, 28))
+            api.launched('bombas', {'id': offs[0]['id']}, brain_root=tmp, today=date(2026, 9, 28))
+            audit.BRAIN_ROOT = tmp
+            try:
+                rd = audit.Reader(None, 'bombas', audit.last_full_day(None, 'bombas'))
+                stack = api.offer_stack(rd)
+            finally:
+                audit.BRAIN_ROOT = None
+            states = sorted(r['state'] for r in stack if r.get('state'))
+            self.assertEqual(states, ['live', 'planned'])
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)
+
+
 if __name__ == '__main__':
     unittest.main()

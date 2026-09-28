@@ -98,6 +98,16 @@ def offer_stack(rd):
         src = rec.get('source') or {}
         out.append({'item': label, 'id': rec['id'], 'value': _brief(rec.get('value')), 'text': rec.get('text'),
                     'source': src.get('type'), 'ref': src.get('ref'), 'date': rec.get('date'), 'tier': rec.get('tier')})
+    # offers this screen wrote through approvals: planned (proposed status) and live, read back from the brain
+    brain = getattr(rd, '_brain', None)
+    for rec in (brain.records('offers', include_retired=True) if brain else []):
+        v = rec.get('value')
+        if rec.get('added_by') != approvals.SCREEN or not isinstance(v, dict) or rec.get('status') == 'retired':
+            continue
+        src = rec.get('source') or {}
+        out.append({'item': ('Live: ' if v.get('state') == 'live' else 'Planned: ') + (v.get('label') or rec['id']), 'id': rec['id'],
+                    'value': v.get('terms'), 'text': rec.get('text'), 'source': src.get('type'), 'ref': src.get('ref'),
+                    'date': rec.get('valid_from') or src.get('captured_at'), 'tier': rec.get('tier'), 'state': v.get('state')})
     return out
 
 

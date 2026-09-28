@@ -98,6 +98,12 @@ Known gaps from round 0:
 5. New from data: bundles from products bought together (real on the sample brand; Bombas waits on order rows), upsell take rate waits on Rebuy, and one export holds every brief.
 6. Next (round 5): offer records read back into the stack and the waterfalls, gift card liability once the ledger connects, and the web pass again for what the best tools added since.
 
+## Round 5: read back and new rules from the second web pass (from 28 Sep 2026)
+
+| # | Feature | Status |
+|---|---|---|
+| 5.1 | Offer stack read-back: offers written by approvals on this screen appear in "What does a shopper get from us today?" as Planned or Live, with their terms, source and date, read back from the brain (proposed records included on purpose, marked planned) | done |
+
 ## Contract asks
 
 - A shared `registry` table in the data layer that screens can append proposed rows to (events.md). Local fallback: 04 writes proposed rows to `app/screens/04-offers-pricing/outbox/registry.<brand>.json` (git-ignored); the experiments screen can read them from there until the table exists.
@@ -233,6 +239,7 @@ Intelligems (threshold and price tests scored by profit per visitor), Rebuy (tie
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.9 | 2026-09-28 | S3.9; screenshot round0.png |
+| 5 | 5.1 stack read-back | 2026-09-28 | in progress |
 | 4 | 4.1 to 4.10: save to the brain, offer records, bundle pairs, red line gate, approved first, launched read, upsell connect, brief pack, stale inputs | 2026-09-28 | screenshot round4.png |
 | 3 | 3.1 to 3.10: registry, referral, loyalty, window creep, subscription note, depth rules, plug and play, priors, decisions | 2026-09-28 | screenshot round3.png |
 | 2 | 2.1 to 2.10: position, parity, discipline, gift pick, cart ladder, test calendar, depth by line, second order, cost against price, desk tabs | 2026-09-28 | screenshot round2.png |

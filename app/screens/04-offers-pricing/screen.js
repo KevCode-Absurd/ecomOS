@@ -135,6 +135,7 @@
           { key: 'date', label: 'Seen', format: (v) => v ? fmt.date(v) : NA },
           { key: 'tier', label: 'Tier', format: (v) => pretty(v) || NA },
         ], rows, sort: false })),
+      rows.some((r) => r.state) ? el('p', { class: 'micro faint', text: rows.filter((r) => r.state === 'planned').length + ' planned and ' + rows.filter((r) => r.state === 'live').length + ' live offers came from moves approved on this screen.' }) : null,
       actionLine(rows.filter((r) => !r.id).length ? rows.filter((r) => !r.id).length + ' offer lines are missing from the brain. Add them on the brand brain screen so every rule can read them.'
         : 'Every offer line has a source and a date. Each move above reads from these records.', null));
   }
