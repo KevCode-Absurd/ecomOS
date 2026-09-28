@@ -1207,6 +1207,12 @@ class TestPage(unittest.TestCase):
         self.assertNotIn('a pair', js)
         self.assertNotIn('per pair', js)
 
+    def test_action_lanes(self):
+        js = (SCREEN / 'screen.js').read_text(encoding='utf-8')
+        self.assertIn("api('/api/decisions?screen=' + SCREEN)", js)
+        for k in ("key: 'agent'", "key: 'agent_drafts'", "key: 'person'"):
+            self.assertIn(k, js)
+
     def test_report_view(self):
         html = (SCREEN / 'index.html').read_text(encoding='utf-8')
         js = (SCREEN / 'screen.js').read_text(encoding='utf-8')

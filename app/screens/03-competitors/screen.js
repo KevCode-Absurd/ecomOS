@@ -634,6 +634,25 @@
       'Never copy their text, logos, products or faces.'].map((t) => el('li', { text: t })));
   }
 
+  // ---------- 3. action lanes by owner, with the founder's decisions ----------
+  const LANES = [{ key: 'all', label: 'All' }, { key: 'agent', label: 'Agent does it' }, { key: 'agent_drafts', label: 'Agent drafts, you approve' }, { key: 'person', label: 'A person does it' }];
+  async function actionLanes(p) {
+    let dec = {};
+    try { const r = await api('/api/decisions?screen=' + SCREEN); for (const x of (r.decisions || [])) if (x.finding_id) dec[x.finding_id] = x; } catch (e) { dec = {}; }
+    const hours = (xs) => xs.reduce((t, a) => t + (a.time_to_ship_hours || 0), 0);
+    const box = el('div', { class: 'stack' });
+    const summary = el('div', { class: 'small muted' });
+    const draw = (key) => {
+      const xs = p.actions.filter((a) => key === 'all' || a.owner === key);
+      const decided = xs.filter((a) => dec[a.id]).length;
+      summary.textContent = xs.length + ' actions, about ' + hours(xs) + ' hours of work; ' + decided + ' decided, ' + (xs.length - decided) + ' waiting on you.';
+      box.replaceChildren(...(xs.length ? xs.map((a) => UI.actionCard(Object.assign({}, a, { decision: a.decision || (dec[a.id] ? { choice: dec[a.id].choice, time: dec[a.id].time } : null) }), { screen: SCREEN })) : [el('p', { class: 'muted', text: 'Nothing in this lane.' })]));
+    };
+    const items = LANES.map((l) => ({ key: l.key, label: l.label, n: l.key === 'all' ? p.actions.length : p.actions.filter((a) => a.owner === l.key).length }));
+    mount('#actions', UI.pills({ items, current: 'all', onChange: draw }), summary, box);
+    draw('all');
+  }
+
   // ---------- 6. the audit ----------
   function rulesTable(rules) {
     return UI.table({ columns: [{ key: 'rule_id', label: 'Rule' }, { key: 'name', label: 'What it checks' }, { key: 'inputs', label: 'Reads', format: (v) => (v || []).join(', ') }, { key: 'capability', label: 'Capability' }],
@@ -650,7 +669,7 @@
     for (const a of p.actions.concat(p.connect)) for (const id of a.finding_ids) byId[id] = a;
     document.getElementById('wrong-sub').textContent = p.findings.length + ' findings on the latest capture, severity first. Each links to the action that closes it.';
     mount('#wrong', ...wrongList(p.findings, byId, p));
-    mount('#actions', ...(p.actions.length ? p.actions.map((a) => UI.actionCard(a, { screen: SCREEN })) : [el('p', { class: 'muted', text: 'No open action.' })]));
+    actionLanes(p);
     document.getElementById('map-sub').textContent = 'Split at the tracked median price (' + usd(d.positioning.split_x) + ') and the middle of the claim scale. Each corner ends in a move: hold, contest, claim or skip.';
     mount('#map', ...mapCard(d.positioning));
     window.__priceMoves = d.price_moves;
