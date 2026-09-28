@@ -2003,5 +2003,26 @@ class TestLearningDrafts(TempInputs):
         self.assertFalse((self.tmp / 'bombas' / 'learnings.json').read_text(encoding='utf-8').count('competitor_move_'))
 
 
+class TestSecondBrandLoop(TestSecondBrandInputs):
+    """8.9: round 8 on a second brand: outcomes, held moves, site changes, scoreboard and brain drafts, nothing from Bombas."""
+    def test_loop_on_acme(self):
+        q = {'brand': ['acme']}
+        acts = api.handle(Req(['plan'], query=q))['actions']
+        self.assertTrue(acts)
+        self.assertEqual(self.post({'kind': 'site_change', 'page': 'HatCo', 'what': 'new_bundle'})[0], 201)
+        self.assertEqual(self.post({'kind': 'outcome', 'action_id': acts[0]['id'], 'result': 'lost'})[0], 201)
+        p = api.handle(Req(['plan'], query=q))
+        self.assertEqual(p['held'][0]['id'], acts[0]['id'])
+        o = api.handle(Req(['overview'], query=q))
+        self.assertEqual(o['scoreboard']['read'], 1)
+        self.assertEqual(len(o['learning_drafts']), 1)
+        self.assertTrue(o['learning_drafts'][0]['id'].startswith('acme.learnings.'))
+        self.assertEqual(next(r for r in o['room_metrics'] if r['key'] == 'new_launch_count')['value'], 1)
+        g = api.handle(Req(['digest'], query=q))
+        blob = json.dumps([p, o, g])
+        for word in ('Bombas', 'bombas', 'Stance', 'Darn Tough', 'COMFORT20', 'sock'):
+            self.assertNotIn(word, blob)
+
+
 if __name__ == '__main__':
     unittest.main()
