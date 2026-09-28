@@ -576,5 +576,36 @@ class RankRound1(TempBrain):
                 self.assertEqual(a['rubric']['ease'], 1)
 
 
+class ThemeImpact(TempBrain):
+    """Feature 2.1: theme impact = share x star gap, each negative theme tied to its ladder fix."""
+
+    def test_impact_arithmetic_and_links(self):
+        x = api.handle(Req(['overview']))['themes']
+        self.assertTrue(x['available'])
+        for r in x['rows']:
+            self.assertAlmostEqual(r['impact'], round(r['share'] * (r['avg_with'] - r['avg_without']), 3), places=2)
+            self.assertGreaterEqual(r['reviews'], 8)
+            if r['action']:
+                self.assertTrue(r['action']['draft'].startswith('DRAFT'))
+        rows = {r['theme']: r for r in x['rows']}
+        self.assertLess(rows['price_value']['impact'], 0)
+        self.assertGreater(rows['comfort']['impact'], 0)
+        self.assertIn('order_and_delivery', rows['delivery']['ladders'])
+        self.assertTrue(rows['comfort']['action']['title'].startswith('Lead'))
+        self.assertEqual([r['impact'] for r in x['rows']], sorted(r['impact'] for r in x['rows']))
+
+    def test_rising_rule(self):
+        b = api.builds
+        recs = []
+        for i in range(20):
+            recs.append({'id': f'x{i}', 'value': {'themes': ['fit'] if i < 8 else ['comfort'], 'reviews': [{'star': 1 if i < 8 else 5, 'date': '2026-09-01' if i < 6 else '2025-01-01'}]}})
+        x = b.theme_impact(recs, [], '2026-09-27')
+        fit = {r['theme']: r for r in x['rows']}['fit']
+        self.assertTrue(fit['rising'])
+
+    def test_too_few_reviews_unavailable(self):
+        self.assertFalse(api.builds.theme_impact([], [], '2026-09-27')['available'])
+
+
 if __name__ == '__main__':
     unittest.main()

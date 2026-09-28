@@ -263,6 +263,28 @@
         : [el('p', { class: 'muted small', text: 'No misread found for this brain.' })]));
   }
 
+  // ---------- desk: theme impact ----------
+  function divBar(v, max) {
+    const w = Math.round(50 * Math.min(1, Math.abs(v) / (max || 1)));
+    return el('span', { class: 'dbar', title: String(v) }, el('i', { class: v < 0 ? 'neg' : 'pos', style: (v < 0 ? 'right:50%;' : 'left:50%;') + 'width:' + w + '%' }));
+  }
+  function renderThemes(x) {
+    if (!x.available) { mount('#themes', UI.emptyState({ screen: SLUG, title: 'Theme impact unavailable', text: x.reason })); return; }
+    document.getElementById('themes-sub').textContent = 'Impact = share of rated reviews with the theme x (average stars with it minus without it), from ' + x.rated +
+      ' rated public reviews in the brain. Rising: last 90 days share 1.5x the earlier share, with 5 or more reviews. ' + x.line;
+    const max = Math.max(...x.rows.map((r) => Math.abs(r.impact)));
+    const rows = x.rows.map((r) => Object.assign({}, r, { theme_t: pretty(r.theme), bar: '', gap_t: (r.star_gap > 0 ? '+' : '') + r.star_gap + ' stars',
+      actions: r.action ? [{ label: r.impact < 0 ? 'Fix it' : 'Lead with it', onClick: () => briefPanel(r.action) }] : [{ label: 'No ladder', cls: 'quiet', onClick: () => {} }] }));
+    const t = UI.verdictTable({
+      columns: [{ key: 'theme_t', label: 'Theme' }, { key: 'bar', label: 'Impact on stars' }, { key: 'share', label: 'Share', unit: '%' },
+        { key: 'avg_with', label: 'Avg with', align: 'right', format: (v) => v.toFixed(2) }, { key: 'avg_without', label: 'Avg without', align: 'right', format: (v) => v.toFixed(2) }, { key: 'gap_t', label: 'Gap' }, { key: 'reviews', label: 'Reviews', unit: 'n' }],
+      rows, verdict: { at: 1, kind: (r) => r.impact < 0 ? (r.rising ? 'stop' : 'fix') : 'scale', text: (r) => r.impact < 0 ? (r.rising ? 'Rising cost' : 'Costs stars') : 'Earns stars' },
+      actions: { label: 'Do' }, sort: false,
+    });
+    t.querySelectorAll('tbody tr').forEach((tr, i) => { if (tr.children[2]) tr.children[2].replaceChildren(divBar(rows[i].impact, max)); });
+    mount('#themes', t, el('p', { class: 'micro faint', text: 'A public sample, skewed to unhappy buyers. Read it as a ranking of what to fix first, not a forecast of stars.' }));
+  }
+
   function objectionTable(rows) {
     return UI.table({
       columns: [
@@ -457,6 +479,7 @@
     renderActions(r);
     renderCoverage(d.coverage, d.formats);
     renderLadders(d.ladders, d.avatars);
+    renderThemes(d.themes);
     renderWords(d.words, d.avatars);
     renderServed(d.served, d.avatars);
     renderMisreads(d.misreads);

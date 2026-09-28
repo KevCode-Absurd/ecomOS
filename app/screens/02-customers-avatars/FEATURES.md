@@ -38,6 +38,23 @@ Judged by `app/contracts/depth.md`. Each feature ends in an action with an owner
 | 1.9 | Where reviews say we misread an avatar: product lines from the brain's review summaries with their 1 and 2 star share against the median line, verdict problem (1.5x the median or more), split (praise and complaints name the same trait: an expectation copy brief) or fine. Misread cards: an avatar buys the line (2 or more linked reviews, from its own reviews and the reviews behind its doubts), a top complaint shares words with its job or pains, and the line sits at or above the median. Each becomes a fit block for the page, expectation copy, a product quality ticket or a fulfilment ticket, with owner and steps. Bombas: compression fails the Daily Compression Wearer on the job itself (17.3 percent 1 and 2 star, 2.24x the median) | done |
 | 1.10 | Seven new audit rules from the desk (CUST-R04 proof not landing, R05 avatar misread on a product line, R06 unserved buying situation, R07 returning buyers bought back through paid ads, R08 calendar retention cliff, R09 retention age break, R10 split product line), all 10 firing on Bombas. `rank(brand, window)` pairs every finding with the drafted work from the same builders the page uses: real title, owner, steps, artefact kind and draft, stop rule and check date where the move has one; ease rescored by owner (agent 5, agent drafts 4, person with a draft 3, connector 1). 27 actions pass `validate_action`; the top one is the compression misread | done |
 
+## Round 2: rules from the web pass (from 28 Sep 2026)
+
+Web pass: Peel, Triple Whale, Lifetimely, Klaviyo predictive, Daasity RFM, Thematic and Enterpret theme impact, Copyhackers review mining, Fairing and KnoCommerce surveys, Moesta four forces, Dovetail evidence trace. Order-level rules wait on an aggregate (see Contract asks) and ship with a fixture test and an honest unavailable state.
+
+| # | Feature | Status |
+|---|---|---|
+| 2.1 | Which review themes cost us the most stars: impact = share of rated reviews with the theme x (average stars with it minus without it), from the rated reviews in the language bank (8 or more per theme), with a rising flag (last 90 days share 1.5x the earlier share, 5 or more reviews). A diverging bar per theme; a theme that costs stars links to its ladder's open answer or not-landing fix, a theme that earns stars to its lead-with-it ad brief. Bombas: price and value costs the most (12 percent of rated reviews, 0.52 stars below the rest); comfort earns 2 stars | done |
+| 2.2 | Copy gap check: the customers' top win phrases against our own words in the brain | todo |
+| 2.3 | Avatar evidence gate: a checklist per avatar, provisional until it passes, each missing item a task | todo |
+| 2.4 | Hook bank: 2 to 4 word phrases in 3 or more distinct 4 and 5 star reviews, ranked, into an ad brief | todo |
+| 2.5 | Four forces per avatar: push, pull, anxiety and habit lines from their words; under-researched avatars flagged | todo |
+| 2.6 | Size a new avatar from a gap: draft the avatar record from the brain and write it on approval | todo |
+| 2.7 | Avatar moments calendar: when each avatar's trigger comes round and what ships before it | todo |
+| 2.8 | Post-purchase survey spec built from the open gaps: provisional avatars and rungs without proof | todo |
+| 2.9 | Order-level rules pack: gateway product, second-order path, win-back day from order gaps, RFM cells; reads the aggregate when it exists | todo |
+| 2.10 | `rank` and audit rules for round 2, screenshot `round2.png` | todo |
+
 ### Round 1 founder note (28 Sep 2026)
 
 1. You can now open Customers and avatars and see the 10 next moves first, each with an owner, steps and a drafted artefact to approve.

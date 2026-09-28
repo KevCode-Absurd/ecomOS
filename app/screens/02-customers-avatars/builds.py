@@ -849,3 +849,61 @@ def misreads(avatar_records: list[dict], avatars: list[dict], all_rungs: list[di
     return {"available": True, "rows": rows, "lines": table, "median": med,
             "line": (f"{len(rows)} avatar and line pairs where the complaints hit the job the avatar hires us for."
                      if rows else "No line fails the job its avatars buy it for.")}
+
+
+# ---------------------------------------------------------------- theme impact: which themes cost the most stars
+
+THEME_MIN = 8             # a theme needs 8 or more rated reviews in the sample
+RISING_DAYS = 90          # recent window for a rising theme
+RISING_RATIO = 1.5        # recent share 1.5x the earlier share or more
+RISING_MIN = 5            # with 5 or more recent reviews on the theme
+
+
+def _ladder_for(theme: str, ladders_rows: list[dict]) -> list[dict]:
+    toks = {t for t in theme.split("_") if t not in ("and", "of")}
+    return [r for r in ladders_rows if toks & set(r["theme"].split("_"))]
+
+
+def theme_impact(lang_records: list[dict], ladders_rows: list[dict], as_of: str) -> dict:
+    """Impact of each review theme on stars: share of rated reviews x (average with it - average without it).
+
+    From the rated reviews behind the language bank, a public sample, so read it as a ranking, not a forecast.
+    """
+    import datetime as _dt
+    rated = []
+    for rec in lang_records:
+        v = rec.get("value") if isinstance(rec.get("value"), dict) else {}
+        themes = [t for t in (v.get("themes") or []) if t != "general"]
+        for rv in v.get("reviews") or []:
+            if isinstance(rv.get("star"), int):
+                rated.append({"star": rv["star"], "themes": themes, "date": str(rv.get("date") or "")[:10], "id": rec["id"]})
+    if len(rated) < THEME_MIN * 2:
+        return {"available": False, "reason": f"only {len(rated)} rated reviews in the brain", "rows": []}
+    cut = (_dt.date.fromisoformat(as_of) - _dt.timedelta(days=RISING_DAYS)).isoformat()
+    recent = [r for r in rated if r["date"] > cut]
+    older = [r for r in rated if r["date"] and r["date"] <= cut]
+    rows = []
+    for t in sorted({t for r in rated for t in r["themes"]}):
+        w = [r["star"] for r in rated if t in r["themes"]]
+        wo = [r["star"] for r in rated if t not in r["themes"]]
+        if len(w) < THEME_MIN or not wo:
+            continue
+        share = len(w) / len(rated)
+        gap = sum(w) / len(w) - sum(wo) / len(wo)
+        rs = sum(1 for r in recent if t in r["themes"])
+        rec_share = rs / len(recent) if recent else None
+        old_share = sum(1 for r in older if t in r["themes"]) / len(older) if older else None
+        rising = bool(rec_share and old_share and rs >= RISING_MIN and rec_share >= RISING_RATIO * old_share)
+        lads = _ladder_for(t, ladders_rows)
+        order = ("answer", "not_landing") if gap < 0 else ("lead",)
+        move = next((r["action"] for v in order for r in lads if r["verdict"] == v and r["action"]), None)
+        rows.append({"theme": t, "reviews": len(w), "share": round(share, 4), "avg_with": round(sum(w) / len(w), 2),
+                     "avg_without": round(sum(wo) / len(wo), 2), "star_gap": round(gap, 2), "impact": round(share * gap, 3),
+                     "recent_share": round(rec_share, 4) if rec_share is not None else None,
+                     "older_share": round(old_share, 4) if old_share is not None else None, "rising": rising,
+                     "ladders": sorted({r["theme"] for r in lads}), "action": move})
+    rows.sort(key=lambda r: (r["impact"], r["theme"]))
+    worst = [r for r in rows if r["impact"] < 0]
+    return {"available": True, "rows": rows, "rated": len(rated), "recent": len(recent),
+            "line": (f"{worst[0]['theme'].replace('_', ' ').capitalize()} costs the most: in {round(worst[0]['share'] * 100)} percent of rated reviews, "
+                     f"{abs(worst[0]['star_gap'])} stars below the rest." if worst else "No theme pulls stars down.")}

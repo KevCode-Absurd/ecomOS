@@ -282,7 +282,8 @@ def overview(brain: Brain) -> dict:
             "cohorts": _cohorts(brain.brand, avatars), "mix": _mix(brain.brand),
             "misreads": builds.misreads(brain.records("avatars"), avatars, all_rungs, brain.records("language_bank"), brain.records("products")),
             "served": builds.served(avatars, all_rungs, brain.records("competitors"), brain.records("positioning")),
-            "coverage": builds.coverage(avatars, all_rungs), "ladders": builds.ladders(all_rungs, avatars),
+            "coverage": builds.coverage(avatars, all_rungs), "ladders": (lad := builds.ladders(all_rungs, avatars)),
+            "themes": builds.theme_impact(brain.records("language_bank"), lad["rows"], ends_on),
             "words": builds.words(brain.records("language_bank"), all_rungs, avatars, _brand_tokens(brain), audit.source_name), "formats": _formats(brain, avatars)}
 
 
