@@ -9,6 +9,7 @@ question, and accept or ignore on a proposed record. Nothing external.
   GET  agentfile/endpoints      this route table as JSON, for an agent or an MCP wrapper
   GET  brainmd                  the router BRAIN.md text
   GET|POST brainmd/notes        the founder notes block in BRAIN.md, read and set; kept across regeneration
+  GET  trust                    section trust, explained: strong, fresh, reviewed, owned, weighted, with the formula
   GET  proofs                   proof requests for claims below approved, ranked by the doubts they answer, drafted
   POST proofs/<claim>/approve   {evidence, ref}: the evidence written onto the claim and the claim approved
   GET  numbers                  open update plans after a number change, with the dependents left
@@ -227,6 +228,9 @@ _pspec.loader.exec_module(parity)
 _sspec = importlib.util.spec_from_file_location("brand_brain_sitediff", HERE / "sitediff.py")
 sitediff = importlib.util.module_from_spec(_sspec)
 _sspec.loader.exec_module(sitediff)
+_ttspec = importlib.util.spec_from_file_location("brand_brain_trust", HERE / "trust.py")
+trust = importlib.util.module_from_spec(_ttspec)
+_ttspec.loader.exec_module(trust)
 _prspec = importlib.util.spec_from_file_location("brand_brain_proofs", HERE / "proofs.py")
 proofs = importlib.util.module_from_spec(_prspec)
 _prspec.loader.exec_module(proofs)
@@ -2000,6 +2004,10 @@ def handle(req):
         return cd
     if req.method == "POST" and parts == ["claims"]:
         return claim_add(brain, req.body)
+    if req.method == "GET" and parts == ["trust"]:
+        t = trust.scores(brain, health.heatmap(brain), owners.owners(brain, health.SHELF_DAYS, health.META_SECTIONS, brain.section_stats()), health.META_SECTIONS)
+        t.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "BRN-C12", "autonomy": "agent_does"})
+        return t
     if req.method == "GET" and parts == ["proofs"]:
         pr = proofs.requests(brain, claims_mod.desk(brain), [r for r in brain.records("objection_ladders") if isinstance(r.get("value"), dict)])
         pr.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "BRN-C03", "autonomy": "founder_gate"})

@@ -2815,10 +2815,35 @@ class Round7Proofs(TempBrain):
         self.assertEqual(api.handle(Req(['proofs', 'bombas.offers.guarantee', 'approve'], 'POST', body={'evidence': 'seen it'}))[0], 400)
 
 
+class Round7Trust(TempBrain):
+    """Round 7 feature 8: section trust from four counts with the formula shown; owners and reviews move it."""
+
+    def test_scores_and_formula(self):
+        t = api.handle(Req(['trust']))
+        self.assertIn('40 x strong share', t['formula'])
+        scored = [r for r in t['rows'] if r['trust'] is not None]
+        self.assertTrue(scored)
+        self.assertTrue(all(0 <= r['trust'] <= 100 for r in scored))
+        self.assertEqual(t['rows'][0]['trust'], min(r['trust'] for r in scored))
+        w = t['weights']
+        for r in scored:
+            p = r['parts']
+            self.assertEqual(r['trust'], round(w['strong'] * p['strong'] + w['fresh'] * p['fresh'] + w['reviewed'] * p['reviewed'] + w['owned'] * p['owned']))
+        self.assertIsNotNone(t['overall'])
+        pol = next(r for r in t['rows'] if r['section'] == 'policies')
+        before = pol['trust']
+        self.assertEqual(pol['parts']['owned'], 0)
+        api.handle(Req(['owners', 'policies'], 'POST', body={'owner': 'ops', 'cadence_days': 30, 'reviewed': True}))
+        pol2 = next(r for r in api.handle(Req(['trust']))['rows'] if r['section'] == 'policies')
+        self.assertEqual((pol2['parts']['owned'], pol2['parts']['reviewed']), (1.0, 1.0))
+        self.assertGreater(pol2['trust'], before)
+        self.assertNotIn('freshness', [r['section'] for r in t['rows']])
+
+
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
-    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'], ['onepage'], ['brainmd', 'notes'], ['alerts'], ['glossary'], ['expiring'], ['feedback'], ['numbers'], ['proofs'],
+    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'], ['onepage'], ['brainmd', 'notes'], ['alerts'], ['glossary'], ['expiring'], ['feedback'], ['numbers'], ['proofs'], ['trust'],
               ['decisions'], ['flows'], ['claims'], ['site', 'diff'], ['parity'], ['contracts'], ['legal'], ['voice'], ['battlecards'], ['permissions'],
               ['export'], ['assumptions'], ['facts'], ['summaries'], ['changes'], ['learn'], ['report'], ['digest'], ['review'], ['bottlenecks'], ['audit']]
 

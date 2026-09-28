@@ -75,6 +75,7 @@
     loadOwners(m.actions || []);
     loadSelfAudit(m.actions || []);
     loadExpiring(m.actions || []);
+    loadTrust();
     loadPeaks(m.actions || []);
     loadVisual(m.actions || []);
     loadNewBrand();
@@ -387,6 +388,15 @@
   }
 
   // ---------- 5b2. the brain audits itself ----------
+  async function loadTrust() {
+    let t;
+    try { t = await api(BASE + 'trust'); } catch (e) { mount('#trust', el('p', { class: 'muted', text: 'Trust unavailable: ' + e.message })); return; }
+    mount('#trust-tools', UI.orientation([{ label: 'brain trust', value: t.overall, unit: 'n', tone: t.overall == null ? null : t.overall >= 70 ? 'good' : t.overall >= 50 ? 'warn' : 'bad', title: 'record-weighted mean of the sections' }, { label: 'sections under 50', value: t.counts.under_50, unit: 'n', tone: t.counts.under_50 ? 'bad' : 'good' }, { label: 'over 80', value: t.counts.over_80, unit: 'n' }]));
+    const table = UI.verdictTable({ columns: [{ key: 'label', label: 'Section' }, { key: 'trust', label: 'Trust', num: true }, { key: 'strong', label: 'Strong', num: true, unit: '%' }, { key: 'fresh', label: 'Fresh', num: true, unit: '%' }, { key: 'reviewed', label: 'Reviewed', format: (v) => v == null ? NA : v === 1 ? 'yes' : v === 0.5 ? 'never' : 'overdue' }, { key: 'owner', label: 'Owner', format: (v) => v || 'unassigned' }, { key: 'records', label: 'Records', num: true }],
+      verdict: { at: 1, kind: (r) => r.trust == null ? 'na' : r.trust >= 80 ? 'keep' : r.trust >= 50 ? 'watch' : 'fix', text: (r) => r.trust == null ? 'empty' : r.trust >= 80 ? 'Solid' : r.trust >= 50 ? 'Thin' : 'Weak', reason: (r) => r.reason },
+      rows: t.rows.map((r) => ({ label: r.label, trust: r.trust, strong: r.parts ? r.parts.strong : null, fresh: r.parts ? r.parts.fresh : null, reviewed: r.parts ? r.parts.reviewed : null, owner: r.owner, records: r.records, reason: r.reason })), sort: false, empty: 'No section.' });
+    mount('#trust', el('p', { class: 'small', text: 'Formula: ' + t.formula + '.' }), table, el('p', { class: 'micro faint', text: t.note }));
+  }
   async function loadExpiring(actions) {
     let ex;
     try { ex = await api(BASE + 'expiring'); } catch (e) { mount('#expiring', el('p', { class: 'muted', text: 'Expiring unavailable: ' + e.message })); return; }
@@ -568,7 +578,7 @@
       const ev = el('input', { class: 'text', placeholder: 'what you saw, in a line (the spec sheet says 64 percent cotton; the policy page says 30 days)', style: { flex: '1 1 360px' } });
       const ref = el('input', { class: 'text sm', placeholder: 'link or file name (optional)', style: { flex: '1 1 200px' } });
       const go = el('button', { class: 'btn primary sm', type: 'button', text: 'Approve with this evidence' });
-      go.addEventListener('click', async () => { if (!ev.value.trim()) { status.textContent = 'Say what you saw first.'; return; } go.disabled = true; try { const x = await api(BASE + 'proofs/' + encodeURIComponent(r.id) + '/approve', { method: 'POST', body: { evidence: ev.value.trim(), ref: ref.value.trim() } }); status.textContent = x.next; panel.close(); loadProofs(); loadClaims(); loadPlan(); } catch (e) { go.disabled = false; status.textContent = 'Could not approve: ' + e.message; } });
+      go.addEventListener('click', async () => { if (!ev.value.trim()) { status.textContent = 'Say what you saw first.'; return; } go.disabled = true; try { const x = await api(BASE + 'proofs/' + encodeURIComponent(r.id) + '/approve', { method: 'POST', body: { evidence: ev.value.trim(), ref: ref.value.trim() } }); status.textContent = x.next; panel.close(); loadProofs(); if (typeof loadClaims === 'function') loadClaims(); else loadDesk(); loadPlan(); } catch (e) { go.disabled = false; status.textContent = 'Could not approve: ' + e.message; } });
       const panel = UI.panel({ title: 'Proof request: ' + r.id.split('.').pop().replace(/_/g, ' '), body: el('div', { class: 'stack' }, el('div', { class: 'row' }, tierChip(r.tier), el('span', { class: 'chip', text: r.used_by + ' doubts, ' + r.one_star + ' one-star' }), ...r.surfaces.map((s) => el('span', { class: 'chip', text: pretty(s) })), el('span', { class: 'chip', text: 'ask ' + r.who })), el('pre', { class: 'card sunken brief', text: r.draft }), el('div', { class: 'row' }, UI.copyButton({ label: 'Copy the request', text: () => r.draft })), el('div', { class: 'row' }, ev, ref, go, status)) });
     };
     const rows = pr.requests.map((r) => el('div', { class: 'row card flat small' }, tierChip(r.tier), el('span', { class: 'chip', text: r.one_star + ' one-star' }), el('span', { text: r.text.slice(0, 120) }), el('span', { class: 'micro faint', text: 'needs ' + r.evidence + ' from ' + r.who }), el('button', { class: 'btn xs', type: 'button', text: 'Request', onclick: () => open(r) })));
