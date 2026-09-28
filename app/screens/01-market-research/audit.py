@@ -872,12 +872,22 @@ def brand_of(x):
 
 
 def web_pass(x):
-    """The web pass fixture for this brand: the file when its brand field matches (or it names no brand); None for any
-    other brand, so a kitchen brand never reads a sock brand's markets, lanes or launches."""
+    """The web pass for this brand: fixtures/web_pass/<brand>.json when it exists (written by web_pass.py), else the legacy
+    fixture when its brand field matches (or it names no brand); None for any other brand, so a kitchen brand never reads a
+    sock brand's markets, lanes or launches."""
+    b = brand_of(x)
+    if b:
+        own = HERE / 'fixtures' / 'web_pass' / f'{b}.json'
+        if own.is_file():
+            try:
+                doc = json.loads(own.read_text(encoding='utf-8'))
+            except ValueError:
+                doc = None
+            if isinstance(doc, dict) and doc.get('brand') == b:
+                return doc
     fx = market_trends()
     if not fx:
         return None
-    b = brand_of(x)
     return fx if not fx.get('brand') or (b and fx.get('brand') == b) else None
 
 

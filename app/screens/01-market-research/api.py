@@ -1093,6 +1093,11 @@ def rank(brand, window=None):
             a['steps'] = [{'n': 1, 'who': 'person', 'text': 'In Setup, connect the store (read only) so orders and order lines load.'},
                           {'n': 2, 'who': 'agent', 'text': 'Join order lines to the landed costs on file and compute contribution margin by SKU for the window.'},
                           {'n': 3, 'who': 'agent', 'text': 'Compare each launched SKU\'s actual margin with its gate model and report any 5-point shortfall here.'}]
+        if f.get('status') == 'unavailable' and (f.get('unavailable') or {}).get('connector') == 'web_pass':
+            a['title'] = 'Run the web pass for this brand so the market, lane and launch reads can start'
+            a['steps'] = [{'n': 1, 'who': 'agent', 'text': f'Write the template: python3 app/screens/01-market-research/web_pass.py --brand {brand or "sample"} --init --category "<the category>".'},
+                          {'n': 2, 'who': 'agent', 'text': 'Fill it from public sources in a research session: the lanes the category splits into, market sizes and growth, the shifting preferences, competitor launches; one url and one date per number.'},
+                          {'n': 3, 'who': 'person', 'text': f'Check it: python3 app/screens/01-market-research/web_pass.py --brand {brand or "sample"} --check. The desk reads it once the check passes.'}]
         if f.get('status') == 'unavailable' and f.get('rule_id') == 'PROD-R12':
             a['title'] = 'Connect Search Console so search demand for the brand and the category can be read'
             a['steps'] = [{'n': 1, 'who': 'person', 'text': 'In Setup, add a read-only Search Console credential for the brand\'s property.'},

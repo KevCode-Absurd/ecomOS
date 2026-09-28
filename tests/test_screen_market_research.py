@@ -1142,6 +1142,58 @@ class DecisionMemoryTest(unittest.TestCase):
             api.DECISIONS_PATH = saved
 
 
+class WebPassTest(unittest.TestCase):
+    """web_pass.py: a template a research session fills, a checker that refuses a number without a source, and the desk
+    reading the brand's own file first."""
+
+    @classmethod
+    def setUpClass(cls):
+        import importlib.util as iu
+        spec = iu.spec_from_file_location('web_pass_t', SCREEN / 'web_pass.py')
+        cls.wp = iu.module_from_spec(spec)
+        spec.loader.exec_module(cls.wp)
+
+    def test_template_fails_until_filled(self):
+        t = self.wp.template('fakebrand', 'kitchen goods', date(2026, 9, 27))
+        errs = self.wp.check(t, 'fakebrand')
+        self.assertTrue(any('url missing' in e for e in errs))
+        self.assertTrue(any('key must be' in e for e in errs))
+        t['lanes'] = [{'key': 'pans', 'label': 'Pans', 'kind': 'product', 'terms': ['pan', 'skillet']}]
+        t['markets'] = [{'key': 'cookware_us', 'label': 'US cookware', 'size_usd': 5e9, 'size_year': 2025, 'cagr_pct': 3.1, 'cagr_window': '2026 to 2033', 'series': [], 'direction': 'up', 'drivers': [],
+                         'sources': [{'url': 'https://example.org/report', 'publisher': 'Example', 'date': '2026', 'what': 'size and growth'}]}]
+        t['preferences'] = []
+        t['launches'] = [{'brand': 'Rival', 'what': 'a carbon steel pan', 'sub_category': 'pans', 'date': '2026-03', 'price_usd': 90, 'channel': 'dtc',
+                          'sources': [{'url': 'https://example.org/press', 'publisher': 'Press', 'date': '2026-03-02', 'what': 'launch'}]}]
+        self.assertEqual(self.wp.check(t, 'fakebrand'), [])
+        self.assertEqual(self.wp.check(t, 'otherbrand'), ["brand is 'fakebrand', expected 'otherbrand'"])
+        t['markets'][0]['sources'] = []
+        self.assertIn('market 1 (cookware_us): no source; every number needs a url and a date', self.wp.check(t, 'fakebrand'))
+
+    def test_legacy_fixture_checks(self):
+        doc, p = self.wp.load('bombas')
+        self.assertEqual(p.name, 'market_trends.json')
+        self.assertEqual(self.wp.check(doc, 'bombas'), [])
+        self.assertEqual(self.wp.load('nobody'), (None, None))
+
+    def test_desk_reads_the_brands_own_file_first(self):
+        p = self.wp.path_for('bombas')
+        self.assertFalse(p.is_file())
+        p.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            p.write_text(json.dumps({'brand': 'bombas', 'captured_at': '2026-09-27', 'lanes': [{'key': 'pans', 'label': 'Pans', 'terms': ['pan'], 'kind': 'product'}], 'markets': [], 'preferences': [], 'launches': []}), encoding='utf-8')
+            self.assertEqual(audit.lanes_for('bombas'), [('pans', 'Pans', ['pan'])])
+            self.assertEqual(audit.web_pass('bombas')['captured_at'], '2026-09-27')
+        finally:
+            p.unlink()
+        self.assertEqual(len(audit.lanes_for('bombas')), 10)   # back to the legacy fixture
+
+    def test_connect_action_names_the_command(self):
+        r = api.rank('sample', {'ends_on': '2026-09-24', 'days': 28, 'trailing': 4})
+        a = next(x for x in r['actions'] if (x.get('title') or '').startswith('Run the web pass'))
+        self.assertIn('web_pass.py --brand sample --init', a['steps'][0]['text'])
+        self.assertIn('--check', a['steps'][2]['text'])
+
+
 class SecondBrandTest(unittest.TestCase):
     """The desk is not Bombas-shaped: the sample brand (Tallgrass Goods, kitchen goods, no brain, no web pass) reads
     nothing of Bombas and every route still answers."""
