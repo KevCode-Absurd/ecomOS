@@ -96,6 +96,10 @@ COMP-R18 Amazon undercuts our site. A style with 2 or more Amazon listings whose
     pair (market_presence.py). Severity medium. Capability PROD-C46 (agent
     checks sellers and prices). Confidence 0.3: site prices are simulated.
     Owner: 03-competitors.
+COMP-R19 we ship new ads slower. Our estimated launch rate (velocity.py: active
+    ads / median days live x 7) is under half the direct pages' median. Severity
+    medium. Capability CREA-C06 (a weekly creative volume plan). Confidence 0.3:
+    both sides are estimates. Owner: 03-competitors.
 
 Rubric overrides (depth.md section 4 allows reputation and satisfaction per rule):
 COMP-R01 reputation 5: an unclaimed angle is a competitor position gap named in
@@ -150,6 +154,7 @@ lossmod = _local("losses")
 catmod = _local("category")
 revmod = _local("reviews")
 mktmod = _local("market_presence")
+velmod = _local("velocity")
 
 SCREEN = "03-competitors"
 SEVERITY_ORDER = {"critical": 0, "high": 1, "medium": 2, "low": 3}
@@ -218,6 +223,8 @@ RULES = [
      "inputs": ["brain objection_ladders", "tracked page angles and offers"], "capability": "LIFE-C42", "owner_screen": SCREEN},
     {"rule_id": "COMP-R18", "name": "Amazon price per pair undercuts our site", "entity_type": "sku",
      "inputs": ["brain marketplaces", "products_monthly"], "capability": "PROD-C46", "owner_screen": SCREEN},
+    {"rule_id": "COMP-R19", "name": "we ship new ads far slower than direct pages", "entity_type": "brand",
+     "inputs": ["brain learnings adlib formats (median days live)", "active ads"], "capability": "CREA-C06", "owner_screen": SCREEN},
     {"rule_id": "COMP-R08", "name": "discount on most ads while direct peers run none", "entity_type": "offer",
      "inputs": ["brain offers.promo_share_active_ads", "brain competitors offers_seen"], "capability": "LIFE-C38",
      "owner_screen": SCREEN},
@@ -225,7 +232,7 @@ RULES = [
 # what a strategist groups the findings by on the page (depth.md section 2: grouped by bottleneck)
 RULE_GROUP = {"COMP-R01": "creative", "COMP-R05": "creative", "COMP-R06": "creative", "COMP-R03": "offer", "COMP-R07": "offer",
               "COMP-R08": "offer", "COMP-R09": "offer", "COMP-R02": "price", "COMP-R10": "price", "COMP-R11": "position",
-              "COMP-R04": "watch", "COMP-R12": "watch", "COMP-R13": "watch", "COMP-R14": "watch", "COMP-R15": "lost", "COMP-R16": "lost", "COMP-R17": "lost", "COMP-R18": "price"}
+              "COMP-R04": "watch", "COMP-R12": "watch", "COMP-R13": "watch", "COMP-R14": "watch", "COMP-R15": "lost", "COMP-R16": "lost", "COMP-R17": "lost", "COMP-R18": "price", "COMP-R19": "creative"}
 GROUP_LABEL = {"lost": "Shoppers we lose, by name", "creative": "Ads they run that we do not", "offer": "Offers they say that we do not",
                "price": "Price against theirs", "position": "Corners of the map", "watch": "Watch and protect"}
 RUBRIC_OVERRIDES = {"COMP-R01": {"reputation": 5}, "COMP-R02": {"reputation": 3}, "COMP-R04": {"reputation": 5, "satisfaction": 4},
@@ -464,6 +471,7 @@ def market_full(brand: str, today: dt.date, root: Path | None = None) -> dict:
     m["changes"] = changemod.build(m, m["brain"], prev, cur, today)
     m["losses"] = lossmod.build(m, m["brain"])
     m["category"] = catmod.build(m, m["brain"])
+    m["velocity"] = velmod.build(m, m["brain"])
     m["presence"] = mktmod.build(m, m["brain"], laddermod.pairs_in_title)
     m["reviews"] = revmod.build(m, m["brain"], lambda texts: mixmod.offer_types(texts, snap.OFFERS))
     return m
@@ -834,6 +842,19 @@ def rule_presence(m, ends_on):
     return out
 
 
+def rule_velocity(m, ends_on):
+    v = m.get("velocity") or {}
+    if not v.get("slow"):
+        return []
+    ev = [_row("our_launch_rate_week", v["our_rate"], "n", "latest capture", ends_on, None, v["bar"], "threshold", "ad_library"),
+          _row("direct_median_launch_rate_week", v["direct_median_rate"], "n", "latest capture", ends_on, _fresh(m["competitors"]),
+               None, "peer_band", "ad_library")]
+    sentence = (f"We ship about {v['our_rate']:g} new ads a week. Direct pages ship a median {v['direct_median_rate']:g}. "
+                "Both are estimates from ad life.")
+    return [_finding("COMP-R19", "medium", {"type": "brand", "id": "creative_velocity", "label": "creative velocity"}, ev, sentence,
+                     [f"{m['brand']}.learnings.september_flight"], ends_on, 0.3, "no baseline: the return on more ads is not measured")]
+
+
 def packs_month_end(packs):
     if not packs.get("available"):
         return None
@@ -860,7 +881,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
         out += [_unavailable("COMP-R16", "low", {"type": "ladder_rung", "id": "lower_rungs", "label": "lower rungs of the ladder"},
                              ["search trends by rung"], "a search trends source (read only)",
                              "Connect a search trends source for the category and each lower rung.", ends_on)]
-        out += rule_ladder(m, ends_on) + rule_corners(m, ends_on) + rule_refresh(m, ends_on) + rule_freshness(m, ends_on) + rule_losses(m, ends_on) + rule_attack(m, ends_on) + rule_presence(m, ends_on)
+        out += rule_ladder(m, ends_on) + rule_corners(m, ends_on) + rule_refresh(m, ends_on) + rule_freshness(m, ends_on) + rule_losses(m, ends_on) + rule_attack(m, ends_on) + rule_presence(m, ends_on) + rule_velocity(m, ends_on)
     out += rule_price(m, ends_on) + rule_lookalike(m, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f["severity"]], f["id"]))
     return out

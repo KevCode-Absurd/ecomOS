@@ -46,6 +46,8 @@ Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `a
 
 | 2.4 | Are we cheaper on Amazon than on our site (`market_presence.py`): our Amazon listings (count, priced by pair, median stars, reviews), per style the Amazon median price per pair against our site's net price per pair, sellers unknown; competitor marketplace listings unavailable; rule COMP-R18 when a style is 15 percent or more cheaper on Amazon with 2 or more listings: ankle, 40 percent; the answer is a seller and price check (PROD-C46, agent) | done |
 
+| 2.5 | Creative velocity and share of voice (`velocity.py`, the Motion and Foreplay job rebuilt as a rule): estimated new ads a week per page (active ads / median days live x 7) as a bar against the direct median, our counted rate this month beside our estimate, share of voice among direct pages by ads live (a signal of testing, never spend); rule COMP-R19 when our rate is under half the direct median: a weekly volume plan that doubles today's pace, fed by the coverage gaps (CREA-C06) | done |
+
 Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permission check had already refused that paid run and said not to retry it, so it was not re-run. Still listed under Contract asks.
 
 ### Round 1 status for Kevin (28 Sep 2026)
@@ -155,5 +157,5 @@ Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permi
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
-| 2 | 2.1 to 2.4 | 2026-09-28 | Lost by name; category ladder; review themes; Amazon against our site |
+| 2 | 2.1 to 2.5 | 2026-09-28 | Lost by name; category ladder; review themes; Amazon against our site; creative velocity |
 | 1 | 1.1 to 1.10 | 2026-09-28 | Plan first; rank override; 12 pages side by side; coverage matrix; hook and offer mix; references; price and pack ladder; positioning map with moves; changes timeline; freshness and re-pull; rank for all 14 rules. Screenshot `round1.png` |

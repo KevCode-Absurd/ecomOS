@@ -437,6 +437,23 @@ def act_undercut(f: dict, m: dict) -> dict:
             "check_on": _plus(f["last_seen"], 14), "time_to_ship_hours": 2}
 
 
+def act_velocity(f: dict, m: dict) -> dict:
+    """COMP-R19: we ship new ads far slower than direct pages. A weekly volume plan fed by the gaps."""
+    v = m["velocity"]
+    gaps = [f"{g['angle_label'].lower()} in {g['format']}" for g in m["coverage"]["gaps"]]
+    return {"title": f"Ship {v['target']:g} new ads a week from the gaps; we ship {audit.velmod.now_rate(v):g} now",
+            "owner": "agent_drafts",
+            "artefact": {"kind": "ad_brief", "label": "a weekly creative volume plan with the first week's briefs",
+                         "draft": audit.velmod.draft(v, gaps)},
+            "steps": _steps(("agent", "List the coverage gaps, the hook bank lines and the 2 best ads."),
+                            ("agent", "Draft the week: 2 concepts, 3 first line swaps, 1 new format."),
+                            ("person", "Approve the week; creative makes it."),
+                            ("agent", f"Count new ads live and cost per order each week; review on {_plus(f['last_seen'], 28)}.")),
+            "size": {"text": f"{audit.velmod.now_rate(v):g} a week now, {v['target']:g} after"},
+            "win_rule": "Blended cost per order flat or better at the higher volume", "stop_rule": "Cost per order up 15 percent for 2 weeks",
+            "check_on": _plus(f["last_seen"], 28), "time_to_ship_hours": 6}
+
+
 def act_connect(f: dict, m: dict) -> dict:
     un = f.get("unavailable") or {}
     con = un.get("connector") or "the missing source"
@@ -454,7 +471,8 @@ BUILDERS = {"COMP-R01": act_angle, "COMP-R02": act_price, "COMP-R03": act_offer_
             "COMP-R09": act_ladder, "COMP-R10": act_above, "COMP-R11": act_corner,
             "COMP-R12": act_refresh, "COMP-R13": act_no_id, "COMP-R14": act_stale,
             "COMP-R15": act_lost, "COMP-R16": act_connect,
-            "COMP-R17": act_attack, "COMP-R18": act_undercut}   # R16 has no data source yet: always a connect action
+            "COMP-R17": act_attack, "COMP-R18": act_undercut,
+            "COMP-R19": act_velocity}   # R16 has no data source yet: always a connect action
 
 
 def action(f: dict, m: dict, net_revenue: float | None) -> dict:

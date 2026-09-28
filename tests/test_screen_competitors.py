@@ -686,6 +686,28 @@ class TestPresence(TempBrain):
         self.assertTrue(any(e['simulated'] for e in f['evidence']))
 
 
+class TestVelocity(TempBrain):
+    """2.5: launch rate estimate, share of voice by ads, slow-shipping rule with a plan that doubles the pace."""
+    def setUp(self):
+        super().setUp()
+        api.BRAIN_ROOT = self.tmp
+        self.v = api.handle(Req(['overview']))['velocity']
+
+    def test_rates(self):
+        self.assertEqual(audit.velmod.launch_rate(23, 12), round(23 / 12 * 7, 1))
+        self.assertIsNone(audit.velmod.launch_rate(None, 12))
+        shares = [r['share'] for r in self.v['rows'] if r['share'] is not None]
+        self.assertAlmostEqual(sum(shares), 1, delta=0.01)
+        self.assertTrue(self.v['slow'])
+        self.assertLessEqual(self.v['target'], self.v['bar'])
+        self.assertLessEqual(self.v['target'], 2 * self.v['our_counted_rate'] + 0.1)
+
+    def test_rule_r19(self):
+        out = audit.run('bombas', WINDOW, self.tmp)
+        f = next(f for f in out if f['rule_id'] == 'COMP-R19')
+        self.assertEqual(f['confidence'], 0.3)
+
+
 class TestRank(TempBrain):
     """Depth contract rules 2, 3 and 13: owner, steps and artefact on every action; every finding ends in one."""
     W = {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4}

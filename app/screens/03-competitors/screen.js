@@ -418,6 +418,19 @@
       el('p', { class: 'micro faint', text: pr.rule + ' Amazon prices are public list prices; ours are simulated net.' }));
   }
 
+  // ---------- 5m. creative velocity and share of voice ----------
+  function velocitySection(v) {
+    const rows = v.rows.filter((r) => r.rate != null);
+    const chart = Charts.bar({ labels: rows.map((r) => r.name + (r.role === 'self' ? ' (us)' : '')), series: [{ name: 'new ads a week, estimate', values: rows.map((r) => r.rate) }],
+      benchmark: v.direct_median_rate, benchmark_label: 'direct median', unit: 'n', values: true,
+      title: 'New ads a week per page, estimated from ad life', note: 'Active ads / median days live x 7. An estimate on a steady account, not a count. Our counted rate this month: ' + (v.our_counted_rate == null ? NA : v.our_counted_rate + ' a week (' + v.our_counted_note + ')') + '.' });
+    const sov = UI.table({ columns: [{ key: 'name', label: 'Page', format: (x, r) => x + (r.role === 'self' ? ' (us)' : '') }, { key: 'active_ads', label: 'Active ads', unit: 'n' },
+      { key: 'share', label: 'Share of voice', format: (x) => x == null ? NA : fmt.pct(x) }], rows: v.rows.filter((r) => r.share != null).sort((a, b) => b.share - a.share), sort: false });
+    mount('#velocity', chart, el('p', { class: 'small' }, el('b', { text: v.slow ? 'We ship slower: ' : 'Pace: ' }),
+      'about ' + v.our_rate + ' new ads a week against a direct median of ' + v.direct_median_rate + '.' + (v.slow ? ' The volume plan (' + v.target + ' a week) is on the plan.' : '')),
+      el('h4', { text: 'Share of voice among direct pages, by ads live' }), sov, el('p', { class: 'micro faint', text: v.rule }));
+  }
+
   // ---------- 6. the audit ----------
   function rulesTable(rules) {
     return UI.table({ columns: [{ key: 'rule_id', label: 'Rule' }, { key: 'name', label: 'What it checks' }, { key: 'inputs', label: 'Reads', format: (v) => (v || []).join(', ') }, { key: 'capability', label: 'Capability' }],
@@ -447,6 +460,7 @@
     categorySection(d.category);
     reviewSection(d.reviews);
     presenceSection(d.presence);
+    velocitySection(d.velocity);
     document.getElementById('audit-sub').textContent = p.findings.length + ' findings from ' + p.rules.length + ' rules. Public signals, one capture.';
     mount('#audit', auditTable(p.findings));
     mount('#rules', el('h4', { text: 'Rules' }), rulesTable(p.rules));
