@@ -294,6 +294,10 @@
         UI.verdictTable({ columns: [{ key: 'due', label: 'Due' }, { key: 'label', label: 'Step' }, { key: 'owner', label: 'Owner' }, { key: 'when', label: 'Done when' }], rows,
           verdict: { at: 1, kind: (r) => r.x.state === 'done' ? 'keep' : r.x.state === 'overdue' ? 'fix' : r.x.state === 'due' ? 'watch' : 'na', text: (r) => r.state, reason: () => lp.rule }, sort: false }),
         el('div', { class: 'row', style: { gap: '6px', flexWrap: 'wrap' } }, el('button', { class: 'btn sm quiet', type: 'button', text: 'Set the launch target', onclick: () => setDate('launch_target', 'Launch target for ' + lp.name) }),
+          el('button', { class: 'btn sm quiet', type: 'button', text: 'Post-launch read', onclick: () => { const metric = prompt('Metric that decides continue or kill (contribution_margin, units, product_net_sales, return_rate, cvr_overall, aov, repeat_rate_90d)', 'contribution_margin'); if (metric == null) return;
+            const direction = prompt('Direction that means good: up or down', 'up'); if (direction == null) return; const floor = prompt('Floor that decides (a number in the metric\'s unit)', ''); if (floor == null) return;
+            const read_on = prompt('Read date (2026-12-15)', ''); if (read_on == null) return; const owner = prompt('Who reads it', ''); if (owner == null) return;
+            candidatePost('candidates/' + cid, { post_launch: { metric, direction, floor, read_on, owner }, who: 'person' }); } }),
           el('button', { class: 'btn sm quiet', type: 'button', text: 'Order placed on', onclick: () => setDate('ordered_on', 'Order placed on') }), el('button', { class: 'btn sm quiet', type: 'button', text: 'Stock landed on', onclick: () => setDate('stock_landed_on', 'Stock landed on') }), el('button', { class: 'btn sm quiet', type: 'button', text: 'Launched on', onclick: () => setDate('launched_on', 'Launched on') })),
         el('p', { class: 'micro faint', text: 'Rule: ' + lp.rule + '.' })) });
   }

@@ -1481,7 +1481,7 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
             by = {r['candidate_id']: r for r in read['rows']}
             self.assertNotIn('c', by)                                   # before shortlisted with no first run
             self.assertEqual(sum(1 for i in read['items'] if i['hard']), 8)
-            self.assertEqual(len(read['items']), 14)
+            self.assertEqual(len(read['items']), 15)
             self.assertEqual(by['b']['verdict'], 'not_ready')
             self.assertEqual(len(by['b']['hard_open']), 8)
             a = by['a']
@@ -1693,6 +1693,45 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
             self.assertEqual(r['changes'], ['cost floor $2.50'])
             self.assertEqual({x['candidate_id']: x['verdict'] for x in audit.cost_floor_read('fake', data, None, rd, D)['rows']}['c'], 'in_line')
             self.assertEqual(api.candidate_update('fake', 'c', {'cost_floor': {'usd': 0}, 'who': 'person'}, D)[0], 400)
+        finally:
+            audit.PIPELINE_PATH = self.real2
+
+    def test_post_launch_read_before_the_test(self):
+        D = date(2026, 9, 27)
+        self.real2 = audit.PIPELINE_PATH
+        try:
+            audit.PIPELINE_PATH = self.tmp
+            full = {'metric': 'units', 'direction': 'up', 'floor': 300, 'read_on': '2026-12-15', 'owner': 'Sam'}
+            self.tmp.write_text(json.dumps({'rows': [{'candidate_id': 'a', 'brand': 'fake', 'name': 'A', 'stage': 'go'},
+                                                     {'candidate_id': 'b', 'brand': 'fake', 'name': 'B', 'stage': 'shortlisted', 'launch_target': '2026-11-20', 'post_launch': {'metric': 'units', 'floor': 300}},
+                                                     {'candidate_id': 'c', 'brand': 'fake', 'name': 'C', 'stage': 'go', 'post_launch': full},
+                                                     {'candidate_id': 'd', 'brand': 'fake', 'name': 'D', 'stage': 'gated'}]}), encoding='utf-8')
+            self.assertEqual(audit.post_launch_read_of({'post_launch': full})['complete'], True)
+            self.assertEqual(audit.post_launch_read_of({'post_launch': {'metric': 'moon', 'floor': 1}})['missing'], ['metric', 'direction', 'read date', 'owner'])
+            found = audit.post_launch_findings('fake', D)
+            self.assertEqual([f['id'].split('.')[-1] for f in found], ['a', 'b'])
+            self.assertIn('set to launch 2026-11-20', found[1]['sentence'])
+            self.assertIn('missing: direction, read date, owner', found[1]['sentence'])
+            self.check_shape(found[0])
+            self.assertEqual(api.recipe(found[0])['owner'], 'person')
+            self.assertIn('PROD-R58', api.CANDIDATE_RULES)
+            self.assertEqual(api.candidate_update('fake', 'a', {'post_launch': {'metric': 'moon'}, 'who': 'person'}, D)[0], 400)
+            self.assertEqual(api.candidate_update('fake', 'a', {'post_launch': {'metric': 'units', 'direction': 'sideways'}, 'who': 'person'}, D)[0], 400)
+            r = api.candidate_update('fake', 'a', {'post_launch': full, 'who': 'person'}, D)
+            self.assertEqual(r['changes'], ['post-launch read set'])
+            self.assertEqual([f['id'].split('.')[-1] for f in audit.post_launch_findings('fake', D)], ['b'])
+            # the proposed test takes the metric and the read date from the candidate
+            row = next(c for c in audit.pipeline('fake') if c['candidate_id'] == 'a')
+            t = api.propose_test('fake', row, D)
+            self.assertEqual((t['metric']['name'], t['metric']['direction'], t['metric']['floor'], t['read_point']), ('units', 'up', 300.0, '2026-12-15'))
+            # the readiness checklist carries it as a soft item
+            data = api.sample_data()
+            E = audit.last_full_day(data, None)
+            rows = {r['candidate_id']: r for r in audit.launch_readiness('fake', data, None, audit.Reader(data, None, E), E)['rows']}
+            items = {i['key']: i for i in rows['a']['checklist']}
+            self.assertEqual((items['post_launch']['status'], items['post_launch']['hard']), ('pass', False))
+            self.assertIn('units up 300 by 2026-12-15, read by Sam', items['post_launch']['why'])
+            self.assertEqual({i['key']: i['status'] for i in rows['b']['checklist']}['post_launch'], 'open')
         finally:
             audit.PIPELINE_PATH = self.real2
 

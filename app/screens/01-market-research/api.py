@@ -1105,6 +1105,18 @@ def recipe(f):
             'size': {'text': f'{ent.get("variants")} variants planned', 'usd': None}, 'stop_rule': 'no MOQ per variant before the core product sells', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 1,
             'win_rule': 'one variant in the first run, the rest queued behind a sell-through read',
         }
+    if rid == 'PROD-R58':
+        ent = f.get('entity') or {}
+        return {
+            'title': f'Write the post-launch read for {ent.get("label") or "the candidate"} before it launches: the metric, the floor, the date and who reads it',
+            'owner': 'person',
+            'artefact': {'kind': 'brain_record', 'label': f'the post-launch read on {ent.get("label")}: one metric from the contract (contribution margin, units, net sales, return rate), the direction and the floor that decides continue or kill, the read date, and the owner; it rides onto the proposed test and the launch plan (bank idea PRD-125)'},
+            'steps': [{'n': 1, 'who': 'agent', 'text': 'Propose the metric and floor from the gate: contribution margin at or above the brand floor, or units at or above the first run\'s 28-day share.'},
+                      {'n': 2, 'who': 'person', 'text': 'Set the read date (28 days after launch, or the review date) and name the owner who reads it; a slipped read is a decision not made.'},
+                      {'n': 3, 'who': 'agent', 'text': 'Copy the metric and read point onto the proposed test and the first-read step of the launch plan.'}],
+            'size': {'text': 'missing ' + ', '.join(ent.get('missing') or []), 'usd': None}, 'stop_rule': 'no launch without a written metric, floor, date and owner', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 0.5,
+            'win_rule': 'metric, direction, floor, read date and owner on the candidate',
+        }
     if rid == 'PROD-R57':
         ent = f.get('entity') or {}
         none = ent.get('verdict') == 'no_check'
@@ -1377,7 +1389,7 @@ def merge_strength(actions):
 
 
 LANE_RULES = ('PROD-R06', 'PROD-R19', 'PROD-R20', 'PROD-R33', 'PROD-R26', 'PROD-R29')
-CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28', 'PROD-R37', 'PROD-R38', 'PROD-R39', 'PROD-R40', 'PROD-R45', 'PROD-R46', 'PROD-R47', 'PROD-R48', 'PROD-R49', 'PROD-R50', 'PROD-R51', 'PROD-R52', 'PROD-R53', 'PROD-R54', 'PROD-R55', 'PROD-R56', 'PROD-R57')
+CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28', 'PROD-R37', 'PROD-R38', 'PROD-R39', 'PROD-R40', 'PROD-R45', 'PROD-R46', 'PROD-R47', 'PROD-R48', 'PROD-R49', 'PROD-R50', 'PROD-R51', 'PROD-R52', 'PROD-R53', 'PROD-R54', 'PROD-R55', 'PROD-R56', 'PROD-R57', 'PROD-R58')
 
 
 def merge_candidates(actions):
@@ -1789,6 +1801,22 @@ def candidate_update(brand, cid, body, today):
             return 400, {'error': 'cost_floor.usd must be a number above 0'}
         row['cost_floor'] = {'usd': usd, 'source': str(cf.get('source') or '').strip()[:200] or None, 'on': today.isoformat()}
         changes.append(f'cost floor ${usd:,.2f}')
+    if isinstance(body.get('post_launch'), dict):
+        pl = body['post_launch']
+        metric = str(pl.get('metric') or '').strip()
+        if metric and metric not in audit.POST_LAUNCH_METRICS:
+            return 400, {'error': 'post_launch.metric must be one of ' + ', '.join(audit.POST_LAUNCH_METRICS)}
+        direction = str(pl.get('direction') or '').strip().lower()
+        if direction and direction not in audit.POST_LAUNCH_DIRECTIONS:
+            return 400, {'error': 'post_launch.direction must be up or down'}
+        read_on = str(pl.get('read_on') or '').strip()
+        if read_on:
+            try:
+                read_on = dt.date.fromisoformat(read_on).isoformat()
+            except ValueError:
+                return 400, {'error': 'post_launch.read_on must be a date like 2026-11-15'}
+        row['post_launch'] = {'metric': metric or None, 'direction': direction or None, 'floor': _num(pl.get('floor')), 'read_on': read_on or None, 'owner': str(pl.get('owner') or '').strip()[:60] or None, 'set_on': today.isoformat()}
+        changes.append('post-launch read ' + ('set' if audit.post_launch_read_of(row)['complete'] else 'partly set'))
     if body.get('quote_on') is not None:
         q = str(body['quote_on']).strip()
         try:
@@ -2145,7 +2173,7 @@ LAUNCH_STEPS = [
     ('ad_brief', 'Launch ad brief sent', 'creative', 14, 'a row to creative on the shared log'),
     ('stock', 'Stock landed', 'person', audit.ORDER_SAFETY_DAYS, 'the order plus its lead time'),
     ('launch', 'Launch', 'person', 0, 'the launch target'),
-    ('read', 'First read', 'agent', -28, 'the review date, or 28 days after launch'),
+    ('read', 'First read', 'agent', -28, 'the post-launch read date on the candidate, else the review date or 28 days after launch'),
 ]
 LAUNCH_QUOTE_DAYS = 21     # the quote is in hand this long before the order
 LAUNCH_SAMPLE_DAYS = 14    # the sample has passed this long before the order
@@ -2192,7 +2220,11 @@ def launch_plan(data, brand, cid):
         elif key in ('sourcing', 'order'):
             due = order_due
         elif key == 'read':
-            due = max(target + dt.timedelta(days=28), dt.date.fromisoformat(cand['review_date'])) if target and cand.get('review_date') else (target + dt.timedelta(days=28) if target else None)
+            plr = audit.post_launch_read_of(cand)
+            if plr['complete']:
+                due = dt.date.fromisoformat(plr['read_on'])
+            else:
+                due = max(target + dt.timedelta(days=28), dt.date.fromisoformat(cand['review_date'])) if target and cand.get('review_date') else (target + dt.timedelta(days=28) if target else None)
         elif key == 'target':
             due = ends_on
         else:
@@ -2311,11 +2343,13 @@ def propose_test(brand, cand, today):
     25-experiments sets results. One row per candidate; a second go refreshes it."""
     doc = json.loads(TESTS_PATH.read_text(encoding='utf-8')) if TESTS_PATH.is_file() else {'table': 'registry_proposed', 'rows': []}
     rows = [r for r in doc.get('rows') or [] if not (r.get('brand') == brand and r.get('candidate_id') == cand.get('candidate_id'))]
-    read_point = cand.get('review_date') or (today + dt.timedelta(days=audit.REVIEW_DAYS)).isoformat()
+    pl = audit.post_launch_read_of(cand)
+    read_point = (pl['read_on'] if pl['complete'] else None) or cand.get('review_date') or (today + dt.timedelta(days=audit.REVIEW_DAYS)).isoformat()
     rows.append({'id': f'EXP-P-{cand.get("candidate_id")}', 'brand': brand, 'candidate_id': cand.get('candidate_id'), 'name': f'Launch test: {cand.get("name")}', 'screen': SCREEN, 'capability_id': 'PROD-C11',
                  'hypothesis': cand.get('angle_text') or f'{cand.get("name")} sells at its planned price with contribution margin at or above the gate',
                  'source': {'type': 'finding', 'ref': cand.get('source_finding'), 'index': None}, 'idea_id': None, 'owner': cand.get('owner') or 'person',
-                 'metric': {'name': 'contribution_margin', 'direction': 'up', 'min_days': 28, 'registered_on': today.isoformat()},
+                 'metric': ({'name': pl['metric'], 'direction': pl['direction'], 'min_days': 28, 'registered_on': today.isoformat(), 'floor': pl['floor'], 'reason': 'the post-launch read set on the candidate (bank idea PRD-125)'} if pl['complete']
+                            else {'name': 'contribution_margin', 'direction': 'up', 'min_days': 28, 'registered_on': today.isoformat()}),
                  'variant': {'control': 'the current line', 'treatment': cand.get('name')}, 'audience': [cand.get('category') or 'all'],
                  'start': None, 'read_point': read_point, 'end': None, 'status': 'proposed', 'result': None, 'decision': None, 'learnings_ref': None, 'retro': None, 'park': None,
                  'brain_refs': [], 'proposed_on': today.isoformat(), 'simulated': True})

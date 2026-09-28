@@ -209,6 +209,8 @@ Rules
   PROD-R57  Cost above the floor seen: an open candidate at gated or later whose landed cost on file is more than twice the
             supplier price seen for the identical item (a reverse-image search of a competitor's photo, entered with its
             source), or which has no cost floor check at gated or later (bank idea PRD-094). Money: null. Capability PROD-C08
+  PROD-R58  No post-launch read set: a candidate at go, or with a launch target set, with no post-launch metric, floor, read
+            date and owner written before the test starts (bank idea PRD-125). Money: null. Capability PROD-C11
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -339,6 +341,7 @@ RULES = [
     {'rule_id': 'PROD-R55', 'name': 'Candidate with a first run decided on one sourcing channel with no alternative compared', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C13', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R56', 'name': 'Candidate whose ordered units crossed 500 or 1,000 since its quote', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C13', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R57', 'name': 'Candidate at gated or later with no cost floor check, or a landed cost more than twice the floor seen', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline', 'finance_inputs'], 'capability': 'PROD-C08', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R58', 'name': 'Candidate at go or with a launch target and no post-launch metric, floor, read date and owner', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C11', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -396,7 +399,8 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R54': {'id': 'PROD-C01', 'autonomy': 'agent_does'},
               'PROD-R55': {'id': 'PROD-C13', 'autonomy': 'agent_does'},
               'PROD-R56': {'id': 'PROD-C13', 'autonomy': 'agent_does'},
-              'PROD-R57': {'id': 'PROD-C08', 'autonomy': 'agent_does'}}
+              'PROD-R57': {'id': 'PROD-C08', 'autonomy': 'agent_does'},
+              'PROD-R58': {'id': 'PROD-C11', 'autonomy': 'founder_gate'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -992,6 +996,7 @@ def _run_audit(brand, ends_on, data):
     out += sourcing_findings(brand, ends_on)
     out += requote_findings(brand, ends_on)
     out += cost_floor_findings(brand, data, br, rd, ends_on)
+    out += post_launch_findings(brand, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -4742,7 +4747,7 @@ READINESS_ITEMS = [
     ('demand_screen', 'Demand screen run', True), ('angle', 'Angle with a source', True), ('margin', 'Margin gate', True), ('compliance', 'Compliance', True),
     ('tech_pack', 'Tech pack current', True), ('sample', 'Sample passed', True), ('first_run', 'First run sized', True), ('owner', 'Owner named', True),
     ('one_sku', 'One SKU', False), ('packaging', 'Stock packaging', False), ('kill_hold', 'Kill hold clear', False), ('ad_cost', 'Ad-cost ceiling', False),
-    ('copy', 'Listing copy done', False), ('page', 'Launch page done', False),
+    ('copy', 'Listing copy done', False), ('page', 'Launch page done', False), ('post_launch', 'Post-launch read set', False),
 ]
 TEAM_ITEMS = {'copy': 'copy', 'page': 'landing pages'}   # checklist item to the team on the shared log
 
@@ -4817,6 +4822,8 @@ def launch_readiness(brand, data, br, rd, ends_on):
         items['kill_hold'] = ('open', f'reads like {k["name"]}, killed {k["killed_on"]}') if k else ('pass', 'no killed lookalike')
         ac = gg.get('ad_cost_ceiling') or {}
         items['ad_cost'] = ('pass' if ac.get('status') == 'pass' else 'unavailable' if ac.get('status') == 'unavailable' else 'open', ac.get('why') or 'not run')
+        pl = post_launch_read_of(c)
+        items['post_launch'] = ('pass', f'{pl["metric"]} {pl["direction"]} {pl["floor"]:g} by {pl["read_on"]}, read by {pl["owner"]}') if pl['complete'] else ('open', 'missing: ' + ', '.join(pl['missing']))
         for key, team in TEAM_ITEMS.items():
             ts = team_status(cid, team, shared)
             items[key] = ('pass', f'done by {team}' + (f' on {str(ts["time"])[:10]}' if ts.get('time') else '')) if ts['status'] == 'done' else ('open', {'none': f'not sent to {team}', 'proposed': f'sent to {team}, waiting', 'decided': f'{team} decided, not done', 'dropped': f'dropped by {team}'}.get(ts['status'], ts['status']))
@@ -5313,5 +5320,44 @@ def cost_floor_findings(brand, data, br, rd, ends_on):
         f = _finding('PROD-R57', cid, ends_on, 'low' if r['verdict'] == 'no_check' else 'medium', ev, sentence, None, 0.7, [], money_reason='an unlaunched SKU has no baseline to price the gap')
         f['entity'] = {'type': 'sku', 'id': cid, 'label': r['name'], 'candidate': True, 'stage': r['stage'], 'verdict': r['verdict'], 'floor_usd': r['floor_usd'], 'cogs': r['cogs'], 'multiple': r['multiple']}
         f['id'] = f'{SCREEN}.PROD-R57.{cid}'
+        out.append(f)
+    return out
+
+
+# ---------------------------------------------------------------- the post-launch read: metric, floor, date and owner before the test
+
+POST_LAUNCH_METRICS = ('contribution_margin', 'units', 'product_net_sales', 'return_rate', 'cvr_overall', 'aov', 'repeat_rate_90d')   # metrics.md ids a launch read can decide on
+POST_LAUNCH_DIRECTIONS = ('up', 'down')
+
+
+def post_launch_read_of(cand):
+    """The post-launch read on a candidate: the metric (a metrics.md id), the direction, the floor that decides continue or
+    kill, the read date and the owner; which parts are missing; complete when all five are set."""
+    pl = cand.get('post_launch') or {}
+    metric = pl.get('metric') if pl.get('metric') in POST_LAUNCH_METRICS else None
+    direction = pl.get('direction') if pl.get('direction') in POST_LAUNCH_DIRECTIONS else None
+    floor = pl.get('floor') if isinstance(pl.get('floor'), (int, float)) else None
+    read_on = pl.get('read_on') or None
+    owner = str(pl.get('owner') or '').strip() or None
+    missing = [k for k, v in (('metric', metric), ('direction', direction), ('floor', floor), ('read date', read_on), ('owner', owner)) if v is None]
+    return {'metric': metric, 'direction': direction, 'floor': floor, 'read_on': read_on, 'owner': owner, 'missing': missing, 'complete': not missing}
+
+
+def post_launch_findings(brand, ends_on):
+    """PROD-R58: a candidate at go, or with a launch target set, with no complete post-launch read."""
+    out = []
+    for c in pipeline(brand):
+        st = c.get('stage')
+        if st in ('killed', 'kill') or not (st == 'go' or c.get('launch_target')):
+            continue
+        pl = post_launch_read_of(c)
+        if pl['complete']:
+            continue
+        cid = c.get('candidate_id')
+        ev = [_ev('post_launch_read_parts_set', 5 - len(pl['missing']), 'count', ends_on.isoformat(), 'candidate now', 5, 'threshold', source='fixtures.pipeline', simulated=False, freshness_days=0, missing=pl['missing'], stage=st, launch_target=c.get('launch_target'))]
+        sentence = f'{c.get("name")} is {"at go" if st == "go" else "set to launch " + str(c.get("launch_target"))} with no post-launch read written down (missing: {", ".join(pl["missing"])}); the continue-or-kill call would be made on whichever day someone looks.'
+        f = _finding('PROD-R58', cid, ends_on, 'medium', ev, sentence, None, 0.9, [], money_reason='the bet is the first run cash, priced on the first-run card')
+        f['entity'] = {'type': 'sku', 'id': cid, 'label': c.get('name'), 'candidate': True, 'stage': st, 'missing': pl['missing'], 'launch_target': c.get('launch_target'), 'review_date': c.get('review_date')}
+        f['id'] = f'{SCREEN}.PROD-R58.{cid}'
         out.append(f)
     return out
