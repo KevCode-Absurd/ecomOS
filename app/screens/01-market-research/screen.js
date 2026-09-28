@@ -261,6 +261,7 @@
       angle: r.angle_text || 'no angle yet', price: r.planned_price, hours: r.hours_logged,
       actions: [].concat(acts.length ? [{ label: acts[0].rule_id === 'PROD-R15' ? 'Kill or fix' : 'Decide', onClick: () => openAction(acts[0]) }] : [],
         [{ label: 'Brief', cls: 'quiet', onClick: () => openBrief(r.candidate_id) }],
+        !r.closed && (r.failed_checks || []).length ? [{ label: 'Log override', cls: 'quiet', onClick: () => { const v = prompt('Why does ' + r.name + ' move on with ' + r.failed_checks.join(', ') + ' failed? Name the signal.'); if (v != null && v.trim()) candidatePost('candidates/' + r.candidate_id, { override_reason: v, who: 'person' }); } }] : [],
         !r.closed && nx ? [{ label: 'Advance to ' + nx, cls: 'quiet', onClick: () => candidatePost('candidates/' + r.candidate_id, { stage: nx, who: 'person' }) }] : [],
         !r.closed ? [{ label: 'Log 1 h', cls: 'quiet', onClick: () => candidatePost('candidates/' + r.candidate_id, { hours_add: 1, who: 'person' }) }, { label: 'Kill', cls: 'quiet', onClick: () => { if (confirm('Kill ' + r.name + '? It stays killed 90 days.')) candidatePost('candidates/' + r.candidate_id, { stage: 'killed', who: 'person' }); } }] : []) }); });
     const t = UI.verdictTable({

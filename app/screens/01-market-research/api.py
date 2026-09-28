@@ -946,6 +946,30 @@ def recipe(f):
             'stop_rule': 'no full-MOQ order until sell-through on the first run is read', 'check_on': _check_on(f, 14), 'time_to_ship_hours': 2,
             'win_rule': 'a lower-MOQ option noted on the candidate, or a founder note that the full run is the choice',
         }
+    if rid == 'PROD-R38':
+        ent = f.get('entity') or {}
+        return {
+            'title': f'Log why {ent.get("label") or "the candidate"} moved on with {", ".join(ent.get("failed") or []) or "a failed check"}, or send it back',
+            'owner': 'agent_drafts',
+            'artefact': {'kind': 'brain_record', 'label': 'an override line in the candidate log: the rule overridden, the exact signal that justified it, who decided (bank idea PRD-113)'},
+            'steps': [{'n': 1, 'who': 'agent', 'text': 'Draft the override line from the log and the checks: which rule, what signal argued against it, when it was carried past.'},
+                      {'n': 2, 'who': 'person', 'text': 'Confirm the reason in one line on the pipeline row (Log override), or send the candidate back a stage.'},
+                      {'n': 3, 'who': 'agent', 'text': 'Re-read the candidate; an override with a reason closes this, a second unexplained pass reopens it.'}],
+            'size': {'text': f'{len(ent.get("failed") or [])} failed, at {ent.get("stage")}', 'usd': None}, 'stop_rule': 'no further stage without the line', 'check_on': _check_on(f, 3), 'time_to_ship_hours': 0.5,
+            'win_rule': 'a log line naming the override and its signal',
+        }
+    if rid == 'PROD-R39':
+        ent = f.get('entity') or {}
+        return {
+            'title': f'Name the evergreen companion before the first run of {ent.get("label") or "the trending candidate"}',
+            'owner': 'agent',
+            'artefact': {'kind': 'research_note', 'label': 'the evergreen companion: the line or candidate that sells all year beside this trend, its share of the first run cash, and the read point for the trend (bank idea PRD-047)'},
+            'steps': [{'n': 1, 'who': 'agent', 'text': 'List the store\'s lines tagged evergreen and any open candidate tagged evergreen; if none, screen one in from the hero lines.'},
+                      {'n': 2, 'who': 'agent', 'text': 'Size the first run so the trend is a share of the cash, not all of it; write it on the first-run plan.'},
+                      {'n': 3, 'who': 'person', 'text': 'Pick the companion from the card, or accept the trend alone with a note.'}],
+            'size': {'text': f'trending, at {ent.get("stage")}', 'usd': None}, 'stop_rule': 'no MOQ order on a trend alone', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 1,
+            'win_rule': 'an evergreen line or candidate named beside the trend',
+        }
     return None
 
 
@@ -1040,7 +1064,7 @@ def merge_questions(actions):
     return keep
 
 
-CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28', 'PROD-R37')
+CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28', 'PROD-R37', 'PROD-R38', 'PROD-R39')
 
 
 def merge_candidates(actions):
@@ -1375,6 +1399,10 @@ def candidate_update(brand, cid, body, today):
     if body.get('pack_units') is not None:
         row['pack_units'] = int(_num(body['pack_units'], 1) or 1)
         changes.append('pack units set')
+    if body.get('override_reason') is not None:
+        reason = str(body['override_reason']).strip()[:300]
+        if reason:
+            changes.append(f'override: {reason}')
     if isinstance(body.get('first_run'), dict):
         fr = body['first_run']
         row['first_run'] = {'units': int(_num(fr.get('units')) or 0) or None, 'moq_units': int(_num(fr.get('moq_units')) or 0) or None, 'format': str(fr.get('format') or '').strip()[:120] or None,

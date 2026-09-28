@@ -145,6 +145,12 @@ Rules
             cash is 25 percent or more of 28-day net revenue (or revenue unknown), or whose format MOQ is above the units
             wanted, with no lower-MOQ alternative noted. Money: the first run cash. Bank idea BRD-249. Severity medium.
             Capability PROD-C07 (demand pattern and cash timing, agent does). Owner: 01-market-research.
+  PROD-R38  Override without a reason: an open candidate carried past screening with a failed fast check, or past gated with
+            a failed compliance line, whose log holds no line naming the reason (bank idea PRD-113). Severity medium. Money
+            null. Capability PROD-C04. Owner: 01-market-research.
+  PROD-R39  Trend alone: a candidate tagged trending at gated or later with no evergreen line in the store and no evergreen
+            candidate open beside it (bank idea PRD-047). Severity medium. Money null. Capability PROD-C07. Owner:
+            01-market-research.
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -243,6 +249,10 @@ RULES = [
      'inputs': ['brain.*.source', 'brain.config.apify', 'fixtures.market_trends', 'fixtures.social_pull'], 'capability': 'PROD-C04', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R37', 'name': 'Candidate at gated or later with no first run on file, or a full-MOQ first run with no lower-MOQ alternative noted', 'entity_type': 'sku',
      'inputs': ['fixtures.pipeline', 'daily'], 'capability': 'PROD-C07', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R38', 'name': 'Candidate carried past a failed check or gate with no override reason in its log', 'entity_type': 'sku',
+     'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C04', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R39', 'name': 'Trending candidate at gated or later with no evergreen line or candidate beside it', 'entity_type': 'sku',
+     'inputs': ['fixtures.pipeline', 'products_monthly', 'fixtures.market_trends'], 'capability': 'PROD-C07', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -280,7 +290,9 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R34': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
               'PROD-R35': {'id': 'PROD-C12', 'autonomy': 'human_assist'},
               'PROD-R36': {'id': 'PROD-C04', 'autonomy': 'agent_does'},
-              'PROD-R37': {'id': 'PROD-C07', 'autonomy': 'agent_does'}}
+              'PROD-R37': {'id': 'PROD-C07', 'autonomy': 'agent_does'},
+              'PROD-R38': {'id': 'PROD-C04', 'autonomy': 'agent_does'},
+              'PROD-R39': {'id': 'PROD-C07', 'autonomy': 'agent_does'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -768,6 +780,8 @@ def run(brand, window=None, data=None):
     out += question_findings(br, ends_on)
     out += pull_findings(br, brand, ends_on)
     out += first_run_findings(brand, ends_on, net)
+    out += override_findings(brand, ends_on)
+    out += companion_findings(brand, data, rd, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -3643,3 +3657,87 @@ def ledger_week(brand, today=None, path=None):
             'over_bound_week': sum(1 for r in wk if r[3] == 'bound_exceeded'),
             'spent_all_usd': round(sum(usd(r[2] if r[2] is not None else r[1]) for r in rows), 2), 'runs_all': len(rows),
             'by_actor_week': sorted(((a, round(sum(usd(r[2] if r[2] is not None else r[1]) for r in wk if r[0].split(':')[3] == a), 2)) for a in {r[0].split(':')[3] for r in wk}), key=lambda kv: -kv[1])}
+
+
+# ---------------------------------------------------------------- overrides and the evergreen companion (round 5.8, bank ideas PRD-113 and PRD-047)
+
+OVERRIDE_WORDS = ('override', 'because', 'reason', 'despite', 'accepted the fail', 'accept the fail')
+OVERRIDE_STAGE_MIN = 1        # researched or later: a failed fast check has been carried past screening
+
+
+def override_read(brand, ends_on):
+    """Per open candidate carried past screening with a failed fast check, or past gated with a failed compliance line: whether
+    the log names the reason (bank idea PRD-113: every rule override is written down with the exact signal that justified it)."""
+    rows = []
+    for c in pipeline(brand):
+        st = c.get('stage')
+        idx = STAGES.index(st) if st in STAGES else None
+        if st in CLOSED_STAGES or idx is None:
+            continue
+        checks = c.get('screen_result') or {}
+        failed_checks = [k for k in SCREEN_CHECKS if checks.get(k) == 'fail'] if idx >= OVERRIDE_STAGE_MIN else []
+        comp = c.get('compliance') or {}
+        failed_comp = [k for k, v in comp.items() if v == 'fail'] if idx >= SPEC_STAGE_MIN else []
+        failed = failed_checks + [f'compliance {k}' for k in failed_comp]
+        if not failed:
+            continue
+        notes = [l for l in c.get('log') or [] if any(w in str(l.get('what') or '').lower() for w in OVERRIDE_WORDS)]
+        rows.append({'candidate_id': c.get('candidate_id'), 'name': c.get('name'), 'stage': st, 'failed': failed, 'override_note': notes[-1].get('what') if notes else None,
+                     'override_on': notes[-1].get('on') if notes else None, 'verdict': 'logged' if notes else 'unlogged', 'finding_id': f'{SCREEN}.PROD-R38.{c.get("candidate_id")}'})
+    return rows
+
+
+def override_findings(brand, ends_on):
+    """PROD-R38: a candidate carried past a failed check or gate with no override reason in its log."""
+    out = []
+    for r in override_read(brand, ends_on):
+        if r['verdict'] != 'unlogged':
+            continue
+        cid = r['candidate_id']
+        ev = [_ev('failed_checks_carried', len(r['failed']), 'count', ends_on.isoformat(), 'candidate now', 0, 'threshold', source='fixtures.pipeline', simulated=False, freshness_days=0, failed=r['failed'], stage=r['stage']),
+              _ev('override_notes', 0, 'count', ends_on.isoformat(), 'candidate log', 1, 'threshold', source='fixtures.pipeline', simulated=False, freshness_days=0)]
+        sentence = f'{r["name"]} is at {r["stage"]} with {", ".join(r["failed"])} failed and no line in its log says why the rule was overridden.'
+        f = _finding('PROD-R38', cid, ends_on, 'medium', ev, sentence, None, 0.9, [], money_reason='an unlogged override has no order count; it is a discipline gap')
+        f['entity'] = {'type': 'sku', 'id': cid, 'label': r['name'], 'candidate': True, 'stage': r['stage'], 'failed': r['failed']}
+        f['id'] = r['finding_id']
+        out.append(f)
+    return out
+
+
+def companion_read(brand, data, rd, ends_on):
+    """Per open candidate at gated or later tagged trending: whether an evergreen companion exists (a category of the store
+    tagged evergreen, or another open candidate tagged evergreen), bank idea PRD-047: never bet inventory on a trend alone."""
+    mix = category_mix(data, brand, rd)
+    fx = web_pass(brand)
+    cands = [c for c in pipeline(brand) if c.get('stage') not in CLOSED_STAGES]
+    tags = {c.get('candidate_id'): demand_pattern(c.get('category'), mix, fx, c.get('name')) for c in cands}
+    evergreen_cats = [] if mix.get('unavailable') else [r['category'] for r in mix['rows'] if demand_pattern(r['category'], mix, fx)['tag'] == 'evergreen']
+    evergreen_cands = [c.get('name') for c in cands if tags[c.get('candidate_id')]['tag'] == 'evergreen']
+    rows = []
+    for c in cands:
+        st = c.get('stage')
+        idx = STAGES.index(st) if st in STAGES else None
+        p = tags[c.get('candidate_id')]
+        if p['tag'] != 'trending' or idx is None or idx < SPEC_STAGE_MIN:
+            continue
+        companions = [f'{x} (line)' for x in evergreen_cats] + [f'{x} (candidate)' for x in evergreen_cands if x != c.get('name')]
+        rows.append({'candidate_id': c.get('candidate_id'), 'name': c.get('name'), 'stage': st, 'tag': p['tag'], 'why': p['why'], 'companions': companions,
+                     'verdict': 'covered' if companions else 'alone', 'finding_id': f'{SCREEN}.PROD-R39.{c.get("candidate_id")}'})
+    return rows
+
+
+def companion_findings(brand, data, rd, ends_on):
+    """PROD-R39: a trending candidate at gated or later with no evergreen line or candidate beside it."""
+    out = []
+    for r in companion_read(brand, data, rd, ends_on):
+        if r['verdict'] != 'alone':
+            continue
+        cid = r['candidate_id']
+        ev = [_ev('demand_pattern_tag', 1, 'flag', ends_on.isoformat(), '12 months', source='products_monthly', tag=r['tag'], why=r['why']),
+              _ev('evergreen_companions', 0, 'count', ends_on.isoformat(), 'store and pipeline now', 1, 'threshold', source='fixtures.pipeline', simulated=False, freshness_days=0)]
+        sentence = f'{r["name"]} is tagged trending ({r["why"]}) and no evergreen line or candidate stands beside it; an MOQ on a trend alone is the whole bet.'
+        f = _finding('PROD-R39', cid, ends_on, 'medium', ev, sentence, None, 0.6, [], money_reason='the bet is the first run cash, priced on the first-run card')
+        f['entity'] = {'type': 'sku', 'id': cid, 'label': r['name'], 'candidate': True, 'stage': r['stage']}
+        f['id'] = r['finding_id']
+        out.append(f)
+    return out

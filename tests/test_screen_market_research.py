@@ -1109,6 +1109,39 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
         finally:
             audit.market_trends = saved
 
+    def test_override_and_companion_rules(self):
+        D = date(2026, 9, 27)
+        self.real2 = audit.PIPELINE_PATH
+        try:
+            audit.PIPELINE_PATH = self.tmp
+            rows = [{'candidate_id': 'a', 'brand': 'fake', 'name': 'A', 'stage': 'researched', 'screen_result': {'demand': 'pass', 'competition': 'fail', 'store_fit': 'pass'}, 'log': [{'on': '2026-09-20', 'who': 'person', 'what': 'moved to researched'}]},
+                    {'candidate_id': 'b', 'brand': 'fake', 'name': 'B', 'stage': 'researched', 'screen_result': {'demand': 'pass', 'competition': 'fail', 'store_fit': 'pass'}, 'log': [{'on': '2026-09-20', 'who': 'person', 'what': 'override: competition fail accepted because the 3 rivals are all under $10 a pair'}]},
+                    {'candidate_id': 'c', 'brand': 'fake', 'name': 'C', 'stage': 'screened', 'screen_result': {'demand': 'fail', 'competition': 'fail', 'store_fit': 'pass'}, 'log': []},
+                    {'candidate_id': 'd', 'brand': 'fake', 'name': 'D', 'stage': 'gated', 'screen_result': {'demand': 'pass', 'competition': 'pass', 'store_fit': 'pass'}, 'compliance': {'labelling': 'fail'}, 'log': []}]
+            self.tmp.write_text(json.dumps({'rows': rows}), encoding='utf-8')
+            ov = {r['candidate_id']: r for r in audit.override_read('fake', D)}
+            self.assertEqual(set(ov), {'a', 'b', 'd'})            # c is still at screened: a failed check there is not an override yet
+            self.assertEqual((ov['a']['verdict'], ov['b']['verdict'], ov['d']['verdict']), ('unlogged', 'logged', 'unlogged'))
+            self.assertEqual(ov['d']['failed'], ['compliance labelling'])
+            found = audit.override_findings('fake', D)
+            self.assertEqual(sorted(f['id'].split('.')[-1] for f in found), ['a', 'd'])
+            for f in found:
+                self.check_shape(f)
+            # the override write
+            code = api.candidate_update('fake', 'a', {'override_reason': 'competition fail accepted: the rivals are resellers', 'who': 'person'}, D)
+            self.assertEqual(code['changes'], ['override: competition fail accepted: the rivals are resellers'])
+            self.assertEqual({r['candidate_id']: r['verdict'] for r in audit.override_read('fake', D)}['a'], 'logged')
+        finally:
+            audit.PIPELINE_PATH = self.real2
+
+    def test_companion_rule_on_bombas(self):
+        data = None
+        rd = audit.Reader(None, 'bombas', date(2026, 9, 27))
+        rows = audit.companion_read('bombas', data, rd, date(2026, 9, 27))
+        self.assertTrue(all(r['tag'] == 'trending' for r in rows))
+        for f in audit.companion_findings('bombas', data, rd, date(2026, 9, 27)):
+            self.check_shape(f)
+
     def test_demand_pattern_tags(self):
         even = {'rows': [{'category': 'socks', 'series': [100] * 12}], 'months': [f'2026-{m:02d}' for m in range(1, 13)], 'last': '2026-12'}
         peaked = {'rows': [{'category': 'socks', 'series': [50] * 10 + [300, 400]}], 'months': even['months'], 'last': '2026-12'}
