@@ -31,6 +31,7 @@ def profiles(brain, ladderproof_mod=None) -> dict:
         except Exception:  # noqa: BLE001
             rungs_by_avatar = {}
     dflt = defaults(brain)
+    notes = {r["field"][5:]: r for r in brain.records("avatars") if (r.get("field") or "").startswith("note_") and isinstance(r.get("value"), dict)}
     rows = []
     for r in brain.records("avatars"):
         if r.get("field") != "avatar" or not isinstance(r.get("value"), dict):
@@ -41,13 +42,26 @@ def profiles(brain, ladderproof_mod=None) -> dict:
         line = f"{v.get('name')}: wants {v.get('job')}." + (f" Buys when: {', '.join(v.get('triggers') or [])}." if v.get("triggers") else "") + (f" Fears: {', '.join(v.get('pains') or [])}." if v.get("pains") else "") + (f" Feels: {v.get('emotional_driver')}." if v.get("emotional_driver") else "")
         if doubts:
             line += " Doubts to answer: " + "; ".join(f"{d['doubt']}" + (" (proof on file)" if d["has_proof"] else " (no proof: do not claim it)") for d in doubts[:3]) + "."
-        rows.append({"id": r["id"], "key": r["id"].rsplit(".", 1)[-1], "name": v.get("name"), "share": v.get("share_estimate"), "intensity": v.get("intensity"), "job": v.get("job"), "triggers": v.get("triggers") or [], "pains": v.get("pains") or [], "driver": v.get("emotional_driver"),
+        key = r["id"].rsplit(".", 1)[-1]
+        note = notes.get(key)
+        if note:
+            line += f" Founder's note: {note['value'].get('note')}"
+        rows.append({"note": note["value"].get("note") if note else None, "note_date": (None if not note or note["date"] == "undated" else note["date"]),"id": r["id"], "key": r["id"].rsplit(".", 1)[-1], "name": v.get("name"), "share": v.get("share_estimate"), "intensity": v.get("intensity"), "job": v.get("job"), "triggers": v.get("triggers") or [], "pains": v.get("pains") or [], "driver": v.get("emotional_driver"),
                      "tier": r["tier"], "approved": r["tier"] == "approved", "evidence": len(r.get("evidence") or []), "quote": ((r.get("evidence") or [{}])[0].get("quote") if r.get("evidence") else None), "doubts": doubts[:5], "surfaces": surfaces, "line": line,
                      "default_for": [s for s, aid in dflt.items() if aid == r["id"]], "source": (r.get("source") or {}).get("type"), "date": None if r["date"] == "undated" else r["date"]})
     rows.sort(key=lambda x: (-(x["share"] or 0), x["name"] or ""))
     return {"profiles": rows, "defaults": dflt, "surfaces": list(SURFACES),
             "counts": {"profiles": len(rows), "approved": sum(1 for x in rows if x["approved"]), "with_doubts": sum(1 for x in rows if x["doubts"]), "defaults_set": len(dflt), "share_covered": round(sum(x["share"] or 0 for x in rows), 2) if rows else None},
             "note": "Profiles are the avatar records, built from reviews; the doubts come from the ladder rungs that name each one. Approve a profile in the records browser or the claims desk, and pick the default per surface. Every generator writes for one named profile, the default unless the brief names another."}
+
+
+def note_record(brain, key: str, note: str) -> dict | tuple[int, dict]:
+    note = (note or "").strip()[:400]
+    if not any(r["id"].rsplit(".", 1)[-1] == key and r.get("field") == "avatar" for r in brain.records("avatars")):
+        return 404, {"error": "no avatar with that key", "key": key}
+    name = next(((r.get("value") or {}).get("name") for r in brain.records("avatars") if r["id"].rsplit(".", 1)[-1] == key), key)
+    return {"id": f"{brain.brand}.avatars.note_{key}", "brand": brain.brand, "section": "avatars", "field": f"note_{key}", "value": {"avatar": key, "note": note or None}, "text": f"Founder's note on {name}: {note}" if note else f"Founder's note on {name} cleared.",
+            "tier": "approved", "confidence": 1.0, "visibility": "private", "source": {"type": "founder", "ref": "05-brand-brain audience profiles", "captured_at": brain.today.isoformat()}}
 
 
 def set_default(brain, surface: str, avatar_id: str) -> dict | tuple[int, dict]:

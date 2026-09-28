@@ -193,7 +193,7 @@ Sources: round 6's candidates (the alert digest, notes on audience profiles, res
 | # | Feature | Status | What a founder can do |
 |---|---|---|---|
 | 7.1 | The weekly alert digest (`alerts.py`, `GET alerts`, `POST alerts/sent`): one message from every check the screen runs (site changes not reviewed, competitor snapshot age, assets and consents expiring or expired, section reviews overdue, peaks inside 30 days with decisions waiting, red lines without a reason, rejected ideas due, questions open, changes this week), ranked by level with the block each line names; Mark sent writes a founder record and the next digest flags what is new since; a tab next to the weekly report; delivery is copy until a connector exists | done | Read one message a week and know everything that is due, with what appeared since the last one |
-| 7.2 | Founder notes on audience profiles | todo | |
+| 7.2 | Founder notes on audience profiles (`POST audiences/<key>/note`): one line of what the reviews cannot know (who really buys, what the gift is) as a founder avatars record, shown on the card and carried in the profile line every generator and the brain file read | done | Correct a profile built from reviews with what you know, once, for every generator |
 | 7.3 | The brand's own words: names and spellings the scanner checks | todo | |
 | 7.4 | Proof requests for claims that are not yet approved | todo | |
 | 7.5 | What agents got wrong | todo | |

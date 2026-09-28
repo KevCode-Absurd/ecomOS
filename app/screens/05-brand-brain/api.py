@@ -20,6 +20,7 @@ question, and accept or ignore on a proposed record. Nothing external.
   POST package/public           {capability, public}: flag a capability public-facing (founder record until the overlay carries it)
   GET  walkthrough              the brain end to end: 11 setup steps read from the records, the next one named
   GET  audiences                audience profiles from the avatars with their doubts, proof, approval and defaults
+  POST audiences/<key>/note     {note}: the founder's note on a profile, carried in its line
   POST audiences/default        {surface, avatar_id}: the default profile per surface (ads, email, pdp, cx, social)
   POST remember                 {text}: decisions, red lines, learnings and facts proposed from a pasted note
   POST remember/confirm         {items}: the ticked proposals written as approved founder records
@@ -2046,6 +2047,15 @@ def handle(req):
         a = audiences.profiles(brain, ladderproof)
         a.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "BRN-C10", "autonomy": "agent_does"})
         return a
+    if req.method == "POST" and len(parts) == 3 and parts[0] == "audiences" and parts[2] == "note":
+        key = re.sub(r"[^a-z0-9_]+", "", parts[1])
+        rec = audiences.note_record(brain, key, str((req.body or {}).get("note") or ""))
+        if isinstance(rec, tuple):
+            return rec
+        errs = founder_put(brain, rec, "audience", rec["text"][:160])
+        if errs:
+            return 400, {"error": "; ".join(errs)}
+        return 201, {"ok": True, "record": rec["id"], "note": rec["value"]["note"], "version": brain.version(), "next": "On the profile; the brain file carries it in the profile line."}
     if req.method == "POST" and parts == ["audiences", "default"]:
         body = req.body or {}
         rec = audiences.set_default(brain, str(body.get("surface") or ""), str(body.get("avatar_id") or ""))

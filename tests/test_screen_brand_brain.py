@@ -2623,6 +2623,22 @@ class Round7Alerts(TempBrain):
         self.assertEqual(al['delivery']['slack'], None)
 
 
+class Round7AudienceNotes(TempBrain):
+    """Round 7 feature 2: the founder's note on an audience profile, carried in the profile line and the brain file."""
+
+    def test_note_round_trip(self):
+        key = 'holiday_gift_buyer'
+        status, res = api.handle(Req(['audiences', key, 'note'], 'POST', body={'note': 'Mostly wives buying for husbands; the 4 pack at $48 is the gift.'}))
+        self.assertEqual((status, res['record']), (201, 'bombas.avatars.note_holiday_gift_buyer'))
+        p = next(x for x in api.handle(Req(['audiences']))['profiles'] if x['key'] == key)
+        self.assertEqual(p['note'][:12], 'Mostly wives')
+        self.assertIn("Founder's note: Mostly wives", p['line'])
+        self.assertIn('Mostly wives buying for husbands', api.handle(Req(['agentfile'], query={'capability': ['CREA-C06']}))['text'])
+        self.assertEqual(api.handle(Req(['audiences', key, 'note'], 'POST', body={'note': ''}))[0], 201)
+        self.assertIsNone(next(x for x in api.handle(Req(['audiences']))['profiles'] if x['key'] == key)['note'])
+        self.assertEqual(api.handle(Req(['audiences', 'nope', 'note'], 'POST', body={'note': 'x'}))[0], 404)
+
+
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
