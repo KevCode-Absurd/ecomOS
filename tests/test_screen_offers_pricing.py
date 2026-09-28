@@ -2157,5 +2157,16 @@ class WindowAgreementTest(unittest.TestCase):
         self.assertLess(fs['OFFER-R41']['windows']['read'], 4)     # 180-day windows: the data covers only 2
 
 
+class YearAgreementTest(unittest.TestCase):
+    """Round 9 feature 3: year-long Bombas rules read agreement over the 2 years the data holds."""
+
+    def test_bombas(self):
+        fs = [f for f in audit.run('bombas') if f.get('windows') and f['windows']['days'] == 365]
+        rules = {f['rule_id'] for f in fs}
+        self.assertLessEqual({'OFFER-R07', 'OFFER-R19', 'OFFER-R22'}, rules)
+        cost = next(f for f in fs if f['rule_id'] == 'OFFER-R22')
+        self.assertEqual((cost['windows']['agree'], cost['confidence']), (1, 0.5))   # the duty rise is this year's
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -1822,7 +1822,10 @@ def _net_28d(rd):
 WINDOW_RULES = {'OFFER-R10': ('rule_red_line', 28), 'OFFER-R35': ('rule_claim_stress', 28), 'OFFER-R39': ('rule_power', 28),
                 'OFFER-R32': ('rule_welcome', 90), 'OFFER-R36': ('rule_paid', 90), 'OFFER-R37': ('rule_attach', 90),
                 'OFFER-R40': ('rule_leaks', 90), 'OFFER-R41': ('rule_returners', 180), 'OFFER-R38': ('rule_code_returns', 180),
-                'OFFER-R31': ('rule_cohorts', 180)}
+                'OFFER-R31': ('rule_cohorts', 180),
+                # year-long reads from the daily and product aggregates (Bombas): 2 windows is all 2 years allow
+                'OFFER-R18': ('rule_discount', 365), 'OFFER-R19': ('rule_discount', 365), 'OFFER-R22': ('rule_cost', 365),
+                'OFFER-R07': ('rule_ladder', 365), 'OFFER-R09': ('rule_ladder', 365)}
 
 
 def _data_start(rd):
