@@ -1608,7 +1608,7 @@ def overview(data, brand):
                      'gates': gates_block(brand, data, br, rd, ends_on, findings), 'scorecard': scorecard_block(brand, data, br, rd, ends_on, findings),
                      'video': audit.video_signals(br, brand, ends_on), 'tech_packs': tech_pack_block(brand, findings),
                      'hours': dict(audit.hours_table(brand, br), findings={f['entity']['id']: f['id'] for f in findings if f['rule_id'] == 'PROD-R28'}),
-                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on), 'returns': audit.return_rates(data, brand, ends_on), 'questions': audit.open_questions(br, ends_on), 'pulls': audit.pulls(br, brand, ends_on), 'first_runs': audit.first_run_read(brand, ends_on, audit.net_28d(rd)), 'brain_freshness': audit.brain_freshness(br, ends_on), 'assumptions': audit.assumptions(br), 'strength': audit.read_strength(br, brand, data, rd, ends_on), 'line_themes': audit.line_theme_matrix(br), 'samples': audit.sample_read(brand or 'sample', ends_on), 'kills': audit.kill_memory(brand or 'sample', ends_on), 'packaging': audit.packaging_read(brand or 'sample', ends_on), 'readiness': audit.launch_readiness(brand, data, br, rd, ends_on), 'price_bands': audit.price_band_read(brand or 'sample'), 'margin_points': audit.margin_point_read(brand, data, br, rd, ends_on), 'identical_sellers': audit.identical_sellers_read(brand or 'sample', br), 'opportunity': audit.lane_opportunity(br, products(data, brand), ends_on), 'sourcing': audit.sourcing_read(brand or 'sample'), 'audit_memo': audit.memo_stats()},
+                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on), 'returns': audit.return_rates(data, brand, ends_on), 'questions': audit.open_questions(br, ends_on), 'pulls': audit.pulls(br, brand, ends_on), 'first_runs': audit.first_run_read(brand, ends_on, audit.net_28d(rd)), 'brain_freshness': audit.brain_freshness(br, ends_on), 'assumptions': audit.assumptions(br), 'strength': audit.read_strength(br, brand, data, rd, ends_on), 'line_themes': audit.line_theme_matrix(br), 'samples': audit.sample_read(brand or 'sample', ends_on), 'kills': audit.kill_memory(brand or 'sample', ends_on), 'packaging': audit.packaging_read(brand or 'sample', ends_on), 'readiness': audit.launch_readiness(brand, data, br, rd, ends_on), 'price_bands': audit.price_band_read(brand or 'sample'), 'margin_points': audit.margin_point_read(brand, data, br, rd, ends_on), 'identical_sellers': audit.identical_sellers_read(brand or 'sample', br), 'opportunity': audit.lane_opportunity(br, products(data, brand), ends_on), 'sourcing': audit.sourcing_read(brand or 'sample'), 'floors': audit.floors_read(br), 'audit_memo': audit.memo_stats()},
             'audit': {'findings': findings, 'rules': audit.RULES}}
 
 
@@ -2031,6 +2031,46 @@ def send_candidate_handoff(data, brand, cid, team, body, today):
     HANDOFFS_PATH.write_text(json.dumps(doc, indent=1), encoding='utf-8')
     return 201, {'ok': True, 'handoff': row, 'shared': shared}
 
+
+
+
+# ---------------------------------------------------------------- the floors: a founder sets a brand value through the brain
+
+def set_floors(brand, body, today, brain=None):
+    """POST floors: {key: number, ...} for keys in FLOOR_DEFAULTS; writes (or updates) the brand's learnings.research_floors
+    record through the brain store as an approved, founder-sourced record. Unknown keys and non-numbers are refused; every
+    rule on this desk reads the record on its next run."""
+    if not brand:
+        return 400, {'error': 'the sample brand has no brain to write to'}
+    br = brain or audit.brain(brand, today=today)
+    if br is None:
+        return 400, {'error': f'no brain for {brand}'}
+    body = body or {}
+    who = str(body.get('who') or 'person').strip()[:40] or 'person'
+    values = {}
+    for k, v in body.items():
+        if k == 'who':
+            continue
+        if k not in audit.FLOOR_DEFAULTS:
+            return 400, {'error': f'unknown floor {k}; keys: ' + ', '.join(audit.FLOOR_DEFAULTS)}
+        n = _num(v)
+        if n is None or n < 0:
+            return 400, {'error': f'{k} must be a number at or above 0'}
+        values[k] = n
+    if not values:
+        return 400, {'error': 'nothing to set'}
+    rid = f'{brand}.{audit.FLOORS_RECORD}'
+    cur = br.get(rid)
+    merged = dict((cur or {}).get('value') or {}) if isinstance((cur or {}).get('value'), dict) else {}
+    merged.update(values)
+    keep = ('id', 'brand', 'section', 'field', 'value', 'text', 'source', 'confidence', 'tier', 'status', 'visibility', 'added_by', 'notes', 'evidence', 'expires_at', 'valid_from')
+    rec = {k: v for k, v in (cur or {}).items() if k in keep} if cur else {'id': rid, 'brand': brand, 'section': 'learnings', 'field': 'research_floors', 'confidence': 1.0, 'tier': 'approved', 'status': 'active', 'visibility': 'public'}
+    rec.update({'value': merged, 'text': 'Research desk floors set by the founder: ' + ', '.join(f'{k} {merged[k]:g}' for k in sorted(merged)),
+                'source': {'type': 'founder', 'ref': f'{who}, research desk floors, {today.isoformat()}', 'captured_at': today.isoformat()}, 'added_by': who})
+    errs = br.put(rec)
+    if errs:
+        return 400, {'error': 'the brain refused the record', 'details': errs}
+    return 201, {'ok': True, 'record': rid, 'set': values, 'floors': audit.floors_read(br)}
 
 
 # ---------------------------------------------------------------- the launch plan: every dated step to go-live on one list
@@ -2728,6 +2768,8 @@ def handle(req):
                 return 201, take_snapshot(data, brand, today)
             if req.path == ['answers']:
                 return answer_question(brand, req.body, today)
+            if req.path == ['floors']:
+                return set_floors(brand, req.body, today)
             if len(req.path) == 3 and req.path[0] == 'handoff' and req.path[2] == 'send':
                 return send_handoff(brand, req.path[1], req.body, today)
             if len(req.path) == 4 and req.path[0] == 'candidates' and req.path[2] == 'handoff':
@@ -2736,7 +2778,7 @@ def handle(req):
                 return candidate_add(brand or 'sample', req.body, today)
             if len(req.path) == 2 and req.path[0] == 'candidates':
                 return candidate_update(brand or 'sample', req.path[1], req.body, today)
-            return 405, {'error': 'read only, except the candidate pipeline, the seen snapshot, a founder answer, a hand-off send and a go candidate hand-off'}
+            return 405, {'error': 'read only, except the candidate pipeline, the seen snapshot, a founder answer, a hand-off send, a go candidate hand-off and the floors'}
         if req.path == ['overview']:
             return overview(data, brand)
         if req.path == ['findings']:
@@ -2780,4 +2822,4 @@ def handle(req):
             return {'parked': r['parked'], 'decided': r['decided'], 'snooze_days': rank_mod.SNOOZE_DAYS, 'window': r['window']}
     except ValueError as exc:
         return 400, {'error': str(exc)}
-    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank', 'parked', 'decisions', 'calendar', 'week', 'report', 'reports', 'changes', 'log', 'candidates/<id>/brief', 'candidates/<id>/launch', 'candidates/<id>/handoff/<team> (POST)', 'handoff/<finding_id>', 'handoffs', 'product_candidates', 'tests']}
+    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank', 'parked', 'decisions', 'calendar', 'week', 'report', 'reports', 'changes', 'log', 'candidates/<id>/brief', 'candidates/<id>/launch', 'floors (POST)', 'candidates/<id>/handoff/<team> (POST)', 'handoff/<finding_id>', 'handoffs', 'product_candidates', 'tests']}

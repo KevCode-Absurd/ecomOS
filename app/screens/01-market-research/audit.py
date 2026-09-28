@@ -3788,11 +3788,63 @@ FIRST_RUN_STAGE_MIN = 2          # gated or later: the first production run is b
 FIRST_RUN_CASH_SHARE = 0.25      # first run cash at 25 percent of 28-day net revenue or more is a risk without a lower-MOQ option
 
 
+# ---------------------------------------------------------------- brand floors: the thresholds a brand can set in its brain
+
+FLOOR_DEFAULTS = {
+    'price_reject_max': (9.99, 'usd', 'Price reject line: at or under, an offer structure or a reject (bank idea PRD-077)'),
+    'price_caution_low': (9.0, 'usd', 'Price caution band, low end (bank idea PRD-078)'),
+    'price_caution_high': (20.0, 'usd', 'Price caution band, high end (bank idea PRD-078)'),
+    'price_target_low': (50.0, 'usd', 'Target band for a paid launch, low end (bank idea PRD-078)'),
+    'price_target_high': (150.0, 'usd', 'Target band for a paid launch, high end (bank idea PRD-078)'),
+    'identical_sellers': (10, 'sellers', 'Identical sellers that make a candidate a cash test (bank idea PRD-056)'),
+    'first_run_cash_share': (0.25, 'ratio', 'First run cash as a share of 28-day net revenue that is a risk without a lower-MOQ option (bank idea BRD-249)'),
+    'kill_hold_days': (90, 'days', 'Days a killed candidate stays killed'),
+    'opportunity_strong': (60, 'score', 'Lane opportunity score that makes a lane worth a candidate'),
+    'opp_weight_demand': (30, 'weight', 'Opportunity weight: demand'),
+    'opp_weight_competition': (25, 'weight', 'Opportunity weight: room from competitors'),
+    'opp_weight_price_room': (15, 'weight', 'Opportunity weight: price room'),
+    'opp_weight_complaint_room': (15, 'weight', 'Opportunity weight: a complaint to build on'),
+    'opp_weight_presence': (15, 'weight', 'Opportunity weight: room for us'),
+}
+FLOORS_RECORD = 'learnings.research_floors'   # the brain record (value: {key: number}) that overrides the defaults, set by the founder
+
+
+def floors_for(x):
+    """The effective floors for a brand (a Brain, a brand string or None): each key with its value, the default, the unit,
+    what it means and its source (brand when the brain's learnings.research_floors record sets a valid number, else
+    default). An invalid or negative value falls back to the default and says so."""
+    br = x if hasattr(x, 'records') else (brain(x) if x and str(x) != 'sample' else None)
+    rec = br.get(f'{br.brand}.{FLOORS_RECORD}') if br is not None else None
+    v = (rec or {}).get('value') if rec else None
+    v = v if isinstance(v, dict) else {}
+    out = {}
+    for k, (d, unit, label) in FLOOR_DEFAULTS.items():
+        raw = v.get(k)
+        ok = isinstance(raw, (int, float)) and not isinstance(raw, bool) and raw >= 0 and (unit != 'ratio' or raw <= 1)
+        out[k] = {'value': (float(raw) if unit in ('usd', 'ratio') else int(raw)) if ok else d, 'default': d, 'unit': unit, 'label': label, 'source': 'brand' if ok else ('invalid, default used' if raw is not None else 'default')}
+    lo, hi = out['price_caution_low']['value'], out['price_caution_high']['value']
+    if lo >= hi:
+        out['price_caution_high'] = dict(out['price_caution_high'], value=FLOOR_DEFAULTS['price_caution_high'][0], source='invalid, default used')
+    if out['price_target_low']['value'] >= out['price_target_high']['value']:
+        out['price_target_high'] = dict(out['price_target_high'], value=FLOOR_DEFAULTS['price_target_high'][0], source='invalid, default used')
+    return out
+
+
+def floors_read(x):
+    """The floors as a table for the desk: rows with key, label, value, default, unit, source; the record id; the rule."""
+    fl = floors_for(x)
+    br = x if hasattr(x, 'records') else None
+    rows = [dict(fl[k], key=k) for k in FLOOR_DEFAULTS]
+    return {'rows': rows, 'record': f'{br.brand}.{FLOORS_RECORD}' if br is not None else None, 'brand_set': sum(1 for r in rows if r['source'] == 'brand'),
+            'rule': 'every threshold on this desk starts at the bank\'s default; a founder sets a brand value through the floors record in the brain (approved, founder-sourced) and every rule here reads it on the next run; an invalid value falls back to the default and says so'}
+
+
 def first_run_read(brand, ends_on, net_28d):
     """Per candidate at gated or later: the first production run on file (units, the format's MOQ, the format, cash out, the
     lower-MOQ alternative considered), the cash as a share of 28-day net revenue, and the verdict: no plan, full-MOQ risk
     (cash at the share floor or more, or MOQ above the units wanted, with no lower-MOQ option noted), sized, or not yet
     (before gated). Bank idea BRD-249: a lower-MOQ format on the first run lets demand prove itself before capital goes in."""
+    cash_share = floors_for(brand)['first_run_cash_share']['value']
     rows = []
     for c in pipeline(brand):
         st = c.get('stage')
@@ -3802,7 +3854,7 @@ def first_run_read(brand, ends_on, net_28d):
         share = round(cash / net_28d, 4) if cash is not None and net_28d else None
         moq_over = (fr.get('moq_units') or 0) > (fr.get('units') or 0) if fr.get('moq_units') is not None and fr.get('units') is not None else None
         option = bool(str(fr.get('lower_moq_option') or '').strip())
-        sizing = 'no_plan' if not fr else 'full_moq_risk' if not option and ((share is not None and share >= FIRST_RUN_CASH_SHARE) or share is None or moq_over) else 'sized'
+        sizing = 'no_plan' if not fr else 'full_moq_risk' if not option and ((share is not None and share >= cash_share) or share is None or moq_over) else 'sized'
         if st in CLOSED_STAGES:
             verdict = 'closed'
         elif idx is None or idx < FIRST_RUN_STAGE_MIN:
@@ -3814,8 +3866,8 @@ def first_run_read(brand, ends_on, net_28d):
                      'decided_on': fr.get('decided_on'), 'verdict': verdict, 'sizing': sizing, 'finding_id': f'{SCREEN}.PROD-R37.{c.get("candidate_id")}'})
     order = {'full_moq_risk': 0, 'no_plan': 1, 'sized': 2, 'not_yet': 3, 'closed': 4}
     rows.sort(key=lambda r: (order[r['verdict']], r['name'] or ''))
-    return {'rows': rows, 'net_28d': net_28d, 'share_floor': FIRST_RUN_CASH_SHARE,
-            'rule': f'from {STAGES[FIRST_RUN_STAGE_MIN]} on, a candidate needs a first run on file; the run is a risk when its cash is {int(FIRST_RUN_CASH_SHARE * 100)} percent or more of 28-day net revenue (or revenue is unknown), or the format\'s MOQ is above the units wanted, and no lower-MOQ alternative is noted (bank idea BRD-249)'}
+    return {'rows': rows, 'net_28d': net_28d, 'share_floor': cash_share,
+            'rule': f'from {STAGES[FIRST_RUN_STAGE_MIN]} on, a candidate needs a first run on file; the run is a risk when its cash is {int(cash_share * 100)} percent or more of 28-day net revenue (or revenue is unknown), or the format\'s MOQ is above the units wanted, and no lower-MOQ alternative is noted (bank idea BRD-249)'}
 
 
 def first_run_findings(brand, ends_on, net_28d):
@@ -3826,7 +3878,7 @@ def first_run_findings(brand, ends_on, net_28d):
         if r['verdict'] not in ('no_plan', 'full_moq_risk'):
             continue
         cid = r['candidate_id']
-        ev = [_ev('first_run_cash_share_28d', r['cash_share_28d'], 'ratio', ends_on.isoformat(), 'first run plan', FIRST_RUN_CASH_SHARE, 'threshold', source='fixtures.pipeline', simulated=False, freshness_days=0,
+        ev = [_ev('first_run_cash_share_28d', r['cash_share_28d'], 'ratio', ends_on.isoformat(), 'first run plan', fr['share_floor'], 'threshold', source='fixtures.pipeline', simulated=False, freshness_days=0,
                   cash_usd=r['cash_usd'], net_28d=net_28d, units=r['units'], moq_units=r['moq_units'], format=r['format']),
               _ev('lower_moq_option_noted', 1 if r['lower_moq_option'] else 0, 'count', ends_on.isoformat(), 'first run plan', 1, 'threshold', source='fixtures.pipeline', simulated=False, freshness_days=0)]
         if r['verdict'] == 'no_plan':
@@ -4509,6 +4561,7 @@ def content_words(*texts):
 def kill_memory(brand, ends_on):
     """Killed candidates with the reason, the date, the 90-day hold, and the open candidates that read like them (3 or more
     shared content words in name and angle). The desk remembers a kill so the same idea is not re-screened on the same signal."""
+    hold_days = floors_for(brand)['kill_hold_days']['value']
     rows = [c for c in pipeline(brand)]
     killed, open_ = [], []
     for c in rows:
@@ -4520,8 +4573,8 @@ def kill_memory(brand, ends_on):
             reason = c.get('kill_reason') or (str((entry or {}).get('what') or '').split('killed:', 1)[-1].strip() if entry and 'killed:' in str(entry.get('what') or '') else None)
             days = (ends_on - date.fromisoformat(killed_on)).days if killed_on else None
             killed.append({'candidate_id': c.get('candidate_id'), 'name': c.get('name'), 'killed_on': killed_on, 'days_since': days,
-                           'hold_until': (date.fromisoformat(killed_on) + timedelta(days=KILL_HOLD_DAYS)).isoformat() if killed_on else None,
-                           'in_hold': days is not None and days <= KILL_HOLD_DAYS, 'reason': reason, 'words': sorted(content_words(c.get('name'), c.get('angle_text'))), 'lookalikes': []})
+                           'hold_until': (date.fromisoformat(killed_on) + timedelta(days=hold_days)).isoformat() if killed_on else None,
+                           'in_hold': days is not None and days <= hold_days, 'reason': reason, 'words': sorted(content_words(c.get('name'), c.get('angle_text'))), 'lookalikes': []})
         elif st not in CLOSED_STAGES:
             open_.append(c)
     for k in killed:
@@ -4531,8 +4584,8 @@ def kill_memory(brand, ends_on):
             if len(shared) >= KILL_MATCH_WORDS:
                 k['lookalikes'].append({'candidate_id': c.get('candidate_id'), 'name': c.get('name'), 'stage': c.get('stage'), 'shared': sorted(shared)})
     killed.sort(key=lambda k: (0 if k['in_hold'] else 1, -(len(k['lookalikes'])), k['killed_on'] or ''))
-    return {'rows': killed, 'hold_days': KILL_HOLD_DAYS,
-            'rule': f'a killed candidate stays killed for {KILL_HOLD_DAYS} days; an open candidate that shares {KILL_MATCH_WORDS} or more content words with one killed inside the hold is a re-screen of the same idea until a new signal is named'}
+    return {'rows': killed, 'hold_days': hold_days,
+            'rule': f'a killed candidate stays killed for {hold_days} days; an open candidate that shares {KILL_MATCH_WORDS} or more content words with one killed inside the hold is a re-screen of the same idea until a new signal is named'}
 
 
 def kill_findings(brand, ends_on):
@@ -4772,6 +4825,10 @@ def price_band_read(brand):
     reject line, the caution band and the target band, the offer structure and band check noted, and the verdict: no_price,
     not_yet (before researched), reject (at or under the line, no offer structure), caution (in the caution band, no band
     check), below_target, in_target, above_target."""
+    fl = floors_for(brand)
+    reject_max = fl['price_reject_max']['value']
+    caution = (fl['price_caution_low']['value'], fl['price_caution_high']['value'])
+    target = (fl['price_target_low']['value'], fl['price_target_high']['value'])
     rows = []
     for c in pipeline(brand):
         st = c.get('stage')
@@ -4783,13 +4840,13 @@ def price_band_read(brand):
         check = str(c.get('price_band_check') or '').strip() or None
         if price is None:
             band, verdict = None, 'no_price'
-        elif price <= PRICE_REJECT_MAX:
+        elif price <= reject_max:
             band, verdict = 'reject', 'reject' if not offer else 'caution' if not check else 'below_target'
-        elif PRICE_CAUTION[0] < price < PRICE_CAUTION[1]:
+        elif caution[0] < price < caution[1]:
             band, verdict = 'caution', 'caution' if not check else 'below_target'
-        elif price < PRICE_TARGET[0]:
+        elif price < target[0]:
             band, verdict = 'below_target', 'below_target'
-        elif price <= PRICE_TARGET[1]:
+        elif price <= target[1]:
             band, verdict = 'in_target', 'in_target'
         else:
             band, verdict = 'above_target', 'above_target'
@@ -4799,23 +4856,25 @@ def price_band_read(brand):
                      'offer_structure': offer, 'price_band_check': check, 'verdict': verdict, 'finding_id': f'{SCREEN}.PROD-R51.{c.get("candidate_id")}'})
     order = {'reject': 0, 'caution': 1, 'no_price': 2, 'not_yet': 3, 'below_target': 4, 'in_target': 5, 'above_target': 6}
     rows.sort(key=lambda r: (order[r['verdict']], r['name'] or ''))
-    return {'rows': rows, 'reject_max': PRICE_REJECT_MAX, 'caution': list(PRICE_CAUTION), 'target': list(PRICE_TARGET),
-            'rule': f'a planned price at or under ${PRICE_REJECT_MAX} needs an offer structure that raises the order value (a bundle, a multi-pack, a subscription) or the candidate is rejected; ${PRICE_CAUTION[0]:g} to ${PRICE_CAUTION[1]:g} needs a band check before the margin gate is trusted; the target band for a paid-acquisition launch is ${PRICE_TARGET[0]:g} to ${PRICE_TARGET[1]:g}; below it the candidate sells on organic, retention or as a bundle part (bank ideas PRD-077, PRD-078)'}
+    return {'rows': rows, 'reject_max': reject_max, 'caution': list(caution), 'target': list(target), 'floors_source': {k: fl[k]['source'] for k in ('price_reject_max', 'price_caution_low', 'price_caution_high', 'price_target_low', 'price_target_high')},
+            'rule': f'a planned price at or under ${reject_max:g} needs an offer structure that raises the order value (a bundle, a multi-pack, a subscription) or the candidate is rejected; ${caution[0]:g} to ${caution[1]:g} needs a band check before the margin gate is trusted; the target band for a paid-acquisition launch is ${target[0]:g} to ${target[1]:g}; below it the candidate sells on organic, retention or as a bundle part (bank ideas PRD-077, PRD-078)'}
 
 
 def price_band_findings(brand, ends_on):
     """PROD-R51: an open candidate at researched or later priced at or under $9.99 with no offer structure, or inside the caution band with no band check."""
     out = []
-    for r in price_band_read(brand)['rows']:
+    pb = price_band_read(brand)
+    reject_max, caution, target = pb['reject_max'], tuple(pb['caution']), tuple(pb['target'])
+    for r in pb['rows']:
         if r['verdict'] not in ('reject', 'caution'):
             continue
         cid = r['candidate_id']
-        ev = [_ev('planned_price_usd', r['planned_price'], 'usd', ends_on.isoformat(), 'candidate now', PRICE_REJECT_MAX if r['verdict'] == 'reject' else PRICE_CAUTION[1], 'threshold', source='fixtures.pipeline', simulated=False, freshness_days=0,
-                  band=r['band'], target=list(PRICE_TARGET), offer_structure=r['offer_structure'], price_band_check=r['price_band_check'])]
+        ev = [_ev('planned_price_usd', r['planned_price'], 'usd', ends_on.isoformat(), 'candidate now', reject_max if r['verdict'] == 'reject' else caution[1], 'threshold', source='fixtures.pipeline', simulated=False, freshness_days=0,
+                  band=r['band'], target=list(target), offer_structure=r['offer_structure'], price_band_check=r['price_band_check'])]
         if r['verdict'] == 'reject':
-            sentence = f'{r["name"]} is planned at ${r["planned_price"]:g}, at or under the ${PRICE_REJECT_MAX} line, with no offer structure to raise the order value; paid acquisition cannot pay back at that price.'
+            sentence = f'{r["name"]} is planned at ${r["planned_price"]:g}, at or under the ${reject_max:g} line, with no offer structure to raise the order value; paid acquisition cannot pay back at that price.'
         else:
-            sentence = f'{r["name"]} is planned at ${r["planned_price"]:g}, inside the ${PRICE_CAUTION[0]:g} to ${PRICE_CAUTION[1]:g} caution band, with no band check noted; the target band for a paid launch is ${PRICE_TARGET[0]:g} to ${PRICE_TARGET[1]:g}.'
+            sentence = f'{r["name"]} is planned at ${r["planned_price"]:g}, inside the ${caution[0]:g} to ${caution[1]:g} caution band, with no band check noted; the target band for a paid launch is ${target[0]:g} to ${target[1]:g}.'
         f = _finding('PROD-R51', cid, ends_on, 'high' if r['verdict'] == 'reject' else 'medium', ev, sentence, None, 0.7, [], money_reason='an unlaunched SKU has no baseline to price the gap')
         f['entity'] = {'type': 'sku', 'id': cid, 'label': r['name'], 'candidate': True, 'stage': r['stage'], 'planned_price': r['planned_price'], 'verdict': r['verdict'], 'pack_units': r['pack_units']}
         f['id'] = f'{SCREEN}.PROD-R51.{cid}'
@@ -4933,6 +4992,7 @@ def identical_sellers_read(brand, br):
     and the verdict: cash_test (10 or more sellers in a live pull, no cash-test plan noted), cash_test_planned (the plan is
     noted), brand_ok (a live pull read fewer), no_match (a live pull with no matching listing), not_read (no pull, or a
     mock pull, whose sellers are never read as fact)."""
+    floor = floors_for(br if br is not None else brand)['identical_sellers']['value']
     lp = listing_pull_for(br) if br is not None else listing_pull_for(brand)
     lp = lp or {}
     live = lp.get('mode') == 'live'
@@ -4956,7 +5016,7 @@ def identical_sellers_read(brand, br):
             verdict = 'not_read'
         elif not matches:
             verdict = 'no_match'
-        elif (sellers or 0) >= IDENTICAL_SELLERS:
+        elif (sellers or 0) >= floor:
             verdict = 'cash_test_planned' if plan else 'cash_test'
         else:
             verdict = 'brand_ok'
@@ -4964,18 +5024,19 @@ def identical_sellers_read(brand, br):
                      'cash_test_plan': plan, 'verdict': verdict, 'finding_id': f'{SCREEN}.PROD-R54.{c.get("candidate_id")}'})
     order = {'cash_test': 0, 'cash_test_planned': 1, 'brand_ok': 2, 'no_match': 3, 'not_read': 4}
     rows.sort(key=lambda r: (order[r['verdict']], r['name'] or ''))
-    return {'rows': rows, 'pull': {'mode': lp.get('mode'), 'captured_at': lp.get('captured_at'), 'rows': len(lp.get('rows') or [])} if lp else None, 'floor': IDENTICAL_SELLERS,
-            'rule': f'{IDENTICAL_SELLERS} or more sellers of the identical item in a live listing pull means a short-window cash test with its own stop rule, not a brand SKU; a mock pull never counts, and a cash-test plan noted on the candidate settles it (bank idea PRD-056)'}
+    return {'rows': rows, 'pull': {'mode': lp.get('mode'), 'captured_at': lp.get('captured_at'), 'rows': len(lp.get('rows') or [])} if lp else None, 'floor': floor, 'floor_source': floors_for(br if br is not None else brand)['identical_sellers']['source'],
+            'rule': f'{floor} or more sellers of the identical item in a live listing pull means a short-window cash test with its own stop rule, not a brand SKU; a mock pull never counts, and a cash-test plan noted on the candidate settles it (bank idea PRD-056)'}
 
 
 def identical_seller_findings(brand, br, ends_on):
     """PROD-R54: a candidate planned as a brand SKU whose identical item has 10 or more sellers in a live pull."""
     out = []
-    for r in identical_sellers_read(brand, br)['rows']:
+    idn = identical_sellers_read(brand, br)
+    for r in idn['rows']:
         if r['verdict'] != 'cash_test':
             continue
         cid = r['candidate_id']
-        ev = [_ev('identical_sellers', r['sellers'], 'count', ends_on.isoformat(), 'listing pull', IDENTICAL_SELLERS, 'threshold', source='fixtures.amazon_listings', simulated=False, freshness_days=0,
+        ev = [_ev('identical_sellers', r['sellers'], 'count', ends_on.isoformat(), 'listing pull', idn['floor'], 'threshold', source='fixtures.amazon_listings', simulated=False, freshness_days=0,
                   basis=r['basis'], listings=[m['asin'] for m in r['matches']])]
         sentence = f'{r["name"]}: {r["sellers"]} sellers offer the identical item on Amazon ({r["basis"]}); that is a short cash test with a stop rule, not a brand SKU.'
         f = _finding('PROD-R54', cid, ends_on, 'medium', ev, sentence, None, 0.7, [], money_reason='an unlaunched SKU has no baseline to price the gap')
@@ -5000,8 +5061,11 @@ def lane_opportunity(br, prods, ends_on):
     our listings that match the lane, against the 15 percent rule), and room for us (a lane we do not sell scores highest,
     one we sell and advertise lowest). The score averages the parts that were read, weighted; fewer than 3 parts read is
     thin. Each lane names its open candidates, so the top lane with none ends in a screen-in."""
+    fl = floors_for(br)
+    weights = {k: fl['opp_weight_' + k]['value'] for k in OPP_WEIGHTS}
+    strong = fl['opportunity_strong']['value']
     if br is None:
-        return {'rows': [], 'weights': OPP_WEIGHTS, 'labels': OPP_LABEL, 'rule': None}
+        return {'rows': [], 'weights': dict(OPP_WEIGHTS), 'labels': OPP_LABEL, 'rule': None}
     lm = lane_map(br, ends_on)
     price = review_price_signal(br)
     site = our_price_per_pair(prods, br).get('value')
@@ -5023,17 +5087,17 @@ def lane_opportunity(br, prods, ends_on):
         parts['complaint_room'] = round(min(1.0, max(rates) / COMPLAINT_RATE), 3) if rates else None
         parts['presence'] = 1.0 if not pt['sold'] else 0.6 if not pt['advertised'] else 0.2
         read = {k: v for k, v in parts.items() if v is not None}
-        wsum = sum(OPP_WEIGHTS[k] for k in read)
-        score = round(sum(OPP_WEIGHTS[k] * v for k, v in read.items()) / wsum * 100) if wsum else None
+        wsum = sum(weights[k] for k in read)
+        score = round(sum(weights[k] * v for k, v in read.items()) / wsum * 100) if wsum else None
         open_c = [c.get('name') for c in cands if any(t in (str(c.get('name') or '') + ' ' + str(c.get('angle_text') or '')).lower() for t in terms)]
-        verdict = 'thin' if len(read) < OPP_MIN_PARTS or score is None else 'strong_no_candidate' if score >= OPP_STRONG and not open_c else 'strong' if score >= OPP_STRONG else 'weak'
+        verdict = 'thin' if len(read) < OPP_MIN_PARTS or score is None else 'strong_no_candidate' if score >= strong and not open_c else 'strong' if score >= strong else 'weak'
         rows.append({'key': pt['key'], 'label': label, 'score': score, 'parts': parts, 'parts_read': len(read), 'of': len(OPP_WEIGHTS), 'sellers': pt['x'], 'trend': pt['y'], 'quadrant': pt['quadrant'],
                      'sold': pt['sold'], 'advertised': pt['advertised'], 'complaint_listings': [l['asin'] for l in matched], 'open_candidates': open_c, 'verdict': verdict, 'finding_id': pt['finding_id']})
     rows.sort(key=lambda r: (-(r['score'] if r['score'] is not None else -1), r['label']))
     for i, r in enumerate(rows):
         r['rank'] = i + 1
-    return {'rows': rows, 'weights': OPP_WEIGHTS, 'labels': OPP_LABEL, 'strong': OPP_STRONG, 'min_parts': OPP_MIN_PARTS, 'site_per_pair': site, 'review_median_per_pair': price.get('median_per_pair'),
-            'rule': f'score = weighted mean of the parts read (demand {OPP_WEIGHTS["demand"]}, room from competitors {OPP_WEIGHTS["competition"]}, price room {OPP_WEIGHTS["price_room"]}, complaint to build on {OPP_WEIGHTS["complaint_room"]}, room for us {OPP_WEIGHTS["presence"]}) times 100; fewer than {OPP_MIN_PARTS} parts read is thin; {OPP_STRONG} or more with no open candidate is a lane to screen a candidate into; the score ranks lanes, it never replaces the demand screen'}
+    return {'rows': rows, 'weights': weights, 'labels': OPP_LABEL, 'strong': strong, 'floors_source': {k: fl[k]['source'] for k in fl if k.startswith('opp')}, 'min_parts': OPP_MIN_PARTS, 'site_per_pair': site, 'review_median_per_pair': price.get('median_per_pair'),
+            'rule': f'score = weighted mean of the parts read (demand {weights["demand"]}, room from competitors {weights["competition"]}, price room {weights["price_room"]}, complaint to build on {weights["complaint_room"]}, room for us {weights["presence"]}) times 100; fewer than {OPP_MIN_PARTS} parts read is thin; {strong} or more with no open candidate is a lane to screen a candidate into; the score ranks lanes, it never replaces the demand screen'}
 
 
 # ---------------------------------------------------------------- the sourcing channel, compared against at least one alternative

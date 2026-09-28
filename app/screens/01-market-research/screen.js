@@ -930,6 +930,24 @@
         open.length && actionFor(open[0].finding_id) ? { label: 'Open the first', onClick: () => openAction(actionFor(open[0].finding_id)) } : null));
   }
 
+  function floorsBlock(fl) {
+    const rows = (fl && fl.rows) || [];
+    if (!rows.length) return el('p', { class: 'muted', text: 'No floors to show.' });
+    const fmtv = (r) => r.unit === 'usd' ? fmt.money(r.value) : r.unit === 'ratio' ? Math.round(r.value * 100) + ' percent' : r.value + ' ' + r.unit;
+    const fmtd = (r) => r.unit === 'usd' ? fmt.money(r.default) : r.unit === 'ratio' ? Math.round(r.default * 100) + ' percent' : r.default + ' ' + r.unit;
+    const setOne = async (r) => { if (brand === 'sample') { alert('The sample brand has no brain to write to.'); return; } const v = prompt('Brand value for: ' + r.label + ' (' + r.unit + (r.unit === 'ratio' ? ', 0 to 1' : '') + '). Default ' + fmtd(r) + '.', r.value); if (v == null || !v.trim()) return;
+      try { const body = { who: 'person' }; body[r.key] = v.trim(); await api(BASE + 'floors' + Q, { method: 'POST', body }); load(); } catch (e) { alert('Not set: ' + e.message); } };
+    const vrows = rows.map((r) => Object.assign({}, r, { valueText: fmtv(r), defText: fmtd(r), actions: [{ label: 'Set the brand value', cls: 'quiet', onClick: () => setOne(r) }] }));
+    const tbl = UI.verdictTable({
+      columns: [{ key: 'label', label: 'Floor' }, { key: 'valueText', label: 'In force' }, { key: 'defText', label: 'Default' }],
+      rows: vrows,
+      verdict: { at: 1, kind: (r) => r.source === 'brand' ? 'keep' : r.source === 'default' ? 'na' : 'fix', text: (r) => r.source === 'brand' ? 'Brand value' : r.source === 'default' ? 'Default' : 'Invalid, default used', reason: () => fl.rule },
+      actions: { label: 'Do', onClick: () => {} }, sort: false });
+    return el('div', { class: 'stack' }, el('div', { class: 'card scroll' }, tbl),
+      el('p', { class: 'micro faint', text: 'Rule: ' + fl.rule + (fl.record ? ' Record: ' + fl.record + '.' : ' The sample brand has no brain, so every floor is the default.') }),
+      gapLine(fl.brand_set ? fl.brand_set + ' floor' + (fl.brand_set === 1 ? ' is' : 's are') + ' the brand\'s own; the rest read the bank\'s defaults.' : 'Every floor reads the bank\'s default. Set the brand\'s own where the founder knows better (the price band for this category first).', null));
+  }
+
   function scorecardBlock(sc) {
     const rows = (sc && sc.rows) || [];
     if (!rows.length) return el('p', { class: 'muted', text: 'No candidate to score.' });
@@ -1382,6 +1400,7 @@
     parts.push(section('desk-pulls', 'How fresh is what this desk reads, and what would a refresh cost?', 'Every pull the desk depends on: its last capture, age against its window, the blocks it feeds and the estimate for a run under the brand\'s caps. A person approves each paid call; nothing runs from here.', pullsBlock(d.pulls)));
     parts.push(section('desk-brain', 'How fresh is the brain this desk reads?', 'The brain sections behind the rules here, each with its records, last update, age against the contract TTL, stale and conflict counts and confidence; a conflict waits on the founder, a stale section waits on a pull or the keeper.', brainFreshnessBlock(d.brain_freshness)));
     parts.push(section('desk-assumptions', 'What do the simulated numbers assume?', 'The calibration assumptions behind the simulated tables: value, status (founder, sourced, derived, modelled), as-of date, sources, and which rules here price with them. Founder-confirmed or not, said plainly.', assumptionsBlock(d.assumptions)));
+    parts.push(section('desk-floors', 'Which thresholds on this desk are the brand\'s own, and which are the bank\'s defaults?', 'Every floor the rules here read: the price reject line and bands, the identical-sellers floor, the first-run cash share, the kill hold, the opportunity weights and the strong line. A founder sets a brand value; it is written to the brain as an approved, founder-sourced record and every rule reads it on the next run.', floorsBlock(d.floors)));
     const jumps = UI.pills({ items: parts.map((p) => ({ key: p.id, label: p.querySelector('h2').textContent.replace(/\?.*$/, '?').split(',')[0].slice(0, 42) })), onChange: (key) => { const t = document.getElementById(key); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); } });
     const memo = d.audit_memo || {};
     const memoLine = memo.on ? 'The audit ran ' + (memo.runs || 0) + ' time' + (memo.runs === 1 ? '' : 's') + ' in this server process and served ' + (memo.served || 0) + ' request' + (memo.served === 1 ? '' : 's') + ' from memory; a write to the pipeline, a fixture, the ledger or the brain runs it again.' : 'The audit memo is off: every route runs the audit.';

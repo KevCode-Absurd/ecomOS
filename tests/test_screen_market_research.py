@@ -2274,6 +2274,71 @@ class OpportunityTest(unittest.TestCase):
         self.assertTrue(all(a.get('opportunity') is None for a in r['actions'] if a.get('rule_id') in api.CANDIDATE_RULES))
 
 
+class FloorsTest(unittest.TestCase):
+    class Stub:
+        brand = 'fake'
+        def __init__(self, value): self.value = value
+        def records(self, section): return []
+        def get(self, rid): return {'id': rid, 'value': self.value} if rid == 'fake.learnings.research_floors' and self.value is not None else None
+
+    def test_floors_default_brand_and_invalid(self):
+        d = audit.floors_for(None)
+        self.assertEqual((d['price_reject_max']['value'], d['price_reject_max']['source'], d['kill_hold_days']['value']), (9.99, 'default', 90))
+        self.assertEqual(audit.floors_for('sample')['identical_sellers']['source'], 'default')
+        fl = audit.floors_for(self.Stub({'price_reject_max': 14.99, 'identical_sellers': 6, 'first_run_cash_share': 1.5, 'kill_hold_days': -3, 'opp_weight_demand': 50, 'price_caution_low': 30, 'price_caution_high': 20}))
+        self.assertEqual((fl['price_reject_max']['value'], fl['price_reject_max']['source']), (14.99, 'brand'))
+        self.assertEqual((fl['identical_sellers']['value'], fl['identical_sellers']['source']), (6, 'brand'))
+        self.assertEqual((fl['first_run_cash_share']['value'], fl['first_run_cash_share']['source']), (0.25, 'invalid, default used'))   # a share above 1
+        self.assertEqual((fl['kill_hold_days']['value'], fl['kill_hold_days']['source']), (90, 'invalid, default used'))              # negative
+        self.assertEqual(fl['price_caution_high']['source'], 'invalid, default used')                                                  # low above high
+        self.assertEqual(fl['opp_weight_demand']['value'], 50)
+        read = audit.floors_read(self.Stub({'identical_sellers': 6}))
+        self.assertEqual((read['brand_set'], read['record']), (1, 'fake.learnings.research_floors'))
+        self.assertEqual(len(read['rows']), len(audit.FLOOR_DEFAULTS))
+
+    def test_floors_reach_the_rules(self):
+        D = date(2026, 9, 27)
+        stub = self.Stub({'price_reject_max': 14.99, 'identical_sellers': 3, 'opportunity_strong': 90, 'opp_weight_demand': 100, 'opp_weight_competition': 0, 'opp_weight_price_room': 0, 'opp_weight_complaint_room': 0, 'opp_weight_presence': 0})
+        saved = (audit.brain, audit.PIPELINE_PATH, audit.listing_pull)
+        import tempfile
+        tmp = Path(tempfile.mkdtemp()) / 'pipeline.json'
+        try:
+            audit.brain = lambda b, today=None: stub if b == 'fake' else None
+            audit.PIPELINE_PATH = tmp
+            tmp.write_text(json.dumps({'rows': [{'candidate_id': 'a', 'brand': 'fake', 'name': 'Merino calf sock', 'stage': 'researched', 'planned_price': 12.0}]}), encoding='utf-8')
+            pb = audit.price_band_read('fake')
+            self.assertEqual((pb['reject_max'], pb['floors_source']['price_reject_max'], pb['rows'][0]['verdict']), (14.99, 'brand', 'reject'))   # $12 is under the brand's own line
+            self.assertIn('$14.99', audit.price_band_findings('fake', D)[0]['sentence'])
+            audit.listing_pull = lambda: {'brand': 'fake', 'mode': 'live', 'rows': [{'asin': 'B1', 'title': 'Merino Calf Sock', 'seller': 'S', 'offers_count': 4}]}
+            idn = audit.identical_sellers_read('fake', stub)
+            self.assertEqual((idn['floor'], idn['floor_source'], idn['rows'][0]['verdict']), (3, 'brand', 'cash_test'))                 # 4 sellers trips a floor of 3
+            op = audit.lane_opportunity(audit.brain('bombas') if False else stub, [], D)
+            self.assertEqual((op['weights']['demand'], op['strong']), (100, 90))
+        finally:
+            audit.brain, audit.PIPELINE_PATH, audit.listing_pull = saved
+
+    def test_set_floors_writes_a_founder_record(self):
+        import tempfile, sys
+        if str(audit.APP / 'brain') not in sys.path:
+            sys.path.insert(0, str(audit.APP / 'brain'))
+        import store, shutil
+        root = Path(tempfile.mkdtemp())
+        shutil.copytree(audit.APP / 'brain' / 'bombas', root / 'bombas')
+        br = store.Brain('bombas', root=root, today=date(2026, 9, 28))
+        code, out = api.set_floors('bombas', {'price_reject_max': '14.99', 'identical_sellers': 6, 'who': 'kevin'}, date(2026, 9, 28), brain=br)
+        self.assertEqual(code, 201, out)
+        self.assertEqual(out['set'], {'price_reject_max': 14.99, 'identical_sellers': 6.0})
+        rec = br.get('bombas.learnings.research_floors')
+        self.assertEqual((rec['tier'], rec['status'], rec['source']['type'], rec['value']['identical_sellers']), ('approved', 'active', 'founder', 6.0))
+        self.assertEqual(audit.floors_for(br)['price_reject_max']['source'], 'brand')
+        code, out = api.set_floors('bombas', {'kill_hold_days': 120}, date(2026, 9, 29), brain=br)     # a second set merges into the record
+        self.assertEqual(code, 201)
+        self.assertEqual(set(br.get('bombas.learnings.research_floors')['value']), {'price_reject_max', 'identical_sellers', 'kill_hold_days'})
+        self.assertEqual(api.set_floors('bombas', {'moon': 1}, date(2026, 9, 28), brain=br)[0], 400)
+        self.assertEqual(api.set_floors('bombas', {'kill_hold_days': 'soon'}, date(2026, 9, 28), brain=br)[0], 400)
+        self.assertEqual(api.set_floors(None, {'kill_hold_days': 1}, date(2026, 9, 28))[0], 400)
+
+
 class SecondBrandTest(unittest.TestCase):
     """The desk is not Bombas-shaped: the sample brand (Tallgrass Goods, kitchen goods, no brain, no web pass) reads
     nothing of Bombas and every route still answers."""
