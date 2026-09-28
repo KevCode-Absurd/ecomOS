@@ -1029,6 +1029,22 @@ class TestHistory(unittest.TestCase):
             shutil.rmtree(tmp)
 
 
+class TestMacros(TempBrain):
+    """4.8: support answers from verified proof only; a doubt with no proof gets no answer."""
+    def test_macros(self):
+        api.BRAIN_ROOT = self.tmp
+        mc = api.handle(Req(['overview']))['macros']
+        self.assertTrue(mc['rows'])
+        self.assertEqual(mc['ready'], sum(1 for x in mc['rows'] if x['answer']))
+        stance = next(x for x in mc['rows'] if 'Stance' in x['question'])
+        self.assertIsNone(stance['answer'])
+        self.assertIn('Stance', ' '.join(mc['missing']))
+        for x in mc['rows']:
+            if x['answer']:
+                self.assertNotIn('worse', x['answer'].lower())
+                self.assertTrue(x['source'])
+
+
 class TestRank(TempBrain):
     """Depth contract rules 2, 3 and 13: owner, steps and artefact on every action; every finding ends in one."""
     W = {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4}
@@ -1142,7 +1158,7 @@ class TestPage(unittest.TestCase):
         js = (SCREEN / 'screen.js').read_text(encoding='utf-8')
         html = (SCREEN / 'index.html').read_text(encoding='utf-8')
         desk = html.split('id="desk-src"', 1)[1].split('<!-- 6. The audit -->', 1)[0]
-        for sec_id in ('pages', 'history', 'cards', 'landing', 'losses', 'category', 'reviews', 'coverage', 'velocity', 'mix', 'placements', 'refs', 'changes',
+        for sec_id in ('pages', 'history', 'cards', 'macros', 'landing', 'losses', 'category', 'reviews', 'coverage', 'velocity', 'mix', 'placements', 'refs', 'changes',
                        'map', 'frames', 'premium', 'prices', 'presence', 'niche', 'search', 'fresh'):
             self.assertIn(f'id="{sec_id}"', desk)
             self.assertIn(f"'{sec_id}'", js)

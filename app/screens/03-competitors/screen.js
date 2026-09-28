@@ -546,9 +546,22 @@
       el('div', { class: 'gap-line row' + (rising.length ? '' : ' held') }, el('b', { text: rising.length ? 'Gap: ' : 'Holding: ' }), el('span', { text: rising.length ? 'Rising threat: ' + rising.join(', ') + '. Refresh their battlecards and read their new ads.' : (h.dates.length > 1 ? 'No page has gained threat points since the first capture.' : 'One capture on file; the trend starts with the next.') })));
   }
 
+  // ---------- 5w. support answers ----------
+  function macrosSection(mc) {
+    const all = mc.rows.filter((x) => x.answer).map((x) => 'Q: ' + x.question + '\nA: ' + x.answer).join('\n\n');
+    mount('#macros', el('div', { class: 'stack' }, ...mc.rows.map((x) => el('div', { class: 'card flat answer' },
+      el('div', { class: 'row' }, el('b', { text: x.question }), el('span', { class: 'chip', text: pretty(x.theme) })),
+      x.answer ? el('div', { class: 'small', text: x.answer }) : el('div', { class: 'na small', text: 'No answer until the proof is in the brain.' }),
+      el('div', { class: 'row' }, x.answer ? UI.copyButton({ label: 'Copy', text: () => x.answer }) : null, el('span', { class: 'micro faint', text: 'Source: ' + x.source }))))),
+      el('div', { class: 'row' }, UI.copyButton({ label: 'Copy all ' + mc.ready + ' answers', text: () => all }),
+        UI.decisionRow({ capability: 'BRAND-C57', autonomy: 'agent_does', screen: SCREEN, compact: true, finding_id: SCREEN + '.macros' })),
+      mc.missing.length ? el('p', { class: 'small' }, el('b', { text: 'Proof to add: ' }), mc.missing.join(', ') + '.') : null,
+      el('p', { class: 'micro faint', text: mc.rule }));
+  }
+
   // ---------- 5z. desk tabs: each job holds its sections ----------
   const DESK = [
-    { key: 'rivals', label: 'Rivals', ids: ['pages', 'history', 'cards', 'landing', 'losses', 'category', 'reviews'] },
+    { key: 'rivals', label: 'Rivals', ids: ['pages', 'history', 'cards', 'macros', 'landing', 'losses', 'category', 'reviews'] },
     { key: 'creative', label: 'Ads', ids: ['coverage', 'velocity', 'mix', 'placements', 'refs', 'changes'] },
     { key: 'price', label: 'Price and position', ids: ['map', 'frames', 'premium', 'prices', 'presence'] },
     { key: 'market', label: 'Market and data', ids: ['niche', 'search', 'fresh'] },
@@ -649,6 +662,7 @@
     framesSection(d.frames);
     placementSection(d.placements);
     historySection(d.history);
+    macrosSection(d.macros);
     document.getElementById('audit-sub').textContent = p.findings.length + ' findings from ' + p.rules.length + ' rules. Public signals, one capture.';
     mount('#audit', auditTable(p.findings));
     gapLines(d.gap_lines);

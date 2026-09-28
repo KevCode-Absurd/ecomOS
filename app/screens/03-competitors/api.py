@@ -294,7 +294,7 @@ def placements(m: dict) -> dict:
 
 
 # Every desk block ends in a line that names the gap and offers the action (depth.md section 2, row 5).
-SECTION_RULES = {"history": [], "pages": ["COMP-R15"], "cards": ["COMP-R27"], "landing": ["COMP-R26"], "losses": ["COMP-R15", "COMP-R29"],
+SECTION_RULES = {"history": [], "macros": ["COMP-R15"], "pages": ["COMP-R15"], "cards": ["COMP-R27"], "landing": ["COMP-R26"], "losses": ["COMP-R15", "COMP-R29"],
                  "category": ["COMP-R16"], "reviews": ["COMP-R17"], "coverage": ["COMP-R05", "COMP-R01"], "velocity": ["COMP-R19"],
                  "mix": ["COMP-R06", "COMP-R07", "COMP-R08"], "placements": [], "refs": ["COMP-R03"], "changes": ["COMP-R24", "COMP-R12"],
                  "niche": ["COMP-R20"], "map": ["COMP-R11"], "frames": ["COMP-R28"], "premium": ["COMP-R21"],
@@ -323,6 +323,33 @@ def gap_lines(acts: list[dict]) -> dict:
     return out
 
 
+def macros(m: dict) -> dict:
+    """Support answers built from verified brain fields: one per name we lose to, one per top review doubt with proof.
+    A doubt with no proof on file gets no answer, only a note to add the proof."""
+    name = m["brand"].capitalize()
+    out, missing = [], []
+    for x in (m.get("losses") or {}).get("rows", []):
+        if not x["fires"]:
+            continue
+        ans = (f"Great question. Many people who like {x['name']} choose {name} for how it feels day to day. "
+               + (f"{x['proof']} " if x["proof"] else "") + "If a pair ever lets you down, tell us and we will make it right.")
+        out.append({"question": f"How do you compare to {x['name']}?", "answer": ans if x["proof"] else None,
+                    "source": x["ladder"] or x["record"], "theme": x["theme"]})
+        if not x["proof"]:
+            missing.append(f"{x['name']} ({x['theme_label']})")
+    for r in (m.get("reviews") or {}).get("rows", [])[:3]:
+        q = (r["top_doubt"] or "").rstrip("?")
+        if not q:
+            continue
+        out.append({"question": q[0].upper() + q[1:] + "?", "answer": (f"{r['proof']} If it does not work out, tell us and we will make it right."
+                    if r["proof"] else None), "source": r["ladder"], "theme": r["theme"]})
+        if not r["proof"]:
+            missing.append(r["label"])
+    return {"rows": out, "missing": missing, "ready": sum(1 for x in out if x["answer"]),
+            "rule": "Answers use only verified brain proof and the guarantee. A doubt with no proof gets no answer until the proof is added. "
+                    "Never name a rival negatively."}
+
+
 def overview(brand: str, today: dt.date) -> dict:
     m = audit.market_full(brand, today, BRAIN_ROOT)
     brain = m.pop("brain")
@@ -336,7 +363,7 @@ def overview(brand: str, today: dt.date) -> dict:
             "competitors": [_public(c) for c in m["competitors"]], "angles": m["angles"],
             "positioning": pos,
             "lookalike": m["lookalike"], "gap": gaps(m), "pages": (pr := page_rows(m)), "battlecards": battlecards(m, pr),
-            "coverage": {"all": m["coverage"], "direct": m["coverage_direct"]}, "mix": m["mix"], "references": m["references"], "ladder": m["ladder"], "changes": m["changes"], "freshness": freshness(m, brand), "losses": m["losses"], "category": m["category"], "reviews": m["reviews"], "presence": m["presence"], "velocity": m["velocity"], "niche": m["niche"], "premium": m["premium"], "search": m["search"], "price_moves": m["price_moves"], "landing": m["landing"], "placements": placements(m), "history": audit.capmod.history(brand), "gap_lines": gap_lines(ranked),
+            "coverage": {"all": m["coverage"], "direct": m["coverage_direct"]}, "mix": m["mix"], "references": m["references"], "ladder": m["ladder"], "changes": m["changes"], "freshness": freshness(m, brand), "losses": m["losses"], "category": m["category"], "reviews": m["reviews"], "presence": m["presence"], "velocity": m["velocity"], "niche": m["niche"], "premium": m["premium"], "search": m["search"], "price_moves": m["price_moves"], "landing": m["landing"], "placements": placements(m), "macros": macros(m), "history": audit.capmod.history(brand), "gap_lines": gap_lines(ranked),
             "frames": audit.framemod.build(m, brain, moves),
             "category_median": m["category_median"], "price_position_index": m["price_position_index"]}
 
