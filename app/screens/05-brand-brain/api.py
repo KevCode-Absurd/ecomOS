@@ -303,26 +303,94 @@ ROOM_SCREEN = {"today": "00-today", "research": "01-market-research", "avatars":
 DECISIONS_PATH = APP / "data" / "decisions.json"
 
 
+def _decisions_path(req) -> Path:
+    """Tests point the log at a temp file with ?decisions=<path> under the temp brain root; the app never does."""
+    p = req.arg("decisions")
+    if p and BRAIN_ROOT is not None and str(Path(p).resolve()).startswith(str(Path(BRAIN_ROOT).resolve())):
+        return Path(p)
+    return DECISIONS_PATH
+
+
 def decisions_log(brain: Brain, path: Path | None = None) -> dict:
-    """The decisions timeline: action decisions from data/decisions.json (any screen) plus the brain's decisions section."""
+    """The decisions timeline: action decisions from data/decisions.json (any screen) plus the brain's decisions section.
+
+    Each action decision carries whether it is the current one for its finding (a later row supersedes it), and a
+    snooze carries its expiry (time plus rank's SNOOZE_DAYS), the days left, and whether it has expired and the action
+    is back on the list. An `undo` row (this screen's fallback, see decisions_undo) clears the decision before it."""
     path = path or DECISIONS_PATH
     try:
         rows = json.loads(path.read_text(encoding="utf-8")) if path.exists() else []
     except (OSError, ValueError):
         rows = []
+    snooze_days = getattr(rank_mod, "SNOOZE_DAYS", 14)
+    rows = [r for r in (rows if isinstance(rows, list) else []) if isinstance(r, dict)]
+    latest: dict = {}
+    for i, r in enumerate(rows):
+        latest[r.get("finding_id") or (r.get("screen"), r.get("capability"))] = i
     items = []
-    for r in rows if isinstance(rows, list) else []:
-        items.append({"kind": "action", "time": r.get("time"), "date": str(r.get("time") or "")[:10], "screen": r.get("screen"), "capability": r.get("capability"),
-                      "choice": r.get("choice"), "reason": r.get("reason") or "", "finding_id": r.get("finding_id"), "autonomy": r.get("autonomy")})
+    for i, r in enumerate(rows):
+        key = r.get("finding_id") or (r.get("screen"), r.get("capability"))
+        day = str(r.get("time") or "")[:10]
+        it = {"kind": "action", "time": r.get("time"), "date": day, "screen": r.get("screen"), "capability": r.get("capability"),
+              "choice": r.get("choice"), "reason": r.get("reason") or "", "finding_id": r.get("finding_id"), "autonomy": r.get("autonomy"),
+              "current": latest.get(key) == i, "superseded": latest.get(key) != i, "expires_on": None, "days_left": None, "expired": False}
+        if r.get("choice") == "not_now":
+            try:
+                exp = dt.date.fromisoformat(day) + dt.timedelta(days=snooze_days)
+                it["expires_on"] = exp.isoformat()
+                it["days_left"] = (exp - brain.today).days
+                it["expired"] = it["days_left"] <= 0
+            except ValueError:
+                pass
+        items.append(it)
     for r in brain.records("decisions"):
         src = r.get("source") or {}
         items.append({"kind": "brain", "id": r["id"], "date": None if r["date"] == "undated" else r["date"], "time": None,
                       "title": (r.get("field") or "").replace("_", " "), "text": r.get("text") or "", "who": src.get("ref") or src.get("type") or "founder", "tier": r["tier"]})
     items.sort(key=lambda it: (it.get("time") or it.get("date") or ""), reverse=True)
-    counts = {"action": sum(1 for it in items if it["kind"] == "action" and it["choice"] != "not_now"),
-              "snoozed": sum(1 for it in items if it["kind"] == "action" and it["choice"] == "not_now"),
+    cur = [it for it in items if it["kind"] == "action" and it["current"]]
+    active_snoozes = [it for it in cur if it["choice"] == "not_now" and not it["expired"]]
+    counts = {"action": sum(1 for it in cur if it["choice"] in ("agent", "person")),
+              "snoozed": len(active_snoozes),
+              "expiring": sum(1 for it in active_snoozes if it["days_left"] is not None and it["days_left"] <= 3),
+              "expired": sum(1 for it in cur if it["choice"] == "not_now" and it["expired"]),
+              "undone": sum(1 for it in cur if it["choice"] == "undo"),
+              "superseded": sum(1 for it in items if it["kind"] == "action" and it["superseded"]),
               "brain": sum(1 for it in items if it["kind"] == "brain")}
-    return {"items": items, "counts": counts, "last": items[0].get("time") or items[0].get("date") if items else None}
+    return {"items": items, "counts": counts, "snooze_days": snooze_days, "last": items[0].get("time") or items[0].get("date") if items else None,
+            "note": f"A snooze hides an action for {snooze_days} days, then it is back on the list. A later decision on the same action supersedes the earlier one; the log keeps both. Undo appends a clearing row, it never deletes."}
+
+
+def decisions_undo(brain: Brain, body: dict, path: Path | None = None):
+    """Local fallback for an undo: append a row with choice `undo` to data/decisions.json for the finding, so rank's
+    latest-row-wins reading no longer snoozes or marks it decided. The server's POST /api/decisions refuses the choice
+    (CHOICES has no undo yet; contract ask in FEATURES.md), so this screen writes the same file the same way."""
+    path = path or DECISIONS_PATH
+    fid = str((body or {}).get("finding_id") or "")
+    if not fid or len(fid) > 200 or not re.fullmatch(r"[A-Za-z0-9_.:\- /]+", fid):
+        return 400, {"error": "finding_id must be an action id"}
+    try:
+        rows = json.loads(path.read_text(encoding="utf-8")) if path.exists() else []
+    except (OSError, ValueError):
+        rows = []
+    rows = rows if isinstance(rows, list) else []
+    last = next((r for r in reversed(rows) if isinstance(r, dict) and r.get("finding_id") == fid), None)
+    if last is None:
+        return 404, {"error": "no decision on that action", "finding_id": fid}
+    if last.get("choice") == "undo":
+        return 400, {"error": "already undone", "finding_id": fid}
+    row = {"screen": "05-brand-brain", "capability": str(last.get("capability") or "")[:80], "choice": "undo", "reason": str((body or {}).get("reason") or "")[:300],
+           "time": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), "finding_id": fid, "undoes": {"choice": last.get("choice"), "time": last.get("time")}}
+    rows.append(row)
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        tmp = path.with_suffix(".json.tmp")
+        tmp.write_text(json.dumps(rows, indent=1), encoding="utf-8")
+        tmp.replace(path)
+    except OSError as e:
+        return 500, {"error": f"could not write the decisions log: {e}"}
+    changes.log(brain, "decision", None, None, f"undid the {str(last.get('choice')).replace('_', ' ')} decision on {fid}")
+    return 201, {"ok": True, "finding_id": fid, "undid": row["undoes"], "next": "The action is back on the list with no decision. The log keeps both rows."}
 
 
 def questions_ranked(brain: Brain) -> dict:
@@ -1569,9 +1637,11 @@ def handle(req):
         fl.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())
         return fl
     if req.method == "GET" and parts == ["decisions"]:
-        dl = decisions_log(brain)
+        dl = decisions_log(brain, _decisions_path(req))
         dl.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())
         return dl
+    if req.method == "POST" and parts == ["decisions", "undo"]:
+        return decisions_undo(brain, req.body, _decisions_path(req))
     if req.method == "GET" and parts == ["questions"]:
         qv = questions_ranked(brain)
         qv.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())

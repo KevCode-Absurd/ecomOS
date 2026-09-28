@@ -392,20 +392,39 @@
   }
 
   // ---------- 1b. decisions log ----------
-  const CHOICE_TEXT = { agent: 'Agent does it', person: 'Sent to a person', not_now: 'Not now, snoozed 14 days' };
+  const CHOICE_TEXT = { agent: 'Agent does it', person: 'Sent to a person', not_now: 'Not now, snoozed', undo: 'Undone, back on the list' };
+  let decisionsFilter = 'all';
   async function loadDecisions(m) {
     let d;
     try { d = await api(BASE + 'decisions'); } catch (e) { mount('#decisions', el('p', { class: 'muted', text: 'Decisions unavailable: ' + e.message })); return; }
     const byId = {}; for (const a of (m && m.actions) || []) byId[a.id] = a;
-    const items = d.items.map((it) => {
+    const status = el('span', { class: 'micro muted' });
+    const undo = (it) => { const b = el('button', { class: 'btn xs soft', type: 'button', text: it.choice === 'not_now' ? 'Undo the snooze' : 'Undo' }); b.addEventListener('click', async () => { b.disabled = true; try { const r = await api(BASE + 'decisions/undo', { method: 'POST', body: { finding_id: it.finding_id } }); status.textContent = r.next; loadPlan(); } catch (e) { b.disabled = false; status.textContent = 'Could not undo: ' + e.message; } }); return b; };
+    const pick = (it) => {
+      if (decisionsFilter === 'all') return true;
+      if (it.kind === 'brain') return decisionsFilter === 'brain';
+      if (decisionsFilter === 'snoozed') return it.current && it.choice === 'not_now' && !it.expired;
+      if (decisionsFilter === 'expired') return it.current && it.choice === 'not_now' && it.expired;
+      if (decisionsFilter === 'approved') return it.current && (it.choice === 'agent' || it.choice === 'person');
+      return true;
+    };
+    const items = d.items.filter(pick).map((it) => {
       if (it.kind === 'action') {
         const a = byId[it.finding_id];
-        return { when: it.time, who: 'you', tone: it.choice === 'not_now' ? 'warn' : 'good', title: CHOICE_TEXT[it.choice] || it.choice, text: (a ? a.title : (it.finding_id || it.capability)) + (it.reason ? '. ' + it.reason : '') + (it.screen ? ' (' + it.screen + ')' : '') };
+        const tone = it.superseded ? null : (it.choice === 'not_now' ? (it.expired ? 'bad' : 'warn') : (it.choice === 'undo' ? 'info' : 'good'));
+        const title = (it.superseded ? 'Superseded: ' : '') + (CHOICE_TEXT[it.choice] || it.choice) + (it.choice === 'not_now' && it.expires_on ? (it.expired ? ', expired ' + fmt.date(it.expires_on) + ', back on the list' : ' until ' + fmt.date(it.expires_on) + ' (' + it.days_left + ' day' + (it.days_left === 1 ? '' : 's') + ' left)') : '');
+        const text = (a ? a.title : (it.finding_id || it.capability)) + (it.reason ? '. ' + it.reason : '') + (it.screen ? ' (' + it.screen + ')' : '');
+        return { when: it.time, who: 'you', tone, title, text, extra: it.current && it.finding_id && (it.choice === 'not_now' || it.choice === 'agent' || it.choice === 'person') && !it.expired ? undo(it) : null };
       }
       return { when: it.date, who: it.who || 'founder', tone: 'accent', title: it.title, text: it.text };
     });
-    mount('#decisions-tools', UI.orientation([{ label: 'approvals', value: d.counts.action, unit: 'n' }, { label: 'snoozed', value: d.counts.snoozed, unit: 'n' }, { label: 'brain decisions', value: d.counts.brain, unit: 'n' }, { label: 'last', value: null, unit: 'n', unavailable_label: d.last ? fmt.date(d.last) : 'none yet' }]));
-    mount('#decisions', UI.timeline(items.slice(0, 30)), items.length > 30 ? el('div', { class: 'micro faint', text: (items.length - 30) + ' older entries not shown.' }) : null);
+    const c = d.counts;
+    mount('#decisions-tools', UI.orientation([{ label: 'approvals', value: c.action, unit: 'n' }, { label: 'snoozed', value: c.snoozed, unit: 'n' }, { label: 'expiring in 3 days', value: c.expiring, unit: 'n', tone: c.expiring ? 'warn' : null }, { label: 'expired, back on the list', value: c.expired, unit: 'n', tone: c.expired ? 'bad' : null }, { label: 'brain decisions', value: c.brain, unit: 'n' }, { label: 'last', value: null, unit: 'n', unavailable_label: d.last ? fmt.date(d.last) : 'none yet' }]));
+    const filters = el('div', { class: 'row' }, ...[['all', 'All'], ['approved', 'Approved'], ['snoozed', 'Snoozed'], ['expired', 'Expired'], ['brain', 'Brain decisions']].map(([k, label]) => el('button', { class: 'btn xs' + (decisionsFilter === k ? ' primary' : ' soft'), type: 'button', text: label, onclick: () => { decisionsFilter = k; loadDecisions(m); } })), status);
+    const tl = UI.timeline(items.slice(0, 30));
+    // attach the undo buttons after the kit renders the rows
+    Array.from(tl.querySelectorAll('.tl')).forEach((row, i) => { const it = items[i]; if (it && it.extra) row.lastChild.append(el('div', { style: { marginTop: '4px' } }, it.extra)); });
+    mount('#decisions', filters, tl, items.length > 30 ? el('div', { class: 'micro faint', text: (items.length - 30) + ' older entries not shown.' }) : null, el('p', { class: 'micro faint', text: d.note }));
   }
 
   // ---------- 1a. bottlenecks and unlocks ----------

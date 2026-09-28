@@ -649,7 +649,7 @@ class Round1Decisions(TempBrain):
             d = api.handle(Req(['decisions']))
         finally:
             api.DECISIONS_PATH = old
-        self.assertEqual(d['counts'], {'action': 1, 'snoozed': 1, 'brain': 2})
+        self.assertEqual({k: d['counts'][k] for k in ('action', 'snoozed', 'brain')}, {'action': 1, 'snoozed': 1, 'brain': 2})
         self.assertEqual(d['items'][0]['kind'], 'action')
         self.assertEqual(d['items'][0]['choice'], 'agent')
         times = [it.get('time') or it.get('date') for it in d['items']]
@@ -1740,6 +1740,58 @@ class Round4Visual(TempBrain):
         self.assertFalse(v['available'])
         r = api.handle(Req(['visual', 'check'], 'POST', query={'brand': ['example']}, body={'text': '#123456'}))
         self.assertEqual(r['verdict'], 'unavailable')
+
+
+class Round4Decisions(TempBrain):
+    """Round 4 feature 8: snooze expiry, superseded rows, undo as an appended clearing row; the log is never rewritten."""
+
+    def _log(self, rows):
+        p = self.tmp / 'decisions.json'
+        p.write_text(json.dumps(rows), encoding='utf-8')
+        return str(p)
+
+    def test_expiry_and_supersede(self):
+        path = self._log([
+            {'screen': '05-brand-brain', 'capability': 'CREA-C06', 'choice': 'not_now', 'reason': '', 'time': '2026-09-20T10:00:00Z', 'finding_id': '05-brand-brain.BRN-R08.angle_story'},
+            {'screen': '05-brand-brain', 'capability': 'CREA-C06', 'choice': 'not_now', 'reason': '', 'time': '2026-09-01T10:00:00Z', 'finding_id': '05-brand-brain.BRN-R08.angle_offer'},
+            {'screen': '05-brand-brain', 'capability': 'BRN-C05', 'choice': 'person', 'reason': 'ask ops', 'time': '2026-09-25T10:00:00Z', 'finding_id': '05-brand-brain.BRN-R12.x'},
+            {'screen': '05-brand-brain', 'capability': 'BRN-C05', 'choice': 'agent', 'reason': '', 'time': '2026-09-26T10:00:00Z', 'finding_id': '05-brand-brain.BRN-R12.x'},
+        ])
+        d = api.handle(Req(['decisions'], query={'decisions': [path]}))
+        acts = {(it['finding_id'], it['time']): it for it in d['items'] if it['kind'] == 'action'}
+        story = acts[('05-brand-brain.BRN-R08.angle_story', '2026-09-20T10:00:00Z')]
+        self.assertEqual((story['expires_on'], story['days_left'], story['expired'], story['current']), ('2026-10-04', 6, False, True))
+        offer = acts[('05-brand-brain.BRN-R08.angle_offer', '2026-09-01T10:00:00Z')]
+        self.assertEqual((offer['expires_on'], offer['expired']), ('2026-09-15', True))
+        self.assertTrue(acts[('05-brand-brain.BRN-R12.x', '2026-09-25T10:00:00Z')]['superseded'])
+        self.assertTrue(acts[('05-brand-brain.BRN-R12.x', '2026-09-26T10:00:00Z')]['current'])
+        self.assertEqual(d['counts']['snoozed'], 1)
+        self.assertEqual(d['counts']['expired'], 1)
+        self.assertEqual(d['counts']['action'], 1)
+        self.assertEqual(d['counts']['superseded'], 1)
+        self.assertEqual(d['snooze_days'], api.rank_mod.SNOOZE_DAYS)
+
+    def test_undo_appends_and_clears(self):
+        path = self._log([{'screen': '05-brand-brain', 'capability': 'CREA-C06', 'choice': 'not_now', 'reason': '', 'time': '2026-09-27T10:00:00Z', 'finding_id': '05-brand-brain.BRN-R08.angle_story'}])
+        status, res = api.handle(Req(['decisions', 'undo'], 'POST', query={'decisions': [path]}, body={'finding_id': '05-brand-brain.BRN-R08.angle_story'}))
+        self.assertEqual((status, res['undid']['choice']), (201, 'not_now'))
+        rows = json.loads(Path(path).read_text(encoding='utf-8'))
+        self.assertEqual(len(rows), 2)  # appended, never rewritten
+        self.assertEqual((rows[-1]['choice'], rows[-1]['finding_id']), ('undo', '05-brand-brain.BRN-R08.angle_story'))
+        d = api.handle(Req(['decisions'], query={'decisions': [path]}))
+        self.assertEqual((d['counts']['snoozed'], d['counts']['undone']), (0, 1))
+        # rank's latest-row-wins reading: the action is not snoozed and not counted as decided
+        acts = api.rank_mod.apply_decisions([{'id': '05-brand-brain.BRN-R08.angle_story', 'screen': '05-brand-brain', 'capability': {'id': 'CREA-C06'}}], today=dt.date(2026, 9, 28), path=Path(path))
+        self.assertEqual(len(acts), 1)
+        self.assertEqual(acts[0]['decision']['choice'], 'undo')
+        self.assertEqual(api.handle(Req(['decisions', 'undo'], 'POST', query={'decisions': [path]}, body={'finding_id': '05-brand-brain.BRN-R08.angle_story'}))[0], 400)
+        self.assertEqual(api.handle(Req(['decisions', 'undo'], 'POST', query={'decisions': [path]}, body={'finding_id': 'nope.x'}))[0], 404)
+        self.assertEqual(api.handle(Req(['decisions', 'undo'], 'POST', query={'decisions': [path]}, body={}))[0], 400)
+        self.assertIn('decision', [c['kind'] for c in api.handle(Req(['changes']))['changes']])
+
+    def test_path_outside_the_temp_root_is_ignored(self):
+        d = api.handle(Req(['decisions'], query={'decisions': ['/etc/passwd']}))
+        self.assertIn('items', d)
 
 
 class Round4SecondBrand(unittest.TestCase):
