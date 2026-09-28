@@ -86,6 +86,7 @@ class Ctx:
         self.referral = audit.referral(rd)
         self.loyalty = audit.loyalty(rd)
         self.depth_history = audit.depth_history(rd)
+        self.bundles = audit.bundle_pairs(rd)
         self.registry = model.registry(rd, playbook.REGISTRY_SURFACES, playbook.PRICE_TEST_WORDS)
         self.ship_rate = (model.brain_value(rd, 'offers.standard_shipping_cost')[0] or {}).get('cost_usd') if rd.brand else None
         self.scenarios = (model.threshold_scenarios(rd, self.threshold, self.ship_rate, self.be['value'], (self.po or {}).get('units') or 1)
@@ -522,6 +523,8 @@ def surfaces(a):
         return (['product page pack selector'] if ent == 'push' else ['pack price']), 35
     if r == 'OFFER-R09':
         return ['new packs'], 56
+    if r == 'OFFER-R26':
+        return ['bundles'], 35
     if r == 'OFFER-R24':
         return ['loyalty'], 90
     if r == 'OFFER-R23':
@@ -900,6 +903,34 @@ def loyalty_action(f, a, ctx):
     return a
 
 
+def bundle_action(f, a, ctx):
+    bp = ctx.bundles
+    top = bp['pairs'][:3]
+    rows = [f'- {p["a_title"]} ({money(p["price_a"])}) with {p["b_title"]} ({money(p["price_b"])}): bundle at {money(p["bundle_price"])}, '
+            f'{p["orders_both"]} orders had both, {p["lift"]:.1f} times chance. Margin: '
+            + (money(p['bundle_margin']) if p['bundle_margin'] is not None else f'unavailable, {p["margin_reason"]}') + '.' for p in top]
+    a.update({
+        'title': f'Build {len(top)} "complete the set" bundles from pairs people already buy',
+        'owner': 'agent_drafts',
+        'artefact': {'kind': 'offer', 'label': f'{len(top)} bundle offers', 'draft': '\n'.join(
+            [f'Offer spec: bundles from pairs, {bp["rule"]}.'] + rows +
+            [f'Where: the product page of the first item ("complete the set"), the cart upsell in {tool(ctx, "upsell_app", "the cart app")}.',
+             'Win: bundle take rate at or above 5 percent of orders with either item in 28 days, margin per order up.',
+             'Stop: margin per order down 2 weeks in a row.'])},
+        'steps': steps(('agent', 'Pull the pairs, paid prices and landed cost.'),
+                       ('agent', 'Draft the bundle prices, names and the page block.'),
+                       ('person', 'Approve the bundles. Ops creates them in the store.'),
+                       ('agent', f'Read take rate and margin per order weekly; call it on {ctx.check_on(35)}.')),
+        'size': {'text': f'{sum(p["orders_both"] for p in top)} orders in {pair_window_text(bp)} already hold a pair', 'usd': None},
+        'win_rule': 'Bundle take rate at or above 5 percent of orders with either item in 28 days.',
+        'stop_rule': 'Margin per order down 2 weeks in a row.', 'check_on': ctx.check_on(35), 'time_to_ship_hours': 8})
+    return a
+
+
+def pair_window_text(bp):
+    return f'{bp["window"]["start"]} to {bp["window"]["end"]}'
+
+
 def returns_block(rd):
     """returns_by_reason for the window, or the labelled fixture when the metric is unavailable."""
     m = rd.m('returns_by_reason', audit.WINDOW)
@@ -1063,7 +1094,7 @@ BUILDERS = {'OFFER-R01': threshold_action, 'OFFER-R04': rung_action, 'OFFER-R08'
             'OFFER-R16': position_action, 'OFFER-R17': parity_action, 'OFFER-R18': discount_action,
             'OFFER-R19': discount_action, 'OFFER-R20': cart_action, 'OFFER-R21': second_order_action,
             'OFFER-R22': cost_action, 'OFFER-R23': referral_action, 'OFFER-R24': loyalty_action,
-            'OFFER-R25': discount_action}
+            'OFFER-R25': discount_action, 'OFFER-R26': bundle_action}
 
 
 def build(f, rd, ctx, nr):
@@ -1106,5 +1137,5 @@ def rank(brand='bombas', window=None, data=None):
     return {'screen': SCREEN, 'brand': brand, 'window': w, 'simulated': True, 'net_revenue_28d': nr,
             'actions': actions, 'findings': findings, 'objections': ctx.objections, 'returns': returns_block(rd),
             'ladder': dict(ctx.ladder, moves=ctx.ladder_rows), 'first_order': ctx.first_order, 'waterfalls': ctx.waterfalls, 'calendar': ctx.calendar, 'gifting': ctx.gifting, 'guarantee': ctx.guarantee, 'position': ctx.position, 'parity': ctx.parity,
-            'discipline': dict(ctx.discipline, policy=discount_policy(ctx), windows=ctx.depth_history, window_creep_points=playbook.WINDOW_CREEP_POINTS), 'cart': ctx.cart, 'tests': calendar, 'depth': ctx.depth, 'cohorts': ctx.cohorts, 'costs': ctx.costs, 'registry': ctx.registry, 'referral': ctx.referral, 'loyalty': ctx.loyalty,
+            'discipline': dict(ctx.discipline, policy=discount_policy(ctx), windows=ctx.depth_history, window_creep_points=playbook.WINDOW_CREEP_POINTS), 'cart': ctx.cart, 'tests': calendar, 'depth': ctx.depth, 'cohorts': ctx.cohorts, 'costs': ctx.costs, 'registry': ctx.registry, 'referral': ctx.referral, 'loyalty': ctx.loyalty, 'bundles': ctx.bundles,
             'subscription': model.subscription_note(rd, ctx.cohorts, (ctx.depth or {}).get('rows'), (ctx.depth or {}).get('target'))}

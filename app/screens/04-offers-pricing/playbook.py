@@ -193,3 +193,9 @@ REFERRAL_CAC_SHARE = 0.5  # room spec: referral should acquire for under half of
 LOYALTY_EARN = 0.05       # earn rate to design around: 5 percent back (the lowest common rate in loyalty tools)
 LOYALTY_MARGIN_CAP = 0.25 # reward cost above 25 percent of gross margin is too rich (our own heuristic, not a benchmark)
 WINDOW_CREEP_POINTS = 2   # a promo window 2 points deeper than the same window last year is creeping
+
+# Bundle pairs (screen 04, OFFER-R26). Two products bought together more than chance says, often enough to matter.
+PAIR_MIN_ORDERS = 30      # orders that hold both products in the window
+PAIR_MIN_LIFT = 1.5       # bought together 1.5 times as often as chance
+BUNDLE_SAVING = 0.10      # the bundle starts at 10 percent off the two paid prices
+PAIR_DAYS = 90

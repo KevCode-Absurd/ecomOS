@@ -104,6 +104,10 @@ Rules
   OFFER-R25  Promo window depth creeping: a window's discount depth in its last occurrence is more than
              playbook.WINDOW_CREEP_POINTS above the occurrence before (model.depth_history). Money: the extra points
              times the window's gross sales. The action is the discount policy. Capability LIFE-C38.
+  OFFER-R26  Products bought together with no bundle: pairs in the last playbook.PAIR_DAYS of orders with at least
+             PAIR_MIN_ORDERS orders holding both and PAIR_MIN_LIFT lift over chance (model.bundle_pairs), while no
+             brain offers record names a cross-product bundle. One finding for the top pairs. Unavailable without
+             order rows (a connect move). Money null: the take rate is what the bundle finds. Capability LIFE-C39.
   OFFER-R03  Margin after discount per SKU. Needs cogs_landed keyed by the store's SKUs. Unavailable while no
              finance_inputs SKU key matches a product SKU. Capability MONEY-C05 (founder gate). Owner: 04.
   OFFER-R04  A deal-breaker rung with no proof: the top rung of an objection ladder whose proof is empty or
@@ -194,6 +198,8 @@ RULES = [
      'finance_inputs.cogs_landed', 'cohorts'], 'capability': 'LIFE-C36', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R25', 'name': 'Promo window depth creeping year on year', 'entity_type': 'offer',
      'inputs': ['daily'], 'capability': 'LIFE-C38', 'owner_screen': SCREEN},
+    {'rule_id': 'OFFER-R26', 'name': 'Products bought together with no bundle', 'entity_type': 'sku',
+     'inputs': ['orders', 'brain.offers', 'finance_inputs.cogs_landed'], 'capability': 'LIFE-C39', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R03', 'name': 'Margin after discount per SKU', 'entity_type': 'sku',
      'inputs': ['finance_inputs.cogs_landed keyed by product SKU', 'products'], 'capability': 'MONEY-C05',
      'owner_screen': SCREEN},
@@ -223,6 +229,7 @@ CAPABILITY = {'OFFER-R01': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R23': {'id': 'LIFE-C45', 'autonomy': 'founder_gate'},
               'OFFER-R24': {'id': 'LIFE-C36', 'autonomy': 'founder_gate'},
               'OFFER-R25': {'id': 'LIFE-C38', 'autonomy': 'founder_gate'},
+              'OFFER-R26': {'id': 'LIFE-C39', 'autonomy': 'founder_gate'},
               'OFFER-R06': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R04': {'id': 'LIFE-C36', 'autonomy': 'founder_gate'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
@@ -1025,6 +1032,33 @@ def rule_window_creep(rd):
     return out
 
 
+def bundle_pairs(rd):
+    pb = _playbook()
+    return _model().bundle_pairs(rd, pb.PAIR_MIN_ORDERS, pb.PAIR_MIN_LIFT, pb.BUNDLE_SAVING, pb.PAIR_DAYS)
+
+
+def rule_bundles(rd):
+    end = rd.ends_on
+    bp = bundle_pairs(rd)
+    entity = {'type': 'sku', 'id': 'bundle_pairs', 'label': 'Bundles from pairs'}
+    if bp.get('unavailable'):
+        return [_finding('OFFER-R26', entity, 'low', [], 'Products bought together cannot be read without order rows.', None, 0.1, [],
+                         end, status='unavailable', money_reason='no order rows',
+                         unavailable={'inputs': ['orders'], 'connector': bp.get('fix') or 'shopify',
+                                      'fix': 'Connect the store orders, read-only, with line items.'})]
+    if not bp['pairs'] or _model().has_program(rd, ('cross_bundle', 'complete_the_set', 'bundle_pair')):
+        return []
+    top = bp['pairs'][0]
+    evidence = [_ev('orders_with_both', top['orders_both'], 'count', end, baseline=_playbook().PAIR_MIN_ORDERS, baseline_kind='threshold',
+                    window=f'{_playbook().PAIR_DAYS}d', source='orders'),
+                _ev('pair_lift', top['lift'], 'ratio', end, baseline=_playbook().PAIR_MIN_LIFT, baseline_kind='threshold',
+                    window=f'{_playbook().PAIR_DAYS}d', source='orders')]
+    sentence = (f'{len(bp["pairs"])} product pairs sell together more than chance and have no bundle. Top: {top["a_title"]} with '
+                f'{top["b_title"]}, {top["orders_both"]} orders, {top["lift"]:.1f} times chance.')
+    return [_finding('OFFER-R26', entity, 'medium', evidence, sentence, None, 0.6, [], end,
+                     money_reason='the take rate is what the bundle finds')]
+
+
 def rule_ladder(rd):
     end = rd.ends_on
     pb = _playbook()
@@ -1196,7 +1230,7 @@ def run(brand, window=None, data=None):
     """Findings for one brand, sorted by severity then money at stake. `window` is {ends_on} or None."""
     ends_on = date.fromisoformat(window['ends_on']) if window and window.get('ends_on') else last_full_day(data, brand)
     rd = Reader(data, brand, ends_on)
-    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_cost(rd) + rule_referral(rd) + rule_loyalty(rd) + rule_window_creep(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
+    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_cost(rd) + rule_referral(rd) + rule_loyalty(rd) + rule_window_creep(rd) + rule_bundles(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
            rule_unanswered(rd))
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f.get('money_at_stake') or {}).get('usd') or -1), f['id']))
     return out

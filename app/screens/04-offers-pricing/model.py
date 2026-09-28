@@ -1106,3 +1106,57 @@ def subscription_note(rd, cc, depth_rows, target):
             'questions': ['Is the reason to subscribe stronger than a flat discount? Needs a wear-out interval per line from order rows.',
                           'Would subscribers be customers who already come back anyway? Needs repeat by first pack from order rows.',
                           'Can the save rate in a cancel flow hold? Needs a subscription platform export.']}
+
+
+# ---------------------------------------------------------------- bundle pairs
+
+def bundle_pairs(rd, min_orders, min_lift, saving, days):
+    """Products bought together in the last `days` of orders: orders holding both, lift over chance, the paid
+    price of each, and a bundle price at `saving` off with its margin where landed cost is on file.
+    Needs order rows with line items; unavailable otherwise."""
+    from itertools import combinations
+    orders = rd.table('orders')
+    if not isinstance(orders, list) or not orders:
+        return {'unavailable': True, 'reason': 'the orders table is not connected', 'fix': 'shopify', 'pairs': []}
+    start = (rd.ends_on - timedelta(days=days - 1)).isoformat()
+    end = rd.ends_on.isoformat()
+    n = 0
+    single, both, price, title = {}, {}, {}, {}
+    for o in orders:
+        day = str(o.get('created_at') or '')[:10]
+        if not (start <= day <= end):
+            continue
+        n += 1
+        items = {}
+        for li in o.get('line_items') or []:
+            sku = li.get('sku')
+            if not sku:
+                continue
+            items[sku] = li
+            p = price.setdefault(sku, [0.0, 0])
+            p[0] += float(li.get('line_total') or 0)
+            p[1] += int(li.get('qty') or 0)
+            title[sku] = li.get('title') or sku
+        for sku in items:
+            single[sku] = single.get(sku, 0) + 1
+        for a, b in combinations(sorted(items), 2):
+            both[(a, b)] = both.get((a, b), 0) + 1
+    if not n:
+        return {'unavailable': True, 'reason': 'no orders in the window', 'pairs': []}
+    cogs = cogs_by_sku(rd, rd.ends_on)
+    out = []
+    for (a, b), k in both.items():
+        lift = (k / n) / ((single[a] / n) * (single[b] / n))
+        if k < min_orders or lift < min_lift:
+            continue
+        pa = price[a][0] / price[a][1] if price[a][1] else None
+        pb = price[b][0] / price[b][1] if price[b][1] else None
+        bp = round((pa + pb) * (1 - saving), 2) if pa and pb else None
+        cost = cogs.get(a) + cogs.get(b) if a in cogs and b in cogs else None
+        out.append({'a': a, 'b': b, 'a_title': title[a], 'b_title': title[b], 'orders_both': k, 'lift': round(lift, 2),
+                    'share_of_a': round(k / single[a], 4), 'price_a': round(pa, 2) if pa else None, 'price_b': round(pb, 2) if pb else None,
+                    'bundle_price': bp, 'bundle_margin': round(bp - cost, 2) if bp and cost is not None else None,
+                    'margin_reason': None if cost is not None else 'no landed cost for one of the two SKUs'})
+    out.sort(key=lambda r: (-r['lift'] * r['orders_both']))
+    return {'unavailable': False, 'orders': n, 'window': {'start': start, 'end': end}, 'pairs': out[:12],
+            'rule': f'at least {min_orders} orders with both and {min_lift}x lift over chance, last {days} days'}

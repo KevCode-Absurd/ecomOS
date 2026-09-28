@@ -1190,5 +1190,33 @@ class ApprovalsTest(unittest.TestCase):
         self.assertFalse([r for r in store.Brain('bombas').raw('plans') if (r.get('value') or {}).get('screen') == '04-offers-pricing'])
 
 
+class BundlePairsTest(unittest.TestCase):
+    """Round 4 feature 3: bundles from pairs, real on the sample brand's orders, a connect move for Bombas."""
+
+    def test_sample_brand_pairs(self):
+        sys.path.insert(0, str(ROOT / 'app'))
+        import server
+        d = server.Data()
+        rd = audit.Reader(d, None, audit.last_full_day(d, None))
+        pb = audit._playbook()
+        bp = audit.bundle_pairs(rd)
+        self.assertFalse(bp['unavailable'])
+        for p in bp['pairs']:
+            self.assertGreaterEqual(p['orders_both'], pb.PAIR_MIN_ORDERS)
+            self.assertGreaterEqual(p['lift'], pb.PAIR_MIN_LIFT)
+            self.assertAlmostEqual(p['bundle_price'], round((p['price_a'] + p['price_b']) * (1 - pb.BUNDLE_SAVING), 2))
+        out = api.actions.rank(None, None, data=d)
+        if bp['pairs']:
+            a = next(a for a in out['actions'] if a['rule_id'] == 'OFFER-R26')
+            self.assertEqual(a['artefact']['kind'], 'offer')
+            self.assertTrue(a['stop_rule'] and a['size']['text'])
+
+    def test_bombas_waits_on_orders(self):
+        f = next(f for f in audit.run('bombas') if f['rule_id'] == 'OFFER-R26')
+        rd = audit.Reader(None, 'bombas', audit.last_full_day(None, 'bombas'))
+        if not rd.table('orders'):
+            self.assertEqual(f['status'], 'unavailable')
+
+
 if __name__ == '__main__':
     unittest.main()
