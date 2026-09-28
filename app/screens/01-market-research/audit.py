@@ -83,6 +83,9 @@ Rules
             another brand in 24 months, up to 0.3) is 0.3 or more and whose sellers (competitor pages pushing it
             plus those launches) number 5 or more, the red rung of the bank's PRD-052 ladder. Severity low.
             Capability PROD-C05. Owner: 01-market-research.
+  PROD-R20  Sustained spend found: a product lane where 3 or more competitor pages keep an ad live 90 days or
+            more (a funded test, bank idea PRD-023) and the pipeline holds no open candidate whose name or angle
+            sits on the lane. Capability PROD-C03 (scout ad libraries, agent does). Owner: 01-market-research.
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -147,6 +150,8 @@ RULES = [
      'inputs': ['fixtures.pipeline', 'products_monthly', 'fixtures.market_trends'], 'capability': 'PROD-C07', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R19', 'name': 'Lane growing (trend score 0.3 or more) with 5 or more sellers: growing, but full', 'entity_type': 'metric',
      'inputs': ['fixtures.market_trends', 'brain.competitors'], 'capability': 'PROD-C05', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R20', 'name': 'Product lane with 3 or more advertisers keeping an ad live 90 days or more and no open candidate on it', 'entity_type': 'metric',
+     'inputs': ['brain.competitors', 'fixtures.pipeline'], 'capability': 'PROD-C03', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -166,7 +171,8 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R16': {'id': 'PROD-C08', 'autonomy': 'agent_does'},
               'PROD-R17': {'id': 'PROD-C08', 'autonomy': 'agent_does'},
               'PROD-R18': {'id': 'PROD-C07', 'autonomy': 'agent_does'},
-              'PROD-R19': {'id': 'PROD-C05', 'autonomy': 'agent_does'}}
+              'PROD-R19': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
+              'PROD-R20': {'id': 'PROD-C03', 'autonomy': 'agent_does'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -637,6 +643,7 @@ def run(brand, window=None, data=None):
     out += margin_findings(brand, data, br, rd, ends_on)
     out += pattern_findings(brand, data, rd, ends_on)
     out += lane_map_findings(br, ends_on)
+    out += spend_findings(br, brand, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -1854,5 +1861,80 @@ def lane_map_findings(br, ends_on):
         f = _finding('PROD-R19', p['key'], ends_on, 'low', ev, sentence, None, 0.5, [f'{br.brand}.competitors.competitor_set'], money_reason='a saturation read has no order count')
         f['entity'] = {'type': 'metric', 'id': p['key'], 'label': p['label'], 'sellers': p['x'], 'trend': p['y'], 'sold': p['sold']}
         f['id'] = f'{SCREEN}.PROD-R19.{p["key"]}'
+        out.append(f)
+    return out
+
+
+# ---------------------------------------------------------------- sustained ad spend per lane (idea PRD-023: run length is a live, funded test, not proof of profit)
+
+RUN_BANDS = [(0, 13, 'under 14 days'), (14, 29, '14 to 29 days'), (30, 89, '30 to 89 days'), (90, 10 ** 6, '90 days or more')]
+FUNDED_MIN_DAYS = 90
+FUNDED_MIN_ADVERTISERS = 3
+LIVE_TEST_MIN_DAYS = 14
+
+
+def run_band(days):
+    if days is None:
+        return None
+    return next(label for lo, hi, label in RUN_BANDS if lo <= days <= hi)
+
+
+def candidate_lanes(brand):
+    """Which lanes each open candidate sits on, by the lane terms in its name and angle."""
+    out = {}
+    for c in pipeline(brand):
+        if c.get('stage') in CLOSED_STAGES:
+            continue
+        text = f'{c.get("name") or ""} {c.get("angle_text") or ""} {c.get("category") or ""}'.lower()
+        for key, _, terms in SUBCATS:
+            if any(t in text for t in terms):
+                out.setdefault(key, []).append(c.get('name'))
+    return out
+
+
+def spend_signal(br, brand, ends_on):
+    """Per lane: advertisers by run-length band, those with an ad live 90 days or more, and the verdict:
+    funded test (3 or more at 90 days), live test (1 or more at 14 days), noise."""
+    lanes = subcategory_table(br, ends_on)
+    cands = candidate_lanes(brand)
+    out = []
+    for row in lanes:
+        bands = {label: 0 for _, _, label in RUN_BANDS}
+        funded, live = [], []
+        for c in row['competitors']:
+            b = run_band(c.get('longest_run_days'))
+            if b:
+                bands[b] += 1
+            if (c.get('longest_run_days') or 0) >= FUNDED_MIN_DAYS:
+                funded.append(c['name'])
+            if (c.get('longest_run_days') or 0) >= LIVE_TEST_MIN_DAYS:
+                live.append(c['name'])
+        verdict = 'funded' if len(funded) >= FUNDED_MIN_ADVERTISERS else 'live' if live else 'noise' if row['competitors'] else 'none'
+        out.append({'key': row['key'], 'label': row['label'], 'kind': row['kind'], 'bands': bands, 'funded': funded, 'live': live, 'longest': max([c.get('longest_run_days') or 0 for c in row['competitors']] or [None]),
+                    'long_runners_30d': sum(c.get('long_runners_30d') or 0 for c in row['competitors']), 'verdict': verdict,
+                    'sold': row['sold'], 'advertised': row['advertised'], 'candidates': cands.get(row['key'], []), 'finding_id': f'{SCREEN}.PROD-R20.{row["key"]}'})
+    order = {'funded': 0, 'live': 1, 'noise': 2, 'none': 3}
+    out.sort(key=lambda r: (order[r['verdict']], -len(r['funded']), -(r['longest'] or 0)))
+    return {'rows': out, 'bands': [label for _, _, label in RUN_BANDS],
+            'rule': f'funded test: {FUNDED_MIN_ADVERTISERS} or more advertisers with an ad live {FUNDED_MIN_DAYS} days or more; live test: 1 or more at {LIVE_TEST_MIN_DAYS} days; run length is a funded test, never proof of profit (bank idea PRD-023)'}
+
+
+def spend_findings(br, brand, ends_on):
+    """PROD-R20: a product lane with a funded test (3 or more advertisers at 90 days) and no open candidate on it."""
+    out = []
+    if br is None:
+        return out
+    for r in spend_signal(br, brand, ends_on)['rows']:
+        if r['verdict'] != 'funded' or r['kind'] == 'proof' or r['candidates']:
+            continue
+        ev = [_ev('ad_library_spend_signal', len(r['funded']), 'count', ends_on.isoformat(), 'active ads now', FUNDED_MIN_ADVERTISERS, 'threshold', source='brain.competitors', simulated=False, freshness_days=0,
+                  names=r['funded'], min_days=FUNDED_MIN_DAYS),
+              _ev('longest_run_days', r['longest'], 'days', ends_on.isoformat(), 'active ads now', source='brain.competitors', simulated=False, freshness_days=0),
+              _ev('open_candidates_on_lane', 0, 'count', ends_on.isoformat(), 'pipeline now', 1, 'threshold', source='fixtures.pipeline', simulated=False, freshness_days=0)]
+        sentence = (f'{len(r["funded"])} advertisers have kept an ad live {FUNDED_MIN_DAYS}+ days on {r["label"].lower()} ({", ".join(r["funded"][:3])}; longest {r["longest"]} days). '
+                    f'That is a real spend signal, not a trend, and no candidate on the lane is open.')
+        f = _finding('PROD-R20', r['key'], ends_on, 'medium', ev, sentence, None, 0.5, [f'{br.brand}.competitors.competitor_set'], money_reason='competitor run length is a signal; no spend or revenue is measurable')
+        f['entity'] = {'type': 'metric', 'id': r['key'], 'label': r['label'], 'names': ', '.join(r['funded'][:3]), 'sold': r['sold']}
+        f['id'] = f'{SCREEN}.PROD-R20.{r["key"]}'
         out.append(f)
     return out

@@ -520,6 +520,28 @@
         full.length && actionFor(full[0].finding_id) ? { label: 'Find the room', onClick: () => openAction(actionFor(full[0].finding_id)) } : null));
   }
 
+  function spendBlock(sp) {
+    const rows = (sp && sp.rows) || [];
+    if (!rows.length) return UI.emptyState({ screen: SLUG, title: 'No competitor ad signals', text: 'The brain holds no Ad Library records yet.', missing: ['ad_library'] });
+    const bands = sp.bands || [];
+    const chart = Charts.bar({ title: 'Advertisers by longest run, per lane', labels: rows.map((r) => r.label.length > 18 ? r.label.slice(0, 16) + '..' : r.label), stacked: true, unit: 'n',
+      series: bands.map((b) => ({ name: b, values: rows.map((r) => r.bands[b]) })),
+      note: 'One count per competitor page, by the longest run of its active ads on the lane. A snapshot from the Ad Library pull in the brain, not a spend figure.' });
+    const vrows = rows.map((r) => { const a = actionFor(r.finding_id); return Object.assign({}, r, {
+      fundedText: r.funded.length ? r.funded.join(', ') : 'none', longestText: r.longest == null ? NA : r.longest + ' d', cand: r.candidates.length ? r.candidates.join(', ') : 'none',
+      actions: [a ? { label: 'Screen it', onClick: () => openAction(a) } : { label: r.verdict === 'funded' ? (r.candidates.length ? 'Candidate open' : r.kind === 'proof' ? 'Proof lane' : 'Covered') : r.verdict === 'live' ? 'Live test' : 'Noise', cls: 'quiet', onClick: () => {} }] }); });
+    const t = UI.verdictTable({
+      columns: [{ key: 'label', label: 'Lane' }, { key: 'fundedText', label: 'Advertisers at 90 days or more' }, { key: 'longestText', label: 'Longest run', align: 'right' }, { key: 'long_runners_30d', label: 'Their ads live 30 d+', unit: 'n' }, { key: 'cand', label: 'Our open candidates on it' }],
+      rows: vrows,
+      verdict: { at: 1, kind: (r) => r.verdict === 'funded' ? 'scale' : r.verdict === 'live' ? 'watch' : 'na', text: (r) => r.verdict === 'funded' ? 'Funded test' : r.verdict === 'live' ? 'Live test' : r.verdict === 'noise' ? 'Noise' : 'No advertiser', reason: (r) => r.funded.length + ' at 90 days, ' + r.live.length + ' at 14 days' },
+      actions: { label: 'Do', onClick: () => {} }, sort: false });
+    const gaps = rows.filter((r) => r.verdict === 'funded' && r.kind !== 'proof' && !r.candidates.length);
+    return el('div', { class: 'stack' }, el('div', { class: 'grid two' }, el('div', { class: 'card' }, chart), el('div', { class: 'card flat' }, el('h4', { text: 'How to read it' }), el('p', { class: 'small', text: sp.rule + '.' }), el('p', { class: 'small muted', text: 'A high concurrent ad count reads as budget and confidence, then the margin gate checks the money (bank idea PRD-024). Lanes with a candidate open are covered; proof lanes carry the brief from the lanes table above, not a candidate.' }))),
+      el('div', { class: 'card scroll' }, t),
+      gapLine(gaps.length ? gaps.length + ' funded lane' + (gaps.length === 1 ? ' has' : 's have') + ' no candidate: ' + gaps.map((g) => g.label.toLowerCase()).join(', ') + '.' : 'Every funded product lane has a candidate open.',
+        gaps.length && actionFor(gaps[0].finding_id) ? { label: 'Screen the first', onClick: () => openAction(actionFor(gaps[0].finding_id)) } : null));
+  }
+
   function loadDesk(o) {
     const d = o.desk || {};
     const w = (o.window || {}).trend;
@@ -537,6 +559,7 @@
     parts.push(section('desk-reviews', 'What do reviews praise and fail, line by line?', 'Public site review totals per line, with the objection ladder rungs built from them.', reviewBlock(d.reviews || [])));
     parts.push(section('desk-margin', 'Does each candidate make money after real costs?', 'The margin gate per candidate: planned price stepping down through landed cost, the donated item, fulfilment and payment fees to contribution, every term from the finance inputs or the brain.', marginBlock(d.margin)));
     parts.push(section('desk-lane-map', 'Which lanes are growing with room left, and which are growing and already full?', 'Trend direction against competitive saturation per lane, read together as one go or no-go signal: market growth and launches from the web pass, sellers from the competitor pages in the brain.', laneMapBlock(d.lane_map)));
+    parts.push(section('desk-spend', 'Who is actually funding which lane, not just posting about it?', 'Competitor pages by the longest run of their active ads per lane. Three or more advertisers at 90 days is a funded test; one at 14 days is a live test; the rest is noise.', spendBlock(d.spend)));
     parts.push(section('desk-pattern', 'Is each candidate evergreen, seasonal or a trend, and when does cash move?', 'The demand pattern from our own 12-month series by category and the web pass, with the cash timing it implies and the cash plan attached to each candidate.', patternBlock(d.pattern)));
     parts.push(section('desk-pipeline', 'What is in the next-SKU pipeline, and what is past its time box?', 'Candidates screened in from the gaps above or by hand, their stage, fast checks, time box and hours. Advance, log hours or kill from the card; every write lands in the pipeline log.', pipelineBlock(d.pipeline || { rows: [] })));
     mount('#desk', ...parts);

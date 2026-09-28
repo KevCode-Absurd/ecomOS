@@ -618,6 +618,38 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
             self.assertGreaterEqual(by[f['entity']['id']]['x'], audit.SATURATION_FULL)
             self.assertGreaterEqual(by[f['entity']['id']]['y'], audit.TREND_UP)
 
+    def test_spend_signal_bands_and_rule(self):
+        self.assertEqual([audit.run_band(d) for d in (0, 13, 14, 29, 30, 89, 90, 343, None)],
+                         ['under 14 days', 'under 14 days', '14 to 29 days', '14 to 29 days', '30 to 89 days', '30 to 89 days', '90 days or more', '90 days or more', None])
+        br = audit.brain('bombas')
+        if br is None:
+            self.skipTest('no bombas brain')
+        sp = audit.spend_signal(br, 'bombas', date(2026, 9, 27))
+        for r in sp['rows']:
+            self.assertEqual(sum(r['bands'].values()), len([1 for _ in r['funded']]) + (r['bands']['under 14 days'] + r['bands']['14 to 29 days'] + r['bands']['30 to 89 days']))
+            if r['verdict'] == 'funded':
+                self.assertGreaterEqual(len(r['funded']), audit.FUNDED_MIN_ADVERTISERS)
+        fs = audit.spend_findings(br, 'bombas', date(2026, 9, 27))
+        for f in fs:
+            self.check_shape(f)
+            row = next(r for r in sp['rows'] if r['key'] == f['entity']['id'])
+            self.assertEqual(row['verdict'], 'funded')
+            self.assertEqual(row['candidates'], [])
+            self.assertNotEqual(row['kind'], 'proof')
+
+    def test_candidate_lanes_from_name_and_angle(self):
+        self.real2 = audit.PIPELINE_PATH
+        try:
+            audit.PIPELINE_PATH = self.tmp
+            self.tmp.write_text(json.dumps({'rows': [{'candidate_id': 'a', 'brand': 'fake', 'name': 'Merino hiking sock', 'stage': 'screened', 'angle_text': ''},
+                                                     {'candidate_id': 'b', 'brand': 'fake', 'name': 'x', 'stage': 'killed', 'angle_text': 'compression'}]}), encoding='utf-8')
+            lanes = audit.candidate_lanes('fake')
+        finally:
+            audit.PIPELINE_PATH = self.real2
+        self.assertEqual(lanes.get('merino'), ['Merino hiking sock'])
+        self.assertEqual(lanes.get('performance'), ['Merino hiking sock'])
+        self.assertNotIn('compression', lanes)   # killed candidates do not count
+
     def test_demand_pattern_tags(self):
         even = {'rows': [{'category': 'socks', 'series': [100] * 12}], 'months': [f'2026-{m:02d}' for m in range(1, 13)], 'last': '2026-12'}
         peaked = {'rows': [{'category': 'socks', 'series': [50] * 10 + [300, 400]}], 'months': even['months'], 'last': '2026-12'}

@@ -605,6 +605,23 @@ def recipe(f):
             'stop_rule': 'no candidate on the lane without an angle no seller owns', 'check_on': _check_on(f, 14), 'time_to_ship_hours': 3,
             'win_rule': 'a logged go with an angle, or a logged no-go',
         }
+    if rid == 'PROD-R20':
+        ent = f.get('entity') or {}
+        label = (ent.get('label') or '').lower()
+        n = _ev_value(f, 'ad_library_spend_signal')
+        return {
+            'title': f'Screen a {label} candidate: {n} advertisers have funded it for 90 days or more',
+            'owner': 'agent',
+            'artefact': {'kind': 'research_note', 'label': f'a fast screen for a {label} candidate: what {ent.get("names")} sell on it (price, claim, format), the angle open to us, demand and store fit, with a go or kill'},
+            'steps': [
+                {'n': 1, 'who': 'agent', 'text': f'Read the long-running ads of {ent.get("names")} on {label} by page id: product, price, claim, format. Signals only; nothing copied.'},
+                {'n': 2, 'who': 'agent', 'text': 'Run the 3 fast checks (demand, competition, store fit) with the numbers and name the angle none of them owns.'},
+                {'n': 3, 'who': 'agent', 'text': 'Screen the candidate into the pipeline with a 10-day box, or log the kill.'},
+                {'n': 4, 'who': 'person', 'text': 'Confirm from the pipeline card.'}],
+            'size': {'text': f'{n} advertisers at 90+ days, longest {_ev_value(f, "longest_run_days")} days', 'usd': None},
+            'stop_rule': 'a run length is a funded test, never proof of profit: the margin gate still decides', 'check_on': _check_on(f, 10), 'time_to_ship_hours': 3,
+            'win_rule': 'an open candidate on the lane, or a logged kill',
+        }
     return None
 
 
@@ -613,12 +630,15 @@ def merge_lanes(actions):
     r06 = [a for a in actions if a.get('rule_id') == 'PROD-R06']
     keep = []
     for a in actions:
-        if a.get('rule_id') != 'PROD-R05':
+        if a.get('rule_id') not in ('PROD-R05', 'PROD-R20'):
             keep.append(a)
             continue
         key = (a.get('entity') or {}).get('id') or ''
-        words = set(audit.MARKET_WORDS.get(key, []))
-        host = next((b for b in r06 if words & set(next((t for k, _, t in audit.SUBCATS if k == (b.get('entity') or {}).get('id')), []))), None)
+        if a.get('rule_id') == 'PROD-R20':
+            host = next((b for b in r06 if (b.get('entity') or {}).get('id') == key), None)
+        else:
+            words = set(audit.MARKET_WORDS.get(key, []))
+            host = next((b for b in r06 if words & set(next((t for k, _, t in audit.SUBCATS if k == (b.get('entity') or {}).get('id')), []))), None)
         if host is None:
             keep.append(a)
             continue
@@ -799,7 +819,7 @@ def overview(data, brand):
                      'demand_unavailable': {'reason': tr.get('reason'), 'fix': tr.get('fix')} if tr.get('unavailable') else None,
                      'price_bands': bands, 'reviews': review_mining(reviews, lads),
                      'pipeline': pipeline_block(brand, ends_on, findings, floor), 'margin': margin_block(brand, data, br, rd, ends_on, findings),
-                     'pattern': pattern_block(brand, data, rd, findings), 'lane_map': audit.lane_map(br, ends_on)},
+                     'pattern': pattern_block(brand, data, rd, findings), 'lane_map': audit.lane_map(br, ends_on), 'spend': audit.spend_signal(br, brand, ends_on)},
             'audit': {'findings': findings, 'rules': audit.RULES}}
 
 
