@@ -42,6 +42,8 @@ Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `a
 
 | 2.2 | The category ladder (`category.py`): 5 rungs by rule (premium above the median, direct at or below, basics and apparel, cheap multipacks from Reddit, doing nothing), members and a signal per rung (active ads, upvotes, Reddit frame mentions), our rung marked, a move per rung with its capability and decision row; demand trend by rung reads unavailable and rule COMP-R16 (a lower rung gaining) becomes a connect action for a search trends source | done |
 
+| 2.3 | Review themes against their claims (`reviews.py`): our one-star and five-star counts per theme from the objection ladders, praise share, top doubt, and the pages that lead their ads with the same theme; attacked, contested or quiet; competitor review counts unavailable (no pull yet); rule COMP-R17 (high) when a top 2 one-star theme is led with by 2 or more direct pages: durability now, against Darn Tough, Smartwool and Feetures; the answer is a guarantee block, 2 ad lines and a product ticket (LIFE-C42) | done |
+
 Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permission check had already refused that paid run and said not to retry it, so it was not re-run. Still listed under Contract asks.
 
 ### Round 1 status for Kevin (28 Sep 2026)
@@ -151,5 +153,5 @@ Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permi
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
-| 2 | 2.1 to 2.2 | 2026-09-28 | Lost by name; category ladder |
+| 2 | 2.1 to 2.3 | 2026-09-28 | Lost by name; category ladder; review themes |
 | 1 | 1.1 to 1.10 | 2026-09-28 | Plan first; rank override; 12 pages side by side; coverage matrix; hook and offer mix; references; price and pack ladder; positioning map with moves; changes timeline; freshness and re-pull; rank for all 14 rules. Screenshot `round1.png` |

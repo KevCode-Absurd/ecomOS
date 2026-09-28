@@ -403,6 +403,23 @@ def act_lost(f: dict, m: dict) -> dict:
             "check_on": _plus(f["last_seen"], 28), "time_to_ship_hours": 3}
 
 
+def act_attack(f: dict, m: dict) -> dict:
+    """COMP-R17: they lead with the theme we are weakest on. Say our guarantee against it; send the doubt to product."""
+    a = m["reviews"]["attack"] or {}
+    return {"title": f"Answer the {a.get('label')} attack: the guarantee up front and the top doubt to product",
+            "owner": "agent_drafts",
+            "artefact": {"kind": "page_section", "label": f"a guarantee block against the {a.get('label')} doubt, plus a product ticket",
+                         "draft": audit.revmod.draft(a, m["brand"].capitalize()) if a else None},
+            "steps": _steps(("agent", "Pull the rung doubts, their one-star reviews and the guarantee wording."),
+                            ("agent", "Draft the page block, 2 ad lines and the product ticket."),
+                            ("person", "Founder approves the guarantee wording."),
+                            ("person", "Product owner takes the ticket on the top doubt."),
+                            ("agent", f"Check one-star reviews on the theme on {_plus(f['last_seen'], 28)}.")),
+            "size": {"text": f"{a.get('one_star')} one-star reviews on the theme", "count": a.get("one_star")},
+            "win_rule": "One-star share on the theme down next quarter", "stop_rule": None,
+            "check_on": _plus(f["last_seen"], 28), "time_to_ship_hours": 4}
+
+
 def act_connect(f: dict, m: dict) -> dict:
     un = f.get("unavailable") or {}
     con = un.get("connector") or "the missing source"
@@ -419,7 +436,8 @@ BUILDERS = {"COMP-R01": act_angle, "COMP-R02": act_price, "COMP-R03": act_offer_
             "COMP-R05": act_coverage, "COMP-R06": act_first_line, "COMP-R07": act_offer_gap, "COMP-R08": act_discount,
             "COMP-R09": act_ladder, "COMP-R10": act_above, "COMP-R11": act_corner,
             "COMP-R12": act_refresh, "COMP-R13": act_no_id, "COMP-R14": act_stale,
-            "COMP-R15": act_lost, "COMP-R16": act_connect}   # R16 has no data source yet: always a connect action
+            "COMP-R15": act_lost, "COMP-R16": act_connect,
+            "COMP-R17": act_attack}   # R16 has no data source yet: always a connect action
 
 
 def action(f: dict, m: dict, net_revenue: float | None) -> dict:

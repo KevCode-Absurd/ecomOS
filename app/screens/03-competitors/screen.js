@@ -392,6 +392,19 @@
     mount('#category', box, el('p', { class: 'micro faint', text: c.rule + ' Our price ' + usd(c.our_price) + ' a pair (simulated) against a split of ' + usd(c.split) + '. ' + c.coverage + ' of ' + c.rungs.length + ' rungs mapped. Demand trend by rung: unavailable, ' + c.trend_reason + '.' }));
   }
 
+  // ---------- 5k. review themes against their claims ----------
+  function reviewSection(rv) {
+    const t = UI.verdictTable({
+      columns: [{ key: 'label', label: 'Our review theme' }, { key: 'one_star', label: 'One-star', unit: 'n' }, { key: 'five_star', label: 'Five-star', unit: 'n' },
+        { key: 'praise_share', label: 'Praise share', format: (v) => v == null ? NA : Math.round(v * 100) + ' percent' },
+        { key: 'leaders', label: 'Pages leading with it', format: (v) => v.length ? v.join(', ') : 'none' }],
+      rows: rv.rows,
+      verdict: { at: 1, kind: (r) => rv.attack && r.theme === rv.attack.theme ? 'stop' : r.direct_leaders >= 2 ? 'watch' : 'keep', text: (r) => rv.attack && r.theme === rv.attack.theme ? 'Attacked' : r.direct_leaders >= 2 ? 'Contested' : 'Quiet', reason: (r) => r.direct_leaders + ' direct pages lead with it' },
+      reason: { key: 'doubt', label: 'Top doubt', text: (r) => r.top_doubt || NA }, sort: false });
+    mount('#reviews', t, el('p', { class: 'small' }, el('b', { text: 'Their review counts: ' }), 'unavailable, ' + rv.their_reviews_reason + '.'),
+      el('p', { class: 'micro faint', text: rv.rule + (rv.attack ? ' The answer is on the plan.' : '') }));
+  }
+
   // ---------- 6. the audit ----------
   function rulesTable(rules) {
     return UI.table({ columns: [{ key: 'rule_id', label: 'Rule' }, { key: 'name', label: 'What it checks' }, { key: 'inputs', label: 'Reads', format: (v) => (v || []).join(', ') }, { key: 'capability', label: 'Capability' }],
@@ -419,6 +432,7 @@
     freshSection(d.freshness);
     lossSection(d.losses);
     categorySection(d.category);
+    reviewSection(d.reviews);
     document.getElementById('audit-sub').textContent = p.findings.length + ' findings from ' + p.rules.length + ' rules. Public signals, one capture.';
     mount('#audit', auditTable(p.findings));
     mount('#rules', el('h4', { text: 'Rules' }), rulesTable(p.rules));

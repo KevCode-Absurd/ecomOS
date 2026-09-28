@@ -641,6 +641,29 @@ class TestCategory(TempBrain):
         self.assertEqual((a['owner'], a['artefact']['kind']), ('person', 'connector_setup'))
 
 
+class TestReviews(TempBrain):
+    """2.3: our review themes against the claims they lead with; attacked theme on the plan."""
+    def setUp(self):
+        super().setUp()
+        api.BRAIN_ROOT = self.tmp
+        self.rv = api.handle(Req(['overview']))['reviews']
+
+    def test_rows(self):
+        rows = self.rv['rows']
+        self.assertEqual([r['one_star'] for r in rows], sorted((r['one_star'] for r in rows), reverse=True))
+        self.assertEqual(self.rv['attack']['theme'], 'durability')
+        self.assertIn('Darn Tough Vermont', self.rv['attack']['leaders'])
+        for r in rows:
+            self.assertIsNone(r['their_reviews'])
+
+    def test_rule_r17(self):
+        out = audit.run('bombas', WINDOW, self.tmp)
+        f = next(f for f in out if f['rule_id'] == 'COMP-R17')
+        self.assertEqual(f['severity'], 'high')
+        acts = api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions']
+        self.assertEqual(acts[0]['rule_id'], 'COMP-R17')
+
+
 class TestRank(TempBrain):
     """Depth contract rules 2, 3 and 13: owner, steps and artefact on every action; every finding ends in one."""
     W = {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4}
