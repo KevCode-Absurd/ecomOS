@@ -221,6 +221,16 @@ def orientation(brain: Brain, avatars: list[dict], all_rungs: list[dict], chart:
     ]
 
 
+def _cohorts(brand: str, avatars: list[dict]) -> dict:
+    try:
+        from tables import brand_data
+        data = brand_data(brand)
+        rows, monthly, as_of = data.table("cohorts"), data.table("monthly"), data.brand.get("as_of")
+    except (ImportError, ValueError, KeyError, FileNotFoundError) as exc:
+        return {"available": False, "reason": f"no cohort table for {brand} ({exc})", "rows": [], "moves": []}
+    return builds.cohort_grid(rows, monthly, as_of, avatars)
+
+
 def _brand_tokens(brain: Brain) -> set[str]:
     """Words of the brand's own name, from the brain identity, so a phrase that only names the brand counts as generic."""
     toks = {brain.brand.lower()}
@@ -259,6 +269,7 @@ def overview(brain: Brain) -> dict:
             "avatars": avatars,
             "objections": objections, "angles": {k: angles[k] for k in ("available", "reason", "ads")},
             "language": audit.language_rows(brain), "voice": voice_sheet(brain),
+            "cohorts": _cohorts(brain.brand, avatars),
             "coverage": builds.coverage(avatars, all_rungs), "ladders": builds.ladders(all_rungs, avatars),
             "words": builds.words(brain.records("language_bank"), all_rungs, avatars, _brand_tokens(brain), audit.source_name), "formats": _formats(brain, avatars)}
 

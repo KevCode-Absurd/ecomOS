@@ -172,6 +172,27 @@
     show('all');
   }
 
+  // ---------- desk: cohort grid and retention moves ----------
+  function renderCohorts(c) {
+    if (!c.available) { mount('#cohort', UI.emptyState({ screen: SLUG, title: 'Cohorts unavailable', text: c.reason })); return; }
+    const cb = c.calendar_break, ab = c.age_break;
+    document.getElementById('cohort-sub').textContent = 'Share of each first-order month active again, by months since the first order. A cell shows once that month has ended. ' +
+      'Break rules: a month where half or more of cohorts fall 40 percent at once is the calendar; the largest fall after the peak, outside that month, is their age.';
+    const full = c.rows.filter((r) => r.value_12m != null);
+    mount('#cohort-orient', UI.orientation([
+      { label: 'peak return month', value: c.peak_month, unit: 'n', title: 'month 1 to 3 with the highest median active share' },
+      { label: 'repeat months 1 to 3, median', value: c.repeat_median, unit: '%' },
+      { label: 'est. 12-month value', value: full.length ? full[full.length - 1].value_12m : null, unit: '$', title: 'latest full cohort; one order per active month times AOV, an estimate' },
+    ]));
+    mount('#cohort', Charts.cohort({ rows: c.rows.map((r) => ({ label: r.cohort, values: r.values })), columns: c.columns, unit: '%', cellW: 52, labelW: 70,
+      title: 'Active again, by months since the first order',
+      note: 'Simulated. From cohorts.json as of ' + fmt.date(c.as_of) + '. Grey is a month that has not ended. ' +
+        (cb ? 'Calendar break: ' + cb.month + ', ' + Math.round(cb.share * 100) + ' percent of ' + cb.cohorts + ' cohorts fell together. ' : '') +
+        (ab ? 'Age break: month ' + ab.month + ' to ' + (ab.month + 1) + ', down ' + Math.round(ab.drop * 100) + ' percent.' : '') }));
+    mount('#cohort-moves', el('span', { class: 'kicker', text: 'Retention moves from the breaks' }),
+      ...c.moves.map((m) => UI.actionCard(m, { compact: true, screen: SLUG })));
+  }
+
   function objectionTable(rows) {
     return UI.table({
       columns: [
@@ -367,6 +388,7 @@
     renderCoverage(d.coverage, d.formats);
     renderLadders(d.ladders, d.avatars);
     renderWords(d.words, d.avatars);
+    renderCohorts(d.cohorts);
     mount('#avatars', ...(d.avatars.length ? d.avatars.map(avatarCard) : [el('p', { class: 'muted', text: 'No avatar records yet.' })]));
     document.getElementById('obj-note').textContent = 'Avatars come from the objection ladders. Ad coverage: ' +
       (d.angles.available ? 'counted from the ad table.' : d.angles.reason + '.') + ' Page coverage needs a live page scan.';

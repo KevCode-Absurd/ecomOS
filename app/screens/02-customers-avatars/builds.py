@@ -420,3 +420,146 @@ def words(lang_records: list[dict], all_rungs: list[dict], avatars: list[dict], 
     lang = sum(1 for rec in lang_records if phrase_row(rec, source_name))
     return {"rows": rows, "phrases_used": len(used), "phrases_total": len(lang_records), "phrases_sided": lang,
             "line": f"{len(used)} of {len(lang_records)} banked phrases sit on a rung. Pick lines and make a copy brief."}
+
+
+# ---------------------------------------------------------------- cohort grid and retention moves
+
+GRID_MONTHS = 12
+GRID_COHORTS = 18
+CLIFF_DROP = 0.40          # a cohort's active share falls 40 percent or more from one month to the next
+CLIFF_SHARE = 0.5          # and half or more of the cohorts alive then fall together in the same calendar month
+WEAK_COHORT = 0.8          # repeat in months 1 to 3 under 0.8x the median of the grid
+MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October",
+               "November", "December"]
+
+
+def _add(month: str, n: int) -> str:
+    y, m = (int(x) for x in month.split("-"))
+    m += n
+    return f"{y + (m - 1) // 12}-{(m - 1) % 12 + 1:02d}"
+
+
+def _median(xs: list[float]) -> float | None:
+    xs = sorted(x for x in xs if x is not None)
+    if not xs:
+        return None
+    mid = len(xs) // 2
+    return xs[mid] if len(xs) % 2 else (xs[mid - 1] + xs[mid]) / 2
+
+
+def _move(mid, title, why, kind, label, cap, owner, steps, draft, check_days=28, stop=None, as_of=None):
+    import datetime as _dt
+    check = (_dt.date.fromisoformat(as_of) + _dt.timedelta(days=check_days)).isoformat() if as_of else None
+    return {"id": f"{SCREEN}.retention.{mid}", "finding_ids": [], "title": title, "why": why, "severity": "medium",
+            "status": "open", "owner": owner, "capability": {"id": cap[0], "autonomy": cap[1]},
+            "artefact": {"kind": kind, "label": label, "draft": draft}, "steps": steps, "check_on": check, "stop_rule": stop}
+
+
+def cohort_grid(cohorts: list[dict], monthly: list[dict], as_of: str, avatars: list[dict]) -> dict:
+    """Active share by months since the first order, the breaks in it, and the retention move for each break.
+
+    Active share: customers of a cohort who ordered again in a month, over the cohort size. A cell shows only once
+    that calendar month has ended. Est. 12-month value: (1 + active months 1 to 12 over size) x the cohort month's
+    AOV, which assumes one order per active customer per month; it is an estimate, labelled so.
+    """
+    if not cohorts:
+        return {"available": False, "reason": "no cohort table", "rows": []}
+    aov = {r["month"]: r.get("aov") for r in monthly if r.get("aov")}
+    done = lambda m: _add(m, 1) <= as_of[:7]
+    rows = []
+    for c in cohorts[-GRID_COHORTS - 3:]:
+        n, act = c.get("customers"), c.get("active_by_month") or []
+        if not n:
+            continue
+        vals = []
+        for k in range(1, GRID_MONTHS + 1):
+            cal = _add(c["cohort"], k)
+            vals.append(round(act[k] / n, 4) if k < len(act) and done(cal) else None)
+        full12 = all(v is not None for v in vals)
+        ltv = round((1 + sum(vals)) * aov[c["cohort"]], 2) if full12 and aov.get(c["cohort"]) else None
+        r3 = round(sum(vals[:3]), 4) if all(v is not None for v in vals[:3]) else None
+        if any(v is not None for v in vals):
+            rows.append({"cohort": c["cohort"], "customers": n, "values": vals, "repeat_m1_m3": r3, "value_12m": ltv})
+    rows = rows[-GRID_COHORTS:]
+    # second-order peak: the month 1 to 3 with the highest median active share
+    med_by_k = [_median([r["values"][k] for r in rows]) for k in range(GRID_MONTHS)]
+    peak_k = max(range(3), key=lambda k: med_by_k[k] or -1) + 1
+    # calendar cliff: the calendar month where most cohorts alive then fall 40 percent or more
+    by_cal: dict[str, list[bool]] = {}
+    for r in rows:
+        for k in range(1, GRID_MONTHS):
+            a, b = r["values"][k - 1], r["values"][k]
+            if a and b is not None and k >= 2:
+                by_cal.setdefault(_add(r["cohort"], k + 1), []).append(b <= a * (1 - CLIFF_DROP))
+    cliffs = sorted(((m, sum(v) / len(v), len(v)) for m, v in by_cal.items() if len(v) >= 3 and sum(v) / len(v) >= CLIFF_SHARE),
+                    key=lambda x: (-x[1], x[0]))
+    # age break: the month after the peak with the largest median fall, leaving out cells in a calendar cliff month
+    cliff_months = {m for m, _, _ in cliffs}
+    med_ex = [_median([r["values"][k] for r in rows if _add(r["cohort"], k + 1) not in cliff_months]) for k in range(GRID_MONTHS)]
+    drops = []
+    for k in range(peak_k, GRID_MONTHS - 1):
+        a, b = med_ex[k - 1], med_ex[k]
+        if a and b is not None:
+            drops.append((round(1 - b / a, 4), k))
+    age_drop, age_k = max(drops) if drops else (None, None)
+    rep = [r["repeat_m1_m3"] for r in rows if r["repeat_m1_m3"] is not None]
+    rep_med = _median(rep)
+    weak = [r for r in rows if r["repeat_m1_m3"] is not None and rep_med and r["repeat_m1_m3"] < WEAK_COHORT * rep_med]
+    moves = []
+    pk = round((med_by_k[peak_k - 1] or 0) * 100, 1)
+    day = max(14, peak_k * 30 - 10)
+    moves.append(_move(
+        "second_order", f"Time the second-order email to day {day}",
+        f"Month {peak_k} is when most repeat buyers come back: {pk} percent of a cohort, median of {len(rows)} cohorts.",
+        "flow", "a post-purchase flow step", ("LIFE-C07", "founder_gate"), "agent_drafts",
+        [{"n": 1, "who": "agent", "text": f"Read the post-purchase flow and find the step nearest day {day}."},
+         {"n": 2, "who": "agent", "text": "Draft the step: the product they bought, the next one to try, their own words."},
+         {"n": 3, "who": "person", "text": "Approve the email and set the send day in the email tool."},
+         {"n": 4, "who": "agent", "text": f"Read month {peak_k} active share for the next 2 cohorts against {pk} percent."}],
+        f"DRAFT flow step\nSend on: day {day} after the first order\nWhy then: month {peak_k} holds the most second orders ({pk} percent)\n"
+        "Content: how their first pair is doing, the next product to try, a five-star line from the ladder.",
+        stop=f"Stop if month {peak_k} active share falls below {round(pk * 0.9, 1)} percent for 2 cohorts", as_of=as_of))
+    if age_k is not None and age_drop and age_drop >= 0.2:
+        wd = age_k * 30
+        a_, b_ = round(med_ex[age_k - 1] * 100, 1), round(med_ex[age_k] * 100, 1)
+        moves.append(_move(
+            "age_break", f"Start win-back at day {wd}, before month {age_k + 1}",
+            f"Active share falls {round(age_drop * 100)} percent from month {age_k} ({a_} percent) to month {age_k + 1} ({b_} percent).",
+            "flow", "a win-back flow", ("LIFE-C08", "founder_gate"), "agent_drafts",
+            [{"n": 1, "who": "agent", "text": f"Read the win-back flow trigger. Note its current start day."},
+             {"n": 2, "who": "agent", "text": f"Draft a 3-email win-back from day {wd}: reminder, their words, a small reason to come back."},
+             {"n": 3, "who": "person", "text": "Approve the emails and any offer in them."},
+             {"n": 4, "who": "agent", "text": f"Read month {age_k + 1} active share for the next 2 cohorts."}],
+            f"DRAFT win-back\nStart: day {wd}\nEmail 1: what is new since their first order\nEmail 2: the top five-star line for their product\n"
+            "Email 3: a small reason to come back. A person sets any offer.", as_of=as_of))
+    for cal, share, n in cliffs[:1]:
+        mname = MONTH_NAMES[int(cal[5:7]) - 1]
+        moves.append(_move(
+            f"calendar_{cal}", f"Plan a {mname} return for every past buyer",
+            f"In {mname} {cal[:4]}, {round(share * 100)} percent of {n} cohorts fell 40 percent or more at once. It is the calendar, not their age.",
+            "email", "a campaign plan for the month", ("LIFE-C20", "agent_does"), "agent_drafts",
+            [{"n": 1, "who": "agent", "text": f"Pull what past buyers bought before {mname} and what they return for."},
+             {"n": 2, "who": "agent", "text": f"Draft a {mname} plan: 2 emails and 1 ad for past buyers, no deep discount."},
+             {"n": 3, "who": "person", "text": "Approve the plan and put it on the calendar."},
+             {"n": 4, "who": "agent", "text": f"Compare {mname} active share with last year's fall."}],
+            f"DRAFT {mname} plan\nAudience: every buyer from the last 12 months\nWhy: {round(share * 100)} percent of cohorts fell together in {mname} {cal[:4]}\n"
+            "Emails: 2, one on what is new, one on a care or replace theme\nAd: 1 for past buyers", as_of=as_of))
+    if weak:
+        names = ", ".join(r["cohort"] for r in weak[:4])
+        gifting = [a["name"] for a in avatars if any(w in " ".join(a.get("triggers") or []).lower() for w in ("gift", "holiday", "christmas"))]
+        who = f" The gift avatar, {gifting[0]}, buys in these months." if gifting else ""
+        moves.append(_move(
+            "weak_cohorts", f"Give first buyers from {names} their own post-purchase path",
+            f"These cohorts repeat at under {int(WEAK_COHORT * 100)} percent of the median in months 1 to 3 ({round((rep_med or 0) * 100, 1)} percent).{who}",
+            "flow", "a post-purchase branch", ("LIFE-C07", "founder_gate"), "agent_drafts",
+            [{"n": 1, "who": "agent", "text": "Split first orders in these months by gift or self from order notes and ship-to."},
+             {"n": 2, "who": "agent", "text": "Draft a branch for gift buyers: a thank-you and a pair for themselves."},
+             {"n": 3, "who": "person", "text": "Approve the branch in the email tool."},
+             {"n": 4, "who": "agent", "text": "Read months 1 to 3 repeat for the next cohort from these months."}],
+            f"DRAFT post-purchase branch\nFor: first buyers in {names}\nEmail 1: thank you, and how the gift landed\n"
+            "Email 2: a pair for you, with a five-star line on comfort\nEmail 3: the care guide", as_of=as_of))
+    cols = [f"M{k}" for k in range(1, GRID_MONTHS + 1)]
+    return {"available": True, "rows": rows, "columns": cols, "median_by_month": [round(x, 4) if x is not None else None for x in med_by_k],
+            "peak_month": peak_k, "age_break": {"month": age_k, "drop": age_drop} if age_k else None,
+            "calendar_break": {"month": cliffs[0][0], "share": round(cliffs[0][1], 4), "cohorts": cliffs[0][2]} if cliffs else None,
+            "weak": [r["cohort"] for r in weak], "repeat_median": rep_med, "moves": moves, "as_of": as_of, "simulated": True}

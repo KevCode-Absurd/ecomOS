@@ -382,5 +382,49 @@ class Words(TempBrain):
         self.assertFalse(builds._generic('No slipping', {'bombas'}))
 
 
+class Cohorts(unittest.TestCase):
+    """Feature 1.6: cohort grid from cohorts.json with the breaks named and a retention move per break."""
+
+    def grid(self, rows=None, as_of='2026-09-27'):
+        from tables import brand_data
+        data = brand_data('bombas')
+        return api.builds.cohort_grid(rows if rows is not None else data.table('cohorts'), data.table('monthly'), as_of, [])
+
+    def test_cells_from_table_and_unended_months_blank(self):
+        from tables import brand_data
+        src = {r['cohort']: r for r in brand_data('bombas').table('cohorts')}
+        g = self.grid()
+        self.assertTrue(g['available'])
+        for r in g['rows']:
+            for k, v in enumerate(r['values'], start=1):
+                cal = api.builds._add(r['cohort'], k)
+                if cal >= '2026-09':
+                    self.assertIsNone(v)
+                elif v is not None:
+                    self.assertAlmostEqual(v, round(src[r['cohort']]['active_by_month'][k] / src[r['cohort']]['customers'], 4))
+            self.assertTrue(any(v is not None for v in r['values']))
+
+    def test_breaks_and_moves(self):
+        g = self.grid()
+        self.assertEqual(g['peak_month'], 2)
+        self.assertEqual(g['calendar_break']['month'], '2026-01')
+        ids = [m['id'] for m in g['moves']]
+        self.assertIn('02-customers-avatars.retention.second_order', ids)
+        self.assertIn('02-customers-avatars.retention.calendar_2026-01', ids)
+        for m in g['moves']:
+            self.assertEqual(rank_engine.validate_action(dict(m, rubric={'total': 0})), [])
+            self.assertIn(m['artefact']['kind'], rank_engine.ARTEFACT_KINDS)
+            self.assertTrue(m['artefact']['draft'].startswith('DRAFT'))
+            self.assertRegex(m['why'], r'\d')
+
+    def test_value_12m_only_for_full_cohorts(self):
+        for r in self.grid()['rows']:
+            if r['value_12m'] is not None:
+                self.assertTrue(all(v is not None for v in r['values']))
+
+    def test_empty_table_unavailable(self):
+        self.assertFalse(self.grid(rows=[])['available'])
+
+
 if __name__ == '__main__':
     unittest.main()
