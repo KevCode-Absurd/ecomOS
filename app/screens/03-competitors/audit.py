@@ -124,6 +124,10 @@ COMP-R25 a competitor cut its price sharply. A tracked page's median price per
     the room's price-cut rule. Severity high for a direct page, medium else.
     Capability CREA-C31 (answer with value framing, never a reflex match).
     Owner: 03-competitors.
+COMP-R26 a top threat's landing pages are not tracked. One finding for the top
+    3 threat pages (landing.py) with no landing page capture. Severity low.
+    Capability BRN-C01 (site crawl, snapshot and diff; agent does it, public
+    read). Owner: 03-competitors.
 
 Rubric overrides (depth.md section 4 allows reputation and satisfaction per rule):
 COMP-R01 reputation 5: an unclaimed angle is a competitor position gap named in
@@ -175,6 +179,7 @@ mixmod = _local("mix")
 refmod = _local("references")
 changemod = _local("changes")
 capmod = _local("capture")
+landmod = _local("landing")
 lossmod = _local("losses")
 catmod = _local("category")
 revmod = _local("reviews")
@@ -267,6 +272,8 @@ RULES = [
      "inputs": ["page-summary captures", "Ad Library snapshot"], "capability": "CREA-C06", "owner_screen": SCREEN},
     {"rule_id": "COMP-R25", "name": "a competitor cut its price per pair 15 percent or more", "entity_type": "page",
      "inputs": ["page-summary captures (price band)"], "capability": "CREA-C31", "owner_screen": SCREEN},
+    {"rule_id": "COMP-R26", "name": "top threats' landing pages not tracked", "entity_type": "page",
+     "inputs": ["threat verdicts", "brain competitors price_ref"], "capability": "BRN-C01", "owner_screen": SCREEN},
     {"rule_id": "COMP-R08", "name": "discount on most ads while direct peers run none", "entity_type": "offer",
      "inputs": ["brain offers.promo_share_active_ads", "brain competitors offers_seen"], "capability": "LIFE-C38",
      "owner_screen": SCREEN},
@@ -274,13 +281,13 @@ RULES = [
 # what a strategist groups the findings by on the page (depth.md section 2: grouped by bottleneck)
 RULE_GROUP = {"COMP-R01": "creative", "COMP-R05": "creative", "COMP-R06": "creative", "COMP-R03": "offer", "COMP-R07": "offer",
               "COMP-R08": "offer", "COMP-R09": "offer", "COMP-R02": "price", "COMP-R10": "price", "COMP-R11": "position",
-              "COMP-R04": "watch", "COMP-R12": "watch", "COMP-R13": "watch", "COMP-R14": "watch", "COMP-R15": "lost", "COMP-R16": "lost", "COMP-R17": "lost", "COMP-R18": "price", "COMP-R19": "creative", "COMP-R20": "position", "COMP-R21": "offer", "COMP-R22": "position", "COMP-R23": "position", "COMP-R24": "watch", "COMP-R25": "price"}
+              "COMP-R04": "watch", "COMP-R12": "watch", "COMP-R13": "watch", "COMP-R14": "watch", "COMP-R15": "lost", "COMP-R16": "lost", "COMP-R17": "lost", "COMP-R18": "price", "COMP-R19": "creative", "COMP-R20": "position", "COMP-R21": "offer", "COMP-R22": "position", "COMP-R23": "position", "COMP-R24": "watch", "COMP-R25": "price", "COMP-R26": "watch"}
 GROUP_LABEL = {"lost": "Shoppers we lose, by name", "creative": "Ads they run that we do not", "offer": "Offers they say that we do not",
                "price": "Price against theirs", "position": "Corners of the map", "watch": "Watch and protect"}
 RUBRIC_OVERRIDES = {"COMP-R01": {"reputation": 5}, "COMP-R02": {"reputation": 3}, "COMP-R04": {"reputation": 5, "satisfaction": 4},
                     "COMP-R15": {"reputation": 4}, "COMP-R17": {"reputation": 4, "satisfaction": 4},
                     "COMP-R21": {"reputation": 3}}
-AUTONOMY = {"BRAND-C07": "agent_does", "BRAND-C23": "agent_does", "PROD-C46": "agent_does", "LIFE-C42": "founder_gate", "BRAND-C18": "agent_does", "BRAND-C57": "agent_does", "BRN-C11": "agent_does", "BRAND-C20": "agent_does", "LIFE-C39": "founder_gate", "CREA-C31": "agent_does", "CREA-C06": "agent_does", "CREA-C04": "agent_does", "LIFE-C47": "agent_does", "LIFE-C38": "founder_gate", "BRAND-C21": "founder_gate", "BRAND-C24": "founder_gate", "MONEY-C48": "human_assist"}
+AUTONOMY = {"BRN-C01": "agent_does", "BRAND-C07": "agent_does", "BRAND-C23": "agent_does", "PROD-C46": "agent_does", "LIFE-C42": "founder_gate", "BRAND-C18": "agent_does", "BRAND-C57": "agent_does", "BRN-C11": "agent_does", "BRAND-C20": "agent_does", "LIFE-C39": "founder_gate", "CREA-C31": "agent_does", "CREA-C06": "agent_does", "CREA-C04": "agent_does", "LIFE-C47": "agent_does", "LIFE-C38": "founder_gate", "BRAND-C21": "founder_gate", "BRAND-C24": "founder_gate", "MONEY-C48": "human_assist"}
 
 
 # ---------------------------------------------------------------- reading
@@ -513,6 +520,7 @@ def market_full(brand: str, today: dt.date, root: Path | None = None) -> dict:
     prev = snap.load(brand, before=cur["captured_at"]) if cur else None
     cprev, ccur = capmod.latest_two(brand)
     m["changes"] = changemod.build(m, m["brain"], prev, cur, today, capmod.diff(cprev, ccur), len(capmod.captures(brand)))
+    m["landing"] = landmod.build(m, cur)
     m["price_moves"] = {"moves": capmod.price_moves(cprev, ccur, parse_band), "captures": len(capmod.captures(brand)),
                         "since": cprev["captured_at"] if cprev else None, "threshold": capmod.PRICE_MOVE}
     m["losses"] = lossmod.build(m, m["brain"])
@@ -984,6 +992,16 @@ def rule_price_cut(m, ends_on):
     return out
 
 
+def rule_landing(m, ends_on):
+    rows = [r for r in (m.get("landing") or {}).get("rows", []) if not r["tracked"]]
+    if not rows:
+        return []
+    ev = [_row("threats_untracked", len(rows), "n", "latest capture", ends_on, None, 0, "threshold", "competitors")]
+    sentence = f"{', '.join(r['name'] for r in rows)} are top threats and none of their landing pages is tracked."
+    return [_finding("COMP-R26", "low", {"type": "page", "id": "landing_tracking", "label": "threat landing pages"}, ev, sentence,
+                     [], ends_on, 0.5, "no baseline: page changes are not captured yet")]
+
+
 def packs_month_end(packs):
     if not packs.get("available"):
         return None
@@ -1010,7 +1028,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
         out += [_unavailable("COMP-R16", "low", {"type": "ladder_rung", "id": "lower_rungs", "label": "lower rungs of the ladder"},
                              ["search trends by rung"], "a search trends source (read only)",
                              "Connect a search trends source for the category and each lower rung.", ends_on)]
-        out += rule_ladder(m, ends_on) + rule_corners(m, ends_on) + rule_refresh(m, ends_on) + rule_freshness(m, ends_on) + rule_losses(m, ends_on) + rule_attack(m, ends_on) + rule_presence(m, ends_on) + rule_velocity(m, ends_on) + rule_niche(m, ends_on) + rule_premium(m, ends_on) + rule_search(m, ends_on) + rule_new_move(m, ends_on) + rule_price_cut(m, ends_on)
+        out += rule_ladder(m, ends_on) + rule_corners(m, ends_on) + rule_refresh(m, ends_on) + rule_freshness(m, ends_on) + rule_losses(m, ends_on) + rule_attack(m, ends_on) + rule_presence(m, ends_on) + rule_velocity(m, ends_on) + rule_niche(m, ends_on) + rule_premium(m, ends_on) + rule_search(m, ends_on) + rule_new_move(m, ends_on) + rule_price_cut(m, ends_on) + rule_landing(m, ends_on)
     out += rule_price(m, ends_on) + rule_lookalike(m, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f["severity"]], f["id"]))
     return out

@@ -850,6 +850,22 @@ class TestPriceMoves(TempBrain):
         self.assertGreaterEqual(pm['captures'], 1)
 
 
+class TestLanding(TempBrain):
+    """3.3: landing page tracking for the top 3 threats; untracked reads not tracked, never blank."""
+    def test_rows_and_rule(self):
+        api.BRAIN_ROOT = self.tmp
+        ld = api.handle(Req(['overview']))['landing']
+        self.assertEqual(len(ld['rows']), 3)
+        pts = [r['points'] for r in ld['rows']]
+        self.assertEqual(pts, sorted(pts, reverse=True))
+        for r in ld['rows']:
+            self.assertFalse(r['tracked'])
+            self.assertIsNone(r['last_capture'])
+            self.assertTrue(r['urls'])
+        out = audit.run('bombas', WINDOW, self.tmp)
+        self.assertTrue([f for f in out if f['rule_id'] == 'COMP-R26'])
+
+
 class TestRank(TempBrain):
     """Depth contract rules 2, 3 and 13: owner, steps and artefact on every action; every finding ends in one."""
     W = {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4}
@@ -943,7 +959,7 @@ class TestPage(unittest.TestCase):
         js = (SCREEN / 'screen.js').read_text(encoding='utf-8')
         html = (SCREEN / 'index.html').read_text(encoding='utf-8')
         desk = html.split('id="desk-src"', 1)[1].split('<!-- 6. The audit -->', 1)[0]
-        for sec_id in ('pages', 'losses', 'category', 'reviews', 'coverage', 'velocity', 'mix', 'refs', 'changes',
+        for sec_id in ('pages', 'landing', 'losses', 'category', 'reviews', 'coverage', 'velocity', 'mix', 'refs', 'changes',
                        'map', 'premium', 'prices', 'presence', 'niche', 'search', 'fresh'):
             self.assertIn(f'id="{sec_id}"', desk)
             self.assertIn(f"'{sec_id}'", js)

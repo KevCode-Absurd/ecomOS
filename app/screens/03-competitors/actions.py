@@ -532,6 +532,19 @@ def act_price_cut(f: dict, m: dict) -> dict:
             "time_to_ship_hours": 3}
 
 
+def act_landing(f: dict, m: dict) -> dict:
+    """COMP-R26: start weekly landing page tracking for the top threats (public read)."""
+    rows = [r for r in m["landing"]["rows"] if not r["tracked"]]
+    return {"title": f"Start weekly landing page tracking for {len(rows)} top threats", "owner": "agent",
+            "artefact": {"kind": "research_note", "label": "a tracking plan and the first dated capture",
+                         "draft": audit.landmod.plan_text(rows)},
+            "steps": _steps(("agent", "Visit each watch url (public read) and store the first dated capture."),
+                            ("agent", "Diff weekly: headline, offer, guarantee, best seller price per pair, new collections."),
+                            ("agent", "Raise an alert on the changes timeline when a rule crosses.")),
+            "size": {"text": f"{sum(len(r['urls']) for r in rows)} urls a week"}, "win_rule": None, "stop_rule": None,
+            "check_on": _plus(f["last_seen"], 7), "time_to_ship_hours": 2}
+
+
 def act_connect(f: dict, m: dict) -> dict:
     un = f.get("unavailable") or {}
     con = un.get("connector") or "the missing source"
@@ -552,7 +565,8 @@ BUILDERS = {"COMP-R01": act_angle, "COMP-R02": act_price, "COMP-R03": act_offer_
             "COMP-R17": act_attack, "COMP-R18": act_undercut,
             "COMP-R19": act_velocity, "COMP-R20": act_niche,
             "COMP-R21": act_premium, "COMP-R22": act_search, "COMP-R23": act_connect,
-            "COMP-R24": act_new_move, "COMP-R25": act_price_cut}   # R16 has no data source yet: always a connect action
+            "COMP-R24": act_new_move, "COMP-R25": act_price_cut,
+            "COMP-R26": act_landing}   # R16 has no data source yet: always a connect action
 
 
 def action(f: dict, m: dict, net_revenue: float | None) -> dict:
