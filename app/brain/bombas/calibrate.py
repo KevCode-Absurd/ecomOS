@@ -210,6 +210,10 @@ def build(records: list[dict], today: str) -> tuple[list[dict], list[dict]]:
         answered.add("return_rate")
     v, r = _founder("monthly_revenue_shape")
     if v:
+        for e in a:
+            if e["field"] == "seasonality":
+                e["status"] = "founder"; e["source_ids"] = [r["id"]]
+                e["reasoning"] = "Kevin signed off the seasonality index at the S1.4 review: November and December carry about 26 percent of the year."
         answered.add("seasonality")
 
     questions = [

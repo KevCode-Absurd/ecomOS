@@ -63,7 +63,7 @@ No records yet: diagnosis, changes, plans.
 
 - Documents: [documents/manifest.json](documents/manifest.json), 0 files
 - Open questions: [open_questions.json](open_questions.json), 5 open
-- Brain version 9acdcc645732. Generated from records; edit records, not this file.
+- Brain version 9e620df5c169. Generated from records; edit records, not this file.
 
 ## Founder notes
 
