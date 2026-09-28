@@ -112,6 +112,9 @@ Rules
   PROD-R28  Research sprawl: an open candidate whose hours logged pass the hours allowed through its stage (the per-stage
             budgets summed: 4 screened, 16 researched, 8 gated, 4 shortlisted by default; a brand sets its own in
             learnings.research_hours_budget). Severity low. Capability PROD-C04. Owner: 01-market-research.
+  PROD-R29  Trend without history: a lane with an open candidate whose market series in the web pass holds no 3 years
+            of history (forecast only, or none), or whose last-year growth is more than twice its multi-year rate
+            (a spike). Bank ideas PRD-044 and PRD-045. Severity low. Capability PROD-C05. Owner: 01-market-research.
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -192,6 +195,8 @@ RULES = [
      'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C13', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R28', 'name': 'Open candidate whose research hours pass the cumulative hours budget for its stage', 'entity_type': 'sku',
      'inputs': ['fixtures.pipeline', 'brain.learnings'], 'capability': 'PROD-C04', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R29', 'name': 'Candidate lane whose market trend rests on a forecast or one year, with no 3-year history on file, or reads as a spike', 'entity_type': 'metric',
+     'inputs': ['fixtures.market_trends', 'fixtures.pipeline'], 'capability': 'PROD-C05', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -220,7 +225,8 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R25': {'id': 'PROD-C11', 'autonomy': 'founder_gate'},
               'PROD-R26': {'id': 'PROD-C02', 'autonomy': 'agent_does'},
               'PROD-R27': {'id': 'PROD-C13', 'autonomy': 'agent_does'},
-              'PROD-R28': {'id': 'PROD-C04', 'autonomy': 'agent_does'}}
+              'PROD-R28': {'id': 'PROD-C04', 'autonomy': 'agent_does'},
+              'PROD-R29': {'id': 'PROD-C05', 'autonomy': 'agent_does'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -699,6 +705,7 @@ def run(brand, window=None, data=None):
     out += video_findings(br, brand, ends_on)
     out += tech_pack_findings(brand, ends_on)
     out += hours_findings(brand, br, ends_on)
+    out += trend_check_findings(br, brand, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -2514,5 +2521,90 @@ def hours_findings(brand, br, ends_on):
         f = _finding('PROD-R28', r['candidate_id'], ends_on, 'low', ev, sentence, None, 0.9, [], money_reason='research hours, not revenue')
         f['entity'] = {'type': 'sku', 'id': r['candidate_id'], 'label': r['name'], 'candidate': True, 'stage': r['stage'], 'hours_logged': r['hours_logged'], 'hours_allowed': r['hours_allowed']}
         f['id'] = f'{SCREEN}.PROD-R28.{r["candidate_id"]}'
+        out.append(f)
+    return out
+
+
+# ---------------------------------------------------------------- 12-month against multi-year trend checks (bank ideas PRD-044 and PRD-045: the exact term, several years, not one graph)
+
+HISTORY_MIN_YEARS = 3    # a trend read needs 3 or more years of history before a forecast is trusted
+
+
+def trend_history(market, as_of_year):
+    """Split a market's series into history (years up to as_of) and forecast; short-term growth from the last 2 history points,
+    long-term growth a year from the first to the last history point; forecast growth from the last history point to the last forecast."""
+    pts = sorted((p for p in (market.get('series') or []) if isinstance(p.get('value_usd'), (int, float)) and isinstance(p.get('year'), int)), key=lambda p: p['year'])
+    hist = [p for p in pts if p['year'] <= as_of_year]
+    fcst = [p for p in pts if p['year'] > as_of_year]
+    out = {'history_years': (hist[-1]['year'] - hist[0]['year']) if len(hist) >= 2 else 0, 'history_points': len(hist), 'forecast_points': len(fcst),
+           'short_growth': None, 'long_growth': None, 'forecast_growth': None, 'first_year': hist[0]['year'] if hist else None, 'last_year': hist[-1]['year'] if hist else None}
+    if len(hist) >= 2:
+        a, b = hist[-2], hist[-1]
+        yrs = b['year'] - a['year']
+        out['short_growth'] = round((b['value_usd'] / a['value_usd']) ** (1 / yrs) - 1, 4) if yrs and a['value_usd'] else None
+        a, b = hist[0], hist[-1]
+        yrs = b['year'] - a['year']
+        out['long_growth'] = round((b['value_usd'] / a['value_usd']) ** (1 / yrs) - 1, 4) if yrs and a['value_usd'] else None
+    if hist and fcst:
+        a, b = hist[-1], fcst[-1]
+        yrs = b['year'] - a['year']
+        out['forecast_growth'] = round((b['value_usd'] / a['value_usd']) ** (1 / yrs) - 1, 4) if yrs and a['value_usd'] else None
+    if out['history_years'] >= HISTORY_MIN_YEARS and out['short_growth'] is not None and out['long_growth'] is not None:
+        out['verdict'] = 'fad_risk' if out['short_growth'] > 2 * max(out['long_growth'], 0.0) + 0.02 else 'steady' if out['long_growth'] > 0 else 'falling'
+    elif out['history_points'] >= 1:
+        out['verdict'] = 'forecast_only'
+    else:
+        out['verdict'] = 'no_series'
+    return out
+
+
+def trend_checks(br, brand, ends_on):
+    fx = market_trends() or {}
+    markets = {m.get('key'): m for m in fx.get('markets') or []}
+    cands = candidate_lanes(brand)
+    rows = []
+    for key, label, _ in SUBCATS:
+        keys = LANE_MARKET.get(key, [])
+        best = None
+        for k in keys:
+            m = markets.get(k)
+            if not m:
+                continue
+            h = trend_history(m, ends_on.year)
+            src = (m.get('sources') or [{}])[0]
+            row = dict(h, key=key, label=label, market=m.get('label'), market_key=k, cagr_pct=m.get('cagr_pct'), cite=f"{src.get('publisher') or 'public source'}, {src.get('date') or 'undated'}", url=src.get('url'))
+            if best is None or row['history_years'] > best['history_years']:
+                best = row
+        if best is None:
+            best = {'key': key, 'label': label, 'market': None, 'market_key': None, 'verdict': 'no_series', 'history_years': 0, 'history_points': 0, 'forecast_points': 0,
+                    'short_growth': None, 'long_growth': None, 'forecast_growth': None, 'cagr_pct': None, 'cite': None, 'url': None, 'first_year': None, 'last_year': None}
+        best['candidates'] = cands.get(key, [])
+        best['finding_id'] = f'{SCREEN}.PROD-R29.{key}'
+        rows.append(best)
+    order = {'fad_risk': 0, 'forecast_only': 1, 'no_series': 2, 'falling': 3, 'steady': 4}
+    rows.sort(key=lambda r: (order[r['verdict']], r['label']))
+    return {'rows': rows, 'rule': f'a trend read is trusted with {HISTORY_MIN_YEARS} or more years of history on the exact lane term; fad risk when the last-year growth is more than twice the multi-year rate; forecast only when the series holds a current point and a projection but no history'}
+
+
+def trend_check_findings(br, brand, ends_on):
+    """PROD-R29: a lane with an open candidate whose market trend rests on a forecast (or on one year) and has no multi-year history on file, or reads as a fad."""
+    out = []
+    for r in trend_checks(br, brand, ends_on)['rows']:
+        if not r['candidates'] or r['verdict'] not in ('forecast_only', 'fad_risk', 'no_series'):
+            continue
+        ev = [_ev('trend_history_years', r['history_years'], 'years', ends_on.isoformat(), 'web pass', HISTORY_MIN_YEARS, 'threshold', source=r['url'] or 'fixtures.market_trends', simulated=False, freshness_days=0,
+                  verdict=r['verdict'], history_points=r['history_points'], forecast_points=r['forecast_points']),
+              _ev('short_growth', r['short_growth'], 'ratio', ends_on.isoformat(), 'last 2 history points', source='fixtures.market_trends', simulated=False, freshness_days=0),
+              _ev('long_growth', r['long_growth'], 'ratio', ends_on.isoformat(), 'history', source='fixtures.market_trends', simulated=False, freshness_days=0)]
+        if r['verdict'] == 'fad_risk':
+            what = f'last-year growth {round(r["short_growth"] * 100)} percent against {round(r["long_growth"] * 100)} percent a year over {r["history_years"]} years: a spike, not a trend yet'
+        elif r['verdict'] == 'forecast_only':
+            what = f'the {r["market"]} series holds {r["history_points"]} current point and {r["forecast_points"]} forecast point{"s" if r["forecast_points"] != 1 else ""} ({r["cite"]}), no multi-year history'
+        else:
+            what = 'no market series is on file for the lane'
+        sentence = f'{", ".join(r["candidates"][:2])} rests on {r["label"].lower()}: {what}. Check 3 or more years of history on the exact term before funding.'
+        f = _finding('PROD-R29', r['key'], ends_on, 'low', ev, sentence, None, 0.7, [], money_reason='a trend check has no order count')
+        f['entity'] = {'type': 'metric', 'id': r['key'], 'label': r['label'], 'verdict': r['verdict'], 'candidates': r['candidates'], 'market': r['market']}
+        f['id'] = f'{SCREEN}.PROD-R29.{r["key"]}'
         out.append(f)
     return out

@@ -789,6 +789,19 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
             self.assertTrue(row['candidates'])
         self.assertEqual(audit.reddit_lane_mentions(None)['merino'], {'mentions': 0, 'upvotes': 0})
 
+    def test_trend_history_verdicts(self):
+        steady = {'series': [{'year': 2021, 'value_usd': 100}, {'year': 2023, 'value_usd': 110}, {'year': 2025, 'value_usd': 121}, {'year': 2030, 'value_usd': 160}]}
+        h = audit.trend_history(steady, 2026)
+        self.assertEqual((h['history_years'], h['history_points'], h['forecast_points'], h['verdict']), (4, 3, 1, 'steady'))
+        self.assertAlmostEqual(h['long_growth'], 0.0489, places=3)
+        spike = {'series': [{'year': 2021, 'value_usd': 100}, {'year': 2024, 'value_usd': 103}, {'year': 2025, 'value_usd': 140}]}
+        self.assertEqual(audit.trend_history(spike, 2026)['verdict'], 'fad_risk')
+        fc = {'series': [{'year': 2025, 'value_usd': 100}, {'year': 2033, 'value_usd': 150}]}
+        self.assertEqual(audit.trend_history(fc, 2026)['verdict'], 'forecast_only')
+        self.assertAlmostEqual(audit.trend_history(fc, 2026)['forecast_growth'], 0.0520, places=3)
+        self.assertEqual(audit.trend_history({'series': []}, 2026)['verdict'], 'no_series')
+        self.assertEqual(audit.trend_history({'series': [{'year': 2021, 'value_usd': 100}, {'year': 2025, 'value_usd': 90}]}, 2026)['verdict'], 'falling')
+
     def test_demand_pattern_tags(self):
         even = {'rows': [{'category': 'socks', 'series': [100] * 12}], 'months': [f'2026-{m:02d}' for m in range(1, 13)], 'last': '2026-12'}
         peaked = {'rows': [{'category': 'socks', 'series': [50] * 10 + [300, 400]}], 'months': even['months'], 'last': '2026-12'}

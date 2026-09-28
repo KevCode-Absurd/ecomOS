@@ -732,6 +732,25 @@
         over.length && (h.findings || {})[over[0].candidate_id] && actionFor(h.findings[over[0].candidate_id]) ? { label: 'Stop the first clock', onClick: () => openAction(actionFor(h.findings[over[0].candidate_id])) } : null));
   }
 
+  function trendChecksBlock(t) {
+    const rows = (t && t.rows) || [];
+    if (!rows.length) return UI.emptyState({ screen: SLUG, title: 'No lanes', text: 'No web pass on file.', missing: ['web_pass'] });
+    const pct = (v) => v == null ? NA : (v * 100).toFixed(1) + ' percent';
+    const vrows = rows.map((r) => { const a = actionFor(r.finding_id); return Object.assign({}, r, {
+      hist: r.history_points ? r.history_points + ' point' + (r.history_points === 1 ? '' : 's') + ', ' + r.history_years + ' year' + (r.history_years === 1 ? '' : 's') + (r.first_year ? ' (' + r.first_year + (r.last_year !== r.first_year ? ' to ' + r.last_year : '') + ')' : '') : 'none',
+      shortText: pct(r.short_growth), longText: pct(r.long_growth), fc: r.forecast_growth == null ? NA : pct(r.forecast_growth) + ' (' + r.forecast_points + ' pt)', cand: r.candidates.length ? r.candidates.join(', ') : 'none',
+      actions: [a ? { label: 'Run the multi-year check', onClick: () => openAction(a) } : { label: r.verdict === 'steady' ? 'Trusted' : r.candidates.length ? 'Fine' : 'No candidate', cls: 'quiet', onClick: () => {} }] }); });
+    const tbl = UI.verdictTable({
+      columns: [{ key: 'label', label: 'Lane' }, { key: 'market', label: 'Market series', format: (v) => v || 'none' }, { key: 'hist', label: 'History on file' }, { key: 'shortText', label: 'Last year' }, { key: 'longText', label: 'Multi-year a year' }, { key: 'fc', label: 'Forecast a year' }, { key: 'cand', label: 'Our candidates' }],
+      rows: vrows,
+      verdict: { at: 1, kind: (r) => r.verdict === 'steady' ? 'keep' : r.verdict === 'fad_risk' ? 'stop' : r.verdict === 'falling' ? 'cut' : 'watch', text: (r) => ({ steady: 'Steady trend', fad_risk: 'Spike, not trend', falling: 'Falling', forecast_only: 'Forecast only', no_series: 'No series' })[r.verdict], reason: (r) => t.rule },
+      actions: { label: 'Do', onClick: () => {} }, sort: false });
+    const gaps = rows.filter((r) => r.candidates.length && r.verdict !== 'steady');
+    return el('div', { class: 'stack' }, el('div', { class: 'card scroll' }, tbl), el('p', { class: 'micro faint', text: 'Rule: ' + t.rule + '. Series come from the web pass with a url per market; today most hold one current point and a forecast, which is why the check is open.' }),
+      gapLine(gaps.length ? gaps.length + ' candidate lane' + (gaps.length === 1 ? ' rests' : 's rest') + ' on a forecast or one year: ' + gaps.map((r) => r.label.toLowerCase()).join(', ') + '.' : 'Every candidate lane has 3 or more years of history behind its trend.',
+        gaps.length && actionFor(gaps[0].finding_id) ? { label: 'Run the first check', onClick: () => openAction(actionFor(gaps[0].finding_id)) } : null));
+  }
+
   function loadDesk(o) {
     const d = o.desk || {};
     const w = (o.window || {}).trend;
@@ -757,6 +776,7 @@
     parts.push(section('desk-video', 'Is the demand one clip or a real pattern?', 'Independent platforms showing demand per lane: the Instagram hashtag pull, Reddit mentions and upvotes, competitor creator-style ads and our own, with the candidates that rest on each lane.', videoBlock(d.video)));
     parts.push(section('desk-tech-packs', 'Which candidates have a real, versioned spec ready for sourcing?', 'Tech pack versions per candidate: tolerances, the bill of materials and the packaging cost line. A pack saved from the card becomes the current version and supersedes the last.', techPackBlock(d.tech_packs)));
     parts.push(section('desk-hours', 'Has any candidate used up its research hours?', 'Hours logged per candidate against the hours allowed through its stage, from the brand\'s budget per stage. Research cannot sprawl past the box.', hoursBlock(d.hours)));
+    parts.push(section('desk-trend-checks', 'Does each lane\'s trend rest on history, or on a forecast?', 'The 12-month rate against the multi-year rate per lane from the web pass series: a trend is trusted with 3 or more years of history on the exact term; a last year over twice the multi-year rate is a spike.', trendChecksBlock(d.trend_checks)));
     parts.push(section('desk-pattern', 'Is each candidate evergreen, seasonal or a trend, and when does cash move?', 'The demand pattern from our own 12-month series by category and the web pass, with the cash timing it implies and the cash plan attached to each candidate.', patternBlock(d.pattern)));
     parts.push(section('desk-pipeline', 'What is in the next-SKU pipeline, and what is past its time box?', 'Candidates screened in from the gaps above or by hand, their stage, fast checks, time box and hours. Advance, log hours or kill from the card; every write lands in the pipeline log.', pipelineBlock(d.pipeline || { rows: [] })));
     const jumps = UI.pills({ items: parts.map((p) => ({ key: p.id, label: p.querySelector('h2').textContent.replace(/\?.*$/, '?').split(',')[0].slice(0, 42) })), onChange: (key) => { const t = document.getElementById(key); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); } });

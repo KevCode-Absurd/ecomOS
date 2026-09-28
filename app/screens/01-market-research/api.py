@@ -744,6 +744,22 @@ def recipe(f):
             'stop_rule': 'no new hours without a named question', 'check_on': _check_on(f, 2), 'time_to_ship_hours': 1,
             'win_rule': 'a stage change or a kill logged',
         }
+    if rid == 'PROD-R29':
+        ent = f.get('entity') or {}
+        label = (ent.get('label') or '').lower()
+        return {
+            'title': f'Run the multi-year check on {label} before funding {", ".join((ent.get("candidates") or [])[:1]) or "the candidate"}',
+            'owner': 'agent',
+            'artefact': {'kind': 'research_note', 'label': f'a trend history for {label}: 3 to 5 years of the exact term from public sources with a url and a date per point, the 12-month rate against the multi-year rate, and fad or trend'},
+            'steps': [
+                {'n': 1, 'who': 'agent', 'text': 'Pull yearly points for the exact lane term (not the broad category) from public sources; every point keeps its url and date.'},
+                {'n': 2, 'who': 'agent', 'text': 'Compute the last-year rate and the multi-year rate; a last year over twice the multi-year rate reads as a spike.'},
+                {'n': 3, 'who': 'agent', 'text': 'Write the series into the web pass fixture so the lane map and the pattern tag read it next run.'},
+                {'n': 4, 'who': 'person', 'text': 'Read the verdict on the candidate card; a spike sends it back to screened.'}],
+            'size': {'text': f'{ent.get("verdict", "").replace("_", " ")} on {ent.get("market") or "no market"}', 'usd': None},
+            'stop_rule': 'no funding on a forecast alone', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 2,
+            'win_rule': '3 or more years of history on file for the lane',
+        }
     return None
 
 
@@ -973,7 +989,8 @@ def overview(data, brand):
                      'price_signal': price_signal_block(br, brand, data, findings), 'complaints': audit.listing_complaints(br),
                      'gates': gates_block(brand, data, br, rd, ends_on, findings), 'scorecard': scorecard_block(brand, data, br, rd, ends_on, findings),
                      'video': audit.video_signals(br, brand, ends_on), 'tech_packs': tech_pack_block(brand, findings),
-                     'hours': dict(audit.hours_table(brand, br), findings={f['entity']['id']: f['id'] for f in findings if f['rule_id'] == 'PROD-R28'})},
+                     'hours': dict(audit.hours_table(brand, br), findings={f['entity']['id']: f['id'] for f in findings if f['rule_id'] == 'PROD-R28'}),
+                     'trend_checks': audit.trend_checks(br, brand, ends_on)},
             'audit': {'findings': findings, 'rules': audit.RULES}}
 
 
