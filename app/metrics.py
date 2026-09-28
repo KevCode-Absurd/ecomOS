@@ -588,6 +588,58 @@ def m_payment_mix(ctx, name, kw):
                   by_method={m: round(c / n, 6) for m, c in sorted(by_method.items(), key=lambda kv: -kv[1])})
 
 
+# ---------------------------------------------------------------- order value (04)
+
+def _order_value_sql(ctx, win, step):
+    """Order value bins from data.sqlite with one GROUP BY, for a brand folder whose orders are too many to load."""
+    sql = getattr(ctx.data, '_sql', None)
+    if sql is None or not getattr(ctx.data, 'sqlite', None):
+        raise Unavailable('the orders table is unreadable', fix=CONNECTOR['orders'])
+    paid = ', '.join(f"'{s}'" for s in PAID_STATES)
+    try:
+        span = sql('SELECT MIN(substr(created_at, 1, 10)) AS first, MAX(substr(created_at, 1, 10)) AS last FROM orders')
+        cover(win, span[0]['first'], span[0]['last'], 'orders')
+        rows = sql(
+            f'SELECT CAST((subtotal - COALESCE(discount, 0)) / {step} AS INTEGER) AS bin, COUNT(*) AS orders, '
+            f'SUM(subtotal - COALESCE(discount, 0)) AS value, SUM(CASE WHEN shipping > 0 THEN 1 ELSE 0 END) AS paid_shipping, '
+            f'SUM(COALESCE(shipping, 0)) AS shipping FROM orders WHERE status IN ({paid}) '
+            f"AND substr(created_at, 1, 10) BETWEEN '{win.s}' AND '{win.e}' GROUP BY bin ORDER BY bin")
+    except KeyError:
+        raise Unavailable('the orders table is not connected', fix=CONNECTOR['orders'])
+    if 'orders' not in ctx.used:
+        ctx.used.append('orders')
+    return {r['bin']: [r['orders'], r['value'], r['paid_shipping'], r['shipping']] for r in rows}
+
+
+@metric('order_value_distribution')
+def m_order_value_distribution(ctx, name, kw):
+    """Paid orders by order value (subtotal minus discounts, before tax and shipping) in bins of `step` dollars (default 5).
+    Each bin carries orders, share of orders, value, and how many orders paid shipping. For a free shipping threshold."""
+    step = int(kw.get('step') or 5)
+    if step < 1 or step > 100:
+        raise ValueError('step must be 1 to 100 dollars')
+    if getattr(ctx.data, 'sqlite', None) is not None:
+        bins = _order_value_sql(ctx, ctx.win, step)
+    else:
+        bins = {}
+        for _, _, net, o in paid_in_window(ctx, ctx.win):
+            b = bins.setdefault(int(net // step), [0, 0.0, 0, 0.0])
+            ship = o.get('shipping')
+            b[0] += 1
+            b[1] += net
+            b[2] += 1 if (ship or 0) > 0 else 0
+            b[3] += ship or 0
+    n = sum(b[0] for b in bins.values())
+    if not n:
+        raise Unavailable('no paid orders in this window')
+    groups = [{'from': k * step, 'to': (k + 1) * step, 'orders': v[0], 'share': round(v[0] / n, 6),
+               'value': money(v[1]), 'paid_shipping_orders': v[2], 'shipping_charged': money(v[3])}
+              for k, v in sorted(bins.items())]
+    total = sum(g['value'] for g in groups)
+    return ctx.ok(n, 'count', {'orders': n, 'value': money(total), 'step': step}, groups=groups,
+                  basis='paid orders; order value is subtotal minus discounts, before tax and shipping')
+
+
 # ---------------------------------------------------------------- paid
 
 def paid_channels(ctx, kw):

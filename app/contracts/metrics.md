@@ -64,6 +64,13 @@ A brand folder that keeps `finance_inputs.json` beside its aggregates (S2.4) is 
 
 Both take `by=sku`, `by=line`, `by=month` or `by=line_month` and return `groups` with units, net sales, SKUs and net per unit. A line is the SKU title without its pack size ("Ankle Sock 4-Pack" is "Ankle Sock"), read from `products`; without that table the line is the SKU category. Added 28 Sep 2026 for 01-market-research.
 
+## Offers (04)
+| Metric | Formula |
+|---|---|
+| order_value_distribution | paid orders in bins of `step` dollars (default 5) by order value: subtotal minus discounts, before tax and shipping. Each bin: orders, share, value, orders that paid shipping, shipping charged. |
+
+A brand folder reads it from `data.sqlite` with one GROUP BY (orders are too many to load whole); unavailable when data.sqlite is absent. Added 28 Sep 2026 for 04-offers-pricing (free shipping threshold).
+
 ## Speed (08)
 Median of the lab's runs in the window from `speed_runs`, for one page, device and variant (default pdp, mobile, baseline).
 | Metric | Formula |
