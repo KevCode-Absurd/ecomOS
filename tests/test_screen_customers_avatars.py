@@ -98,7 +98,7 @@ class AuditShape(unittest.TestCase):
         self.assertEqual(r03['status'], 'unavailable')
         self.assertEqual(r03['evidence'], [])
         self.assertEqual(set(r03['unavailable']), {'inputs', 'connector', 'fix'})
-        self.assertEqual({r['rule_id'] for r in audit.RULES}, {f'CUST-R{n:02d}' for n in range(1, 32)})
+        self.assertEqual({r['rule_id'] for r in audit.RULES}, {f'CUST-R{n:02d}' for n in range(1, 33)})
 
 
 class AuditRules(TempBrain):
@@ -595,7 +595,7 @@ class RankRound1(TempBrain):
 
     def test_every_rule_fires_on_bombas(self):
         rules = {f['rule_id'] for f in audit.run('bombas', RANK_WINDOW, self.tmp)}
-        self.assertEqual(rules, {f'CUST-R{n:02d}' for n in range(1, 32) if n != 23})
+        self.assertEqual(rules, {f'CUST-R{n:02d}' for n in range(1, 33) if n not in (23, 32)})
 
     def test_open_actions_carry_drafts(self):
         acts = api.rank('bombas', RANK_WINDOW)['actions']
@@ -2056,3 +2056,38 @@ class BrowserSmoke(unittest.TestCase):
             self.assertGreater(n, 0, tab)
         self.assertGreaterEqual(out['report'], 6)
         self.assertEqual(out['avatar'], 8)
+
+
+class WeakCohortMoney(unittest.TestCase):
+    """Feature 8.7: CUST-R32 weak cohort, priced from the grid's own median repeat, with a same-month-last-year note."""
+
+    def grid(self, cut=None):
+        from tables import brand_data
+        data = brand_data('bombas')
+        cohorts = [dict(c, active_by_month=list(c['active_by_month'])) for c in data.table('cohorts')]
+        for c in cohorts:
+            if cut and c['cohort'] in cut:
+                for k in (1, 2, 3):
+                    c['active_by_month'][k] = c['active_by_month'][k] * 0.5
+        return api.builds.cohort_grid(cohorts, data.table('monthly'), '2026-09-27', [])
+
+    def test_bombas_has_no_weak_cohort(self):
+        g = self.grid()
+        self.assertEqual(g['weak'], [])
+        self.assertEqual(api.audit.r32({'cohorts': g}, '2026-09-27'), [])
+
+    def test_weak_cohort_is_priced_and_redoes(self):
+        g = self.grid({'2026-03'})
+        self.assertEqual(g['weak'], ['2026-03'])
+        st = g['weak_stakes']['2026-03']
+        i = st['inputs']
+        redo = (i['median_repeat_m1_m3'] - i['cohort_repeat_m1_m3']) * i['customers'] * i['aov_cohort_month']
+        self.assertLess(abs(redo - st['usd']) / st['usd'], 0.01)
+        self.assertIn('so this year is new', st['note'])
+        f = api.audit.r32({'cohorts': g}, '2026-09-27')[0]
+        self.assertEqual(f['rule_id'], 'CUST-R32')
+        self.assertEqual(f['money_at_stake']['usd'], st['usd'])
+
+    def test_weak_both_years_is_the_season(self):
+        g = self.grid({'2025-03', '2026-03'})
+        self.assertIn('the season', g['weak_stakes']['2026-03']['note'])

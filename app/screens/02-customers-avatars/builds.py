@@ -496,6 +496,24 @@ def _cliff_stake(rows: list[dict], cal: str, cliff_months: set, aov: dict) -> di
                      if seen_ly else "Against a normal month. The same month last year is outside the grid, so part of this may be the season.")}
 
 
+def _weak_stake(r: dict, med: float | None, rows: list[dict], aov: dict) -> dict:
+    """Repeat orders a weak cohort missed in months 1 to 3: (the grid's median repeat minus the cohort's) x cohort size
+    x the cohort month's AOV; one order per active customer, as in the grid. The same month a year earlier, when
+    in the grid, is written down: a weak month that was weak last year too is a season the post-purchase branch fixes."""
+    ly = next((x for x in rows if x["cohort"] == _add(r["cohort"], -12) and x["repeat_m1_m3"] is not None), None)
+    if med is None or r["repeat_m1_m3"] is None:
+        return {"usd": None, "reason": "no median repeat to compare"}
+    if not aov.get(r["cohort"]):
+        return {"usd": None, "reason": f"no AOV for {r['cohort']}"}
+    lost = (med - r["repeat_m1_m3"]) * r["customers"]
+    note = ("The same month a year earlier is outside the grid." if ly is None else
+            f"A year earlier the {ly['cohort']} cohort repeated at {round(ly['repeat_m1_m3'] * 100, 1)} percent" +
+            (": weak then too, so it is the season." if ly["repeat_m1_m3"] < WEAK_COHORT * med else ", so this year is new."))
+    return {"usd": round(lost * aov[r["cohort"]]), "formula": "(median_repeat_m1_m3 - cohort_repeat_m1_m3) * customers * aov_cohort_month",
+            "inputs": {"median_repeat_m1_m3": round(med, 4), "cohort_repeat_m1_m3": r["repeat_m1_m3"], "customers": r["customers"],
+                       "aov_cohort_month": aov[r["cohort"]]}, "window": r["cohort"], "note": note}
+
+
 def _season_check(st: dict, monthly: list[dict], cal: str, aov: dict) -> dict:
     """The same step a year earlier, from the monthly table: returning orders in the cliff month over the month before,
     this year against last. When last year is there it is the baseline: the stake is only the fall beyond last
@@ -647,6 +665,7 @@ def cohort_grid(cohorts: list[dict], monthly: list[dict], as_of: str, avatars: l
             f"DRAFT post-purchase branch\nFor: first buyers in {names}\nEmail 1: thank you, and how the gift landed\n"
             "Email 2: a pair for you, with a five-star line on comfort\nEmail 3: the care guide", as_of=as_of))
     cols = [f"M{k}" for k in range(1, GRID_MONTHS + 1)]
+    weak_stakes = {r["cohort"]: _weak_stake(r, rep_med, rows, aov) for r in weak}
     cal_stake = _season_check(_cliff_stake(rows, cliffs[0][0], cliff_months, aov), monthly, cliffs[0][0], aov) if cliffs else None
     if cal_stake and cal_stake.get("fall_last_year") is not None:
         for m in moves:
@@ -657,7 +676,7 @@ def cohort_grid(cohorts: list[dict], monthly: list[dict], as_of: str, avatars: l
     return {"available": True, "rows": rows, "columns": cols, "median_by_month": [round(x, 4) if x is not None else None for x in med_by_k],
             "peak_month": peak_k, "age_break": {"month": age_k, "drop": age_drop, "stake": age_stake} if age_k else None,
             "calendar_break": {"month": cliffs[0][0], "share": round(cliffs[0][1], 4), "cohorts": cliffs[0][2], "stake": cal_stake} if cliffs else None,
-            "weak": [r["cohort"] for r in weak], "repeat_median": rep_med, "moves": moves, "as_of": as_of, "simulated": True}
+            "weak": [r["cohort"] for r in weak], "weak_stakes": weak_stakes, "repeat_median": rep_med, "moves": moves, "as_of": as_of, "simulated": True}
 
 
 # ---------------------------------------------------------------- new against returning, and what drives it

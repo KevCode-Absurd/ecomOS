@@ -110,9 +110,13 @@ CUST-R31 reviews and sales disagree on who buys. An avatar's share of sales thro
     1.5x its share from reviews or under 1 / 1.5, or sales give it a share and reviews give none
     (builds.sales_share; products_monthly with the SKU to line fixture). One finding per avatar.
     Severity low. Capability LIFE-C29. Unavailable when the line sales cannot be read.
+CUST-R32 weak cohort. A first-order month repeats in months 1 to 3 at under 0.8x the grid's median
+    (builds.cohort_grid). One finding per cohort. Severity medium. Capability LIFE-C07. Money
+    (builds._weak_stake): (median repeat minus the cohort's) x cohort size x the cohort month's AOV; the note
+    says whether the same month last year was weak too (the season).
 
 Money at stake is null for evidence and proof gaps, which have no revenue formula yet (`money_reason`
-says so); R07, R08 and R09 carry a stake against the brand's own history when it exists. Confidence:
+says so); R07, R08, R09 and R32 carry a stake against the brand's own history when it exists. Confidence:
 one brain snapshot is one window (0.5), minus 0.2 when an input record is past `expires_at`.
 """
 from __future__ import annotations
@@ -203,6 +207,8 @@ RULES = [
      "inputs": ["brain avatars", "brain learnings hook_types"], "capability": "BRAND-C01", "owner_screen": SCREEN},
     {"rule_id": "CUST-R31", "name": "reviews and sales disagree on who buys", "entity_type": "brand",
      "inputs": ["products_monthly", "fixtures sku_lines", "brain avatars", "brain language_bank"], "capability": "LIFE-C29", "owner_screen": SCREEN},
+    {"rule_id": "CUST-R32", "name": "weak cohort", "entity_type": "metric",
+     "inputs": ["cohorts", "monthly"], "capability": "LIFE-C07", "owner_screen": SCREEN},
 ]
 AUTONOMY = {"BRAND-C11": "founder_gate", "BRAND-C13": "agent_does", "CREA-C03": "agent_does", "SITE-C38": "human_assist",
             "PROD-C73": "human_assist", "CREA-C24": "agent_does", "LIFE-C27": "human_assist", "BRAND-C16": "founder_gate",
@@ -1021,6 +1027,23 @@ def r31(d, ends_on):
     return out
 
 
+def r32(d, ends_on):
+    c = d["cohorts"]
+    if not c.get("available"):
+        return []
+    out = []
+    rows = {r["cohort"]: r for r in c["rows"]}
+    for m in c.get("weak") or []:
+        r = rows[m]
+        ev = [_ev("repeat_m1_m3", r["repeat_m1_m3"], "%", ends_on, "cohorts", baseline=round(builds.WEAK_COHORT * c["repeat_median"], 4), simulated=True),
+              _ev("median_repeat_m1_m3", round(c["repeat_median"], 4), "%", ends_on, "cohorts", simulated=True)]
+        s = (f"First buyers from {m} came back at {round(r['repeat_m1_m3'] * 100, 1)} percent in months 1 to 3, "
+             f"against a median of {round(c['repeat_median'] * 100, 1)} percent.")
+        out.append(_with_stake(_finding("CUST-R32", "medium", {"type": "metric", "id": "weak_" + m, "label": f"Weak cohort, {m}"},
+                                        ev, s, "LIFE-C07", 0.5, [], ends_on), (c.get("weak_stakes") or {}).get(m)))
+    return out
+
+
 def run(brand: str, window: dict, brain_root: Path | None = None) -> list[dict]:
     ends_on = window["ends_on"]
     today = dt.date.fromisoformat(ends_on) + dt.timedelta(days=1)
@@ -1032,6 +1055,6 @@ def run(brand: str, window: dict, brain_root: Path | None = None) -> list[dict]:
     d["brand"] = brand
     findings = (r01(brain, avatars, ends_on) + r02(brain, avatars, all_rungs, ends_on) + r03(brain, all_rungs, angles, ends_on)
                 + r04(d, all_rungs, ends_on) + r05(d, ends_on) + r06(d, ends_on) + r07(d, ends_on) + r08_r09(d, ends_on) + r10(d, ends_on)
-                + r11_r12(d, ends_on) + r13_r14(d, ends_on) + r15_r16(d, ends_on) + r17_r23(d, ends_on) + r24_r25(d, ends_on) + r26_r30(d, avatars, ends_on) + r31(d, ends_on))
+                + r11_r12(d, ends_on) + r13_r14(d, ends_on) + r15_r16(d, ends_on) + r17_r23(d, ends_on) + r24_r25(d, ends_on) + r26_r30(d, avatars, ends_on) + r31(d, ends_on) + r32(d, ends_on))
     findings.sort(key=lambda f: (SEVERITY_ORDER[f["severity"]], f["rule_id"], f["id"]))
     return findings

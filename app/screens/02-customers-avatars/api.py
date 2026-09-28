@@ -554,7 +554,7 @@ RULE_JOB = {"CUST-R01": "avatars", "CUST-R05": "avatars", "CUST-R06": "avatars",
             "CUST-R10": "offers", "CUST-R18": "offers", "CUST-R20": "offers", "CUST-R21": "offers",
             "CUST-R07": "retention", "CUST-R08": "retention", "CUST-R09": "retention", "CUST-R15": "retention", "CUST-R16": "retention",
             "CUST-R23": "retention", "CUST-R24": "avatars", "CUST-R25": "avatars", "CUST-R26": "avatars", "CUST-R27": "avatars", "CUST-R28": "offers",
-            "CUST-R29": "avatars", "CUST-R30": "avatars", "CUST-R31": "avatars", "CUST-R17": "brand", "CUST-R19": "brand", "CUST-R22": "brand"}
+            "CUST-R29": "avatars", "CUST-R30": "avatars", "CUST-R31": "avatars", "CUST-R32": "retention", "CUST-R17": "brand", "CUST-R19": "brand", "CUST-R22": "brand"}
 EASE = {"agent": 5, "agent_drafts": 4, "person_draft": 3, "person": 2}
 
 
@@ -661,6 +661,9 @@ def _plans(brand: str, window: dict) -> dict:
     for m in d["cohorts"].get("moves", []):
         if ".retention.calendar_" in m["id"]:
             plans[("CUST-R08", "calendar_" + m["id"].split("calendar_")[1])] = m
+        if m["id"].endswith(".weak_cohorts"):
+            for c in d["cohorts"].get("weak") or []:
+                plans[("CUST-R32", "weak_" + c)] = m
         if m["id"].endswith(".age_break"):
             cb = d["cohorts"].get("age_break") or {}
             plans[("CUST-R09", f"age_month_{cb.get('month')}")] = m
