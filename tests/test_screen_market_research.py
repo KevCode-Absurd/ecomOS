@@ -2261,9 +2261,9 @@ class HandoffCreativeTest(unittest.TestCase):
 
     def test_launch_plan_dates_work_back_from_the_target(self):
         import tempfile
-        saved = (audit.SHARED_HANDOFFS_PATH, audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH)
+        saved = (audit.SHARED_HANDOFFS_PATH, audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH, api.DECISIONS_PATH)
         tmp = Path(tempfile.mkdtemp())
-        audit.SHARED_HANDOFFS_PATH, audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH = tmp / 'handoffs.json', tmp / 'pipeline.json', tmp / 'pc.json', tmp / 'pt.json'
+        audit.SHARED_HANDOFFS_PATH, audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH, api.DECISIONS_PATH = tmp / 'handoffs.json', tmp / 'pipeline.json', tmp / 'pc.json', tmp / 'pt.json', tmp / 'decisions.json'
         try:
             data = api.sample_data()
             D = audit.last_full_day(data, None)
@@ -2305,7 +2305,7 @@ class HandoffCreativeTest(unittest.TestCase):
             self.assertEqual(r['changes'], ['ordered on set'])
             self.assertEqual({x['key']: x['state'] for x in api.launch_plan(data, None, 'g1')['steps']}['order'], 'done')
         finally:
-            audit.SHARED_HANDOFFS_PATH, audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH = saved
+            audit.SHARED_HANDOFFS_PATH, audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH, api.DECISIONS_PATH = saved
 
     def test_launch_steps_and_handoffs_in_week_plan_and_report(self):
         import tempfile

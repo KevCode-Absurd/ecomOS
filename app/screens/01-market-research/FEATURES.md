@@ -291,7 +291,7 @@ Picked from the round 9 note and the idea pass (`scripts/ideas.py --domain 01-PR
 | 10.6 | Launch steps as decisions: marking the order, the stock or the launch on a candidate writes a row to the shared decisions log (this screen, capability PROD-C10, choice person, the step as the reason), so the decisions table and 00-today see them (`log_launch_decision`; a launch target is a plan, not a step, so it writes none; the decisions read tags them `launch_step` with the candidate id) | done |
 | 10.7 | Kill memory on the opportunity read: the last kill in each lane (by the lane on the candidate, else the lane words) with its reason, date and hold on the opportunity row, a Last kill here column, and in the screen-in prompt so the new signal is named | done |
 | 10.8 | Owner load in the week plan (`owner_load`): person-owned launch steps open, hand-offs waiting on a team and research hours left per owner across the candidates they hold, unowned candidates under no owner, the most loaded owner named | done |
-| 10.9 | Second brand pass; every new block and route on Tallgrass Goods | todo |
+| 10.9 | Second brand pass: every route (13 plus the per-candidate ones) answers on Tallgrass Goods and Bombas, the proposed floors, quick screen, caution and verified reads render on the sample brand, no page errors; the launch plan test now points the decisions log at a temp file so a test run never writes the shared log | done |
 | 10.10 | Recipes, tests, round10.png, founder note | todo |
 
 ## Round 9 note for the founder (28 Sep 2026)
