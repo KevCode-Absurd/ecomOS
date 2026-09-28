@@ -419,7 +419,7 @@ BUILDERS = {"COMP-R01": act_angle, "COMP-R02": act_price, "COMP-R03": act_offer_
             "COMP-R05": act_coverage, "COMP-R06": act_first_line, "COMP-R07": act_offer_gap, "COMP-R08": act_discount,
             "COMP-R09": act_ladder, "COMP-R10": act_above, "COMP-R11": act_corner,
             "COMP-R12": act_refresh, "COMP-R13": act_no_id, "COMP-R14": act_stale,
-            "COMP-R15": act_lost}
+            "COMP-R15": act_lost, "COMP-R16": act_connect}   # R16 has no data source yet: always a connect action
 
 
 def action(f: dict, m: dict, net_revenue: float | None) -> dict:
