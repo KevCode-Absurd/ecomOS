@@ -2029,5 +2029,21 @@ class WeekTest(unittest.TestCase):
         self.assertTrue(wk['team_reason'])
 
 
+class UnlocksTest(unittest.TestCase):
+    """Round 8 feature 4: the store connect move lists every desk read waiting on order rows."""
+
+    def test_bombas(self):
+        a = next(x for x in api.actions.rank('bombas')['actions'] if x['id'].endswith('.connect.shopify'))
+        self.assertEqual(len(a['unlocks']), 5)
+        self.assertIn('code leaks', a['why'])
+        self.assertIn('5 desk reads', a['title'])
+
+    def test_sample_has_rows(self):
+        sys.path.insert(0, str(ROOT / 'app'))
+        import server
+        acts = api.actions.rank(None, None, server.Data())['actions']
+        self.assertFalse(any(a.get('unlocks') for a in acts))
+
+
 if __name__ == '__main__':
     unittest.main()

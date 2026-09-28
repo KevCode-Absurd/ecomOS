@@ -1383,6 +1383,22 @@ def add_exposure(actions, ctx, nr):
     return actions
 
 
+ORDER_ROW_READS = (('paid', 'what shoppers pay per product'), ('attach', 'second-item rates'), ('code_returns', 'returns on code orders'),
+                   ('leaks', 'code leaks'), ('returners', 'codes for returning buyers'))   # the welcome code has its own rule, OFFER-R32
+
+
+def add_unlocks(actions, ctx):
+    """The store connect move lists every desk read that waits on order rows, not only the rules that fired."""
+    waiting = [label for key, label in ORDER_ROW_READS
+               if isinstance(getattr(ctx, key, None), dict) and getattr(ctx, key).get('unavailable') and getattr(ctx, key).get('fix') == 'shopify']
+    for a in actions:
+        if a.get('id', '').endswith('.connect.shopify') and waiting:
+            a['unlocks'] = waiting
+            a['why'] = a['why'] + ' Also waiting on order rows: ' + ', '.join(waiting) + '.'
+            a['title'] = f'Connect shopify, read-only, so {len(a["finding_ids"])} rules and {len(waiting)} desk reads can run'
+    return actions
+
+
 def bunches(rd):
     """Order-value bunches and the tiers above them, from real order bins only (never from the fixture)."""
     dist = rd.m('order_value_distribution', audit.WINDOW, step=5)
@@ -1602,7 +1618,7 @@ def rank(brand='bombas', window=None, data=None):
     actions = merge_into(actions, 'OFFER-R38', 'OFFER-R32')
     actions = flag_stale_inputs(attach_margin_checks(add_priors(covered_by_registry(actions, ctx), ctx), ctx), ctx)
     actions = [a for a in actions if not RANK.validate_action(a)]
-    actions = add_exposure(actions, ctx, nr)
+    actions = add_unlocks(add_exposure(actions, ctx, nr), ctx)
     actions.sort(key=RANK.sort_key)
     calendar = test_calendar(actions, ctx)
     for row in calendar:   # the change a sitewide test of this length can see; a single page sees less
