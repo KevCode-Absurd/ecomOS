@@ -237,7 +237,7 @@ The candidate side of the desk: the pipeline with its gates, boxes and scorecard
 | 7.3 | The weekly report runner: `weekly.py --brand X` writes the desk report and the week plan to a dated file and lists past reports from Exports; scheduling it is the lead's call (contract ask) | todo |
 | 7.4 | Decisions on this desk: every choice from the shared decisions log for this screen with its action, when and the note, as a table under the plan and a CSV | todo |
 | 7.5 | Send to creative: the creative hand-off written as a file and a row in a hand-off table (events contract shape) from the card panel; contract ask for the shared table | todo |
-| 7.6 | The web pass history: a passing check keeps a dated copy; the trends block says what changed since the last capture (new launches, growth moved, new preferences); first capture says so | todo |
+| 7.6 | The web pass history: a passing `web_pass.py --check` keeps a dated copy under `fixtures/web_pass_history/<brand>/` (the same capture never twice) and the trends block says what changed since the last kept capture: launches new and gone, markets whose growth or size moved, markets and preferences added, preferences that turned, lanes added; the first capture says so; Bombas's 28 Sep capture is the first on file | done |
 | 7.7 | One SKU first (bank idea PRD-093): variants on the candidate; rule PROD-R48 a first run with more than one variant before any sell-through | todo |
 | 7.8 | Custom packaging after proof (bank idea PRD-100): rule PROD-R49 a first run in a custom or printed format with no passed sample and no sell-through | todo |
 | 7.9 | A per-process memo for the audit run keyed on the writable files' mtimes and the brain version, so a page load runs the audit once; second brand pass | todo |

@@ -135,6 +135,72 @@ def check(doc: dict, brand: str | None = None) -> list[str]:
     return errs
 
 
+HISTORY_DIR = HERE / 'fixtures' / 'web_pass_history'
+
+
+def history_dir(brand: str) -> Path:
+    return HISTORY_DIR / brand
+
+
+def snapshot(brand: str, doc: dict) -> Path | None:
+    """Keep a dated copy of a web pass that passed its check, keyed by captured_at; the same capture is not copied twice."""
+    d = history_dir(brand)
+    d.mkdir(parents=True, exist_ok=True)
+    p = d / f'{str(doc.get("captured_at") or "undated")[:10]}.json'
+    text = json.dumps(doc, indent=2, ensure_ascii=False) + '\n'
+    if p.is_file() and p.read_text(encoding='utf-8') == text:
+        return None
+    p.write_text(text, encoding='utf-8')
+    return p
+
+
+def history(brand: str) -> list[Path]:
+    d = history_dir(brand)
+    return sorted(d.glob('*.json')) if d.is_dir() else []
+
+
+def _launch_key(l: dict) -> tuple:
+    return (str(l.get('brand') or '').lower(), str(l.get('what') or '')[:60].lower(), str(l.get('date') or '')[:7])
+
+
+def diff(prev: dict, cur: dict) -> dict:
+    """What changed between two web passes: launches added and gone, markets whose growth or size moved, markets, preferences
+    and lanes added. Numbers only; a changed url or wording is not a change."""
+    pl = {_launch_key(l): l for l in prev.get('launches') or []}
+    cl = {_launch_key(l): l for l in cur.get('launches') or []}
+    pm = {m.get('key'): m for m in prev.get('markets') or []}
+    cm = {m.get('key'): m for m in cur.get('markets') or []}
+    moved = []
+    for k, m in cm.items():
+        o = pm.get(k)
+        if not o:
+            continue
+        if o.get('cagr_pct') != m.get('cagr_pct') or o.get('size_usd') != m.get('size_usd'):
+            moved.append({'key': k, 'label': m.get('label'), 'cagr_from': o.get('cagr_pct'), 'cagr_to': m.get('cagr_pct'), 'size_from': o.get('size_usd'), 'size_to': m.get('size_usd')})
+    pp = {p.get('key'): p for p in prev.get('preferences') or []}
+    cp = {p.get('key'): p for p in cur.get('preferences') or []}
+    return {'launches_new': [cl[k] for k in cl if k not in pl], 'launches_gone': [pl[k] for k in pl if k not in cl], 'markets_moved': moved,
+            'markets_new': [cm[k] for k in cm if k not in pm], 'preferences_new': [cp[k] for k in cp if k not in pp],
+            'preferences_turned': [{'key': k, 'from': pp[k].get('direction'), 'to': p.get('direction')} for k, p in cp.items() if k in pp and pp[k].get('direction') != p.get('direction')],
+            'lanes_new': [l for l in cur.get('lanes') or [] if l.get('key') not in {x.get('key') for x in prev.get('lanes') or []}]}
+
+
+def changes_since_last(brand: str, cur: dict | None = None) -> dict:
+    """The diff between the current web pass and the newest earlier snapshot; first capture when there is none."""
+    doc = cur
+    if doc is None:
+        doc, _ = load(brand)
+    if doc is None:
+        return {'available': False, 'reason': 'no web pass for this brand'}
+    snaps = [p for p in history(brand) if p.stem != str(doc.get('captured_at') or '')[:10]]
+    if not snaps:
+        return {'available': False, 'reason': 'first capture on file; the next check that passes keeps a copy and the diff starts', 'current': str(doc.get('captured_at') or '')[:10], 'snapshots': len(history(brand))}
+    prev = json.loads(snaps[-1].read_text(encoding='utf-8'))
+    d = diff(prev, doc)
+    quiet = not any(d[k] for k in d)
+    return dict(d, available=True, previous=str(prev.get('captured_at') or snaps[-1].stem)[:10], current=str(doc.get('captured_at') or '')[:10], quiet=quiet, snapshots=len(history(brand)))
+
+
 def load(brand: str) -> tuple[dict | None, Path | None]:
     p = path_for(brand)
     if p.is_file():
@@ -175,6 +241,14 @@ def main(argv=None) -> int:
     for e in errs:
         print(' -', e)
     print('ok: the desk can read it' if not errs else f'{len(errs)} problems')
+    if not errs:
+        kept = snapshot(args.brand, doc)
+        print(f'kept a copy at {kept}' if kept else 'this capture is already in the history')
+        ch = changes_since_last(args.brand, doc)
+        if ch.get('available'):
+            print(f'since {ch["previous"]}: {len(ch["launches_new"])} new launches, {len(ch["markets_moved"])} markets moved, {len(ch["preferences_new"])} new preferences' + (' (nothing changed)' if ch['quiet'] else ''))
+        else:
+            print(ch.get('reason'))
     return 0 if not errs else 1
 
 

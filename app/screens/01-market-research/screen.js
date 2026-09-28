@@ -353,7 +353,11 @@
         reason: (r) => 'direction ' + (r.direction || NA) + (r.drivers && r.drivers.length ? '; ' + r.drivers.slice(0, 2).join('; ') : '') },
       actions: { label: 'Do', onClick: () => {} }, sort: false });
     const gaps = subRows.filter((r) => r.covered && r.advertised === false && (r.cagr_pct >= 4 || r.key === 'gifting_socks'));
-    return el('div', { class: 'stack' },
+    const since = t.since || {};
+    const sinceStrip = el('p', { class: 'micro muted', text: since.available
+      ? ('Since the web pass of ' + fmt.date(since.previous) + ': ' + (since.quiet ? 'nothing changed in the numbers.' : (since.launches_new.length + ' new launch' + (since.launches_new.length === 1 ? '' : 'es') + (since.launches_new.length ? ' (' + since.launches_new.slice(0, 3).map((l) => l.brand + ': ' + (l.what || '').slice(0, 40)).join('; ') + ')' : '') + ', ' + since.markets_moved.length + ' market' + (since.markets_moved.length === 1 ? '' : 's') + ' moved' + (since.markets_moved.length ? ' (' + since.markets_moved.slice(0, 3).map((m) => m.label + ' ' + m.cagr_from + ' to ' + m.cagr_to + ' percent') .join('; ') + ')' : '') + ', ' + since.preferences_new.length + ' new preference' + (since.preferences_new.length === 1 ? '' : 's') + (since.preferences_turned.length ? ', ' + since.preferences_turned.length + ' turned' : '') + '.')) + ' ' + since.snapshots + ' capture' + (since.snapshots === 1 ? '' : 's') + ' on file.')
+      : ('Web pass history: ' + (since.reason || 'unavailable') + (since.snapshots ? ' (' + since.snapshots + ' on file)' : '') + '.') });
+    return el('div', { class: 'stack' }, sinceStrip,
       el('div', { class: 'grid two' }, el('div', { class: 'card' }, strip), el('div', { class: 'card scroll' }, el('h4', { text: 'Our mix against the market, 12 whole months to ' + (mix.last || NA) }), (mix.basis && mix.basis !== 'products_monthly') || mix.growth_note ? el('p', { class: 'micro muted', text: (mix.basis && mix.basis !== 'products_monthly' ? 'Built from ' + mix.basis + '. ' : '') + (mix.growth_note ? mix.growth_note.charAt(0).toUpperCase() + mix.growth_note.slice(1) + '.' : '') }) : null, mixTable)),
       el('div', { class: 'card scroll' }, el('h4', { text: 'Lanes: sold, advertised, or neither' }), subTable),
       gapLine(gaps.length ? gaps.length + ' growing lanes are sold and not named in any active ad: ' + gaps.map((g) => g.label).join(', ') + '. Each carries an ad brief in the plan.' : 'Every growing lane the brand sells has an active ad naming it.',

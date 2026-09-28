@@ -1737,6 +1737,31 @@ class WebPassTest(unittest.TestCase):
             p.unlink()
         self.assertEqual(len(audit.lanes_for('bombas')), 10)   # back to the legacy fixture
 
+    def test_history_and_diff(self):
+        import tempfile
+        prev = {'brand': 'h', 'captured_at': '2026-09-01', 'lanes': [{'key': 'a'}], 'markets': [{'key': 'm1', 'label': 'M1', 'cagr_pct': 4.0, 'size_usd': 100}], 'preferences': [{'key': 'p1', 'direction': 'up'}],
+                'launches': [{'brand': 'R', 'what': 'old thing', 'date': '2026-05'}]}
+        cur = {'brand': 'h', 'captured_at': '2026-09-28', 'lanes': [{'key': 'a'}, {'key': 'b'}], 'markets': [{'key': 'm1', 'label': 'M1', 'cagr_pct': 5.5, 'size_usd': 100}, {'key': 'm2', 'label': 'M2', 'cagr_pct': 1}],
+               'preferences': [{'key': 'p1', 'direction': 'down'}, {'key': 'p2', 'direction': 'up'}], 'launches': [{'brand': 'R', 'what': 'old thing', 'date': '2026-05'}, {'brand': 'S', 'what': 'new thing', 'date': '2026-09'}]}
+        d = self.wp.diff(prev, cur)
+        self.assertEqual(([l['what'] for l in d['launches_new']], d['launches_gone'], [m['key'] for m in d['markets_moved']], [m['key'] for m in d['markets_new']], [p['key'] for p in d['preferences_new']], d['preferences_turned'], [l['key'] for l in d['lanes_new']]),
+                         (['new thing'], [], ['m1'], ['m2'], ['p2'], [{'key': 'p1', 'from': 'up', 'to': 'down'}], ['b']))
+        saved = self.wp.HISTORY_DIR
+        self.wp.HISTORY_DIR = Path(tempfile.mkdtemp())
+        try:
+            self.assertFalse(self.wp.changes_since_last('h', cur)['available'])       # nothing kept yet
+            self.assertIsNotNone(self.wp.snapshot('h', prev))
+            self.assertIsNone(self.wp.snapshot('h', prev))                          # the same capture is not copied twice
+            ch = self.wp.changes_since_last('h', cur)
+            self.assertTrue(ch['available'])
+            self.assertEqual((ch['previous'], ch['current'], ch['quiet'], len(ch['launches_new'])), ('2026-09-01', '2026-09-28', False, 1))
+            self.wp.snapshot('h', cur)
+            self.assertEqual(self.wp.changes_since_last('h', cur)['previous'], '2026-09-01')   # the current capture is never its own baseline
+        finally:
+            self.wp.HISTORY_DIR = saved
+        b = audit.web_pass_changes('bombas')
+        self.assertIn('available', b)
+
     def test_connect_action_names_the_command(self):
         r = api.rank('sample', {'ends_on': '2026-09-24', 'days': 28, 'trailing': 4})
         a = next(x for x in r['actions'] if (x.get('title') or '').startswith('Run the web pass'))

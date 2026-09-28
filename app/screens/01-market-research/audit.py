@@ -968,6 +968,19 @@ def web_pass(x):
     return fx if not fx.get('brand') or (b and fx.get('brand') == b) else None
 
 
+def web_pass_changes(x):
+    """What changed in the brand's web pass since the last kept capture (web_pass.py history); first capture says so."""
+    b = brand_of(x)
+    if not b:
+        return {'available': False, 'reason': 'no brand'}
+    if 'web_pass_mod' not in _MODS:
+        _MODS['web_pass_mod'] = _load('ecomos_web_pass_research', HERE / 'web_pass.py')
+    try:
+        return _MODS['web_pass_mod'].changes_since_last(b, web_pass(x))
+    except Exception as exc:  # noqa: BLE001
+        return {'available': False, 'reason': f'history unreadable ({exc})'}
+
+
 def lanes_for(x):
     """The lanes (key, label, terms) this desk follows for the brand: the web pass fixture's lanes, else the module default
     when the fixture matches the brand and names none, else nothing."""

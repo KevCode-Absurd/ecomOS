@@ -246,7 +246,7 @@ def trends(br, mix):
                         'finding_id': f'{SCREEN}.PROD-R05.{key}',
                         'our_growth': our.get('growth') if our else None, 'our_net_share': our.get('net_share') if our else None,
                         'gap_points': round(our['growth'] * 100 - m['cagr_pct'], 1) if our and our.get('growth') is not None and isinstance(m.get('cagr_pct'), (int, float)) else None})
-    return {'captured_at': (fx or {}).get('captured_at'), 'note': (fx or {}).get('note'), 'markets': markets,
+    return {'captured_at': (fx or {}).get('captured_at'), 'note': (fx or {}).get('note'), 'since': audit.web_pass_changes(br), 'markets': markets,
             'on_file': fx is not None, 'public_mix': public_mix(br)}
 
 
