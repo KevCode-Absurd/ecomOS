@@ -46,6 +46,7 @@ Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `a
 | 9.6 | Site visits count as tracking: the site change log gains "checked, no change"; any visit logged to a top threat's site in the last 7 days marks it tracked, so COMP-R26 (untracked threat pages) closes while the team visits weekly and comes back when visits stop; "no change" visits stay off the changes timeline; each landing card shows the last visit | done |
 | 9.7 | Exports gain the team's records (every interview, price, check, poll, threshold, outcome and site change with its date, summary and who) and the "what worked" scoreboard as CSV, next to the 7 desk tables | done |
 | 9.8 | Depth rule 5 on every rule added since round 6: a test logs the records that fire COMP-R24, R25, R31, R32, R33, R34 (and R35 is always on) and checks every money or traffic action has a size, a stop rule and a check date. Found and fixed: the price cut answer (COMP-R25) had no size, missed in 4.3 because it had never fired | done |
+| 9.9 | Depth rule 4 on the new rules: on the fired scenario every open finding has evidence rows in the audit contract shape, and every number in the sentences of COMP-R24, R25, R31 to R34 is backed by an evidence value, window or threshold. Found and fixed: the logged price cut said "30-day average" with no 30 in its evidence; its window now reads "trailing 30 days to" the date | done |
 
 ## Round 8: closing the loop on moves
 
@@ -341,7 +342,7 @@ Where each job lives now (round 9). The question column quotes the room spec.
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
-| 9 | 9.1 to 9.8 | 2026-09-28 | Depth pass; room jobs map; price drift across captures; open corners with demand; traffic connect step; visits count as tracking; team exports; sized new rules |
+| 9 | 9.1 to 9.9 | 2026-09-28 | Depth pass; room jobs map; price drift across captures; open corners with demand; traffic connect step; visits count as tracking; team exports; sized new rules; evidence on new rules |
 | 8 | 8.1 to 8.10 | 2026-09-28 | Outcomes; lost moves held; overdue reads; scoreboard; site changes; bring back snoozed; results in the brief and report; learnings for the brain; second brand check; round close. Screenshot `round8.png` |
 | 7 | 7.1 to 7.10 | 2026-09-28 | Interview reasons; coverage by name; prices seen on the band chart; price re-check cadence; logged work in the brief; queue and log in the report; briefs as rows; second brand check; form access; round close. Screenshot `round7.png` |
 | 6 | 6.1 to 6.10 | 2026-09-28 | Win-loss log; repeated loss reason; rival prices seen; battlecard checks; positioning polls; thresholds on the page; capture from the page; the team log; waiting on you; round close (and the hand-off fix). Screenshot `round6.png` |

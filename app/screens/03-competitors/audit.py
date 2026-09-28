@@ -1182,9 +1182,10 @@ def rule_price_cut(m, ends_on):
             continue
         logged = mv.get("source") == "logged"
         src = "team" if logged else "captures"
-        ev = [_row("price_per_unit" if logged else "median_price_per_pair", mv["to"], "usd", f"since {mv['since']}", ends_on, None, mv["from"],
+        win = f"trailing {inpmod.TRAIL_DAYS} days to {mv['when']}" if logged else f"since {mv['since']}"
+        ev = [_row("price_per_unit" if logged else "median_price_per_pair", mv["to"], "usd", win, ends_on, None, mv["from"],
                    "trailing" if logged else "threshold", src),
-              _row("price_change", mv["change"], "%", f"since {mv['since']}", ends_on, None, -capmod.PRICE_MOVE, "threshold", src)]
+              _row("price_change", mv["change"], "%", win, ends_on, None, -capmod.PRICE_MOVE, "threshold", src)]
         if logged:
             sentence = (f"{mv['page']} cut the price on {mv['product']} by {round(-mv['change'] * 100)} percent, ${mv['to']:.2f} a "
                         f"{m['term']['unit']} against its own {inpmod.TRAIL_DAYS}-day average of ${mv['from']:.2f}.")

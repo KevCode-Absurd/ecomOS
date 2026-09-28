@@ -2175,5 +2175,32 @@ class TestSizedNewRules(TempInputs):
             self.assertTrue(a.get('size') and a.get('stop_rule') and a.get('check_on'), a['rule_id'])
 
 
+class TestEvidenceNewRules(TestSizedNewRules):
+    """9.9: depth rule 4 and the audit contract on the same fired scenario: every open finding has evidence rows in the
+    contract shape, and every number in its sentence is backed by a row or its window."""
+    def test_all_fire_and_are_sized(self):
+        pass
+
+    def test_evidence(self):
+        import re as _re
+        TestSizedNewRules.test_all_fire_and_are_sized(self)
+        out = api.actions.build('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4}, api.BRAIN_ROOT)
+        for f in out['findings']:
+            self.assertEqual(set(FIELDS) - set(f), set(), f['rule_id'])
+            if f['status'] != 'open':
+                continue
+            self.assertTrue(f['evidence'], f['rule_id'])
+            for e in f['evidence']:
+                self.assertEqual(set(e), EVIDENCE, f['rule_id'])
+            if f['rule_id'] in ('COMP-R24', 'COMP-R25', 'COMP-R31', 'COMP-R32', 'COMP-R33', 'COMP-R34'):
+                backed = ' '.join(str(e['value']) + ' ' + str(e['window']) + ' ' + str(e['baseline']) for e in f['evidence'])
+                nums = {abs(float(v)) for v in _re.findall(r'-?\d+(?:\.\d+)?', backed)}
+                text = _re.sub(r'\d{4}-\d{2}-\d{2}', '', f['sentence']).replace('$', '')   # dates are windows, checked apart
+                for n in _re.findall(r'\d+(?:\.\d+)?', text):
+                    x = float(n)
+                    ok = (x in nums or any(abs(x - v * 100) < 1 for v in nums) or n in f['entity']['label'])
+                    self.assertTrue(ok, f"{f['rule_id']}: {n} in '{f['sentence']}'")
+
+
 if __name__ == '__main__':
     unittest.main()
