@@ -1557,6 +1557,43 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
         self.assertEqual(r['changes'], ['price low set', 'cost source quote', 'quote date set'])
         self.assertEqual((r['candidate']['cogs_source'], r['candidate']['quote_on'], r['candidate']['price_low']), ('quote', '2026-09-20', 9.0))
 
+    def test_identical_sellers_cash_test(self):
+        D = date(2026, 9, 27)
+        self.real2 = audit.PIPELINE_PATH
+        saved = audit.listing_pull
+        try:
+            audit.PIPELINE_PATH = self.tmp
+            self.tmp.write_text(json.dumps({'rows': [{'candidate_id': 'a', 'brand': 'fake', 'name': 'Merino calf sock with a wear-life promise', 'stage': 'researched'},
+                                                     {'candidate_id': 'b', 'brand': 'fake', 'name': 'Merino calf sock, planned', 'stage': 'gated', 'cash_test_plan': '3 weeks, $2,000 cap, stop when contribution is under ad cost for 7 days'},
+                                                     {'candidate_id': 'c', 'brand': 'fake', 'name': 'Holiday gift box', 'stage': 'gated'},
+                                                     {'candidate_id': 'd', 'brand': 'fake', 'name': 'Merino calf sock, screened', 'stage': 'screened'}]}), encoding='utf-8')
+            live = {'brand': 'fake', 'mode': 'live', 'captured_at': '2026-09-27', 'rows': [{'asin': 'B1', 'title': 'Merino Wool Calf Socks 3-Pack', 'seller': 'Shop One', 'offers_count': 14},
+                                                                                            {'asin': 'B2', 'title': 'Merino Calf Sock Men', 'seller': 'Shop Two', 'offers_count': None}]}
+            audit.listing_pull = lambda: live
+            read = audit.identical_sellers_read('fake', None)
+            by = {r['candidate_id']: r for r in read['rows']}
+            self.assertNotIn('d', by)
+            self.assertEqual((by['a']['verdict'], by['a']['sellers'], by['a']['basis']), ('cash_test', 14, 'offer count on the listing'))
+            self.assertEqual([m['asin'] for m in by['a']['matches']], ['B1', 'B2'])
+            self.assertEqual(by['b']['verdict'], 'cash_test_planned')
+            self.assertEqual(by['c']['verdict'], 'no_match')
+            found = audit.identical_seller_findings('fake', None, D)
+            self.assertEqual([f['id'].split('.')[-1] for f in found], ['a'])
+            self.assertIn('14 sellers', found[0]['sentence'])
+            self.check_shape(found[0])
+            self.assertIn('cash test', api.recipe(found[0])['title'])
+            self.assertIn('PROD-R54', api.CANDIDATE_RULES)
+            # distinct sellers count when no listing carries an offer count
+            live['rows'] = [{'asin': f'B{i}', 'title': 'Merino Calf Sock', 'seller': f'Shop {i}', 'offers_count': None} for i in range(10)]
+            self.assertEqual((audit.identical_sellers_read('fake', None)['rows'][0]['sellers'], audit.identical_sellers_read('fake', None)['rows'][0]['basis']), (10, 'distinct sellers across matching listings'))
+            # a mock pull never counts
+            live['mode'] = 'mock'
+            self.assertEqual({r['verdict'] for r in audit.identical_sellers_read('fake', None)['rows']}, {'not_read'})
+            self.assertEqual(audit.identical_seller_findings('fake', None, D), [])
+        finally:
+            audit.listing_pull = saved
+            audit.PIPELINE_PATH = self.real2
+
     def test_demand_pattern_tags(self):
         even = {'rows': [{'category': 'socks', 'series': [100] * 12}], 'months': [f'2026-{m:02d}' for m in range(1, 13)], 'last': '2026-12'}
         peaked = {'rows': [{'category': 'socks', 'series': [50] * 10 + [300, 400]}], 'months': even['months'], 'last': '2026-12'}

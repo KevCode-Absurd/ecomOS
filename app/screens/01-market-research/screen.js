@@ -834,6 +834,27 @@
         open.length ? { label: 'Open the first', onClick: () => openAction(actionFor(open[0].finding_ids.points) || actionFor(open[0].finding_ids.cost)) } : null));
   }
 
+  function identicalSellersBlock(idn) {
+    const rows = (idn && idn.rows) || [];
+    if (!rows.length) return UI.emptyState({ screen: SLUG, title: 'No candidate at researched yet', text: 'From researched on, each candidate is matched against the listing pull here.', missing: ['pipeline'] });
+    const vt = { cash_test: 'Cash test, no plan', cash_test_planned: 'Cash test planned', brand_ok: 'Under the floor', no_match: 'No matching listing', not_read: 'Not read' };
+    const pullText = idn.pull ? (idn.pull.mode === 'live' ? 'live pull of ' + idn.pull.rows + ' listings on ' + fmt.date(idn.pull.captured_at) : 'mock pull on file: sellers are never read from it') : 'no listing pull on file';
+    const vrows = rows.map((r) => { const a = actionFor(r.finding_id); return Object.assign({}, r, {
+      matchText: r.matches.length ? r.matches.map((m) => m.asin + ' (' + m.shared.join(', ') + ')').join('; ') : 'none', sellersText: r.sellers == null ? NA : r.sellers + ' (' + r.basis + ')', planText: r.cash_test_plan || 'none noted',
+      actions: [a ? { label: 'Plan the cash test', onClick: () => openAction(a) } : null,
+        { label: 'Cash-test plan', cls: 'quiet', onClick: () => { const v = prompt('Cash-test plan for ' + r.name + ': the window, the cap and the stop rule', r.cash_test_plan || ''); if (v != null) candidatePost('candidates/' + r.candidate_id, { cash_test_plan: v, who: 'person' }); } }].filter(Boolean) }); });
+    const tbl = UI.verdictTable({
+      columns: [{ key: 'name', label: 'Candidate' }, { key: 'stage', label: 'Stage' }, { key: 'matchText', label: 'Matching listings' }, { key: 'sellersText', label: 'Sellers' }, { key: 'planText', label: 'Cash-test plan' }],
+      rows: vrows,
+      verdict: { at: 1, kind: (r) => r.verdict === 'cash_test' ? 'fix' : r.verdict === 'cash_test_planned' ? 'watch' : r.verdict === 'brand_ok' ? 'keep' : 'na', text: (r) => vt[r.verdict], reason: (r) => idn.rule },
+      actions: { label: 'Do', onClick: () => {} }, sort: false });
+    const open = rows.filter((r) => r.verdict === 'cash_test');
+    return el('div', { class: 'stack' }, el('div', { class: 'card scroll' }, tbl),
+      el('p', { class: 'micro faint', text: 'Rule: ' + idn.rule + '. Pull: ' + pullText + '.' }),
+      gapLine(open.length ? open.length + ' candidate' + (open.length === 1 ? ' reads' : 's read') + ' as a commodity with no cash-test plan: ' + open.map((r) => r.name).join(', ') + '.' : (idn.pull && idn.pull.mode === 'live' ? 'No candidate matches an item with 10 or more sellers.' : 'The seller count needs a live listing pull; until then this block cannot judge a candidate.'),
+        open.length && actionFor(open[0].finding_id) ? { label: 'Open the first', onClick: () => openAction(actionFor(open[0].finding_id)) } : null));
+  }
+
   function scorecardBlock(sc) {
     const rows = (sc && sc.rows) || [];
     if (!rows.length) return el('p', { class: 'muted', text: 'No candidate to score.' });
@@ -1268,6 +1289,7 @@
     parts.push(section('desk-complaints', 'What do buyers hate about what exists, listing by listing?', 'Complaint themes mined from the brand\'s own Amazon listings as a share of reviews mined, against praise, with the listing\'s public stars, ratings and price. One complaint over 15 percent is the angle to build on.', complaintBlock(d.complaints)));
     parts.push(section('desk-line-themes', 'Where do the complaints land, line by theme?', 'Mined complaint quotes per line and theme: Amazon issues by ASIN mapped to the line by the listing title, plus the own-site issue phrases; a line where one theme carries 40 percent or more gets a listing and page fix.', lineThemeBlock(d.line_themes)));
     parts.push(section('desk-marketplace', 'Who sells us on Amazon, and at what price?', 'The brain\'s Amazon read: whether a brand store, A+ content or a brand-as-seller offer showed, the resellers seen, and every listing with its price per pair against the site. Public listing data, no order counts.', marketplaceBlock(d.marketplace)));
+    parts.push(section('desk-identical', 'Is any candidate a commodity with 10 or more sellers already?', 'Per candidate from researched on: the listings in the live listing pull whose title matches it, and how many sellers offer the identical item. 10 or more means a short cash test with a stop rule, not a brand SKU (bank idea PRD-056). A mock pull never counts.', identicalSellersBlock(d.identical_sellers)));
     parts.push(section('desk-gates', 'Is each candidate ready to fund: an owned angle and the 5 go-live gates?', 'Angle confidence (filled, sourced, not a competitor claim) and the gates per candidate: provable claim, owned difference, brand threshold, contribution margin, ad-cost ceiling, plus the compliance check.', gatesBlock(d.gates)));
     parts.push(section('desk-readiness', 'Is every hard stop clear before money goes out?', 'The launch checklist per candidate from shortlisted on, or once a first run is decided: 8 hard stops (demand screen, sourced angle, margin gate, compliance, tech pack, passed sample, sized first run, owner) and 4 soft items (one SKU, stock packaging, kill hold, ad-cost ceiling). A go with a hard stop open is a finding (bank ideas PRD-121, PRD-112). The verdict rides on the product_candidates hand-off.', readinessBlock(d.readiness)));
     parts.push(section('desk-scorecard', 'Which candidates does the founder decide on this week?', 'The fixed scorecard with the brand\'s weights: demand, margin, differentiation, compliance and cash timing, each scored in code, ranked, with the go or no-go memo drafted from the numbers and the review date.', scorecardBlock(d.scorecard)));

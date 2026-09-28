@@ -1105,6 +1105,18 @@ def recipe(f):
             'size': {'text': f'{ent.get("variants")} variants planned', 'usd': None}, 'stop_rule': 'no MOQ per variant before the core product sells', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 1,
             'win_rule': 'one variant in the first run, the rest queued behind a sell-through read',
         }
+    if rid == 'PROD-R54':
+        ent = f.get('entity') or {}
+        return {
+            'title': f'Run {ent.get("label") or "the candidate"} as a short cash test, not a brand SKU: {ent.get("sellers")} sellers already offer the identical item',
+            'owner': 'agent',
+            'artefact': {'kind': 'research_note', 'label': f'the cash-test plan for {ent.get("label")}: a small buy with no custom packaging, a 2 to 4 week window, the spend cap, the stop rule (contribution per order below the ad cost for 7 days), and the exit; written on the candidate as its cash-test plan (bank idea PRD-056)'},
+            'steps': [{'n': 1, 'who': 'agent', 'text': f'Confirm the identical item on the {len(ent.get("listings") or [])} matching listing{"s" if len(ent.get("listings") or []) != 1 else ""} and count the sellers again in 7 days; a falling count means the window is closing.'},
+                      {'n': 2, 'who': 'agent', 'text': 'Re-size the first run to the test window: units for 2 to 4 weeks at the read price, stock packaging, no MOQ tooling.'},
+                      {'n': 3, 'who': 'person', 'text': 'Approve the cash test with its cap and stop rule, or kill the candidate with the reason "commodity, 10 or more sellers".'}],
+            'size': {'text': f'{ent.get("sellers")} sellers of the identical item', 'usd': None}, 'stop_rule': 'no brand build (custom packaging, line extension, brand ads) on an item 10 or more sellers offer', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 1,
+            'win_rule': 'a cash-test plan with a cap, a window and a stop rule on the candidate, or the candidate killed',
+        }
     if rid == 'PROD-R52':
         ent = f.get('entity') or {}
         lo, pl = ent.get('low') or {}, ent.get('planned') or {}
@@ -1323,7 +1335,7 @@ def merge_strength(actions):
     return keep
 
 
-CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28', 'PROD-R37', 'PROD-R38', 'PROD-R39', 'PROD-R40', 'PROD-R45', 'PROD-R46', 'PROD-R47', 'PROD-R48', 'PROD-R49', 'PROD-R50', 'PROD-R51', 'PROD-R52', 'PROD-R53')
+CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28', 'PROD-R37', 'PROD-R38', 'PROD-R39', 'PROD-R40', 'PROD-R45', 'PROD-R46', 'PROD-R47', 'PROD-R48', 'PROD-R49', 'PROD-R50', 'PROD-R51', 'PROD-R52', 'PROD-R53', 'PROD-R54')
 
 
 def merge_candidates(actions):
@@ -1576,7 +1588,7 @@ def overview(data, brand):
                      'gates': gates_block(brand, data, br, rd, ends_on, findings), 'scorecard': scorecard_block(brand, data, br, rd, ends_on, findings),
                      'video': audit.video_signals(br, brand, ends_on), 'tech_packs': tech_pack_block(brand, findings),
                      'hours': dict(audit.hours_table(brand, br), findings={f['entity']['id']: f['id'] for f in findings if f['rule_id'] == 'PROD-R28'}),
-                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on), 'returns': audit.return_rates(data, brand, ends_on), 'questions': audit.open_questions(br, ends_on), 'pulls': audit.pulls(br, brand, ends_on), 'first_runs': audit.first_run_read(brand, ends_on, audit.net_28d(rd)), 'brain_freshness': audit.brain_freshness(br, ends_on), 'assumptions': audit.assumptions(br), 'strength': audit.read_strength(br, brand, data, rd, ends_on), 'line_themes': audit.line_theme_matrix(br), 'samples': audit.sample_read(brand or 'sample', ends_on), 'kills': audit.kill_memory(brand or 'sample', ends_on), 'packaging': audit.packaging_read(brand or 'sample', ends_on), 'readiness': audit.launch_readiness(brand, data, br, rd, ends_on), 'price_bands': audit.price_band_read(brand or 'sample'), 'margin_points': audit.margin_point_read(brand, data, br, rd, ends_on), 'audit_memo': audit.memo_stats()},
+                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on), 'returns': audit.return_rates(data, brand, ends_on), 'questions': audit.open_questions(br, ends_on), 'pulls': audit.pulls(br, brand, ends_on), 'first_runs': audit.first_run_read(brand, ends_on, audit.net_28d(rd)), 'brain_freshness': audit.brain_freshness(br, ends_on), 'assumptions': audit.assumptions(br), 'strength': audit.read_strength(br, brand, data, rd, ends_on), 'line_themes': audit.line_theme_matrix(br), 'samples': audit.sample_read(brand or 'sample', ends_on), 'kills': audit.kill_memory(brand or 'sample', ends_on), 'packaging': audit.packaging_read(brand or 'sample', ends_on), 'readiness': audit.launch_readiness(brand, data, br, rd, ends_on), 'price_bands': audit.price_band_read(brand or 'sample'), 'margin_points': audit.margin_point_read(brand, data, br, rd, ends_on), 'identical_sellers': audit.identical_sellers_read(brand or 'sample', br), 'audit_memo': audit.memo_stats()},
             'audit': {'findings': findings, 'rules': audit.RULES}}
 
 
@@ -1660,7 +1672,7 @@ def candidate_update(brand, cid, body, today):
             return 400, {'error': 'hours_add must be a number'}
         row['hours_logged'] = round((row.get('hours_logged') or 0) + h, 2)
         changes.append(f'{h:g} hours logged')
-    for k in ('angle_text', 'angle_source', 'cash_plan', 'source_finding', 'offer_structure', 'price_band_check'):
+    for k in ('angle_text', 'angle_source', 'cash_plan', 'source_finding', 'offer_structure', 'price_band_check', 'cash_test_plan'):
         if body.get(k) is not None:
             row[k] = str(body[k]).strip()[:300] or None
             changes.append(k.replace('_', ' ') + ' set')

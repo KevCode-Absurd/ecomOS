@@ -196,6 +196,10 @@ Rules
   PROD-R53  Cost is not our own quote: an open candidate at gated or later whose landed cost is an estimate, a competitor-implied
             number or the category median, not the brand's own supplier quote (bank idea PRD-081). Money: null.
             Capability PROD-C08
+  PROD-R54  Identical sellers: an open candidate at researched or later, planned as a brand SKU, whose matching listing in a
+            live listing pull shows 10 or more sellers of the identical item (the offer count, or distinct sellers across
+            matching listings), with no cash-test plan noted (bank idea PRD-056: that is a short cash test, not a brand).
+            A mock pull never counts. Money: null. Capability PROD-C01
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -322,6 +326,7 @@ RULES = [
     {'rule_id': 'PROD-R51', 'name': 'Candidate at researched or later priced at or under $9.99 with no offer structure, or in the $9 to $20 caution band with no band check', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C08', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R52', 'name': 'Candidate whose modelled margin passes at the planned price and fails at the low price', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline', 'finance_inputs'], 'capability': 'PROD-C08', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R53', 'name': 'Candidate at gated or later whose landed cost is not the brand\'s own supplier quote', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline', 'finance_inputs'], 'capability': 'PROD-C08', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R54', 'name': 'Candidate planned as a brand SKU whose identical item has 10 or more sellers in a live listing pull', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline', 'fixtures.amazon_listings'], 'capability': 'PROD-C01', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -375,7 +380,8 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R50': {'id': 'PROD-C10', 'autonomy': 'founder_gate'},
               'PROD-R51': {'id': 'PROD-C08', 'autonomy': 'agent_does'},
               'PROD-R52': {'id': 'PROD-C08', 'autonomy': 'agent_does'},
-              'PROD-R53': {'id': 'PROD-C08', 'autonomy': 'agent_does'}}
+              'PROD-R53': {'id': 'PROD-C08', 'autonomy': 'agent_does'},
+              'PROD-R54': {'id': 'PROD-C01', 'autonomy': 'agent_does'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -966,6 +972,7 @@ def _run_audit(brand, ends_on, data):
     out += readiness_findings(brand, data, br, rd, ends_on)
     out += price_band_findings(brand, ends_on)
     out += margin_point_findings(brand, data, br, rd, ends_on)
+    out += identical_seller_findings(brand, br, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -4873,4 +4880,69 @@ def margin_point_findings(brand, data, br, rd, ends_on):
             f['entity'] = {'type': 'sku', 'id': cid, 'label': r['name'], 'candidate': True, 'stage': r['stage'], 'cost_basis': r['cost_basis'], 'cost_basis_label': r['cost_basis_label'], 'cogs': r['cogs']}
             f['id'] = f'{SCREEN}.PROD-R53.{cid}'
             out.append(f)
+    return out
+
+
+# ---------------------------------------------------------------- identical sellers: a cash test, not a brand
+
+IDENTICAL_SELLERS = 10        # this many sellers of the identical item: a short cash test, not a brand SKU (bank idea PRD-056)
+IDENTICAL_MATCH_WORDS = 2     # content words a listing title shares with the candidate's name and angle to count as its item
+IDENTICAL_STAGE_MIN = 1       # researched or later
+
+
+def identical_sellers_read(brand, br):
+    """Per open candidate at researched or later: the listings in the listing pull whose title shares 2 or more content words
+    with the candidate, the seller count read (the offer count on a listing, or the distinct sellers across the matches),
+    and the verdict: cash_test (10 or more sellers in a live pull, no cash-test plan noted), cash_test_planned (the plan is
+    noted), brand_ok (a live pull read fewer), no_match (a live pull with no matching listing), not_read (no pull, or a
+    mock pull, whose sellers are never read as fact)."""
+    lp = listing_pull_for(br) if br is not None else listing_pull_for(brand)
+    lp = lp or {}
+    live = lp.get('mode') == 'live'
+    rows = []
+    for c in pipeline(brand):
+        st = c.get('stage')
+        idx = STAGES.index(st) if st in STAGES else None
+        if st in CLOSED_STAGES or idx is None or idx < IDENTICAL_STAGE_MIN:
+            continue
+        words = content_words(c.get('name'), c.get('angle_text'))
+        matches = []
+        for l in lp.get('rows') or []:
+            shared = sorted(words & content_words(l.get('title')))
+            if len(shared) >= IDENTICAL_MATCH_WORDS:
+                matches.append({'asin': l.get('asin'), 'title': l.get('title'), 'seller': l.get('seller'), 'offers_count': l.get('offers_count'), 'shared': shared})
+        offers = [m['offers_count'] for m in matches if isinstance(m.get('offers_count'), int)]
+        distinct = len({str(m['seller']).strip().lower() for m in matches if m.get('seller')})
+        sellers = max([*offers, distinct]) if matches else None
+        plan = str(c.get('cash_test_plan') or '').strip() or None
+        if not live:
+            verdict = 'not_read'
+        elif not matches:
+            verdict = 'no_match'
+        elif (sellers or 0) >= IDENTICAL_SELLERS:
+            verdict = 'cash_test_planned' if plan else 'cash_test'
+        else:
+            verdict = 'brand_ok'
+        rows.append({'candidate_id': c.get('candidate_id'), 'name': c.get('name'), 'stage': st, 'matches': matches, 'sellers': sellers if live else None, 'basis': ('offer count on the listing' if offers else 'distinct sellers across matching listings') if matches else None,
+                     'cash_test_plan': plan, 'verdict': verdict, 'finding_id': f'{SCREEN}.PROD-R54.{c.get("candidate_id")}'})
+    order = {'cash_test': 0, 'cash_test_planned': 1, 'brand_ok': 2, 'no_match': 3, 'not_read': 4}
+    rows.sort(key=lambda r: (order[r['verdict']], r['name'] or ''))
+    return {'rows': rows, 'pull': {'mode': lp.get('mode'), 'captured_at': lp.get('captured_at'), 'rows': len(lp.get('rows') or [])} if lp else None, 'floor': IDENTICAL_SELLERS,
+            'rule': f'{IDENTICAL_SELLERS} or more sellers of the identical item in a live listing pull means a short-window cash test with its own stop rule, not a brand SKU; a mock pull never counts, and a cash-test plan noted on the candidate settles it (bank idea PRD-056)'}
+
+
+def identical_seller_findings(brand, br, ends_on):
+    """PROD-R54: a candidate planned as a brand SKU whose identical item has 10 or more sellers in a live pull."""
+    out = []
+    for r in identical_sellers_read(brand, br)['rows']:
+        if r['verdict'] != 'cash_test':
+            continue
+        cid = r['candidate_id']
+        ev = [_ev('identical_sellers', r['sellers'], 'count', ends_on.isoformat(), 'listing pull', IDENTICAL_SELLERS, 'threshold', source='fixtures.amazon_listings', simulated=False, freshness_days=0,
+                  basis=r['basis'], listings=[m['asin'] for m in r['matches']])]
+        sentence = f'{r["name"]}: {r["sellers"]} sellers offer the identical item on Amazon ({r["basis"]}); that is a short cash test with a stop rule, not a brand SKU.'
+        f = _finding('PROD-R54', cid, ends_on, 'medium', ev, sentence, None, 0.7, [], money_reason='an unlaunched SKU has no baseline to price the gap')
+        f['entity'] = {'type': 'sku', 'id': cid, 'label': r['name'], 'candidate': True, 'stage': r['stage'], 'sellers': r['sellers'], 'basis': r['basis'], 'listings': [m['asin'] for m in r['matches']]}
+        f['id'] = f'{SCREEN}.PROD-R54.{cid}'
+        out.append(f)
     return out

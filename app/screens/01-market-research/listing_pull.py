@@ -24,7 +24,7 @@ sys.path.insert(0, str(ROOT))
 from app.connectors import apify  # noqa: E402
 
 DEFAULT_ACTOR = "junglee~amazon-crawler"
-FIELDS = ("asin", "title", "url", "price", "stars", "reviewsCount", "brand", "seller")   # whitelist: no reviewer fields
+FIELDS = ("asin", "title", "url", "price", "stars", "reviewsCount", "brand", "seller", "offersCount", "sellersCount", "otherSellersCount")   # whitelist: no reviewer fields
 
 
 def config_for(brand: str) -> dict:
@@ -44,8 +44,10 @@ def rows_from(items: list[dict], brand_name: str) -> list[dict]:
         price = row.get("price")
         price = (price.get("value") if isinstance(price, dict) else price)
         third = None if not seller else seller.strip().lower() != brand_name.strip().lower()
+        offers = next((row.get(k) for k in ("offersCount", "sellersCount", "otherSellersCount") if isinstance(row.get(k), (int, float))), None)   # how many sellers offer the identical item; None when the actor did not read it
         out.append({"asin": row.get("asin"), "title": row.get("title"), "url": row.get("url"), "price_usd": float(price) if price is not None else None,
-                    "stars": row.get("stars"), "ratings": row.get("reviewsCount"), "brand_on_listing": row.get("brand"), "seller": seller, "third_party_seller": third})
+                    "stars": row.get("stars"), "ratings": row.get("reviewsCount"), "brand_on_listing": row.get("brand"), "seller": seller, "third_party_seller": third,
+                    "offers_count": int(offers) if offers is not None else None})
     return out
 
 
