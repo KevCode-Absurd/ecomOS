@@ -482,6 +482,8 @@ def _finding(rule_id, entity, severity, evidence, sentence, money, confidence, b
          'money_at_stake': money, 'confidence': confidence, 'brain_refs': brain_refs,
          'first_seen': ends_on.isoformat(), 'last_seen': ends_on.isoformat(), 'status': status,
          'unavailable': unavailable}
+    if money is not None:
+        assert {'usd', 'formula', 'inputs', 'window'} <= set(money), (rule_id, 'money_at_stake needs usd, formula, inputs, window')
     if money is None:
         f['money_reason'] = money_reason or 'no baseline'
     return f
@@ -1378,6 +1380,7 @@ def rule_welcome(rd):
     if w['signup_to_order'] is not None:
         ev.append(_ev('signup_to_code_order', w['signup_to_order'], 'ratio', end, baseline=w['signups'], baseline_kind='welcome_signups', window=win, source='flows'))
     money = {'usd': round(w['code_dollars'] * 28 / w['days'], 2), 'formula': 'code_dollars_90d x 28 / 90',
+             'inputs': {'code_dollars_90d': w['code_dollars'], 'days': w['days']},
              'window': '28d', 'note': 'at stake if no code order is new'}
     return [_finding('OFFER-R32', entity, 'medium' if need >= pb.WELCOME_FLAG else 'low', ev,
                      f'{w["code"]} cost ${w["code_dollars"]:,.0f} on {w["code_orders"]} first orders in {w["days"]} days. '
@@ -1456,7 +1459,9 @@ def rule_claim_stress(rd):
     return [_finding('OFFER-R35', {'type': 'offer', 'id': 'guarantee_stress', 'label': 'Guarantee under high claims'}, 'high', ev,
                      f'At {pb.CLAIM_STRESS} times the planned claims, contribution falls to {row["contribution_share"] * 100:.0f} percent, '
                      f'under the {gs["target"] * 100:.0f} percent target. It breaks at {gs["breaks_at"]} times.',
-                     {'usd': lost, 'formula': 'orders_28d x (target x net - contribution at stress)', 'window': '28d'}, 0.6, [], end)]
+                     {'usd': lost, 'formula': 'orders_28d x (target x net - contribution at stress)', 'window': '28d',
+                      'inputs': {'orders_28d': orders, 'target': gs['target'], 'net': gs['net'], 'contribution_at_stress': row['contribution_per_order']}},
+                     0.6, [], end)]
 
 
 def paid_prices(rd):
@@ -1480,7 +1485,8 @@ def rule_paid(rd):
     return [_finding('OFFER-R36', entity, 'medium', ev,
                      f'{len(lean)} products sell {pb.CODE_DEPENDENT * 100:.0f} percent or more of units with a code, against '
                      f'{pp["code_share"] * 100:.0f} percent for all products. {lean[0]["title"]} leads at {lean[0]["code_share"] * 100:.0f} percent.',
-                     {'usd': usd, 'formula': '(list - paid) x units on these products x 28 / 90', 'window': '28d'}, 0.6, [], end)]
+                     {'usd': usd, 'formula': '(list - paid) x units on these products x 28 / 90', 'window': '28d',
+                      'inputs': {'products': [r['sku'] for r in lean], 'days': pp['days']}}, 0.6, [], end)]
 
 
 def attach_rates(rd):
@@ -1504,7 +1510,9 @@ def rule_attach(rd):
         out.append(_finding('OFFER-R37', {'type': 'sku', 'id': 'attach_' + r['sku'].lower(), 'label': r['title']}, 'medium', ev,
                             f'{r["title"]} is in {r["orders"]:,} orders, but only {r["attach"] * 100:.0f} percent carry a second item, '
                             f'against {ar["median"] * 100:.0f} percent for the median product. {r["partner_title"] or r["partner"]} is its most common mate.',
-                            {'usd': usd, 'formula': 'orders x (median - attach) x partner unit margin x 28 / 90', 'window': '28d'} if usd is not None else None,
+                            {'usd': usd, 'formula': 'orders x (median - attach) x partner unit margin x 28 / 90', 'window': '28d',
+                             'inputs': {'orders': r['orders'], 'median': ar['median'], 'attach': r['attach'], 'partner_margin': r['partner_margin'], 'days': ar['days']}}
+                            if usd is not None else None,
                             0.6, [], end, money_reason='no unit cost for the partner'))
     return out
 
@@ -1579,7 +1587,9 @@ def rule_leaks(rd):
           _ev('returning_orders_with_first_order_code', cl['returning']['orders'], 'count', end, window=f'{cl["days"]}d'),
           _ev('coupon_site_code_orders', cl['coupon_sites']['orders'], 'count', end, window=f'{cl["days"]}d')]
     return [_finding('OFFER-R40', {'type': 'offer', 'id': 'code_leaks', 'label': 'Code leaks'}, 'medium', ev,
-                     '. '.join(parts) + '.', {'usd': usd, 'formula': 'leaked code dollars x 28 / 90', 'window': '28d'}, 0.7, [], end)]
+                     '. '.join(parts) + '.', {'usd': usd, 'formula': 'leaked code dollars x 28 / 90', 'window': '28d',
+                                              'inputs': {'returning_28d': cl['returning']['dollars_28d'], 'coupon_sites_28d': cl['coupon_sites']['dollars_28d']}},
+                     0.7, [], end)]
 
 
 def returner_codes(rd):
@@ -1602,7 +1612,8 @@ def rule_returners(rd):
     return [_finding('OFFER-R41', {'type': 'offer', 'id': 'returner_codes', 'label': 'Codes for returning buyers'}, 'medium', ev,
                      f'Returning buyers with a code ({names}) came back after {c:.0f} days; those without after {n:.0f}. '
                      f'The code did not bring them sooner and cost ${rc["code_dollars"]:,.0f} in {rc["days"]} days.',
-                     {'usd': rc['code_dollars_28d'], 'formula': 'code dollars on returning orders x 28 / 180', 'window': '28d'}, 0.6, [], end)]
+                     {'usd': rc['code_dollars_28d'], 'formula': 'code dollars on returning orders x 28 / 180', 'window': '28d',
+                      'inputs': {'code_dollars': rc['code_dollars'], 'days': rc['days']}}, 0.6, [], end)]
 
 
 def rule_ladder(rd):

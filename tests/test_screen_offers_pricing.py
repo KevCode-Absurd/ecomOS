@@ -2072,5 +2072,22 @@ class BaselineKindTest(unittest.TestCase):
                 self.assertIn(e['baseline_kind'], audit.BASELINE_KINDS + (None,), (f['rule_id'], e))
 
 
+class MoneyShapeTest(unittest.TestCase):
+    """Round 8 feature 7: money at stake carries usd, formula, inputs and window (audit.md section 1) on every rule."""
+
+    def test_builder_refuses_missing_inputs(self):
+        import datetime as dtm
+        with self.assertRaises(AssertionError):
+            audit._finding('OFFER-R36', {'type': 'sku', 'id': 'x', 'label': 'x'}, 'low', [], 's', {'usd': 1, 'formula': 'f', 'window': '28d'},
+                           0.5, [], dtm.date(2026, 9, 24))
+
+    def test_both_brands(self):
+        sys.path.insert(0, str(ROOT / 'app'))
+        import server
+        for f in audit.run('bombas') + audit.run(None, None, server.Data()):
+            if f['money_at_stake']:
+                self.assertLessEqual({'usd', 'formula', 'inputs', 'window'}, set(f['money_at_stake']), f['rule_id'])
+
+
 if __name__ == '__main__':
     unittest.main()
