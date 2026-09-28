@@ -1162,12 +1162,19 @@ def rule_winloss(m, ends_on):
     ls = m.get("losses") or {}
     fired = [x for x in ls.get("rows", []) if x["fires"]]
     n = ls.get("interviews") or 0
-    if not fired or n >= lossmod.MIN_INTERVIEWS:
+    short = [(x["name"], (x.get("win_loss") or {}).get("n") or 0) for x in fired[:lossmod.MAX_NAMES]]
+    short = [(nm, k) for nm, k in short if k < lossmod.MIN_INTERVIEWS]
+    if not short:
         return []
     ev = [_row("names_we_lose_to", len(fired), "n", "reddit capture", ends_on, None, 1, "threshold", "reddit"),
-          _row("winloss_interviews", n, "n", "logged on this screen", ends_on, None, lossmod.MIN_INTERVIEWS, "threshold", "team")]
-    sentence = (f"We lose shoppers to {', '.join(x['name'] for x in fired)} and have "
-                + (f"only {n} win-loss interview{'s' if n != 1 else ''} on why." if n else "no win-loss interviews on why."))
+          _row("winloss_interviews", n, "n", "logged on this screen", ends_on, None, lossmod.MIN_INTERVIEWS * len(fired[:lossmod.MAX_NAMES]),
+               "threshold", "team"),
+          _row("names_short_of_interviews", len(short), "n", "logged on this screen", ends_on, None, 0, "threshold", "team")]
+    if not n:
+        sentence = f"We lose shoppers to {', '.join(x['name'] for x in fired)} and have no win-loss interviews on why."
+    else:
+        sentence = (f"We lose shoppers to {', '.join(x['name'] for x in fired)}. Still short of {lossmod.MIN_INTERVIEWS} interviews each: "
+                    + ", ".join(f"{nm} ({k})" for nm, k in short) + ".")
     return [_finding("COMP-R29", "low", {"type": "brand", "id": "winloss", "label": "win-loss research"}, ev, sentence,
                      [x["record"] for x in fired], ends_on, 0.5, "no baseline: the win rate is unknown")]
 

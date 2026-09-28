@@ -13,14 +13,15 @@ Reason rule for a named alternative, first match wins:
 Rule COMP-R15: an alternative recommended instead of us MIN_TIMES (2) or more times. The answer is a
 "how we compare" page section and support macro from verified brain facts (BRAND-C57). The win rate
 against a named competitor needs win-loss interviews (BRAND-C58) and reads unavailable until then. Interviews are
-logged on the page (inputs.py): win rate = wins / (wins + losses) per name; COMP-R29 holds until MIN_INTERVIEWS (5)
-are logged. With INTERVIEW_THEME_MIN (3) or more logged losses to a name, the reason is the top coded loss reason, not
+logged on the page (inputs.py): win rate = wins / (wins + losses) per name; COMP-R29 holds until each of the top
+MAX_NAMES (3) names we lose to has MIN_INTERVIEWS (5). With INTERVIEW_THEME_MIN (3) or more logged losses to a name, the reason is the top coded loss reason, not
 the ad-angle rule, and the answer draws on that reason's objection ladder.
 """
 from __future__ import annotations
 
 MIN_TIMES = 2
-MIN_INTERVIEWS = 5    # COMP-R29 stays on the plan until this many interviews are logged
+MIN_INTERVIEWS = 5    # COMP-R29 stays on the plan until each of the top MAX_NAMES names has this many interviews
+MAX_NAMES = 3
 THEME_LADDER = {"durability": "durability", "value": "price_and_value", "style": None, "unknown": None}
 INTERVIEW_THEME_MIN = 3   # logged losses to one name before its reason comes from the interviews, not the ad-angle rule
 # interview reason code -> theme, what shoppers say the rival does, our objection ladder theme

@@ -1412,9 +1412,10 @@ class TestWinLoss(TempInputs):
         d = api.handle(Req(['overview']))
         self.assertEqual(d['losses']['win_rate'], 0.25)
         f = next(f for f in api.handle(Req(['plan']))['findings'] if f['rule_id'] == 'COMP-R29')
-        self.assertIn('only 4', f['sentence'])
+        self.assertIn(f'{top} (4)', f['sentence'])
         self.interview('win', top, 'comfort and feel')
-        self.assertNotIn('COMP-R29', [f['rule_id'] for f in api.handle(Req(['plan']))['findings']])
+        f = next(f for f in api.handle(Req(['plan']))['findings'] if f['rule_id'] == 'COMP-R29')
+        self.assertNotIn(f'{top} (', f['sentence'])      # this name is covered; the others are still short
         m = next(r for r in api.handle(Req(['overview']))['room_metrics'] if r['key'] == 'win_rate_vs_named_competitor')
         self.assertEqual(m['value'], 0.4)
 
@@ -1711,6 +1712,23 @@ class TestInterviewThemes(TempInputs):
         js = (SCREEN / 'screen.js').read_text(encoding='utf-8')
         for theme, _, _ in api.audit.lossmod.REASON_THEME.values():
             self.assertIn(theme + ":", js)
+
+
+class TestInterviewCoverage(TempInputs):
+    """7.2: COMP-R29 holds until each of the top 3 names we lose to has 5 interviews."""
+    def test_per_name(self):
+        ls = api.handle(Req(['overview']))['losses']
+        names = [x['name'] for x in ls['rows'] if x['fires']][:3]
+        self.assertTrue(names)
+        size = lambda: next(a for a in api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions']
+                            if a['rule_id'] == 'COMP-R29')['size']['text']
+        self.assertEqual(size(), f'{5 * len(names)} interviews left')
+        for nm in names:
+            for _ in range(5):
+                self.interview('loss', nm, 'other')
+            if nm != names[-1]:
+                self.assertIn('COMP-R29', [f['rule_id'] for f in api.handle(Req(['plan']))['findings']])
+        self.assertNotIn('COMP-R29', [f['rule_id'] for f in api.handle(Req(['plan']))['findings']])
 
 
 if __name__ == '__main__':

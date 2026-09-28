@@ -578,6 +578,11 @@ def act_frames(f: dict, m: dict) -> dict:
             "stop_rule": "No line beats the current one by 5 points", "check_on": _plus(f["last_seen"], 21), "time_to_ship_hours": 6}
 
 
+def _interviews_left(m: dict) -> int:
+    fired = [x for x in m["losses"]["rows"] if x["fires"]][:audit.lossmod.MAX_NAMES]
+    return sum(max(0, audit.lossmod.MIN_INTERVIEWS - ((x.get("win_loss") or {}).get("n") or 0)) for x in fired)
+
+
 def act_winloss(f: dict, m: dict) -> dict:
     """COMP-R29: run win-loss interviews. A person books them; the agent writes the kit and codes the answers."""
     return {"title": "Run 5 win-loss interviews against each name we lose to", "owner": "person",
@@ -586,7 +591,7 @@ def act_winloss(f: dict, m: dict) -> dict:
                             ("person", "Recruit from past visitors and buyers; book 5 per name."),
                             ("person", "Run the 20-minute interviews; log each on this screen: win or loss, the name, one reason code."),
                             ("agent", "Code each interview; report the win rate by name and any reason repeated 3 or more times.")),
-            "size": {"text": f"{5 * min(3, len([x for x in m['losses']['rows'] if x['fires']]))} interviews"},
+            "size": {"text": f"{_interviews_left(m)} interviews left"},
             "win_rule": None, "stop_rule": None, "check_on": _plus(f["last_seen"], 21), "time_to_ship_hours": 12}
 
 
