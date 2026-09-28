@@ -23,7 +23,7 @@ Routes
   GET  /api/handoffs?from_screen=&to=&status=&kind=  briefs handed between screens and teams (events.md)
   POST /api/handoffs                  append one hand-off {from_screen, to, kind, title, why, draft, win_rule, stop_rule, check_on, capability, owner, finding_id}
   GET  /api/decisions?screen=<slug>   the decisions log
-  POST /api/decisions                 append one decision {screen, capability, choice, reason}
+  POST /api/decisions                 append one decision {screen, capability, choice, reason, brand?, finding_id?}
   GET  /api/<slug>/rank?window=28d    rubric-scored actions from the screen's audit (app/rank.py), unless api.py sets HANDLES_RANK
   ANY  /api/<slug>/...                handed to screens/<slug>/api.py: handle(req)
 
@@ -294,6 +294,9 @@ class Decisions:
         if choice not in CHOICES:
             raise ValueError('choice must be one of ' + ', '.join(CHOICES))
         row = {'screen': screen, 'capability': capability, 'choice': choice, 'reason': reason, 'time': now_iso()}
+        brand = body.get('brand')
+        if isinstance(brand, str) and re.fullmatch(r'[a-z0-9_-]{1,40}', brand):
+            row['brand'] = brand   # optional; a decision without it is read as the sample brand's
         finding_id = body.get('finding_id')
         if isinstance(finding_id, str) and 0 < len(finding_id) <= 200 and re.fullmatch(r'[A-Za-z0-9_.:\- /]+', finding_id):
             row['finding_id'] = finding_id
