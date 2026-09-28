@@ -40,7 +40,11 @@
     const card = $('brandcard');
     card.replaceChildren();
     if (!brand) { card.append(UI.el('b', { text: 'Brand unavailable' })); return; }
-    card.append(UI.el('b', { text: brand.brand }), UI.el('span', { text: (brand.fictional ? 'fictional sample brand' : 'live brand') + ', ' + (brand.market || 'US') + ', ' + (brand.platform || '') }));
+    card.append(UI.el('b', { text: brand.brand }), UI.el('span', { text: (brand.fictional ? 'sample brand, simulated data' : 'live brand, read-only') + ', ' + (brand.market || 'US') }));
+    const approve = UI.el('a', { class: 'approve', href: '#/05-brand-brain', text: 'To approve ' });
+    const n = UI.el('span', { class: 'n', text: '…' });
+    approve.append(n); card.append(approve);
+    UI.api('/api/05-brand-brain/master').then((m) => { n.textContent = String((m.top || []).length); }).catch(() => { approve.remove(); });
     UI.mount('#sample-strip', UI.sampleBadge(brand));
   }
   function show(slug) {
@@ -96,6 +100,12 @@
     }
     renderBrand();
     $('screen-select').addEventListener('change', (e) => { location.hash = '#/' + e.target.value; });
+    const search = $('nav-search');
+    if (search) search.addEventListener('input', () => {
+      const q = search.value.trim().toLowerCase();
+      for (const a of document.querySelectorAll('#navlist a')) a.hidden = !!q && !a.textContent.toLowerCase().includes(q);
+      for (const ph of document.querySelectorAll('#navlist .phase')) ph.hidden = !!q;
+    });
     $('theme-btn').addEventListener('click', cycleTheme);
     $('theme-btn-m').addEventListener('click', cycleTheme);
     themeLabel();
