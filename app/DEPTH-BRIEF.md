@@ -1,11 +1,21 @@
-# ecomOS depth brief: from round 0 skeletons to an analytics platform (Kevin, 28 Sep 2026)
+# ecomOS depth brief: from round 0 skeletons to an execution operating system (Kevin, 28 Sep 2026)
 
 This is the founder's direction after reviewing round 0 of all 28 screens. It replaces the "10 candidates, founder picks" loop in `sessions/SESSIONS.md` for feature rounds. Read it first, then `app/CLAUDE.md`, then `app/contracts/`. It is written for the lead session that studies the Meta gallery and launches one manager session per screen.
+
+## 0. Correction from Kevin (28 Sep, after the first brief)
+
+ecomOS is not an e-commerce analytics platform. It is an all-in-one e-commerce execution platform, an operating system. Do not focus on analytics. Focus on what the data and the brain let us build and do for the brand: how to grow it, what to make, what to change, what to launch, and then do it. The Meta gallery is the reference for depth and for how a page is read, not for a dashboard of charts. Every screen answers "what do we build and do next for this brand, and how does it get done", with the numbers as support. An element that only shows a number is not finished until it says what to do, who does it (agent or person), and how.
+
+Practical reading of this for every manager:
+- The top of a screen is the plan and the next moves, not a KPI row. Orientation numbers may sit beside them, small.
+- Every finding ends in a build or an action: an ad to make, a page section to change, an offer to launch, a listing to fix, an email to write, a test to run. Each has an owner (agent does it, person does it, or agent drafts and a person approves), the steps, and the artefact it produces.
+- "Build out the brand" is the frame: the brand brain holds who we are, the screens turn that into things to ship, the orchestrator ranks them, the agents ship them, the founder approves.
+- Depth means a strategist's judgement encoded as rules and playbooks that produce concrete work, not more metrics.
 
 ## 1. What Kevin said, in order
 
 1. **No more picking.** Do not ask the founder to choose 10 features. Build 10 features per screen per round, then keep looping: next 10, next 10. The founder reviews finished screens and gives step by step instructions; the managers build.
-2. **Not a report. An analytics platform.** Round 0 reads like a report. Every screen must read like the Meta gallery built for Gehna (`meta_gallery/web/`, published at https://claude.ai/artifact/PYtCXf5norsr9vhSw4ZFVT): dense, visual, actionable, the most important thing at the top, then what is wrong, then the actions, then how each action gets implemented. Sections and subsections, not long text. Charts, matrices, maps, interactive diagrams, 3D where it helps the reader. Premium e-commerce look. The accent may move to green or blue; the lead decides the design system.
+2. **Not a report. An execution platform** (see the correction in section 0: not analytics; what to build and do). Round 0 reads like a report. Every screen must read like the Meta gallery built for Gehna (`meta_gallery/web/`, published at https://claude.ai/artifact/PYtCXf5norsr9vhSw4ZFVT): dense, visual, actionable, the most important thing at the top, then what is wrong, then the actions, then how each action gets implemented. Sections and subsections, not long text. Charts, matrices, maps, interactive diagrams, 3D where it helps the reader. Premium e-commerce look. The accent may move to green or blue; the lead decides the design system.
 3. **Each screen is the best person in the world at that job, replaced by a screen plus agents.** Ask: if a world-class market researcher, Google Ads buyer, CRO lead or CX head had to hand their judgement to someone as a tool, what would the screen show, and what would its agents do? The screen shows the strategy, what is going right and wrong, what to do, what to prioritise, the top 10 things. The agents below it do the work. Deep analysis, not surface metrics. Surface metrics are allowed at the top as orientation only.
 4. **Audit on every screen.** Each screen audits its whole domain end to end, ranks findings by a rubric, and pushes its top items up.
 5. **Generalisable, plug and play, specific.** Any brand connects its sources and gets the same depth personalised from its own brain and data. Structure is fixed; content is the brand's.
