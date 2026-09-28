@@ -204,6 +204,16 @@ Known gaps from round 0:
 | 9.7 | Snoozed findings (audit.md section 4): when the founder presses "Not now" on a move, its findings read snoozed with the day they come back, sit at the end of the ranked list as "Not now, back 11 Oct", and are kept, not resolved, in the finding history | done |
 | 9.8 | The rule register holds (audit.md section 8): a test that every rule a finding can carry is listed once in RULES with its inputs, capability and owner, is in the capability map and the audit.py docstring, and that all 14 capability ids exist in the catalogue. 40 rules today, all consistent | done |
 | 9.9 | What changed since the last run: from the finding history, the plan shows "Since <last run>: N new findings, M resolved" with buttons to the first 3 new moves, so a founder coming back sees what is new before the full list. Shown only when an earlier run exists | done |
+| 9.10 | Round close: 1,071 screen tests run, only the 4 known site speed tests fail; the rank route returns 25 valid Bombas moves; 360 px clean on both brands; round9.png on the sample brand | done |
+
+### Round 9 note for Kevin (28 Sep 2026)
+
+1. Confidence is now earned: each windowed rule reruns on the windows before, so "4 of 4 windows" means the problem held for 4 periods, and a new problem, like the April duty rise, reads lower.
+2. Promo window stakes are in this year's terms: Bombas sells 1.31 times last year, so holiday gifting is worth $8.9 million and Black Friday to Cyber Monday $6.8 million if they perform like last year.
+3. Findings now have a history: each says how long it has been open, stops-firing ones show as resolved for 28 days, and "Not now" ones read snoozed until they come back.
+4. The top of the plan says what changed since the last run, with buttons to the new moves.
+5. Every drafted brief now ends with its check date and stop rule, so it can be handed over as it is.
+6. Next (round 10): wait for Kevin's review of rounds 1 to 9 and act on it first; meanwhile keep the contract asks (findings table, registry table, baseline kinds) in front of the lead.
 
 ## Contract asks
 
@@ -344,7 +354,7 @@ Intelligems (threshold and price tests scored by profit per visitor), Rebuy (tie
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.9 | 2026-09-28 | S3.9; screenshot round0.png |
-| 9 | 9.1 onward: promo stakes this year | 2026-09-28 | in progress |
+| 9 | 9.1 to 9.10: promo stakes this year, window agreement, year rules, stale inputs, finding history, whole drafts, snoozed, rule register, since last run, close | 2026-09-28 | screenshot round9.png (sample brand) |
 | 8 | 8.1 to 8.10: one money scale, exposure, your week, unlocks, start dates, baseline kinds, stake inputs, severity and wording, confidence, close | 2026-09-28 | screenshot round8.png |
 | 7 | 7.1 to 7.10: paid prices, attach rate, returns by code, test power, code leaks, returning-buyer codes, code depth, app blind spots, one read of orders, close | 2026-09-28 | screenshot round7.png (sample brand) |
 | 6 | 6.1 to 6.10: settings not text, sized moves, block lines, cannot see yet, 360 px, welcome code, test trust, price moves, tier lift, claims stress | 2026-09-28 | screenshot round6.png |
