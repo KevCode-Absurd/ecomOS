@@ -1148,6 +1148,7 @@ class ApprovalsTest(unittest.TestCase):
         self.assertTrue(rec2['source']['derived_from'])
         rows = api.approvals.outbox_rows('bombas', self.tmp / 'out')
         self.assertTrue(all(x['status'] == 'proposed' and x['proposed_by'] == '04-offers-pricing' for x in rows))
+        self.assertTrue(all(x['metric']['name'] == 'profit_per_visitor' and x['metric']['registered_on'] == '2026-09-28' for x in rows))
         # saving again updates the same record, no duplicate
         api.approve('bombas', {'id': other['id']}, brain_root=self.tmp, outbox=self.tmp / 'out', today=date(2026, 9, 28))
         sys.path.insert(0, str(ROOT / 'app' / 'brain'))

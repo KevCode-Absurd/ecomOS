@@ -72,13 +72,17 @@ def plan_record(brand, action, mode, today):
     return rec
 
 
-def registry_row(brand, action, rec, surfaces):
+def registry_row(brand, action, rec, surfaces, today=None):
     """A proposed registry row in the events.md shape. The experiments screen assigns the EXP id later."""
     art = action.get('artefact') or {}
+    today = today or dt.date.today()
     return {'id': 'PROP-04-' + hashlib.sha1(action['id'].encode()).hexdigest()[:8], 'brand': brand,
             'hypothesis': action['title'] + '. ' + (action.get('win_rule') or ''),
             'source': {'type': 'finding', 'ref': (action.get('finding_ids') or [action['id']])[0], 'index': None},
-            'idea_id': None, 'owner': 'founder', 'metric': None,
+            'idea_id': None, 'owner': 'founder',
+            # web pass 2 (Intelligems): judge offer, price and shipping tests on profit per visitor, not conversion or AOV
+            'metric': {'name': 'profit_per_visitor', 'direction': 'up', 'min_days': 28, 'registered_on': today.isoformat(),
+                       'reason': 'revenue minus promo cost, landed cost and shipping, over visitors, per arm'},
             'variant': {'control': 'today', 'treatment': art.get('label')}, 'audience': list(surfaces or []),
             'start': None, 'read_point': action.get('check_on'), 'end': None, 'status': 'proposed', 'result': None,
             'decision': None, 'learnings_ref': None, 'retro': None, 'park': None,
@@ -146,7 +150,7 @@ def save(brand, action, mode='proposed', surfaces=None, brain_root=None, outbox=
         offer_id = orec['id']
     row = None
     if (action.get('artefact') or {}).get('kind') in TEST_KINDS:
-        row = registry_row(brand, action, rec, surfaces)
+        row = registry_row(brand, action, rec, surfaces, today)
         rows = [r for r in outbox_rows(brand, outbox) if r.get('id') != row['id']] + [row]
         Path(outbox).mkdir(parents=True, exist_ok=True)
         (Path(outbox) / f'registry.{brand}.json').write_text(json.dumps(rows, indent=1), encoding='utf-8')
