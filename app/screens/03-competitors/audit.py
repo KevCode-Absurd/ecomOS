@@ -485,8 +485,41 @@ def brand_packs(brand: str) -> dict:
 
 # ---------------------------------------------------------------- the market model
 
+# Thresholds a brand can tune (depth.md section 8): a `plans` record with field competitor_thresholds whose
+# value is {name: number}. Unknown names are ignored. Defaults are the constants in each module.
+_self = sys.modules[__name__]
+TUNABLE = {"price_band_low": (_self, "PRICE_BAND", 0), "price_band_high": (_self, "PRICE_BAND", 1),
+           "stale_days": (_self, "STALE_DAYS", None), "angle_share_max": (_self, "ANGLE_SHARE_MAX", None),
+           "threat_points": (pagemod, "THREAT_AT", None), "watch_points": (pagemod, "WATCH_AT", None),
+           "coverage_gap_min": (covmod, "GAP_MIN", None), "surge": (capmod, "SURGE", None), "price_move": (capmod, "PRICE_MOVE", None),
+           "discount_deeper_points": (premmod, "DEEPER", None), "ladder_min_saving": (laddermod, "LADDER_MIN", None),
+           "undercut": (mktmod, "UNDERCUT", None)}
+
+
+def apply_thresholds(brain: Brain) -> dict:
+    """Reset every tunable to its default, then apply the brand's competitor_thresholds record. Returns what is in force."""
+    rec = next((r for r in brain.records("plans") if r.get("field") == "competitor_thresholds" and isinstance(r.get("value"), dict)), None)
+    over = rec["value"] if rec else {}
+    out = {}
+    for name, (mod, attr, idx) in TUNABLE.items():
+        if not hasattr(mod, "_default_" + attr):   # the default lives on the module, so every loaded copy shares it
+            setattr(mod, "_default_" + attr, getattr(mod, attr))
+        default = getattr(mod, "_default_" + attr)
+        cur = list(getattr(mod, attr)) if idx is not None else getattr(mod, attr)
+        base = default[idx] if idx is not None else default
+        val = over.get(name, base) if isinstance(over.get(name, base), (int, float)) else base
+        if idx is not None:
+            cur[idx] = val
+            setattr(mod, attr, tuple(cur))
+        else:
+            setattr(mod, attr, val)
+        out[name] = {"value": val, "default": base, "source": "brain" if name in over and val == over[name] else "default"}
+    return {"values": out, "record": rec["id"] if rec else None}
+
+
 def market(brand: str, today: dt.date, root: Path | None = None) -> dict:
     brain = Brain(brand, root, today)
+    thresholds = apply_thresholds(brain)
     comps = competitors(brain)
     prof = brand_profile(brain)
     packs = brand_packs(brand)
@@ -523,7 +556,7 @@ def market(brand: str, today: dt.date, root: Path | None = None) -> dict:
     points = covmod.proof_points(brain)
     refs = refmod.build(pages, top, snap.FORMAT_LABEL, lambda a: covmod.proof_for(points, a))
     return {"brand": brand, "brain": brain, "competitors": comps, "profile": prof, "packs": packs,
-            "references": refs, "ladder": None, "mix": mixmod.build(pages, brain, snap),
+            "references": refs, "ladder": None, "thresholds": thresholds, "mix": mixmod.build(pages, brain, snap),
             "coverage": cov,
             "coverage_direct": covmod.matrix(pages, snap.ANGLES, snapshot, brain, direct_only=True),
             "pages": pages, "snapshot": {k: v for k, v in (snapshot or {}).items() if k != "ads"} or None,

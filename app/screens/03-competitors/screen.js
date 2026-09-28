@@ -609,7 +609,11 @@
     document.getElementById('audit-sub').textContent = p.findings.length + ' findings from ' + p.rules.length + ' rules. Public signals, one capture.';
     mount('#audit', auditTable(p.findings));
     deskTabs();
-    mount('#rules', el('h4', { text: 'Rules' }), rulesTable(p.rules));
+    const th = p.thresholds || { values: {} };
+    mount('#rules', el('h4', { text: 'Rules' }), rulesTable(p.rules), el('h4', { text: 'Thresholds in force' }),
+      UI.table({ columns: [{ key: 'k', label: 'Threshold' }, { key: 'v', label: 'Value' }, { key: 'd', label: 'Default' }, { key: 's', label: 'From' }], sort: false,
+        rows: Object.entries(th.values).map(([k, x]) => ({ k: pretty(k), v: String(x.value), d: String(x.default), s: x.source === 'brain' ? 'the brain record' : 'default' })) }),
+      el('p', { class: 'micro faint', text: 'Tune a threshold with a plans record, field competitor_thresholds' + (th.record ? ' (in use: ' + th.record + ')' : '') + '. The founder edits it on the brand brain screen.' }));
   }
 
   if (new URLSearchParams(location.search).get('view') === 'report') {

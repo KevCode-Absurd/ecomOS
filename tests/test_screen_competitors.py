@@ -906,6 +906,29 @@ class TestFrames(TempBrain):
         self.assertTrue([f for f in out if f['rule_id'] == 'COMP-R28'])
 
 
+class TestThresholds(TempBrain):
+    """3.8: thresholds the brand tunes with a plans record; defaults come back when the record goes."""
+    def test_override_and_reset(self):
+        path = self.tmp / 'bombas' / 'plans.json'
+        rows = json.loads(path.read_text()) if path.exists() else []
+        rows.append({'id': 'bombas.plans.competitor_thresholds', 'brand': 'bombas', 'section': 'plans',
+                     'field': 'competitor_thresholds', 'value': {'price_band_low': 40, 'threat_points': 5, 'bogus': 1},
+                     'text': 'founder thresholds', 'tier': 'approved'})
+        path.write_text(json.dumps(rows))
+        out = audit.run('bombas', WINDOW, self.tmp)
+        self.assertFalse([f for f in out if f['rule_id'] == 'COMP-R02'])
+        m = audit.market('bombas', dt.date(2026, 9, 28), self.tmp)
+        th = m['thresholds']['values']
+        self.assertEqual((th['price_band_low']['value'], th['price_band_low']['source']), (40, 'brain'))
+        self.assertNotIn('bogus', th)
+        self.assertEqual(sum(p['verdict']['text'] == 'Threat' for p in m['pages'] if p['role'] != 'self'), 3)
+        path.write_text(json.dumps([r for r in rows if r['field'] != 'competitor_thresholds']))
+        m = audit.market('bombas', dt.date(2026, 9, 28), self.tmp)
+        self.assertEqual(audit.PRICE_BAND, (85, 115))
+        self.assertEqual(m['thresholds']['values']['threat_points']['source'], 'default')
+        self.assertTrue([f for f in audit.run('bombas', WINDOW, self.tmp) if f['rule_id'] == 'COMP-R02'])
+
+
 class TestRank(TempBrain):
     """Depth contract rules 2, 3 and 13: owner, steps and artefact on every action; every finding ends in one."""
     W = {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4}
