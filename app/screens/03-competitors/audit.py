@@ -609,8 +609,13 @@ def market_full(brand: str, today: dt.date, root: Path | None = None) -> dict:
     m["landing"] = landmod.build(m, cur)
     m["frames"] = framemod.build(m, m["brain"])
     m["season"] = seasonmod.build(m, m["brain"], today)
-    m["price_moves"] = {"moves": capmod.price_moves(cprev, ccur, parse_band), "captures": len(capmod.captures(brand)),
-                        "since": cprev["captured_at"] if cprev else None, "threshold": capmod.PRICE_MOVE}
+    logged = inpmod.price_moves(inpmod.read(brand, "price_seen"), capmod.PRICE_MOVE,
+                                {p["name"]: p["frame"] for p in m["pages"] if p["role"] != "self"})
+    m["price_moves"] = {"moves": capmod.price_moves(cprev, ccur, parse_band) + logged["moves"], "captures": len(capmod.captures(brand)),
+                        "since": cprev["captured_at"] if cprev else None, "threshold": capmod.PRICE_MOVE,
+                        "logged": logged, "trail_days": inpmod.TRAIL_DAYS,
+                        "pages": [p["name"] for p in m["pages"] if p["role"] != "self" and p["source"] != "none"],
+                        "recent": sorted(inpmod.read(brand, "price_seen"), key=lambda r: (r["date"], r["id"]))[-8:][::-1]}
     m["losses"] = lossmod.build(m, m["brain"], inpmod.read(brand, "interview"), inpmod.win_loss)
     m["category"] = catmod.build(m, m["brain"])
     m["velocity"] = velmod.build(m, m["brain"])
@@ -1071,10 +1076,18 @@ def rule_price_cut(m, ends_on):
     for mv in (m.get("price_moves") or {}).get("moves", []):
         if mv["kind"] != "cut":
             continue
-        ev = [_row("median_price_per_pair", mv["to"], "usd", f"since {mv['since']}", ends_on, None, mv["from"], "threshold", "captures"),
-              _row("price_change", mv["change"], "%", f"since {mv['since']}", ends_on, None, -capmod.PRICE_MOVE, "threshold", "captures")]
-        sentence = f"{mv['page']} cut its median price per {m['term']['unit']} {round(-mv['change'] * 100)} percent, ${mv['from']:.2f} to ${mv['to']:.2f}."
-        ent = {"type": "page", "id": f"price_cut_{pagemod.slug(mv['page'])}", "label": f"{mv['page']} price cut"}
+        logged = mv.get("source") == "logged"
+        src = "team" if logged else "captures"
+        ev = [_row("price_per_unit" if logged else "median_price_per_pair", mv["to"], "usd", f"since {mv['since']}", ends_on, None, mv["from"],
+                   "trailing" if logged else "threshold", src),
+              _row("price_change", mv["change"], "%", f"since {mv['since']}", ends_on, None, -capmod.PRICE_MOVE, "threshold", src)]
+        if logged:
+            sentence = (f"{mv['page']} cut the price on {mv['product']} by {round(-mv['change'] * 100)} percent, ${mv['to']:.2f} a "
+                        f"{m['term']['unit']} against its own {inpmod.TRAIL_DAYS}-day average of ${mv['from']:.2f}.")
+        else:
+            sentence = f"{mv['page']} cut its median price per {m['term']['unit']} {round(-mv['change'] * 100)} percent, ${mv['from']:.2f} to ${mv['to']:.2f}."
+        eid = f"price_cut_{pagemod.slug(mv['page'])}" + (f"_{pagemod.slug(mv['product'])}" if logged else "")
+        ent = {"type": "page", "id": eid, "label": f"{mv['page']} price cut"}
         out.append(_finding("COMP-R25", "high" if mv["frame"] == "direct" else "medium", ent, ev, sentence, [], ends_on, 0.5,
                             "no baseline: orders lost to their new price are not measured"))
     return out

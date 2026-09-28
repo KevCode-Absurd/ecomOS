@@ -368,8 +368,9 @@ def room_metrics(m: dict, pos: dict, cards: dict) -> list[dict]:
     return [
         row("competitors_tracked", len(comps), "n", "pages in the brain's competitive frame"),
         row("price_position_index", m["price_position_index"], "index", "our price per unit / tracked median x 100", "no store prices or no bands"),
-        row("price_change_count", len(pm.get("moves") or []) if (pm.get("captures") or 0) >= 2 else None, "n",
-            "price moves of 15 percent or more between the latest two captures", "needs 2 dated captures"),
+        row("price_change_count", len(pm.get("moves") or []) if (pm.get("captures") or 0) >= 2 or (pm.get("logged") or {}).get("with_baseline") else None, "n",
+            "price moves of 15 percent or more: between the latest two captures, and logged prices against their own 30-day average",
+            "needs 2 dated captures or 2 logged prices for one product"),
         row("new_creative_count", None, "n", "ads first seen this period", "needs 2 ad-level snapshots"),
         row("new_launch_count", None, "n", "new products or listings seen", "needs product feed captures"),
         row("positioning_openness_score", sum(1 for x in q["quadrants"] if not x["competitors"]) / 4 if q.get("openness") else None, "%",
@@ -514,8 +515,9 @@ def handle(req):
         if req.path == ["inputs"]:
             if req.method == "POST":
                 body = req.body if isinstance(req.body, dict) else {}
-                ls = audit.market_full(brand, today, BRAIN_ROOT)["losses"]
-                return audit.inpmod.add(brand, str(body.get("kind") or ""), body, {"competitors": ls["names"]}, today)
+                m = audit.market_full(brand, today, BRAIN_ROOT)
+                return audit.inpmod.add(brand, str(body.get("kind") or ""), body, {"competitors": m["losses"]["names"],
+                                        "pages": [p["name"] for p in m["pages"] if p["role"] != "self"]}, today)
             return {"records": audit.inpmod.read(brand, req.arg("kind")), "reason_codes": audit.inpmod.REASON_CODES,
                     "note": "Logged by the team on this screen. Local file, never sent anywhere. No names or quotes kept."}
         if req.method == "GET" and req.path == ["briefs"]:

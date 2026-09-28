@@ -96,9 +96,19 @@
     const amz = lad.amazon.length ? el('div', { class: 'small' }, el('b', { text: 'Cross-check, our Amazon listings (public list prices): ' }),
       lad.amazon.length + ' listings state a pack size; ' + usd(lad.amazon[0].per_pair) + ' to ' + usd(lad.amazon[lad.amazon.length - 1].per_pair) + ' a ' + U + ', median ' + usd(lad.amazon[Math.floor(lad.amazon.length / 2)].per_pair) + '. Site prices above are simulated net, so the gap is a check, not a finding.') : null;
     const pm = window.__priceMoves || { moves: [], captures: 0 };
-    const moves = el('div', { class: 'small' }, el('b', { text: 'Price moves: ' }), pm.moves.length ? pm.moves.map((x) => x.page + ' ' + (x.kind === 'cut' ? 'cut' : 'raised') + ' ' + Math.round(Math.abs(x.change) * 100) + ' percent, ' + usd(x.from) + ' to ' + usd(x.to) + ' since ' + fmt.date(x.since)).join('; ') + '.'
-      : (pm.captures < 2 ? 'start with the second dated capture (' + pm.captures + ' on file); a move of ' + Math.round((pm.threshold || 0.15) * 100) + ' percent or more is flagged.' : 'none of ' + Math.round((pm.threshold || 0.15) * 100) + ' percent or more since ' + fmt.date(pm.since) + '.'));
-    mount('#prices', moves, bandChart(lad), el('p', { class: 'micro faint', text: 'Our dots grow with pack size; hover for price per pack. Our prices are simulated net sales per unit for ' + lad.month + '. Hollow dots are rough public reads.' }),
+    const moveTxt = (x) => x.source === 'logged'
+      ? x.page + ' ' + (x.kind === 'cut' ? 'cut' : 'raised') + ' ' + x.product + ' ' + Math.round(Math.abs(x.change) * 100) + ' percent, ' + usd(x.to) + ' a ' + U + ' against its ' + pm.trail_days + '-day average of ' + usd(x.from) + ' (logged)'
+      : x.page + ' ' + (x.kind === 'cut' ? 'cut' : 'raised') + ' ' + Math.round(Math.abs(x.change) * 100) + ' percent, ' + usd(x.from) + ' to ' + usd(x.to) + ' since ' + fmt.date(x.since);
+    const moves = el('div', { class: 'small' }, el('b', { text: 'Price moves: ' }), pm.moves.length ? pm.moves.map(moveTxt).join('; ') + '.'
+      : (pm.captures < 2 && !(pm.logged && pm.logged.with_baseline) ? 'start with the second dated capture (' + pm.captures + ' on file) or the second logged price for one product; a move of ' + Math.round((pm.threshold || 0.15) * 100) + ' percent or more is flagged.' : 'none of ' + Math.round((pm.threshold || 0.15) * 100) + ' percent or more.'));
+    const seen = el('details', { class: 'card flat' }, el('summary', { class: 'small', text: 'Log a price seen on their site (' + ((pm.logged && pm.logged.records) || 0) + ' logged)' }),
+      (pm.recent || []).length ? UI.table({ columns: [{ key: 'date', label: 'Date', format: (v) => fmt.date(v) }, { key: 'page', label: 'Page' }, { key: 'product', label: 'Product' },
+        { key: 'price', label: 'Price', format: (v) => usd(v) }, { key: 'units', label: 'Units', unit: 'n' }, { key: 'per_unit', label: 'A ' + U, format: (v) => usd(v) }], rows: pm.recent, sort: false }) : null,
+      inputForm('price_seen', [{ key: 'page', label: 'Page', options: pm.pages || [] }, { key: 'product', label: 'Product (short label)' },
+        { key: 'price', label: 'Price in dollars', type: 'number', step: '0.01' }, { key: 'units', label: 'Units in the pack', type: 'number', value: '1' },
+        { key: 'date', label: 'Date seen', type: 'date', value: new Date().toISOString().slice(0, 10) }, { key: 'url', label: 'Source link (https)' }], 'Log the price'),
+      el('p', { class: 'micro faint', text: 'Log the same product each week. A price ' + Math.round((pm.threshold || 0.15) * 100) + ' percent or more below its own ' + (pm.trail_days || 30) + '-day average goes on the plan. Public prices only.' }));
+    mount('#prices', moves, seen, bandChart(lad), el('p', { class: 'micro faint', text: 'Our dots grow with pack size; hover for price per pack. Our prices are simulated net sales per unit for ' + lad.month + '. Hollow dots are rough public reads.' }),
       table, el('p', { class: 'small' }, el('b', { text: 'Pack ladder: ' }), 'our packs save a median ' + (lad.median_saving == null ? NA : Math.round(lad.median_saving * 100) + ' percent') + ' a ' + U + ' against a single' + (b ? '. ' + b.page + ' advertises ' + b.pct + ' percent off bundles.' : '.') + (lad.shallow ? ' The ladder offer is on the plan.' : '')), amz,
       el('ul', { class: 'small muted' }, ...lad.bands.map((x) => el('li', null, x.name + ': ' + x.text + '. ', x.ref ? el('a', { href: x.ref, target: '_blank', rel: 'noopener', text: 'source' }) : null))));
   }

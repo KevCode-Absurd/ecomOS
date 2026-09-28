@@ -1443,5 +1443,51 @@ class TestRepeatLoss(TempInputs):
         self.assertTrue(all(v[0] in kinds for v in api.audit.lossmod.REASON_MOVE.values()))
 
 
+class TestPriceSeen(TempInputs):
+    """6.3: rival prices logged on the page; a cut of 15 percent against its own 30-day average goes on the plan."""
+    def price(self, price, date, units=1, product='Merino crew', page='Darn Tough Vermont', url=''):
+        return self.post({'kind': 'price_seen', 'page': page, 'product': product, 'price': price, 'units': units, 'date': date, 'url': url})
+
+    def test_validation(self):
+        self.assertEqual(self.price(20, DAY, page='Nobody')[0], 400)
+        self.assertEqual(self.price(-1, DAY)[0], 400)
+        self.assertEqual(self.price(20, DAY, units=0)[0], 400)
+        self.assertEqual(self.price(20, DAY, product='<script>')[0], 400)
+        self.assertEqual(self.price(20, DAY, url='http://x.com')[0], 400)
+        code, out = self.price(60, DAY, units=3, url='https://example.com/p')
+        self.assertEqual(code, 201)
+        self.assertEqual(out['record']['per_unit'], 20.0)
+
+    def test_cut_against_trailing_average(self):
+        rank = lambda: api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions']
+        d = api.handle(Req(['overview']))
+        m = next(r for r in d['room_metrics'] if r['key'] == 'price_change_count')
+        self.assertIsNone(m['value'])
+        self.price(26, '2026-09-01')
+        self.price(24, '2026-09-10')
+        self.price(22, '2026-08-01')   # outside the 30 days before the latest record
+        self.price(21.25, '2026-09-27')
+        pm = api.handle(Req(['overview']))['price_moves']
+        mv = pm['logged']['moves'][0]
+        self.assertEqual(mv['from'], 25.0)
+        self.assertEqual(mv['change'], -0.15)
+        self.assertEqual(mv['kind'], 'cut')
+        a = next(a for a in rank() if a['rule_id'] == 'COMP-R25')
+        self.assertIn('cut the price on Merino crew by 15 percent', a['why'])
+        self.assertIn('30-day average', a['why'])
+        self.assertEqual(a['severity'], 'high')
+        self.assertEqual(api.actions.ranker.validate_action(a), [])
+        m = next(r for r in api.handle(Req(['overview']))['room_metrics'] if r['key'] == 'price_change_count')
+        self.assertEqual(m['value'], 1)
+
+    def test_no_baseline_no_move(self):
+        self.price(10, DAY)
+        self.price(30, DAY, product='Hiker')
+        pm = api.handle(Req(['overview']))['price_moves']
+        self.assertEqual(pm['logged']['moves'], [])
+        self.assertEqual(pm['logged']['with_baseline'], 0)
+        self.assertEqual(len(pm['recent']), 2)
+
+
 if __name__ == '__main__':
     unittest.main()

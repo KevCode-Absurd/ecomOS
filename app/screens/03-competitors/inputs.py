@@ -6,6 +6,11 @@ an interview stores the outcome, the named competitor, one reason code and the d
 
 Kinds:
   interview   a win-loss interview (BRAND-C58): outcome win or loss, competitor from the names on file, reason code
+  price_seen  a rival price a person saw on their site (the price capture the room asks for): tracked page, product
+              label, price in dollars, units in the pack, date, and an optional https source link
+Price rule (the room's "competitor cut price sharply"): per page and product, the latest price per unit against the
+mean of that product's earlier records in the trailing TRAIL_DAYS (30) days; a move of the price move threshold or
+more is a cut or a raise. With no earlier record in the window there is no baseline, and no move.
 """
 from __future__ import annotations
 
@@ -59,7 +64,60 @@ def _interview(body: dict, known: dict, today: dt.date) -> tuple[dict | None, st
     return {"outcome": outcome, "competitor": match, "reason": reason, "date": day}, None
 
 
-VALIDATE = {"interview": _interview}
+SAFE_TEXT = re.compile(r"^[A-Za-z0-9 .,&'()/+-]{1,60}$")
+TRAIL_DAYS = 30
+
+
+def _price_seen(body: dict, known: dict, today: dt.date) -> tuple[dict | None, str | None]:
+    pages = known.get("pages") or []
+    page = next((n for n in pages if n.lower() == str(body.get("page") or "").strip().lower()), None)
+    if not page:
+        return None, "page must be one of the tracked pages: " + ", ".join(pages)
+    product = str(body.get("product") or "").strip()
+    if not SAFE_TEXT.match(product):
+        return None, "product must be a short label (letters, digits, up to 60)"
+    try:
+        u = body.get("units")
+        price, units = float(body.get("price")), int(1 if u in (None, "") else u)
+    except (TypeError, ValueError):
+        return None, "price must be a number and units a whole number"
+    if not (0 < price < 10000) or not (1 <= units <= 100):
+        return None, "price must be above 0 and under 10,000; units 1 to 100"
+    day = _date(body.get("date") or today.isoformat(), today)
+    if not day:
+        return None, "date must be YYYY-MM-DD and not in the future"
+    url = str(body.get("url") or "").strip()
+    if url and not re.match(r"^https://[A-Za-z0-9.-]+(/[^\s]*)?$", url):
+        return None, "source must be an https link"
+    return {"page": page, "product": product, "price": round(price, 2), "units": units, "per_unit": round(price / units, 2),
+            "date": day, "url": url[:300] or None}, None
+
+
+def price_moves(rows: list[dict], threshold: float, frames: dict | None = None) -> dict:
+    """Per page and product: the latest price per unit against the mean of the earlier records in the trailing window."""
+    groups: dict[tuple, list[dict]] = {}
+    for r in rows:
+        groups.setdefault((r["page"], r["product"].lower()), []).append(r)
+    moves, based = [], 0
+    for (page, _), xs in sorted(groups.items()):
+        xs.sort(key=lambda r: (r["date"], r["id"]))
+        last = xs[-1]
+        start = (dt.date.fromisoformat(last["date"]) - dt.timedelta(days=TRAIL_DAYS)).isoformat()
+        prior = [r["per_unit"] for r in xs[:-1] if start <= r["date"] <= last["date"]]
+        if not prior:
+            continue
+        based += 1
+        avg = sum(prior) / len(prior)
+        ch = (last["per_unit"] - avg) / avg
+        if abs(ch) >= threshold:
+            moves.append({"page": page, "product": last["product"], "frame": (frames or {}).get(page), "from": round(avg, 2),
+                          "to": last["per_unit"], "change": round(ch, 3), "kind": "cut" if ch < 0 else "raise",
+                          "since": min(r["date"] for r in xs[:-1] if start <= r["date"]), "when": last["date"],
+                          "source": "logged", "records": len(prior) + 1, "url": last.get("url")})
+    return {"moves": sorted(moves, key=lambda r: r["change"]), "with_baseline": based, "records": len(rows)}
+
+
+VALIDATE = {"interview": _interview, "price_seen": _price_seen}
 
 
 def add(brand: str, kind: str, body, known: dict, today: dt.date) -> tuple[int, dict]:
