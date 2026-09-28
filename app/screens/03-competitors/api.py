@@ -279,12 +279,15 @@ def overview(brand: str, today: dt.date) -> dict:
     m = audit.market_full(brand, today, BRAIN_ROOT)
     brain = m.pop("brain")
     name = brand.capitalize()
+    pos = positioning(m)
+    moves = pos["kit"]["durability"]["moves"] + pos["kit"]["comfort"]["moves"]
     return {"brand": brand, "today": today.isoformat(), "version": brain.version(),
             "simulated_note": SIMULATED_NOTE.format(name=name), "signal_note": SIGNAL_NOTE,
             "competitors": [_public(c) for c in m["competitors"]], "angles": m["angles"],
-            "positioning": positioning(m),
+            "positioning": pos,
             "lookalike": m["lookalike"], "gap": gaps(m), "pages": (pr := page_rows(m)), "battlecards": battlecards(m, pr),
             "coverage": {"all": m["coverage"], "direct": m["coverage_direct"]}, "mix": m["mix"], "references": m["references"], "ladder": m["ladder"], "changes": m["changes"], "freshness": freshness(m, brand), "losses": m["losses"], "category": m["category"], "reviews": m["reviews"], "presence": m["presence"], "velocity": m["velocity"], "niche": m["niche"], "premium": m["premium"], "search": m["search"], "price_moves": m["price_moves"], "landing": m["landing"],
+            "frames": audit.framemod.build(m, brain, moves),
             "category_median": m["category_median"], "price_position_index": m["price_position_index"]}
 
 

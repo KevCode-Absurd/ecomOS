@@ -131,6 +131,10 @@ COMP-R26 a top threat's landing pages are not tracked. One finding for the top
 COMP-R27 battlecard facts are stale. A direct page's record behind its battlecard
     was last checked more than 90 days ago. Severity low. Capability BRAND-C57
     (agent re-verifies and refreshes the card). Owner: 03-competitors.
+COMP-R28 the positioning line was never tested against shopper frames. The top
+    Reddit category frame (frames.py) is not in our frame's words and no
+    positioning test is on file. Severity medium. Capability BRAND-C20.
+    Reputation 3. Owner: 03-competitors.
 
 Rubric overrides (depth.md section 4 allows reputation and satisfaction per rule):
 COMP-R01 reputation 5: an unclaimed angle is a competitor position gap named in
@@ -183,6 +187,7 @@ refmod = _local("references")
 changemod = _local("changes")
 capmod = _local("capture")
 landmod = _local("landing")
+framemod = _local("frames")
 lossmod = _local("losses")
 catmod = _local("category")
 revmod = _local("reviews")
@@ -279,6 +284,9 @@ RULES = [
      "inputs": ["threat verdicts", "brain competitors price_ref"], "capability": "BRN-C01", "owner_screen": SCREEN},
     {"rule_id": "COMP-R27", "name": "battlecard facts past 90 days", "entity_type": "page",
      "inputs": ["brain competitors captured_at"], "capability": "BRAND-C57", "owner_screen": SCREEN},
+    {"rule_id": "COMP-R28", "name": "positioning line not tested against the top shopper frame", "entity_type": "brand",
+     "inputs": ["brain positioning.reddit_frames", "brain positioning.frame", "brain learnings"], "capability": "BRAND-C20",
+     "owner_screen": SCREEN},
     {"rule_id": "COMP-R08", "name": "discount on most ads while direct peers run none", "entity_type": "offer",
      "inputs": ["brain offers.promo_share_active_ads", "brain competitors offers_seen"], "capability": "LIFE-C38",
      "owner_screen": SCREEN},
@@ -286,12 +294,12 @@ RULES = [
 # what a strategist groups the findings by on the page (depth.md section 2: grouped by bottleneck)
 RULE_GROUP = {"COMP-R01": "creative", "COMP-R05": "creative", "COMP-R06": "creative", "COMP-R03": "offer", "COMP-R07": "offer",
               "COMP-R08": "offer", "COMP-R09": "offer", "COMP-R02": "price", "COMP-R10": "price", "COMP-R11": "position",
-              "COMP-R04": "watch", "COMP-R12": "watch", "COMP-R13": "watch", "COMP-R14": "watch", "COMP-R15": "lost", "COMP-R16": "lost", "COMP-R17": "lost", "COMP-R18": "price", "COMP-R19": "creative", "COMP-R20": "position", "COMP-R21": "offer", "COMP-R22": "position", "COMP-R23": "position", "COMP-R24": "watch", "COMP-R25": "price", "COMP-R26": "watch", "COMP-R27": "watch"}
+              "COMP-R04": "watch", "COMP-R12": "watch", "COMP-R13": "watch", "COMP-R14": "watch", "COMP-R15": "lost", "COMP-R16": "lost", "COMP-R17": "lost", "COMP-R18": "price", "COMP-R19": "creative", "COMP-R20": "position", "COMP-R21": "offer", "COMP-R22": "position", "COMP-R23": "position", "COMP-R24": "watch", "COMP-R25": "price", "COMP-R26": "watch", "COMP-R27": "watch", "COMP-R28": "position"}
 GROUP_LABEL = {"lost": "Shoppers we lose, by name", "creative": "Ads they run that we do not", "offer": "Offers they say that we do not",
                "price": "Price against theirs", "position": "Corners of the map", "watch": "Watch and protect"}
 RUBRIC_OVERRIDES = {"COMP-R01": {"reputation": 5}, "COMP-R02": {"reputation": 3}, "COMP-R04": {"reputation": 5, "satisfaction": 4},
                     "COMP-R15": {"reputation": 4}, "COMP-R17": {"reputation": 4, "satisfaction": 4},
-                    "COMP-R21": {"reputation": 3}}
+                    "COMP-R21": {"reputation": 3}, "COMP-R28": {"reputation": 3}}
 AUTONOMY = {"BRN-C01": "agent_does", "BRAND-C07": "agent_does", "BRAND-C23": "agent_does", "PROD-C46": "agent_does", "LIFE-C42": "founder_gate", "BRAND-C18": "agent_does", "BRAND-C57": "agent_does", "BRN-C11": "agent_does", "BRAND-C20": "agent_does", "LIFE-C39": "founder_gate", "CREA-C31": "agent_does", "CREA-C06": "agent_does", "CREA-C04": "agent_does", "LIFE-C47": "agent_does", "LIFE-C38": "founder_gate", "BRAND-C21": "founder_gate", "BRAND-C24": "founder_gate", "MONEY-C48": "human_assist"}
 
 
@@ -526,6 +534,7 @@ def market_full(brand: str, today: dt.date, root: Path | None = None) -> dict:
     cprev, ccur = capmod.latest_two(brand)
     m["changes"] = changemod.build(m, m["brain"], prev, cur, today, capmod.diff(cprev, ccur), len(capmod.captures(brand)))
     m["landing"] = landmod.build(m, cur)
+    m["frames"] = framemod.build(m, m["brain"])
     m["price_moves"] = {"moves": capmod.price_moves(cprev, ccur, parse_band), "captures": len(capmod.captures(brand)),
                         "since": cprev["captured_at"] if cprev else None, "threshold": capmod.PRICE_MOVE}
     m["losses"] = lossmod.build(m, m["brain"])
@@ -1024,6 +1033,20 @@ def rule_cards(m, ends_on):
     return out
 
 
+def rule_frames(m, ends_on):
+    fr = m.get("frames") or {}
+    if not fr.get("fires"):
+        return []
+    t = fr["top"]
+    ev = [_row("top_frame_mentions", t["mentions"], "n", "reddit capture", ends_on, None, None, "threshold", "reddit"),
+          _row("brand_named_in_frame", t["brand_named"], "n", "reddit capture", ends_on, None, None, "threshold", "reddit")]
+    sentence = (f"Shoppers frame the category as {t['label']} ({t['mentions']} mentions). Our line does not say it, "
+                "and it was never tested.")
+    return [_finding("COMP-R28", "medium", {"type": "brand", "id": "positioning_test", "label": "positioning line"}, ev, sentence,
+                     [f"{m['brand']}.positioning.frame", f"{m['brand']}.positioning.reddit_frames"], ends_on, 0.3,
+                     "no baseline: no positioning test on file")]
+
+
 def packs_month_end(packs):
     if not packs.get("available"):
         return None
@@ -1050,7 +1073,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
         out += [_unavailable("COMP-R16", "low", {"type": "ladder_rung", "id": "lower_rungs", "label": "lower rungs of the ladder"},
                              ["search trends by rung"], "a search trends source (read only)",
                              "Connect a search trends source for the category and each lower rung.", ends_on)]
-        out += rule_ladder(m, ends_on) + rule_corners(m, ends_on) + rule_refresh(m, ends_on) + rule_freshness(m, ends_on) + rule_losses(m, ends_on) + rule_attack(m, ends_on) + rule_presence(m, ends_on) + rule_velocity(m, ends_on) + rule_niche(m, ends_on) + rule_premium(m, ends_on) + rule_search(m, ends_on) + rule_new_move(m, ends_on) + rule_price_cut(m, ends_on) + rule_landing(m, ends_on) + rule_cards(m, ends_on)
+        out += rule_ladder(m, ends_on) + rule_corners(m, ends_on) + rule_refresh(m, ends_on) + rule_freshness(m, ends_on) + rule_losses(m, ends_on) + rule_attack(m, ends_on) + rule_presence(m, ends_on) + rule_velocity(m, ends_on) + rule_niche(m, ends_on) + rule_premium(m, ends_on) + rule_search(m, ends_on) + rule_new_move(m, ends_on) + rule_price_cut(m, ends_on) + rule_landing(m, ends_on) + rule_cards(m, ends_on) + rule_frames(m, ends_on)
     out += rule_price(m, ends_on) + rule_lookalike(m, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f["severity"]], f["id"]))
     return out

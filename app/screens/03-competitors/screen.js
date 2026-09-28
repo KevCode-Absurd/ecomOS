@@ -502,11 +502,24 @@
       el('p', { class: 'micro faint', text: bc.rule + ' Verified differences only; never disparage.' }));
   }
 
+  // ---------- 5t. positioning lines against shopper frames ----------
+  function framesSection(fr) {
+    const t = UI.table({ columns: [{ key: 'label', label: 'Shopper frame (Reddit)' }, { key: 'mentions', label: 'Mentions', unit: 'n' },
+      { key: 'brand_named', label: 'We are named', format: (v) => v == null ? NA : String(v) }, { key: 'in_our_frame', label: 'In our line', format: (v) => v ? 'yes' : 'no' }],
+    rows: fr.frames, sort: false });
+    const lines = el('div', { class: 'stack' }, ...fr.lines.map((x) => el('div', { class: 'card flat' }, el('b', { text: x.key + '. ' }), x.line,
+      el('div', { class: 'micro faint', text: 'Answers ' + x.answers + (x.proof ? '. Proof: ' + x.proof : x.key === 'B' ? '. No proof on file.' : '') }))));
+    mount('#frames', el('p', { class: 'small' }, el('b', { text: 'Our line now: ' }), fr.our_frame || NA), t, el('h4', { text: 'Lines to test' }), lines,
+      el('p', { class: 'small' }, el('b', { text: 'Test score: ' }), fr.score == null ? 'unavailable, no test on file.' : fr.score),
+      UI.decisionRow({ capability: 'BRAND-C20', autonomy: 'agent_does', owner: 'agent_drafts', screen: SCREEN, compact: true, finding_id: SCREEN + '.COMP-R28.positioning_test' }),
+      el('p', { class: 'micro faint', text: fr.rule + ' Reddit is a signal; never quoted.' }));
+  }
+
   // ---------- 5z. desk tabs: each job holds its sections ----------
   const DESK = [
     { key: 'rivals', label: 'Rivals', ids: ['pages', 'cards', 'landing', 'losses', 'category', 'reviews'] },
     { key: 'creative', label: 'Ads', ids: ['coverage', 'velocity', 'mix', 'refs', 'changes'] },
-    { key: 'price', label: 'Price and offer', ids: ['map', 'premium', 'prices', 'presence'] },
+    { key: 'price', label: 'Price and position', ids: ['map', 'frames', 'premium', 'prices', 'presence'] },
     { key: 'market', label: 'Market and data', ids: ['niche', 'search', 'fresh'] },
   ];
   function deskTabs() {
@@ -588,6 +601,7 @@
     digestSection();
     landingSection(d.landing);
     cardsSection(d.battlecards);
+    framesSection(d.frames);
     document.getElementById('audit-sub').textContent = p.findings.length + ' findings from ' + p.rules.length + ' rules. Public signals, one capture.';
     mount('#audit', auditTable(p.findings));
     deskTabs();

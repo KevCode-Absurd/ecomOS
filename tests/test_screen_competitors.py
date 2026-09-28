@@ -880,6 +880,21 @@ class TestCards(TempBrain):
         self.assertFalse([f for f in audit.run('bombas', WINDOW, self.tmp) if f['rule_id'] == 'COMP-R27'])
 
 
+class TestFrames(TempBrain):
+    """3.6: positioning lines against shopper frames; test brief when the top frame is not in our line."""
+    def test_frames(self):
+        api.BRAIN_ROOT = self.tmp
+        fr = api.handle(Req(['overview']))['frames']
+        self.assertEqual(fr['frames'][0]['frame'], 'buy_it_for_life')
+        self.assertFalse(fr['frames'][0]['in_our_frame'])
+        self.assertEqual([x['key'] for x in fr['lines']], ['A', 'B', 'C'])
+        self.assertIn('Guarantee', fr['lines'][1]['proof'])
+        self.assertIsNone(fr['score'])
+        self.assertTrue(fr['fires'])
+        out = audit.run('bombas', WINDOW, self.tmp)
+        self.assertTrue([f for f in out if f['rule_id'] == 'COMP-R28'])
+
+
 class TestRank(TempBrain):
     """Depth contract rules 2, 3 and 13: owner, steps and artefact on every action; every finding ends in one."""
     W = {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4}
@@ -974,7 +989,7 @@ class TestPage(unittest.TestCase):
         html = (SCREEN / 'index.html').read_text(encoding='utf-8')
         desk = html.split('id="desk-src"', 1)[1].split('<!-- 6. The audit -->', 1)[0]
         for sec_id in ('pages', 'cards', 'landing', 'losses', 'category', 'reviews', 'coverage', 'velocity', 'mix', 'refs', 'changes',
-                       'map', 'premium', 'prices', 'presence', 'niche', 'search', 'fresh'):
+                       'map', 'frames', 'premium', 'prices', 'presence', 'niche', 'search', 'fresh'):
             self.assertIn(f'id="{sec_id}"', desk)
             self.assertIn(f"'{sec_id}'", js)
 

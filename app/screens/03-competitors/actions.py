@@ -557,6 +557,20 @@ def act_card(f: dict, m: dict) -> dict:
             "size": None, "win_rule": None, "stop_rule": None, "check_on": _plus(f["last_seen"], 7), "time_to_ship_hours": 1}
 
 
+def act_frames(f: dict, m: dict) -> dict:
+    """COMP-R28: test the positioning line against the top shopper frame before rewriting it."""
+    fr = m["frames"]
+    return {"title": f"Test our line against the {fr['top']['label']} frame shoppers use", "owner": "agent_drafts",
+            "artefact": {"kind": "test_brief", "label": "a positioning test: the current line against the frame lines",
+                         "draft": audit.framemod.draft(fr)},
+            "steps": _steps(("agent", "Build the lines from the brain: current, the top frame with its proof, the contested corner."),
+                            ("person", "Approve the lines; every claim has its proof on file."),
+                            ("agent", "Run the 5-second poll with 200 shoppers, then the winner as an ad first line for 7 days."),
+                            ("person", "Approve the winning line as a brain record.")),
+            "size": {"text": "200 shoppers, 2 ad lines"}, "win_rule": "The new line wins the poll by 10 points and the ad test",
+            "stop_rule": "No line beats the current one by 5 points", "check_on": _plus(f["last_seen"], 21), "time_to_ship_hours": 6}
+
+
 def act_connect(f: dict, m: dict) -> dict:
     un = f.get("unavailable") or {}
     con = un.get("connector") or "the missing source"
@@ -578,7 +592,8 @@ BUILDERS = {"COMP-R01": act_angle, "COMP-R02": act_price, "COMP-R03": act_offer_
             "COMP-R19": act_velocity, "COMP-R20": act_niche,
             "COMP-R21": act_premium, "COMP-R22": act_search, "COMP-R23": act_connect,
             "COMP-R24": act_new_move, "COMP-R25": act_price_cut,
-            "COMP-R26": act_landing, "COMP-R27": act_card}   # R16 has no data source yet: always a connect action
+            "COMP-R26": act_landing, "COMP-R27": act_card,
+            "COMP-R28": act_frames}   # R16 has no data source yet: always a connect action
 
 
 def action(f: dict, m: dict, net_revenue: float | None) -> dict:
