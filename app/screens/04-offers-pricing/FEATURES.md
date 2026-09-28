@@ -180,6 +180,16 @@ Known gaps from round 0:
 | 8.7 | Money at stake follows audit.md: 6 rules from rounds 6 and 7 (welcome code, attach, returning-buyer codes, guarantee stress, paid prices, code leaks) now carry the inputs behind each dollar, and the finding builder refuses a stake without usd, formula, inputs and window, so a rule that does not fire today cannot ship one malformed later | done |
 | 8.8 | Severity and wording follow audit.md: a stake over 5 percent of trailing 28-day net sales raises a finding to critical, over 1 percent to high (never lowers a rule's own severity). Bombas's two promo windows are now critical and the sample brand's welcome code high. Every finding sentence is checked on both brands: under 40 words, 2 sentences at most, no "should", "try" or "consider"; the promo window and welcome code sentences were cut to 2 | done |
 | 8.9 | Confidence follows audit.md where it applies to every rule: minus 0.2 when a baseline is a peer band rather than the brand's own history, floor 0.1, and an open finding under 0.3 reads "Weak evidence." in the ranked list. Bombas: the price position finding (competitor median) goes from 0.5 to 0.3. The window-agreement part of the formula stays with each rule's own constant for now | done |
+| 8.10 | Round close: 1,037 screen tests run, only the 4 known site speed tests fail; the rank route returns 25 valid Bombas moves; 360 px clean on both brands with every card open; round8.png | done |
+
+### Round 8 note for Kevin (28 Sep 2026)
+
+1. The plan now ranks every brand on one money scale: the sample brand's stakes are sized against its own net sales, so its biggest stake, the welcome code at $2,417 a month, leads its plan.
+2. Moves whose lift only a test can find now say how much of the last 28 days' sales they touch, and when they can start; Bombas's 5 promise launches are staggered from 4 Oct.
+3. Under the plan, "Your week" says how many approvals and hours the first moves need: 7 approvals and about 32 hours for Bombas. Team hours read unavailable until the brain holds them.
+4. Connecting the store now says what it unlocks: 6 rules and 5 desk reads for Bombas.
+5. Findings now follow the audit contract: severity rises with money share (the two Bombas promo windows are critical), every stake carries its inputs, sentences stay under 40 words, and peer-band evidence scores lower.
+6. Next (round 9): the window-agreement part of confidence, rule by rule, and the promo windows' stake read against the current window rather than last year's.
 
 ## Contract asks
 
@@ -319,7 +329,7 @@ Intelligems (threshold and price tests scored by profit per visitor), Rebuy (tie
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.9 | 2026-09-28 | S3.9; screenshot round0.png |
-| 8 | 8.1 onward: one money scale | 2026-09-28 | in progress |
+| 8 | 8.1 to 8.10: one money scale, exposure, your week, unlocks, start dates, baseline kinds, stake inputs, severity and wording, confidence, close | 2026-09-28 | screenshot round8.png |
 | 7 | 7.1 to 7.10: paid prices, attach rate, returns by code, test power, code leaks, returning-buyer codes, code depth, app blind spots, one read of orders, close | 2026-09-28 | screenshot round7.png (sample brand) |
 | 6 | 6.1 to 6.10: settings not text, sized moves, block lines, cannot see yet, 360 px, welcome code, test trust, price moves, tier lift, claims stress | 2026-09-28 | screenshot round6.png |
 | 5 | 5.1 to 5.10: stack read-back, break-even discount, profit per visitor, pack label, installments, loyalty calibration, line match, code-won cohorts, order bunches | 2026-09-28 | screenshot round5.png |
