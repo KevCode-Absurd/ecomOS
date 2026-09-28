@@ -1045,6 +1045,24 @@ class TestMacros(TempBrain):
                 self.assertTrue(x['source'])
 
 
+class TestRoomMetrics(TempBrain):
+    """4.9: the room's 15 metrics, each computed or unavailable with a reason; none reads 0 for unknown."""
+    def test_metrics(self):
+        api.BRAIN_ROOT = self.tmp
+        rows = api.handle(Req(['overview']))['room_metrics']
+        self.assertEqual(len(rows), 15)
+        by = {r['key']: r for r in rows}
+        self.assertEqual(by['competitors_tracked']['value'], 12)
+        self.assertEqual(by['discount_depth_vs_category']['value'], 20)
+        for k in ('new_creative_count', 'win_rate_vs_named_competitor', 'positioning_test_score', 'price_change_count'):
+            self.assertIsNone(by[k]['value'])
+            self.assertTrue(by[k]['unavailable'])
+        for r in rows:
+            self.assertTrue(r['formula'])
+            if r['value'] is None:
+                self.assertTrue(r['unavailable'], r['key'])
+
+
 class TestRank(TempBrain):
     """Depth contract rules 2, 3 and 13: owner, steps and artefact on every action; every finding ends in one."""
     W = {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4}

@@ -46,6 +46,7 @@ Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `a
 | 4.6 | Phone width at 360 px: the top and each of the 4 desk tabs checked with every panel open, no page scroll and nothing wider than the screen outside the table, matrix and chart scrollers; found and fixed a live-server fault on the way: the server reloads api.py but not the modules it loads, so the page served a stale mix after edits; api.py now drops this folder's cached modules on reload | done |
 | 4.7 | Who is getting more dangerous: threat points per page across the dated captures as a trend strip, highest first, with ads now; a gap line names any page whose points rose since the first capture (refresh its battlecard, read its new ads); one capture on file now, so it says the trend starts with the next | done |
 | 4.8 | What support can paste today: answers to "how do you compare to X" for each name we lose to and to the top 3 review doubts, built only from verified brain proof plus the guarantee, each with its source record; a doubt or name with no proof gets no answer and lands on "proof to add" (Stance, look better); copy one or all; BRAND-C57 decision | done |
+| 4.9 | The room's 15 specified metrics in the audit, each with value, formula and, when it cannot be computed, the reason (price change count needs 2 captures, new creative count needs 2 ad-level snapshots, win rate needs interviews, niche size and positioning test score need their sources); none reads 0 for unknown | done |
 
 ## Round 3: watching over time, reports and the rest of the room
 
@@ -213,7 +214,7 @@ Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permi
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
-| 4 | 4.1 to 4.8 | 2026-09-28 | Placements and new channel alerts; gap lines; stop rules; unit from the brain; never zero; phone width; threat history; support answers |
+| 4 | 4.1 to 4.9 | 2026-09-28 | Placements and new channel alerts; gap lines; stop rules; unit from the brain; never zero; phone width; threat history; support answers; room metrics |
 | 3 | 3.1 to 3.10 | 2026-09-28 | Page-summary captures and diffs; price moves; landing page tracking; printable report; battlecards; positioning test; win-loss kit; tunable thresholds; second brand. Screenshot `round3.png` |
 | 2 | 2.1 to 2.10 | 2026-09-28 | Lost by name; category ladder; review themes; Amazon against our site; creative velocity; weekly brief; niche sizing; premium signals; search seeds; desk tabs. Screenshot `round2.png` |
 | 1 | 1.1 to 1.10 | 2026-09-28 | Plan first; rank override; 12 pages side by side; coverage matrix; hook and offer mix; references; price and pack ladder; positioning map with moves; changes timeline; freshness and re-pull; rank for all 14 rules. Screenshot `round1.png` |

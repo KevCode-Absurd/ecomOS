@@ -667,6 +667,10 @@
     mount('#audit', auditTable(p.findings));
     gapLines(d.gap_lines);
     deskTabs();
+    const fmtM = (r) => r.value == null ? NA : r.unit === '%' ? fmt.pct(r.value) : fmt.num(r.value) + (r.unit === 'days' ? ' days' : r.unit === 'points' ? ' points' : '');
+    mount('#metrics', el('h4', { text: 'Room metrics' }), UI.table({ columns: [{ key: 'key', label: 'Metric', format: (v) => pretty(v) }, { key: 'v', label: 'Value' },
+      { key: 'formula', label: 'Formula' }, { key: 'unavailable', label: 'Why unavailable', format: (v) => v || '' }], sort: false,
+      rows: (d.room_metrics || []).map((r) => Object.assign({}, r, { v: fmtM(r) })) }));
     const th = p.thresholds || { values: {} };
     mount('#rules', el('h4', { text: 'Rules' }), rulesTable(p.rules), el('h4', { text: 'Thresholds in force' }),
       UI.table({ columns: [{ key: 'k', label: 'Threshold' }, { key: 'v', label: 'Value' }, { key: 'd', label: 'Default' }, { key: 's', label: 'From' }], sort: false,

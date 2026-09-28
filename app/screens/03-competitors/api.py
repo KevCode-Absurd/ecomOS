@@ -350,6 +350,38 @@ def macros(m: dict) -> dict:
                     "Never name a rival negatively."}
 
 
+def room_metrics(m: dict, pos: dict, cards: dict) -> list[dict]:
+    """The metrics the room spec names, each computed from this screen's models or unavailable with the reason."""
+    comps = [p for p in m["pages"] if p["role"] != "self"]
+    q = pos["quadrants"]["durability"]
+    pm = m.get("price_moves") or {}
+    v, pr, n, cat = m["velocity"], m["premium"], m["niche"], m["category"]
+    us_share = next((r["share"] for r in v["rows"] if r["role"] == "self"), None)
+    ages = [r["age_days"] for r in cards["rows"] if r["age_days"] is not None]
+    row = lambda k, val, unit, formula, why=None: {"key": k, "value": val, "unit": unit, "formula": formula,  # noqa: E731
+                                                    "unavailable": None if val is not None else why}
+    return [
+        row("competitors_tracked", len(comps), "n", "pages in the brain's competitive frame"),
+        row("price_position_index", m["price_position_index"], "index", "our price per unit / tracked median x 100", "no store prices or no bands"),
+        row("price_change_count", len(pm.get("moves") or []) if (pm.get("captures") or 0) >= 2 else None, "n",
+            "price moves of 15 percent or more between the latest two captures", "needs 2 dated captures"),
+        row("new_creative_count", None, "n", "ads first seen this period", "needs 2 ad-level snapshots"),
+        row("new_launch_count", None, "n", "new products or listings seen", "needs product feed captures"),
+        row("positioning_openness_score", sum(1 for x in q["quadrants"] if not x["competitors"]) / 4 if q.get("openness") else None, "%",
+            "open quadrants / 4 on the price by durability map", "fewer than 3 brands placed"),
+        row("category_ladder_coverage", cat["coverage"], "n", "rungs with at least one member, of 5"),
+        row("market_size_estimate", (n.get("bar") or {}).get("buyers"), "n", "buyers a year for 1 percent of revenue", "AOV, repeat rate or revenue missing"),
+        row("addressable_niche_size", None, "n", "search demand for the niche x capture rate", "needs a keyword source"),
+        row("win_rate_vs_named_competitor", None, "%", "wins / (wins + losses) in win-loss interviews", "no interviews on file"),
+        row("battlecard_freshness_days", max(ages) if ages else None, "days", "days since the oldest card's facts were checked", "no cards"),
+        row("competitor_activity_share", us_share, "%", "our active ads / all active ads on direct pages plus ours", "our active ads unknown"),
+        row("premium_signal_score", pr.get("our_score"), "%", "premium signals present / signals known", "no signals read"),
+        row("discount_depth_vs_category", (pr["our_depth"] - pr["direct_median_depth"]) if pr.get("our_depth") is not None
+            and pr.get("direct_median_depth") is not None else None, "points", "our deepest discount minus the direct median", "offers not read"),
+        row("positioning_test_score", m["frames"].get("score"), "points", "share preferring the new line minus the current", "no test on file"),
+    ]
+
+
 def overview(brand: str, today: dt.date) -> dict:
     m = audit.market_full(brand, today, BRAIN_ROOT)
     brain = m.pop("brain")
@@ -362,7 +394,8 @@ def overview(brand: str, today: dt.date) -> dict:
             "simulated_note": SIMULATED_NOTE.format(name=name, unit=m["term"]["unit"]), "term": m["term"], "signal_note": SIGNAL_NOTE,
             "competitors": [_public(c) for c in m["competitors"]], "angles": m["angles"],
             "positioning": pos,
-            "lookalike": m["lookalike"], "gap": gaps(m), "pages": (pr := page_rows(m)), "battlecards": battlecards(m, pr),
+            "lookalike": m["lookalike"], "gap": gaps(m), "pages": (pr := page_rows(m)), "battlecards": (bc := battlecards(m, pr)),
+            "room_metrics": room_metrics(m, pos, bc),
             "coverage": {"all": m["coverage"], "direct": m["coverage_direct"]}, "mix": m["mix"], "references": m["references"], "ladder": m["ladder"], "changes": m["changes"], "freshness": freshness(m, brand), "losses": m["losses"], "category": m["category"], "reviews": m["reviews"], "presence": m["presence"], "velocity": m["velocity"], "niche": m["niche"], "premium": m["premium"], "search": m["search"], "price_moves": m["price_moves"], "landing": m["landing"], "placements": placements(m), "macros": macros(m), "history": audit.capmod.history(brand), "gap_lines": gap_lines(ranked),
             "frames": audit.framemod.build(m, brain, moves),
             "category_median": m["category_median"], "price_position_index": m["price_position_index"]}
