@@ -263,8 +263,8 @@ class RulesTest(ShapeMixin, unittest.TestCase):
                 self.assertTrue(rules <= {'PROD-R31', 'PROD-R32'}, rules)   # one Amazon stance card
             elif 'PROD-R35' in rules:
                 self.assertTrue(rules <= {'PROD-R07', 'PROD-R35'}, rules)   # a founder question rides on its theme card
-            elif rules == {'PROD-R41'}:
-                pass                                                          # one brain refresh card across sections
+            elif rules == {'PROD-R41'} or rules == {'PROD-R42'}:
+                pass                                                          # one brain refresh card, one assumptions card
             else:
                 self.assertTrue(rules <= {'PROD-R05', 'PROD-R06', 'PROD-R20', 'PROD-R33'}, rules)   # one brief per lane
         covered = [fid for a in acts for fid in a['finding_ids']]
@@ -1205,6 +1205,25 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
         self.assertTrue(all(r['verdict'] in ('fresh', 'unknown', 'stale', 'conflict', 'no_ttl') for r in bombas['rows']))
         self.assertNotIn('config', {r['section'] for r in bombas['rows']})
         self.assertTrue(any(r['verdict'] == 'fresh' for r in bombas['rows']))
+
+    def test_assumptions_block_and_rule(self):
+        D = date(2026, 9, 27)
+        self.assertEqual(audit.assumptions(None)['rows'], [])
+        br = audit.brain('bombas')
+        rows = {r['field']: r for r in audit.assumptions(br)['rows']}
+        self.assertEqual(rows['repeat_rate_12m']['verdict'], 'confirmed')
+        self.assertEqual(rows['gross_margin']['verdict'], 'unconfirmed')
+        self.assertEqual(rows['giving_units']['verdict'], 'unused')
+        self.assertIn('PROD-R11', rows['repeat_rate_12m']['readers'])
+        found = audit.assumption_findings(br, D)
+        self.assertEqual(sorted(f['id'].split('.')[-1] for f in found), ['category_mix', 'gross_margin', 'return_share'])
+        for f in found:
+            self.assertEqual(f['severity'], 'low')
+            self.check_shape(f)
+        acts = [a for a in api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions'] if a.get('rule_id') == 'PROD-R42']
+        self.assertEqual(len(acts), 1)                       # one card for all three
+        self.assertEqual(len(acts[0]['finding_ids']), 3)
+        self.assertEqual(acts[0]['owner'], 'person')
 
     def test_demand_pattern_tags(self):
         even = {'rows': [{'category': 'socks', 'series': [100] * 12}], 'months': [f'2026-{m:02d}' for m in range(1, 13)], 'last': '2026-12'}

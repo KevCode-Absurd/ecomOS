@@ -1017,6 +1017,18 @@ def recipe(f):
             'size': {'text': f'read by {len(ent.get("readers") or [])} rules', 'usd': None}, 'stop_rule': 'stop at the per-run or weekly cap', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 1,
             'win_rule': 'the section inside its TTL with no stale records',
         }
+    if rid == 'PROD-R42':
+        ent = f.get('entity') or {}
+        return {
+            'title': f'Confirm or correct the {ent.get("label") or "assumption"} ({ent.get("short") or ""}) that {len(ent.get("readers") or [])} rules price with',
+            'owner': 'person',
+            'artefact': {'kind': 'brain_record', 'label': f'the {ent.get("label")} assumption with status founder (kept or corrected), its as-of date and source, in the brand\'s assumptions file'},
+            'steps': [{'n': 1, 'who': 'agent', 'text': f'Show the number, its {ent.get("status")} source{"s" if len(ent.get("sources") or []) != 1 else ""} and the rules that read it: {", ".join(ent.get("readers") or [])}.'},
+                      {'n': 2, 'who': 'person', 'text': 'Confirm it, or give the real number; a real store connection replaces it outright.'},
+                      {'n': 3, 'who': 'agent', 'text': 'Write the status and re-run the desk; the money on those rules moves with it.'}],
+            'size': {'text': f'{ent.get("status")}, as of {ent.get("as_of") or "undated"}', 'usd': None}, 'stop_rule': 'no money claim in a memo rests on an unconfirmed assumption without saying so', 'check_on': _check_on(f, 14), 'time_to_ship_hours': 0.5,
+            'win_rule': 'status founder on the assumption',
+        }
     return None
 
 
@@ -1131,6 +1143,25 @@ def merge_freshness(actions):
     return keep
 
 
+def merge_assumptions(actions):
+    """One card for the unconfirmed assumptions: the one most rules read hosts the rest."""
+    rows = [a for a in actions if a.get('rule_id') == 'PROD-R42']
+    if len(rows) < 2:
+        return actions
+    rows.sort(key=lambda a: (-len((a.get('entity') or {}).get('readers') or []), a['id']))
+    host = rows[0]
+    keep = []
+    for a in actions:
+        if a is host or a not in rows:
+            keep.append(a)
+            continue
+        host['finding_ids'] = sorted(set(host['finding_ids']) | set(a['finding_ids']))
+        host['why'] = host['why'] + ' ' + a['why']
+        host['brain_refs'] = sorted(set(host.get('brain_refs') or []) | set(a.get('brain_refs') or []))
+    host['title'] = f'Confirm or correct {len(rows)} assumptions the desk prices with: ' + ', '.join((a.get('entity') or {}).get('label') or '' for a in rows)
+    return keep
+
+
 CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28', 'PROD-R37', 'PROD-R38', 'PROD-R39', 'PROD-R40')
 
 
@@ -1230,7 +1261,7 @@ def rank(brand, window=None):
         a['screen'] = SCREEN
         if not rank_mod.validate_action(a):
             actions.append(a)
-    actions = merge_freshness(merge_questions(merge_marketplace(merge_surfaces(merge_candidates(merge_lanes(actions, brand))))))
+    actions = merge_assumptions(merge_freshness(merge_questions(merge_marketplace(merge_surfaces(merge_candidates(merge_lanes(actions, brand)))))))
     for a in actions:   # a merge can lift the host's confidence; the total follows the rubric
         r = a['rubric']
         r['total'] = round(sum(rank_mod.WEIGHTS[k] * (r[k] if r[k] is not None else 2.5) / 5 for k in rank_mod.WEIGHTS), 1)
@@ -1377,7 +1408,7 @@ def overview(data, brand):
                      'gates': gates_block(brand, data, br, rd, ends_on, findings), 'scorecard': scorecard_block(brand, data, br, rd, ends_on, findings),
                      'video': audit.video_signals(br, brand, ends_on), 'tech_packs': tech_pack_block(brand, findings),
                      'hours': dict(audit.hours_table(brand, br), findings={f['entity']['id']: f['id'] for f in findings if f['rule_id'] == 'PROD-R28'}),
-                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on), 'returns': audit.return_rates(data, brand, ends_on), 'questions': audit.open_questions(br, ends_on), 'pulls': audit.pulls(br, brand, ends_on), 'first_runs': audit.first_run_read(brand, ends_on, audit.net_28d(rd)), 'brain_freshness': audit.brain_freshness(br, ends_on)},
+                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on), 'returns': audit.return_rates(data, brand, ends_on), 'questions': audit.open_questions(br, ends_on), 'pulls': audit.pulls(br, brand, ends_on), 'first_runs': audit.first_run_read(brand, ends_on, audit.net_28d(rd)), 'brain_freshness': audit.brain_freshness(br, ends_on), 'assumptions': audit.assumptions(br)},
             'audit': {'findings': findings, 'rules': audit.RULES}}
 
 

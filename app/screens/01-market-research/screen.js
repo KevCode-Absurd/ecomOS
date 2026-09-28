@@ -1039,6 +1039,25 @@
         open.length && actionFor(open[0].finding_id) ? { label: 'Open the first', onClick: () => openAction(actionFor(open[0].finding_id)) } : null));
   }
 
+  function assumptionsBlock(a0) {
+    const rows = (a0 && a0.rows) || [];
+    if (!rows.length) return UI.emptyState({ screen: SLUG, title: 'No assumptions on file', text: 'The brain has no assumptions file for this brand; the simulated tables carry no stated basis.', missing: ['brain'] });
+    const vt = { unconfirmed: 'Not confirmed', confirmed: 'Founder confirmed', unused: 'Not priced here' };
+    const vrows = rows.map((r) => { const a = actionFor(r.finding_id); return Object.assign({}, r, {
+      unitText: r.unit || '', asOf: r.as_of || NA, src: (r.sources || []).length ? (r.sources.length + ' source' + (r.sources.length === 1 ? '' : 's')) : (r.source_ids || []).length ? r.source_ids.join(', ') : 'none', readersText: r.readers.length ? r.readers.join(', ') : 'none',
+      actions: [a ? { label: 'Confirm or correct', onClick: () => openAction(a) } : { label: r.verdict === 'confirmed' ? 'Confirmed' : 'Reference', cls: 'quiet', onClick: () => {} }] }); });
+    const tbl = UI.verdictTable({
+      columns: [{ key: 'label', label: 'Assumption' }, { key: 'short', label: 'Value' }, { key: 'unitText', label: 'Unit' }, { key: 'status', label: 'Status' }, { key: 'asOf', label: 'As of' }, { key: 'src', label: 'Sources' }, { key: 'readersText', label: 'Priced by' }],
+      rows: vrows,
+      verdict: { at: 1, kind: (r) => r.verdict === 'unconfirmed' ? 'watch' : r.verdict === 'confirmed' ? 'keep' : 'na', text: (r) => vt[r.verdict], reason: (r) => a0.rule },
+      actions: { label: 'Do', onClick: () => {} }, sort: false });
+    const open = rows.filter((r) => r.verdict === 'unconfirmed');
+    return el('div', { class: 'stack' }, el('div', { class: 'card scroll' }, tbl),
+      el('p', { class: 'micro faint', text: 'Rule: ' + a0.rule + '. These numbers calibrate the simulated tables; a real store connection replaces them outright.' }),
+      gapLine(open.length ? open.length + ' assumption' + (open.length === 1 ? '' : 's') + ' the desk prices with ' + (open.length === 1 ? 'is' : 'are') + ' not founder-confirmed: ' + open.map((r) => r.label).join(', ') + '.' : 'Every assumption the desk prices with is founder-confirmed.',
+        open.length && actionFor(open[0].finding_id) ? { label: 'Confirm the first', onClick: () => openAction(actionFor(open[0].finding_id)) } : null));
+  }
+
   function loadDesk(o) {
     const d = o.desk || {};
     const w = (o.window || {}).trend;
@@ -1075,6 +1094,7 @@
     parts.push(section('desk-pipeline', 'What is in the next-SKU pipeline, and what is past its time box?', 'Candidates screened in from the gaps above or by hand, their stage, fast checks, time box and hours. Advance, log hours or kill from the card; every write lands in the pipeline log.', pipelineBlock(d.pipeline || { rows: [] })));
     parts.push(section('desk-pulls', 'How fresh is what this desk reads, and what would a refresh cost?', 'Every pull the desk depends on: its last capture, age against its window, the blocks it feeds and the estimate for a run under the brand\'s caps. A person approves each paid call; nothing runs from here.', pullsBlock(d.pulls)));
     parts.push(section('desk-brain', 'How fresh is the brain this desk reads?', 'The brain sections behind the rules here, each with its records, last update, age against the contract TTL, stale and conflict counts and confidence; a conflict waits on the founder, a stale section waits on a pull or the keeper.', brainFreshnessBlock(d.brain_freshness)));
+    parts.push(section('desk-assumptions', 'What do the simulated numbers assume?', 'The calibration assumptions behind the simulated tables: value, status (founder, sourced, derived, modelled), as-of date, sources, and which rules here price with them. Founder-confirmed or not, said plainly.', assumptionsBlock(d.assumptions)));
     const jumps = UI.pills({ items: parts.map((p) => ({ key: p.id, label: p.querySelector('h2').textContent.replace(/\?.*$/, '?').split(',')[0].slice(0, 42) })), onChange: (key) => { const t = document.getElementById(key); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); } });
     mount('#desk', el('section', { class: 'section' }, el('div', { class: 'sec-head' }, el('h2', { text: 'The desk: ' + parts.length + ' blocks' }), el('span', { class: 'sub', text: 'Each block ends in a gap line and an action. Jump to one:' })), jumps), ...parts);
   }

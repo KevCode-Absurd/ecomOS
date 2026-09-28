@@ -158,6 +158,9 @@ Rules
   PROD-R41  Stale brain section: a section this desk reads that is past its contract TTL (brand-brain.md), holds stale
             records, or has an open conflict waiting on the founder (medium; else low). Money null. Capability PROD-C04.
             Owner: 01-market-research.
+  PROD-R42  Unconfirmed assumption: a calibration assumption (assumptions.json) that a money rule here prices with, whose
+            status is sourced, derived or modelled rather than founder. Severity low. Money null. Capability PROD-C08
+            (product economics, agent does; the confirmation is the founder's). Owner: 01-market-research.
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -264,6 +267,8 @@ RULES = [
      'inputs': ['fixtures.pipeline', 'products_monthly', 'brain.learnings', 'brain.operations'], 'capability': 'PROD-C07', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R41', 'name': 'Brain section this desk reads that is past its TTL, holds stale records, or has an open conflict', 'entity_type': 'brand',
      'inputs': ['brain.freshness', 'brain.review.conflicts'], 'capability': 'PROD-C04', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R42', 'name': 'Calibration assumption a money rule prices with that the founder has not confirmed', 'entity_type': 'brand',
+     'inputs': ['brain.assumptions'], 'capability': 'PROD-C08', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -305,7 +310,8 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R38': {'id': 'PROD-C04', 'autonomy': 'agent_does'},
               'PROD-R39': {'id': 'PROD-C07', 'autonomy': 'agent_does'},
               'PROD-R40': {'id': 'PROD-C07', 'autonomy': 'agent_does'},
-              'PROD-R41': {'id': 'PROD-C04', 'autonomy': 'agent_does'}}
+              'PROD-R41': {'id': 'PROD-C04', 'autonomy': 'agent_does'},
+              'PROD-R42': {'id': 'PROD-C08', 'autonomy': 'agent_does'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -797,6 +803,7 @@ def run(brand, window=None, data=None):
     out += companion_findings(brand, data, rd, ends_on)
     out += order_findings(brand, data, br, rd, ends_on)
     out += freshness_findings(br, ends_on)
+    out += assumption_findings(br, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -3922,6 +3929,57 @@ def freshness_findings(br, ends_on):
                      money_reason='a stale section has no order count; the rules that read it carry the stake')
         f['entity'] = {'type': 'brand', 'id': r['section'], 'label': r['section'].replace('_', ' '), 'verdict': r['verdict'], 'readers': r['readers'], 'ttl_days': r['ttl_days'], 'age_days': r['age_days'],
                        'open_conflicts': r['open_conflicts']}
+        f['id'] = r['finding_id']
+        out.append(f)
+    return out
+
+
+# ---------------------------------------------------------------- what the simulated numbers assume (round 6.3)
+
+# the calibration assumptions this desk prices with, and the rules that read the number they shape
+ASSUMPTION_USERS = {'revenue_band': ['PROD-R01', 'PROD-R02', 'PROD-R04', 'PROD-R11', 'PROD-R37'], 'seasonality': ['PROD-R18', 'PROD-R40'], 'repeat_rate_12m': ['PROD-R11'],
+                    'aov_usd': ['PROD-R16', 'PROD-R24'], 'category_mix': ['PROD-R04', 'PROD-R05', 'PROD-R19'], 'gross_margin': ['PROD-R16', 'PROD-R37'], 'return_share': ['PROD-R34'],
+                    'channel_mix': [], 'paid_channels_present': [], 'giving_units': [], 'retail_partners': [], 'paid_media_split': []}
+CONFIRMED_STATUSES = ('founder',)
+
+
+def assumptions(br):
+    """The calibration assumptions behind the simulated tables (app/brain/<brand>/assumptions.json): value, unit, status
+    (founder, sourced, derived, modelled), as-of, sources, and which rules here price with the number they shape."""
+    if br is None:
+        return {'rows': [], 'rule': None}
+    rows = []
+    for r in br.records('assumptions'):
+        field = r.get('field')
+        if not field:
+            continue
+        v = r.get('value')
+        short = (f'{v:g}' if isinstance(v, (int, float)) else ', '.join(f'{k} {vv}' for k, vv in list(v.items())[:4] if not isinstance(vv, (list, dict))) if isinstance(v, dict)
+                 else '; '.join(str(x)[:40] for x in v[:3]) if isinstance(v, list) else str(v))[:120]
+        users = ASSUMPTION_USERS.get(field, [])
+        status = str(r.get('status') or 'unverified')
+        verdict = 'confirmed' if status in CONFIRMED_STATUSES else ('unconfirmed' if users else 'unused')
+        rows.append({'field': field, 'label': field.replace('_', ' '), 'value': v, 'short': short, 'unit': r.get('unit'), 'status': status, 'as_of': r.get('as_of'),
+                     'sources': list(r.get('source_refs') or [])[:3], 'source_ids': list(r.get('source_ids') or [])[:3], 'readers': users, 'verdict': verdict,
+                     'finding_id': f'{SCREEN}.PROD-R42.{field}'})
+    order = {'unconfirmed': 0, 'confirmed': 1, 'unused': 2}
+    rows.sort(key=lambda r: (order[r['verdict']], -len(r['readers']), r['field']))
+    return {'rows': rows, 'rule': 'an assumption a money rule prices with is confirmed only when its status is founder; sourced, derived and modelled numbers stay open until the founder confirms or corrects them'}
+
+
+def assumption_findings(br, ends_on):
+    """PROD-R42: an assumption a money rule here prices with whose status is not founder."""
+    out = []
+    if br is None:
+        return out
+    for r in assumptions(br)['rows']:
+        if r['verdict'] != 'unconfirmed':
+            continue
+        ev = [_ev('assumption_status', 0, 'flag', ends_on.isoformat(), 'brain now', 1, 'threshold', source=f'{br.brand}.assumptions.{r["field"]}', simulated=False, freshness_days=0,
+                  status=r['status'], as_of=r['as_of'], assumed=r['short'], readers=r['readers'])]
+        sentence = f'The {r["label"]} assumption ({r["short"]}{", " + r["unit"] if r["unit"] else ""}) is {r["status"]}, not founder-confirmed, and {len(r["readers"])} rule{"s" if len(r["readers"]) != 1 else ""} here price with it.'
+        f = _finding('PROD-R42', r['field'], ends_on, 'low', ev, sentence, None, 0.9, r['source_ids'], money_reason='the stake sits on the rules that read the assumption')
+        f['entity'] = {'type': 'brand', 'id': r['field'], 'label': r['label'], 'status': r['status'], 'short': r['short'], 'unit': r['unit'], 'as_of': r['as_of'], 'readers': r['readers'], 'sources': r['sources']}
         f['id'] = r['finding_id']
         out.append(f)
     return out
