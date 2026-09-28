@@ -989,6 +989,35 @@
     mount('#site', ...items);
   }
 
+  // ---------- 5c2b. store facts for AI shopping agents ----------
+  function factPanel(r, reload) {
+    const q = el('input', { class: 'text sm', value: r.question, 'aria-label': 'Question' });
+    const ta = el('textarea', { class: 'text', rows: 3 }); ta.value = r.approved || r.generated || '';
+    const status = el('span', { class: 'micro muted' });
+    const go = el('button', { class: 'btn primary sm', type: 'button', text: 'Approve this answer' });
+    const body = el('div', { class: 'stack' }, r.status === 'stale' ? el('div', { class: 'card sunken small' }, el('b', { text: 'Stale: ' }), r.reason + '. Built from the records now: ' + r.generated) : el('div', { class: 'small muted', text: r.reason + (r.records.length ? '. Built from ' + r.records.join(', ') : '') }), q, ta, el('div', { class: 'row' }, go, status));
+    const panel = UI.panel({ title: 'Store fact: ' + pretty(r.key), body });
+    go.addEventListener('click', async () => { go.disabled = true; try { await api(BASE + 'facts/' + r.key, { method: 'POST', body: { question: q.value.trim(), answer: ta.value.trim() } }); panel.close(); reload(); } catch (e) { go.disabled = false; status.textContent = 'Could not save: ' + e.message; } });
+  }
+  async function loadFacts() {
+    let fp;
+    try { fp = await api(BASE + 'facts'); } catch (e) { mount('#facts', el('p', { class: 'muted', text: 'Store facts unavailable: ' + e.message })); return; }
+    const S = { approved: 'keep', proposed: 'watch', stale: 'stop', unavailable: 'wait' };
+    const T = { approved: 'Approved', proposed: 'Proposed', stale: 'Stale', unavailable: 'Unavailable' };
+    mount('#facts-tools', UI.orientation([{ label: 'approved', value: fp.counts.approved, unit: 'n', tone: 'good' }, { label: 'proposed', value: fp.counts.proposed, unit: 'n' }, { label: 'stale', value: fp.counts.stale, unit: 'n', tone: fp.counts.stale ? 'bad' : null }, { label: 'unanswered', value: fp.counts.unavailable, unit: 'n' }]));
+    const exp = el('button', { class: 'btn sm', type: 'button', text: 'Copy FAQ JSON-LD' });
+    const expT = el('button', { class: 'btn sm', type: 'button', text: 'Copy as text' });
+    const st = el('span', { class: 'micro muted' });
+    const doExport = (kind) => async () => { try { const e = await api(BASE + 'facts/export'); const text = kind === 'json' ? JSON.stringify(e.jsonld, null, 1) : e.text; await navigator.clipboard.writeText(text); st.textContent = e.count + ' approved pairs copied. ' + e.note; } catch (err) { st.textContent = 'Could not export: ' + err.message; } };
+    exp.addEventListener('click', doExport('json')); expT.addEventListener('click', doExport('text'));
+    mount('#facts', UI.verdictTable({
+      columns: [{ key: 'question', label: 'Question' }, { key: 'answer', label: 'Answer', format: (v) => v || NA }, { key: 'recs', label: 'Built from', format: (v, r) => r.records.length + (r.records.length === 1 ? ' record' : ' records') }],
+      verdict: { at: 1, kind: (r) => S[r.status], text: (r) => T[r.status], reason: (r) => r.reason },
+      actions: { label: (r) => r.status === 'approved' ? 'Edit' : (r.status === 'unavailable' ? 'Answer it' : 'Approve'), onClick: (r) => factPanel(r, loadFacts) },
+      rows: fp.pairs, sort: false, maxRows: 20,
+    }), el('div', { class: 'row', style: { marginTop: '8px' } }, exp, expT, UI.decisionRow({ capability: 'LOOP-C38', autonomy: 'agent_does', owner: 'agent', screen: SCREEN, compact: true, stub: 'The agent asks 3 public AI shopping assistants the same questions about the brand and compares their answers with these approved facts and the claims tiers. Differences land here as findings.' }), st), el('div', { class: 'micro faint', text: fp.note }));
+  }
+
   // ---------- 5c3. how we write: voice sheet and snippets ----------
   function voiceFields(vs, reload) {
     const wrap = el('div', { class: 'profile-sec' });
@@ -1211,6 +1240,7 @@
     loadBattlecards();
     loadPermissions();
     loadAssumptions();
+    loadFacts();
     const [prof] = await Promise.all([loadProfile(), loadDesk()]);
     await loadPlan(prof);
   }

@@ -77,6 +77,10 @@ question, and accept or ignore on a proposed record. Nothing external.
   GET  dependents?record=<id>   what depends on one fact: records, ladder rungs, questions, snippets, ads
   GET  assumptions              the register: the numbers the simulation runs on, status, unit, as of, rooms
   POST assumptions/<field>      {choice: confirm} or {value}: an approved founder record on the source id
+  GET  facts                    store facts for AI shopping agents: question and answer pairs built from records,
+                                proposed, approved, stale or unavailable
+  POST facts/<key>              {answer, question?}: approve the wording as content.faq_<key>
+  GET  facts/export             FAQPage JSON-LD and plain text of the approved pairs
   GET  records?section=<name>   one section's records with tier, date, source and evidence
   GET  audit                    findings from audit.py (app/contracts/audit.md shape)
   POST questions/<field>        {answer}: writes a founder record, marks the question answered
@@ -118,6 +122,9 @@ _spec.loader.exec_module(audit)
 _hspec = importlib.util.spec_from_file_location("brand_brain_health", HERE / "health.py")
 health = importlib.util.module_from_spec(_hspec)
 _hspec.loader.exec_module(health)
+_fspec = importlib.util.spec_from_file_location("brand_brain_facts", HERE / "facts.py")
+facts = importlib.util.module_from_spec(_fspec)
+_fspec.loader.exec_module(facts)
 _uspec = importlib.util.spec_from_file_location("brand_brain_assumptions", HERE / "assumptions.py")
 assumptions = importlib.util.module_from_spec(_uspec)
 _uspec.loader.exec_module(assumptions)
@@ -812,6 +819,24 @@ def claim_add(brain: Brain, body: dict):
     return 201, {"ok": True, "record": rid, "tier": tier, "flows_to": FLOWS_TO.get("claims", ""), "version": brain.version()}
 
 
+def fact_approve(brain: Brain, key: str, body: dict):
+    if key not in facts.KEYS:
+        return 404, {"error": "no such fact", "key": key}
+    answer = str((body or {}).get("answer") or "").strip()
+    if len(answer) < 4:
+        return 400, {"error": "answer is empty"}
+    question = str((body or {}).get("question") or "").strip() or facts.QUESTIONS[key]
+    field = f"faq_{key}"
+    rec = {"id": f"{brain.brand}.content.{field}", "brand": brain.brand, "section": "content", "field": field, "value": {"question": question, "answer": answer},
+           "text": f"Q: {question} A: {answer}", "tier": "approved", "confidence": 1.0, "visibility": "public",
+           "source": {"type": "founder", "ref": "05-brand-brain store facts", "captured_at": brain.today.isoformat()}}
+    errs = founder_put(brain, rec, what=f"store fact {key} approved: {answer[:100]}")
+    if errs:
+        return 400, {"error": "record not valid", "details": errs}
+    row = next((r for r in facts.pairs(brain)["pairs"] if r["key"] == key), None)
+    return 201, {"ok": True, "record": rec["id"], "status": row["status"] if row else None, "version": brain.version()}
+
+
 def assumption_set(brain: Brain, field: str, body: dict):
     body = body or {}
     row = next((a for a in assumptions.load(brain) if a.get("field") == field), None)
@@ -1059,6 +1084,14 @@ def handle(req):
         ends = (brain.today - dt.timedelta(days=1)).isoformat()
         findings = audit.run(brain.brand, {"ends_on": ends, "days": 1, "trailing": 0}, BRAIN_ROOT)
         return {"findings": findings, "rules": audit.RULES, "brain_version": brain.version()}
+    if req.method == "GET" and parts == ["facts"]:
+        fp = facts.pairs(brain)
+        fp.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())
+        return fp
+    if req.method == "GET" and parts == ["facts", "export"]:
+        return facts.export(brain)
+    if req.method == "POST" and len(parts) == 2 and parts[0] == "facts":
+        return fact_approve(brain, parts[1], req.body)
     if req.method == "GET" and parts == ["assumptions"]:
         try:
             rooms = health.rooms_by_section(keeper.load_bank())

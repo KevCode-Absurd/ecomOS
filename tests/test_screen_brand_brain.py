@@ -1203,3 +1203,34 @@ class Round3Assumptions(TempBrain):
         self.assertEqual((rec['value'], rec['tier'], rec['source']['type']), (3.8, 'approved', 'founder'))
         self.assertEqual(api.handle(Req(['assumptions', 'nope'], 'POST', body={'choice': 'confirm'}))[0], 404)
         self.assertEqual(api.handle(Req(['assumptions', 'return_share'], 'POST', body={}))[0], 400)
+
+
+class Round3Facts(TempBrain):
+    """Round 3 feature 4: store facts for AI shopping agents, built from records, approved once, exported."""
+
+    def test_pairs_built_from_records(self):
+        fp = api.handle(Req(['facts']))
+        by = {r['key']: r for r in fp['pairs']}
+        self.assertEqual(by['free_shipping']['answer'], 'Yes. Standard shipping is free on orders over $75.')
+        self.assertIn('30 days', by['returns']['answer'])
+        self.assertEqual(by['ship_where']['status'], 'unavailable')
+        self.assertEqual(fp['counts']['approved'], 0)
+        self.assertEqual(api.handle(Req(['facts', 'export']))['count'], 0)
+
+    def test_approve_export_and_stale(self):
+        status, res = api.handle(Req(['facts', 'free_shipping'], 'POST', body={'answer': 'Yes. Standard shipping is free on every order over $75.'}))
+        self.assertEqual((status, res['status']), (201, 'approved'))
+        api.handle(Req(['facts', 'ship_where'], 'POST', body={'answer': 'We ship to every US state.'}))
+        e = api.handle(Req(['facts', 'export']))
+        self.assertEqual(e['count'], 2)
+        self.assertEqual(e['jsonld']['@type'], 'FAQPage')
+        self.assertIn('Q: Where do you ship?', e['text'])
+        rows = self.section('offers')
+        for r in rows:
+            if r['id'] == 'bombas.offers.free_shipping_threshold_usd':
+                r['value'] = 80
+        self.write('offers', rows)
+        by = {r['key']: r for r in api.handle(Req(['facts']))['pairs']}
+        self.assertEqual(by['free_shipping']['status'], 'stale')
+        self.assertEqual(api.handle(Req(['facts', 'export']))['count'], 1)
+        self.assertEqual(api.handle(Req(['facts', 'nope'], 'POST', body={'answer': 'x y z w'}))[0], 404)
