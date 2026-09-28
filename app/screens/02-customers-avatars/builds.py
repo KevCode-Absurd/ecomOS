@@ -729,3 +729,123 @@ def served(avatars: list[dict], all_rungs: list[dict], competitors: list[dict], 
     return {"points": pts, "mid_x": mid_x, "mid_y": mid_y, "unplaced": unplaced, "verdicts": verdicts, "segments": segs,
             "line": (f"Fix first: {', '.join(fix)}. " if fix else "") +
                     (f"The category serves {', '.join(gaps)} and we have no avatar for it." if gaps else "No contested situation is left unserved.")}
+
+
+# ---------------------------------------------------------------- where reviews say an avatar is misread
+
+LINE_PROBLEM = 1.5        # a line's 1 and 2 star share at 1.5x the median line or more
+STOP = {"with", "that", "than", "after", "their", "they", "them", "from", "into", "only", "some", "more", "this", "have",
+        "does", "like", "feel", "feels", "over", "vs", "the", "and", "for", "not", "enough", "every", "day", "socks", "sock"}
+MIN_LINKS = 2             # the avatar is tied to the line by 2 or more reviews
+ISSUE_KIND = [("order", r"\b(shipment|shipments|shipped|order|delivery)"), ("fit", r"\b(size|sizing|small|huge|short|fit|length|longer|knee|pull on|tight|slip|slides|rolls)"),
+              ("wear", r"\b(thin|wear|pilling|thread|seam|apart|decline|quality|holes?|peel)"),
+              ("feel", r"\b(warm|drape|felt|thick|support|compression)")]
+KIND_ACTION = {"order": ("ticket", ("LIFE-C27", "human_assist"), "a fulfilment ticket and a support reply"),
+               "fit": ("page_section", ("SITE-C38", "human_assist"), "a fit and size block for the product page"),
+               "wear": ("ticket", ("PROD-C73", "human_assist"), "a product quality ticket with the review evidence"),
+               "feel": ("copy", ("CREA-C24", "agent_does"), "expectation copy for the product page and ads")}
+
+
+def _content(text: str) -> set[str]:
+    return {w for w in re.findall(r"[a-z]+", str(text or "").lower()) if len(w) >= 4 and w not in STOP}
+
+
+def _issue_kind(issue: str) -> str:
+    for k, pat in ISSUE_KIND:
+        if re.search(pat, issue.lower()):
+            return k
+    return "feel"
+
+
+def misreads(avatar_records: list[dict], avatars: list[dict], all_rungs: list[dict], lang_records: list[dict],
+             product_records: list[dict]) -> dict:
+    """Review themes by product line against what each avatar hires us for. A misread is a line the avatar buys
+    whose top complaints hit the avatar's own job or pains, on a line at or above the median 1 and 2 star share."""
+    lines = {}
+    for r in product_records:
+        v = r.get("value") if isinstance(r.get("value"), dict) else {}
+        dist = v.get("yotpo_star_distribution")
+        if r.get("field") != "review_summary" or not isinstance(dist, dict):
+            continue
+        tot = sum(n for n in dist.values() if isinstance(n, (int, float)))
+        if not tot:
+            continue
+        lines[v["product_line"]] = {"line": v["product_line"], "product": v.get("yotpo_product"), "pdp": v.get("pdp"), "reviews": tot,
+                                    "average": v.get("yotpo_average"), "neg_share": round((dist.get("1", 0) + dist.get("2", 0)) / tot, 4),
+                                    "praise": v.get("praise") or [], "issues": v.get("issues") or [], "ref": r["id"]}
+    if not lines:
+        return {"available": False, "reason": "no review summary by product line in the brain", "rows": [], "lines": []}
+    med = _median([l["neg_share"] for l in lines.values()])
+    # which lines each avatar buys: its own reviews, then reviews linked to its doubts
+    buys: dict[str, dict[str, int]] = {}
+    for rec in avatar_records:
+        for rv in ((rec.get("value") or {}).get("reviews") or []) if isinstance(rec.get("value"), dict) else []:
+            if rv.get("line") in lines:
+                buys.setdefault(rec["id"], {}).setdefault(rv["line"], 0)
+                buys[rec["id"]][rv["line"]] += 1
+    phrase_lines = {}
+    for rec in lang_records:
+        for rv in ((rec.get("value") or {}).get("reviews") or []):
+            if rv.get("line") in lines:
+                phrase_lines.setdefault(rec["id"], set()).add(rv["line"])
+    for rg in all_rungs:
+        ls = set().union(*[phrase_lines.get(p, set()) for p in rg["derived_from"]]) if rg["derived_from"] else set()
+        for aid in rg["avatars"]:
+            for ln in ls:
+                buys.setdefault(aid, {}).setdefault(ln, 0)
+                buys[aid][ln] += 1
+    rows = []
+    for a in avatars:
+        need = _content(" ".join([a.get("job") or "", *a.get("pains", []), *a.get("triggers", [])]))
+        for ln, n in sorted((buys.get(a["id"]) or {}).items(), key=lambda kv: (-kv[1], kv[0])):
+            L = lines[ln]
+            hit = [i for i in L["issues"] if _content(i) & need]
+            if not hit or n < MIN_LINKS or L["neg_share"] < (med or 0):
+                continue
+            kind = _issue_kind(hit[0])
+            art, cap, label = KIND_ACTION[kind]
+            owner = "person" if art == "ticket" else "agent_drafts"
+            why = (f"{a['name']} buys {ln.replace('_', ' ')} to get {a.get('job') or 'its job done'}. "
+                   f"{round(L['neg_share'] * 100, 1)} percent of its {L['reviews']:,} reviews are 1 or 2 star against a {round(med * 100, 1)} percent median. "
+                   f"Top complaint: {hit[0]}.")
+            rows.append({"avatar": a["name"], "avatar_key": a["key"], "line": ln, "links": n, "neg_share": L["neg_share"], "median": med,
+                         "hits": hit, "kind": kind, "why": why,
+                         "action": {"id": f"{SCREEN}.misread.{a['key']}.{ln}", "kind": art, "owner": owner,
+                                    "title": f"Fix what {ln.replace('_', ' ')} promises {a['name']}: {hit[0]}",
+                                    "capability": {"id": cap[0], "autonomy": cap[1]},
+                                    "draft": "\n".join([f"DRAFT: {label}", f"Line: {L['product'] or ln} ({L['pdp'] or 'no page on file'})",
+                                                        f"Avatar: {a['name']}. Job: {a.get('job') or 'unavailable'}",
+                                                        f"Complaints that hit the job: {'; '.join(hit)}",
+                                                        f"Praise to keep: {'; '.join(L['praise']) or 'none on file'}",
+                                                        f"1 and 2 star share: {round(L['neg_share'] * 100, 1)} percent, median {round(med * 100, 1)} percent"]),
+                                    "steps": ([{"n": 1, "who": "agent", "text": "Pull 20 one and two star reviews for the line that name the complaint."},
+                                               {"n": 2, "who": "person", "text": "Send the ticket to the product team with the batch and size data."},
+                                               {"n": 3, "who": "agent", "text": "Add an honest line on the page until the fix ships."},
+                                               {"n": 4, "who": "agent", "text": "Recount the complaint on the next review pull."}] if art == "ticket" else
+                                              [{"n": 1, "who": "agent", "text": "Pull the reviews that name the complaint and the praise to keep."},
+                                               {"n": 2, "who": "agent", "text": f"Draft {label}."},
+                                               {"n": 3, "who": "person", "text": "Approve and ship it on the product page."},
+                                               {"n": 4, "who": "agent", "text": "Recount the complaint and the line's 1 and 2 star share next pull."}])}})
+    rows.sort(key=lambda r: (-r["neg_share"], -r["links"], r["avatar"]))
+    table = []
+    for L in sorted(lines.values(), key=lambda l: -l["neg_share"]):
+        polar = sorted(set().union(*[_content(p) for p in L["praise"]]) & set().union(*[_content(i) for i in L["issues"]])) if L["praise"] and L["issues"] else []
+        verdict = "problem" if med and L["neg_share"] >= LINE_PROBLEM * med else ("split" if polar else "fine")
+        act = None
+        if verdict == "split":
+            act = {"id": f"{SCREEN}.split.{L['line']}", "kind": "copy", "owner": "agent_drafts",
+                   "title": f"Set the expectation on {', '.join(polar)} for {L['line'].replace('_', ' ')}",
+                   "capability": {"id": "CREA-C24", "autonomy": "agent_does"},
+                   "draft": "\n".join([f"DRAFT: expectation copy for {L['product'] or L['line']}",
+                                       f"Same trait, two reactions: praise says {'; '.join(L['praise'])}. Complaints say {'; '.join(L['issues'])}.",
+                                       f"Say plainly who it suits and who it does not, on {', '.join(polar)}.",
+                                       "Place: product page near the size picker, and the first line of retargeting ads."]),
+                   "steps": [{"n": 1, "who": "agent", "text": "Pull the praise and complaint lines that share the trait."},
+                             {"n": 2, "who": "agent", "text": "Draft 2 lines: who it suits, who it does not."},
+                             {"n": 3, "who": "person", "text": "Approve and ship on the product page."},
+                             {"n": 4, "who": "agent", "text": "Recount the complaint share on the next pull."}]}
+        table.append(dict(L, ratio=round(L["neg_share"] / med, 2) if med else None, polar=polar, verdict=verdict, action=act,
+                          avatars=sorted({r["avatar"] for r in rows if r["line"] == L["line"]})))
+    return {"available": True, "rows": rows, "lines": table, "median": med,
+            "line": (f"{len(rows)} avatar and line pairs where the complaints hit the job the avatar hires us for."
+                     if rows else "No line fails the job its avatars buy it for.")}

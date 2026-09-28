@@ -507,5 +507,41 @@ class Served(TempBrain):
         self.assertFalse([s for s in self.served()['segments'] if s['verdict'] == 'gap'])
 
 
+class Misreads(TempBrain):
+    """Feature 1.9: review themes by line against each avatar's job; misreads become page, copy or product actions."""
+
+    def misreads(self):
+        return api.handle(Req(['overview']))['misreads']
+
+    def test_rule_holds_for_every_row(self):
+        x = self.misreads()
+        self.assertTrue(x['available'])
+        med = x['median']
+        for r in x['rows']:
+            self.assertGreaterEqual(r['neg_share'], med)
+            self.assertGreaterEqual(r['links'], 2)
+            self.assertTrue(r['hits'])
+            a = r['action']
+            self.assertIn(a['kind'], rank_engine.ARTEFACT_KINDS)
+            self.assertEqual(a['owner'] == 'person', a['kind'] == 'ticket')
+            self.assertTrue(a['draft'].startswith('DRAFT'))
+        top = x['rows'][0]
+        self.assertEqual((top['avatar'], top['line']), ('Daily Compression Wearer', 'compression'))
+
+    def test_line_verdicts(self):
+        x = self.misreads()
+        lines = {l['line']: l for l in x['lines']}
+        self.assertEqual(lines['compression']['verdict'], 'problem')
+        self.assertEqual(lines['no_show']['verdict'], 'split')
+        self.assertIn('heel', lines['no_show']['polar'])
+        self.assertIsNotNone(lines['no_show']['action'])
+        for l in x['lines']:
+            self.assertEqual(l['action'] is not None, l['verdict'] == 'split')
+
+    def test_no_summaries_unavailable(self):
+        self.write('products', [r for r in self.section('products') if r.get('field') != 'review_summary'])
+        self.assertFalse(self.misreads()['available'])
+
+
 if __name__ == '__main__':
     unittest.main()

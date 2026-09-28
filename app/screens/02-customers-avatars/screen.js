@@ -22,7 +22,7 @@
     return el('a', { href: ref, target: '_blank', rel: 'noopener', text: text || short(ref) });
   }
 
-  const KIND_LABEL = { offer: 'an offer spec', page_section: 'a page section', research_note: 'a research note', ad_brief: 'an ad brief', email: 'an email draft', copy: 'copy', test_brief: 'a test brief' };
+  const KIND_LABEL = { ticket: 'a ticket', report: 'a report', flow: 'a flow', offer: 'an offer spec', page_section: 'a page section', research_note: 'a research note', ad_brief: 'an ad brief', email: 'an email draft', copy: 'copy', test_brief: 'a test brief' };
   function nextBuild(n) {
     const box = el('div', { class: 'next' });
     const draft = el('pre', { class: 'draft', hidden: true, text: n.draft });
@@ -241,6 +241,28 @@
       el('p', { class: 'micro faint', text: 'Gap: 2 or more competitors push it and we hold no avatar with quotes for it. Watch: 1 competitor or Reddit only. Competitor positioning is a signal, not proof the segment pays.' }));
   }
 
+  // ---------- desk: misreads ----------
+  const LINE_V = { problem: ['cut', 'Problem'], split: ['watch', 'Split'], fine: ['keep', 'Fine'] };
+  function renderMisreads(x) {
+    if (!x.available) { mount('#misread-lines', UI.emptyState({ screen: SLUG, title: 'Review themes unavailable', text: x.reason })); return; }
+    document.getElementById('misread-sub').textContent = 'Review themes by product line against what each avatar hires us for. A misread: the avatar buys the line (2 or more linked reviews), ' +
+      'a top complaint hits its own job or pains, and the line is at or above the median 1 and 2 star share (' + Math.round(x.median * 1000) / 10 + ' percent). ' + x.line;
+    mount('#misread-lines', el('h4', { text: 'Product lines: complaints against the median' }), UI.verdictTable({
+      columns: [{ key: 'line_t', label: 'Line' }, { key: 'neg_share', label: '1 and 2 star', unit: '%' }, { key: 'ratio', label: 'x median', unit: 'x' },
+        { key: 'issues_t', label: 'Top complaints' }, { key: 'praise_t', label: 'Praise' }],
+      rows: x.lines.map((l) => Object.assign({}, l, { line_t: pretty(l.line), issues_t: l.issues.join('; '), praise_t: l.praise.join('; '),
+        actions: l.action ? [{ label: 'Brief it', onClick: () => briefPanel(l.action) }] : l.avatars.length ? [{ label: 'See misreads', cls: 'quiet', onClick: () => document.getElementById('misreads').scrollIntoView({ behavior: 'smooth' }) }] : [{ label: 'Nothing to do', cls: 'quiet', onClick: () => {} }] })),
+      verdict: { at: 1, kind: (r) => LINE_V[r.verdict][0], text: (r) => LINE_V[r.verdict][1], reason: (r) => r.polar.length ? 'praised and blamed for: ' + r.polar.join(', ') : '' },
+      actions: { label: 'Do' }, sort: false,
+    }), el('p', { class: 'micro faint', text: 'Problem: 1.5x the median or more. Split: praise and complaints name the same trait, so set the expectation. From the review summaries in the brain, public reviews.' }));
+    mount('#misreads', ...(x.rows.length ? x.rows.map((r) => el('article', { class: 'card misread' },
+        el('div', { class: 'row between' }, el('b', { text: r.avatar }), el('span', { class: 'chip bad', text: pretty(r.line) + ' ' + Math.round(r.neg_share * 1000) / 10 + '%' })),
+        el('div', { class: 'small', text: r.why }),
+        el('div', { class: 'row' }, el('span', { class: 'chip', text: 'makes ' + (KIND_LABEL[r.action.kind] || pretty(r.action.kind)) }), UI.ownerChip(r.action.owner),
+          el('button', { class: 'btn soft xs', type: 'button', text: 'Brief it', onclick: () => briefPanel(r.action) }))))
+        : [el('p', { class: 'muted small', text: 'No misread found for this brain.' })]));
+  }
+
   function objectionTable(rows) {
     return UI.table({
       columns: [
@@ -437,6 +459,7 @@
     renderLadders(d.ladders, d.avatars);
     renderWords(d.words, d.avatars);
     renderServed(d.served, d.avatars);
+    renderMisreads(d.misreads);
     renderCohorts(d.cohorts);
     renderMix(d.mix);
     mount('#avatars', ...(d.avatars.length ? d.avatars.map(avatarCard) : [el('p', { class: 'muted', text: 'No avatar records yet.' })]));
