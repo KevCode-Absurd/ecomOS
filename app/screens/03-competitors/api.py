@@ -329,6 +329,26 @@ def scoreboard(brand: str) -> dict:
             "rule": "Win share = won / (won + lost + flat) of the moves read. Not shipped is counted apart: it says nothing about the idea."}
 
 
+def learning_drafts(brand: str, today: dt.date, built: dict | None = None) -> list[dict]:
+    """One brain learnings record per read move (won, lost or flat), in the brand-brain contract's minimal shape, for the
+    brain's review queue. Never written to the brain from here."""
+    if built is None:
+        built = actions.build(brand, actions.ranker.default_window(28, (today - dt.timedelta(days=1)).isoformat()), BRAIN_ROOT)
+    titles = {a["id"]: a["title"] for a in built["actions"]} | {h["id"]: h["title"] for h in built.get("held") or []}
+    names = {r["rule_id"]: r["name"] for r in audit.RULES}
+    out = []
+    for o in audit.inpmod.outcomes(audit.inpmod.read(brand, "outcome")).values():
+        if o["result"] == "not shipped":
+            continue
+        rid = next((p for p in o["action_id"].split(".") if p.startswith("COMP-R")), None)
+        what = titles.get(o["action_id"]) or names.get(rid, "a competitor move")
+        out.append({"id": f"{brand}.learnings.competitor_move_{audit.pagemod.slug(o['action_id'].split('.', 1)[-1])}", "brand": brand,
+                    "section": "learnings", "field": f"competitor_move_{(rid or 'x').lower().replace('-', '_')}",
+                    "text": f"{what}: {o['result']}" + (f" ({o['reading']})" if o.get("reading") else "") + f", read {o['date']}.",
+                    "source": {"type": "screen", "ref": f"{audit.SCREEN} outcome {o['id']}", "captured_at": o["date"]}})
+    return out
+
+
 def logged_week(brand: str, today: dt.date, days: int = 7) -> dict:
     """What the team logged on this screen in the last `days` days (by the record's own date, else when it was logged)."""
     start = (today - dt.timedelta(days=days - 1)).isoformat()
@@ -534,7 +554,8 @@ def overview(brand: str, today: dt.date) -> dict:
     name = brand.capitalize()
     pos = positioning(m)
     window = actions.ranker.default_window(28, (today - dt.timedelta(days=1)).isoformat())
-    ranked = actions.build(brand, window, BRAIN_ROOT)["actions"]
+    built = actions.build(brand, window, BRAIN_ROOT)
+    ranked = built["actions"]
     moves = pos["kit"]["durability"]["moves"] + pos["kit"]["comfort"]["moves"]
     return {"brand": brand, "today": today.isoformat(), "version": brain.version(),
             "simulated_note": SIMULATED_NOTE.format(name=name, unit=m["term"]["unit"]), "term": m["term"], "signal_note": SIGNAL_NOTE,
@@ -544,7 +565,7 @@ def overview(brand: str, today: dt.date) -> dict:
             "room_metrics": room_metrics(m, pos, bc),
             "coverage": {"all": m["coverage"], "direct": m["coverage_direct"]}, "mix": m["mix"], "references": m["references"], "ladder": m["ladder"], "changes": m["changes"], "freshness": freshness(m, brand), "losses": m["losses"], "category": m["category"], "reviews": m["reviews"], "presence": m["presence"], "velocity": m["velocity"], "niche": m["niche"], "premium": m["premium"], "search": m["search"], "price_moves": m["price_moves"], "landing": m["landing"], "placements": placements(m), "season": m["season"],
             "review": review(m, pos, audit.framemod.build(m, brain, moves), today), "macros": macros(m), "history": audit.capmod.history(brand), "gap_lines": gap_lines(ranked),
-            "frames": audit.framemod.build(m, brain, moves), "scoreboard": scoreboard(brand),
+            "frames": audit.framemod.build(m, brain, moves), "scoreboard": scoreboard(brand), "learning_drafts": learning_drafts(brand, today, built),
             "category_median": m["category_median"], "price_position_index": m["price_position_index"]}
 
 

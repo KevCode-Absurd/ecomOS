@@ -926,6 +926,8 @@
       { key: 'win_share', label: 'Win share', format: (v) => v == null ? NA : fmt.pct(v) }], rows: sb.rows, sort: false })
       : el('p', { class: 'small muted', text: 'Unavailable until a move\'s outcome is logged on the check due lane.' }),
       sb.read ? el('p', { class: 'small', text: sb.read + ' moves read, win share ' + fmt.pct(sb.win_share) + (sb.not_shipped ? '; ' + sb.not_shipped + ' not shipped.' : '.') }) : null,
+      (d.learning_drafts || []).length ? el('div', { class: 'row' }, UI.copyButton({ label: 'Copy ' + d.learning_drafts.length + ' learnings for the brain', text: () => JSON.stringify(d.learning_drafts, null, 1) }),
+        el('span', { class: 'micro faint', text: 'Paste into the brand brain review queue; the founder approves each one.' })) : null,
       el('p', { class: 'micro faint', text: sb.rule }));
     deskTabs();
     const fmtM = (r) => r.value == null ? NA : r.unit === '%' ? fmt.pct(r.value) : fmt.num(r.value) + (r.unit === 'days' ? ' days' : r.unit === 'points' ? ' points' : '');

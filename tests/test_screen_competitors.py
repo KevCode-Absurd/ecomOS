@@ -1986,5 +1986,22 @@ class TestResultsInBrief(TempInputs):
         self.assertIn("k: 'Moves read (win share)'", (SCREEN / 'screen.js').read_text(encoding='utf-8'))
 
 
+class TestLearningDrafts(TempInputs):
+    """8.8: one brain learnings draft per read move, in the contract's minimal shape; not shipped makes none."""
+    def test_drafts(self):
+        self.assertEqual(api.handle(Req(['overview']))['learning_drafts'], [])
+        acts = api.handle(Req(['plan']))['actions']
+        self.post({'kind': 'outcome', 'action_id': acts[0]['id'], 'result': 'lost', 'reading': 'cost per order 45 against 38'})
+        self.post({'kind': 'outcome', 'action_id': acts[1]['id'], 'result': 'not shipped'})
+        drafts = api.handle(Req(['overview']))['learning_drafts']
+        self.assertEqual(len(drafts), 1)
+        r = drafts[0]
+        self.assertEqual((r['brand'], r['section']), ('bombas', 'learnings'))
+        self.assertTrue(r['id'].startswith('bombas.learnings.competitor_move_'))
+        self.assertIn(acts[0]['title'] + ': lost (cost per order 45 against 38), read ' + DAY, r['text'])   # held, still titled
+        self.assertEqual(r['source']['type'], 'screen')
+        self.assertFalse((self.tmp / 'bombas' / 'learnings.json').read_text(encoding='utf-8').count('competitor_move_'))
+
+
 if __name__ == '__main__':
     unittest.main()

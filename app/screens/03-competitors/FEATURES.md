@@ -45,6 +45,7 @@ Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `a
 | 8.5 | Changes seen on their sites: a person logs a change on a tracked page (new product, new bundle, new offer, price change, headline, hero image, product removed) with the date and a link; it joins the 28-day changes timeline marked "seen on their site" (follow on a direct page for a product, bundle, offer or price; watch for the rest; ignore off-frame); a follow goes on the plan as a counter brief (COMP-R24); `new_launch_count` fills from new products and bundles logged | done |
 | 8.6 | Snoozed moves come back on demand: under the plan, the moves set to "Not now" with the date each returns, and a "Bring back" button that withdraws the snooze through the decisions log (choice undo) | done |
 | 8.7 | Results in the brief and the report: the weekly brief says how many moves were read, the win share, how many are held after a lost result and how many reads are overdue; the printable report's numbers table adds the same line | done |
+| 8.8 | Learnings for the brain: one learnings record per read move (won, lost or flat) in the brand-brain contract's minimal shape (id, brand, section, field, text with the move, result, reading and date, and its source), offered as a copy for the brain's review queue under the scoreboard; never written to the brain from here; the propose endpoint is a Contract ask | done |
 
 ## Round 7: first-party reasons, price watch cadence and the hand-offs
 
@@ -216,6 +217,8 @@ Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permi
 
 - A shared `briefs` table: this screen drafts ad briefs, offers, page sections, copy and tickets that 09-creative, 04-offers-pricing, 10-copy, 07-landing-pages-cro and 15-customers-cx act on. Proposed row (served at `GET briefs`, field `rows`): id, brand, from_screen, team, kind, title, why, draft, win_rule, stop_rule, check_on, capability, autonomy, owner, status (proposed or decided), created. Local fallback: one copy per team, and the rows as JSON.
 
+- A way to propose brain records: the brand-brain contract names `POST /brain/<brand>/records` (proposed, into the review queue), not built yet. This screen drafts one learnings record per read move (served in `overview` as `learning_drafts`) and offers them as a copy. Local fallback: paste into the review queue by hand.
+
 - A snapshot run needs a permission for `snapshot.py --live` (Apify, page ids only, inside the Bombas caps) in the session settings; local fallback: the screen reads the brain's page summaries and labels every estimate.
 
 ## Room jobs (JTBD)
@@ -312,7 +315,7 @@ Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permi
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
-| 8 | 8.1 to 8.7 | 2026-09-28 | Outcomes; lost moves held; overdue reads; scoreboard; site changes; bring back snoozed; results in the brief and report |
+| 8 | 8.1 to 8.8 | 2026-09-28 | Outcomes; lost moves held; overdue reads; scoreboard; site changes; bring back snoozed; results in the brief and report; learnings for the brain |
 | 7 | 7.1 to 7.10 | 2026-09-28 | Interview reasons; coverage by name; prices seen on the band chart; price re-check cadence; logged work in the brief; queue and log in the report; briefs as rows; second brand check; form access; round close. Screenshot `round7.png` |
 | 6 | 6.1 to 6.10 | 2026-09-28 | Win-loss log; repeated loss reason; rival prices seen; battlecard checks; positioning polls; thresholds on the page; capture from the page; the team log; waiting on you; round close (and the hand-off fix). Screenshot `round6.png` |
 | 5 | 5.1 to 5.10 | 2026-09-28 | Hand-offs; action lanes; season plan; quarterly review; exports (and the 5.4 load fix); browser smoke test; team notes; brief pack; check due lane; round close |
