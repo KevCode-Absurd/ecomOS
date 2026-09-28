@@ -1150,7 +1150,7 @@ const {{ chromium }} = require('{PW}');
       empty.push(...await p.$$eval('#desk .section > [id]:not([id$="-sub"])', (xs) => xs.filter((x) => !x.children.length).map((x) => x.id)));
     }}
     out[k] = {{ errs, empty, tabs: await p.$$eval('#desk .tab', (t) => t.length), plan: await p.$$eval('.plan-item', (t) => t.length),
-               moves: await p.$$eval('#r-moves tbody tr', (t) => t.length) }};
+               moves: await p.$$eval('#r-moves tbody tr', (t) => t.length), queue: await p.$$eval('#r-queue li', (t) => t.length) }};
   }}
   console.log(JSON.stringify(out)); await b.close();
 }})();"""
@@ -1162,6 +1162,7 @@ const {{ chromium }} = require('{PW}');
             self.assertGreaterEqual(out['main']['plan'], 5)
             self.assertEqual(out['report']['errs'], [])
             self.assertGreaterEqual(out['report']['moves'], 5)
+            self.assertGreaterEqual(out['report']['queue'], 1)
         finally:
             srv.terminate()
             srv.wait(timeout=10)
@@ -1352,7 +1353,7 @@ class TestPage(unittest.TestCase):
         html = (SCREEN / 'index.html').read_text(encoding='utf-8')
         js = (SCREEN / 'screen.js').read_text(encoding='utf-8')
         self.assertIn('href="?view=report"', html)
-        for i in ('r-moves', 'r-changed', 'r-threats', 'r-numbers', 'r-caveats'):
+        for i in ('r-moves', 'r-queue', 'r-changed', 'r-logged', 'r-threats', 'r-numbers', 'r-caveats'):
             self.assertIn(f'id="{i}"', html)
             self.assertIn(f"'#{i}'", js)
 

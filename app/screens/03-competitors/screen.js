@@ -770,6 +770,12 @@
     mount('#r-moves', UI.table({ columns: [{ key: 'n', label: '#', unit: 'n' }, { key: 'title', label: 'Move' }, { key: 'owner', label: 'Who', format: (v) => OWNER[v] || v },
       { key: 'why', label: 'Why' }, { key: 'check_on', label: 'Check on', format: (v) => v ? fmt.date(v) : NA }],
     rows: p.actions.slice(0, 10).map((a, i) => ({ n: i + 1, title: a.title, owner: a.owner, why: a.why, check_on: a.check_on })), sort: false }));
+    const q = p.queue || { items: [], total: 0 };
+    mount('#r-queue', q.items.length ? el('div', null, el('p', { class: 'small', text: q.total + ' calls wait on you; the top ' + q.items.length + ':' }),
+      el('ol', null, ...q.items.map((x) => el('li', null, el('b', { text: x.question }), ' (move #' + x.rank + '). Yes means: ' + x.yes))))
+      : el('p', { class: 'muted', text: 'Nothing waits on you.' }));
+    const lw = g.logged || { n: 0, lines: [] };
+    mount('#r-logged', lw.n ? el('ul', null, ...lw.lines.map((t) => el('li', { text: t }))) : el('p', { class: 'muted', text: 'Nothing logged this week.' }));
     const ev = d.changes.events.filter((e) => e.verdict !== 'ours');
     mount('#r-changed', ev.length ? el('ul', null, ...ev.map((e) => el('li', null, el('b', { text: fmt.date(e.when) + ', ' + e.page + ': ' }), e.text + ' (' + e.verdict_text.toLowerCase() + ')')))
       : el('p', { class: 'muted', text: 'Nothing crossed a rule in the last 28 days.' }));
