@@ -9,6 +9,8 @@ question, and accept or ignore on a proposed record. Nothing external.
   GET  agentfile/endpoints      this route table as JSON, for an agent or an MCP wrapper
   GET  brainmd                  the router BRAIN.md text
   GET|POST brainmd/notes        the founder notes block in BRAIN.md, read and set; kept across regeneration
+  GET  round                    the founder round as a checklist: questions, the review queue, moves, reviews due, carried over
+  POST round/tick               {key, done}: tick or untick an item; POST round/close closes the round with one dated decision
   GET  trust                    section trust, explained: strong, fresh, reviewed, owned, weighted, with the formula
   GET  proofs                   proof requests for claims below approved, ranked by the doubts they answer, drafted
   POST proofs/<claim>/approve   {evidence, ref}: the evidence written onto the claim and the claim approved
@@ -228,6 +230,9 @@ _pspec.loader.exec_module(parity)
 _sspec = importlib.util.spec_from_file_location("brand_brain_sitediff", HERE / "sitediff.py")
 sitediff = importlib.util.module_from_spec(_sspec)
 _sspec.loader.exec_module(sitediff)
+_rdspec = importlib.util.spec_from_file_location("brand_brain_roundlist", HERE / "roundlist.py")
+roundlist = importlib.util.module_from_spec(_rdspec)
+_rdspec.loader.exec_module(roundlist)
 _ttspec = importlib.util.spec_from_file_location("brand_brain_trust", HERE / "trust.py")
 trust = importlib.util.module_from_spec(_ttspec)
 _ttspec.loader.exec_module(trust)
@@ -1166,6 +1171,34 @@ def report_view(brain: Brain, days: int) -> dict:
     return out
 
 
+def round_view(brain: Brain, req) -> dict:
+    try:
+        qs = questions_ranked(brain).get("questions") or []
+    except Exception:  # noqa: BLE001
+        qs = []
+    try:
+        rv = review_view(brain)
+        review_count = sum(len(g.get("items") or []) for g in rv.get("groups") or []) if isinstance(rv, dict) else 0
+    except Exception:  # noqa: BLE001
+        review_count = 0
+    try:
+        actions = rank_mod.master(brain.brand, _window(req, brain), decisions_path=_decisions_path(req))["actions"]
+    except Exception:  # noqa: BLE001
+        try:
+            actions = rank(brain.brand, _window(req, brain))["actions"]
+        except Exception:  # noqa: BLE001
+            actions = []
+    ow = owners.owners(brain, health.SHELF_DAYS, health.META_SECTIONS, brain.section_stats())
+    carried = []
+    for r in brain.records("decisions"):
+        v = r.get("value") if isinstance(r.get("value"), dict) else {}
+        if (r.get("field") or "").startswith("round_") and v.get("carried") and v.get("round") != roundlist._round_key(brain):
+            carried = [str(x) for x in v["carried"]]
+    out = roundlist.build(brain, qs, review_count, actions, ow, carried)
+    out.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "BRN-C07", "autonomy": "founder_gate"})
+    return out
+
+
 def digest_view(brain: Brain) -> dict:
     try:
         actions = rank(brain.brand, _window_dict(brain))["actions"]
@@ -2004,6 +2037,31 @@ def handle(req):
         return cd
     if req.method == "POST" and parts == ["claims"]:
         return claim_add(brain, req.body)
+    if req.method == "GET" and parts == ["round"]:
+        return round_view(brain, req)
+    if req.method == "POST" and parts == ["round", "tick"]:
+        body = req.body or {}
+        key = str(body.get("key") or "")
+        if not key:
+            return 400, {"error": "key is required"}
+        st = roundlist.state(brain)
+        rec = roundlist.tick_record(brain, st, key, bool(body.get("done", True)))
+        errs = founder_put(brain, rec, "founder_edit", f"founder round {st['key']}: {key} {'done' if body.get('done', True) else 'undone'}")
+        if errs:
+            return 400, {"error": "; ".join(errs)}
+        return 201, {"ok": True, "key": key, "done": bool(body.get("done", True)), "version": brain.version()}
+    if req.method == "POST" and parts == ["round", "close"]:
+        rv = round_view(brain, req)
+        st = roundlist.state(brain)
+        done = [it["label"] for it in rv["items"] if it["done"]]
+        carried = [it["label"] for it in rv["items"] if not it["done"] and it["kind"] != "carried"] + [it["label"].replace("Carried over: ", "") for it in rv["items"] if it["kind"] == "carried" and not it["done"]]
+        rec = roundlist.tick_record(brain, st, "", True, close=True, summary=f"{len(done)} done, {len(carried)} carried")
+        errs = founder_put(brain, rec, "founder_edit", f"founder round {st['key']} closed")
+        if errs:
+            return 400, {"error": "; ".join(errs)}
+        dec = roundlist.close_decision(brain, st["key"], done, carried)
+        founder_put(brain, dec, "founder_edit", dec["text"][:160])
+        return 201, {"ok": True, "round": st["key"], "done": len(done), "carried": carried, "decision": dec["id"], "version": brain.version(), "next": "Closed and logged. The next round lists what was carried over first."}
     if req.method == "GET" and parts == ["trust"]:
         t = trust.scores(brain, health.heatmap(brain), owners.owners(brain, health.SHELF_DAYS, health.META_SECTIONS, brain.section_stats()), health.META_SECTIONS)
         t.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "BRN-C12", "autonomy": "agent_does"})
