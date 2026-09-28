@@ -7,6 +7,7 @@ same tables, brain and window give the same actions in the same order.
 """
 import importlib.util
 import json
+import re
 import math
 import sys
 from datetime import date, timedelta
@@ -1399,6 +1400,20 @@ def add_unlocks(actions, ctx):
     return actions
 
 
+def close_drafts(actions):
+    """Every drafted artefact is handed over whole: a draft with no stop or check line gets the move's own."""
+    for a in actions:
+        art = a.get('artefact') or {}
+        d = art.get('draft')
+        if a.get('status') != 'open' or not d or art.get('kind') == 'connector_setup':
+            continue
+        if re.search(r'(?i)stop|check|read (it|on|claims)|call it', d):
+            continue
+        tail = [f'Check on {a["check_on"]}.' if a.get('check_on') else None, f'Stop: {a["stop_rule"]}' if a.get('stop_rule') else None]
+        art['draft'] = d + '\n' + ' '.join(x for x in tail if x)
+    return actions
+
+
 def bunches(rd):
     """Order-value bunches and the tiers above them, from real order bins only (never from the fixture)."""
     dist = rd.m('order_value_distribution', audit.WINDOW, step=5)
@@ -1618,7 +1633,7 @@ def rank(brand='bombas', window=None, data=None):
     actions = merge_into(actions, 'OFFER-R38', 'OFFER-R32')
     actions = flag_stale_inputs(attach_margin_checks(add_priors(covered_by_registry(actions, ctx), ctx), ctx), ctx)
     actions = [a for a in actions if not RANK.validate_action(a)]
-    actions = add_unlocks(add_exposure(actions, ctx, nr), ctx)
+    actions = close_drafts(add_unlocks(add_exposure(actions, ctx, nr), ctx))
     actions.sort(key=RANK.sort_key)
     calendar = test_calendar(actions, ctx)
     for row in calendar:   # the change a sitewide test of this length can see; a single page sees less

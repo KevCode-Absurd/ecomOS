@@ -2214,5 +2214,25 @@ class FindingHistoryTest(unittest.TestCase):
         self.assertTrue((_HIST / 'findings.bombas.json').is_file())
 
 
+class HandoverTest(unittest.TestCase):
+    """Round 9 feature 6: every drafted artefact is whole: test briefs carry arms, the metric, days and a stop line;
+    every other draft ends in a stop or check line."""
+
+    def test_both_brands(self):
+        import re
+        sys.path.insert(0, str(ROOT / 'app'))
+        import server
+        for acts in (api.actions.rank('bombas')['actions'], api.actions.rank(None, None, server.Data())['actions']):
+            for a in acts:
+                t = (a['artefact'].get('draft') or '').lower()
+                if a['status'] != 'open' or a['artefact']['kind'] == 'connector_setup':
+                    continue
+                self.assertTrue(t, a['id'])
+                self.assertRegex(t, r'stop|check|read (it|on|claims)|call it', a['id'])
+                if a['artefact']['kind'] == 'test_brief':
+                    for p_ in (r'arms?:|control', r'profit per|primary metric', r'\d+ days', r'stop'):
+                        self.assertRegex(t, p_, a['id'])
+
+
 if __name__ == '__main__':
     unittest.main()
