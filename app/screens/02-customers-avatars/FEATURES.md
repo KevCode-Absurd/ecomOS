@@ -115,7 +115,16 @@ Lead's review: rounds 1 to 4 passed. Focus: returns and tickets by avatar, depth
 | 6.7 | The page at phone width: checked in a 360 px browser on all 5 desk tabs; the served map grid pushed the Avatars tab to 580 px. Fixed in `screen.css`: grid children may shrink, two-column desk grids stack under 720 px, wide tables scroll inside their card, the desk tabs wrap. Page width is 360 on every tab, nothing past the edge | done |
 | 6.8 | A monthly customer report for the founder: "Monthly report" in the head opens `GET report` in a panel, 8 short sections in plain words (the three moves to approve, who buys and who to build for next, what stops them, what they say that we do not, who comes back, risks to the brand, due in the next 30 days, what we do not know yet), with Copy and Print; print shows only the report. Works for a second brand | done |
 | 6.9 | Faster loads: the overview and `rank` are built once per brand, day or window, brain version, aggregates timestamp and brain root, and every caller gets a copy, so a brain edit or a data refresh rebuilds them and nothing leaks between callers (tested). Overview 0.215 s cold, 0.013 s warm | done |
-| 6.10 | Audit rules and `rank` for round 6, screenshot `round6.png` | todo |
+| 6.10 | Money on the audit where the tables allow: CUST-R07 prices paid returning orders against the brand's own 12-month median paid share (share gap x returning orders x paid spend per paid order, cost-side, inputs written so a founder can redo it; `builds.paid_stake`). Bombas: 29.9 percent sits on its median, so the stake is null with that reason, not a number pushed by the 25 percent target. Checked the master list: 59 actions, best 62, none in the top 10 because no finding here has a baseline gap in money yet. Screenshot `round6.png` (the monthly report) | done |
+
+### Round 6 founder note (28 Sep 2026)
+
+1. The screen now works for any brand: a second, sparse brain renders every route with honest unavailable states and no Bombas facts in code.
+2. Findings that ask for the same draft are one action now, so you approve the durability offer once for 2 findings; 59 actions in all.
+3. "Monthly report" gives you one page in plain words: 3 moves to approve, who to build for, what stops them, and what is due in 30 days. Copy or print it.
+4. What is due is on one list: 2 seasonal answers are late, winter ads by 25 Oct, 11 avatar records re-checked by 28 Oct.
+5. Compare any 2 avatars on 14 rows, open any ladder rung for its reviews, and see what changed since your last visit. The page works at phone width and loads in 0.013 s once built.
+6. None of our moves reach your top 10 yet: 30 percent of returning orders come through paid ads, but that is flat against our own year, so no money is claimed. Order and ticket data would price the rest.
 
 ### Round 5 founder note (28 Sep 2026)
 
@@ -298,3 +307,4 @@ The job to be done for each avatar is brand data: it lives in `app/brain/<brand>
 | 3 | 3.1 to 3.10, the brand side of the room | 28 Sep 2026 | done; screenshot `round3.png` |
 | 4 | 4.1 to 4.10, one desk, hand-offs, remaining jobs | 28 Sep 2026 | done; screenshot `round4.png` |
 | 5 | 5.1 to 5.10, returns, support and depth per cell | 28 Sep 2026 | done; screenshot `round5.png` |
+| 6 | 6.1 to 6.10, any brand, one action per draft, agenda, compare, report, speed, phone width | 28 Sep 2026 | done; screenshot `round6.png` |

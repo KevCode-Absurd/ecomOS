@@ -42,6 +42,9 @@ CUST-R06 unserved buying situation. 2 or more competitors in the brain push a bu
 CUST-R07 returning buyers bought back through paid ads. A quarter or more of returning orders in
     the latest full month came through paid social or paid search (channels_monthly). Severity
     medium. Capability MEDIA-C12. Unavailable when the channel table is missing.
+    Money (builds.paid_stake): (paid share now minus the own 12-month median) x returning orders x paid
+    spend per paid order, cost-side. Null with the reason when the share sits at or under its median,
+    history is under 4 months or spend is missing. The 25 percent line is a target, not the baseline.
     Owner: 02-customers-avatars; screen 11 reads it.
 CUST-R08 calendar retention cliff. Half or more of the cohorts alive in one calendar month fell 40
     percent or more at once (cohorts.json). Severity medium. Capability LIFE-C20.
@@ -514,7 +517,14 @@ def load_mix(brand: str) -> dict:
         monthly, channels, as_of = data.table("monthly"), data.table("channels_monthly"), data.brand.get("as_of")
     except (ImportError, ValueError, KeyError, FileNotFoundError) as exc:
         return {"available": False, "reason": f"no monthly or channel table for {brand} ({exc})", "moves": []}
-    return builds.mix(monthly, channels, as_of)
+    out = builds.mix(monthly, channels, as_of)
+    if out.get("available"):
+        try:
+            paid = data.table("paid_media_monthly")
+        except (ValueError, KeyError, FileNotFoundError):
+            paid = None
+        out["stake"] = builds.paid_stake(channels, paid, out["latest"])
+    return out
 
 
 def brand_tokens(brain: Brain) -> set[str]:
@@ -709,8 +719,15 @@ def r07(d, ends_on):
     ev = [_ev("paid_share_of_returning_orders", x["paid_share_returning"], "%", ends_on, "channels_monthly",
               baseline=builds.PAID_RETURNING, simulated=True)]
     s = f"{round(x['paid_share_returning'] * 100, 1)} percent of returning orders in {x['latest']} came through paid ads. We pay again for buyers we have."
-    return [_finding("CUST-R07", "medium", {"type": "metric", "id": "returning_via_paid", "label": "Returning orders through paid ads"},
-                     ev, s, "MEDIA-C12", 0.5, [], ends_on)]
+    f = _finding("CUST-R07", "medium", {"type": "metric", "id": "returning_via_paid", "label": "Returning orders through paid ads"},
+                 ev, s, "MEDIA-C12", 0.5, [], ends_on)
+    st = x.get("stake") or {}
+    if isinstance(st.get("usd"), (int, float)) and st["usd"] > 0:
+        f["money_at_stake"] = {k: st[k] for k in ("usd", "formula", "inputs", "window")}
+        f["money_reason"] = None
+    elif st.get("reason"):
+        f["money_reason"] = st["reason"]
+    return [f]
 
 
 def r08_r09(d, ends_on):

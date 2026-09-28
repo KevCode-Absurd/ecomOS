@@ -471,6 +471,49 @@ class Mix(unittest.TestCase):
         self.assertFalse(api.builds.mix(monthly[-5:], channels, '2026-09-27')['available'])
 
 
+class PaidStake(unittest.TestCase):
+    """Feature 6.10: money at stake on paid returning orders, against the brand's own 12-month median."""
+
+    def tables(self):
+        from tables import brand_data
+        data = brand_data('bombas')
+        return data.table('channels_monthly'), data.table('paid_media_monthly')
+
+    def test_flat_share_gives_no_money_and_a_reason(self):
+        channels, paid = self.tables()
+        st = api.builds.paid_stake(channels, paid, '2026-08')
+        self.assertIsNone(st['usd'])
+        self.assertIn('median', st['reason'])
+
+    def test_rise_above_median_is_priced_from_inputs(self):
+        channels, paid = self.tables()
+        channels = [dict(r) for r in channels]
+        for r in channels:
+            if r['month'] == '2026-08' and r['channel'] == 'paid_social':
+                r['new_customer_orders'] = round(r['new_customer_orders'] * 0.8)
+        st = api.builds.paid_stake(channels, paid, '2026-08')
+        self.assertGreater(st['usd'], 0)
+        i = st['inputs']
+        redo = (i['paid_share_now'] - i['paid_share_median_12m']) * i['returning_orders'] * i['paid_spend'] / i['paid_orders']
+        self.assertLess(abs(redo - st['usd']) / st['usd'], 0.01)
+        self.assertEqual(set(st), {'usd', 'median', 'formula', 'inputs', 'window'})
+
+    def test_missing_spend_is_null_not_zero(self):
+        channels, _ = self.tables()
+        channels = [dict(r) for r in channels]
+        for r in channels:
+            if r['month'] == '2026-08' and r['channel'] == 'paid_social':
+                r['new_customer_orders'] = round(r['new_customer_orders'] * 0.8)
+        st = api.builds.paid_stake(channels, None, '2026-08')
+        self.assertIsNone(st['usd'])
+        self.assertIn('spend', st['reason'])
+
+    def test_short_history_has_no_baseline(self):
+        channels, paid = self.tables()
+        short = [r for r in channels if r['month'] >= '2026-06']
+        self.assertIn('no baseline', api.builds.paid_stake(short, paid, '2026-08')['reason'])
+
+
 class Served(TempBrain):
     """Feature 1.8: avatars by reach and how well we serve them; situations the category serves and we do not."""
 

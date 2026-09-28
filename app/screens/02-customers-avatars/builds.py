@@ -581,6 +581,44 @@ CHANNEL_LABEL = {"paid_social": "paid social", "paid_search": "paid search", "or
                  "direct": "direct", "email": "email", "sms": "SMS", "other": "other", "pos": "stores"}
 
 
+def paid_stake(channels: list[dict], paid: list[dict] | None, month: str) -> dict:
+    """Money at stake for returning buyers bought back through paid ads (audit.md section 3).
+
+    Baseline is the brand's own median paid share of returning orders over the 12 months before `month`
+    (4 or more months needed). Stake = (share now minus median) x returning orders now x paid spend per paid order.
+    It is cost-side: spend paid to reach buyers we already have. Any input missing gives usd None with a reason.
+    The 25 percent line in the rule is a target, never the baseline."""
+    ret = {}
+    for r in channels:
+        ret.setdefault(r["month"], {})[r["channel"]] = (r["orders"] - r["new_customer_orders"], r["orders"])
+    def share(m):
+        b = ret.get(m) or {}
+        tot = sum(v[0] for v in b.values())
+        return sum(b[c][0] for c in PAID if c in b) / tot if tot else None
+    now = share(month)
+    prior = [x for x in (share(_add(month, -k)) for k in range(1, 13)) if x is not None]
+    if now is None or len(prior) < 4:
+        return {"usd": None, "reason": f"no baseline: {len(prior)} earlier months of channel orders, 4 needed"}
+    med = _median(prior)
+    if now <= med:
+        return {"usd": None, "reason": f"no gap: paid share {round(now * 100, 1)} percent is at or under the own 12-month median of {round(med * 100, 1)} percent",
+                "median": round(med, 4)}
+    if not paid:
+        return {"usd": None, "reason": "no paid spend table to price a paid order", "median": round(med, 4)}
+    spend = sum(r["spend"] for r in paid if r.get("month") == month and isinstance(r.get("spend"), (int, float)))
+    orders = sum(ret[month][c][1] for c in PAID if c in ret[month])
+    if not spend or not orders:
+        return {"usd": None, "reason": f"no paid spend or paid orders in {month}", "median": round(med, 4)}
+    returning = sum(v[0] for v in ret[month].values())
+    cpo = spend / orders
+    usd = round((now - med) * returning * cpo)
+    return {"usd": usd, "median": round(med, 4),
+            "formula": "(paid_share_now - paid_share_median_12m) * returning_orders * (paid_spend / paid_orders)",
+            "inputs": {"paid_share_now": round(now, 4), "paid_share_median_12m": round(med, 4), "returning_orders": round(returning),
+                       "paid_spend": round(spend, 2), "paid_orders": round(orders)},
+            "window": month}
+
+
 def mix(monthly: list[dict], channels: list[dict], as_of: str) -> dict:
     """Returning share of orders by month, this year against last, and the channels behind the change."""
     full = [r for r in monthly if r.get("orders") and _add(r["month"], 1) <= as_of[:7]]
