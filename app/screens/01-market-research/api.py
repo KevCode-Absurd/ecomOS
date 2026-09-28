@@ -1882,6 +1882,57 @@ def desk_report(data, brand):
     return {'brand': brand or 'sample', 'ends_on': o['window']['ends_on'], 'text': '\n'.join(L), 'blocks': len(lines)}
 
 
+# ---------------------------------------------------------------- since you last looked (round 5.9)
+
+SEEN_DIR = HERE / 'fixtures' / 'seen'
+
+
+def _seen_path(brand):
+    return SEEN_DIR / f'{brand or "sample"}.json'
+
+
+def take_snapshot(data, brand, today):
+    """Write what the desk shows now: every finding's severity, status and stake, keyed by id, so the next visit can say
+    what is new, gone or changed. Taken only when a person clicks Mark as seen."""
+    findings = audit.run(brand, None, data=data)
+    doc = {'brand': brand or 'sample', 'taken_on': today.isoformat(), 'findings': {f['id']: {'severity': f.get('severity'), 'status': f.get('status'), 'stake_usd': (f.get('money_at_stake') or {}).get('usd'), 'sentence': f.get('sentence')} for f in findings}}
+    p = _seen_path(brand)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(json.dumps(doc, indent=1), encoding='utf-8')
+    return {'taken_on': doc['taken_on'], 'findings': len(doc['findings'])}
+
+
+SEV = {'critical': 4, 'high': 3, 'medium': 2, 'low': 1}
+
+
+def changes_since(data, brand):
+    """The diff between the desk now and the last snapshot: new findings, gone findings, severity moved up or down, stake moved
+    20 percent or more. No snapshot means nothing to compare, said so."""
+    p = _seen_path(brand)
+    now = {f['id']: f for f in audit.run(brand, None, data=data)}
+    if not p.is_file():
+        return {'available': False, 'reason': 'no snapshot yet; Mark as seen takes one', 'now': len(now)}
+    doc = json.loads(p.read_text(encoding='utf-8'))
+    then = doc.get('findings') or {}
+    new = [{'id': i, 'sentence': f.get('sentence'), 'severity': f.get('severity')} for i, f in now.items() if i not in then]
+    gone = [{'id': i, 'sentence': f.get('sentence'), 'severity': f.get('severity')} for i, f in then.items() if i not in now]
+    worse, better, stake_moves = [], [], []
+    for i, f in now.items():
+        o = then.get(i)
+        if not o:
+            continue
+        a, b = SEV.get(o.get('severity'), 0), SEV.get(f.get('severity'), 0)
+        if b > a:
+            worse.append({'id': i, 'from': o.get('severity'), 'to': f.get('severity'), 'sentence': f.get('sentence')})
+        elif b < a:
+            better.append({'id': i, 'from': o.get('severity'), 'to': f.get('severity'), 'sentence': f.get('sentence')})
+        s0, s1 = o.get('stake_usd'), (f.get('money_at_stake') or {}).get('usd')
+        if s0 and s1 and abs(s1 - s0) / s0 >= 0.2:
+            stake_moves.append({'id': i, 'from': s0, 'to': s1, 'sentence': f.get('sentence')})
+    return {'available': True, 'taken_on': doc.get('taken_on'), 'then': len(then), 'now': len(now), 'new': new, 'gone': gone, 'worse': worse, 'better': better, 'stake_moves': stake_moves,
+            'quiet': not (new or gone or worse or better or stake_moves)}
+
+
 def _brand(req):
     brand = req.arg('brand', DEFAULT_BRAND)
     if brand in ('', 'sample'):
@@ -1899,11 +1950,13 @@ def handle(req):
             audit.brand_data(brand)  # ValueError for an unknown brand
         if req.method == 'POST':
             today = audit.last_full_day(data, brand) + dt.timedelta(days=1)
+            if req.path == ['snapshot']:
+                return 201, take_snapshot(data, brand, today)
             if req.path == ['candidates']:
                 return candidate_add(brand or 'sample', req.body, today)
             if len(req.path) == 2 and req.path[0] == 'candidates':
                 return candidate_update(brand or 'sample', req.path[1], req.body, today)
-            return 405, {'error': 'read only, except the candidate pipeline'}
+            return 405, {'error': 'read only, except the candidate pipeline and the seen snapshot'}
         if req.path == ['overview']:
             return overview(data, brand)
         if req.path == ['findings']:
@@ -1916,6 +1969,8 @@ def handle(req):
             return {'rows': proposed_tests(brand or 'sample'), 'file': str(TESTS_PATH.relative_to(APP.parent))}
         if len(req.path) == 2 and req.path[0] == 'handoff':
             return creative_handoff(brand, req.path[1])
+        if req.path == ['changes']:
+            return changes_since(data, brand)
         if req.path == ['report']:
             return desk_report(data, brand)
         if req.path == ['calendar']:
@@ -1925,4 +1980,4 @@ def handle(req):
             return {'parked': r['parked'], 'decided': r['decided'], 'snooze_days': rank_mod.SNOOZE_DAYS, 'window': r['window']}
     except ValueError as exc:
         return 400, {'error': str(exc)}
-    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank', 'parked', 'calendar', 'report', 'candidates/<id>/brief', 'handoff/<finding_id>', 'product_candidates', 'tests']}
+    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank', 'parked', 'calendar', 'report', 'changes', 'candidates/<id>/brief', 'handoff/<finding_id>', 'product_candidates', 'tests']}

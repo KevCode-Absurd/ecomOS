@@ -67,6 +67,21 @@
       gapLine((c.overdue ? c.overdue + ' overdue' : 'nothing overdue') + ', ' + (c.this_week || 0) + ' due in the next 7 days, ' + items.length + ' in ' + c.horizon_days + ' days.', items.length && items[0].action_id ? { label: 'Open the first', onClick: () => open(items[0]) } : null)));
   }
 
+  async function loadChanges() {
+    let c;
+    try { c = await api(BASE + 'changes' + Q); } catch (e) { return; }
+    const host = document.getElementById('changes') || el('div', { id: 'changes' });
+    host.innerHTML = '';
+    document.getElementById('plan').append(host);
+    const mark = el('button', { class: 'btn sm', type: 'button', text: 'Mark as seen', onclick: async () => { try { await api(BASE + 'snapshot' + Q, { method: 'POST', body: {} }); loadChanges(); } catch (e) { alert('Could not take the snapshot: ' + e.message); } } });
+    const line = (label, items, f) => items.length ? el('div', { class: 'small' }, el('b', { text: label + ' (' + items.length + '): ' }), items.slice(0, 5).map((x) => f(x)).join('; ') + (items.length > 5 ? '; ...' : '')) : null;
+    host.append(el('div', { class: 'card flat', style: { marginTop: '10px' } },
+      el('div', { class: 'sec-head' }, el('h2', { text: c.available ? 'Since you last looked (' + fmt.date(c.taken_on) + '): ' + (c.quiet ? 'nothing moved' : (c.new.length + ' new, ' + c.gone.length + ' gone, ' + c.worse.length + ' worse, ' + c.better.length + ' better')) : 'Since you last looked: no snapshot yet' }),
+        el('span', { class: 'sub', text: c.available ? c.then + ' findings then, ' + c.now + ' now. Mark as seen takes a new snapshot.' : c.now + ' findings now. Mark as seen takes the first snapshot; the next visit shows what is new, gone or changed.' }), mark),
+      c.available ? [line('New', c.new, (x) => x.severity + ': ' + (x.sentence || x.id).slice(0, 90)), line('Gone', c.gone, (x) => (x.sentence || x.id).slice(0, 90)), line('Worse', c.worse, (x) => x.from + ' to ' + x.to + ': ' + (x.sentence || x.id).slice(0, 80)),
+        line('Better', c.better, (x) => x.from + ' to ' + x.to + ': ' + (x.sentence || x.id).slice(0, 80)), line('Stake moved', c.stake_moves, (x) => fmt.money(x.from) + ' to ' + fmt.money(x.to) + ': ' + (x.sentence || x.id).slice(0, 70))] : null));
+  }
+
   async function loadParked() {
     let r;
     try { r = await api(BASE + 'parked' + Q); } catch (e) { return; }
@@ -100,6 +115,7 @@
       empty: 'No open finding on this desk for the window. The desk below shows the gaps still worth a look.',
     }));
     loadParked();
+    loadChanges();
     loadCalendar();
     if (connect.length) {
       document.getElementById('plan').append(el('div', { class: 'card flat', style: { marginTop: '10px' } },

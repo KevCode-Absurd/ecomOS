@@ -1272,6 +1272,43 @@ class DecisionMemoryTest(unittest.TestCase):
             api.DECISIONS_PATH = saved
 
 
+class ChangesTest(unittest.TestCase):
+    def test_snapshot_and_diff(self):
+        saved = api.SEEN_DIR
+        api.SEEN_DIR = ROOT / 'tests' / '_seen'
+        try:
+            c0 = api.handle(Req(['changes']))
+            self.assertFalse(c0['available'])
+            code, snap = api.handle(Req(['snapshot'], method='POST'))
+            self.assertEqual(code, 201)
+            self.assertGreater(snap['findings'], 50)
+            c1 = api.handle(Req(['changes']))
+            self.assertTrue(c1['available'])
+            self.assertTrue(c1['quiet'])
+            # doctor the snapshot: drop one finding, add a stale one, lower one severity, halve one stake
+            p = api._seen_path('bombas')
+            doc = json.loads(p.read_text(encoding='utf-8'))
+            ids = list(doc['findings'])
+            dropped = ids[0]
+            del doc['findings'][dropped]
+            doc['findings']['01-market-research.PROD-R99.gone'] = {'severity': 'low', 'status': 'open', 'stake_usd': None, 'sentence': 'an old finding'}
+            hi = next(i for i in ids[1:] if doc['findings'][i]['severity'] in ('high', 'critical'))
+            doc['findings'][hi]['severity'] = 'low'
+            st = next(i for i in ids[1:] if doc['findings'][i]['stake_usd'])
+            doc['findings'][st]['stake_usd'] = doc['findings'][st]['stake_usd'] / 2
+            p.write_text(json.dumps(doc), encoding='utf-8')
+            c2 = api.handle(Req(['changes']))
+            self.assertEqual([x['id'] for x in c2['new']], [dropped])
+            self.assertEqual([x['id'] for x in c2['gone']], ['01-market-research.PROD-R99.gone'])
+            self.assertIn(hi, [x['id'] for x in c2['worse']])
+            self.assertIn(st, [x['id'] for x in c2['stake_moves']])
+            self.assertFalse(c2['quiet'])
+        finally:
+            import shutil
+            shutil.rmtree(api.SEEN_DIR, ignore_errors=True)
+            api.SEEN_DIR = saved
+
+
 class CalendarTest(unittest.TestCase):
     def test_calendar_lists_every_dated_thing(self):
         c = api.handle(Req(['calendar']))
