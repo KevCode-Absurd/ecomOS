@@ -182,7 +182,9 @@ def coverage(avatars: list[dict], all_rungs: list[dict]) -> dict:
             need = [r for r in mine if ch["key"] in (r.get("uses") or [])]
             done = [r for r in need if r["proof_ids"]]
             open_ = [r for r in need if not r["proof_ids"]]
-            cell = {"us": len(done) if need else None, "them": len(need) if need else None, "unit": "n", "open": len(open_)}
+            cell = {"us": len(done) if need else None, "them": len(need) if need else None, "unit": "n", "open": len(open_),
+                    "rungs": [{"id": r["id"], "doubt": r["doubt"], "one_star": r["one_star"], "five_star": r["five_star"],
+                               "proof": r["proof"] if r["proof_ids"] else None} for r in need]}
             if open_:
                 cell["brief"] = _cell_brief(a, ch, open_)
             cells[a["key"]][ch["key"]] = cell

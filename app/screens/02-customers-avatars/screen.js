@@ -88,13 +88,26 @@
         UI.decisionRow({ capability: b.capability, owner: b.owner, screen: SLUG, finding_id: b.id })),
     });
   }
+  function cellPanel(cell, row, col) {
+    if (!cell || !cell.rungs || !cell.rungs.length) {
+      UI.panel({ title: row.label + ' in ' + col.label, body: el('p', { class: 'muted', text: 'No doubt of this avatar needs an answer in ' + col.label.toLowerCase() + '.' }) });
+      return;
+    }
+    UI.panel({ title: row.label + ' in ' + col.label, tools: cell.brief ? [el('button', { class: 'btn soft sm', type: 'button', text: 'Brief the open ones', onclick: () => briefPanel(cell.brief) })] : [],
+      body: el('div', { class: 'stack' }, el('p', { class: 'small muted', text: cell.us + ' of ' + cell.them + ' doubts answered with proof here.' }),
+        ...cell.rungs.map((r) => el('div', { class: 'card flat' }, el('div', { class: 'row between' }, el('b', { text: '"' + r.doubt + '"' }),
+          el('span', { class: 'chip ' + (r.proof ? 'good' : 'bad'), text: r.proof ? 'answered' : 'open' })),
+          el('div', { class: 'small', text: r.one_star + ' one-star, ' + r.five_star + ' five-star' }),
+          el('div', { class: 'small muted', text: r.proof ? 'Proof: ' + r.proof : 'No proof on file yet.' })))) });
+  }
   function renderCoverage(c, f) {
     document.getElementById('cover-sub').textContent = 'Each cell: doubts answered with proof | doubts that channel must answer, from the objection ladders. ' + c.line;
     mount('#cover', UI.coverageMatrix({
       rows: c.rows, cols: c.cols, cells: c.cells, unit: 'n', corner: 'Avatar',
       gapRule: (cell) => !cell || cell.them == null ? '' : cell.open ? 'gap' : 'lead',
       action: { label: 'Brief it', onClick: (cell) => cell && cell.brief && briefPanel(cell.brief) },
-      note: 'Red: a doubt with no answer there, click Brief it. Green: every doubt answered. n/a: no doubt needs that channel.' +
+      onCell: (cell, row, col) => cellPanel(cell, row, col),
+      note: 'Red: a doubt with no answer there, click Brief it. Green: every doubt answered. n/a: no doubt needs that channel. Click any cell to see the doubts behind it.' +
         (c.skipped.length ? ' Not shown, no doubts mapped yet: ' + c.skipped.join(', ') + '.' : ''),
     }));
     if (!f.available) { mount('#formats', UI.emptyState({ screen: SLUG, title: 'Format mix unavailable', text: f.reason })); return; }

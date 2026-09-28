@@ -1263,5 +1263,21 @@ class Macros(TempBrain):
         self.assertEqual(sum(x['counts'].values()), len(x['rows']))
 
 
+class CellDepth(TempBrain):
+    """Feature 5.4: every coverage cell carries the rungs behind its count."""
+
+    def test_cells_carry_rungs(self):
+        c = api.handle(Req(['overview']))['coverage']
+        for row in c['rows']:
+            for col in c['cols']:
+                cell = c['cells'][row['key']][col['key']]
+                if cell['them'] is None:
+                    self.assertEqual(cell['rungs'], [])
+                    continue
+                self.assertEqual(len(cell['rungs']), cell['them'])
+                self.assertEqual(sum(1 for r in cell['rungs'] if r['proof']), cell['us'])
+        self.assertIn('onCell: (cell, row, col) => cellPanel(cell, row, col)', (SCREEN / 'screen.js').read_text(encoding='utf-8'))
+
+
 if __name__ == '__main__':
     unittest.main()
