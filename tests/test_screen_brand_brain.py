@@ -90,7 +90,7 @@ class AuditShape(unittest.TestCase):
         self.assertIn('05-brand-brain.BRN-R02.section_economics', ids)
         self.assertIn('05-brand-brain.BRN-R04.mission_trust.rung_1.donation_pledge', ids)
         rules = {r['rule_id'] for r in audit.RULES}
-        self.assertEqual(rules, {'BRN-R01', 'BRN-R02', 'BRN-R03', 'BRN-R04'})
+        self.assertLessEqual({'BRN-R01', 'BRN-R02', 'BRN-R03', 'BRN-R04', 'BRN-R05', 'BRN-R06', 'BRN-R07'}, rules)
 
 
 class AuditRules(TempBrain):
@@ -275,3 +275,62 @@ class Round1TopSection(TempBrain):
         self.assertNotIn('id="tiles"', html)
         self.assertNotIn('id="chart"', html)
         self.assertNotIn('—', html)
+
+
+class Round1Market(TempBrain):
+    """Round 1 feature 1: the Ad Library pages against the brand, format and hook mix, gaps, re-pull cost."""
+
+    def test_pages_against_the_brand(self):
+        d = api.handle(Req(['competitors']))
+        self.assertEqual(d['us']['role'], 'self')
+        self.assertEqual(d['pages'][0]['role'], 'self')
+        self.assertGreaterEqual(d['competitors_pulled'], 10)
+        for p in d['pages']:
+            if not p['pulled']:
+                self.assertIsNone(p['ads_seen'])  # unavailable, never 0
+                self.assertEqual(p['verdict']['kind'], 'wait')
+                continue
+            self.assertAlmostEqual(sum(p['format_share'].values()), 1.0, places=1)
+            self.assertIn(p['verdict']['kind'], ('info', 'new', 'watch', 'keep'))
+            self.assertTrue(p['ad_library_url'].startswith('https://www.facebook.com/ads/library/'))
+        self.assertIn('Allbirds', d['not_pulled'])
+        self.assertTrue(d['proposed'] and d['proposed'][0]['name'])
+        # medians only over pages with 20 or more ads seen
+        self.assertEqual(d['medians']['n'], sum(1 for p in d['pages'] if p['role'] == 'competitor' and p['pulled'] and p['ads_seen'] >= 20))
+
+    def test_gaps_are_rules_in_numbers(self):
+        d = api.handle(Req(['competitors']))
+        kinds = {(g['kind'], g['key']) for g in d['gaps']}
+        self.assertIn(('format', 'dco'), kinds)
+        self.assertIn(('hook', 'question'), kinds)
+        for g in d['gaps']:
+            self.assertLess(g['us'], g['them'] if g['them'] else 1)
+            self.assertTrue(g['leaders'] and g['record_ids'])
+        ids = {f['id'] for f in api.handle(Req(['audit']))['findings']}
+        self.assertIn('05-brand-brain.BRN-R05.format_dco', ids)
+        self.assertIn('05-brand-brain.BRN-R06.hook_question', ids)
+        f = next(f for f in api.handle(Req(['audit']))['findings'] if f['id'] == '05-brand-brain.BRN-R05.format_dco')
+        self.assertEqual(f['capability']['id'], 'CREA-C19')
+        self.assertEqual({e['metric'] for e in f['evidence']} & {'format_share_us', 'format_share_competitor_median'}, {'format_share_us', 'format_share_competitor_median'})
+
+    def test_snapshot_stale_rule(self):
+        # 8 days later every page is past the 7 day shelf life: one BRN-R07 finding per pulled competitor
+        later = (dt.date.fromisoformat(DAY) + dt.timedelta(days=8)).isoformat()
+        findings = api.handle(Req(['audit'], query={'today': [later]}))['findings']
+        stale = [f for f in findings if f['rule_id'] == 'BRN-R07']
+        self.assertGreaterEqual(len(stale), 10)
+        self.assertTrue(all(f['severity'] == 'low' and f['capability']['id'] == 'BRN-C11' for f in stale))
+        self.assertFalse([f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R07'])
+
+    def test_repull_shows_cost_and_caps_never_runs(self):
+        r = api.handle(Req(['competitors']))['repull']
+        self.assertTrue(r['by_page_id_only'])
+        self.assertGreater(r['estimate_usd'], 0)
+        self.assertLessEqual(r['estimate_usd'], r['cap_per_run_usd'])
+        self.assertEqual(r['pages'], 12)
+        self.assertIsNone(r['week_spent_usd'])  # unavailable, not 0
+
+    def test_page_has_market_between_files_and_desk(self):
+        html = (SCREEN / 'index.html').read_text(encoding='utf-8')
+        self.assertLess(html.index('id="drop"'), html.index('id="market"'))
+        self.assertLess(html.index('id="market"'), html.index('id="audit"'))

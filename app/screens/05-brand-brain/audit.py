@@ -25,6 +25,19 @@ BRN-R04 unapproved claim used by copy. An objection ladder rung whose `uses`
     includes copy cites a claims record whose tier is not approved. Severity
     medium. Capability BRN-C03. Owner: 05-brand-brain; screen 04 owns the
     rung-with-no-proof rule (OFFER-R04), so it is not repeated here.
+BRN-R05 format gap against competitors. In the Ad Library pull (market.py),
+    the competitor median share of a format is at least 15 percent and the
+    brand's share is under half of it. One finding per format. Severity
+    medium. Capability CREA-C19 (select ad format). Reputation override 3:
+    a creative coverage gap. Owner: 05-brand-brain (the brain holds the pull);
+    screen 09 reads it from the findings table.
+BRN-R06 hook-form gap against competitors. Same test on hook forms
+    (question, first person, number, offer), plus a form the brand never uses
+    while 3 or more competitor pages run it 5 times or more. Severity medium.
+    Capability CREA-C04 (hook bank). Reputation override 3. Owner: 05-brand-brain.
+BRN-R07 competitor snapshot stale. A configured Ad Library page was captured
+    more than SNAPSHOT_STALE_DAYS (7) ago, or never. Severity low. Capability
+    BRN-C11 (competitor snapshot, signals only). Owner: 05-brand-brain.
 
 Money at stake is null for every rule: a brain gap has no revenue formula yet.
 Confidence: one snapshot is one window (0.5), minus 0.2 when the input record
@@ -33,6 +46,7 @@ is past its shelf life.
 from __future__ import annotations
 
 import datetime as dt
+import importlib.util
 import json
 import sys
 from pathlib import Path
@@ -61,8 +75,19 @@ RULES = [
      "inputs": ["open_questions", "questions.bank.json"], "capability": "BRN-C07", "owner_screen": SCREEN},
     {"rule_id": "BRN-R04", "name": "unapproved claim used by copy", "entity_type": "ladder_rung",
      "inputs": ["objection_ladders", "claims"], "capability": "BRN-C03", "owner_screen": SCREEN},
+    {"rule_id": "BRN-R05", "name": "format gap against competitors", "entity_type": "brand",
+     "inputs": ["competitors (Ad Library pull)", "learnings", "config/apify.json"], "capability": "CREA-C19", "owner_screen": SCREEN},
+    {"rule_id": "BRN-R06", "name": "hook-form gap against competitors", "entity_type": "brand",
+     "inputs": ["competitors (Ad Library pull)", "learnings", "config/apify.json"], "capability": "CREA-C04", "owner_screen": SCREEN},
+    {"rule_id": "BRN-R07", "name": "competitor snapshot stale", "entity_type": "brand",
+     "inputs": ["competitors (Ad Library pull)", "config/apify.json"], "capability": "BRN-C11", "owner_screen": SCREEN},
 ]
-AUTONOMY = {"BRN-C12": "agent_does", "BRN-C07": "founder_gate", "BRN-C03": "agent_does"}
+AUTONOMY = {"BRN-C12": "agent_does", "BRN-C07": "founder_gate", "BRN-C03": "agent_does",
+            "CREA-C19": "agent_does", "CREA-C04": "agent_does", "BRN-C11": "agent_does"}
+
+_mspec = importlib.util.spec_from_file_location("brand_brain_market", Path(__file__).resolve().parent / "market.py")
+market = importlib.util.module_from_spec(_mspec)
+_mspec.loader.exec_module(market)
 
 
 def _today(window) -> dt.date:
@@ -187,6 +212,51 @@ def rule_claims(brain: Brain, ends_on: str) -> list[dict]:
     return out
 
 
+def _pct(x) -> str:
+    return f"{round(x * 100)} percent" if isinstance(x, (int, float)) else "unavailable"
+
+
+def rule_competitor_gaps(brain: Brain, ends_on: str) -> list[dict]:
+    out = []
+    for g in market.gaps(brain):
+        rid = "BRN-R05" if g["kind"] == "format" else "BRN-R06"
+        if g["kind"] == "long_runner":
+            continue  # reported on the screen; a rule for it needs the brand's own ad rows (screen 09)
+        ev = [_row(f"{g['kind']}_share_us", g["us"], "share", ends_on, None, g["them"], "competitors (Ad Library pull)"),
+              _row(f"{g['kind']}_share_competitor_median", g["them"], "share", ends_on, None, None, "competitors (Ad Library pull)"),
+              _row("ads_seen_us", g["us_total"], "n", ends_on, None, None, "learnings")]
+        lead = ", ".join(f"{x['name']} {_pct(x['share'])}" for x in g["leaders"][:2])
+        what = g["label"].lower() + (" ads" if g["kind"] == "format" else " hooks")
+        if g.get("never"):
+            sentence = f"We run no {what}. {len(g['leaders'])} competitor pages do: {lead}."
+        else:
+            sentence = f"{_pct(g['us'])} of our ads are {what}. The competitor median is {_pct(g['them'])}: {lead}."
+        ent = {"type": "brand", "id": f"{g['kind']}_{g['key']}", "label": f"{g['label']} {'ads' if g['kind'] == 'format' else 'hooks'}"}
+        f = _finding(rid, "medium", ent, ev, sentence, g["record_ids"][:6], ends_on, 0.5)
+        f["gap"] = {k: g[k] for k in ("kind", "key", "label", "us", "them", "us_n", "us_total", "leaders")}
+        out.append(f)
+    return out
+
+
+def rule_snapshot_stale(brain: Brain, ends_on: str) -> list[dict]:
+    out = []
+    d = market.pages(brain)
+    for p in d["pages"]:
+        if p["role"] != "competitor":
+            continue
+        age = p["age_days"]
+        if p["pulled"] and age is not None and age <= market.SNAPSHOT_STALE_DAYS:
+            continue
+        if not p["pulled"] and not p["page_id"]:
+            continue  # no page id: that is a founder task on the screen, not a stale snapshot
+        ev = [_row("competitor_snapshot_age", age, "days", ends_on, age, market.SNAPSHOT_STALE_DAYS, "competitors (Ad Library pull)")]
+        sentence = (f"{p['name']} was last captured {age} days ago. The shelf life is {market.SNAPSHOT_STALE_DAYS} days."
+                    if age is not None else f"{p['name']} has a page id but no capture yet.")
+        out.append(_finding("BRN-R07", "low", {"type": "brand", "id": f"snapshot_{p['slug']}", "label": p["name"]},
+                            ev, sentence, p["record_ids"][:3], ends_on, 0.5))
+    return out
+
+
 def run(brand: str, window: dict | None = None, root: Path | None = None) -> list[dict]:
     today = _today(window)
     brain = Brain(brand, root, today)
@@ -195,7 +265,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
         bank = keeper.load_bank()
     except (OSError, ValueError, KeyError):
         bank = None
-    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on)
+    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
     if bank is None:
         for rid, sev in (("BRN-R02", "medium"), ("BRN-R03", "medium")):
             f = _finding(rid, sev, {"type": "brand", "id": "question_bank", "label": "question bank"},

@@ -15,6 +15,8 @@ question, and accept or ignore on a proposed record. Nothing external.
   GET  documents                the documents manifest with what each file changed
   POST documents                {name, text | content_base64 | url, note}: stores the file
                                 under documents/ and adds a manifest line; never blocked
+  GET  competitors              the Ad Library pages against the brand: format and hook mix per page,
+                                competitor medians, the gaps, proposed pages, and the cost of a re-pull
   GET  records?section=<name>   one section's records with tier, date, source and evidence
   GET  audit                    findings from audit.py (app/contracts/audit.md shape)
   POST questions/<field>        {answer}: writes a founder record, marks the question answered
@@ -53,6 +55,9 @@ META_SECTIONS = {"freshness", "open_questions", "changes"}
 _spec = importlib.util.spec_from_file_location("brand_brain_audit", HERE / "audit.py")
 audit = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(audit)
+_mspec = importlib.util.spec_from_file_location("brand_brain_market", HERE / "market.py")
+market = importlib.util.module_from_spec(_mspec)
+_mspec.loader.exec_module(market)
 _rspec = importlib.util.spec_from_file_location("ecomos_rank_bb", APP / "rank.py")
 rank_mod = importlib.util.module_from_spec(_rspec)
 _rspec.loader.exec_module(rank_mod)
@@ -393,6 +398,17 @@ def document_add(brain: Brain, body: dict):
                  "next": "Kept as it is. Extraction into records is proposed through the review queue.", "version": brain.version()}
 
 
+def competitors(brain: Brain) -> dict:
+    d = market.pages(brain)
+    d["gaps"] = market.gaps(brain)
+    d["repull"] = market.repull(brain)
+    d["formats"] = [{"key": k, "label": market.FORMAT_LABEL[k]} for k in market.FORMATS]
+    d["hooks"] = [{"key": k, "label": market.HOOK_LABEL[k]} for k in market.HOOKS]
+    d["stale_after_days"] = market.SNAPSHOT_STALE_DAYS
+    d["brand"], d["today"], d["version"] = brain.brand, brain.today.isoformat(), brain.version()
+    return d
+
+
 def handle(req):
     try:
         brain = _brain(req)
@@ -411,6 +427,8 @@ def handle(req):
         return documents(brain)
     if req.method == "POST" and parts == ["documents"]:
         return document_add(brain, req.body)
+    if req.method == "GET" and parts == ["competitors"]:
+        return competitors(brain)
     if req.method == "GET" and parts == ["records"]:
         sec = req.arg("section", "")
         if sec not in SECTIONS:

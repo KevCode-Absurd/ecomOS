@@ -105,6 +105,24 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 | 0 | skeleton, 0.1 to 0.10 | 2026-09-28 | Bombas brain (public sources); tests in tests/test_screen_brand_brain.py. No decisions, changes or contracts data yet, so those jobs wait for a later round. |
 | 1 (lead sample) | top section to the depth contract: master list (plan board of the top 10 across 28 audits, connect strip, bottlenecks table), editable profile (8 sections, winning record per field, founder edits write approved records), files in (drop or url into the documents manifest); tiles and the records chart removed; screenshot `round1-sample.png` | 2026-09-28 | Built by the lead session as the sample for every manager. Routes: `master`, `profile`, `profile/<section>/<field>`, `documents`. The manager continues round 1 with brief section 5 items 3 and 4 (competitors and market, health) and the rest of the list. |
 
+| 1 (manager) | competitors and market, coverage matrix, market signals, health, connectors, conflicts, questions, decisions, files in deeper, flow proof and `rank()` | 2026-09-28 | Manager session, brief section 5 items 3 and 4 plus the rest of the list. Table below. |
+
+## Round 1 (manager, 28 Sep 2026): 10 features, one commit each
+
+| # | Feature | Status | What a founder can do |
+|---|---|---|---|
+| 1.1 | Competitors and market: the Ad Library pages against the brand (`GET competitors`, `market.py`): verdict table per page with format mix, hook-form mix, run lengths, offers and signals; page detail panel with mix against the competitor median; stacked mix charts; gaps to brief as actions (rules BRN-R05 format gap, BRN-R06 hook-form gap, BRN-R07 snapshot stale); re-pull strip with the Apify estimate against the per-run and weekly caps, by page id only, logged as a BRN-C11 decision, never run from the screen | done | See which formats and hook forms competitors run that we do not, open any page in the Ad Library, brief the gap, queue a re-pull with its cost known |
+| 1.2 | Coverage matrix: angles by page, us against them, gaps with "brief it" (CREA) | todo | |
+| 1.3 | Reddit recommended-instead signal and the competitor frame as an action list | todo | |
+| 1.4 | Health: freshness by confidence heatmap per section, weak cells end in an action | todo | |
+| 1.5 | Connectors: connected, what each fills, unavailable never zero, connect steps | todo | |
+| 1.6 | Conflicts with the site-wins default and a founder-decides button that writes the resolution | todo | |
+| 1.7 | The 5 open questions with pull-first hints and inline answers, ranked by weight and screens unblocked | todo | |
+| 1.8 | Decisions log timeline; approved master-list items show their decision and move to in progress | todo | |
+| 1.9 | Files in, deeper: rule-based extraction of text and markdown into the review queue, what each file changed | todo | |
+| 1.10 | Positioning flow proof (which screens read each field) and `rank()` with real titles and steps for BRN-R01 to R07 | todo | |
+
+Web pass for round 2 ideas: `WEB-PASS.md` in this folder (25 features from the best brand-ops tools, 5 that none of them do).
 
 ## Round 1 candidates (ranked 28 Sep 2026 by the lead session)
 

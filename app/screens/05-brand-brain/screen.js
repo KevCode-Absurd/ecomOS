@@ -141,6 +141,124 @@
     mount('#drop', zone, status);
   }
 
+  // ---------- 4. competitors and market ----------
+  const pct = (v) => v == null ? NA : Math.round(v * 100) + '%';
+  function marketOrient(d) {
+    const us = d.us || {};
+    const med = d.medians || {};
+    return [
+      { label: 'pages pulled', value: d.competitors_pulled, unit: 'n', title: d.competitors_configured + ' configured' },
+      { label: 'our ads seen', value: us.ads_seen, unit: 'n' },
+      { label: 'ours 30 days+', value: us.long_runner_share, unit: '%', title: 'share of our ads that have run 30 days or more' },
+      { label: 'their median 30 days+', value: med.long_runner_share, unit: '%' },
+      { label: 'snapshot age', value: d.snapshot_age_days, unit: 'days', tone: d.snapshot_age_days > d.stale_after_days ? 'bad' : null },
+      { label: 'gaps', value: (d.gaps || []).length, unit: 'n', tone: (d.gaps || []).length ? 'bad' : 'good' },
+    ];
+  }
+  function pagesTable(d) {
+    const rows = d.pages.map((p) => Object.assign({}, p, {
+      video: p.format_share ? p.format_share.video : null, image: p.format_share ? p.format_share.image : null,
+      dco: p.format_share ? p.format_share.dco : null, dpa: p.format_share ? p.format_share.dpa : null,
+      question: p.hook_share ? p.hook_share.question : null, first_person: p.hook_share ? p.hook_share.first_person : null,
+      offers: (p.offers_seen || []).join(', ') || (p.pulled ? 'none seen' : ''), flags_text: (p.flags || []).map((f) => f.text).join('; '),
+      page_label: p.name + (p.role === 'self' ? ' (us)' : ''),
+    }));
+    return UI.verdictTable({
+      columns: [
+        { key: 'page_label', label: 'Page' },
+        { key: 'ads_seen', label: 'Ads seen', unit: 'n', align: 'right' },
+        { key: 'video', label: 'Video', unit: '%', align: 'right' },
+        { key: 'image', label: 'Image', unit: '%', align: 'right' },
+        { key: 'dco', label: 'Dynamic', unit: '%', align: 'right' },
+        { key: 'dpa', label: 'Catalog', unit: '%', align: 'right' },
+        { key: 'question', label: 'Question hooks', unit: '%', align: 'right' },
+        { key: 'first_person', label: 'First person', unit: '%', align: 'right' },
+        { key: 'long_runner_share', label: '30 days+', unit: '%', align: 'right' },
+        { key: 'median_run_days', label: 'Median run', unit: 'days', align: 'right' },
+        { key: 'offers', label: 'Offers seen' },
+        { key: 'flags_text', label: 'Signals' },
+      ],
+      verdict: { at: 1, kind: (r) => r.verdict.kind, text: (r) => r.verdict.text, reason: (r) => r.verdict.reason },
+      reason: { key: 'why', label: 'Why', text: (r) => r.verdict.reason },
+      actions: { label: 'Open Ad Library', onClick: (r) => { if (r.ad_library_url) window.open(r.ad_library_url, '_blank', 'noopener'); } },
+      rows, sort: false, maxRows: 20, empty: 'No Ad Library pages configured for this brand.',
+      onRow: (r) => openPage(r, d),
+    });
+  }
+  function openPage(p, d) {
+    const med = d.medians || {};
+    const body = el('div', { class: 'stack' });
+    body.append(el('div', { class: 'row' }, el('span', { class: 'chip ' + (p.role === 'self' ? 'accent' : '') , text: p.role === 'self' ? 'us' : 'competitor' }),
+      p.captured_at ? el('span', { class: 'chip', text: 'captured ' + fmt.date(p.captured_at) }) : el('span', { class: 'chip warn', text: 'not pulled' }),
+      ...(p.flags || []).map((f) => el('span', { class: 'chip warn', text: f.text }))));
+    if (p.positioning) body.append(el('div', null, el('b', { text: 'Positioning: ' }), p.positioning));
+    if (p.price_band) body.append(el('div', null, el('b', { text: 'Price band: ' }), p.price_band));
+    if (p.what_they_push) body.append(el('div', null, el('b', { text: 'Pushes now: ' }), p.what_they_push));
+    if ((p.angles || []).length) body.append(el('div', null, el('b', { text: 'Angles seen: ' }), p.angles.join(', ')));
+    if (p.format_share) {
+      body.append(Charts.bar({ title: 'Format mix against the competitor median', labels: d.formats.map((f) => f.label),
+        series: [{ name: p.name, values: d.formats.map((f) => p.format_share[f.key] == null ? null : Math.round(p.format_share[f.key] * 100)) },
+                 { name: 'competitor median', values: d.formats.map((f) => med.format_share && med.format_share[f.key] != null ? Math.round(med.format_share[f.key] * 100) : null) }],
+        unit: '%', height: 200, note: 'Share of ads seen on the page. Median across ' + (med.n || 0) + ' competitor pages with 20 or more ads.' }));
+      body.append(Charts.bar({ title: 'Hook form mix', labels: d.hooks.map((h) => h.label),
+        series: [{ name: p.name, values: d.hooks.map((h) => p.hook_share[h.key] == null ? null : Math.round(p.hook_share[h.key] * 100)) },
+                 { name: 'competitor median', values: d.hooks.map((h) => med.hook_share && med.hook_share[h.key] != null ? Math.round(med.hook_share[h.key] * 100) : null) }],
+        unit: '%', height: 200, note: 'Hook form is how the first line opens, not what it says. Angles are in the coverage matrix.' }));
+    }
+    body.append(el('div', { class: 'small muted', text: 'Records: ' + (p.record_ids || []).join(', ') }));
+    body.append(el('p', { class: 'micro faint', text: d.note }));
+    UI.panel({ title: p.name, body, tools: p.ad_library_url ? [el('a', { class: 'btn sm', href: p.ad_library_url, target: '_blank', rel: 'noopener', text: 'Open in the Ad Library' })] : null });
+  }
+  function mixChart(d, kind) {
+    const keys = kind === 'format' ? d.formats : d.hooks;
+    const pages = d.pages.filter((p) => p.pulled);
+    const share = (p, k) => (kind === 'format' ? p.format_share : p.hook_share);
+    return Charts.bar({
+      title: kind === 'format' ? 'Format mix by page, us first' : 'Hook form mix by page, us first',
+      labels: pages.map((p) => p.role === 'self' ? p.name + ' (us)' : p.name), stacked: true, unit: '%', height: 260,
+      series: keys.map((k) => ({ name: k.label, values: pages.map((p) => { const s = share(p, k.key); return s && s[k.key] != null ? Math.round(s[k.key] * 100) : null; }) })),
+      note: kind === 'format' ? 'Share of ads seen per page. Dynamic and catalog are auto-built from the feed; video and image are made by hand.' : 'Statement hooks dominate every page. The rare forms (question, first person, number, offer) are where a test can stand out.',
+    });
+  }
+  function gapCards(d, actions) {
+    const byKey = {};
+    for (const a of actions || []) if (a.entity && a.entity.id) byKey[a.entity.id] = a;
+    const wrap = el('div', { class: 'grid' });
+    for (const g of d.gaps || []) {
+      const a = byKey[g.kind + '_' + g.key];
+      if (a) { wrap.append(UI.actionCard(a, { screen: SCREEN, expanded: false })); continue; }
+      wrap.append(el('div', { class: 'card flat' }, el('b', { text: g.label }), el('div', { class: 'small muted', text: 'us ' + pct(g.us) + ', competitor median ' + pct(g.them) + '. Leaders: ' + g.leaders.map((l) => l.name + ' ' + pct(l.share)).join(', ') })));
+    }
+    if (!(d.gaps || []).length) wrap.append(el('p', { class: 'muted', text: 'No format or hook-form gap against the competitor median. Check the coverage matrix for angle gaps.' }));
+    return wrap;
+  }
+  function repullStrip(d) {
+    const r = d.repull || {};
+    const stale = d.snapshot_age_days != null && d.snapshot_age_days > d.stale_after_days;
+    const cost = r.estimate_usd != null ? fmt.unit(r.estimate_usd, '$') : NA + (r.estimate_reason ? ' (' + r.estimate_reason + ')' : '');
+    const line = el('div', { class: 'row between' },
+      el('div', null, el('b', { text: (stale ? 'Snapshot is stale. ' : 'Snapshot is fresh. ') }),
+        'A fresh pull of ' + r.pages + ' pages by page id, up to ' + fmt.compact(r.items_max || 0) + ' ads, costs about ' + cost + '. Caps: ' + (r.cap_per_run_usd != null ? fmt.unit(r.cap_per_run_usd, '$') : NA) + ' a run, ' + (r.cap_per_week_usd != null ? fmt.unit(r.cap_per_week_usd, '$') : NA) + ' a week. Spent this week: ' + (r.week_spent_usd != null ? fmt.unit(r.week_spent_usd, '$') : NA) + '.'),
+      UI.decisionRow({ capability: 'BRN-C11', autonomy: 'agent_does', owner: 'agent', screen: SCREEN, compact: true,
+        stub: 'Queues one Ad Library pull of the ' + r.pages + ' configured pages by page id through app/connectors/apify.py. Estimated ' + cost + '. The connector checks the per-run and weekly caps and refuses over either. Never a search term. Records land in the review queue.' }));
+    const notPulled = (d.not_pulled || []).length ? el('div', { class: 'small muted', text: 'Not pulled: ' + d.not_pulled.join(', ') + ' (no page id, or no ads in the market).' }) : null;
+    return el('div', { class: 'card flat repull' + (stale ? ' stale' : '') }, line, notPulled, el('div', { class: 'micro faint', text: r.note || '' }));
+  }
+  async function loadMarket() {
+    let d, actions = [];
+    try { d = await api(BASE + 'competitors'); } catch (e) { mount('#market', el('p', { class: 'muted', text: 'Competitors unavailable: ' + e.message })); return null; }
+    try { const r = await api(BASE + 'rank'); actions = (r.actions || []).filter((a) => a.gap || /BRN-R0[567]/.test(a.rule_id || '')); } catch (e) { actions = []; }
+    mount('#market-tools', UI.orientation(marketOrient(d)));
+    const gapsN = (d.gaps || []).length;
+    mount('#market', UI.tabs({ items: [
+      { key: 'gaps', label: 'Gaps to brief', n: gapsN, panel: () => gapCards(d, actions) },
+      { key: 'pages', label: 'Pages', n: d.pages.length, panel: () => el('div', { class: 'stack' }, pagesTable(d), el('div', { class: 'micro faint', text: d.note + ' Click a row for the page detail.' })) },
+      { key: 'formats', label: 'Format mix', panel: () => mixChart(d, 'format') },
+      { key: 'hooks', label: 'Hook mix', panel: () => mixChart(d, 'hook') },
+    ], current: gapsN ? 'gaps' : 'pages' }), repullStrip(d));
+    return d;
+  }
+
   // ---------- 5. the desk (round 0 blocks, restyled) ----------
   function recordCard(r) {
     const card = el('article', { class: 'card flat rec' });
@@ -299,6 +417,7 @@
   async function load() {
     mountDrop();
     loadDocs();
+    loadMarket();
     const [prof] = await Promise.all([loadProfile(), loadDesk()]);
     await loadPlan(prof);
   }
