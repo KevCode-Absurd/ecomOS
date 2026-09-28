@@ -494,6 +494,32 @@
     mount('#decisions', filters, tl, items.length > 30 ? el('div', { class: 'micro faint', text: (items.length - 30) + ' older entries not shown.' }) : null, el('p', { class: 'micro faint', text: d.note }));
   }
 
+  // ---------- 5c2b. channel rules the founder edits ----------
+  function channelRulesPanel(startChannel) {
+    const body = el('div', { class: 'stack' }, el('p', { class: 'muted small', text: 'Loading.' }));
+    const panel = UI.panel({ title: 'Channel rules', body });
+    let current = startChannel;
+    async function render() {
+      let cs;
+      try { cs = await api(BASE + 'channels'); } catch (e) { mount(body, el('p', { class: 'muted', text: 'Could not load: ' + e.message })); return; }
+      const status = el('span', { class: 'micro muted' });
+      const tabs = el('div', { class: 'row' }, ...Object.entries(cs.channels).map(([k, c]) => el('button', { class: 'btn xs' + (k === current ? ' primary' : ' soft'), type: 'button', text: c.label + ' (' + (c.counts.built_in - c.counts.muted + c.counts.founder) + ')', onclick: () => { current = k; render(); } })));
+      const c = cs.channels[current];
+      const built = el('div', { class: 'stack' }, ...c.built_in.map((r) => { const m = el('button', { class: 'btn xs soft', type: 'button', text: r.muted ? 'Unmute' : 'Mute' }); m.addEventListener('click', async () => { m.disabled = true; try { await api(BASE + 'channels/' + current + '/mute', { method: 'POST', body: { index: r.index } }); render(); } catch (e) { m.disabled = false; status.textContent = 'Could not: ' + e.message; } }); return el('div', { class: 'row card flat small' + (r.muted ? ' faint' : '') }, el('span', { class: 'chip ' + (r.kind === 'fail' ? 'bad' : r.kind === 'must' ? 'warn' : '') , text: r.kind }), el('span', { text: r.why + (r.fix ? '. ' + r.fix : '') }), el('span', { class: 'micro mono faint', text: r.pattern.slice(0, 50) }), r.muted ? el('span', { class: 'chip', text: 'muted' }) : null, m); }));
+      const mine = el('div', { class: 'stack' }, ...(c.founder.length ? c.founder.map((r) => { const x = el('button', { class: 'btn xs soft', type: 'button', text: 'Remove' }); x.addEventListener('click', async () => { x.disabled = true; try { await api(BASE + 'channels/' + current + '/remove', { method: 'POST', body: { record: r.record } }); render(); } catch (e) { x.disabled = false; status.textContent = 'Could not remove: ' + e.message; } }); return el('div', { class: 'row card flat small' }, el('span', { class: 'chip ' + (r.kind === 'fail' ? 'bad' : r.kind === 'must' ? 'warn' : ''), text: r.kind }), el('span', { class: 'mono', text: (r.regex ? '/' + r.pattern + '/' : '"' + r.pattern + '"') }), el('span', { text: (r.why || '') + (r.fix ? '. ' + r.fix : '') }), x); }) : [el('p', { class: 'muted small', text: 'No rule of yours on this channel yet.' })]));
+      const pat = el('input', { class: 'text sm', placeholder: 'phrase, like: 100% cotton', style: { flex: '1 1 200px' } });
+      const kind = el('select', { class: 'text sm' }, ...cs.kinds.map((k) => el('option', { value: k, text: k === 'fail' ? 'fail (blocks)' : k === 'must' ? 'must (fails when absent)' : 'warn (flags)' })));
+      const why = el('input', { class: 'text sm', placeholder: 'why', style: { flex: '1 1 180px' } });
+      const fix = el('input', { class: 'text sm', placeholder: 'fix', style: { flex: '1 1 180px' } });
+      const rx = el('label', { class: 'small' }, el('input', { type: 'checkbox' }), ' regex');
+      const add = el('button', { class: 'btn primary sm', type: 'button', text: 'Add rule' });
+      add.addEventListener('click', async () => { if (!pat.value.trim()) return; add.disabled = true; try { const r = await api(BASE + 'channels/' + current, { method: 'POST', body: { pattern: pat.value.trim(), kind: kind.value, why: why.value.trim(), fix: fix.value.trim(), regex: rx.firstChild.checked } }); status.textContent = r.next; render(); } catch (e) { add.disabled = false; status.textContent = 'Could not add: ' + e.message; } });
+      mount(body, tabs, el('h4', { text: c.label + ': built in (' + c.counts.built_in + ', ' + c.counts.muted + ' muted)' }), built, el('h4', { text: 'Yours (' + c.counts.founder + ')' }), mine, el('div', { class: 'row' }, pat, kind, why, fix, rx, add, status), el('p', { class: 'micro faint', text: cs.note }));
+    }
+    render();
+    return panel;
+  }
+
   // ---------- 1b. competitor moves against the bottleneck ----------
   function movePanel(r) {
     const body = el('div', { class: 'stack' });
@@ -1594,7 +1620,8 @@
       } catch (e) { mount(out, el('p', { class: 'muted', text: 'Could not check: ' + e.message })); }
       btn.disabled = false;
     });
-    return el('div', { class: 'stack scanner' }, ta, el('div', { class: 'row' }, el('span', { class: 'small muted', text: 'Channel:' }), channel, btn, el('span', { class: 'micro faint', text: 'Rules only, no model. A blocking hit is a forbidden phrase, a number the brain contradicts, or a channel rule.' })), out);
+    const edit = el('button', { class: 'btn sm', type: 'button', text: 'Edit channel rules', onclick: () => channelRulesPanel(channel.value || 'amazon') });
+    return el('div', { class: 'stack scanner' }, ta, el('div', { class: 'row' }, el('span', { class: 'small muted', text: 'Channel:' }), channel, btn, edit, el('span', { class: 'micro faint', text: 'Rules only, no model. A blocking hit is a forbidden phrase, a number the brain contradicts, or a channel rule.' })), out);
   }
   async function loadClaims() {
     let cd;

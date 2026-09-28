@@ -174,22 +174,62 @@ CHANNELS = {
 }
 
 
+RULE_KINDS = ("fail", "warn", "must")
+
+
+def founder_rules(brain) -> dict:
+    """The founder's own channel rules and mutes: claims records `channel_rule_<channel>_<n>` (value: channel, pattern,
+    regex, kind, why, fix) and `channel_mute_<channel>_<i>` (value: channel, index of the built-in rule)."""
+    rules: dict[str, list[dict]] = {c: [] for c in CHANNELS}
+    muted: dict[str, set[int]] = {c: set() for c in CHANNELS}
+    for r in brain.records("claims"):
+        f = r.get("field") or ""
+        v = r.get("value") if isinstance(r.get("value"), dict) else {}
+        ch = v.get("channel")
+        if ch not in CHANNELS:
+            continue
+        if f.startswith("channel_rule_") and v.get("pattern"):
+            try:
+                pat = re.compile(v["pattern"] if v.get("regex") else re.escape(v["pattern"]), re.I)
+            except re.error:
+                continue
+            rules[ch].append({"record": r["id"], "channel": ch, "pattern": v["pattern"], "regex": bool(v.get("regex")), "kind": v.get("kind") if v.get("kind") in RULE_KINDS else "warn", "why": v.get("why") or "your rule", "fix": v.get("fix") or "", "compiled": pat, "date": r["date"]})
+        elif f.startswith("channel_mute_") and isinstance(v.get("index"), int):
+            muted[ch].add(v["index"])
+    return {"rules": rules, "muted": muted}
+
+
+def channel_sets(brain) -> dict:
+    """Every channel's rules for the screen: built-in with an index and a muted flag, plus the founder's own."""
+    fr = founder_rules(brain)
+    out = {}
+    for ch, spec in CHANNELS.items():
+        built = [{"index": i, "kind": kind, "why": why, "fix": fix, "pattern": pat.pattern[:80], "muted": i in fr["muted"][ch]} for i, (pat, kind, why, fix) in enumerate(spec["rules"])]
+        mine = [{k: r[k] for k in ("record", "pattern", "regex", "kind", "why", "fix", "date")} for r in fr["rules"][ch]]
+        out[ch] = {"label": spec["label"], "built_in": built, "founder": mine, "counts": {"built_in": len(built), "muted": len(fr["muted"][ch]), "founder": len(mine)}}
+    return {"channels": out, "kinds": list(RULE_KINDS), "note": "Built-in rules are the platform's public vocabulary; mute one when it does not apply to you. Your rules are plain phrases (or a regex when you say so): fail blocks, warn flags, must fails when the phrase is absent. The scanner applies both on every draft for that channel."}
+
+
 def channel_scan(brain, text: str, channel: str) -> dict:
-    """The channel's rules on top of the brain scan. `must` rules fail when the pattern is absent; others when present."""
+    """The channel's rules on top of the brain scan. `must` rules fail when the pattern is absent; others when present.
+    The founder's mutes drop a built-in rule; the founder's own rules run after the built-in ones."""
     base = scan(brain, text)
     ch = CHANNELS.get(channel)
     if not ch:
         return dict(base, channel=None, channel_hits=[], channels=sorted(CHANNELS))
+    fr = founder_rules(brain)
     hits = []
-    for pat, kind, why, fix in ch["rules"]:
+    rules = [(pat, kind, why, fix, None) for i, (pat, kind, why, fix) in enumerate(ch["rules"]) if i not in fr["muted"][channel]]
+    rules += [(r["compiled"], r["kind"], r["why"], r["fix"], r["record"]) for r in fr["rules"][channel]]
+    for pat, kind, why, fix, record in rules:
         m = pat.search(text or "")
         if kind == "must":
             if not m:
-                hits.append({"kind": "channel_missing", "severity": "fail", "match": why, "record": None, "tier": channel, "fix": fix})
+                hits.append({"kind": "channel_missing", "severity": "fail", "match": why, "record": record, "tier": channel, "fix": fix})
         elif m:
             if channel == "email" and pat.pattern.startswith("\\b(unsubscribe"):
                 continue
-            hits.append({"kind": "channel_rule", "severity": kind, "match": m.group(0)[:60] + (": " + why), "record": None, "tier": channel, "fix": fix})
+            hits.append({"kind": "channel_rule", "severity": kind, "match": m.group(0)[:60] + (": " + why), "record": record, "tier": channel, "fix": fix})
     fails = base["fails"] + sum(1 for h in hits if h["severity"] == "fail")
     warns = base["warns"] + sum(1 for h in hits if h["severity"] == "warn")
     return dict(base, channel=channel, channel_label=ch["label"], channel_hits=hits, hits=base["hits"] + hits, fails=fails, warns=warns,

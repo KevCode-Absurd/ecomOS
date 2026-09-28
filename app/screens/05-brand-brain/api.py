@@ -1559,6 +1559,62 @@ def handle(req):
         return bottlenecks_view(brain, _window(req, brain))
     if req.method == "POST" and parts == ["bottlenecks", "pick"]:
         return idea_pick(brain, req.body)
+    if req.method == "GET" and parts == ["channels"]:
+        cs = claims_mod.channel_sets(brain)
+        cs["capability"] = {"id": "BRN-C03", "autonomy": "founder_gate"}
+        return cs
+    if req.method == "POST" and len(parts) == 2 and parts[0] == "channels" and parts[1] in claims_mod.CHANNELS:
+        ch = parts[1]
+        body = req.body or {}
+        pattern = str(body.get("pattern") or "").strip()[:200]
+        kind = str(body.get("kind") or "warn")
+        if not pattern:
+            return 400, {"error": "pattern is required: a phrase, or a regex when regex is true"}
+        if kind not in claims_mod.RULE_KINDS:
+            return 400, {"error": "kind must be fail, warn or must"}
+        if body.get("regex"):
+            try:
+                re.compile(pattern)
+            except re.error as e:
+                return 400, {"error": f"regex does not compile: {e}"}
+        n = 1 + sum(1 for r in brain.records("claims", include_retired=True) if (r.get("field") or "").startswith(f"channel_rule_{ch}_"))
+        rec = {"id": f"{brain.brand}.claims.channel_rule_{ch}_{n}", "brand": brain.brand, "section": "claims", "field": f"channel_rule_{ch}_{n}",
+               "value": {"channel": ch, "pattern": pattern, "regex": bool(body.get("regex")), "kind": kind, "why": str(body.get("why") or "")[:160] or None, "fix": str(body.get("fix") or "")[:160] or None},
+               "text": f"{claims_mod.CHANNELS[ch]['label']} rule ({kind}): " + (f"the draft must contain '{pattern}'" if kind == "must" else f"'{pattern}' {'blocks' if kind == 'fail' else 'flags'} the draft") + (f". {body.get('why')}" if body.get("why") else "."),
+               "tier": "approved", "confidence": 1.0, "visibility": "private", "source": {"type": "founder", "ref": "05-brand-brain channel rules", "captured_at": brain.today.isoformat()}}
+        errs = founder_put(brain, rec, "rule", rec["text"][:160])
+        if errs:
+            return 400, {"error": "; ".join(errs)}
+        return 201, {"ok": True, "record": rec["id"], "channel": ch, "version": brain.version(), "next": "The scanner applies it on every draft for this channel from now on."}
+    if req.method == "POST" and len(parts) == 3 and parts[0] == "channels" and parts[1] in claims_mod.CHANNELS and parts[2] in ("mute", "remove"):
+        ch = parts[1]
+        body = req.body or {}
+        before_v = brain.version()
+        if parts[2] == "mute":
+            idx = body.get("index")
+            if not isinstance(idx, int) or not (0 <= idx < len(claims_mod.CHANNELS[ch]["rules"])):
+                return 400, {"error": "index must name a built-in rule"}
+            existing = next((r for r in brain.raw("claims") if (r.get("field") or "") == f"channel_mute_{ch}_{idx}" and r.get("status", "active") != "retired"), None)
+            if existing:
+                brain.retire(existing["id"])
+                changes.log(brain, "rule", "claims", existing["id"], f"{claims_mod.CHANNELS[ch]['label']}: built-in rule {idx} unmuted")
+                changes.version_step(brain, before_v, f"unmuted {ch} rule {idx}")
+                return 201, {"ok": True, "muted": False, "index": idx, "version": brain.version()}
+            why = claims_mod.CHANNELS[ch]["rules"][idx][2]
+            rec = {"id": f"{brain.brand}.claims.channel_mute_{ch}_{idx}", "brand": brain.brand, "section": "claims", "field": f"channel_mute_{ch}_{idx}", "value": {"channel": ch, "index": idx, "why": why},
+                   "text": f"{claims_mod.CHANNELS[ch]['label']} built-in rule muted by the founder: {why}.", "tier": "approved", "confidence": 1.0, "visibility": "private", "source": {"type": "founder", "ref": "05-brand-brain channel rules", "captured_at": brain.today.isoformat()}}
+            errs = founder_put(brain, rec, "rule", rec["text"][:160])
+            if errs:
+                return 400, {"error": "; ".join(errs)}
+            return 201, {"ok": True, "muted": True, "index": idx, "version": brain.version()}
+        rid = str(body.get("record") or "")
+        raw = next((r for r in brain.raw("claims") if r.get("id") == rid and (r.get("field") or "").startswith(f"channel_rule_{ch}_")), None)
+        if raw is None:
+            return 404, {"error": "no founder rule with that id on this channel", "record": rid}
+        brain.retire(rid)
+        changes.log(brain, "rule", "claims", rid, f"{claims_mod.CHANNELS[ch]['label']} rule removed (retired): {str(raw.get('text'))[:100]}")
+        changes.version_step(brain, before_v, f"removed {rid}")
+        return 201, {"ok": True, "removed": rid, "version": brain.version()}
     if req.method == "GET" and parts == ["moves"]:
         window = _window(req, brain)
         try:

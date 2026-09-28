@@ -1938,10 +1938,53 @@ class Round5Moves(TempBrain):
         self.assertEqual(m['counts'], {'moves': 0, 'against_bottleneck': 0, 'watch': 0, 'with_action': 0})
 
 
+class Round5ChannelRules(TempBrain):
+    """Round 5 feature 3: channel rule sets the founder edits: add a rule, mute a built-in one, remove; the scanner applies them."""
+
+    def test_add_mute_remove_and_scan(self):
+        cs = api.handle(Req(['channels']))
+        self.assertEqual(sorted(cs['channels']), ['amazon', 'email', 'google', 'meta', 'sms'])
+        self.assertEqual(cs['channels']['amazon']['counts']['founder'], 0)
+        # a founder rule: the phrase blocks on Amazon
+        status, res = api.handle(Req(['channels', 'amazon'], 'POST', body={'pattern': '100% cotton', 'kind': 'fail', 'why': 'our socks are a blend', 'fix': 'Say cotton blend.'}))
+        self.assertEqual((status, res['record']), (201, 'bombas.claims.channel_rule_amazon_1'))
+        r = api.handle(Req(['scan'], 'POST', body={'text': 'Soft socks in 100% cotton.', 'channel': 'amazon'}))
+        hit = next(h for h in r['channel_hits'] if h['record'] == 'bombas.claims.channel_rule_amazon_1')
+        self.assertEqual((hit['severity'], r['verdict']), ('fail', 'fail'))
+        self.assertIn('our socks are a blend', hit['match'])
+        # a must rule fails when the phrase is absent
+        api.handle(Req(['channels', 'sms'], 'POST', body={'pattern': 'Bombas', 'kind': 'must', 'why': 'the brand name'}))
+        r = api.handle(Req(['scan'], 'POST', body={'text': 'Reply STOP to opt out. Socks from the brand you like.', 'channel': 'sms'}))
+        self.assertTrue(any(h['kind'] == 'channel_missing' and h['record'] == 'bombas.claims.channel_rule_sms_1' for h in r['channel_hits']))
+        # mute the Amazon guarantee warning (built-in index 2) and the hit goes away
+        r = api.handle(Req(['scan'], 'POST', body={'text': 'Backed by our guarantee.', 'channel': 'amazon'}))
+        self.assertTrue(any('guarantee' in h['match'] for h in r['channel_hits']))
+        status, res = api.handle(Req(['channels', 'amazon', 'mute'], 'POST', body={'index': 2}))
+        self.assertEqual((status, res['muted']), (201, True))
+        r = api.handle(Req(['scan'], 'POST', body={'text': 'Backed by our guarantee.', 'channel': 'amazon'}))
+        self.assertFalse(any('guarantee' in h['match'] for h in r['channel_hits']))
+        cs = api.handle(Req(['channels']))
+        self.assertTrue(cs['channels']['amazon']['built_in'][2]['muted'])
+        self.assertEqual(cs['channels']['amazon']['counts'], {'built_in': 4, 'muted': 1, 'founder': 1})
+        status, res = api.handle(Req(['channels', 'amazon', 'mute'], 'POST', body={'index': 2}))
+        self.assertEqual((status, res['muted']), (201, False))
+        # remove retires the rule; the scan no longer blocks
+        status, res = api.handle(Req(['channels', 'amazon', 'remove'], 'POST', body={'record': 'bombas.claims.channel_rule_amazon_1'}))
+        self.assertEqual(status, 201)
+        self.assertEqual(next(x['status'] for x in self.section('claims') if x['id'] == 'bombas.claims.channel_rule_amazon_1'), 'retired')
+        r = api.handle(Req(['scan'], 'POST', body={'text': 'Soft socks in 100% cotton.', 'channel': 'amazon'}))
+        self.assertFalse(any(h.get('record') == 'bombas.claims.channel_rule_amazon_1' for h in r['channel_hits']))
+        self.assertEqual(api.handle(Req(['channels', 'amazon'], 'POST', body={'pattern': '(', 'regex': True}))[0], 400)
+        self.assertEqual(api.handle(Req(['channels', 'amazon'], 'POST', body={'pattern': 'x', 'kind': 'nope'}))[0], 400)
+        self.assertEqual(api.handle(Req(['channels', 'amazon', 'mute'], 'POST', body={'index': 99}))[0], 400)
+        self.assertEqual(api.handle(Req(['channels', 'tiktok'], 'POST', body={'pattern': 'x'}))[0], 404)
+        self.assertGreaterEqual(sum(1 for c in api.handle(Req(['changes']))['changes'] if c['kind'] == 'rule'), 4)
+
+
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
-    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'],
+    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'],
               ['decisions'], ['flows'], ['claims'], ['site', 'diff'], ['parity'], ['contracts'], ['legal'], ['voice'], ['battlecards'], ['permissions'],
               ['export'], ['assumptions'], ['facts'], ['summaries'], ['changes'], ['learn'], ['report'], ['digest'], ['review'], ['bottlenecks'], ['audit']]
 
