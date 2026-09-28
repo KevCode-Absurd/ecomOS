@@ -189,8 +189,11 @@ Rules
 
 Money uses net sales, not margin. Review counts are public and real; sales are simulated.
 """
+import copy
+import hashlib
 import importlib.util
 import json
+import os
 import re
 import statistics
 from datetime import date, timedelta
@@ -780,11 +783,93 @@ def net_28d(rd):
     return (r.get('inputs') or {}).get('net_revenue') if not r.get('unavailable') else None
 
 
+# ---------------------------------------------------------------- the audit memo: one run per state, per process
+
+MEMO_ON = True                    # tests turn it off to time a bare run
+MEMO_KEEP = 8                     # states kept (brand x window); the oldest goes first
+MEMO_CONTENT_BYTES = 512 * 1024   # files at or under this size are keyed by content, not by mtime, so two writes inside one clock tick still differ
+_MEMO = {'states': {}, 'runs': 0, 'served': 0}
+
+
+def _memo_paths(brand):
+    """Every file the audit reads that this screen or a person can write: the fixtures folder (pipeline, pulls, web pass,
+    history, hand-offs, seen, reports), the pipeline file wherever a test points it, the spend ledger, the brand's data
+    folder and the brain folder. Missing paths count as absent."""
+    paths = [p for p in sorted((HERE / 'fixtures').rglob('*')) if p.is_file()]
+    paths += [Path(PIPELINE_PATH), Path(LEDGER_PATH)]
+    for folder in ((APP / 'data' / str(brand)) if brand else None, (APP / 'brain' / str(brand)) if brand else None):
+        if folder and folder.is_dir():
+            paths += [p for p in sorted(folder.rglob('*')) if p.is_file()]
+    seen, out = set(), []
+    for p in paths:
+        k = str(p)
+        if k not in seen:
+            seen.add(k)
+            out.append(p)
+    return out
+
+
+def memo_key(brand, ends_on, data=None):
+    """A hash over the state the audit depends on: the brand, the window end, today, which data object was passed, the brain
+    version, and every writable file (name, size, mtime, and the content of small ones)."""
+    h = hashlib.sha256()
+    h.update(f'{brand}|{ends_on}|{date.today()}|{id(data) if data is not None else 0}|'.encode())
+    for p in _memo_paths(brand):
+        try:
+            st = os.stat(p)
+        except OSError:
+            h.update(f'{p}|absent|'.encode())
+            continue
+        h.update(f'{p}|{st.st_size}|{st.st_mtime_ns}|'.encode())
+        if st.st_size <= MEMO_CONTENT_BYTES:
+            try:
+                h.update(p.read_bytes())
+            except OSError:
+                h.update(b'unreadable')
+    br = brain(brand) if brand else None
+    if br is not None:
+        h.update(br.version().encode())
+    return h.hexdigest()[:16]
+
+
+def memo_stats():
+    """How the memo did in this process: audits run, requests served from a memo, states kept, and whether it is on."""
+    return {'on': MEMO_ON, 'runs': _MEMO['runs'], 'served': _MEMO['served'], 'states': len(_MEMO['states']), 'keep': MEMO_KEEP,
+            'rule': 'the audit runs once per state (brand, window, the files it reads, the brain version) in a server process; every route on a page load reads that run, and any write to the pipeline, a fixture, the ledger or the brain runs it again'}
+
+
+def memo_clear():
+    _MEMO['states'].clear()
+    _MEMO['runs'] = 0
+    _MEMO['served'] = 0
+
+
 def run(brand, window=None, data=None):
-    """Findings for one brand and window ({ends_on, days, trailing}), sorted by severity then stake."""
+    """Findings for one brand and window ({ends_on, days, trailing}), sorted by severity then stake. Served from the
+    per-process memo when nothing the audit reads has changed; the caller gets its own copy."""
     data = data if data is not None else (brand_data(brand) if brand else None)
     last = last_full_day(data, brand)
     ends_on = min(date.fromisoformat(window['ends_on']), last) if window and window.get('ends_on') else last   # never past the data
+    if not MEMO_ON:
+        _MEMO['runs'] += 1
+        return _run_audit(brand, ends_on, data)
+    slot = (str(brand), ends_on.isoformat())
+    key = memo_key(brand, ends_on, data)
+    hit = _MEMO['states'].get(slot)
+    if hit and hit['key'] == key:
+        _MEMO['served'] += 1
+        return copy.deepcopy(hit['findings'])
+    findings = _run_audit(brand, ends_on, data)
+    _MEMO['runs'] += 1
+    _MEMO['states'].pop(slot, None)
+    _MEMO['states'][slot] = {'key': key, 'findings': copy.deepcopy(findings)}
+    while len(_MEMO['states']) > MEMO_KEEP:
+        _MEMO['states'].pop(next(iter(_MEMO['states'])))
+    return findings
+
+
+def _run_audit(brand, ends_on, data):
+    """The audit itself: every rule family in order, for one brand, window end and data object."""
     rd = Reader(data, brand, ends_on)
     tr = trend(rd)
     net = net_28d(rd)

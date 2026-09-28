@@ -7,7 +7,7 @@ import importlib.util
 import json
 import sys
 import unittest
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -1400,6 +1400,52 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
             self.assertIn('first run', ' '.join(r['changes']))
             self.assertEqual(audit.packaging_findings('fake', D), [])
         finally:
+            audit.PIPELINE_PATH = self.real2
+
+    def test_audit_memo(self):
+        D = date(2026, 9, 27)
+        self.real2 = audit.PIPELINE_PATH
+        was = audit.MEMO_ON
+        try:
+            audit.PIPELINE_PATH = self.tmp
+            audit.memo_clear()
+            audit.MEMO_ON = True
+            rows = [{'candidate_id': 'a', 'brand': 'fake', 'name': 'A', 'stage': 'gated', 'first_run': {'units': 500}, 'variants': 4}]
+            self.tmp.write_text(json.dumps({'rows': rows}), encoding='utf-8')
+            k1 = audit.memo_key('fake', D)
+            self.assertEqual(k1, audit.memo_key('fake', D))
+            rows[0]['variants'] = 1
+            self.tmp.write_text(json.dumps({'rows': rows}), encoding='utf-8')      # a second write inside the same clock tick still changes the key: small files are keyed by content
+            self.assertNotEqual(k1, audit.memo_key('fake', D))
+            self.assertNotEqual(audit.memo_key('fake', D), audit.memo_key("fake", D - timedelta(days=1)))
+            st = audit.memo_stats()
+            self.assertEqual((st['runs'], st['served'], st['on']), (0, 0, True))
+            self.assertIn('runs once per state', st['rule'])
+            # the sample brand through the api: one run, then served, then a run again after a pipeline write
+            a1 = api.rank('sample', None)
+            n = audit.memo_stats()['runs']
+            a2 = api.rank('sample', None)
+            self.assertEqual(audit.memo_stats()['runs'], n)
+            self.assertGreaterEqual(audit.memo_stats()['served'], 1)
+            self.assertEqual([x['id'] for x in a1['actions']], [x['id'] for x in a2['actions']])
+            rows[0]['variants'] = 3
+            self.tmp.write_text(json.dumps({'rows': rows}), encoding='utf-8')
+            api.rank('sample', None)
+            self.assertEqual(audit.memo_stats()['runs'], n + 1)
+            self.assertLessEqual(audit.memo_stats()['states'], audit.MEMO_KEEP)
+            # the caller gets its own copy: mutating it does not leak into the next read
+            f1 = audit.run(None, {'ends_on': D.isoformat()}, data=api.sample_data())
+            if f1:
+                f1[0]['sentence'] = 'changed by the caller'
+                f2 = audit.run(None, {'ends_on': D.isoformat()}, data=api.sample_data())
+                self.assertNotEqual(f2[0]['sentence'], 'changed by the caller')
+            audit.MEMO_ON = False
+            r = audit.memo_stats()['runs']
+            audit.run(None, {'ends_on': D.isoformat()}, data=api.sample_data())
+            self.assertEqual(audit.memo_stats()['runs'], r + 1)
+        finally:
+            audit.MEMO_ON = was
+            audit.memo_clear()
             audit.PIPELINE_PATH = self.real2
 
     def test_demand_pattern_tags(self):

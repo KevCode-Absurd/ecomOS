@@ -1203,7 +1203,9 @@
     parts.push(section('desk-brain', 'How fresh is the brain this desk reads?', 'The brain sections behind the rules here, each with its records, last update, age against the contract TTL, stale and conflict counts and confidence; a conflict waits on the founder, a stale section waits on a pull or the keeper.', brainFreshnessBlock(d.brain_freshness)));
     parts.push(section('desk-assumptions', 'What do the simulated numbers assume?', 'The calibration assumptions behind the simulated tables: value, status (founder, sourced, derived, modelled), as-of date, sources, and which rules here price with them. Founder-confirmed or not, said plainly.', assumptionsBlock(d.assumptions)));
     const jumps = UI.pills({ items: parts.map((p) => ({ key: p.id, label: p.querySelector('h2').textContent.replace(/\?.*$/, '?').split(',')[0].slice(0, 42) })), onChange: (key) => { const t = document.getElementById(key); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); } });
-    mount('#desk', el('section', { class: 'section' }, el('div', { class: 'sec-head' }, el('h2', { text: 'The desk: ' + parts.length + ' blocks' }), el('span', { class: 'sub', text: 'Each block ends in a gap line and an action. Jump to one:' })), jumps), ...parts);
+    const memo = d.audit_memo || {};
+    const memoLine = memo.on ? 'The audit ran ' + (memo.runs || 0) + ' time' + (memo.runs === 1 ? '' : 's') + ' in this server process and served ' + (memo.served || 0) + ' request' + (memo.served === 1 ? '' : 's') + ' from memory; a write to the pipeline, a fixture, the ledger or the brain runs it again.' : 'The audit memo is off: every route runs the audit.';
+    mount('#desk', el('section', { class: 'section' }, el('div', { class: 'sec-head' }, el('h2', { text: 'The desk: ' + parts.length + ' blocks' }), el('span', { class: 'sub', text: 'Each block ends in a gap line and an action. Jump to one:' })), jumps), ...parts, el('p', { class: 'micro faint', text: memoLine }));
   }
 
   // ---------- 6. the audit ----------
