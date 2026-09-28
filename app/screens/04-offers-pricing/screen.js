@@ -203,7 +203,7 @@
   function actionsList(d) {
     const open = d.plan.filter((a) => a.status !== 'unavailable');
     mount('#actions', UI.sectionHead({ title: 'Actions: how each move gets done', sub: 'Owner, steps with who does each, the artefact it produces, the win and stop rules, the check date.' }),
-      el('div', { class: 'grid' }, open.map((a, i) => UI.actionCard(a, { expanded: i === 0, screen: SLUG, extra: el('div', null, saveRow(a), priceFile(a)) }))));
+      el('div', { class: 'grid' }, open.map((a, i) => UI.actionCard(a, { expanded: i === 0, screen: SLUG, extra: el('div', null, saveRow(a), priceFile(a), calendarFile(a)) }))));
   }
 
   /** A price move's file for arm B: SKU, today's price, the test price. */
@@ -214,6 +214,21 @@
     return el('div', { class: 'row save-row' }, el('span', { class: 'kicker', text: pf.label ? 'File' : 'Price file' }),
       el('button', { class: 'btn sm', type: 'button', text: 'Export ' + pf.rows.length + ' ' + noun, onclick: () => UI.csv(pf.rows, null, pf.name) }),
       el('span', { class: 'micro faint', text: pf.note }));
+  }
+
+  /** A move's dates as an .ics file: all-day events a founder adds to a calendar in one click. */
+  function calendarFile(a) {
+    const cf = a.calendar_file;
+    if (!cf) return null;
+    const ics = () => ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//ecomOS//offers//EN']
+      .concat(...cf.events.map((e, i) => ['BEGIN:VEVENT', 'UID:' + a.id + '.' + i + '@ecomos', 'DTSTAMP:' + e.date.replace(/-/g, '') + 'T000000Z',
+        'DTSTART;VALUE=DATE:' + e.date.replace(/-/g, ''), 'SUMMARY:' + e.title.replace(/[,;]/g, ' '), 'END:VEVENT']))
+      .concat(['END:VCALENDAR']).join('\r\n');
+    return el('div', { class: 'row save-row' }, el('span', { class: 'kicker', text: 'Dates' }),
+      el('button', { class: 'btn sm', type: 'button', text: 'Add ' + cf.events.length + ' dates to a calendar', onclick: () => {
+        const link = el('a', { href: URL.createObjectURL(new Blob([ics()], { type: 'text/calendar' })), download: cf.name });
+        document.body.append(link); link.click(); link.remove(); } }),
+      el('span', { class: 'micro faint', text: cf.events.map((e) => fmt.date(e.date)).join(', ') }));
   }
 
   // ---------- 5. the desk ----------

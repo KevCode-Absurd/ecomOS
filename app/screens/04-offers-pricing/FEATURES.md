@@ -225,6 +225,7 @@ Known gaps from round 0:
 | 10.4 | Build files for two more moves: the bundle move exports the bundles to build (both SKUs, their prices, the bundle price and orders together, the same 3 pairs the move names), and a code exclusion test exports the SKUs arm B excludes from every code. Sample brand: 3 bundles, from Tea Towel Set of 3 with Napkin Set of 4 | done |
 | 10.5 | The file travels with the hand-off: a handed-over move with a build file (price file, bundles, exclusions) carries it as CSV text at the end of the hand-off draft, within the table's 20 KB limit, so the receiving team gets the brief and the rows in one place | done |
 | 10.6 | The brief pack carries the files: "Export all briefs" now prints each move's build file (price file, bundles, exclusions) as CSV lines under its draft, from the same helper the hand-off uses, so the forwarded file and the hand-off never differ | done |
+| 10.7 | Promo window dates in a calendar: each promo window move carries its 4 dates (approve the offer, creative and email briefs a week later, the window's start and end) and exports them as an .ics file of all-day events from the action card. Bombas: holiday gifting and Black Friday to Cyber Monday | done |
 
 ## Contract asks
 

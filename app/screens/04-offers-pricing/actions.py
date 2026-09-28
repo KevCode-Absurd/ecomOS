@@ -1459,6 +1459,22 @@ def price_files(actions, ctx):
     return actions
 
 
+def window_dates(actions, ctx):
+    """A promo window move carries its dates as calendar events: approve, briefs due a week later, start, end."""
+    by = {'window_' + w['key']: w for w in ctx.calendar or []}
+    for a in actions:
+        w = by.get((a.get('entity') or {}).get('id'))
+        if a.get('rule_id') != 'OFFER-R11' or not w or a.get('status') != 'open':
+            continue
+        briefs = (date.fromisoformat(w['approve_by']) + timedelta(days=7)).isoformat()
+        a['calendar_file'] = {'name': f'{w["key"]}-dates.ics', 'events': [
+            {'date': w['approve_by'], 'title': f'Approve the {w["name"]} offer'},
+            {'date': briefs, 'title': f'{w["name"]}: creative and email briefs due'},
+            {'date': w['start'], 'title': f'{w["name"]} starts'},
+            {'date': w['end'], 'title': f'{w["name"]} ends; read it against last year'}]}
+    return actions
+
+
 def bunches(rd):
     """Order-value bunches and the tiers above them, from real order bins only (never from the fixture)."""
     dist = rd.m('order_value_distribution', audit.WINDOW, step=5)
@@ -1678,7 +1694,7 @@ def rank(brand='bombas', window=None, data=None):
     actions = merge_into(actions, 'OFFER-R38', 'OFFER-R32')
     actions = flag_stale_inputs(attach_margin_checks(add_priors(covered_by_registry(actions, ctx), ctx), ctx), ctx)
     actions = [a for a in actions if not RANK.validate_action(a)]
-    actions = price_files(close_drafts(add_unlocks(add_exposure(actions, ctx, nr), ctx)), ctx)
+    actions = window_dates(price_files(close_drafts(add_unlocks(add_exposure(actions, ctx, nr), ctx)), ctx), ctx)
     actions.sort(key=RANK.sort_key)
     calendar = test_calendar(actions, ctx)
     for row in calendar:   # the change a sitewide test of this length can see; a single page sees less

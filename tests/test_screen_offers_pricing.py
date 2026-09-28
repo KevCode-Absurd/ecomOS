@@ -2385,5 +2385,21 @@ class BriefPackFileTest(unittest.TestCase):
         self.assertIn('  sku,price_now,price_b,change', text)
 
 
+class WindowDatesTest(unittest.TestCase):
+    """Round 10 feature 7: a promo window move carries its dates: approve, briefs a week later, start, end."""
+
+    def test_bombas(self):
+        from datetime import date, timedelta
+        r = api.actions.rank('bombas')
+        cal = {'window_' + w['key']: w for w in r['calendar']}
+        acts = [a for a in r['actions'] if a['rule_id'] == 'OFFER-R11' and a['status'] == 'open']
+        self.assertTrue(acts)
+        for a in acts:
+            w = cal[a['entity']['id']]
+            ds = [e['date'] for e in a['calendar_file']['events']]
+            self.assertEqual(ds, [w['approve_by'], (date.fromisoformat(w['approve_by']) + timedelta(days=7)).isoformat(), w['start'], w['end']])
+            self.assertEqual(ds, sorted(ds))
+
+
 if __name__ == '__main__':
     unittest.main()
