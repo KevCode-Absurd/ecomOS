@@ -114,7 +114,7 @@ Lead's review: rounds 1 to 4 passed. Focus: returns and tickets by avatar, depth
 | 6.6 | Since your last visit: a strip under the head names the new moves (up to 3) and how many were resolved or merged since this browser last loaded the screen, and whether the brain changed. Per-viewer only, in browser storage wrapped so a blocked store just hides the strip; the shared record of decisions stays in the decisions log | done |
 | 6.7 | The page at phone width: checked in a 360 px browser on all 5 desk tabs; the served map grid pushed the Avatars tab to 580 px. Fixed in `screen.css`: grid children may shrink, two-column desk grids stack under 720 px, wide tables scroll inside their card, the desk tabs wrap. Page width is 360 on every tab, nothing past the edge | done |
 | 6.8 | A monthly customer report for the founder: "Monthly report" in the head opens `GET report` in a panel, 8 short sections in plain words (the three moves to approve, who buys and who to build for next, what stops them, what they say that we do not, who comes back, risks to the brand, due in the next 30 days, what we do not know yet), with Copy and Print; print shows only the report. Works for a second brand | done |
-| 6.9 | Faster loads: the overview built once per brain version and window | todo |
+| 6.9 | Faster loads: the overview and `rank` are built once per brand, day or window, brain version, aggregates timestamp and brain root, and every caller gets a copy, so a brain edit or a data refresh rebuilds them and nothing leaks between callers (tested). Overview 0.215 s cold, 0.013 s warm | done |
 | 6.10 | Audit rules and `rank` for round 6, screenshot `round6.png` | todo |
 
 ### Round 5 founder note (28 Sep 2026)

@@ -1523,5 +1523,26 @@ class MonthlyReport(TempBrain):
         self.assertNotIn('bombas', r['text'].lower())
 
 
+class Cache(TempBrain):
+    """Feature 6.9: overview and rank are cached per brain version; a brain edit rebuilds them, and callers get copies."""
+
+    def test_cache_invalidates_on_brain_change(self):
+        a = api.handle(Req(['overview']))
+        a['avatars'].clear()
+        b = api.handle(Req(['overview']))
+        self.assertTrue(b['avatars'])
+        rows = self.section('objection_ladders')
+        for lad in rows:
+            if lad['id'] == 'bombas.objection_ladders.durability':
+                lad['value']['rungs'][2]['proof_ids'] = ['bombas.policies.happiness_guarantee']
+        self.write('objection_ladders', rows)
+        c = api.handle(Req(['overview']))
+        self.assertNotEqual(a['version'], c['version'])
+        self.assertEqual({r['id']: r['verdict'] for r in c['ladders']['rows']}['durability.3'] != 'answer', True)
+        r1 = api.rank('bombas', RANK_WINDOW)
+        r1['actions'].clear()
+        self.assertTrue(api.rank('bombas', RANK_WINDOW)['actions'])
+
+
 if __name__ == '__main__':
     unittest.main()

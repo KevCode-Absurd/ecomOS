@@ -399,7 +399,33 @@ def _formats(brain: Brain, avatars: list[dict]) -> dict:
     return f
 
 
+_OVERVIEW_CACHE: dict = {}
+_CACHE_MAX = 8
+
+
+def _data_stamp(brand: str) -> str:
+    """Newest modified time of the brand's aggregates, so a data refresh rebuilds the overview."""
+    folder = APP / "data" / "brands" / brand / "aggregates"
+    try:
+        return str(max((p.stat().st_mtime for p in folder.glob("*.json")), default=0))
+    except OSError:
+        return "0"
+
+
 def overview(brain: Brain) -> dict:
+    """The page's data, built once per brand, day, brain version and data state; callers get a copy."""
+    import copy
+    key = (brain.brand, brain.today.isoformat(), brain.version(), _data_stamp(brain.brand), str(BRAIN_ROOT))
+    hit = _OVERVIEW_CACHE.get(key)
+    if hit is None:
+        hit = _build_overview(brain)
+        if len(_OVERVIEW_CACHE) >= _CACHE_MAX:
+            _OVERVIEW_CACHE.pop(next(iter(_OVERVIEW_CACHE)))
+        _OVERVIEW_CACHE[key] = hit
+    return copy.deepcopy(hit)
+
+
+def _build_overview(brain: Brain) -> dict:
     ends_on = (brain.today - dt.timedelta(days=1)).isoformat()
     avatars = audit.avatar_rows(brain)
     all_rungs = audit.rungs(brain)
@@ -670,8 +696,23 @@ def _rescore(a: dict, eng) -> None:
     r["total"] = round(total, 1)
 
 
+_RANK_CACHE: dict = {}
+
+
 def rank(brand: str, window: dict) -> dict:
-    """Every open or unavailable finding as an action with its real title, owner, steps and drafted artefact."""
+    """Every open or unavailable finding as an action with its real title, owner, steps and drafted artefact.
+    Cached per brand, window, brain version and data state; callers get a copy."""
+    import copy
+    ver = Brain(brand, BRAIN_ROOT, dt.date.fromisoformat(window["ends_on"]) + dt.timedelta(days=1)).version()
+    key = (brand, window["ends_on"], window.get("days"), ver, _data_stamp(brand), str(BRAIN_ROOT))
+    if key not in _RANK_CACHE:
+        if len(_RANK_CACHE) >= _CACHE_MAX:
+            _RANK_CACHE.pop(next(iter(_RANK_CACHE)))
+        _RANK_CACHE[key] = _build_rank(brand, window)
+    return copy.deepcopy(_RANK_CACHE[key])
+
+
+def _build_rank(brand: str, window: dict) -> dict:
     eng = _engine()
     findings = audit.run(brand, window, BRAIN_ROOT)
     nr = eng.net_revenue_28d(brand, window)
