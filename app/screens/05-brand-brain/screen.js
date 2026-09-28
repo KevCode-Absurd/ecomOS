@@ -63,6 +63,7 @@
     loadUnlocks();
     loadMoves();
     loadLadderProof(m.actions || []);
+    loadProofs();
     loadAssets(m.actions || []);
     loadUgc(m.actions || []);
     loadDrift(m.actions || []);
@@ -556,6 +557,22 @@
     // attach the undo buttons after the kit renders the rows
     Array.from(tl.querySelectorAll('.tl')).forEach((row, i) => { const it = items[i]; if (it && it.extra) row.lastChild.append(el('div', { style: { marginTop: '4px' } }, it.extra)); });
     mount('#decisions', filters, tl, items.length > 30 ? el('div', { class: 'micro faint', text: (items.length - 30) + ' older entries not shown.' }) : null, el('p', { class: 'micro faint', text: d.note }));
+  }
+
+  // ---------- 5c2a. proof requests ----------
+  async function loadProofs() {
+    let pr;
+    try { pr = await api(BASE + 'proofs'); } catch (e) { mount('#proofs', el('p', { class: 'muted', text: 'Proof requests unavailable: ' + e.message })); return; }
+    const status = el('span', { class: 'micro muted' });
+    const open = (r) => {
+      const ev = el('input', { class: 'text', placeholder: 'what you saw, in a line (the spec sheet says 64 percent cotton; the policy page says 30 days)', style: { flex: '1 1 360px' } });
+      const ref = el('input', { class: 'text sm', placeholder: 'link or file name (optional)', style: { flex: '1 1 200px' } });
+      const go = el('button', { class: 'btn primary sm', type: 'button', text: 'Approve with this evidence' });
+      go.addEventListener('click', async () => { if (!ev.value.trim()) { status.textContent = 'Say what you saw first.'; return; } go.disabled = true; try { const x = await api(BASE + 'proofs/' + encodeURIComponent(r.id) + '/approve', { method: 'POST', body: { evidence: ev.value.trim(), ref: ref.value.trim() } }); status.textContent = x.next; panel.close(); loadProofs(); loadClaims(); loadPlan(); } catch (e) { go.disabled = false; status.textContent = 'Could not approve: ' + e.message; } });
+      const panel = UI.panel({ title: 'Proof request: ' + r.id.split('.').pop().replace(/_/g, ' '), body: el('div', { class: 'stack' }, el('div', { class: 'row' }, tierChip(r.tier), el('span', { class: 'chip', text: r.used_by + ' doubts, ' + r.one_star + ' one-star' }), ...r.surfaces.map((s) => el('span', { class: 'chip', text: pretty(s) })), el('span', { class: 'chip', text: 'ask ' + r.who })), el('pre', { class: 'card sunken brief', text: r.draft }), el('div', { class: 'row' }, UI.copyButton({ label: 'Copy the request', text: () => r.draft })), el('div', { class: 'row' }, ev, ref, go, status)) });
+    };
+    const rows = pr.requests.map((r) => el('div', { class: 'row card flat small' }, tierChip(r.tier), el('span', { class: 'chip', text: r.one_star + ' one-star' }), el('span', { text: r.text.slice(0, 120) }), el('span', { class: 'micro faint', text: 'needs ' + r.evidence + ' from ' + r.who }), el('button', { class: 'btn xs', type: 'button', text: 'Request', onclick: () => open(r) })));
+    mount('#proofs', rows.length ? el('div', { class: 'stack' }, ...rows) : el('p', { class: 'muted small', text: 'Every claim on file is approved or forbidden.' }), el('p', { class: 'micro faint', text: pr.note }));
   }
 
   // ---------- 5c2b. channel rules the founder edits ----------

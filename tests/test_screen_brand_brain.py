@@ -2788,10 +2788,37 @@ class Round7Numbers(TempBrain):
         self.assertIn('number', [c['kind'] for c in api.handle(Req(['changes']))['changes']])
 
 
+class Round7Proofs(TempBrain):
+    """Round 7 feature 4: proof requests for claims below approved, drafted; approve with evidence on the record."""
+
+    def test_requests_and_approve_with_evidence(self):
+        pr = api.handle(Req(['proofs']))
+        self.assertEqual(pr['counts']['claims'], 6)  # Bombas: 6 site-backed claims
+        top = pr['requests'][0]
+        self.assertGreaterEqual(top['one_star'], pr['requests'][-1]['one_star'])
+        g = next(r for r in pr['requests'] if r['id'] == 'bombas.claims.guarantee_promise')
+        self.assertIn('policy page', g['evidence'])
+        self.assertEqual(g['who'], 'customer experience')
+        self.assertTrue(g['draft'].startswith('Proof request: '))
+        m = next(r for r in pr['requests'] if r['id'] == 'bombas.claims.calf_socks_benefit')
+        self.assertIn('spec sheet', m['evidence'])
+        self.assertTrue(m['surfaces'])
+        status, res = api.handle(Req(['proofs', 'bombas.claims.guarantee_promise', 'approve'], 'POST', body={'evidence': 'The policy page says any reason, any time; CX confirmed by email.', 'ref': 'https://bombas.com/pages/happiness-guarantee'}))
+        self.assertEqual((status, res['was'], res['tier']), (201, 'site_backed', 'approved'))
+        rec = next(r for r in self.section('claims') if r['id'] == 'bombas.claims.guarantee_promise')
+        self.assertEqual((rec['tier'], rec['source']['type'], rec['evidence'][-1]['ref']), ('approved', 'founder', 'https://bombas.com/pages/happiness-guarantee'))
+        self.assertEqual(api.handle(Req(['proofs']))['counts']['claims'], 5)
+        sc = api.handle(Req(['scan'], 'POST', body={'text': rec['text']}))
+        self.assertFalse(any(h['kind'] == 'unapproved' and h['record'] == 'bombas.claims.guarantee_promise' for h in sc['hits']))
+        self.assertEqual(api.handle(Req(['proofs', 'bombas.claims.guarantee_promise', 'approve'], 'POST', body={'evidence': ''}))[0], 400)
+        self.assertEqual(api.handle(Req(['proofs', 'bombas.claims.nope', 'approve'], 'POST', body={'evidence': 'seen it'}))[0], 404)
+        self.assertEqual(api.handle(Req(['proofs', 'bombas.offers.guarantee', 'approve'], 'POST', body={'evidence': 'seen it'}))[0], 400)
+
+
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
-    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'], ['onepage'], ['brainmd', 'notes'], ['alerts'], ['glossary'], ['expiring'], ['feedback'], ['numbers'],
+    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'], ['onepage'], ['brainmd', 'notes'], ['alerts'], ['glossary'], ['expiring'], ['feedback'], ['numbers'], ['proofs'],
               ['decisions'], ['flows'], ['claims'], ['site', 'diff'], ['parity'], ['contracts'], ['legal'], ['voice'], ['battlecards'], ['permissions'],
               ['export'], ['assumptions'], ['facts'], ['summaries'], ['changes'], ['learn'], ['report'], ['digest'], ['review'], ['bottlenecks'], ['audit']]
 

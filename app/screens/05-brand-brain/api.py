@@ -9,6 +9,8 @@ question, and accept or ignore on a proposed record. Nothing external.
   GET  agentfile/endpoints      this route table as JSON, for an agent or an MCP wrapper
   GET  brainmd                  the router BRAIN.md text
   GET|POST brainmd/notes        the founder notes block in BRAIN.md, read and set; kept across regeneration
+  GET  proofs                   proof requests for claims below approved, ranked by the doubts they answer, drafted
+  POST proofs/<claim>/approve   {evidence, ref}: the evidence written onto the claim and the claim approved
   GET  numbers                  open update plans after a number change, with the dependents left
   POST numbers/change           {record, value}: change a scalar fact; the dependents become a plan on the master list
   POST numbers/done             {plan, dependent}: mark one dependent updated; the plan closes when none is left
@@ -225,6 +227,9 @@ _pspec.loader.exec_module(parity)
 _sspec = importlib.util.spec_from_file_location("brand_brain_sitediff", HERE / "sitediff.py")
 sitediff = importlib.util.module_from_spec(_sspec)
 _sspec.loader.exec_module(sitediff)
+_prspec = importlib.util.spec_from_file_location("brand_brain_proofs", HERE / "proofs.py")
+proofs = importlib.util.module_from_spec(_prspec)
+_prspec.loader.exec_module(proofs)
 _nmspec = importlib.util.spec_from_file_location("brand_brain_numbers", HERE / "numbers.py")
 numbers = importlib.util.module_from_spec(_nmspec)
 _nmspec.loader.exec_module(numbers)
@@ -1995,6 +2000,22 @@ def handle(req):
         return cd
     if req.method == "POST" and parts == ["claims"]:
         return claim_add(brain, req.body)
+    if req.method == "GET" and parts == ["proofs"]:
+        pr = proofs.requests(brain, claims_mod.desk(brain), [r for r in brain.records("objection_ladders") if isinstance(r.get("value"), dict)])
+        pr.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "BRN-C03", "autonomy": "founder_gate"})
+        return pr
+    if req.method == "POST" and len(parts) == 3 and parts[0] == "proofs" and parts[2] == "approve":
+        rid = parts[1]
+        if not re.fullmatch(r"[a-z0-9_-]+\.claims\.[A-Za-z0-9_.-]{1,120}", rid):
+            return 400, {"error": "the id must be a claims record"}
+        body = req.body or {}
+        res = proofs.approve_with_evidence(brain, rid, str(body.get("evidence") or ""), body.get("ref"))
+        if isinstance(res, tuple):
+            return res
+        errs = founder_put(brain, res["record"], "approve", f"{rid} approved with evidence: {str(body.get('evidence'))[:100]}")
+        if errs:
+            return 400, {"error": "; ".join(errs)}
+        return 201, {"ok": True, "record": rid, "was": res["was"], "tier": "approved", "version": brain.version(), "next": "Approved with the evidence on the record. The scanner stops flagging it; every surface may say it."}
     if req.method == "GET" and parts == ["numbers"]:
         return {"pending": numbers.pending(brain), "brand": brain.brand, "today": brain.today.isoformat(), "capability": {"id": "BRN-C01", "autonomy": "agent_does"},
                 "note": "Change a fact the brand quotes in one place; every place that carries the old value becomes work on the plan until each is marked done. Only scalar facts change here."}
