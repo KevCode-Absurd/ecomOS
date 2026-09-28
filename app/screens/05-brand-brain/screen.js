@@ -1621,7 +1621,22 @@
       btn.disabled = false;
     });
     const edit = el('button', { class: 'btn sm', type: 'button', text: 'Edit channel rules', onclick: () => channelRulesPanel(channel.value || 'amazon') });
-    return el('div', { class: 'stack scanner' }, ta, el('div', { class: 'row' }, el('span', { class: 'small muted', text: 'Channel:' }), channel, btn, edit, el('span', { class: 'micro faint', text: 'Rules only, no model. A blocking hit is a forbidden phrase, a number the brain contradicts, or a channel rule.' })), out);
+    const review = el('button', { class: 'btn sm', type: 'button', text: 'Review first (every check, one route)' });
+    review.addEventListener('click', async () => {
+      if (!ta.value.trim()) return;
+      review.disabled = true;
+      try {
+        const r = await api(BASE + 'review/draft', { method: 'POST', body: { text: ta.value, channel: channel.value || undefined } });
+        const kids = [el('div', { class: 'row' }, UI.verdict(r.verdict === 'pass' ? 'keep' : r.verdict === 'warn' ? 'watch' : 'stop', r.verdict === 'pass' ? 'Ready for approval' : r.verdict === 'warn' ? r.warns + ' to read' : r.fails + ' blocking'), el('span', { class: 'chip', text: r.words + ' words' }), r.kind ? el('span', { class: 'chip', text: 'gate: ' + r.kind }) : null, el('span', { class: 'chip', text: 'owner next: ' + pretty(r.owner) })),
+          el('div', { class: 'row' }, ...r.checks.map((c) => el('span', { class: 'chip ' + (c.status === 'fail' ? 'bad' : c.status === 'warn' ? 'warn' : c.status === 'pass' ? 'good' : ''), title: c.reason || '', text: c.label + ': ' + c.status + (c.hits ? ' (' + c.hits + ')' : '') }))),
+          el('ol', { class: 'a-steps' }, ...r.route.map((st) => el('li', null, el('span', { class: 'chip ' + (st.who === 'agent' ? 'accent' : 'warn'), text: st.who }), ' ' + st.text)))];
+        if (r.hits.length) kids.push(UI.table({ columns: [{ key: 'severity', label: 'Hit' }, { key: 'kind', label: 'Check', format: (v) => pretty(v) }, { key: 'match', label: 'Where' }, { key: 'fix', label: 'Fix' }], rows: r.hits, sort: false }));
+        kids.push(UI.decisionRow({ capability: r.capability.id, autonomy: 'founder_gate', owner: r.owner, screen: SCREEN, compact: true, stub: r.owner === 'person' ? 'You approve the draft as it stands; the route above is the record.' : 'The agent fixes the blocking hits with the fixes listed, runs this review again, and only then hands the draft to you.' }), el('div', { class: 'micro faint', text: r.note }));
+        mount(out, ...kids);
+      } catch (e) { mount(out, el('p', { class: 'muted', text: 'Could not review: ' + e.message })); }
+      review.disabled = false;
+    });
+    return el('div', { class: 'stack scanner' }, ta, el('div', { class: 'row' }, el('span', { class: 'small muted', text: 'Channel:' }), channel, btn, review, edit, el('span', { class: 'micro faint', text: 'Rules only, no model. A blocking hit is a forbidden phrase, a number the brain contradicts, or a channel rule.' })), out);
   }
   async function loadClaims() {
     let cd;

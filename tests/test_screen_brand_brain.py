@@ -1981,6 +1981,43 @@ class Round5ChannelRules(TempBrain):
         self.assertGreaterEqual(sum(1 for c in api.handle(Req(['changes']))['changes'] if c['kind'] == 'rule'), 4)
 
 
+class Round5ReviewFirst(TempBrain):
+    """Round 5 feature 4: review first: every check in one call and a route (agent fixes, person reads, person approves)."""
+
+    def test_failing_draft_routes_to_the_agent_first(self):
+        d = ('Subject: Re: your socks\nThe best socks in the world, guaranteed. Free shipping on orders over $50. '
+             '"I have worn these every day for a year and they still look new" said a fan on Reddit. Use #ff00aa for the button.')
+        r = api.handle(Req(['review', 'draft'], 'POST', body={'text': d, 'channel': 'email'}))
+        self.assertEqual((r['verdict'], r['kind'], r['owner']), ('fail', 'email', 'agent_drafts'))
+        by = {c['key']: c for c in r['checks']}
+        self.assertEqual((by['brain']['status'], by['channel']['status'], by['legal']['status'], by['visual']['status'], by['quotes']['status']), ('fail', 'fail', 'fail', 'warn', 'fail'))
+        self.assertTrue(any(h['kind'] == 'stale_fact' for h in r['hits']))  # $50 against the brain's $75
+        self.assertTrue(any(h['kind'] == 'quote' and h['severity'] == 'fail' for h in r['hits']))  # a Reddit line as a testimonial
+        self.assertTrue(any(h['kind'] == 'disclosure' for h in r['hits']))
+        self.assertEqual(r['route'][0]['who'], 'agent')
+        self.assertTrue(r['route'][0]['text'].startswith('Fix the ' + str(r['fails']) + ' blocking hit'))
+        self.assertEqual(r['route'][-1]['who'], 'person')
+
+    def test_clean_draft_goes_straight_to_approval(self):
+        d = 'Soft socks for every day. Unsubscribe any time. Bombas, 881 Broadway, New York, NY 10003.'
+        r = api.handle(Req(['review', 'draft'], 'POST', body={'text': d, 'channel': 'email'}))
+        self.assertEqual((r['verdict'], r['fails'], r['owner']), ('pass', 0, 'person'))
+        self.assertEqual([st['who'] for st in r['route']], ['person'])
+        bare = api.handle(Req(['review', 'draft'], 'POST', body={'text': 'Soft socks for every day.'}))
+        self.assertEqual(bare['verdict'], 'pass')
+        self.assertEqual(next(c['status'] for c in bare['checks'] if c['key'] == 'channel'), 'skipped')
+        self.assertEqual(next(c['status'] for c in bare['checks'] if c['key'] == 'legal'), 'skipped')
+        self.assertEqual(api.handle(Req(['review', 'draft'], 'POST', body={'text': '  '}))[0], 400)
+
+    def test_locked_line_and_quote_warning(self):
+        api.handle(Req(['voice', 'snippet', 'free_shipping'], 'POST', body={'text': 'Free standard shipping on orders over $75.'}))
+        r = api.handle(Req(['review', 'draft'], 'POST', body={'text': 'You get free shipping when you spend $75 or more. "These are the softest socks I have ever owned, and I own a lot" says Maya.'}))
+        self.assertTrue(any(h['kind'] == 'locked_line' for h in r['hits']))
+        self.assertTrue(any(h['kind'] == 'quote' and h['severity'] == 'warn' for h in r['hits']))
+        self.assertEqual(r['verdict'], 'warn')
+        self.assertEqual(r['route'][0]['who'], 'person')
+
+
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 

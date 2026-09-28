@@ -179,6 +179,9 @@ _pspec.loader.exec_module(parity)
 _sspec = importlib.util.spec_from_file_location("brand_brain_sitediff", HERE / "sitediff.py")
 sitediff = importlib.util.module_from_spec(_sspec)
 _sspec.loader.exec_module(sitediff)
+_rvspec = importlib.util.spec_from_file_location("brand_brain_reviewer", HERE / "reviewer.py")
+reviewer = importlib.util.module_from_spec(_rvspec)
+_rvspec.loader.exec_module(reviewer)
 _mvspec = importlib.util.spec_from_file_location("brand_brain_moves", HERE / "moves.py")
 moves = importlib.util.module_from_spec(_mvspec)
 _mvspec.loader.exec_module(moves)
@@ -1789,6 +1792,15 @@ def handle(req):
         return cd
     if req.method == "POST" and parts == ["claims"]:
         return claim_add(brain, req.body)
+    if req.method == "POST" and parts == ["review", "draft"]:
+        text = str((req.body or {}).get("text") or "")
+        if not text.strip():
+            return 400, {"error": "text is empty"}
+        if len(text) > 20000:
+            return 413, {"error": "text is over 20,000 characters"}
+        channel = (req.body or {}).get("channel") or None
+        kind = (req.body or {}).get("kind") or None
+        return reviewer.review(brain, text, channel, kind, claims_mod, legal, voice, visual)
     if req.method == "POST" and parts == ["scan"]:
         text = str((req.body or {}).get("text") or "")
         if not text.strip():
