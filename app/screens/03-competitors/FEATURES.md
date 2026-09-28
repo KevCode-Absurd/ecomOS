@@ -41,6 +41,7 @@ Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `a
 | 4.1 | Where they run their ads: Meta placements per page (Facebook, Instagram, Threads, WhatsApp, Messenger, Audience Network) as a heatmap against ours, a gap line (a placement most direct pages run and we do not), ours unavailable until the pull fills them; captures now keep placements and threat points, and a rival on a new placement is a change (the room's "entered a new channel" rule) | done |
 | 4.2 | Depth pass, gap lines: every one of the 20 desk blocks now ends in one line computed in code, either "Gap:" with the finding sentence, the move, its owner and a button to the action (or its connect step), or "Holding:" with what holds; unavailable gaps name the source to connect; the action column header no longer shows raw code (per-row labels ride on the rows); test that every desk section has a line and every linked action exists | done |
 | 4.3 | Depth pass, sized with a stop rule (depth rule 5): every action that changes money or traffic (ad brief, offer, test, page section, copy, listing fix, ticket) carries a size, a stop rule and a dated check; the 4 that lacked a stop rule (durability answer, compare blocks, lookalike report, Amazon check) and 2 dormant builders (counter brief, stale card) now have one; tests on the live actions and on the dormant builders | done |
+| 4.4 | Depth pass, brand content from the brain: the price unit ("pair") is read from the competitors' public price bands in the brain, never typed; every page label, chart axis, orientation title, simulated note and audit sentence uses it; test that screen.js holds no unit word and that a second brand's unit comes from its own bands. The internal field names keep per_pair | done |
 
 ## Round 3: watching over time, reports and the rest of the room
 
@@ -208,7 +209,7 @@ Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permi
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
-| 4 | 4.1 to 4.3 | 2026-09-28 | Placements and new channel alerts; gap lines; stop rules |
+| 4 | 4.1 to 4.4 | 2026-09-28 | Placements and new channel alerts; gap lines; stop rules; unit from the brain |
 | 3 | 3.1 to 3.10 | 2026-09-28 | Page-summary captures and diffs; price moves; landing page tracking; printable report; battlecards; positioning test; win-loss kit; tunable thresholds; second brand. Screenshot `round3.png` |
 | 2 | 2.1 to 2.10 | 2026-09-28 | Lost by name; category ladder; review themes; Amazon against our site; creative velocity; weekly brief; niche sizing; premium signals; search seeds; desk tabs. Screenshot `round2.png` |
 | 1 | 1.1 to 1.10 | 2026-09-28 | Plan first; rank override; 12 pages side by side; coverage matrix; hook and offer mix; references; price and pack ladder; positioning map with moves; changes timeline; freshness and re-pull; rank for all 14 rules. Screenshot `round1.png` |

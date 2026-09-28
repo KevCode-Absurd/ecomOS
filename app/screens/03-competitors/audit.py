@@ -454,7 +454,11 @@ def category_term(brain: Brain) -> dict:
         lines = _value(brain, "products.lines")
         term = str(lines[0]).lower() if isinstance(lines, list) and lines else "products"
     plural = term.lower().strip()
-    return {"plural": plural, "singular": plural[:-1] if plural.endswith("s") else plural}
+    # the price unit is read from the competitors' public price bands ("12 to 25 per pair"), never typed
+    units = [u for r in brain.records("competitors") if isinstance(r.get("value"), dict)
+             for u in re.findall(r"per (\w+)", str(r["value"].get("price_band_usd") or "").lower()) if u != "product"]
+    unit = max(set(units), key=lambda u: (units.count(u), u)) if units else "unit"
+    return {"plural": plural, "singular": plural[:-1] if plural.endswith("s") else plural, "unit": unit}
 
 
 def brand_packs(brand: str, category: str = "socks") -> dict:
@@ -710,7 +714,7 @@ def rule_price(m, ends_on):
                None, "peer_band", "competitors.price_band_usd"),
           _row("price_position_index", idx, "index", "latest capture", ends_on, _fresh(m["competitors"]),
                list(PRICE_BAND), "peer_band", "computed")]
-    sentence = (f"{m['brand'].capitalize()} sells {m['term']['plural']} for ${price:.2f} a pair after discounts. "
+    sentence = (f"{m['brand'].capitalize()} sells {m['term']['plural']} for ${price:.2f} a {m['term']['unit']} after discounts. "
                 f"The tracked brands' median is ${med:.2f}, so the price sits {diff} percent {side} it.")
     refs = [f"{m['brand']}.competitors.competitor_set", f"{m['brand']}.products.price_ladder_{m['term']['plural']}"]
     return [_finding("COMP-R02", "medium", ent, ev, sentence, refs, ends_on, 0.5 - 0.2,
@@ -833,7 +837,7 @@ def rule_ladder(m, ends_on):
                    laddermod.LADDER_MIN, "threshold", "products_monthly", True),
               _row("peer_bundle_saving", b["pct"] / 100, "%", "latest capture", ends_on, fresh, laddermod.BUNDLE_MIN,
                    "threshold", "ad_library")]
-        sentence = (f"{name} packs save a median {round(lad['median_saving'] * 100)} percent a pair against a single. "
+        sentence = (f"{name} packs save a median {round(lad['median_saving'] * 100)} percent a {m['term']['unit']} against a single. "
                     f"{b['page']} advertises {b['pct']} percent off bundles.")
         out.append(_finding("COMP-R09", "medium", {"type": "offer", "id": "pack_ladder", "label": "pack ladder"}, ev, sentence,
                             [f"{m['brand']}.offers.bundles_pack_ladder"], ends_on, 0.5 - 0.2,
@@ -841,7 +845,7 @@ def rule_ladder(m, ends_on):
     for l in lad["above_no_proof"]:
         ev = [_row("single_pair_price", l["single"], "usd", m["packs"]["month"], month_end.isoformat(), age,
                    lad["direct_median"], "peer_band", "products_monthly", True)]
-        sentence = (f"{l['style'].capitalize()} sells at ${l['single']:.2f} a pair, above the direct median of "
+        sentence = (f"{l['style'].capitalize()} sells at ${l['single']:.2f} a {m['term']['unit']}, above the direct median of "
                     f"${lad['direct_median']:.2f}. The brain has no proof for it.")
         out.append(_finding("COMP-R10", "medium", {"type": "sku", "id": f"style_{pagemod.slug(l['style'])}",
                                                    "label": f"{l['style']} single pair"}, ev, sentence,
@@ -962,7 +966,7 @@ def rule_presence(m, ends_on):
                    "products_monthly", True),
               _row("amazon_listings", st["listings"], "n", "latest capture", ends_on, None, mktmod.MIN_LISTINGS, "threshold",
                    "marketplaces")]
-        sentence = (f"{st['style'].capitalize()} sells on Amazon at ${st['amazon_per_pair']:.2f} a pair. Our site nets "
+        sentence = (f"{st['style'].capitalize()} sells on Amazon at ${st['amazon_per_pair']:.2f} a {m['term']['unit']}. Our site nets "
                     f"${st['site_per_pair']:.2f}, {round(st['gap'] * 100)} percent more.")
         ent = {"type": "sku", "id": f"amazon_{pagemod.slug(st['style'])}", "label": f"{st['style']} on Amazon"}
         out.append(_finding("COMP-R18", "medium", ent, ev, sentence, [f"{m['brand']}.marketplaces"], ends_on, 0.3,
@@ -1056,7 +1060,7 @@ def rule_price_cut(m, ends_on):
             continue
         ev = [_row("median_price_per_pair", mv["to"], "usd", f"since {mv['since']}", ends_on, None, mv["from"], "threshold", "captures"),
               _row("price_change", mv["change"], "%", f"since {mv['since']}", ends_on, None, -capmod.PRICE_MOVE, "threshold", "captures")]
-        sentence = f"{mv['page']} cut its median price per pair {round(-mv['change'] * 100)} percent, ${mv['from']:.2f} to ${mv['to']:.2f}."
+        sentence = f"{mv['page']} cut its median price per {m['term']['unit']} {round(-mv['change'] * 100)} percent, ${mv['from']:.2f} to ${mv['to']:.2f}."
         ent = {"type": "page", "id": f"price_cut_{pagemod.slug(mv['page'])}", "label": f"{mv['page']} price cut"}
         out.append(_finding("COMP-R25", "high" if mv["frame"] == "direct" else "medium", ent, ev, sentence, [], ends_on, 0.5,
                             "no baseline: orders lost to their new price are not measured"))

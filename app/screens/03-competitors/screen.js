@@ -7,6 +7,7 @@
   const BASE = '/api/03-competitors/';
   const SCREEN = '03-competitors';
   const NA = 'unavailable';
+  let U = 'unit';   // the price unit from the brain (term.unit), set on load
   const NS = 'http://www.w3.org/2000/svg';
   const pretty = (s) => String(s || '').replace(/_/g, ' ');
   const usd = (v) => v == null ? NA : '$' + Number(v).toFixed(2);
@@ -47,7 +48,7 @@
     const vals = lad.bands.flatMap((b) => [b.low, b.high, b.median]).concat(lad.ladders.flatMap((l) => l.steps.map((s) => s.per_pair))).filter((v) => v != null);
     const xmax = Math.ceil(Math.max(...vals, 10) * 1.1 / 5) * 5;
     const X = (v) => pad.l + (v / xmax) * (W - pad.l - pad.r);
-    const s = svg('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'aria-label': 'Price per pair: tracked bands against our pack ladders' });
+    const s = svg('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'aria-label': 'Price per ' + U + ': tracked bands against our pack ladders' });
     const meds = lad.bands.filter((b) => b.frame === 'direct').map((b) => b.median);
     if (meds.length) s.append(svg('rect', { x: X(Math.min(...meds)), y: pad.t, width: X(Math.max(...meds)) - X(Math.min(...meds)), height: rows.length * rowH, class: 'range' }));
     for (let v = 0; v <= xmax; v += 5) {
@@ -70,12 +71,12 @@
         if (st.length > 1) s.append(svg('line', { x1: X(Math.min(...st.map((x) => x.per_pair))), x2: X(Math.max(...st.map((x) => x.per_pair))), y1: y, y2: y, class: 'band brand' }));
         for (const x of st) {
           const d = svg('circle', { cx: X(x.per_pair), cy: y, r: 4 + Math.min(x.pairs, 12) / 3, class: 'dot brand' });
-          d.append(svg('title', null, (x.pairs === 1 ? 'single' : x.pairs + '-pack') + ': ' + usd(x.per_pair) + ' a pair, ' + usd(x.per_pack) + ' a pack (simulated net)'));
+          d.append(svg('title', null, (x.pairs === 1 ? 'single' : x.pairs + '-pack') + ': ' + usd(x.per_pair) + ' a ' + U + ', ' + usd(x.per_pack) + ' a pack (simulated net)'));
           s.append(d);
         }
       }
     });
-    s.append(svg('text', { x: pad.l + (W - pad.l - pad.r) / 2, y: H - 6, 'text-anchor': 'middle' }, 'Price per pair, US dollars. Shaded: range of direct peers\' medians. Dashed: their median.'));
+    s.append(svg('text', { x: pad.l + (W - pad.l - pad.r) / 2, y: H - 6, 'text-anchor': 'middle' }, 'Price per ' + U + ', US dollars. Shaded: range of direct peers\' medians. Dashed: their median.'));
     return el('div', { class: 'map-wrap' }, s);
   }
   function ladderSection(lad) {
@@ -83,22 +84,22 @@
     const table = UI.verdictTable({
       columns: [
         { key: 'style', label: 'Style' },
-        { key: 'single', label: 'Single, a pair', format: (v) => v == null ? 'not sold single' : usd(v) },
-        { key: 'biggest', label: 'Biggest pack, a pair', format: (v, r) => usd(v) + ' (' + r.biggest_pairs + ' pairs)' },
-        { key: 'saving', label: 'Saving a pair', format: (v) => v == null ? NA : Math.round(v * 100) + ' percent' },
+        { key: 'single', label: 'Single, a ' + U, format: (v) => v == null ? 'not sold single' : usd(v) },
+        { key: 'biggest', label: 'Biggest pack, a ' + U, format: (v, r) => usd(v) + ' (' + r.biggest_pairs + ' ' + U + 's)' },
+        { key: 'saving', label: 'Saving a ' + U, format: (v) => v == null ? NA : Math.round(v * 100) + ' percent' },
         { key: 'proof', label: 'Proof on file', format: (v) => v ? 'yes' : 'none' }],
       rows: lad.ladders,
-      verdict: { at: 1, kind: (r) => r.saving == null ? 'na' : r.saving < lad.ladder_min ? 'fix' : 'keep', text: (r) => r.saving == null ? 'No single' : r.saving < lad.ladder_min ? 'Shallow' : 'OK', reason: (r) => r.saving == null ? 'no single pair to compare' : Math.round(r.saving * 100) + ' percent saving against a ' + Math.round(lad.ladder_min * 100) + ' percent rule' },
+      verdict: { at: 1, kind: (r) => r.saving == null ? 'na' : r.saving < lad.ladder_min ? 'fix' : 'keep', text: (r) => r.saving == null ? 'No single' : r.saving < lad.ladder_min ? 'Shallow' : 'OK', reason: (r) => r.saving == null ? 'no single ' + U + ' to compare' : Math.round(r.saving * 100) + ' percent saving against a ' + Math.round(lad.ladder_min * 100) + ' percent rule' },
       reason: { key: 'why', label: 'Against direct peers', text: (r) => (r.vs_direct_median || NA) + ' their median of ' + usd(lad.direct_median) },
       sort: false });
     const b = lad.bundle;
     const amz = lad.amazon.length ? el('div', { class: 'small' }, el('b', { text: 'Cross-check, our Amazon listings (public list prices): ' }),
-      lad.amazon.length + ' listings state a pack size; ' + usd(lad.amazon[0].per_pair) + ' to ' + usd(lad.amazon[lad.amazon.length - 1].per_pair) + ' a pair, median ' + usd(lad.amazon[Math.floor(lad.amazon.length / 2)].per_pair) + '. Site prices above are simulated net, so the gap is a check, not a finding.') : null;
+      lad.amazon.length + ' listings state a pack size; ' + usd(lad.amazon[0].per_pair) + ' to ' + usd(lad.amazon[lad.amazon.length - 1].per_pair) + ' a ' + U + ', median ' + usd(lad.amazon[Math.floor(lad.amazon.length / 2)].per_pair) + '. Site prices above are simulated net, so the gap is a check, not a finding.') : null;
     const pm = window.__priceMoves || { moves: [], captures: 0 };
     const moves = el('div', { class: 'small' }, el('b', { text: 'Price moves: ' }), pm.moves.length ? pm.moves.map((x) => x.page + ' ' + (x.kind === 'cut' ? 'cut' : 'raised') + ' ' + Math.round(Math.abs(x.change) * 100) + ' percent, ' + usd(x.from) + ' to ' + usd(x.to) + ' since ' + fmt.date(x.since)).join('; ') + '.'
       : (pm.captures < 2 ? 'start with the second dated capture (' + pm.captures + ' on file); a move of ' + Math.round((pm.threshold || 0.15) * 100) + ' percent or more is flagged.' : 'none of ' + Math.round((pm.threshold || 0.15) * 100) + ' percent or more since ' + fmt.date(pm.since) + '.'));
     mount('#prices', moves, bandChart(lad), el('p', { class: 'micro faint', text: 'Our dots grow with pack size; hover for price per pack. Our prices are simulated net sales per unit for ' + lad.month + '. Hollow dots are rough public reads.' }),
-      table, el('p', { class: 'small' }, el('b', { text: 'Pack ladder: ' }), 'our packs save a median ' + (lad.median_saving == null ? NA : Math.round(lad.median_saving * 100) + ' percent') + ' a pair against a single' + (b ? '. ' + b.page + ' advertises ' + b.pct + ' percent off bundles.' : '.') + (lad.shallow ? ' The ladder offer is on the plan.' : '')), amz,
+      table, el('p', { class: 'small' }, el('b', { text: 'Pack ladder: ' }), 'our packs save a median ' + (lad.median_saving == null ? NA : Math.round(lad.median_saving * 100) + ' percent') + ' a ' + U + ' against a single' + (b ? '. ' + b.page + ' advertises ' + b.pct + ' percent off bundles.' : '.') + (lad.shallow ? ' The ladder offer is on the plan.' : '')), amz,
       el('ul', { class: 'small muted' }, ...lad.bands.map((x) => el('li', null, x.name + ': ' + x.text + '. ', x.ref ? el('a', { href: x.ref, target: '_blank', rel: 'noopener', text: 'source' }) : null))));
   }
 
@@ -401,7 +402,7 @@
         el('div', { class: 'row' }, el('span', { class: 'small' }, el('b', { text: 'Move: ' }), r.move),
           UI.decisionRow({ capability: r.capability, autonomy: r.autonomy, screen: SCREEN, compact: true, finding_id: SCREEN + '.rung.' + r.key }))));
     }
-    mount('#category', box, el('p', { class: 'micro faint', text: c.rule + ' Our price ' + usd(c.our_price) + ' a pair (simulated) against a split of ' + usd(c.split) + '. ' + c.coverage + ' of ' + c.rungs.length + ' rungs mapped. Demand trend by rung: unavailable, ' + c.trend_reason + '.' }));
+    mount('#category', box, el('p', { class: 'micro faint', text: c.rule + ' Our price ' + usd(c.our_price) + ' a ' + U + ' (simulated) against a split of ' + usd(c.split) + '. ' + c.coverage + ' of ' + c.rungs.length + ' rungs mapped. Demand trend by rung: unavailable, ' + c.trend_reason + '.' }));
   }
 
   // ---------- 5k. review themes against their claims ----------
@@ -420,11 +421,11 @@
   function presenceSection(pr) {
     const t = UI.verdictTable({
       columns: [{ key: 'style', label: 'Style' }, { key: 'listings', label: 'Amazon listings', unit: 'n' },
-        { key: 'amazon_per_pair', label: 'Amazon, a pair', format: (v) => usd(v) }, { key: 'site_per_pair', label: 'Our site, a pair', format: (v) => usd(v) },
+        { key: 'amazon_per_pair', label: 'Amazon, a ' + U, format: (v) => usd(v) }, { key: 'site_per_pair', label: 'Our site, a ' + U, format: (v) => usd(v) },
         { key: 'unknown_sellers', label: 'Seller unknown', unit: 'n' }],
       rows: pr.styles, verdict: { at: 1, kind: (r) => r.undercut ? 'fix' : r.gap == null ? 'na' : 'keep', text: (r) => r.undercut ? 'Undercut' : r.gap == null ? 'No match' : 'In line', reason: (r) => r.gap == null ? 'no site price for the style' : Math.round(r.gap * 100) + ' percent below the site' },
       reason: { key: 'why', label: 'Gap', text: (r) => r.gap == null ? NA : Math.round(r.gap * 100) + ' percent below our site' }, sort: false });
-    mount('#presence', UI.orientation([{ label: 'our listings', value: pr.listings, unit: 'n' }, { label: 'priced by pair', value: pr.priced, unit: 'n' },
+    mount('#presence', UI.orientation([{ label: 'our listings', value: pr.listings, unit: 'n' }, { label: 'priced by ' + U, value: pr.priced, unit: 'n' },
       { label: 'median stars', value: pr.median_stars, unit: 'n' }, { label: 'reviews', value: pr.reviews, unit: 'n' }]), t,
       el('p', { class: 'small' }, el('b', { text: 'Their marketplace listings: ' }), 'unavailable, ' + pr.theirs_reason + '.'),
       el('p', { class: 'micro faint', text: pr.rule + ' Amazon prices are public list prices; ours are simulated net.' }));
@@ -570,6 +571,7 @@
     let p, d, g;
     try { [p, d, g] = await Promise.all([api(BASE + 'plan'), api(BASE + 'overview'), api(BASE + 'digest')]); }
     catch (e) { mount('#r-badge', 'Could not load: ' + e.message); return; }
+    U = (d.term && d.term.unit) || 'unit';
     mount('#r-badge', el('span', null, el('b', { text: 'Simulated data and public signals. ' }), d.simulated_note));
     document.getElementById('r-title').textContent = 'Competitor report, week of ' + fmt.date(g.week_of);
     document.getElementById('r-sub').textContent = p.actions.length + ' open moves from ' + p.rules.length + ' rules. Brain version ' + d.version + '.';
@@ -586,7 +588,7 @@
       { k: 'Price index (100 = tracked median)', v: d.price_position_index == null ? NA : String(d.price_position_index), b: '85 to 115' },
       { k: 'New ads a week', v: v.our_counted_rate == null ? NA : v.our_counted_rate + ' (counted)', b: 'direct median ' + v.direct_median_rate + ' (estimate)' },
       { k: 'Discount depth', v: pr.our_depth == null ? NA : pr.our_depth + ' percent', b: 'direct median ' + pr.direct_median_depth + ' percent' },
-      { k: 'Pack saving a pair', v: d.ladder.median_saving == null ? NA : Math.round(d.ladder.median_saving * 100) + ' percent', b: 'rule ' + Math.round(d.ladder.ladder_min * 100) + ' percent' },
+      { k: 'Pack saving a ' + U, v: d.ladder.median_saving == null ? NA : Math.round(d.ladder.median_saving * 100) + ' percent', b: 'rule ' + Math.round(d.ladder.ladder_min * 100) + ' percent' },
       { k: 'Threat pages', v: String(d.pages.rows.filter((r) => r.verdict && r.verdict.text === 'Threat').length), b: 'of ' + (d.pages.rows.length - 1) + ' tracked' }] }));
     mount('#r-caveats', ...[
       'Competitor facts are public signals from the Ad Library, public product feeds and Reddit. Run length is a signal, not proof.',
@@ -604,6 +606,7 @@
   async function load() {
     let d, p;
     try { [d, p] = await Promise.all([api(BASE + 'overview'), api(BASE + 'plan')]); } catch (e) { mount('#badge', 'Could not load: ' + e.message); return; }
+    U = (d.term && d.term.unit) || 'unit';
     mount('#badge', el('span', null, el('b', { text: 'Simulated data and public signals. ' }), d.simulated_note + ' Brain version ' + d.version + '.'));
     planSection(p);
     const byId = {};

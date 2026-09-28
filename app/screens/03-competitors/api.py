@@ -27,7 +27,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 BRAIN_ROOT: Path | None = None
 SAFE_BRAND = re.compile(r"^[a-z0-9_-]+$")
-SIMULATED_NOTE = ("{name} is the sample brand. Its prices per pair come from simulated sales. "
+SIMULATED_NOTE = ("{name} is the sample brand. Its prices per {unit} come from simulated sales. "
                   "Competitor facts are public signals from the Meta Ad Library and public product feeds.")
 SIGNAL_NOTE = ("Public signals only. Ad counts and run length show what a brand keeps live, not what works. "
                "Formats and hooks are for layout and mood. Never copy their text, logos, products or faces.")
@@ -139,7 +139,7 @@ def map_kit(m: dict, pts: list[dict], axis: str, q: dict, split_x) -> dict:
         moves.append({"label": quad["label"], "competitors": quad["competitors"], "kind": kind, "text": text,
                       "open": not quad["competitors"]})
     labels = [mv["label"] + (" (open)" if mv["open"] else "") for mv in moves]
-    return {"x": {"label": "Median price per pair, US dollars", "unit": "$", "min": 0,
+    return {"x": {"label": f"Median price per {m['term']['unit']}, US dollars", "unit": "$", "min": 0,
                   "max": max([p["x"] for p in points] + [10]) * 1.15},
             "y": {"label": f"{spec['label']}, 0 to {spec['max']}", "min": -0.3, "max": spec["max"] + 0.3},
             "points": points, "quadrants": labels, "midX": split_x, "midY": q["split_y"], "moves": moves,
@@ -161,7 +161,7 @@ def orientation(m: dict) -> list[dict]:
         {"label": "theirs, median a page", "value": ads[len(ads) // 2] if ads else None, "unit": "n",
          "title": "median active ads across tracked pages, public signal"},
         {"label": "price index", "value": idx, "unit": "n", "tone": None if idx is None else ("bad" if not lo <= idx <= hi else "good"),
-         "title": f"our price per pair / tracked median x 100, band {lo} to {hi}, simulated brand price"},
+         "title": f"our price per {m['term']['unit']} / tracked median x 100, band {lo} to {hi}, simulated brand price"},
     ]
 
 
@@ -327,7 +327,7 @@ def overview(brand: str, today: dt.date) -> dict:
     ranked = actions.build(brand, window, BRAIN_ROOT)["actions"]
     moves = pos["kit"]["durability"]["moves"] + pos["kit"]["comfort"]["moves"]
     return {"brand": brand, "today": today.isoformat(), "version": brain.version(),
-            "simulated_note": SIMULATED_NOTE.format(name=name), "signal_note": SIGNAL_NOTE,
+            "simulated_note": SIMULATED_NOTE.format(name=name, unit=m["term"]["unit"]), "term": m["term"], "signal_note": SIGNAL_NOTE,
             "competitors": [_public(c) for c in m["competitors"]], "angles": m["angles"],
             "positioning": pos,
             "lookalike": m["lookalike"], "gap": gaps(m), "pages": (pr := page_rows(m)), "battlecards": battlecards(m, pr),

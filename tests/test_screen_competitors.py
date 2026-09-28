@@ -958,6 +958,7 @@ class TestSecondBrand(unittest.TestCase):
         for word in ('Bombas', 'Stance', 'Darn Tough', 'COMFORT20', 'sock'):
             self.assertNotIn(word, blob)
         o = out['overview']
+        self.assertEqual(o['term']['unit'], 'pair')   # its one price band says "per pair"; a band "per hat" would say hat
         self.assertEqual(o['pages']['rows'][0]['name'], 'HatCo')
         self.assertFalse(o['ladder']['available'])
         self.assertIsNone(o['niche']['bar'])
@@ -1121,6 +1122,11 @@ class TestPage(unittest.TestCase):
                        'map', 'frames', 'premium', 'prices', 'presence', 'niche', 'search', 'fresh'):
             self.assertIn(f'id="{sec_id}"', desk)
             self.assertIn(f"'{sec_id}'", js)
+
+    def test_no_unit_word_in_js(self):
+        js = (SCREEN / 'screen.js').read_text(encoding='utf-8')
+        self.assertNotIn('a pair', js)
+        self.assertNotIn('per pair', js)
 
     def test_report_view(self):
         html = (SCREEN / 'index.html').read_text(encoding='utf-8')
