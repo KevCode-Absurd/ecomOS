@@ -6,9 +6,16 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | # | Feature | Status |
 |---|---|---|
-| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | todo |
-| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | todo |
-| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | todo |
+| 0.1 | Page shell in the shared UI kit: simulated-data banner, T0 card, tiles, insights, decision rows | done |
+| 0.2 | `api.py`: overview, records per section, audit, answer box, review queue; reads `app/brain/<brand>/` through store.py and keeper.py | done |
+| 0.3 | 3 tiles (open questions, conflicts, sections a room is missing), 2 insights as rules (founder round due at 4+ open questions, BRN-C07; source conflict, BRN-C05), 1 chart (records added per day, by first known date) | done |
+| 0.4 | Section table: records, days since update, stale, mean confidence (unavailable when no record has one) | done |
+| 0.5 | Record browser per section: tier, date, confidence, source link, up to 3 evidence quotes | done |
+| 0.6 | Objection ladders as rungs: doubt, one-star and five-star counts, quotes, uses, proof or "no proof" | done |
+| 0.7 | Open questions with an answer box: writes a founder record (`source.type` founder, tier approved) through `Brain.put` and marks the question answered | done |
+| 0.8 | Review queue: proposed records, accept (active) or ignore (retired, never deleted) | done |
+| 0.9 | Conflicts list from `review/conflicts.json`: both values, sources, the kept value, BRN-C05 decision row | done |
+| 0.10 | `audit.py` in the audit.md shape: BRN-R01 stale section, BRN-R02 empty section a room needs, BRN-R03 unanswered high-weight question, BRN-R04 unapproved claim used by copy. 18 findings on Bombas on 28 Sep 2026 | done |
 
 ## Candidates from the room spec (pick 10 per round)
 
@@ -95,3 +102,4 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
+| 0 | skeleton, 0.1 to 0.10 | 2026-09-28 | Bombas brain (public sources); tests in tests/test_screen_brand_brain.py. No decisions, changes or contracts data yet, so those jobs wait for a later round. |
