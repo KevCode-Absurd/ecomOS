@@ -2709,3 +2709,38 @@ class EveryBlockActs(TempBrain):
                                                                       severity='low', finding_ids=[])), [])
                 else:
                     self.assertNotIn('unlock', b)
+
+
+class Drift(TempBrain):
+    """Feature 11.4: drift in what buyers say, the last 180 days against the 180 before, from dated public reviews;
+    our own assets stay unavailable with a drafted quarterly scan."""
+
+    def recs(self, rows):
+        return [{'id': f'x.{i}', 'value': {'themes': t, 'reviews': [{'star': st, 'date': d}]}} for i, (t, st, d) in enumerate(rows)]
+
+    def test_worse_watch_better(self):
+        now, then = '2026-08-01', '2026-01-15'
+        rows = ([(['durability'], 1, now)] * 12 + [(['fit'], 1, now)] * 8 + [(['fit'], 1, then)] * 20 + [(['durability'], 1, then)] * 1 +
+                [(['comfort'], 5, now)] * 10 + [(['comfort'], 5, then)] * 10)
+        x = api.builds.drift(self.recs(rows), {'rows': [{'theme': 'durability', 'action': {'title': 'Answer durability'}}]}, '2026-09-27')
+        v = {(r['theme'], r['side']): r for r in x['rows']}
+        self.assertEqual(v[('durability', 'complaint')]['verdict'], 'worse')
+        self.assertEqual(v[('durability', 'complaint')]['action']['title'], 'Answer durability')
+        self.assertEqual(v[('fit', 'complaint')]['verdict'], 'better')
+        self.assertEqual(v[('comfort', 'praise')]['verdict'], 'steady')
+        self.assertEqual(x['own_assets'], 'unavailable')
+        self.assertTrue(x['scan']['draft'].startswith('DRAFT'))
+
+    def test_bombas_block(self):
+        d = api.handle(Req(['overview']))
+        x = d['drift']
+        self.assertTrue(x['available'])
+        self.assertIn('drift-wrap', d['blocks'])
+        self.assertIn('180 days', d['blocks']['drift-wrap']['rule'])
+        watch = [r for r in x['rows'] if r['verdict'] in ('worse', 'watch')]
+        for r in watch:
+            self.assertTrue(r['action'], r['theme'])
+
+    def test_too_few_reviews(self):
+        x = api.builds.drift(self.recs([(['fit'], 1, '2026-08-01')] * 3), {}, '2026-09-27')
+        self.assertFalse(x['available'])

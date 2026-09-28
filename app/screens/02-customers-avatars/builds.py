@@ -2735,6 +2735,7 @@ BLOCKS = {
     "macros-wrap": ("brain", None, "A reply built from a policy waits for a person to check the policy."),
     "gap-wrap": ("brain", "Copy gap and hooks", "A word we never say may still be on a page the brain has not read."),
     "perc-wrap": ("brain", "Perception gap", "Our side is the positioning records, not every page we run."),
+    "drift-wrap": ("brain", None, "Dated public reviews only; our own site, ads and email need a dated scan each quarter."),
     "hier-wrap": ("brain", "Theme costs", "The order follows stars earned per theme, not a tested result."),
     "hooks-wrap": ("brain", "Copy gap and hooks", "A repeated line is a hook to test, not a proven winner."),
     "themes-wrap": ("brain", "Theme costs", "Stars move with the product and the season as well as the theme."),
@@ -2945,6 +2946,10 @@ def block_gaps(d: dict) -> dict:
     if ok(mx):
         g["mix-wrap"] = ("cross_source", f"Channels this year against last: {round(mx['paid_share_returning'] * 100, 1)} percent of returning orders came through paid ads."
                          if isinstance(mx.get("paid_share_returning"), (int, float)) else "Channels this year against last.")
+    dr = d.get("drift") or {}
+    if ok(dr):
+        n_w = sum(1 for r in dr["rows"] if r["verdict"] in ("worse", "watch"))
+        g["drift-wrap"] = ("cross_source", f"Buyers now against buyers {dr['window_days']} days earlier: {n_w} theme{'' if n_w == 1 else 's'} moved the wrong way. Our own assets: never scanned twice.")
     vo = d.get("voice") or {}
     if vo.get("contexts") or vo.get("do") or vo.get("liked") or vo.get("disliked"):
         ctx = len(vo.get("contexts") or [])
@@ -2956,7 +2961,7 @@ def block_gaps(d: dict) -> dict:
         if sid in g:
             kind, text = g[sid]
         else:
-            src = {"salesshare-wrap": "sales_share", "paths-wrap": "paths", "cohort-wrap": "cohorts", "mix-wrap": "mix", "health-wrap": "health", "gap-wrap": "copy_gap",
+            src = {"drift-wrap": "drift", "salesshare-wrap": "sales_share", "paths-wrap": "paths", "cohort-wrap": "cohorts", "mix-wrap": "mix", "health-wrap": "health", "gap-wrap": "copy_gap",
                    "perc-wrap": "perception", "hier-wrap": "hierarchy", "misread-wrap": "misreads", "themes-wrap": "themes"}.get(sid)
             reason = (d.get(src) or {}).get("reason") if src else None
             kind, text = "unavailable", (str(reason).rstrip(".").capitalize() + "." if reason else EMPTY_REASON.get(sid, "No input for this block yet."))
@@ -3220,6 +3225,7 @@ def block_rules(d: dict) -> dict:
         "price-wrap": f"Price-led: price rungs hold {pc(PRICE_LED)} or more of its one-star mentions.",
         "claims-wrap": f"Under fire: {CLAIM_HITS} or more bad reviews use the claim's own feature words.",
         "look-wrap": "Pages the Ad Library pull flags as likely impostors: our name, ads, links elsewhere.",
+    "drift-wrap": f"Theme share of praise and complaint reviews, the last {DRIFT_DAYS} days against the {DRIFT_DAYS} before. Moved: {round(DRIFT_PTS * 100)} points.",
         "timing-wrap": f"A season: 3 months hold {SEASON_LIFT:g}x the theme's share of all complaints, with {SEASON_WIN_MIN} or more.",
         "moments-wrap": f"Moments from avatar triggers on US dates, {HORIZON_MONTHS} months ahead. Ads live {LEAD_DAYS['ad']} days before, emails {LEAD_DAYS['email']}.",
         "market-wrap": f"Marketplace-led: {pc(MARKET_SHARE)} or more of its reviews on Amazon. Reddit is left out.",
@@ -3236,7 +3242,7 @@ def block_rules(d: dict) -> dict:
              "hier-wrap": "hierarchy", "hooks-wrap": "hooks", "themes-wrap": "themes", "words-wrap": "words", "served-wrap": "served",
              "price-wrap": "price", "claims-wrap": "claims_fire", "look-wrap": "lookalikes", "timing-wrap": "timing", "moments-wrap": "moments",
              "market-wrap": "marketplace", "returns-wrap": "returns", "misread-wrap": "misreads", "paths-wrap": "paths", "cohort-wrap": "cohorts",
-             "health-wrap": "health", "mix-wrap": "mix"}
+             "health-wrap": "health", "mix-wrap": "mix", "drift-wrap": "drift"}
     out = {}
     for sid, rule in R.items():
         x = d.get(lines[sid]) or {}
@@ -3285,3 +3291,76 @@ def tuned(overrides: dict):
             yield
         finally:
             g.update(saved)
+
+
+# ---------------------------------------------------------------- drift: what buyers say, this half-year against the last (11.4)
+
+DRIFT_DAYS = 180          # the last 180 days against the 180 before
+DRIFT_PTS = 0.05          # a theme moves 5 points or more of the reviews on its side
+DRIFT_MIN = 10            # with 10 or more mentions in one of the two windows
+DRIFT_WATCH_MIN = 5       # 5 to 9 mentions: a thin move, shown as watch
+
+
+def drift(lang_records: list[dict], themes_x: dict, as_of: str) -> dict:
+    """Brand drift as far as the brain allows: the share of praise (4 and 5 star) and complaint (1 and 2 star) reviews
+    that name each theme, the last 180 days against the 180 before, from dated public reviews. Our own live site, ads
+    and email need dated scans before their drift can be read; that stays unavailable."""
+    import datetime as _dt
+    end = _dt.date.fromisoformat(as_of)
+    cut, start = (end - _dt.timedelta(days=DRIFT_DAYS)).isoformat(), (end - _dt.timedelta(days=2 * DRIFT_DAYS)).isoformat()
+    win = {"now": {"praise": [], "complaint": []}, "then": {"praise": [], "complaint": []}}
+    for rec in lang_records:
+        v = rec.get("value") if isinstance(rec.get("value"), dict) else {}
+        themes = [t for t in (v.get("themes") or []) if t != "general"]
+        for rv in v.get("reviews") or []:
+            d, star = str(rv.get("date") or "")[:10], rv.get("star")
+            if not d or not isinstance(star, int) or d <= start or star == 3:
+                continue
+            side = "praise" if star >= 4 else "complaint"
+            win["now" if d > cut else "then"][side].append(themes)
+    n = {w: {s: len(win[w][s]) for s in ("praise", "complaint")} for w in win}
+    if min(n["now"]["complaint"] + n["now"]["praise"], n["then"]["complaint"] + n["then"]["praise"]) < DRIFT_MIN * 2:
+        return {"available": False, "reason": f"too few dated reviews in the last {2 * DRIFT_DAYS} days to compare two windows", "rows": [],
+                "own_assets": "unavailable"}
+    actions = {r["theme"]: r.get("action") for r in (themes_x or {}).get("rows", [])}
+    rows = []
+    for side in ("complaint", "praise"):
+        all_t = sorted({t for w in win for ts in win[w][side] for t in ts})
+        for t in all_t:
+            c_now = sum(1 for ts in win["now"][side] if t in ts)
+            c_then = sum(1 for ts in win["then"][side] if t in ts)
+            s_now = c_now / n["now"][side] if n["now"][side] else None
+            s_then = c_then / n["then"][side] if n["then"][side] else None
+            if s_now is None or s_then is None:
+                continue
+            ch = round(s_now - s_then, 4)
+            top = max(c_now, c_then)
+            wrong = (ch > 0) == (side == "complaint")
+            if abs(ch) < DRIFT_PTS or top < DRIFT_WATCH_MIN:
+                verdict = "steady"
+            elif not wrong:
+                verdict = "better"
+            else:
+                verdict = "worse" if top >= DRIFT_MIN else "watch"
+            rows.append({"theme": t, "side": side, "then": round(s_then, 4), "now": round(s_now, 4), "change": ch,
+                         "mentions_then": c_then, "mentions_now": c_now, "verdict": verdict,
+                         "action": actions.get(t) if verdict in ("worse", "watch") else None})
+    rows.sort(key=lambda r: ({"worse": 0, "watch": 1, "better": 2, "steady": 3}[r["verdict"]], -abs(r["change"])))
+    worse = [r for r in rows if r["verdict"] in ("worse", "watch")]
+    line = (f"{len(worse)} theme{'' if len(worse) == 1 else 's'} moved the wrong way: " + ", ".join(
+                f"{r['theme'].replace('_', ' ')} {r['side']}s {round(r['then'] * 100)} to {round(r['now'] * 100)} percent"
+                + (" (thin)" if r["verdict"] == "watch" else "") for r in worse[:3]) + "."
+            if worse else "No theme moved the wrong way by 5 points or more.")
+    check = (end + _dt.timedelta(days=90)).isoformat()
+    scan = {"id": f"{SCREEN}.drift.quarterly_scan", "kind": "research_note", "owner": "agent_drafts", "check_on": check,
+            "title": "Scan our site, ads and email each quarter so drift can be read",
+            "capability": {"id": "BRAND-C37", "autonomy": "agent_does"},
+            "draft": "DRAFT quarterly scan\nSite: homepage, top product pages and the guarantee page, text saved with the date\n"
+                     "Ads: the Ad Library by our page id, hooks and formats, inside the weekly cap\nEmail: subject lines and first lines of the last 90 days of sends\n"
+                     "Then: compare each scan with the last one on the voice sheet, the claims and the messaging hierarchy",
+            "steps": [{"n": 1, "who": "agent", "text": "Plan the scan with the Ad Library cost, inside the weekly cap."},
+                      {"n": 2, "who": "person", "text": "Approve the spend and the email export."},
+                      {"n": 3, "who": "agent", "text": "Save each scan to the brain with its date."},
+                      {"n": 4, "who": "agent", "text": "From the second scan on, list what changed against the voice sheet and claims."}]}
+    return {"available": True, "rows": rows, "n": n, "window_days": DRIFT_DAYS, "line": line, "own_assets": "unavailable",
+            "own_reason": "our site, ads and email have one capture in the brain; drift needs a dated scan each quarter", "scan": scan}

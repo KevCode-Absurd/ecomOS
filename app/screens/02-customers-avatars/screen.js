@@ -608,6 +608,20 @@
     }));
   }
 
+  // ---------- desk: drift in what buyers say ----------
+  function renderDrift(x) {
+    if (!x.available) { mount('#drift', el('p', { class: 'muted', text: 'Unavailable: ' + x.reason + '.' })); return; }
+    const V = { worse: ['stop', 'Worse'], watch: ['watch', 'Watch, thin'], better: ['keep', 'Better'], steady: ['wait', 'Steady'] };
+    const pct = (v) => Math.round(v * 1000) / 10 + ' percent';
+    mount('#drift', UI.verdictTable({
+      columns: [{ key: 'theme_t', label: 'Theme' }, { key: 'then_t', label: 'Before' }, { key: 'now_t', label: 'Last half-year' }, { key: 'n_t', label: 'Mentions' }],
+      rows: x.rows.map((r) => Object.assign({}, r, { theme_t: pretty(r.theme) + ' ' + r.side + 's', then_t: pct(r.then), now_t: pct(r.now), n_t: r.mentions_then + ' then, ' + r.mentions_now + ' now',
+        actions: r.action ? [{ label: 'Answer it', onClick: () => briefPanel(r.action) }] : [keep('Nothing to do', 'This theme did not move the wrong way, by the rule above.')] })),
+      verdict: { at: 1, kind: (r) => V[r.verdict][0], text: (r) => V[r.verdict][1] }, actions: { label: 'Do' }, sort: false, maxRows: 12,
+    }), el('p', { class: 'small muted' }, 'Our own site, ads and email: unavailable. ' + pretty(x.own_reason).replace(/^./, (c) => c.toUpperCase()) + '. ',
+      el('button', { class: 'btn soft xs', type: 'button', text: 'Plan the quarterly scan', onclick: () => briefPanel(x.scan) })));
+  }
+
   // ---------- desk: evidence gate ----------
   function renderGate(g) {
     const tbl = el('table', { class: 'gate' });
@@ -1101,7 +1115,7 @@
     { key: 'doubts', label: 'Doubts and words', ids: ['ladders-wrap', 'cover-wrap', 'themes-wrap', 'words-wrap', 'hooks-wrap', 'gap-wrap', 'macros-wrap'] },
     { key: 'offers', label: 'Offers and claims', ids: ['offers-wrap', 'price-wrap', 'claims-wrap', 'timing-wrap'] },
     { key: 'retention', label: 'Retention', ids: ['paths-wrap', 'cohort-wrap', 'mix-wrap', 'moments-wrap', 'health-wrap'] },
-    { key: 'brand', label: 'Brand and voice', ids: ['perc-wrap', 'hier-wrap', 'look-wrap', 'voice-wrap'] },
+    { key: 'brand', label: 'Brand and voice', ids: ['drift-wrap', 'perc-wrap', 'hier-wrap', 'look-wrap', 'voice-wrap'] },
   ];
   let deskTabs = null;
   function buildDesk(actions) {
@@ -1172,6 +1186,7 @@
     renderNaming(d.naming);
     renderLadders(d.ladders, d.avatars);
     renderGap(d.copy_gap);
+    renderDrift(d.drift);
     renderPerception(d.perception);
     renderHierarchy(d.hierarchy);
     renderHooks(d.hooks);
