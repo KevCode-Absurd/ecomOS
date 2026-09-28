@@ -274,7 +274,7 @@ class Round1TopSection(TempBrain):
 
     def test_page_has_the_plan_first(self):
         html = (SCREEN / 'index.html').read_text(encoding='utf-8')
-        self.assertLess(html.index('id="ask"'), html.index('id="plan"'))   # the ask box is a tool line above the plan, not a section
+        self.assertLess(html.index('id="plan"'), html.index('id="ask"'))   # the page opens on the plan; the ask box sits right under it (depth.md rule 1)
         self.assertLess(html.index('id="plan"'), html.index('id="profile"'))
         self.assertLess(html.index('id="profile"'), html.index('id="drop"'))
         self.assertLess(html.index('id="drop"'), html.index('id="audit"'))
