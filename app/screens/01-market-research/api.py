@@ -2082,7 +2082,9 @@ def creative_handoff(brand, finding_id):
               '', 'HAND-OFF']
     if a:
         lines += [f'Owner: {a.get("owner")}. Artefact: {(a.get("artefact") or {}).get("label") or (a.get("artefact") or {}).get("kind")}.', f'Win rule: {a.get("win_rule") or na}. Check on: {a.get("check_on") or na}.']
-    return {'finding_id': finding_id, 'rule_id': f.get('rule_id'), 'theme': theme, 'title': (a or {}).get('title'), 'text': '\n'.join(lines), 'avatars': [v['name'] for v in avatars], 'quotes': len(praise) + len(complaint)}
+    terms = {'why': (a or {}).get('why'), 'win_rule': (a or {}).get('win_rule'), 'stop_rule': (a or {}).get('stop_rule'), 'check_on': (a or {}).get('check_on'),
+             'capability': ((a or {}).get('capability') or {}).get('id'), 'owner': (a or {}).get('owner')}
+    return {'finding_id': finding_id, 'rule_id': f.get('rule_id'), 'theme': theme, 'title': (a or {}).get('title'), 'text': '\n'.join(lines), 'avatars': [v['name'] for v in avatars], 'quotes': len(praise) + len(complaint), 'terms': terms}
 
 
 # ---------------------------------------------------------------- the desk report (round 5.5)
@@ -2320,6 +2322,40 @@ def decisions_on_desk(data, brand, limit=50):
 
 HANDOFFS_DIR = HERE / 'fixtures' / 'handoffs'
 HANDOFFS_PATH = HERE / 'fixtures' / 'creative_handoffs.json'
+SHARED_HANDOFFS_PATH = Path(rank_mod.DECISIONS).parent / 'handoffs.json'   # the shared append-only log (events.md), next to the decisions log; tests point this elsewhere
+HANDOFF_TO = {'creative': 'creative', 'copy': 'copy', 'landing pages': 'landing pages'}
+
+
+def _server():
+    """The app server module (loaded once): its Handoffs class validates and appends to the shared log."""
+    if 'server' not in _SAMPLE:
+        spec = importlib.util.spec_from_file_location('ecomos_server_research', APP / 'server.py')
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        _SAMPLE['server'] = mod
+    return _SAMPLE['server']
+
+
+def shared_handoffs():
+    """The shared hand-off log (data/handoffs.json) as the server's Handoffs class, at the path this module points to."""
+    return _server().Handoffs(SHARED_HANDOFFS_PATH)
+
+
+def post_shared_handoff(to, kind, title, why, draft, terms, finding_id, owner='agent_drafts'):
+    """Append one row to the shared hand-off log in the events contract shape and return it. The server validates the
+    shape (from_screen, to, kind, title, status proposed) and sets the id and time."""
+    body = {'from_screen': SCREEN, 'to': to, 'kind': kind, 'title': title, 'why': why, 'draft': draft, 'finding_id': finding_id, 'owner': owner if owner in ('agent', 'agent_drafts', 'person') else 'agent_drafts',
+            'win_rule': (terms or {}).get('win_rule'), 'stop_rule': (terms or {}).get('stop_rule'), 'check_on': (terms or {}).get('check_on'), 'capability': (terms or {}).get('capability')}
+    return shared_handoffs().append({k: v for k, v in body.items() if v is not None})
+
+
+def shared_handoff_rows(brand=None, to=None):
+    """Rows this screen posted to the shared log, newest first, optionally for one team; the brand is read from the finding
+    id's brand tag when present, else every row from this screen is returned (the shared log carries no brand column yet)."""
+    rows = [r for r in shared_handoffs().read() if r.get('from_screen') == SCREEN and (to is None or r.get('to') == to)]
+    rows.sort(key=lambda r: str(r.get('time') or ''), reverse=True)
+    return rows
+
 
 
 def send_handoff(brand, finding_id, body, today):
@@ -2334,21 +2370,36 @@ def send_handoff(brand, finding_id, body, today):
     p.write_text(h['text'] + '\n', encoding='utf-8')
     doc = json.loads(HANDOFFS_PATH.read_text(encoding='utf-8')) if HANDOFFS_PATH.is_file() else {'table': 'creative_handoffs', 'rows': []}
     rows = [r for r in doc.get('rows') or [] if not (r.get('brand') == (brand or 'sample') and r.get('finding_id') == finding_id)]
-    row = {'id': f'HO-{safe}', 'brand': brand or 'sample', 'from': SCREEN, 'to': '09-creative', 'finding_id': finding_id, 'rule_id': h.get('rule_id'), 'title': h.get('title'), 'theme': h.get('theme'),
+    terms = h.get('terms') or {}
+    shared = post_shared_handoff('creative', 'ad_brief', h.get('title') or f'Creative hand-off: {h.get("theme")}', terms.get('why') or f'the {h.get("theme")} theme on the research desk', h['text'], terms, finding_id, terms.get('owner') or 'agent_drafts')
+    row = {'id': f'HO-{safe}', 'brand': brand or 'sample', 'from': SCREEN, 'to': 'creative', 'finding_id': finding_id, 'rule_id': h.get('rule_id'), 'title': h.get('title'), 'theme': h.get('theme'),
            'avatars': h.get('avatars'), 'quotes': h.get('quotes'), 'artefact': str(p.relative_to(HERE)) if str(p).startswith(str(HERE)) else str(Path('fixtures') / 'handoffs' / (brand or 'sample') / p.name),
-           'sent_on': today.isoformat(), 'by': who, 'status': 'sent', 'simulated': True}
+           'sent_on': today.isoformat(), 'by': who, 'status': 'sent', 'shared_id': shared['id'], 'shared_status': shared['status'], 'simulated': True}
     rows.append(row)
     doc['rows'] = rows
-    doc['note'] = 'Creative hand-offs from 01-market-research (events contract): the file is the brief, the row is the pointer. 09-creative reads these once a shared table exists.'
+    doc['note'] = 'Creative hand-offs from 01-market-research: the file is the brief, the row is the pointer, and shared_id is the row in the shared hand-off log (data/handoffs.json, events contract) that 09-creative reads by to=creative.'
     HANDOFFS_PATH.write_text(json.dumps(doc, indent=1), encoding='utf-8')
     return 201, {'ok': True, 'handoff': row}
 
 
 def handoffs_sent(brand):
+    """Hand-offs this desk sent: the local pointer rows for the brand, each carrying the live status of its row in the shared
+    log (proposed, decided, done, dropped; the receiving screen sets it), plus a count of rows in the shared log by status."""
     doc = json.loads(HANDOFFS_PATH.read_text(encoding='utf-8')) if HANDOFFS_PATH.is_file() else {'rows': []}
     rows = [r for r in doc.get('rows') or [] if r.get('brand') == (brand or 'sample')]
+    shared_rows = shared_handoff_rows()
+    shared = {r.get('id'): r for r in shared_rows}
+    for r in rows:
+        sr = shared.get(r.get('shared_id'))
+        r['shared_status'] = sr.get('status') if sr else ('not in the shared log' if r.get('shared_id') else 'sent before the shared log existed')
+        r['to'] = sr.get('to') if sr else r.get('to')
     rows.sort(key=lambda r: str(r.get('sent_on') or ''), reverse=True)
-    return {'rows': rows, 'file': str(HANDOFFS_PATH.relative_to(APP.parent)) if str(HANDOFFS_PATH).startswith(str(APP.parent)) else str(HANDOFFS_PATH)}
+    by_status = {}
+    for sr in shared_rows:
+        by_status[sr.get('status') or 'proposed'] = by_status.get(sr.get('status') or 'proposed', 0) + 1
+    return {'rows': rows, 'file': str(HANDOFFS_PATH.relative_to(APP.parent)) if str(HANDOFFS_PATH).startswith(str(APP.parent)) else str(HANDOFFS_PATH),
+            'shared': {'file': str(SHARED_HANDOFFS_PATH.relative_to(APP.parent)) if str(SHARED_HANDOFFS_PATH).startswith(str(APP.parent)) else str(SHARED_HANDOFFS_PATH), 'by_status': by_status, 'route': '/api/handoffs?from_screen=' + SCREEN},
+            'rule': 'a send writes the brief file here and one row to the shared hand-off log; the receiving team reads the log by to and sets the status; this desk never edits another screen\'s rows'}
 
 
 def _brand(req):

@@ -1789,22 +1789,37 @@ class HandoffCreativeTest(unittest.TestCase):
 
     def test_send_to_creative(self):
         import tempfile
-        saved = (api.HANDOFFS_DIR, api.HANDOFFS_PATH)
+        saved = (api.HANDOFFS_DIR, api.HANDOFFS_PATH, api.SHARED_HANDOFFS_PATH)
         tmp = Path(tempfile.mkdtemp())
-        api.HANDOFFS_DIR, api.HANDOFFS_PATH = tmp / 'handoffs', tmp / 'creative_handoffs.json'
+        api.HANDOFFS_DIR, api.HANDOFFS_PATH, api.SHARED_HANDOFFS_PATH = tmp / 'handoffs', tmp / 'creative_handoffs.json', tmp / 'shared' / 'handoffs.json'
         try:
             fid = f'{audit.SCREEN}.PROD-R07.durability'
             code, out = api.handle(Req(['handoff', fid, 'send'], method='POST'))
             self.assertEqual(code, 201)
             row = out['handoff']
-            self.assertEqual((row['from'], row['to'], row['finding_id'], row['status']), ('01-market-research', '09-creative', fid, 'sent'))
+            self.assertEqual((row['from'], row['to'], row['finding_id'], row['status']), ('01-market-research', 'creative', fid, 'sent'))
             self.assertTrue((api.HANDOFFS_DIR / 'bombas' / (row['id'][3:] + '.md')).is_file())
+            # the same send is one row in the shared log, in the events contract shape, that 09-creative reads by to=creative
+            shared = json.loads(api.SHARED_HANDOFFS_PATH.read_text(encoding='utf-8'))
+            self.assertEqual(len(shared), 1)
+            sr = shared[0]
+            self.assertEqual((sr['from_screen'], sr['to'], sr['kind'], sr['status'], sr['finding_id'], sr['owner']), ('01-market-research', 'creative', 'ad_brief', 'proposed', fid, 'agent_drafts'))
+            self.assertEqual(sr['id'], row['shared_id'])
+            self.assertTrue(sr['id'].startswith('HO-') and len(sr['id']) == 13)
+            self.assertIn('CREATIVE HAND-OFF', sr['draft'])
+            for k in ('why', 'win_rule', 'stop_rule', 'check_on', 'capability'):
+                self.assertTrue(sr.get(k), k)
             api.handle(Req(['handoff', fid, 'send'], method='POST'))
-            self.assertEqual(len(api.handoffs_sent('bombas')['rows']), 1)      # a second send refreshes, never duplicates
+            sent = api.handoffs_sent('bombas')
+            self.assertEqual(len(sent['rows']), 1)      # a second send refreshes the pointer, never duplicates it
+            self.assertEqual(len(json.loads(api.SHARED_HANDOFFS_PATH.read_text(encoding='utf-8'))), 2)   # the shared log is append-only: the resend is a new row
+            self.assertEqual(sent['rows'][0]['shared_status'], 'proposed')
+            self.assertEqual(sent['shared']['by_status'], {'proposed': 2})
+            self.assertIn('never edits', sent['rule'])
             self.assertEqual(api.handoffs_sent('other')['rows'], [])
             self.assertEqual(api.handle(Req(['handoff', 'nope', 'send'], method='POST'))[0], 400)
         finally:
-            api.HANDOFFS_DIR, api.HANDOFFS_PATH = saved
+            api.HANDOFFS_DIR, api.HANDOFFS_PATH, api.SHARED_HANDOFFS_PATH = saved
 
     def test_avatar_handoff_names_the_buyer(self):
         fid = next(f['id'] for f in audit.run('bombas', {'ends_on': '2026-09-27'}) if f['rule_id'] == 'PROD-R11')

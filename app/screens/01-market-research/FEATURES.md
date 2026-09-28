@@ -243,6 +243,23 @@ The candidate side of the desk: the pipeline with its gates, boxes and scorecard
 | 7.9 | A per-process memo for the audit run keyed on the writable files' mtimes and the brain version, so a page load runs the audit once: `memo_key` hashes the fixtures folder, the pipeline and ledger files, the brand data and brain folders (small files by content, so two writes in one clock tick still differ) and the brain version; `memo_stats` on the desk footer; callers get their own copy; `MEMO_ON` off for a bare run; both brands checked on every route (the test suite runs in half the time) | done |
 | 7.10 | Recipes for R46 to R49, 120 tests green on both suites, round7.png to round7d.png (Bombas) and round7s.png (Tallgrass Goods), founder note | done |
 
+## Round 8: the shared log, launch readiness and the sourcing gates (from 28 Sep 2026)
+
+Picked from the round 7 note, the room spec (PROD-C08, C10, C11, C12) and the idea pass (`scripts/ideas.py --domain 01-PRD --bottleneck cash_inventory margin_cogs risk_compliance`, ideas PRD-121, PRD-112, PRD-077, PRD-078, PRD-080, PRD-081, PRD-056, PRD-099). The ad spend timeline (advertisers with a live ad by month) stays out: the brain's ad records carry a longest run and an active count, not first and last seen dates, so a month series would be invented.
+
+| # | Feature | Status |
+|---|---|---|
+| 8.1 | The creative hand-off through the shared hand-off log (`data/handoffs.json`, events contract): Send to creative posts one row in the server's shape (from_screen, to creative, kind ad_brief, title, why, draft, win rule, stop rule, check on, capability, owner, finding id, status proposed) through the server's `Handoffs` class; the local pointer row keeps `shared_id`; Hand-offs sent shows the live status per row and the counts by status from the shared log; this desk never edits another screen's rows | done |
+| 8.2 | Launch readiness (bank ideas PRD-121, PRD-112): one checklist per candidate at shortlisted or go (demand screen run, angle with a source, margin gate, compliance, tech pack, sample passed, first run sized, one SKU, stock packaging, owner, kill hold clear); rule PROD-R50 a candidate at go, or shortlisted with a first run decided, with a hard stop open; the gates carried onto the product_candidates hand-off | todo |
+| 8.3 | Price band gate (bank ideas PRD-077, PRD-078): rule PROD-R51 a candidate at researched or later whose planned price sits at or under $9.99 with no offer structure noted, or inside the $9 to $20 caution band with no band check noted; the target band for a paid-acquisition launch on the margin block | todo |
+| 8.4 | Margin at three points and the cost basis (bank ideas PRD-080, PRD-081): the gate run at the low, planned and high price and at the expected bulk cost; rule PROD-R52 a margin that clears the floor at one price only; rule PROD-R53 a candidate at gated or later whose cost is an estimate or competitor-implied, not the brand's own quote | todo |
+| 8.5 | Identical sellers (bank idea PRD-056): rule PROD-R54 a candidate whose lane has a listing with 10 or more sellers of the identical item, planned as a brand SKU; recipe reframes it as a short cash test with its own stop rule | todo |
+| 8.6 | Lane opportunity score (the Jungle Scout job as rules): per lane, demand, competition, price room, complaint room and our presence on stated weights, ranked; the score on the lane card with the parts, and the top lane with no open candidate ends in a screen-in action | todo |
+| 8.7 | Sourcing channel comparison (bank idea PRD-099): the sourcing channel per candidate with a first run (agent, marketplace direct, domestic, own factory) and the alternatives compared on cost, days and branding; rule PROD-R55 a first run decided on one channel with no alternative compared | todo |
+| 8.8 | Go candidate hand-offs through the shared log: listing copy to copy and the launch page section to landing pages, posted from the go candidate's card with the brief drafted from the candidate, the angle and the proof on file | todo |
+| 8.9 | Second brand pass; the memo covers the shared hand-off log and the decisions log; every new block and route on Tallgrass Goods | todo |
+| 8.10 | Recipes, tests, round8.png, founder note | todo |
+
 ## Round 7 note for the founder (28 Sep 2026)
 
 1. The last gates before money goes out are now rules on the candidate. From shortlisted on, or once a first run is decided, a sample must be ordered, received and tested through our own fulfilment chain before any MOQ (PROD-R46); a first launch with more than one variant gets a one-SKU plan (PROD-R48); a first run in a custom, printed, branded or embossed format before a passed sample and a first sell-through gets a stock-packaging-first plan with the custom design parked (PROD-R49). All three merge into the candidate card, so one card per candidate still holds every open ask.
@@ -307,6 +324,8 @@ The candidate side of the desk: the pipeline with its gates, boxes and scorecard
 6. Next: round 2 takes the rest of the room spec (candidate pipeline with the margin gate, time boxes, the shortlist scorecard, video-commerce demand signals) and what the best research tools do (Particl, Jungle Scout, Exploding Topics, Glimpse, SparkToro, Similarweb style jobs) rebuilt as rules on our own data, plus the idea bank.
 
 ## Contract asks
+
+- The shared hand-off log (`data/handoffs.json`) has no brand column; this desk reads its own rows by from_screen and keeps the brand on the local pointer row. A `brand` field on the shared row would let a multi-brand server filter it (round 8.1).
 
 - `creative_handoffs` (a hand-off from 01-market-research to 09-creative, events.md has no row for it yet): the shape this screen writes is in `fixtures/creative_handoffs.json` (id, brand, from, to, finding_id, rule_id, title, theme, avatars, quotes, artefact path, sent_on, by, status). Ask: a row in events.md and a home in the data layer so 09-creative reads one path.
 - A schedule for `python3 app/screens/01-market-research/weekly.py --brand bombas` (a Routine or a cron, weekly on Monday) is the lead's call: this session does not create one. The note lands in `fixtures/reports/<brand>/` and the Exports section lists it.
