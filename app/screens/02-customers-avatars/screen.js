@@ -354,6 +354,18 @@
       artefact: { kind: r.action.kind, label: 'a dated plan: ad briefs and 2 emails', draft: r.action.draft } }, { compact: true, screen: SLUG })));
   }
 
+  // ---------- desk: support replies ----------
+  function renderMacros(x) {
+    document.getElementById('macros-sub').textContent = 'A reply for every doubt the ladders send to support, from the proof on file, or from a policy a person checks. It never promises what is not on file. ' + x.line;
+    mount('#macros-tools', UI.copyButton({ label: 'Copy all replies', text: () => x.rows.map((m) => m.draft).join('\n\n') }));
+    const S = { ready: ['good', 'ready'], check: ['warn', 'check the policy'], person: ['bad', 'a person writes it'] };
+    mount('#macros', ...x.rows.map((m) => el('article', { class: 'card flat macro' },
+      el('div', { class: 'row between' }, el('b', { text: '"' + m.doubt + '"' }), el('span', { class: 'chip ' + S[m.status][0], text: S[m.status][1] })),
+      el('pre', { class: 'draft', text: m.draft.split('\n').slice(2).join('\n') }),
+      el('div', { class: 'row' }, UI.copyButton({ label: 'Copy', cls: 'quiet xs', text: () => m.draft }),
+        UI.decisionRow({ capability: m.action.capability, owner: m.action.owner, screen: SLUG, compact: true, finding_id: m.action.id })))));
+  }
+
   // ---------- desk: return risk ----------
   function renderReturns(x) {
     document.getElementById('returns-sub').textContent = 'Return risk per avatar: the lines it buys, weighted by how often, times each line\'s 1 and 2 star share and the share of its top complaints that are fit or wear. High: 1.25x the median avatar. A proxy from public reviews until ticket and return reasons are aggregated. ' + (x.line || '');
@@ -850,7 +862,7 @@
   // ---------- the desk, grouped into tabs by job ----------
   const DESK = [
     { key: 'avatars', label: 'Avatars', ids: ['focus-wrap', 'avatars-wrap', 'voiceads-wrap', 'split-wrap', 'gate-wrap', 'forces-wrap', 'survey-wrap', 'served-wrap', 'returns-wrap', 'misread-wrap'] },
-    { key: 'doubts', label: 'Doubts and words', ids: ['ladders-wrap', 'cover-wrap', 'themes-wrap', 'words-wrap', 'hooks-wrap', 'gap-wrap'] },
+    { key: 'doubts', label: 'Doubts and words', ids: ['ladders-wrap', 'cover-wrap', 'themes-wrap', 'words-wrap', 'hooks-wrap', 'gap-wrap', 'macros-wrap'] },
     { key: 'offers', label: 'Offers and claims', ids: ['offers-wrap', 'claims-wrap', 'timing-wrap'] },
     { key: 'retention', label: 'Retention', ids: ['paths-wrap', 'cohort-wrap', 'mix-wrap', 'moments-wrap', 'health-wrap'] },
     { key: 'brand', label: 'Brand and voice', ids: ['perc-wrap', 'hier-wrap', 'look-wrap', 'voice-wrap'] },
@@ -903,6 +915,7 @@
     renderDrafts(d.drafts);
     renderMisreads(d.misreads);
     renderReturns(d.returns);
+    renderMacros(d.macros);
     renderClaims(d.claims_fire);
     renderLookalikes(d.lookalikes);
     renderTiming(d.timing);

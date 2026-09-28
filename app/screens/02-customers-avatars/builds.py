@@ -1911,10 +1911,12 @@ def handoff(d: dict) -> list[dict]:
     email += [item(m["title"], m["artefact"]["kind"], m["artefact"]["draft"]) for m in d["mix"].get("moves", []) if m["artefact"]["kind"] in ("flow", "email")]
     email += [item(m["action"]["title"], "email", m["action"]["draft"]) for m in d["moments"].get("rows", [])]
     email.append(item(d["survey"]["action"]["title"], "research_note", d["survey"]["action"]["draft"]))
+    cx = [item(m["action"]["title"], "copy", m["draft"]) for m in (d.get("macros") or {}).get("rows", [])]
     return [{"screen": "09-creative", "label": "Creative", "items": creative},
             {"screen": "10-copy", "label": "Copy", "items": copy},
             {"screen": "07-landing-pages-cro", "label": "Landing pages", "items": pages},
-            {"screen": "14-email-messaging", "label": "Email and messaging", "items": email}]
+            {"screen": "14-email-messaging", "label": "Email and messaging", "items": email}] + \
+           ([{"screen": "15-customers-cx", "label": "Support", "items": cx}] if cx else [])
 
 
 # ---------------------------------------------------------------- ad naming convention
@@ -2133,3 +2135,42 @@ def return_risk(avatars: list[dict], buys: dict[str, dict[str, int]], line_rows:
             "tickets": {"available": False, "reason": "ticket reasons are in the order-level tables; no aggregate by reason and product line yet",
                         "fix": "Aggregate tickets and returns by reason and product line (see Contract asks)."},
             "line": (f"{rows[0]['name']} carries the most return risk, driven by {rows[0]['driver'].replace('_', ' ')}." if rows else "No avatar is tied to a product line yet.")}
+
+
+# ---------------------------------------------------------------- support replies per doubt
+
+def macros(ladders_rows: list[dict], all_rungs: list[dict], policy_texts: dict[str, str]) -> dict:
+    """A drafted support reply for every rung whose uses include cx_macro. Proof on file becomes the answer; a rung
+    with no proof gets the policy that applies, or is left for a person to write. Never promises what is not on file."""
+    by_id = {r["id"]: r for r in all_rungs}
+    guarantee = next((t for k, t in policy_texts.items() if "guarantee" in k or "exchange" in k), None)
+    rows = []
+    for r in ladders_rows:
+        if "cx_macro" not in (r.get("uses") or []):
+            continue
+        rung = by_id.get(r["id"]) or {}
+        one = next((q for q in rung.get("one_star_quotes") or [] if q), None)
+        if r["proof"]:
+            answer, status = r["proof"], "ready"
+        elif guarantee:
+            answer, status = guarantee + " (policy, not proof of the doubt: a person checks the wording)", "check"
+        else:
+            answer, status = None, "person"
+        complaint = r["verdict"] in ("answer", "not_landing")
+        lines = [f"MACRO: {r['doubt']}", f"When a buyer says something like: \"{_clip(one)}\"" if one else "When a buyer raises this doubt.",
+                 "Reply:", "Thanks for telling us, and sorry this happened." if complaint else "Good question. Here is the plain answer.",
+                 (f"Here is what we do: {answer}" if answer else "Here is what we do: [a person writes this; no proof or policy on file]"),
+                 "Reply with your order number and we will sort it today." if complaint else "Anything else, just reply here.",
+                 "Tag: " + r["theme"].replace("_", " ") + f", rung {r['level']}"]
+        rows.append({"id": r["id"], "doubt": r["doubt"], "theme": r["theme"], "status": status, "one_star": r["one_star"],
+                     "draft": "\n".join(lines),
+                     "action": {"id": f"{SCREEN}.macro.{r['id']}", "kind": "copy", "owner": "agent_drafts" if status != "person" else "person",
+                                "title": f"Support reply for \"{r['doubt']}\"", "capability": {"id": "LIFE-C27", "autonomy": "human_assist"},
+                                "draft": "\n".join(lines),
+                                "steps": [{"n": 1, "who": "agent", "text": "Draft the reply from the proof or policy on file."},
+                                          {"n": 2, "who": "person", "text": "Check the wording and add it to the help desk as a macro."},
+                                          {"n": 3, "who": "agent", "text": "Count tickets tagged with this doubt next month."}]}})
+    rows.sort(key=lambda x: ({"person": 0, "check": 1, "ready": 2}[x["status"]], -(x["one_star"] or 0)))
+    c = {k: sum(1 for x in rows if x["status"] == k) for k in ("ready", "check", "person")}
+    return {"rows": rows, "counts": c,
+            "line": f"{len(rows)} doubts support answers: {c['ready']} ready from proof, {c['check']} lean on a policy a person checks, {c['person']} need a person to write."}

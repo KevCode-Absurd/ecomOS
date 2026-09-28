@@ -1079,10 +1079,10 @@ class Handoff(TempBrain):
     def test_packs(self):
         x = api.handle(Req(['handoff']))
         screens = [p['screen'] for p in x['packs']]
-        self.assertEqual(screens, ['09-creative', '10-copy', '07-landing-pages-cro', '14-email-messaging'])
+        self.assertEqual(screens, ['09-creative', '10-copy', '07-landing-pages-cro', '14-email-messaging', '15-customers-cx'])
         events = (ROOT / 'app' / 'contracts' / 'events.md').read_text(encoding='utf-8')
         row = next(l for l in events.splitlines() if l.startswith('| 02-customers-avatars'))
-        for sc in screens:
+        for sc in screens[:4]:
             self.assertIn(sc, row)
         for p in x['packs']:
             self.assertTrue(p['items'])
@@ -1245,6 +1245,22 @@ class ReturnRisk(TempBrain):
             self.assertEqual(r['action'] is not None, r['verdict'] == 'high')
         self.assertFalse(x['tickets']['available'])
         self.assertTrue(0 < x['refund_share_3m'] < 0.2)
+
+
+class Macros(TempBrain):
+    """Feature 5.3: support replies per doubt, never promising what is not on file."""
+
+    def test_macros(self):
+        x = api.handle(Req(['overview']))['macros']
+        lad = {r['id']: r for r in api.handle(Req(['overview']))['ladders']['rows']}
+        for m in x['rows']:
+            self.assertIn('cx_macro', lad[m['id']]['uses'])
+            if lad[m['id']]['proof']:
+                self.assertEqual(m['status'], 'ready')
+                self.assertIn(lad[m['id']]['proof'], m['draft'])
+            else:
+                self.assertNotEqual(m['status'], 'ready')
+        self.assertEqual(sum(x['counts'].values()), len(x['rows']))
 
 
 if __name__ == '__main__':
