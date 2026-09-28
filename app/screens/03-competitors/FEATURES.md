@@ -28,7 +28,7 @@ Round 0 notes (28 Sep 2026): brand price per pair is simulated net sales per uni
 | 1.5 | Longest running ads as signals (`references.py`): one per page with days live, start, share of ads live 30 days or more, study, watch or too new; relevance from 4 rules (our top angle, keeps half its ads 30 days, 3x our median, direct) with the reason shown; "Use as reference" opens a brief that says what to borrow (layout, pacing, mood), maps it to our angle and proof, and what never to copy; rights reference only; logs SCT-C04. Our own long runners on top with SCT-C02 | done |
 | 1.6 | Price and pack ladder (`ladder.py`): band chart of each tracked price band per pair against our ladder by style (dots grow with pack size), the direct peers' median range shaded; ladder table with saving a pair from single to biggest pack, proof on file, position against the direct median; Amazon listing prices per pair as a public cross-check; rules COMP-R09 shallow ladder while a peer sells bundles (offer spec, LIFE-C39) and COMP-R10 priced above the peers with no proof (page section, CREA-C31). Pack labels fixed (style from the SKU) | done |
 | 1.7 | Positioning map on `Charts.positioningMap`: price per pair against durability or comfort claim, us and every placed brand sized by active ads, pages with no price band listed as not placed; each corner ends in a move computed in code (hold, contest with the claim points we miss, claim, skip) with a BRAND-C20 decision row; rule COMP-R11 puts an open strong-claim corner on the plan as a 2-frame positioning test (does not fire on this capture, tested on an edited brain) | done |
-| 1.8 | Launches and changes timeline with follow, watch or ignore | todo |
+| 1.8 | Launches and changes (`changes.py`): a 28-day timeline, newest first, from snapshot diffs when two ad-level snapshots exist (new ads, formats, offer types, angles) and from the brain now (full account refreshes, the lookalike page, our own launches); each change is follow, watch or ignore with the action and a BRN-C11 decision row; rule COMP-R12 puts a direct competitor's full refresh on the plan as a research note | done |
 | 1.9 | Snapshot freshness and the re-pull button with the Apify estimate first | todo |
 | 1.10 | `rank` for every rule, old and new, with tests that every finding maps to an action | todo |
 
@@ -128,4 +128,4 @@ Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `a
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
-| 1 | 1.1 to 1.7 | 2026-09-28 | Plan first; rank override; 12 pages side by side; coverage matrix; hook and offer mix; references; price and pack ladder; positioning map with moves |
+| 1 | 1.1 to 1.8 | 2026-09-28 | Plan first; rank override; 12 pages side by side; coverage matrix; hook and offer mix; references; price and pack ladder; positioning map with moves; changes timeline |

@@ -345,6 +345,25 @@ def act_corner(f: dict, m: dict) -> dict:
             "check_on": _plus(f["last_seen"], 21), "time_to_ship_hours": 6}
 
 
+def act_refresh(f: dict, m: dict) -> dict:
+    """COMP-R12: a direct competitor replaced every ad. The agent reads the new flight and says what overlaps ours."""
+    page = f["entity"]["label"].replace(" new flight", "")
+    p = next((x for x in m["pages"] if x["name"] == page), {})
+    draft = "\n".join([f"Research note: {page}'s new flight.",
+                       f"What changed: {f['sentence']}",
+                       f"Their angles on file: {', '.join(a['label'].lower() for a in p.get('angles') or []) or 'none tagged'}.",
+                       f"Our top angles: {', '.join(m['our_top_angles'])}.",
+                       "Read: formats, first line kinds, offers and landing pages of the new ads, by page id only.",
+                       "Output: 3 lines on what overlaps ours and whether to answer. Signals only; never copy their ads."])
+    return {"title": f"Read {page}'s new flight and say what overlaps ours", "owner": "agent",
+            "artefact": {"kind": "research_note", "label": f"a research note on {page}'s new ads", "draft": draft},
+            "steps": _steps(("agent", f"Pull {page}'s active ads by page id at the next capture, inside the Apify caps."),
+                            ("agent", "Tag angles, formats, first lines and offers; diff against the last capture."),
+                            ("agent", "Write the 3-line note; raise a brief only if a new angle overlaps ours.")),
+            "size": {"text": f"{p.get('active_ads')} new ads to read", "count": p.get("active_ads")},
+            "win_rule": None, "stop_rule": None, "check_on": _plus(f["last_seen"], 7), "time_to_ship_hours": 1}
+
+
 def act_connect(f: dict, m: dict) -> dict:
     un = f.get("unavailable") or {}
     con = un.get("connector") or "the missing source"
@@ -359,7 +378,8 @@ def act_connect(f: dict, m: dict) -> dict:
 
 BUILDERS = {"COMP-R01": act_angle, "COMP-R02": act_price, "COMP-R03": act_offer_run, "COMP-R04": act_lookalike,
             "COMP-R05": act_coverage, "COMP-R06": act_first_line, "COMP-R07": act_offer_gap, "COMP-R08": act_discount,
-            "COMP-R09": act_ladder, "COMP-R10": act_above, "COMP-R11": act_corner}
+            "COMP-R09": act_ladder, "COMP-R10": act_above, "COMP-R11": act_corner,
+            "COMP-R12": act_refresh}
 
 
 def action(f: dict, m: dict, net_revenue: float | None) -> dict:

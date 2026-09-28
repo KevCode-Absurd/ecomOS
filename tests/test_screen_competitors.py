@@ -491,6 +491,44 @@ class TestMap(TempBrain):
         self.assertEqual(a['artefact']['kind'], 'test_brief')
 
 
+class TestChanges(TempBrain):
+    """1.8: launches and changes, newest first, each with follow, watch or ignore; snapshot diffs when two exist."""
+    def setUp(self):
+        super().setUp()
+        api.BRAIN_ROOT = self.tmp
+        self.ch = api.handle(Req(['overview']))['changes']
+
+    def test_events(self):
+        ev = self.ch['events']
+        whens = [e['when'] for e in ev]
+        self.assertEqual(whens, sorted(whens, reverse=True))
+        stance = next(e for e in ev if e['page'] == 'Stance')
+        self.assertEqual((stance['kind'], stance['verdict']), ('refresh', 'watch'))
+        tj = next(e for e in ev if e['page'] == 'Tommy John')
+        self.assertEqual(tj['verdict'], 'ignore')
+        lk = next(e for e in ev if e['kind'] == 'lookalike')
+        self.assertEqual(lk['verdict'], 'follow')
+        self.assertTrue(all(e['when'] >= self.ch['window_start'] for e in ev))
+        self.assertEqual(self.ch['snapshots'], 0)
+
+    def test_snapshot_diff(self):
+        def ad(pid, aid, fmt, offers=(), angles=()):
+            return {'page_id': pid, 'ad_id': aid, 'format': fmt, 'offers': [{'tag': o} for o in offers],
+                    'angles': [{'tag': a} for a in angles], 'role': 'competitor'}
+        prev = {'captured_at': '2026-09-14', 'pages': {'1': {'name': 'Stance', 'role': 'competitor'}},
+                'ads': [ad('1', 'a', 'video')]}
+        cur = {'captured_at': '2026-09-28', 'pages': {'1': {'name': 'Stance', 'role': 'competitor'}},
+               'ads': [ad('1', 'a', 'video'), ad('1', 'b', 'carousel', ['percent_off'], ['comfort'])]}
+        kinds = {e['kind'] for e in audit.changemod.diff(prev, cur)}
+        self.assertEqual(kinds, {'new_ads', 'new_format', 'new_offer', 'new_angle'})
+        self.assertEqual(audit.changemod.diff(None, cur), [])
+
+    def test_rule_r12(self):
+        out = audit.run('bombas', WINDOW, self.tmp)
+        r12 = [f for f in out if f['rule_id'] == 'COMP-R12']
+        self.assertEqual([f['entity']['id'] for f in r12], ['refresh_stance'])
+
+
 class TestRank(TempBrain):
     """Depth contract rules 2, 3 and 13: owner, steps and artefact on every action; every finding ends in one."""
     W = {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4}

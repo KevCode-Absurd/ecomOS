@@ -65,6 +65,10 @@ COMP-R11 open strong-claim corner. On the positioning map (price per pair
     a strong-claim quadrant with no tracked brand in it, with 3 or more brands
     placed. Severity medium. Capability BRAND-C20 (test the positioning line
     that takes it). Owner: 03-competitors.
+COMP-R12 direct competitor refreshed its ads. A direct competitor whose oldest
+    active ad is under REFRESH_DAYS (14) days old has replaced every ad it runs
+    (changes.py). Severity low. Capability BRN-C11 (agent reads the new flight).
+    Owner: 03-competitors.
 
 Rubric overrides (depth.md section 4 allows reputation and satisfaction per rule):
 COMP-R01 reputation 5: an unclaimed angle is a competitor position gap named in
@@ -114,6 +118,7 @@ covmod = _local("coverage")
 laddermod = _local("ladder")
 mixmod = _local("mix")
 refmod = _local("references")
+changemod = _local("changes")
 
 SCREEN = "03-competitors"
 SEVERITY_ORDER = {"critical": 0, "high": 1, "medium": 2, "low": 3}
@@ -166,12 +171,14 @@ RULES = [
     {"rule_id": "COMP-R11", "name": "open strong-claim corner on the positioning map", "entity_type": "brand",
      "inputs": ["brain competitors price_band_usd, hook_types, positioning"], "capability": "BRAND-C20",
      "owner_screen": SCREEN},
+    {"rule_id": "COMP-R12", "name": "direct competitor replaced every ad in 14 days", "entity_type": "page",
+     "inputs": ["brain competitors longest_running_ad", "Ad Library snapshot"], "capability": "BRN-C11", "owner_screen": SCREEN},
     {"rule_id": "COMP-R08", "name": "discount on most ads while direct peers run none", "entity_type": "offer",
      "inputs": ["brain offers.promo_share_active_ads", "brain competitors offers_seen"], "capability": "LIFE-C38",
      "owner_screen": SCREEN},
 ]
 RUBRIC_OVERRIDES = {"COMP-R01": {"reputation": 5}, "COMP-R02": {"reputation": 3}, "COMP-R04": {"reputation": 5, "satisfaction": 4}}
-AUTONOMY = {"BRAND-C20": "agent_does", "LIFE-C39": "founder_gate", "CREA-C31": "agent_does", "CREA-C06": "agent_does", "CREA-C04": "agent_does", "LIFE-C47": "agent_does", "LIFE-C38": "founder_gate", "BRAND-C21": "founder_gate", "BRAND-C24": "founder_gate", "MONEY-C48": "human_assist"}
+AUTONOMY = {"BRN-C11": "agent_does", "BRAND-C20": "agent_does", "LIFE-C39": "founder_gate", "CREA-C31": "agent_does", "CREA-C06": "agent_does", "CREA-C04": "agent_does", "LIFE-C47": "agent_does", "LIFE-C38": "founder_gate", "BRAND-C21": "founder_gate", "BRAND-C24": "founder_gate", "MONEY-C48": "human_assist"}
 
 
 # ---------------------------------------------------------------- reading
@@ -393,6 +400,9 @@ def market(brand: str, today: dt.date, root: Path | None = None) -> dict:
 def market_full(brand: str, today: dt.date, root: Path | None = None) -> dict:
     m = market(brand, today, root)
     m["ladder"] = laddermod.build(m, m["brain"])
+    cur = snap.load(brand)
+    prev = snap.load(brand, before=cur["captured_at"]) if cur else None
+    m["changes"] = changemod.build(m, m["brain"], prev, cur, today)
     return m
 
 
@@ -673,6 +683,24 @@ def rule_corners(m, ends_on):
     return out
 
 
+def rule_refresh(m, ends_on):
+    out = []
+    for e in (m.get("changes") or {}).get("events", []):
+        if e["kind"] != "refresh" or not e.get("direct"):
+            continue
+        p = next(p for p in m["pages"] if p["name"] == e["page"])
+        ev = [_row("oldest_active_ad_days", p["longest_days"], "days", "latest capture", ends_on, _fresh(m["competitors"]),
+                   changemod.REFRESH_DAYS, "threshold", "ad_library"),
+              _row("active_ads", p["active_ads"], "n", "latest capture", ends_on, _fresh(m["competitors"]), None, "threshold",
+                   "ad_library")]
+        sentence = (f"{p['name']} replaced every ad: the oldest of its {p['active_ads']} active ads is "
+                    f"{p['longest_days']} days old.")
+        ent = {"type": "page", "id": f"refresh_{p['key']}", "label": f"{p['name']} new flight"}
+        out.append(_finding("COMP-R12", "low", ent, ev, sentence, p["record_ids"], ends_on, 0.5,
+                            "no baseline: a competitor's flight has no cost to us until it takes share"))
+    return out
+
+
 def packs_month_end(packs):
     if not packs.get("available"):
         return None
@@ -696,7 +724,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
                for rid in ("COMP-R01", "COMP-R03")]
     else:
         out = rule_angles(m, ends_on) + rule_offer_runs(m, ends_on) + rule_coverage(m, ends_on) + rule_mix(m, ends_on)
-        out += rule_ladder(m, ends_on) + rule_corners(m, ends_on)
+        out += rule_ladder(m, ends_on) + rule_corners(m, ends_on) + rule_refresh(m, ends_on)
     out += rule_price(m, ends_on) + rule_lookalike(m, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f["severity"]], f["id"]))
     return out

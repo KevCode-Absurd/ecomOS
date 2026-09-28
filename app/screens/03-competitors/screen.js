@@ -314,6 +314,24 @@
     mount('#refs', ours, table, el('p', { class: 'micro faint', text: rf.rule + ' Run length is a signal, not a result. Versions per ad need an ad-level snapshot.' }));
   }
 
+  // ---------- 5g. launches and changes ----------
+  const VKIND = { follow: 'stop', watch: 'watch', ignore: 'keep', ours: 'new' };
+  const VTONE = { follow: 'bad', watch: 'warn', ignore: null, ours: 'accent' };
+  function changesSection(ch) {
+    const items = ch.events.map((e) => ({ when: e.when, who: e.page, title: e.page, text: e.text, tone: VTONE[e.verdict] }));
+    const tl = UI.timeline(items);
+    Array.from(tl.children).forEach((node, i) => {
+      const e = ch.events[i]; if (!e) return;
+      const body = node.lastChild;
+      body.append(el('div', { class: 'row tl-act' }, UI.verdict(VKIND[e.verdict], e.verdict_text), e.action ? el('span', { class: 'small', text: e.action }) : null,
+        e.verdict === 'follow' || e.verdict === 'watch' ? UI.decisionRow({ capability: 'BRN-C11', autonomy: 'agent_does', screen: SCREEN, compact: true, finding_id: SCREEN + '.change.' + e.kind + '.' + String(e.page).replace(/[^a-z0-9]+/gi, '_') }) : null,
+        el('span', { class: 'micro faint', text: e.source })));
+    });
+    const c = ch.counts;
+    mount('#changes', UI.orientation([{ label: 'follow', value: c.follow, unit: 'n', tone: c.follow ? 'bad' : null }, { label: 'watch', value: c.watch, unit: 'n' }, { label: 'ignore', value: c.ignore, unit: 'n' }, { label: 'ours', value: c.ours, unit: 'n' }]),
+      tl, el('p', { class: 'micro faint', text: ch.rule + ' ' + (ch.snapshots < 2 ? 'Ad-level diffs (new ads, formats, offers, angles) start when a second snapshot lands; until then changes come from the brain.' : '') + (ch.older ? ' ' + ch.older + ' older events hidden.' : '') }));
+  }
+
   // ---------- 6. the audit ----------
   function rulesTable(rules) {
     return UI.table({ columns: [{ key: 'rule_id', label: 'Rule' }, { key: 'name', label: 'What it checks' }, { key: 'inputs', label: 'Reads', format: (v) => (v || []).join(', ') }, { key: 'capability', label: 'Capability' }],
@@ -339,6 +357,7 @@
     coverageSection(d.coverage);
     mixSection(d.mix, byId);
     refsSection(d.references);
+    changesSection(d.changes);
     document.getElementById('audit-sub').textContent = p.findings.length + ' findings from ' + p.rules.length + ' rules. Public signals, one capture.';
     mount('#audit', auditTable(p.findings));
     mount('#rules', el('h4', { text: 'Rules' }), rulesTable(p.rules));
