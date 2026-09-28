@@ -103,6 +103,7 @@ Known gaps from round 0:
 | # | Feature | Status |
 |---|---|---|
 | 5.1 | Offer stack read-back: offers written by approvals on this screen appear in "What does a shopper get from us today?" as Planned or Live, with their terms, source and date, read back from the brain (proposed records included on purpose, marked planned) | done |
+| 5.2 | Break-even discount and volume multiple per line (web pass 2: Saras, Nebulab): contribution before media over price is the deepest discount a line can take before it earns nothing, and the units a 20 percent cut needs to keep the same contribution. Two new columns in the promo depth table; the Black Friday spec carries a volume check | done |
 
 ## Contract asks
 
@@ -239,7 +240,7 @@ Intelligems (threshold and price tests scored by profit per visitor), Rebuy (tie
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.9 | 2026-09-28 | S3.9; screenshot round0.png |
-| 5 | 5.1 stack read-back | 2026-09-28 | in progress |
+| 5 | 5.1 stack read-back, 5.2 break-even discount | 2026-09-28 | in progress |
 | 4 | 4.1 to 4.10: save to the brain, offer records, bundle pairs, red line gate, approved first, launched read, upsell connect, brief pack, stale inputs | 2026-09-28 | screenshot round4.png |
 | 3 | 3.1 to 3.10: registry, referral, loyalty, window creep, subscription note, depth rules, plug and play, priors, decisions | 2026-09-28 | screenshot round3.png |
 | 2 | 2.1 to 2.10: position, parity, discipline, gift pick, cart ladder, test calendar, depth by line, second order, cost against price, desk tabs | 2026-09-28 | screenshot round2.png |

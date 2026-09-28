@@ -380,7 +380,9 @@
     const table = UI.verdictTable({
       columns: [{ key: 'sku', label: 'Pack' }, { key: 'price', label: 'Paid price', unit: '$' }, { key: 'cogs', label: 'Landed cost', unit: '$' },
         { key: 'contribution_at_depth', label: 'Kept at that depth', format: (v) => v == null ? 'no tier clears' : fmt.money(v) },
-        { key: 'share_at_depth', label: 'Share of price', format: (v) => v == null ? 'no tier clears' : pct(v) }],
+        { key: 'share_at_depth', label: 'Share of price', format: (v) => v == null ? 'no tier clears' : pct(v) },
+        { key: 'break_even_discount', label: 'Break-even discount', unit: '%' },
+        { key: 'units_needed_at_20', label: 'Units needed at 20 percent off', format: (v) => v == null ? 'never pays' : v.toFixed(2) + 'x' }],
       rows: dl.rows, maxRows: 30,
       verdict: { at: 1, kind: (r) => r.max_depth == null ? 'watch' : r.max_depth >= 0.2 ? 'scale' : 'keep', text: (r) => r.tier, reason: (r) => 'red line ' + pct(dl.target, 0) },
       sort: false });

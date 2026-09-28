@@ -330,6 +330,10 @@ def promo_action(f, a, ctx):
         tiers = {}
         for r in dl['rows']:
             tiers.setdefault(r['tier'], []).append(r['sku'])
+        worst = min((r for r in dl['rows'] if r.get('units_needed_at_20')), key=lambda r: -r['units_needed_at_20'], default=None)
+        if worst:
+            lines.append(f'Volume check: at 20 percent off, {worst["sku"]} must sell {worst["units_needed_at_20"]:.2f} times the units to keep '
+                         f'the same contribution before media; its break-even discount is {worst["break_even_discount"] * 100:.0f} percent.')
         lines.append(f'Depth by line (keeps the {dl["target"] * 100:.0f} percent red line after media): ' +
                      '; '.join(f'{t}: {", ".join(v)}' for t, v in tiers.items()) + '.')
     lines += ['Win: net sales in the window at or above last year with discount depth at or below last year.',

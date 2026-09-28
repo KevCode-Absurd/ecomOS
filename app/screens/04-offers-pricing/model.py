@@ -910,7 +910,13 @@ def depth_by_line(rd, tiers, end=None):
             if contrib / price >= target / 100:
                 best = (d, round(contrib, 2), round(contrib / price, 4))
                 break
+        # break-even discount (web pass: contribution before media over price) and the units a 20 percent cut needs
+        base = p - c - per_order_cost * alloc - (p * fee_pct / 100 + fee_fix * alloc)
+        cut = 0.20
+        at_cut = p * (1 - cut) - c - per_order_cost * alloc - (p * (1 - cut) * fee_pct / 100 + fee_fix * alloc)
         rows.append({'line': ln['line'], 'sku': sku, 'category': ln['category'], 'price': p, 'cogs': c,
+                     'break_even_discount': round(base / p, 4) if p else None,
+                     'units_needed_at_20': round(base / at_cut, 2) if at_cut > 0 else None,
                      'revenue_12m': ln['revenue'], 'max_depth': best[0] if best else None,
                      'contribution_at_depth': best[1] if best else None, 'share_at_depth': best[2] if best else None,
                      'tier': (f'{int(best[0] * 100)} percent off' if best else 'gift, no discount')})

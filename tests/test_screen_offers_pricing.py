@@ -1372,5 +1372,19 @@ class StackReadBackTest(unittest.TestCase):
             shutil.rmtree(tmp, ignore_errors=True)
 
 
+class BreakEvenDiscountTest(unittest.TestCase):
+    def test_cap_and_multiple(self):
+        rd = audit.Reader(None, 'bombas', audit.last_full_day(None, 'bombas'))
+        dl = api.model.depth_by_line(rd, audit._playbook().DEPTH_TIERS)
+        for r in dl['rows']:
+            self.assertTrue(0 < r['break_even_discount'] < 1)
+            if r['units_needed_at_20'] is not None:
+                self.assertGreater(r['units_needed_at_20'], 1)
+                self.assertGreater(r['break_even_discount'], 0.2)
+        bf = next((a for a in api.actions.rank('bombas')['actions'] if a['entity']['id'] == 'window_bfcm'), None)
+        if bf:
+            self.assertIn('Volume check', bf['artefact']['draft'])
+
+
 if __name__ == '__main__':
     unittest.main()
