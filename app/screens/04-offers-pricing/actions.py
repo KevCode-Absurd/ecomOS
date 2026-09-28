@@ -68,6 +68,9 @@ class Ctx:
         self.totals = model.window_totals(rd)
         self.po = model.per_order(self.totals)
         self.objections = objection_map(rd)
+        self.ship_rate = (model.brain_value(rd, 'offers.standard_shipping_cost')[0] or {}).get('cost_usd') if rd.brand else None
+        self.scenarios = (model.threshold_scenarios(rd, self.threshold, self.ship_rate, self.be['value'], (self.po or {}).get('units') or 1)
+                          if self.threshold is not None and self.be.get('value') is not None else [])
 
     def check_on(self, days):
         return (self.end + timedelta(days=days)).isoformat()
@@ -81,12 +84,15 @@ def threshold_action(f, a, ctx):
     stake = f.get('money_at_stake')
     size = (f'{money(stake["usd"])} of labels in 28 days on orders from ${t:,.0f} to ${be["value"]:,.2f}' if stake else
             f'Label cost on orders from ${t:,.0f} to ${be["value"]:,.2f} is unavailable until order rows connect')
+    sc = next((x for x in ctx.scenarios if x['threshold'] == new), {})
     brief = '\n'.join([
         f'Test brief: free shipping at ${new} against ${t:,.0f}',
         f'Why: break-even is ${be["value"]:,.2f} (AOV {money(be["aov"])} plus the {money(be["label"])} label over a '
         f'{be["gross_margin"] * 100:.0f} percent margin). Every free order under it ships at a loss on the label.',
         f'Arms: A keeps ${t:,.0f}. B moves the line to ${new}. Same cart bar, same copy, only the number changes.',
         'Split: 50/50 by visitor, new and returning, all devices, 28 days.',
+        (f'The bar B must clear: {sc["text"]} The rest pay the {money(ctx.ship_rate)} rate or add an item.'
+         if sc.get('limit') is not None else 'The walk-away limit is unavailable: contribution inputs are missing.'),
         'Primary metric: contribution per visitor (net minus landed cost, label, pick and pack, fees).',
         'Guard: conversion rate by arm, AOV by arm, share of orders in the $10 under each line.',
         'Win: contribution per visitor up in B with conversion down less than 3 percent relative.',
@@ -95,7 +101,7 @@ def threshold_action(f, a, ctx):
     a.update({
         'title': f'Test free shipping at ${new} against ${t:,.0f}',
         'why': f['sentence'] + f' Break-even is AOV {money(be["aov"])} plus the {money(be["label"])} label over a '
-               f'{be["gross_margin"] * 100:.0f} percent margin.',
+               f'{be["gross_margin"] * 100:.0f} percent margin.' + (f' ${new} {sc["text"][0].lower()}{sc["text"][1:]}' if sc.get('limit') is not None else ''),
         'owner': 'agent_drafts',
         'artefact': {'kind': 'test_brief', 'label': f'Test brief: free shipping at ${new} against ${t:,.0f}', 'draft': brief},
         'steps': steps(

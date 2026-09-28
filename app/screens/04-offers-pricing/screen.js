@@ -108,36 +108,52 @@
         ], rows, sort: false })));
   }
 
-  function thresholdBlock(th, d) {
+  function thresholdBlock(th) {
     const a = ACTIONS.find((x) => x.rule_id === 'OFFER-R01');
-    const head = { title: 'Does the free shipping line pay for itself?', sub: 'Break-even = AOV + average label / gross margin. A line that works has more orders in the $10 just over it than just under it.' };
-    if (th.threshold == null) return section('desk-threshold', head, UI.emptyState({ screen: SLUG, title: 'No threshold in the brain', text: th.reason, missing: [th.fix] }));
+    const head = { title: 'Does the free shipping line pay for itself?', sub: 'Break-even = AOV + average label / gross margin. A line that works has more orders in the $' + (th.band || 10) + ' just over it than just under it.' };
+    if (th.unavailable) return section('desk-threshold', head, UI.emptyState({ screen: SLUG, title: 'Threshold economics unavailable', text: th.reason, missing: [th.fix] }));
     const inp = th.break_even_inputs || {};
+    const bins = th.bins || [];
+    const i0 = bins.findIndex((g) => g.from === th.shade[0]);
+    const dist = Charts.bar({
+      labels: bins.map((g) => '$' + g.from), stacked: true, unit: '%', shade: i0 >= 0 ? [i0, i0 + Math.round((th.shade[1] - th.shade[0]) / 5) - 1] : null,
+      series: [
+        { name: 'Pays shipping', values: bins.map((g) => g.orders ? g.share * g.paid_shipping_orders / g.orders : null) },
+        { name: 'Ships free', values: bins.map((g) => g.orders ? g.share * (1 - g.paid_shipping_orders / g.orders) : null) },
+      ],
+      maxLabels: 10, title: (th.fixture ? 'Fixture: ' : '') + 'share of orders by order value, $5 bins' + (th.fixture ? ' (shape only, not brand data)' : ', ' + th.window.label),
+      note: th.fixture ? 'Order values are ' + NA + ': ' + th.distribution_unavailable + '. A labelled fixture is drawn so the layout can be checked. Shaded: the $' + th.band + ' just under the line.'
+        : 'Shaded: the $' + th.band + ' just under the line. Order value is subtotal minus discounts, before tax and shipping. ' + fmt.int(th.orders_sample) + ' order rows.',
+    });
+    const trend = Charts.step({ labels: th.trend.map((r) => r.month.slice(2)), unit: '$',
+      series: [{ name: 'Break-even', values: th.trend.map((r) => r.break_even) }, { name: 'Free shipping line', values: th.trend.map((r) => r.threshold) }],
+      title: 'Break-even by month against the line', note: '28-day AOV at each month end, label in force that day, target gross margin. The gap is label money on every order in between.', maxLabels: 6 });
     const facts = [
-      ['Threshold', fmt.money(th.threshold) + ' (' + (SOURCE[(th.threshold_source || {}).type] || 'brain') + ', ' + ((th.threshold_source || {}).captured_at || 'undated') + ')'],
-      ['Break-even', th.break_even == null ? NA : fmt.money(th.break_even) + ' = AOV ' + fmt.money(inp.aov) + ' + label ' + fmt.money(inp.label) + ' / margin ' + pct(inp.gross_margin, 0)],
-      ['Margin used', th.margin_basis],
+      ['Line', fmt.money(th.threshold) + ' (' + (SOURCE[(th.threshold_source || {}).type] || 'brain') + ', ' + ((th.threshold_source || {}).captured_at || 'undated') + '), ' + pct(th.above_aov, 0) + ' above AOV'],
+      ['Break-even', fmt.money(th.break_even) + ' = AOV ' + fmt.money(inp.aov) + ' + label ' + fmt.money(inp.label) + ' / margin ' + pct(inp.gross_margin, 0)],
+      ['Gap', th.gap == null ? NA : fmt.money(th.gap) + (th.gap > 0 ? ' under break-even on every free order in between' : ' over break-even')],
+      ['Shipping under the line', th.shipping_listed == null ? NA : fmt.money(th.shipping_listed) + ' listed rate'],
+      ['Just under / just over', th.share_just_under == null ? NA + ' until order rows connect' : pct(th.share_just_under) + ' / ' + pct(th.share_just_over)],
     ];
-    const body = el('div', { class: 'card' });
-    if (th.bins) {
-      body.append(Charts.bar({
-        labels: th.bins.map((g) => '$' + g.from), stacked: true, unit: '%',
-        series: [
-          { name: 'Pays shipping', values: th.bins.map((g) => g.orders ? g.share * g.paid_shipping_orders / g.orders : null) },
-          { name: 'Ships free', values: th.bins.map((g) => g.orders ? g.share * (1 - g.paid_shipping_orders / g.orders) : null) },
-        ],
-        maxLabels: 10, title: 'Share of orders by order value, $5 bins, ' + th.window.label,
-        note: 'Order value is subtotal minus discounts, before tax and shipping. ' + fmt.int(th.orders_sample) + ' order rows.',
-      }));
-      facts.push(['Just under ($' + th.band + ')', pct(th.share_just_under) + ' of orders'], ['Just over ($' + th.band + ')', pct(th.share_just_over) + ' of orders'], ['Ships free', pct(th.share_ship_free) + ' of orders']);
-    } else {
-      facts.push(['Orders by value', 'unavailable: ' + (th.reason || 'the orders table is not connected') + '. The bins, the orders just under the line and the label cost wait on order rows.']);
-    }
-    body.append(kv(facts));
-    const line = th.break_even != null && th.threshold < th.break_even
-      ? 'The line sits ' + fmt.money(th.break_even - th.threshold) + ' under break-even. Test the line at the break-even rounded up to $5.'
-      : 'The line sits at or over break-even. Keep it; watch the orders just under it.';
-    return section('desk-threshold', head, body, actionLine(line, a));
+    const scen = UI.verdictTable({
+      columns: [
+        { key: 'threshold', label: 'Line', format: (v) => fmt.money(v, null, 0) },
+        { key: 'be', label: 'Covers break-even', format: (v, r) => r.covers_break_even ? 'yes' : 'no' },
+        { key: 'band_orders_28d', label: 'Orders in band, 28 days', format: (v, r) => r.current ? '' : v == null ? NA : fmt.int(v) },
+        { key: 'contribution_free', label: 'Contribution, band order', format: (v, r) => r.current ? '' : v == null ? NA : fmt.money(v) },
+        { key: 'text', label: 'What must be true' },
+      ],
+      rows: th.scenarios.map((r) => Object.assign({ be: '' }, r)),
+      verdict: { at: 1, kind: (r) => r.current ? 'keep' : r.kind === 'raise' && r.covers_break_even ? 'new' : r.kind === 'raise' ? 'watch' : 'wait',
+        text: (r) => r.current ? 'Today' : r.kind === 'raise' && r.covers_break_even ? 'Test' : r.kind === 'raise' ? 'Partial' : 'Needs lift', reason: (r) => r.text },
+      actions: { label: (r) => r.kind === 'raise' && r.covers_break_even && a ? 'Open test brief' : 'Copy', onClick: (r) => { if (r.kind === 'raise' && r.covers_break_even && a) openAction(a); else UI.copy('Free shipping at $' + r.threshold + ': ' + r.text); } },
+      sort: false,
+    });
+    const line = th.suggested ? 'The line sits ' + fmt.money(th.gap) + ' under break-even. Test $' + th.suggested + ' against ' + fmt.money(th.threshold) + '.' : 'The line sits at or over break-even. Keep it; watch the orders just under it.';
+    return section('desk-threshold', head,
+      el('div', { class: 'grid two' }, el('div', { class: 'card' }, dist), el('div', { class: 'card' }, trend, kv(facts))),
+      el('div', { class: 'card tight' }, el('h4', { text: 'What would a different line need to pay?' }), el('p', { class: 'micro faint', text: th.scenario_rule }), scen),
+      actionLine(line, a));
   }
 
   function discountBlock(d) {
@@ -230,7 +246,7 @@
     wrong(d);
     actionsList(d);
     mount('#desk', el('div', { class: 'desk-kicker' }, el('h3', { text: 'The desk' })),
-      stackBlock(d.stack || []), thresholdBlock(d.threshold, d), discountBlock(d), ladderBlock(d.ladder), objectionBlock(d.objections || [], d.returns));
+      stackBlock(d.stack || []), thresholdBlock(d.threshold), discountBlock(d), ladderBlock(d.ladder), objectionBlock(d.objections || [], d.returns));
     auditBlock(d);
   }
 

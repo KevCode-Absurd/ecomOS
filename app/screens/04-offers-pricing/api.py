@@ -11,6 +11,7 @@ capability it maps to. Missing is unavailable, never 0. Default brand is bombas 
 """
 import calendar
 import importlib.util
+import json
 import math
 import re
 import statistics
@@ -88,42 +89,68 @@ def offer_stack(rd):
 
 # ---------------------------------------------------------------- free shipping threshold
 
+def _month_ends(end, n=13):
+    out, y, m = [], end.year, end.month
+    for _ in range(n):
+        last = date(y, m, calendar.monthrange(y, m)[1])
+        if last <= end:
+            out.append(last)
+        m -= 1
+        if m == 0:
+            y, m = y - 1, 12
+    return sorted(out)[-12:]
+
+
 def threshold(rd):
+    """Free shipping line: break-even and its trend, the order value bins (or a labelled fixture), the orders just
+    under and over, what each nearby line must achieve to pay, and the rule."""
     t, rec = audit.threshold_usd(rd)
     be = audit.break_even(rd, rd.ends_on)
     dist = rd.m('order_value_distribution', audit.WINDOW, step=5)
+    rate = (model.brain_value(rd, 'offers.standard_shipping_cost')[0] or {}).get('cost_usd') if rd.brand else None
     out = {'threshold': t, 'threshold_source': (rec or {}).get('source'), 'break_even': be.get('value'),
            'break_even_inputs': {k: be.get(k) for k in ('aov', 'label', 'gross_margin', 'label_rows')},
            'break_even_formula': 'AOV + average label / gross margin (room spec free_shipping_threshold_breakeven)',
-           'margin_basis': 'target gross margin from finance_inputs; per-SKU cost does not join to products yet',
-           'unavailable': t is None or be.get('value') is None or bool(dist.get('unavailable')),
+           'margin_basis': 'target gross margin from finance_inputs', 'shipping_listed': rate,
+           'unavailable': t is None or be.get('value') is None,
            'reason': None if t is not None else 'no threshold in the brain'}
     if out['unavailable']:
-        out['reason'] = out['reason'] or be.get('reason') or dist.get('reason')
-        out['fix'] = be.get('fix') or dist.get('fix')
+        out['reason'] = out['reason'] or be.get('reason')
+        out['fix'] = be.get('fix')
         return out
     band = audit.BAND_USD
-    groups = dist['groups']
-    under = audit.band_share(groups, t - band, t)
-    over = audit.band_share(groups, t, t + band)
-    below = audit.band_share(groups, 0, t)
-    aov = be['aov']
-    suggested = math.ceil(be['value'] / 5) * 5 if t < be['value'] else None
-    lo, hi = max(0, t - 40), t + 60
+    out['trend'] = [{'month': d.strftime('%Y-%m'), 'break_even': audit.break_even(rd, d).get('value'), 'threshold': t}
+                    for d in _month_ends(rd.ends_on)]
+    fixture = bool(dist.get('unavailable'))
+    if fixture:
+        fx = json.loads((HERE / 'fixtures' / 'order_value_distribution.json').read_text(encoding='utf-8'))
+        groups = fx['groups']
+        out.update({'distribution_unavailable': dist.get('reason'), 'fix': dist.get('fix'), 'fixture_note': fx['note'],
+                    'fixture_threshold': fx.get('threshold_in_fixture')})
+    else:
+        groups = dist['groups']
+    ft = out.get('fixture_threshold') or t  # a fixture is drawn around its own line
+    lo, hi = max(0, ft - 40), ft + 60
     out.update({
-        'band': band, 'share_just_under': under, 'share_just_over': over, 'share_below': below,
-        'share_ship_free': round(1 - below, 6), 'above_aov': round(t / aov - 1, 4),
-        'suggested': suggested,
-        'suggested_share_below_now': audit.band_share(groups, 0, suggested) if suggested else None,
-        'bins': [g for g in groups if lo <= g['from'] < hi], 'orders_sample': dist['value'],
-        'shipping_paid_avg': (round(sum(g['shipping_charged'] for g in groups) / paying, 2)
-                              if (paying := sum(g['paid_shipping_orders'] for g in groups)) else None),
-        'shipping_listed': ((rd.record(f'{rd.brand}.offers.standard_shipping_cost') or {}).get('value') or {}).get('cost_usd')
-                           if rd.brand else None,
-        'window': dist['window'], 'basis': dist['basis'],
+        'fixture': fixture, 'band': band, 'bins': [g for g in groups if lo <= g['from'] < hi],
+        'shade': [ft - band, ft], 'window': (dist.get('window') or {}), 'basis': dist.get('basis'),
+        'orders_sample': None if fixture else dist['value'],
+        'share_just_under': None if fixture else audit.band_share(groups, t - band, t),
+        'share_just_over': None if fixture else audit.band_share(groups, t, t + band),
+        'share_below': None if fixture else audit.band_share(groups, 0, t),
+        'above_aov': round(t / be['aov'] - 1, 4), 'gap': round(be['value'] - t, 2), 'suggested': math.ceil(be['value'] / 5) * 5 if t < be['value'] else None,
         'rule': (f'Move when the threshold is under break-even (suggest break-even rounded up to $5). A threshold '
                  f'that works shows more orders in the ${band} just over it than the ${band} just under it.'),
     })
+    if not fixture:
+        out['share_ship_free'] = round(1 - out['share_below'], 6)
+    units = (model.per_order(model.window_totals(rd)) or {}).get('units') or 1
+    out['scenarios'] = model.threshold_scenarios(rd, t, rate, be['value'], units, None if fixture else groups,
+                                                 be.get('orders'))
+    out['scenario_rule'] = ('A higher line: the rest of the orders between the lines pay the listed shipping rate, so the '
+                            'move pays while fewer walk away than the limit. A lower line: those orders stop paying '
+                            'shipping, so it pays only if orders in the band rise by the limit. Midpoint order, '
+                            'contribution before media from finance inputs.')
     return out
 
 
@@ -243,35 +270,14 @@ def ladder(rd, months=12):
 
 # ---------------------------------------------------------------- rules behind the desk lines, chart
 
-def insights(th, months, findings):
-    """The rules behind the insight cards. Each returns the sentence it produces and its capability."""
-    out = []
-    if th['unavailable']:
-        out.append({'id': 'threshold', 'severity': 'medium', 'capability': 'MONEY-C05', 'autonomy': 'founder_gate',
-                    'sentence': f'Free shipping economics are unavailable: {th["reason"]}.', 'rule': th['rule'] if 'rule' in th else ''})
-    else:
-        pull = th['share_just_over'] > th['share_just_under']
-        s = (f'{th["share_just_over"] * 100:.1f} percent of orders land in the ${th["band"]} just over the ${th["threshold"]:,.0f} line '
-             f'and {th["share_just_under"] * 100:.1f} percent in the ${th["band"]} just under. ')
-        s += 'The line pulls baskets up. ' if pull else 'The line is not pulling baskets up. '
-        if th['suggested']:
-            s += f'It sits under the ${th["break_even"]:,.2f} break-even; ${th["suggested"]} would cover the label.'
-        else:
-            s += 'It sits at or over break-even.'
-        stake = next((f['money_at_stake'] for f in findings if f['rule_id'] == 'OFFER-R01' and f['money_at_stake']), None)
-        out.append({'id': 'threshold', 'severity': 'high' if th['suggested'] else 'info', 'capability': 'MONEY-C05',
-                    'autonomy': 'founder_gate', 'sentence': s, 'rule': th['rule'],
-                    'stub': (f'Model a move of the free shipping threshold from ${th["threshold"]:,.0f} to ${th["suggested"]} '
-                             f'before any change: margin, AOV shift and orders now just under the new line '
-                             f'({th["suggested_share_below_now"] * 100:.0f} percent of orders sit below ${th["suggested"]} today). '
-                             + (f'Label cost on free orders under break-even: ${stake["usd"]:,.0f} in 28 days. ' if stake else '')
-                             + 'Nothing on the store changes; your choice is logged.') if th['suggested'] else None})
+def creep_rule(months):
+    """Room spec discount creep: the sentence it produces and its capability."""
     full = [m for m in (months or []) if m['full'] and m['discount_share'] is not None]
     rule = (f'discount share of gross, last full month against 3 months before; more than {CREEP_POINTS} points up is creep '
             f'(room spec: discount creep)')
     if len(full) < 4:
-        out.append({'id': 'creep', 'severity': 'medium', 'capability': 'LIFE-C38', 'autonomy': 'founder_gate',
-                    'sentence': 'Discount creep cannot be checked: fewer than 4 full months of data.', 'rule': rule})
+        return {'id': 'creep', 'severity': 'medium', 'capability': 'LIFE-C38', 'autonomy': 'founder_gate',
+                'sentence': 'Discount creep cannot be checked: fewer than 4 full months of data.', 'rule': rule}
     else:
         a, b = full[-4], full[-1]
         pts = (b['discount_share'] - a['discount_share']) * 100
@@ -281,10 +287,9 @@ def insights(th, months, findings):
         s += ('That is creep. ' if pts > CREEP_POINTS else 'No creep. ')
         if yoy:
             s += f'Same month last year: {yoy["discount_share"] * 100:.1f} percent.'
-        out.append({'id': 'creep', 'severity': 'high' if pts > CREEP_POINTS else 'info',
-                    'capability': 'LIFE-C38' if pts > CREEP_POINTS else None, 'autonomy': 'founder_gate', 'sentence': s,
-                    'rule': rule})
-    return out
+        return {'id': 'creep', 'severity': 'high' if pts > CREEP_POINTS else 'info',
+                'capability': 'LIFE-C38' if pts > CREEP_POINTS else None, 'autonomy': 'founder_gate', 'sentence': s,
+                'rule': rule}
 
 
 def chart(months):
@@ -345,7 +350,7 @@ def overview(data, brand):
     return {'brand': head, 'window': {'ends_on': ends_on.isoformat(), 'days': audit.WINDOW},
             'orientation': orientation(rd, th), 'plan': plan,
             'stack': offer_stack(rd), 'threshold': th, 'bfcm': bfcm(rd), 'ladder': ladder(rd),
-            'objections': objections, 'returns': returns, 'creep': insights(th, months, findings)[1], 'chart': chart(months),
+            'objections': objections, 'returns': returns, 'creep': creep_rule(months), 'chart': chart(months),
             'findings': findings, 'rules': audit.RULES}
 
 

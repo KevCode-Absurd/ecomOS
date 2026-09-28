@@ -15,6 +15,12 @@ Rules
              Without order rows the rule still fires from the aggregates and finance_inputs (break-even needs
              no order rows); money is null and names the orders table it waits on.
              Capability MONEY-C05 (founder gate). Owner: 04-offers-pricing.
+  OFFER-R05  Free shipping threshold stale: break-even today against break-even 364 days before moved more than
+             STALE_MOVE (5 percent) and the threshold did not move (room spec: free shipping threshold stale).
+             No money: the move itself is priced by OFFER-R01. Capability MONEY-C05 (founder gate).
+  OFFER-R06  Threshold not pulling: the $10 just over the line holds no more orders than the $10 just under
+             (order_value_distribution, 28 days). Unavailable without order rows. Money: orders just under
+             times the listed shipping rate they pay, a floor on the shipping friction. Capability MONEY-C05.
   OFFER-R03  Margin after discount per SKU. Needs cogs_landed keyed by the store's SKUs. Unavailable while no
              finance_inputs SKU key matches a product SKU. Capability MONEY-C05 (founder gate). Owner: 04.
   OFFER-R04  A deal-breaker rung with no proof: the top rung of an objection ladder whose proof is empty or
@@ -44,6 +50,7 @@ SCREEN = '04-offers-pricing'
 WINDOW = 28
 TRAILING = 4
 BAND_USD = 10          # the "just under" and "just over" bands either side of the threshold
+STALE_MOVE = 0.05       # break-even moved more than 5 percent in a year: the threshold is stale
 TOP_DOUBT = 20         # one-star mentions that make a rung a top doubt (severity high)
 RETURNS_NOISE = 0.05    # returns within 5 percent of the own median carry no money
 LABEL_CARRIER = 'usps'  # free standard shipping goes out on the ground carrier
@@ -55,6 +62,11 @@ RULES = [
     {'rule_id': 'OFFER-R01', 'name': 'Free shipping threshold under break-even', 'entity_type': 'offer',
      'inputs': ['brain.offers.free_shipping_threshold_usd', 'orders', 'finance_inputs.shipping_label',
                 'finance_inputs.target_gross_margin'], 'capability': 'MONEY-C05', 'owner_screen': SCREEN},
+    {'rule_id': 'OFFER-R05', 'name': 'Free shipping threshold stale against break-even', 'entity_type': 'offer',
+     'inputs': ['brain.offers.free_shipping_threshold_usd', 'daily', 'finance_inputs.shipping_label',
+                'finance_inputs.target_gross_margin'], 'capability': 'MONEY-C05', 'owner_screen': SCREEN},
+    {'rule_id': 'OFFER-R06', 'name': 'Free shipping threshold not pulling baskets up', 'entity_type': 'offer',
+     'inputs': ['brain.offers.free_shipping_threshold_usd', 'orders'], 'capability': 'MONEY-C05', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R03', 'name': 'Margin after discount per SKU', 'entity_type': 'sku',
      'inputs': ['finance_inputs.cogs_landed keyed by product SKU', 'products'], 'capability': 'MONEY-C05',
      'owner_screen': SCREEN},
@@ -64,6 +76,8 @@ RULES = [
 ]
 CAPABILITY = {'OFFER-R01': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R03': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
+              'OFFER-R05': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
+              'OFFER-R06': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R04': {'id': 'LIFE-C36', 'autonomy': 'founder_gate'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
@@ -289,6 +303,61 @@ def rule_threshold(rd):
                      _confidence(agree), refs, end)]
 
 
+def rule_stale(rd):
+    end = rd.ends_on
+    t, rec = threshold_usd(rd)
+    if t is None:
+        return []
+    now, then = break_even(rd, end), break_even(rd, end - timedelta(days=364))
+    if now['value'] is None or then['value'] is None:
+        return []
+    move = now['value'] / then['value'] - 1
+    if abs(move) <= STALE_MOVE:
+        return []
+    entity = {'type': 'offer', 'id': 'free_shipping_threshold_stale', 'label': f'Free shipping at ${t:,.0f}'}
+    evidence = [_ev('free_shipping_threshold_breakeven', now['value'], 'usd', end, baseline=then['value'],
+                    baseline_kind='same_window_last_year', source='aov, finance_inputs'),
+                _ev('aov', now['aov'], 'usd', end, baseline=then['aov'], baseline_kind='same_window_last_year', source='daily'),
+                _ev('average_label', now['label'], 'usd_per_order', end, baseline=then['label'],
+                    baseline_kind='same_window_last_year', source='finance_inputs.shipping_label', window='in force')]
+    sentence = (f'Break-even for free shipping moved from ${then["value"]:,.2f} to ${now["value"]:,.2f} in a year, '
+                f'{move * 100:+.1f} percent. The ${t:,.0f} line did not move.')
+    return [_finding('OFFER-R05', entity, 'medium', evidence, sentence, None, 0.7,
+                     [f'{rd.brand}.offers.free_shipping_threshold_usd'], end, money_reason='priced by OFFER-R01')]
+
+
+def rule_pull(rd):
+    end = rd.ends_on
+    t, _ = threshold_usd(rd)
+    if t is None:
+        return []
+    entity = {'type': 'offer', 'id': 'free_shipping_pull', 'label': f'Free shipping at ${t:,.0f}'}
+    dist = rd.m('order_value_distribution', WINDOW, end, step=5)
+    if dist.get('unavailable'):
+        return [_finding('OFFER-R06', entity, 'medium', [], 'Whether the free shipping line pulls baskets up is unknown '
+                         'without order rows.', None, 0.1, [f'{rd.brand}.offers.free_shipping_threshold_usd'], end,
+                         status='unavailable', money_reason='order value bins need the orders table',
+                         unavailable={'inputs': ['orders'], 'connector': dist.get('fix') or 'shopify',
+                                      'fix': 'Connect the store orders, read-only, so order values can be binned.'})]
+    under, over = band_share(dist['groups'], t - BAND_USD, t), band_share(dist['groups'], t, t + BAND_USD)
+    if over > under:
+        return []
+    rate = ((rd.record(f'{rd.brand}.offers.standard_shipping_cost') or {}).get('value') or {}).get('cost_usd') if rd.brand else None
+    aov = rd.m('aov', WINDOW)
+    orders = None if aov.get('unavailable') else aov['inputs']['orders']
+    money = None
+    if rate and orders:
+        n = round(under * orders)
+        money = {'usd': round(n * rate, 2), 'formula': 'orders_28d x share_just_under x shipping_rate',
+                 'inputs': {'orders_28d': orders, 'share_just_under': under, 'shipping_rate': rate}, 'window': '28d'}
+    evidence = [_ev('share_just_under', under, 'ratio', end), _ev('share_just_over', over, 'ratio', end,
+                                                                 baseline=under, baseline_kind='just_under')]
+    sentence = (f'{over * 100:.1f} percent of orders land in the ${BAND_USD} over the ${t:,.0f} line and '
+                f'{under * 100:.1f} percent in the ${BAND_USD} under it. The line is not pulling baskets up.')
+    return [_finding('OFFER-R06', entity, 'medium', evidence, sentence, money, 0.7,
+                     [f'{rd.brand}.offers.free_shipping_threshold_usd'], end, money_reason=None if money else 'no shipping rate')]
+
+
 def sku_join(rd):
     """(matched, product_skus, cogs_skus) between finance_inputs cogs_landed and the products table."""
     f = rd.fin()
@@ -419,6 +488,6 @@ def run(brand, window=None, data=None):
     """Findings for one brand, sorted by severity then money at stake. `window` is {ends_on} or None."""
     ends_on = date.fromisoformat(window['ends_on']) if window and window.get('ends_on') else last_full_day(data, brand)
     rd = Reader(data, brand, ends_on)
-    out = rule_threshold(rd) + rule_sku_margin(rd) + rule_unanswered(rd)
+    out = rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_sku_margin(rd) + rule_unanswered(rd)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f.get('money_at_stake') or {}).get('usd') or -1), f['id']))
     return out

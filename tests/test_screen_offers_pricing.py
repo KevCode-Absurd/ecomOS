@@ -288,5 +288,59 @@ class ObjectionOfferTest(unittest.TestCase):
                 self.assertTrue(f['money_reason'])
 
 
+class ThresholdTest(unittest.TestCase):
+    """Round 1 feature 3: the free shipping line, its break-even trend, what a different line must achieve."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.rd = audit.Reader(None, 'bombas', audit.last_full_day(None, 'bombas'))
+        cls.th = api.threshold(cls.rd)
+
+    def test_scenarios_arithmetic(self):
+        th = self.th
+        self.assertFalse(th['unavailable'])
+        rate = th['shipping_listed']
+        cur = [r for r in th['scenarios'] if r['current']]
+        self.assertEqual(len(cur), 1)
+        for r in th['scenarios']:
+            if r['current'] or r.get('limit') is None:
+                continue
+            cf = r['contribution_free']
+            want = rate / (rate + cf) if r['kind'] == 'raise' else rate / cf
+            self.assertAlmostEqual(r['limit'], round(want, 4))
+            self.assertEqual(r['kind'], 'raise' if r['threshold'] > th['threshold'] else 'lower')
+            self.assertIn('percent', r['text'])
+        self.assertIn(th['suggested'], [r['threshold'] for r in th['scenarios']])
+
+    def test_trend_and_gap(self):
+        th = self.th
+        self.assertEqual(len(th['trend']), 12)
+        self.assertAlmostEqual(th['gap'], round(th['break_even'] - th['threshold'], 2))
+        for r in th['trend']:
+            self.assertEqual(r['threshold'], th['threshold'])
+
+    def test_fixture_labelled_and_no_shares_from_it(self):
+        th = self.th
+        if th['fixture']:
+            self.assertIn('Fixture', th['fixture_note'])
+            self.assertIsNone(th['share_just_under'])
+            self.assertIsNone(th['share_below'])
+            self.assertTrue(th['distribution_unavailable'])
+            for r in th['scenarios']:
+                self.assertIsNone(r.get('band_orders_28d'))
+
+    def test_pull_rule_unavailable_without_orders_and_stale_rule_threshold(self):
+        fs = {f['rule_id']: f for f in audit.run('bombas')}
+        if self.th['fixture']:
+            self.assertEqual(fs['OFFER-R06']['status'], 'unavailable')
+        now = audit.break_even(self.rd, self.rd.ends_on)['value']
+        then = audit.break_even(self.rd, self.rd.ends_on - audit.timedelta(days=364))['value']
+        self.assertEqual('OFFER-R05' in fs, abs(now / then - 1) > audit.STALE_MOVE)
+
+    def test_test_brief_carries_the_walk_away_limit(self):
+        a = next(a for a in api.actions.rank('bombas')['actions'] if a['rule_id'] == 'OFFER-R01')
+        self.assertIn('walk away', a['artefact']['draft'])
+
+
 if __name__ == '__main__':
     unittest.main()

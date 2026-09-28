@@ -6,6 +6,7 @@ finance_inputs and brain records. A missing input makes the step unavailable (No
 nothing is filled with a default or an industry average.
 """
 import calendar
+import math
 from datetime import date, timedelta
 
 WINDOW = 28
@@ -206,4 +207,54 @@ def claim_cost(rd, kind, day=None):
         out.update(value=None, reason='missing ' + ', '.join(missing), fix='finance_inputs')
     else:
         out.update(value=round(sum(p[1] for p in parts), 2))
+    return out
+
+
+def contribution_free(rd, day, value, units):
+    """Contribution before media of one order of `value` that ships free: value minus landed cost (cogs ratio),
+    packaging, pick and pack, payment fee and the label. None with the missing input when one is absent."""
+    cr = cogs_ratio(rd, day)
+    if cr['ratio'] is None:
+        return None, cr['reason']
+    steps = order_steps(rd, day, value, units, free_shipping=True, cogs=cr['ratio'] * value)
+    miss = [s['label'] for s in steps if s['value'] is None]
+    if miss:
+        return None, 'missing ' + ', '.join(miss)
+    return round(value - sum(s['value'] for s in steps), 2), None
+
+
+def threshold_scenarios(rd, threshold, ship_rate, break_even, units, groups=None, orders_28d=None, step=5, span=2):
+    """What each nearby free shipping line must achieve to pay. For a higher line: the share of orders in the band
+    between the lines that can walk away before the move loses money (the rest pay shipping). For a lower line: the
+    rise in orders in the band needed to pay for the shipping no longer charged. Midpoint order of each band."""
+    day = rd.ends_on
+    cands = sorted({threshold + step * k for k in range(-span, span + 1)} |
+                   ({math.ceil(break_even / step) * step} if break_even else set()))
+    out = []
+    for c in cands:
+        row = {'threshold': c, 'current': c == threshold, 'covers_break_even': bool(break_even and c >= break_even)}
+        if c == threshold:
+            row['text'] = 'Today.'
+            out.append(row)
+            continue
+        lo, hi = (threshold, c) if c > threshold else (c, threshold)
+        mid = (lo + hi) / 2
+        cf, why = contribution_free(rd, day, mid, units)
+        row.update({'band': [lo, hi], 'mid_order': mid, 'contribution_free': cf})
+        share = None
+        if groups:
+            share = round(sum(g['share'] for g in groups if g['from'] >= lo and g['to'] <= hi), 6)
+        row['band_share'] = share
+        row['band_orders_28d'] = round(share * orders_28d) if share is not None and orders_28d else None
+        if cf is None or ship_rate is None:
+            row.update({'limit': None, 'text': 'unavailable: ' + (why or 'no shipping rate in the brain')})
+        elif c > threshold:
+            lim = ship_rate / (ship_rate + cf)
+            row.update({'kind': 'raise', 'limit': round(lim, 4),
+                        'text': f'Pays if fewer than {lim * 100:.0f} percent of orders between ${lo:,.0f} and ${hi:,.0f} walk away.'})
+        else:
+            need = ship_rate / cf
+            row.update({'kind': 'lower', 'limit': round(need, 4),
+                        'text': f'Pays only if orders between ${lo:,.0f} and ${hi:,.0f} rise {need * 100:.0f} percent.'})
+        out.append(row)
     return out
