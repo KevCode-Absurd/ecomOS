@@ -2138,5 +2138,24 @@ class PromoStakeTest(unittest.TestCase):
         self.assertIn('this year', f['money_at_stake']['window'])
 
 
+class WindowAgreementTest(unittest.TestCase):
+    """Round 9 feature 2: confidence from how many trailing windows agree (audit.md section 2)."""
+
+    def test_mapping(self):
+        self.assertEqual([audit.agreement_confidence(n) for n in (1, 2, 3, 4)], [0.5, 0.7, 0.7, 0.9])
+
+    def test_sample(self):
+        sys.path.insert(0, str(ROOT / 'app'))
+        import server
+        fs = {f['rule_id']: f for f in audit.run(None, None, server.Data()) if f.get('windows')}
+        self.assertIn('OFFER-R32', fs)
+        for f in fs.values():
+            w = f['windows']
+            self.assertLessEqual(w['agree'], w['read'])
+            self.assertLessEqual(w['read'], 4)
+            self.assertEqual(f['confidence'], audit.agreement_confidence(w['agree']))
+        self.assertLess(fs['OFFER-R41']['windows']['read'], 4)     # 180-day windows: the data covers only 2
+
+
 if __name__ == '__main__':
     unittest.main()

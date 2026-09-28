@@ -1807,7 +1807,7 @@ def run(brand, window=None, data=None):
     rd = Reader(data, brand, ends_on)
     out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_cost(rd) + rule_referral(rd) + rule_loyalty(rd) + rule_window_creep(rd) + rule_bundles(rd) + rule_launched(rd) + rule_upsell(rd) + rule_bnpl(rd) + rule_threshold_match(rd) + rule_cohorts(rd) + rule_welcome(rd) + rule_test_trust(rd) + rule_price_moves(rd) + rule_claim_stress(rd) + rule_paid(rd) + rule_attach(rd) + rule_code_returns(rd) + rule_power(rd) + rule_leaks(rd) + rule_returners(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
            rule_unanswered(rd))
-    out = confidence_rules(severity_from_money(out, _net_28d(rd)))
+    out = confidence_rules(severity_from_money(window_agreement(out, rd), _net_28d(rd)))
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f.get('money_at_stake') or {}).get('usd') or -1), f['id']))
     return out
 
@@ -1815,6 +1815,51 @@ def run(brand, window=None, data=None):
 def _net_28d(rd):
     t = _model().window_totals(rd, rd.ends_on)
     return t['net_sales'] if t else _model().net_revenue_orders(rd, WINDOW)
+
+
+# audit.md section 2: confidence from how many trailing windows agree. Each windowed rule reruns on the windows
+# before this one, of its own length, while the data covers them: 4 agreeing is 0.9, 2 or 3 is 0.7, 1 is 0.5.
+WINDOW_RULES = {'OFFER-R10': ('rule_red_line', 28), 'OFFER-R35': ('rule_claim_stress', 28), 'OFFER-R39': ('rule_power', 28),
+                'OFFER-R32': ('rule_welcome', 90), 'OFFER-R36': ('rule_paid', 90), 'OFFER-R37': ('rule_attach', 90),
+                'OFFER-R40': ('rule_leaks', 90), 'OFFER-R41': ('rule_returners', 180), 'OFFER-R38': ('rule_code_returns', 180),
+                'OFFER-R31': ('rule_cohorts', 180)}
+
+
+def _data_start(rd):
+    days = [r.get('date') for r in rd.table('daily') or [] if r.get('date')]
+    orders = [str(o.get('created_at'))[:10] for o in rd.table('orders') or [] if o.get('created_at')]
+    first = min(days + orders) if (days or orders) else None
+    return date.fromisoformat(first) if first else None
+
+
+def agreement_confidence(n):
+    return 0.9 if n >= 4 else 0.7 if n >= 2 else 0.5
+
+
+def window_agreement(findings, rd):
+    start = _data_start(rd)
+    if not start:
+        return findings
+    cache = {}
+    for f in findings:
+        spec = WINDOW_RULES.get(f['rule_id'])
+        if not spec or f.get('status') != 'open':
+            continue
+        name, days = spec
+        agree, read = 1, 1
+        for k in (1, 2, 3):
+            end = rd.ends_on - timedelta(days=days * k)
+            if end - timedelta(days=days - 1) < start:
+                break
+            key = (name, end)
+            if key not in cache:
+                cache[key] = {x['id']: x for x in globals()[name](Reader(rd.data, rd.brand, end))}
+            read += 1
+            other = cache[key].get(f['id'])
+            agree += 1 if other and other.get('status') == 'open' else 0
+        f['confidence'] = agreement_confidence(agree)
+        f['windows'] = {'agree': agree, 'read': read, 'days': days}
+    return findings
 
 
 WEAK_EVIDENCE = 0.3

@@ -196,6 +196,7 @@ Known gaps from round 0:
 | # | Feature | Status |
 |---|---|---|
 | 9.1 | Promo window stakes in this year's terms: last year's lift over the 28 days before each window, times this year's scale (net sales in the 28 days to today over the same 28 days a year before), times contribution before media. Bombas: 1.31 times last year, so holiday gifting reads $8.9 million and Black Friday to Cyber Monday $6.8 million, labelled "this year's window, from last year's lift". Without a year of history the stake is null with its reason | done |
+| 9.2 | Confidence from windows that agree (audit.md section 2): 10 windowed rules (red line, claims stress, test length, welcome code, paid prices, attach, code leaks, returning-buyer codes, returns by code, code cohorts) rerun on up to 3 earlier windows of their own length, only where the data covers them; 4 agreeing is 0.9, 2 or 3 is 0.7, 1 is 0.5. The ranked list shows "(4 of 4 windows)". Sample brand: welcome code, attach and test length 4 of 4; returning-buyer codes 2 of 2, since 180-day windows reach back only twice | done |
 
 ## Contract asks
 
