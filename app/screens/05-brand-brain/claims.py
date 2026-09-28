@@ -141,6 +141,61 @@ def _brain_facts(brain) -> list[dict]:
     return facts
 
 
+# Channel rule sets: generic platform vocabulary, not brand facts. Each rule: a pattern, why it fails or warns, and the fix.
+# They are guidance from the platforms' public policies as read on 28 Sep 2026, kept short; a person signs off before anything ships.
+CHANNELS = {
+    "amazon": {"label": "Amazon listing", "rules": [
+        (re.compile(r"\b(free shipping|best ?seller|#1|number one|on sale|sale|discount|% off|percent off|deal|limited time)\b", re.I), "fail", "promotional wording is not allowed in titles and bullets", "Move offers out of the listing; state the product facts only."),
+        (re.compile(r"https?://|www\.", re.I), "fail", "external links are not allowed", "Remove the link."),
+        (re.compile(r"\b(guarantee|guaranteed|warranty)\b", re.I), "warn", "guarantee wording needs the terms on the listing", "Say what the guarantee covers, or drop it."),
+        (re.compile(r"[A-Z]{5,}"), "warn", "all caps words read as shouting and fail style checks", "Use sentence case."),
+    ]},
+    "meta": {"label": "Meta ad", "rules": [
+        (re.compile(r"\b(you are|you're|are you|do you)\s+(?:\w+\s+){0,2}(overweight|fat|sick|depressed|broke|in debt|lonely|ugly|old)\b", re.I), "fail", "asserting a personal attribute about the reader", "Speak about the product, not the person."),
+        (re.compile(r"\b(before and after|before/after)\b", re.I), "warn", "before and after imagery and wording draw review", "Show the product in use instead."),
+        (re.compile(r"\b(cure|cures|treat|treats|heal|heals|medical|clinically)\b", re.I), "warn", "health claims need substantiation and can be rejected", "Use comfort and feel language, not medical outcomes."),
+        (re.compile(r"\b(creator|influencer|partner|ambassador)\b", re.I), "warn", "a creator mention needs the paid partnership label", "Add the paid partnership label."),
+    ]},
+    "google": {"label": "Google ad", "rules": [
+        (re.compile(r"!"), "fail", "exclamation marks are not allowed in headlines", "Remove them."),
+        (re.compile(r"\b[A-Z]{4,}\b"), "fail", "all caps words fail editorial review", "Use sentence case."),
+        (re.compile(r"\b(click here|click now)\b", re.I), "fail", "generic click prompts are not allowed", "Say what the click gets: Shop the 4 pack."),
+        (re.compile(r"\b(best|#1|number one|cheapest|lowest price)\b", re.I), "warn", "superlatives need third-party verification on the landing page", "Drop it or link the proof."),
+    ]},
+    "email": {"label": "Email", "rules": [
+        (re.compile(r"\b(unsubscribe|opt[- ]?out|manage preferences)\b", re.I), "must", "an unsubscribe line", "Add a one-click unsubscribe line in the footer."),
+        (re.compile(r"\b(re:|fwd:)", re.I), "fail", "a fake reply or forward subject line is deceptive", "Write the subject plainly."),
+        (re.compile(r"\b(free|winner|urgent|act now|last chance)\b", re.I), "warn", "spam-trigger words hurt placement", "Say the offer plainly, once."),
+    ]},
+    "sms": {"label": "SMS", "rules": [
+        (re.compile(r"\b(reply stop|text stop|stop to opt out|stop=)\b", re.I), "must", "an opt-out instruction", "Add: Reply STOP to opt out."),
+        (re.compile(r"\b(brand|from)\b", re.I), "must", "the brand name", "Name the brand in the first line."),
+    ]},
+}
+
+
+def channel_scan(brain, text: str, channel: str) -> dict:
+    """The channel's rules on top of the brain scan. `must` rules fail when the pattern is absent; others when present."""
+    base = scan(brain, text)
+    ch = CHANNELS.get(channel)
+    if not ch:
+        return dict(base, channel=None, channel_hits=[], channels=sorted(CHANNELS))
+    hits = []
+    for pat, kind, why, fix in ch["rules"]:
+        m = pat.search(text or "")
+        if kind == "must":
+            if not m:
+                hits.append({"kind": "channel_missing", "severity": "fail", "match": why, "record": None, "tier": channel, "fix": fix})
+        elif m:
+            if channel == "email" and pat.pattern.startswith("\\b(unsubscribe"):
+                continue
+            hits.append({"kind": "channel_rule", "severity": kind, "match": m.group(0)[:60] + (": " + why), "record": None, "tier": channel, "fix": fix})
+    fails = base["fails"] + sum(1 for h in hits if h["severity"] == "fail")
+    warns = base["warns"] + sum(1 for h in hits if h["severity"] == "warn")
+    return dict(base, channel=channel, channel_label=ch["label"], channel_hits=hits, hits=base["hits"] + hits, fails=fails, warns=warns,
+                verdict="fail" if fails else ("warn" if warns else "pass"), channels=sorted(CHANNELS))
+
+
 def scan(brain, text: str) -> dict:
     text = text or ""
     hits = []

@@ -1101,14 +1101,15 @@
       note: 'Usable in copy: approved and site backed. Untiered claims should reach 0 within ' + cd.untiered_days + ' days of appearing.' });
   }
   function scanner() {
-    const ta = el('textarea', { class: 'text', rows: 6, placeholder: 'Paste an ad, an email, a page section. The scanner checks it against the brain: forbidden phrases, unproven absolutes, stale numbers, unapproved claims, reading grade.' });
+    const ta = el('textarea', { class: 'text', rows: 6, placeholder: 'Paste an ad, an email, a page section. The scanner checks it against the brain: forbidden phrases, unproven absolutes, stale numbers, unapproved claims, the avoid list, reading grade. Pick a channel to add its rules.' });
+    const channel = el('select', { class: 'text sm' }, el('option', { value: '', text: 'No channel rules' }), ...['amazon', 'meta', 'google', 'email', 'sms'].map((c) => el('option', { value: c, text: pretty(c) + ' rules' })));
     const out = el('div', { class: 'stack' });
     const btn = el('button', { class: 'btn primary sm', type: 'button', text: 'Check the draft' });
     btn.addEventListener('click', async () => {
       if (!ta.value.trim()) { mount(out, el('p', { class: 'muted small', text: 'Paste a draft first.' })); return; }
       btn.disabled = true;
       try {
-        const r = await api(BASE + 'scan', { method: 'POST', body: { text: ta.value } });
+        const r = await api(BASE + 'scan', { method: 'POST', body: { text: ta.value, channel: channel.value || undefined } });
         const head = el('div', { class: 'row' }, UI.verdict(r.verdict === 'pass' ? 'keep' : r.verdict === 'warn' ? 'watch' : 'stop', r.verdict === 'pass' ? 'Ships' : r.verdict === 'warn' ? 'Check first' : 'Blocked', r.fails + ' blocking, ' + r.warns + ' warnings'),
           el('span', { class: 'chip', text: r.words + ' words, ' + r.sentences + ' sentences' }), el('span', { class: 'chip ' + (r.reading_grade != null && r.reading_grade > 10 ? 'warn' : ''), text: 'reading grade ' + (r.reading_grade == null ? NA : r.reading_grade) }),
           el('span', { class: 'micro faint', text: 'Checked ' + r.checked.forbidden_phrases + ' forbidden phrases, ' + r.checked.facts + ' brain numbers, ' + r.checked.weak_claims + ' unapproved claims.' }));
@@ -1118,7 +1119,7 @@
       } catch (e) { mount(out, el('p', { class: 'muted', text: 'Could not check: ' + e.message })); }
       btn.disabled = false;
     });
-    return el('div', { class: 'stack scanner' }, ta, el('div', { class: 'row' }, btn, el('span', { class: 'micro faint', text: 'Rules only, no model. A blocking hit is a forbidden phrase or a number the brain contradicts.' })), out);
+    return el('div', { class: 'stack scanner' }, ta, el('div', { class: 'row' }, el('span', { class: 'small muted', text: 'Channel:' }), channel, btn, el('span', { class: 'micro faint', text: 'Rules only, no model. A blocking hit is a forbidden phrase, a number the brain contradicts, or a channel rule.' })), out);
   }
   async function loadClaims() {
     let cd;

@@ -1234,3 +1234,26 @@ class Round3Facts(TempBrain):
         self.assertEqual(by['free_shipping']['status'], 'stale')
         self.assertEqual(api.handle(Req(['facts', 'export']))['count'], 1)
         self.assertEqual(api.handle(Req(['facts', 'nope'], 'POST', body={'answer': 'x y z w'}))[0], 404)
+
+
+class Round3Channels(TempBrain):
+    """Round 3 feature 5: channel rule sets on top of the brain scan."""
+
+    def test_channel_rules(self):
+        r = api.handle(Req(['scan'], 'POST', body={'text': 'Free shipping on every 4 pack. Best seller. See www.example.com', 'channel': 'amazon'}))
+        self.assertEqual(r['channel'], 'amazon')
+        kinds = [h['match'] for h in r['channel_hits']]
+        self.assertTrue(any('promotional' in m for m in kinds))
+        self.assertTrue(any('external links' in m for m in kinds))
+        self.assertEqual(r['verdict'], 'fail')
+        r = api.handle(Req(['scan'], 'POST', body={'text': 'Shop the 4 pack now!', 'channel': 'google'}))
+        self.assertTrue(any('exclamation' in h['match'] for h in r['channel_hits']))
+        r = api.handle(Req(['scan'], 'POST', body={'text': 'Socks so soft you forget them. Reply STOP to opt out. From Bombas.', 'channel': 'sms'}))
+        self.assertEqual((r['verdict'], r['channel_hits']), ('pass', []))
+        r = api.handle(Req(['scan'], 'POST', body={'text': 'Socks so soft you forget them.', 'channel': 'sms'}))
+        self.assertEqual({h['kind'] for h in r['channel_hits']}, {'channel_missing'})
+        r = api.handle(Req(['scan'], 'POST', body={'text': 'Are you overweight? Try our socks.', 'channel': 'meta'}))
+        self.assertEqual(r['channel_hits'][0]['severity'], 'fail')
+        r = api.handle(Req(['scan'], 'POST', body={'text': 'Plain line.', 'channel': 'nope'}))
+        self.assertIsNone(r['channel'])
+        self.assertEqual(r['channels'], ['amazon', 'email', 'google', 'meta', 'sms'])

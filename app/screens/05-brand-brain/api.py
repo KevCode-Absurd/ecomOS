@@ -45,8 +45,9 @@ question, and accept or ignore on a proposed record. Nothing external.
   GET  claims                   the claims desk: every claim with tier, category, source, where the ladders use it,
                                 the verdict, tier counts and the forbidden phrases
   POST claims                   {text, tier: approved | forbidden}: add a claim or forbid a phrase (founder record)
-  POST scan                     {text}: check a draft against the brain: forbidden phrases, unproven absolutes,
-                                stale numbers, unapproved claims, reading grade; hits name the record and the fix
+  POST scan                     {text, channel?}: check a draft against the brain (forbidden phrases, unproven
+                                absolutes, stale numbers, unapproved claims, avoid list, reading grade) and, with a
+                                channel (amazon, meta, google, email, sms), that channel's rule set
   GET  site/diff                changes between the two newest site snapshots, each with its action; one snapshot
                                 reads unavailable with the reason
   POST site/snapshot            store the crawl on file as a snapshot (after each site crawl)
@@ -1196,7 +1197,8 @@ def handle(req):
             return 400, {"error": "text is empty"}
         if len(text) > 20000:
             return 413, {"error": "text is over 20,000 characters"}
-        return claims_mod.scan(brain, text)
+        channel = (req.body or {}).get("channel")
+        return claims_mod.channel_scan(brain, text, channel) if channel else dict(claims_mod.scan(brain, text), channel=None, channel_hits=[], channels=sorted(claims_mod.CHANNELS))
     if req.method == "GET" and parts == ["flows"]:
         fl = flows(brain)
         fl.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())
