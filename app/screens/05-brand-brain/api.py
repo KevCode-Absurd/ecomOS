@@ -35,6 +35,8 @@ question, and accept or ignore on a proposed record. Nothing external.
   GET  questions                every open question ranked by weight times rooms unblocked, with the pull-first
                                 hint, the fields an answer fills and the screens it unblocks
   POST questions/bank/<qid>     {answer}: answers a bank question with an approved founder record on its first field
+  GET  decisions                the decisions timeline: action decisions from every screen plus the brain's
+                                decisions section, newest first
   GET  records?section=<name>   one section's records with tier, date, source and evidence
   GET  audit                    findings from audit.py (app/contracts/audit.md shape)
   POST questions/<field>        {answer}: writes a founder record, marks the question answered
@@ -171,6 +173,31 @@ ROOM_SCREEN = {"today": "00-today", "research": "01-market-research", "avatars":
                "seo": "17-seo", "answer_engines": "18-answer-engines", "supply": "19-supply-inventory", "marketplaces": "20-marketplaces",
                "finance": "21-finance-cash", "measurement": "22-measurement", "team_ops": "23-team-ops", "security": "24-security",
                "experiments": "25-experiments", "reports": "26-reports", "wild_bets": "27-wild-bets-pr", "orchestrator": "05-brand-brain"}
+
+
+DECISIONS_PATH = APP / "data" / "decisions.json"
+
+
+def decisions_log(brain: Brain, path: Path | None = None) -> dict:
+    """The decisions timeline: action decisions from data/decisions.json (any screen) plus the brain's decisions section."""
+    path = path or DECISIONS_PATH
+    try:
+        rows = json.loads(path.read_text(encoding="utf-8")) if path.exists() else []
+    except (OSError, ValueError):
+        rows = []
+    items = []
+    for r in rows if isinstance(rows, list) else []:
+        items.append({"kind": "action", "time": r.get("time"), "date": str(r.get("time") or "")[:10], "screen": r.get("screen"), "capability": r.get("capability"),
+                      "choice": r.get("choice"), "reason": r.get("reason") or "", "finding_id": r.get("finding_id"), "autonomy": r.get("autonomy")})
+    for r in brain.records("decisions"):
+        src = r.get("source") or {}
+        items.append({"kind": "brain", "id": r["id"], "date": None if r["date"] == "undated" else r["date"], "time": None,
+                      "title": (r.get("field") or "").replace("_", " "), "text": r.get("text") or "", "who": src.get("ref") or src.get("type") or "founder", "tier": r["tier"]})
+    items.sort(key=lambda it: (it.get("time") or it.get("date") or ""), reverse=True)
+    counts = {"action": sum(1 for it in items if it["kind"] == "action" and it["choice"] != "not_now"),
+              "snoozed": sum(1 for it in items if it["kind"] == "action" and it["choice"] == "not_now"),
+              "brain": sum(1 for it in items if it["kind"] == "brain")}
+    return {"items": items, "counts": counts, "last": items[0].get("time") or items[0].get("date") if items else None}
 
 
 def questions_ranked(brain: Brain) -> dict:
@@ -689,6 +716,10 @@ def handle(req):
         ends = (brain.today - dt.timedelta(days=1)).isoformat()
         findings = audit.run(brain.brand, {"ends_on": ends, "days": 1, "trailing": 0}, BRAIN_ROOT)
         return {"findings": findings, "rules": audit.RULES, "brain_version": brain.version()}
+    if req.method == "GET" and parts == ["decisions"]:
+        dl = decisions_log(brain)
+        dl.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())
+        return dl
     if req.method == "GET" and parts == ["questions"]:
         qv = questions_ranked(brain)
         qv.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())

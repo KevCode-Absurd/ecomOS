@@ -629,3 +629,44 @@ class Round1Questions(TempBrain):
         self.assertNotIn('q.economics.gross_margin', ids)
         self.assertEqual(api.handle(Req(['questions', 'bank', 'q.nope'], 'POST', body={'answer': 'x'}))[0], 404)
         self.assertEqual(api.handle(Req(['questions', 'bank', 'q.claims.approved'], 'POST', body={'answer': ' '}))[0], 400)
+
+
+class Round1Decisions(TempBrain):
+    """Round 1 feature 8: the decisions timeline, and approvals reflected on the master list."""
+
+    def test_timeline_merges_action_and_brain_decisions(self):
+        path = self.tmp / 'decisions.json'
+        path.write_text(json.dumps([
+            {'screen': '05-brand-brain', 'capability': 'CREA-C06', 'choice': 'agent', 'reason': 'go', 'time': '2026-09-28T10:00:00Z', 'finding_id': '05-brand-brain.BRN-R08.angle_durability'},
+            {'screen': '04-offers-pricing', 'capability': 'LIFE-C36', 'choice': 'not_now', 'reason': '', 'time': '2026-09-27T10:00:00Z', 'finding_id': 'x'}]), encoding='utf-8')
+        old = api.DECISIONS_PATH
+        api.DECISIONS_PATH = path
+        try:
+            d = api.handle(Req(['decisions']))
+        finally:
+            api.DECISIONS_PATH = old
+        self.assertEqual(d['counts'], {'action': 1, 'snoozed': 1, 'brain': 2})
+        self.assertEqual(d['items'][0]['kind'], 'action')
+        self.assertEqual(d['items'][0]['choice'], 'agent')
+        times = [it.get('time') or it.get('date') for it in d['items']]
+        self.assertEqual(times, sorted(times, reverse=True))
+        brain_items = [it for it in d['items'] if it['kind'] == 'brain']
+        self.assertTrue(all(it['text'] and it['who'] for it in brain_items))
+        self.assertEqual(d['last'], '2026-09-28T10:00:00Z')
+
+    def test_conflict_decision_shows_in_the_timeline(self):
+        Round1Conflicts.inject(self)
+        api.handle(Req(['conflicts', 'bombas.conflict.offers.returns_window_days'], 'POST', body={'index': 1, 'reason': 'brand book'}))
+        d = api.handle(Req(['decisions']))
+        self.assertTrue(any(it['kind'] == 'brain' and 'returns window days' in it['title'] for it in d['items']))
+
+    def test_approved_master_item_carries_its_decision(self):
+        path = self.tmp / 'decisions.json'
+        m0 = api.handle(Req(['master']))
+        first = m0['top'][0]
+        path.write_text(json.dumps([{'screen': first['screen'], 'capability': first['capability']['id'], 'choice': 'agent', 'reason': 'go', 'time': DAY + 'T10:00:00Z', 'finding_id': first['id']}]), encoding='utf-8')
+        m = api.rank_mod.master('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4}, decisions_path=path)
+        a = next(x for x in m['actions'] if x['id'] == first['id'])
+        self.assertEqual(a['decision']['choice'], 'agent')
+        self.assertEqual(a['status'], 'open')
+        self.assertIn('id="progress"', (SCREEN / 'index.html').read_text(encoding='utf-8'))

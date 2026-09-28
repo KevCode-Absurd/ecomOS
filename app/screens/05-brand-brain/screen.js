@@ -34,13 +34,24 @@
     let m;
     try { m = await api(BASE + 'master'); } catch (e) { mount('#plan', el('p', { class: 'muted', text: 'Master list unavailable: ' + e.message })); return; }
     const win = m.window || {};
+    const decided = (a) => a.decision && (a.decision.choice === 'agent' || a.decision.choice === 'person');
+    const inProgress = (m.actions || []).filter((a) => a.status !== 'unavailable' && decided(a));
+    const toApprove = (m.actions || []).filter((a) => a.status !== 'unavailable' && !decided(a)).slice(0, 10);
+    m.top = toApprove;
     mount('#plan', UI.planBoard({
-      title: 'The plan: top 10 to approve', sub: win.days + ' days to ' + fmt.date(win.ends_on) + ', ' + (m.screens || []).length + ' screens ranked',
-      orient: orient(m, prof), actions: m.top, limit: 10, screen: SCREEN, showScreen: true,
+      title: 'The plan: top 10 to approve', sub: win.days + ' days to ' + fmt.date(win.ends_on) + ', ' + (m.screens || []).length + ' screens ranked' + (inProgress.length ? ', ' + inProgress.length + ' in progress' : ''),
+      orient: orient(m, prof), actions: toApprove, limit: 10, screen: SCREEN, showScreen: true, onDecision: () => loadPlan(prof),
       tools: [el('button', { class: 'btn sm', type: 'button', text: 'Export CSV', onclick: () => UI.csv((m.actions || []).map((a) => ({ rank: (m.actions || []).indexOf(a) + 1, screen: a.screen, title: a.title, owner: a.owner, severity: a.severity, status: a.status, total: a.rubric && a.rubric.total, stake_usd: a.money_at_stake && a.money_at_stake.usd, why: a.why })), null, 'master-list.csv') })],
       foot: el('div', { class: 'row', style: { gap: '14px' } }, UI.rubricLegend(), el('span', { class: 'micro faint', text: 'Ranking: critical first by stake, then rubric total, severity, stake, days open. Approvals log to the decisions table; "Not now" snoozes 14 days.' })),
       empty: 'No open action across the 28 audits for this window.',
     }));
+    const pw = document.getElementById('progress-wrap');
+    if (inProgress.length) {
+      pw.hidden = false;
+      mount('#progress', el('div', { class: 'sec-head' }, el('h2', { text: 'In progress: ' + inProgress.length + ' approved' }), el('span', { class: 'sub', text: 'Approved on this screen. Agent items run when the agent layer is live; person items wait on the person named. Each shows its decision and date.' })),
+        el('div', { class: 'grid' }, ...inProgress.slice(0, 10).map((a) => UI.actionCard(a, { compact: true, screen: SCREEN, showScreen: true, onDecision: () => loadPlan(prof) }))));
+    } else pw.hidden = true;
+    loadDecisions(m);
     const con = m.connect || [];
     const cw = document.getElementById('connect-wrap');
     if (con.length) {
@@ -60,6 +71,23 @@
       actions: { label: 'Open', onClick: (r) => { if (window.parent && window.parent !== window) window.parent.location.hash = '#/' + r.screen; else window.open('/screens/' + r.screen + '/', '_blank'); } },
       sort: { key: 'score', dir: 'desc' }, maxRows: 28,
     }));
+  }
+
+  // ---------- 1b. decisions log ----------
+  const CHOICE_TEXT = { agent: 'Agent does it', person: 'Sent to a person', not_now: 'Not now, snoozed 14 days' };
+  async function loadDecisions(m) {
+    let d;
+    try { d = await api(BASE + 'decisions'); } catch (e) { mount('#decisions', el('p', { class: 'muted', text: 'Decisions unavailable: ' + e.message })); return; }
+    const byId = {}; for (const a of (m && m.actions) || []) byId[a.id] = a;
+    const items = d.items.map((it) => {
+      if (it.kind === 'action') {
+        const a = byId[it.finding_id];
+        return { when: it.time, who: 'you', tone: it.choice === 'not_now' ? 'warn' : 'good', title: CHOICE_TEXT[it.choice] || it.choice, text: (a ? a.title : (it.finding_id || it.capability)) + (it.reason ? '. ' + it.reason : '') + (it.screen ? ' (' + it.screen + ')' : '') };
+      }
+      return { when: it.date, who: it.who || 'founder', tone: 'accent', title: it.title, text: it.text };
+    });
+    mount('#decisions-tools', UI.orientation([{ label: 'approvals', value: d.counts.action, unit: 'n' }, { label: 'snoozed', value: d.counts.snoozed, unit: 'n' }, { label: 'brain decisions', value: d.counts.brain, unit: 'n' }, { label: 'last', value: null, unit: 'n', unavailable_label: d.last ? fmt.date(d.last) : 'none yet' }]));
+    mount('#decisions', UI.timeline(items.slice(0, 30)), items.length > 30 ? el('div', { class: 'micro faint', text: (items.length - 30) + ' older entries not shown.' }) : null);
   }
 
   // ---------- 2. the profile, editable ----------
@@ -595,8 +623,14 @@
       { label: 'answer by connecting', value: qv.counts.connect_first, unit: 'n' }, { label: 'rooms blocked', value: qv.counts.rooms_blocked, unit: 'n' }, { label: 'answered', value: qv.counts.answered, unit: 'n', tone: 'good' }]));
     const open = qv.questions.filter((q) => !q.answered_on);
     const done = qv.questions.filter((q) => q.answered_on);
-    const items = open.map((q) => questionCard(q, loadQuestions));
+    const items = open.slice(0, 5).map((q) => questionCard(q, loadQuestions));
     if (!open.length) items.push(el('p', { class: 'muted', text: 'Nothing waits on you. The next pull or audit may add a question.' }));
+    if (open.length > 5) {
+      const more = el('div', { class: 'grid', hidden: true });
+      const btn = el('button', { class: 'btn sm', type: 'button', text: 'Show ' + (open.length - 5) + ' more' });
+      btn.addEventListener('click', () => { more.hidden = !more.hidden; btn.textContent = more.hidden ? 'Show ' + (open.length - 5) + ' more' : 'Show the top 5 only'; if (!more.hidden && !more.children.length) mount(more, ...open.slice(5).map((q) => questionCard(q, loadQuestions))); });
+      items.push(el('div', { class: 'row' }, btn), more);
+    }
     if (done.length) {
       const list = el('div', { class: 'grid', hidden: true });
       const btn = el('button', { class: 'btn sm', type: 'button', text: 'Show ' + done.length + ' answered' });
