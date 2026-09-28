@@ -89,6 +89,10 @@ Rules
              (playbook.RETURNING_OFFER_WORDS) and the cohort curve (model.cohort_curve, months 1 to 6) shows where
              customers fall off. The action is a flow drafted to reach first-time buyers before the steepest drop,
              with no percent off for past buyers. Money null. Satisfaction 3 (post-purchase). Capability LIFE-C36.
+  OFFER-R22  Cost rose, price did not: landed cost in force today is more than playbook.COST_MOVE over a year ago
+             and the paid price per pack (last 3 full months against the same 3 a year before) rose less than the
+             cost did (model.cost_moves). One finding for all such SKUs. Money: margin dollars leaked per pack times
+             packs in the last 12 full months, scaled to 28 days. Capability MONEY-C05 (founder gate).
   OFFER-R03  Margin after discount per SKU. Needs cogs_landed keyed by the store's SKUs. Unavailable while no
              finance_inputs SKU key matches a product SKU. Capability MONEY-C05 (founder gate). Owner: 04.
   OFFER-R04  A deal-breaker rung with no proof: the top rung of an objection ladder whose proof is empty or
@@ -171,6 +175,8 @@ RULES = [
      'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R21', 'name': 'No offer for the second order', 'entity_type': 'offer',
      'inputs': ['cohorts', 'brain.offers'], 'capability': 'LIFE-C36', 'owner_screen': SCREEN},
+    {'rule_id': 'OFFER-R22', 'name': 'Cost rose, price did not', 'entity_type': 'sku',
+     'inputs': ['finance_inputs.cogs_landed', 'products_monthly'], 'capability': 'MONEY-C05', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R03', 'name': 'Margin after discount per SKU', 'entity_type': 'sku',
      'inputs': ['finance_inputs.cogs_landed keyed by product SKU', 'products'], 'capability': 'MONEY-C05',
      'owner_screen': SCREEN},
@@ -196,6 +202,7 @@ CAPABILITY = {'OFFER-R01': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R19': {'id': 'LIFE-C38', 'autonomy': 'founder_gate'},
               'OFFER-R20': {'id': 'LIFE-C41', 'autonomy': 'founder_gate'},
               'OFFER-R21': {'id': 'LIFE-C36', 'autonomy': 'founder_gate'},
+              'OFFER-R22': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R06': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R04': {'id': 'LIFE-C36', 'autonomy': 'founder_gate'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
@@ -902,6 +909,33 @@ def rule_second_order(rd):
                      sentence, None, 0.6, [], end, money_reason='the lift a second-order offer brings is what the flow test finds')]
 
 
+def cost_moves(rd):
+    pb = _playbook()
+    return _model().cost_moves(rd, pb.COST_MOVE, pb.PRICE_STEP)
+
+
+def rule_cost(rd):
+    end = rd.ends_on
+    cm = cost_moves(rd)
+    if cm.get('unavailable'):
+        return []
+    hit = [r for r in cm['rows'] if r['fires']]
+    if not hit:
+        return []
+    usd = round(cm['leak_12m'] * 28 / 365, 2)
+    money = {'usd': usd, 'usd_revenue': usd, 'formula': 'sum(leak_per_pack x packs_12m) x 28 / 365',
+             'inputs': {'leak_12m': cm['leak_12m'], 'skus': len(hit)}, 'window': '28d'}
+    top = hit[0]
+    evidence = [_ev('landed_cost_move', top['cost_move'], 'ratio', end, baseline=_playbook().COST_MOVE, baseline_kind='threshold',
+                    window='365d', source='finance_inputs.cogs_landed'),
+                _ev('paid_price_move', top['price_move'], 'ratio', end, baseline=top['cost_move'], baseline_kind='cost_move',
+                    window=cm['months']['recent'], source='products_monthly')]
+    sentence = (f'Landed cost rose on {len(hit)} SKUs, {top["cost_move"] * 100:.0f} percent on {top["sku"]}, and prices did not follow. '
+                f'That leaks ${cm["leak_12m"]:,.0f} of margin a year.')
+    return [_finding('OFFER-R22', {'type': 'sku', 'id': 'cost_vs_price', 'label': 'Cost against price'}, 'high', evidence,
+                     sentence, money, 0.8, [], end)]
+
+
 def rule_ladder(rd):
     end = rd.ends_on
     pb = _playbook()
@@ -1073,7 +1107,7 @@ def run(brand, window=None, data=None):
     """Findings for one brand, sorted by severity then money at stake. `window` is {ends_on} or None."""
     ends_on = date.fromisoformat(window['ends_on']) if window and window.get('ends_on') else last_full_day(data, brand)
     rd = Reader(data, brand, ends_on)
-    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
+    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_cost(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
            rule_unanswered(rd))
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f.get('money_at_stake') or {}).get('usd') or -1), f['id']))
     return out

@@ -870,5 +870,30 @@ class SecondOrderTest(unittest.TestCase):
             self.assertIn(a['id'], [t['id'] for t in out['tests']])
 
 
+class CostPriceTest(unittest.TestCase):
+    """Round 2 feature 9: cost rose, price did not."""
+
+    def test_leak_arithmetic_and_rule(self):
+        rd = audit.Reader(None, 'bombas', audit.last_full_day(None, 'bombas'))
+        cm = audit.cost_moves(rd)
+        self.assertFalse(cm['unavailable'])
+        pb = audit._playbook()
+        for r in cm['rows']:
+            leak = (r['cost_now'] - r['cost_then']) - (r['price_now'] - r['price_then'])
+            self.assertAlmostEqual(r['leak_per_pack'], round(leak, 2), places=2)
+            self.assertEqual(r['fires'], r['cost_now'] / r['cost_then'] - 1 > pb.COST_MOVE and leak > 0)
+            self.assertEqual(r['test_price'] % pb.PRICE_STEP, 0)
+            self.assertGreaterEqual(r['test_price'], r['price_now'])
+            m1 = r['price_now'] - r['cost_now']
+            self.assertAlmostEqual(r['cvr_limit'], round(1 - m1 / (m1 + r['test_raise']), 4), places=3)
+        out = api.actions.rank('bombas')
+        f = next((f for f in out['findings'] if f['rule_id'] == 'OFFER-R22'), None)
+        self.assertEqual(bool(f), any(r['fires'] for r in cm['rows']))
+        if f:
+            self.assertAlmostEqual(f['money_at_stake']['usd'], round(cm['leak_12m'] * 28 / 365, 2))
+            a = next(a for a in out['actions'] if a['rule_id'] == 'OFFER-R22')
+            self.assertEqual(a['artefact']['kind'], 'price_change')
+
+
 if __name__ == '__main__':
     unittest.main()

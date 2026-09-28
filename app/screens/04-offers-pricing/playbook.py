@@ -167,3 +167,8 @@ DEPTH_TIERS = (0.30, 0.25, 0.20, 0.15, 0.10)
 # Second-order offer (screen 04, OFFER-R21). Words in an offers record that mean an offer for past buyers already exists.
 RETURNING_OFFER_WORDS = ('second_order', 'returning', 'loyalty', 'replenish', 'refill', 'subscribe')
 CURVE_MONTHS = 6          # read the cohort curve over months 1 to 6 after the first order
+
+# Cost against price (screen 04, OFFER-R22). Landed cost up more than COST_MOVE in a year while the paid price per
+# item moved less than the cost did: margin dollars are leaking. The test restores them, rounded up to PRICE_STEP.
+COST_MOVE = 0.03
+PRICE_STEP = 1.0

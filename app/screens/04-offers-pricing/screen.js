@@ -345,6 +345,21 @@
       actionLine(a ? 'No offer speaks to the second order. Send first-time buyers the pack upgrade and the gift by day ' + cc.send_by_day + ', no percent off.' : 'A second-order offer is in the brain.', a));
   }
 
+  function costBlock(cm) {
+    const head = { title: 'Did prices follow our costs?', sub: 'Landed cost in force today against a year ago, and the paid price per pack over the last 3 full months against the same 3 a year before. The gap is margin that leaks on every pack.' };
+    if (!cm || cm.unavailable) return section('desk-cost', head, UI.emptyState({ screen: SLUG, title: 'Cost history unavailable', text: (cm || {}).reason }));
+    const a = ACTIONS.find((x) => x.rule_id === 'OFFER-R22');
+    const table = UI.verdictTable({
+      columns: [{ key: 'sku', label: 'Pack' }, { key: 'cost_move', label: 'Cost move', unit: '%' }, { key: 'price_move', label: 'Price move', unit: '%' },
+        { key: 'leak_per_pack', label: 'Leak per pack', unit: '$' }, { key: 'leak_12m', label: 'Leak, 12 months', unit: '$' },
+        { key: 'test_price', label: 'Test price', unit: '$' }, { key: 'cvr_limit', label: 'Conversion it can lose', unit: '%' }],
+      rows: cm.rows.slice(0, 12), verdict: { at: 1, kind: (r) => r.fires ? 'fix' : 'keep', text: (r) => r.fires ? 'Leaking' : 'Covered', reason: (r) => 'cost ' + pct(r.cost_move, 0) + ', price ' + pct(r.price_move, 1) },
+      sort: false });
+    const n = cm.rows.filter((r) => r.fires).length;
+    return section('desk-cost', head, el('div', { class: 'card tight' }, table, el('p', { class: 'micro faint', text: cm.basis + '. Showing the 12 biggest leaks of ' + cm.rows.length + ' packs.' })),
+      actionLine(n ? n + ' packs leak ' + fmt.money(cm.leak_12m) + ' a year. Test passing the cost rise through on the biggest ones.' : 'Prices followed costs.', a));
+  }
+
   function giftingBlock(g) {
     const head = { title: 'Do we sell gifts at the holidays?', sub: 'Holiday index = a line\'s November and December share of its 12 months over the store\'s own share. Gift-led lines sit at or above the bar.' };
     if (!g) return section('desk-gifting', head, UI.emptyState({ screen: SLUG, title: 'Gifting unavailable', text: 'No brand folder.' }));
@@ -504,7 +519,7 @@
     wrong(d);
     actionsList(d);
     mount('#desk', el('div', { class: 'desk-kicker' }, el('h3', { text: 'The desk' })), testsBlock(d.tests), calendarBlock(d.calendar), depthBlock(d.depth), secondOrderBlock(d.cohorts), giftingBlock(d.gifting),
-      stackBlock(d.stack || []), thresholdBlock(d.threshold), cartBlock(d.cart), firstOrderBlock(d.first_order), positionBlock(d.position, d.brand || {}), parityBlock(d.parity), waterfallBlock(d.waterfalls), discountBlock(d), ladderBlock(d.ladder), objectionBlock(d.objections || [], d.returns), guaranteeBlock(d.guarantee, d.returns));
+      stackBlock(d.stack || []), thresholdBlock(d.threshold), cartBlock(d.cart), firstOrderBlock(d.first_order), positionBlock(d.position, d.brand || {}), costBlock(d.costs), parityBlock(d.parity), waterfallBlock(d.waterfalls), discountBlock(d), ladderBlock(d.ladder), objectionBlock(d.objections || [], d.returns), guaranteeBlock(d.guarantee, d.returns));
     auditBlock(d);
   }
 

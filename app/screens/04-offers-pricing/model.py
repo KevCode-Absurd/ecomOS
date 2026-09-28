@@ -935,3 +935,50 @@ def cohort_curve(rd, months):
     return {'unavailable': False, 'curve': curve, 'cohorts': len(rows), 'customers': total, 'drop_after_month': month,
             'drop': round(drop, 4), 'send_by_day': 30 * month - 7, 'new_customers_latest': latest['customers'],
             'latest_cohort': latest['cohort']}
+
+
+# ---------------------------------------------------------------- cost against price
+
+def cost_moves(rd, cost_move, step, end=None):
+    """Per SKU: landed cost in force today against a year ago, paid price per pack over the last 3 full months
+    against the same 3 months a year before, the margin lost per pack, units in the last 12 full months, and the
+    price that restores margin dollars (rounded up to `step`) with the conversion it can lose and still earn more."""
+    end = end or rd.ends_on
+    f = rd.fin()
+    if not f:
+        return {'unavailable': True, 'reason': 'no finance_inputs'}
+    now_c = {str(r['scope_key']): float(r['value']) for r in f.in_force('cogs_landed', end.isoformat())}
+    then_c = {str(r['scope_key']): float(r['value']) for r in f.in_force('cogs_landed', (end - timedelta(days=365)).isoformat())}
+    ms = full_months(rd, end, 15)
+    if len(ms) < 15:
+        return {'unavailable': True, 'reason': 'fewer than 15 full months in the aggregates'}
+    recent, year_ago, last12 = ms[-3:], ms[-15:-12], ms[-12:]
+    pm = rd.table('products_monthly') or []
+
+    def price(sku, months):
+        rs = [r for r in pm if r['sku'] == sku and r['month'] in months and r['units']]
+        u = sum(r['units'] for r in rs)
+        return round(sum(r['net_sales'] for r in rs) / u, 2) if u else None
+
+    rows = []
+    for sku in sorted(set(now_c) & set(then_c)):
+        c1, c0 = now_c[sku], then_c[sku]
+        p1, p0 = price(sku, recent), price(sku, year_ago)
+        units = sum(r['units'] for r in pm if r['sku'] == sku and r['month'] in last12)
+        if not (p1 and p0 and units):
+            continue
+        dc = c1 - c0
+        moved = c1 / c0 - 1
+        covered = p1 - p0
+        leak = dc - covered
+        m1 = p1 - c1
+        new_p = math.ceil((p1 + max(leak, 0)) / step) * step
+        rows.append({'sku': sku, 'cost_then': c0, 'cost_now': c1, 'cost_move': round(moved, 4), 'price_then': p0, 'price_now': p1,
+                     'price_move': round(p1 / p0 - 1, 4), 'leak_per_pack': round(leak, 2), 'units_12m': units,
+                     'leak_12m': round(max(leak, 0) * units, 2), 'test_price': new_p, 'test_raise': round(new_p - p1, 2),
+                     'cvr_limit': round(1 - m1 / (m1 + (new_p - p1)), 4) if m1 + (new_p - p1) > 0 else None,
+                     'fires': moved > cost_move and leak > 0})
+    rows.sort(key=lambda r: -r['leak_12m'])
+    return {'unavailable': False, 'rows': rows, 'months': {'recent': f'{recent[0]} to {recent[-1]}', 'year_ago': f'{year_ago[0]} to {year_ago[-1]}'},
+            'leak_12m': round(sum(r['leak_12m'] for r in rows if r['fires']), 2),
+            'basis': 'cogs_landed in force today and a year ago; paid price per pack from products_monthly'}

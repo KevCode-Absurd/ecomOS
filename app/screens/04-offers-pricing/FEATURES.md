@@ -60,6 +60,7 @@ Known gaps from round 0:
 | 2.6 | Test calendar (room spec: overlapping offer tests, offer test backlog): every open move declares the surface it changes (cart rewards, first order offer, ad angle, a theme's product page promise, the guarantee block, the pack selector, pack price, new packs, marketplace listing) and its length; the scheduler starts each 7 days out for approval, queues moves that share a surface, and keeps every move out of the promo windows. Verdict per move (starts first, waits, after the peak), what it waits for, CSV export | done |
 | 2.7 | Promo depth by line: for each line's best-selling pack, the deepest tier (30, 25, 20, 15, 10 percent) that keeps the target contribution margin after its share of fulfilment and paid media, or a gift when no tier clears. The Black Friday offer spec now carries the tiers by line. Web pass: Common Thread (depth by margin and stock; stock waits on inventory rows) | done |
 | 2.8 | Second-order offer: the cohort curve (share of new customers active in months 1 to 6, weighted by cohort size) and the month after which it falls most. New rule OFFER-R21 (no offers record speaks to past buyers) with a 3-message flow drafted to land before the drop: no percent off, the pack upgrade from the ladder, the cart gift; a 20 percent holdout; on the test calendar as its own surface. Web pass: Klaviyo (past buyers get no discount) | done |
+| 2.9 | Cost against price: landed cost in force today against a year ago per SKU (finance history), paid price per pack over the last 3 full months against the same 3 a year before, margin leaked per pack and over 12 months, and a test price that restores margin dollars (rounded up to $1) with the conversion it can lose and still earn more. New rule OFFER-R22 (cost up more than 3 percent, price did not follow; money is the leak scaled to 28 days) with a price test brief that also cites our price against the set median. Web pass: Intelligems profit per visitor | done |
 
 ## Room jobs
 
@@ -177,7 +178,7 @@ Known gaps from round 0:
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.9 | 2026-09-28 | S3.9; screenshot round0.png |
-| 2 | 2.1 price and offer position, 2.2 marketplace parity, 2.3 discount discipline, 2.4 gift pick, 2.5 cart reward ladder, 2.6 test calendar, 2.7 depth by line, 2.8 second-order offer | 2026-09-28 | in progress |
+| 2 | 2.1 price and offer position, 2.2 marketplace parity, 2.3 discount discipline, 2.4 gift pick, 2.5 cart reward ladder, 2.6 test calendar, 2.7 depth by line, 2.8 second-order offer, 2.9 cost against price | 2026-09-28 | in progress |
 | 1 | 1.1 plan first, 1.2 objection to offer map, 1.3 free shipping line, 1.4 pack ladder, 1.5 first-order offer, 1.6 margin waterfall, 1.7 promo calendar, 1.8 gifting and holiday, 1.9 guarantee as an offer, 1.10 rank complete | 2026-09-28 | manager session; screenshot round1.png (updated as the round lands) |
 
 

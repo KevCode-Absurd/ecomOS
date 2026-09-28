@@ -82,6 +82,7 @@ class Ctx:
         self.cart = audit.cart_ladder(rd)
         self.depth = model.depth_by_line(rd, playbook.DEPTH_TIERS)
         self.cohorts = audit.cohort_curve(rd)
+        self.costs = audit.cost_moves(rd)
         self.ship_rate = (model.brain_value(rd, 'offers.standard_shipping_cost')[0] or {}).get('cost_usd') if rd.brand else None
         self.scenarios = (model.threshold_scenarios(rd, self.threshold, self.ship_rate, self.be['value'], (self.po or {}).get('units') or 1)
                           if self.threshold is not None and self.be.get('value') is not None else [])
@@ -497,6 +498,8 @@ def surfaces(a):
         return (['product page pack selector'] if ent == 'push' else ['pack price']), 35
     if r == 'OFFER-R09':
         return ['new packs'], 56
+    if r == 'OFFER-R22':
+        return ['list price'], 35
     if r == 'OFFER-R21':
         return ['second-order flow'], 70
     return None, None
@@ -736,6 +739,35 @@ def second_order_action(f, a, ctx):
     return a
 
 
+def cost_action(f, a, ctx):
+    cm = ctx.costs
+    hit = [r for r in cm['rows'] if r['fires']][:6]
+    cp = ctx.position or {}
+    us = cp.get('us') or {}
+    rows = [f'- {r["sku"]}: cost {money(r["cost_then"])} to {money(r["cost_now"])} (+{r["cost_move"] * 100:.0f} percent), price '
+            f'{money(r["price_then"])} to {money(r["price_now"])}. Test {money(r["test_price"])} (+{money(r["test_raise"])}); '
+            f'it can lose {r["cvr_limit"] * 100:.1f} percent of conversion and still earn more.' for r in hit]
+    head = (f' We sell at {money(us["price"])} an item against a set median of {money(cp["set_median_price"])}.'
+            if us.get('price') and cp.get('set_median_price') else '')
+    a.update({
+        'title': f'Test a price rise on the {len(hit)} packs whose cost rose most',
+        'why': f['sentence'] + head,
+        'owner': 'agent_drafts',
+        'artefact': {'kind': 'price_change', 'label': 'Price test brief: restore margin dollars', 'draft': '\n'.join(
+            ['Price test brief: pass the cost rise through', f'Cost months: in force today against a year ago. Price months: {cm["months"]["recent"]} against {cm["months"]["year_ago"]}.']
+            + rows + [f'Arms: A keeps today\'s price. B shows the test price. 50/50 by visitor in {tool(ctx, "ab_testing", "the test tool")}, 28 days.',
+                      'Primary metric: gross margin per visitor on these packs.',
+                      'Win: margin per visitor up in B. Stop: conversion in B down more than the limit above for 7 days.'])},
+        'steps': steps(('agent', 'Confirm the cost rows and the paid price per pack.'),
+                       ('agent', 'Draft the price test with the conversion each pack can lose.'),
+                       ('person', 'Approve the test prices. Nothing changes before that.'),
+                       ('agent', f'Read margin per visitor weekly; call it on {ctx.check_on(35)}.')),
+        'size': {'text': f'{money(cm["leak_12m"])} of margin a year leaks at today\'s prices', 'usd': (f.get('money_at_stake') or {}).get('usd')},
+        'win_rule': 'Gross margin per visitor up in B.', 'stop_rule': 'Conversion in B down more than the pack\'s limit for 7 days.',
+        'check_on': ctx.check_on(35), 'time_to_ship_hours': 4})
+    return a
+
+
 def returns_block(rd):
     """returns_by_reason for the window, or the labelled fixture when the metric is unavailable."""
     m = rd.m('returns_by_reason', audit.WINDOW)
@@ -896,7 +928,8 @@ BUILDERS = {'OFFER-R01': threshold_action, 'OFFER-R04': rung_action, 'OFFER-R08'
             'OFFER-R10': red_line_action, 'OFFER-R11': promo_action, 'OFFER-R12': gifting_action,
             'OFFER-R14': guarantee_action, 'OFFER-R05': stale_action, 'OFFER-R06': pull_action, 'OFFER-R15': claims_action,
             'OFFER-R16': position_action, 'OFFER-R17': parity_action, 'OFFER-R18': discount_action,
-            'OFFER-R19': discount_action, 'OFFER-R20': cart_action, 'OFFER-R21': second_order_action}
+            'OFFER-R19': discount_action, 'OFFER-R20': cart_action, 'OFFER-R21': second_order_action,
+            'OFFER-R22': cost_action}
 
 
 def build(f, rd, ctx, nr):
@@ -936,4 +969,4 @@ def rank(brand='bombas', window=None):
     return {'screen': SCREEN, 'brand': brand, 'window': w, 'simulated': True, 'net_revenue_28d': nr,
             'actions': actions, 'findings': findings, 'objections': ctx.objections, 'returns': returns_block(rd),
             'ladder': dict(ctx.ladder, moves=ctx.ladder_rows), 'first_order': ctx.first_order, 'waterfalls': ctx.waterfalls, 'calendar': ctx.calendar, 'gifting': ctx.gifting, 'guarantee': ctx.guarantee, 'position': ctx.position, 'parity': ctx.parity,
-            'discipline': dict(ctx.discipline, policy=discount_policy(ctx)), 'cart': ctx.cart, 'tests': calendar, 'depth': ctx.depth, 'cohorts': ctx.cohorts}
+            'discipline': dict(ctx.discipline, policy=discount_policy(ctx)), 'cart': ctx.cart, 'tests': calendar, 'depth': ctx.depth, 'cohorts': ctx.cohorts, 'costs': ctx.costs}
