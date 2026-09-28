@@ -85,6 +85,10 @@ Rules
              second tier one item past the free shipping line (model.cart_ladder): the gift pays when a shopper adds
              gift cost over the contribution share. Money null: climbers and the orders already past tier 2 need
              order rows. Capability LIFE-C41 (founder gate). Web pass: Rebuy tiered progress bar.
+  OFFER-R21  No offer for the second order: no brain offers record names a returning-customer offer
+             (playbook.RETURNING_OFFER_WORDS) and the cohort curve (model.cohort_curve, months 1 to 6) shows where
+             customers fall off. The action is a flow drafted to reach first-time buyers before the steepest drop,
+             with no percent off for past buyers. Money null. Satisfaction 3 (post-purchase). Capability LIFE-C36.
   OFFER-R03  Margin after discount per SKU. Needs cogs_landed keyed by the store's SKUs. Unavailable while no
              finance_inputs SKU key matches a product SKU. Capability MONEY-C05 (founder gate). Owner: 04.
   OFFER-R04  A deal-breaker rung with no proof: the top rung of an objection ladder whose proof is empty or
@@ -165,6 +169,8 @@ RULES = [
     {'rule_id': 'OFFER-R20', 'name': 'One reward in the cart', 'entity_type': 'offer',
      'inputs': ['brain.stack.upsell_app', 'brain.offers', 'finance_inputs', 'products_monthly'], 'capability': 'LIFE-C41',
      'owner_screen': SCREEN},
+    {'rule_id': 'OFFER-R21', 'name': 'No offer for the second order', 'entity_type': 'offer',
+     'inputs': ['cohorts', 'brain.offers'], 'capability': 'LIFE-C36', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R03', 'name': 'Margin after discount per SKU', 'entity_type': 'sku',
      'inputs': ['finance_inputs.cogs_landed keyed by product SKU', 'products'], 'capability': 'MONEY-C05',
      'owner_screen': SCREEN},
@@ -189,6 +195,7 @@ CAPABILITY = {'OFFER-R01': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R18': {'id': 'LIFE-C38', 'autonomy': 'founder_gate'},
               'OFFER-R19': {'id': 'LIFE-C38', 'autonomy': 'founder_gate'},
               'OFFER-R20': {'id': 'LIFE-C41', 'autonomy': 'founder_gate'},
+              'OFFER-R21': {'id': 'LIFE-C36', 'autonomy': 'founder_gate'},
               'OFFER-R06': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R04': {'id': 'LIFE-C36', 'autonomy': 'founder_gate'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
@@ -875,6 +882,26 @@ def rule_cart(rd):
                      None, 0.5, [rec['id']] if rec else [], end, money_reason=cl['leak_reason'] or 'climbers need order rows')]
 
 
+def cohort_curve(rd):
+    return _model().cohort_curve(rd, _playbook().CURVE_MONTHS)
+
+
+def rule_second_order(rd):
+    end = rd.ends_on
+    words = _playbook().RETURNING_OFFER_WORDS
+    if any(any(w in (str(r.get('id')) + str(r.get('field'))).lower() for w in words) for r in rd.records('offers')):
+        return []
+    cc = cohort_curve(rd)
+    if cc.get('unavailable'):
+        return []
+    evidence = [_ev('active_share_month_1', cc['curve'][0], 'ratio', end, window=f'{cc["cohorts"]} cohorts', source='cohorts'),
+                _ev('largest_monthly_drop', cc['drop'], 'ratio', end, window=f'after month {cc["drop_after_month"]}', source='cohorts')]
+    sentence = (f'Nothing in the offers speaks to a second order. {cc["curve"][0] * 100:.1f} percent of new customers buy again in month 1, '
+                f'and the curve falls most after month {cc["drop_after_month"]}.')
+    return [_finding('OFFER-R21', {'type': 'offer', 'id': 'second_order', 'label': 'Second-order offer'}, 'medium', evidence,
+                     sentence, None, 0.6, [], end, money_reason='the lift a second-order offer brings is what the flow test finds')]
+
+
 def rule_ladder(rd):
     end = rd.ends_on
     pb = _playbook()
@@ -1046,7 +1073,7 @@ def run(brand, window=None, data=None):
     """Findings for one brand, sorted by severity then money at stake. `window` is {ends_on} or None."""
     ends_on = date.fromisoformat(window['ends_on']) if window and window.get('ends_on') else last_full_day(data, brand)
     rd = Reader(data, brand, ends_on)
-    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
+    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
            rule_unanswered(rd))
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f.get('money_at_stake') or {}).get('usd') or -1), f['id']))
     return out

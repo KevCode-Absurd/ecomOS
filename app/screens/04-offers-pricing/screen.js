@@ -335,6 +335,16 @@
       actionLine('Build the promo as tiers by line, not one sitewide percent. ' + gifts + ' lines get a gift instead of a discount.', a));
   }
 
+  function secondOrderBlock(cc) {
+    const head = { title: 'When do first-time buyers stop coming back?', sub: 'Share of each month\'s new customers who order again in months 1 to ' + (cc && cc.curve ? cc.curve.length : 6) + ', weighted by cohort size. The offer goes out before the steepest drop.' };
+    if (!cc || cc.unavailable) return section('desk-second', head, UI.emptyState({ screen: SLUG, title: 'Cohorts unavailable', text: (cc || {}).reason }));
+    const a = ACTIONS.find((x) => x.rule_id === 'OFFER-R21');
+    const chart = Charts.bar({ labels: cc.curve.map((_, i) => 'Month ' + (i + 1)), series: [{ name: 'Active share', values: cc.curve }], unit: '%', values: true, width: 900, height: 200,
+      shade: [cc.drop_after_month - 1, cc.drop_after_month - 1], title: 'Share of new customers who order again, by month', note: cc.cohorts + ' cohorts, ' + fmt.int(cc.customers) + ' customers. Shaded: the month before the steepest drop.' });
+    return section('desk-second', head, el('div', { class: 'card' }, chart),
+      actionLine(a ? 'No offer speaks to the second order. Send first-time buyers the pack upgrade and the gift by day ' + cc.send_by_day + ', no percent off.' : 'A second-order offer is in the brain.', a));
+  }
+
   function giftingBlock(g) {
     const head = { title: 'Do we sell gifts at the holidays?', sub: 'Holiday index = a line\'s November and December share of its 12 months over the store\'s own share. Gift-led lines sit at or above the bar.' };
     if (!g) return section('desk-gifting', head, UI.emptyState({ screen: SLUG, title: 'Gifting unavailable', text: 'No brand folder.' }));
@@ -493,7 +503,7 @@
     plan(d);
     wrong(d);
     actionsList(d);
-    mount('#desk', el('div', { class: 'desk-kicker' }, el('h3', { text: 'The desk' })), testsBlock(d.tests), calendarBlock(d.calendar), depthBlock(d.depth), giftingBlock(d.gifting),
+    mount('#desk', el('div', { class: 'desk-kicker' }, el('h3', { text: 'The desk' })), testsBlock(d.tests), calendarBlock(d.calendar), depthBlock(d.depth), secondOrderBlock(d.cohorts), giftingBlock(d.gifting),
       stackBlock(d.stack || []), thresholdBlock(d.threshold), cartBlock(d.cart), firstOrderBlock(d.first_order), positionBlock(d.position, d.brand || {}), parityBlock(d.parity), waterfallBlock(d.waterfalls), discountBlock(d), ladderBlock(d.ladder), objectionBlock(d.objections || [], d.returns), guaranteeBlock(d.guarantee, d.returns));
     auditBlock(d);
   }

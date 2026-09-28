@@ -916,3 +916,22 @@ def depth_by_line(rd, tiers, end=None):
     return {'unavailable': False, 'rows': rows, 'target': target / 100, 'media_share': round(media_share, 4),
             'basis': ('Best-selling pack per line at its paid price; fulfilment and paid media shared out by the pack price '
                       'over the average order; red line is the target contribution margin')}
+
+
+# ---------------------------------------------------------------- second-order offer
+
+def cohort_curve(rd, months):
+    """Customer-weighted share of a cohort active in each month 1..months after its first, over cohorts old enough,
+    and the month after which the share falls most (the offer goes out before it)."""
+    rows = [r for r in (rd.table('cohorts') or []) if r.get('customers') and len(r.get('active_by_month') or []) > months]
+    if not rows:
+        return {'unavailable': True, 'reason': 'no cohort old enough in the cohorts aggregate'}
+    total = sum(r['customers'] for r in rows)
+    curve = [round(sum(r['active_by_month'][k] for r in rows) / total, 4) for k in range(1, months + 1)]
+    drops = [(curve[k] - curve[k + 1], k + 1) for k in range(len(curve) - 1)]
+    drop, month = max(drops)
+    full = set(full_months(rd, rd.ends_on, 24))
+    latest = max((r for r in (rd.table('cohorts') or []) if r.get('customers') and r['cohort'] in full), key=lambda r: r['cohort'])
+    return {'unavailable': False, 'curve': curve, 'cohorts': len(rows), 'customers': total, 'drop_after_month': month,
+            'drop': round(drop, 4), 'send_by_day': 30 * month - 7, 'new_customers_latest': latest['customers'],
+            'latest_cohort': latest['cohort']}

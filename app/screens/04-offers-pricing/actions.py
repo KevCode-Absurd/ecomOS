@@ -81,6 +81,7 @@ class Ctx:
         self.discipline = audit.discipline(rd)
         self.cart = audit.cart_ladder(rd)
         self.depth = model.depth_by_line(rd, playbook.DEPTH_TIERS)
+        self.cohorts = audit.cohort_curve(rd)
         self.ship_rate = (model.brain_value(rd, 'offers.standard_shipping_cost')[0] or {}).get('cost_usd') if rd.brand else None
         self.scenarios = (model.threshold_scenarios(rd, self.threshold, self.ship_rate, self.be['value'], (self.po or {}).get('units') or 1)
                           if self.threshold is not None and self.be.get('value') is not None else [])
@@ -496,6 +497,8 @@ def surfaces(a):
         return (['product page pack selector'] if ent == 'push' else ['pack price']), 35
     if r == 'OFFER-R09':
         return ['new packs'], 56
+    if r == 'OFFER-R21':
+        return ['second-order flow'], 70
     return None, None
 
 
@@ -705,6 +708,34 @@ def cart_action(f, a, ctx):
     return a
 
 
+def second_order_action(f, a, ctx):
+    cc = ctx.cohorts
+    cl = ctx.cart
+    push = next((r for r in ctx.ladder_rows if r['verdict'] == 'push'), None)
+    lines = ['Flow spec: the second-order offer',
+             f'Who: first-time buyers, from their first order. {cc["new_customers_latest"]:,} joined in {cc["latest_cohort"]}.',
+             f'When: send by day {cc["send_by_day"]}, before the drop after month {cc["drop_after_month"]}. '
+             f'Curve, months 1 to {len(cc["curve"])}: ' + ', '.join(f'{x * 100:.1f}' for x in cc['curve']) + ' percent active.',
+             'Offer: no percent off. Past buyers already trust the product; a code only trains them to wait.']
+    if push:
+        lines.append(f'Upgrade: move a single buyer to the {push["pack"]}-pack at {money(push["pack_per_item"])} an item; each trade-up adds {money(push["gain_per_trade_up"])}.')
+    if cl:
+        lines.append(f'Reward: the cart gift at ${cl["tier2"]:,.0f} ({cl["tiers"][1]["reward"]}).')
+    lines += ['Messages: 3 over 10 days: the refill reminder, the pack upgrade, the last call with the gift.',
+              'Win: month 2 active share up 1 point in the test cohort. Stop: unsubscribes above 1 percent a send.']
+    a.update({
+        'title': f'Send first-time buyers a second-order offer by day {cc["send_by_day"]}',
+        'owner': 'agent_drafts',
+        'artefact': {'kind': 'flow', 'label': 'Second-order flow: 3 messages, no percent off', 'draft': '\n'.join(lines)},
+        'steps': steps(('agent', 'Pull the cohort curve and the pack each first order bought.'),
+                       ('agent', f'Draft the 3 messages and the upgrade offer for {tool(ctx, "email_app", "the email tool")}.'),
+                       ('person', 'Approve the messages. The retention lead loads the flow with a 20 percent holdout.'),
+                       ('agent', f'Read month 2 active share against the holdout; call it on {ctx.check_on(70)}.')),
+        'win_rule': 'Month 2 active share up 1 point against the holdout.',
+        'stop_rule': 'Unsubscribes above 1 percent a send.', 'check_on': ctx.check_on(70), 'time_to_ship_hours': 8})
+    return a
+
+
 def returns_block(rd):
     """returns_by_reason for the window, or the labelled fixture when the metric is unavailable."""
     m = rd.m('returns_by_reason', audit.WINDOW)
@@ -846,7 +877,7 @@ def merge_ladder(actions, ctx):
 # Rubric overrides by rule (depth.md section 4 lets a screen raise reputation or satisfaction for a rule; the
 # override is written in audit.py's docstring next to the rule). Weights never change.
 RUBRIC_OVERRIDE = {'OFFER-R04': {'reputation': 4, 'satisfaction': 4}, 'OFFER-R14': {'reputation': 4, 'satisfaction': 4},
-                   'OFFER-R16': {'reputation': 5}, 'OFFER-R17': {'reputation': 4}}
+                   'OFFER-R16': {'reputation': 5}, 'OFFER-R17': {'reputation': 4}, 'OFFER-R21': {'satisfaction': 3}}
 
 
 def rescore(a, dims):
@@ -865,7 +896,7 @@ BUILDERS = {'OFFER-R01': threshold_action, 'OFFER-R04': rung_action, 'OFFER-R08'
             'OFFER-R10': red_line_action, 'OFFER-R11': promo_action, 'OFFER-R12': gifting_action,
             'OFFER-R14': guarantee_action, 'OFFER-R05': stale_action, 'OFFER-R06': pull_action, 'OFFER-R15': claims_action,
             'OFFER-R16': position_action, 'OFFER-R17': parity_action, 'OFFER-R18': discount_action,
-            'OFFER-R19': discount_action, 'OFFER-R20': cart_action}
+            'OFFER-R19': discount_action, 'OFFER-R20': cart_action, 'OFFER-R21': second_order_action}
 
 
 def build(f, rd, ctx, nr):
@@ -905,4 +936,4 @@ def rank(brand='bombas', window=None):
     return {'screen': SCREEN, 'brand': brand, 'window': w, 'simulated': True, 'net_revenue_28d': nr,
             'actions': actions, 'findings': findings, 'objections': ctx.objections, 'returns': returns_block(rd),
             'ladder': dict(ctx.ladder, moves=ctx.ladder_rows), 'first_order': ctx.first_order, 'waterfalls': ctx.waterfalls, 'calendar': ctx.calendar, 'gifting': ctx.gifting, 'guarantee': ctx.guarantee, 'position': ctx.position, 'parity': ctx.parity,
-            'discipline': dict(ctx.discipline, policy=discount_policy(ctx)), 'cart': ctx.cart, 'tests': calendar, 'depth': ctx.depth}
+            'discipline': dict(ctx.discipline, policy=discount_policy(ctx)), 'cart': ctx.cart, 'tests': calendar, 'depth': ctx.depth, 'cohorts': ctx.cohorts}

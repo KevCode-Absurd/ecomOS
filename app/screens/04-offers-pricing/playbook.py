@@ -163,3 +163,7 @@ GWP_RATIO = 4.0
 
 # Promo depth by line (screen 04, feature 2.7). Tiers a line can take in a promo window, deepest first.
 DEPTH_TIERS = (0.30, 0.25, 0.20, 0.15, 0.10)
+
+# Second-order offer (screen 04, OFFER-R21). Words in an offers record that mean an offer for past buyers already exists.
+RETURNING_OFFER_WORDS = ('second_order', 'returning', 'loyalty', 'replenish', 'refill', 'subscribe')
+CURVE_MONTHS = 6          # read the cohort curve over months 1 to 6 after the first order

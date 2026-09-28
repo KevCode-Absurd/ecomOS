@@ -852,5 +852,23 @@ class DepthTest(unittest.TestCase):
             self.assertIn('Depth by line', bf['artefact']['draft'])
 
 
+class SecondOrderTest(unittest.TestCase):
+    """Round 2 feature 8: the cohort curve and the second-order flow."""
+
+    def test_curve_and_flow(self):
+        rd = audit.Reader(None, 'bombas', audit.last_full_day(None, 'bombas'))
+        cc = audit.cohort_curve(rd)
+        self.assertFalse(cc['unavailable'])
+        drops = [cc['curve'][k] - cc['curve'][k + 1] for k in range(len(cc['curve']) - 1)]
+        self.assertEqual(cc['drop_after_month'], drops.index(max(drops)) + 1)
+        self.assertEqual(cc['send_by_day'], 30 * cc['drop_after_month'] - 7)
+        out = api.actions.rank('bombas')
+        a = next((a for a in out['actions'] if a['rule_id'] == 'OFFER-R21'), None)
+        if a:
+            self.assertEqual(a['artefact']['kind'], 'flow')
+            self.assertIn('no percent off', a['artefact']['draft'])
+            self.assertIn(a['id'], [t['id'] for t in out['tests']])
+
+
 if __name__ == '__main__':
     unittest.main()
