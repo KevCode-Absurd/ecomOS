@@ -152,3 +152,8 @@ Chargeback, dispute and return to sender rules from the room's insight list are 
 4. Firing on Bombas: R01 stock-out before the next PO (2 critical hero SKUs), R02 under reorder point with no PO (moccasin slipper), R03 landed cost up 8 percent on 23 SKUs with no margin check.
 5. Unavailable, never 0: R04 to R09 and R11 to R14 name the table and connector each needs. R10 dead stock runs and finds nothing.
 6. Next: lift SKU stock metrics into the metric contract, add received date and supplier to inbound_pos, then courier and 3PL feeds.
+
+
+## Round 1 job 1 (added 28 Sep 2026 by the lead session)
+
+SUPPLY-R02 fires on the scale 0.1 database the build session used but not on the full-scale rebuild (fixes 1 to 14, founder calibration), where R01 fires on 15 SKUs and R03 on 1. Re-tune R02's threshold on the 1.0 data and make the test assert it again. General note for every screen: build sessions test on 0.1, the lead tests on 1.0; thresholds should be stated as ratios, not counts, so they hold at both scales.
