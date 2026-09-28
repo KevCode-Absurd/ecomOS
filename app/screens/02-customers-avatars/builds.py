@@ -1738,3 +1738,33 @@ def health(monthly: list[dict], cohort_rows: list[dict], as_of: str) -> dict:
     return {"available": True, "months": months, "rows": rows, "missing": MISSING_LINES, "moves": moves, "simulated": True,
             "line": f"{len(rows)} lines from our own store data, {len(MISSING_LINES)} wait on a connector." +
                     (f" {len(moves)} moving the wrong way." if moves else " None is moving the wrong way.")}
+
+
+# ---------------------------------------------------------------- avatar one-pager
+
+def one_pager(a: dict, d: dict, forbidden: list[str]) -> str:
+    """Everything a creator or agency needs for one avatar, as plain text, from the page's own builders."""
+    key = a["key"]
+    L = [f"{a['name'].upper()}: ONE-PAGER", f"Share of buyers: {round(a['share_estimate'] * 100)} percent (rough, from public reviews)"
+         if a["share_estimate"] is not None else "Share of buyers: unavailable",
+         f"Evidence: {a['quote_count']} quotes from {', '.join(a['sources']) or 'no source'}; status {next((r['status'] for r in d['gate']['rows'] if r['key'] == key), 'unknown')}",
+         "", f"JOB: {a.get('job') or 'unavailable'}", "MOMENTS: " + ("; ".join(a.get("triggers") or []) or "unavailable"),
+         "PAINS: " + ("; ".join(a.get("pains") or []) or "unavailable"), "", "DOUBTS, TOP FIRST:"]
+    for r in [r for r in d["ladders"]["rows"] if key in r["avatars"]]:
+        L.append(f"- {r['doubt']} ({r['one_star']} one-star, {r['five_star']} five-star): " + (f"answer with {r['proof']}" if r["proof"] else "NO PROOF YET, do not promise it"))
+    w = [r for r in d["words"]["rows"] if key in r["avatars"]]
+    win = [x["text"] for r in w for x in r["win_words"] if not x["language_only"]][:4]
+    doubt = [x["text"] for r in w for x in r["doubt_words"]][:3]
+    L += ["", "THEIR WORDS FOR THE WIN: " + ("; ".join(f'"{x}"' for x in win) or "none banked"),
+          "THEIR WORDS FOR THE DOUBT: " + ("; ".join(f'"{x}"' for x in doubt) or "none banked")]
+    hooks = [h["hook"] for h in d["hooks"]["rows"] if a["name"] in h["avatars"]][:5]
+    L.append("HOOKS BUYERS REPEAT: " + (", ".join(f'"{h}"' for h in hooks) or "none tied to this avatar"))
+    mis = [m for m in d["misreads"].get("rows", []) if m["avatar_key"] == key]
+    if mis:
+        L.append("WATCH: " + "; ".join(f"{m['line'].replace('_', ' ')} reviews complain about {m['hits'][0]}" for m in mis))
+    mom = [m for m in d["moments"].get("rows", []) if a["name"] in m["avatars"]]
+    if mom:
+        L.append("DATES: " + "; ".join(f"{m['label']} starts {m['starts']}, ads live by {m['ad_by']}" for m in mom))
+    L += ["", f"NEXT BUILD: {a['next']['title']}", "", "DO NOT SAY: " + ("; ".join(forbidden) if forbidden else "no forbidden claims on file") +
+          ". No Reddit line as a review. No claim without proof on file.", "Simulated sales data; customer words are public reviews."]
+    return "\n".join(L)

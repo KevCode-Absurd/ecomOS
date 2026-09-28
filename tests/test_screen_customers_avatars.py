@@ -967,5 +967,18 @@ class Health(unittest.TestCase):
         self.assertIn('tickets', [m['key'] for m in x['moves']])
 
 
+class OnePager(TempBrain):
+    """Feature 3.8: a plain-text one-pager per avatar."""
+
+    def test_one_pager(self):
+        r = api.handle(Req(['avatar', 'daily_compression_wearer', 'brief']))
+        t = r['text']
+        for part in ('JOB:', 'DOUBTS, TOP FIRST:', 'NO PROOF YET', 'NEXT BUILD:', 'DO NOT SAY:'):
+            self.assertIn(part, t)
+        self.assertNotIn('\u2014', t)
+        self.assertEqual(api.handle(Req(['avatar', 'nobody', 'brief']))[0], 404)
+        self.assertEqual(api.handle(Req(['avatar', '../x', 'brief']))[0], 400)
+
+
 if __name__ == '__main__':
     unittest.main()

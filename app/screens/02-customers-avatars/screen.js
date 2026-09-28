@@ -63,7 +63,15 @@
     const quotes = a.quotes.filter((q) => q.source !== 'Reddit').slice(0, 2);
     for (const q of quotes) card.append(el('blockquote', null, '"' + q.quote + '" ', link(q.ref, q.source || undefined)));
     if (!a.quotes.length) card.append(el('p', { class: 'muted small', text: 'No customer quotes. This avatar is a guess until customers say it.' }));
-    card.append(nextBuild(a.next));
+    const op = el('button', { class: 'btn quiet xs', type: 'button', text: 'One-pager for a creator' });
+    op.addEventListener('click', async () => {
+      try {
+        const r = await api(BASE + 'avatar/' + encodeURIComponent(a.key) + '/brief');
+        UI.panel({ title: r.name + ': one-pager', tools: [UI.copyButton({ label: 'Copy', text: () => r.text }), el('button', { class: 'btn sm', type: 'button', text: 'Print', onclick: () => window.print() })],
+          body: el('pre', { class: 'draft', text: r.text }) });
+      } catch (e) { op.textContent = 'Could not load: ' + e.message; }
+    });
+    card.append(op, nextBuild(a.next));
     return card;
   }
 

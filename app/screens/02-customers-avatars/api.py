@@ -10,6 +10,7 @@ founder-marked voice example, through Brain.put. Nothing external, no model.
   GET  rank              served by app/rank.py, which calls `rank(brand, window)` below when present
   GET  audit             findings from audit.py (app/contracts/audit.md shape) and RULES
   POST avatars/draft      {segment}: writes the drafted avatar for an unserved situation, tier inferred
+  GET  avatar/<key>/brief  a plain-text one-pager for one avatar, for a creator or agency
   POST voice/check        {text}: pass, warn or fail against the writing rules, voice sheet and claims; no write
   POST messaging/approve  writes the drafted messaging hierarchy as an approved founder positioning record
   POST voice/examples    {kind: liked | disliked, text, note?}: writes a founder voice record
@@ -309,6 +310,17 @@ def _hierarchy(brain: Brain, avatars: list[dict], all_rungs: list[dict], lad: di
     return h
 
 
+def avatar_brief(brain: Brain, key: str):
+    if not SAFE_BRAND.match(key or ""):
+        return 400, {"error": "bad avatar key"}
+    d = overview(brain)
+    a = next((x for x in d["avatars"] if x["key"] == key), None)
+    if a is None:
+        return 404, {"error": "no such avatar", "key": key}
+    forbidden = [c["text"] for c in d["voice"]["claims"] if c["tier"] == "forbidden" and c["text"]]
+    return {"key": key, "name": a["name"], "text": builds.one_pager(a, d, forbidden)}
+
+
 def check_line(brain: Brain, body: dict):
     """Check a pasted line against the writing rules, the voice sheet and the claims register. No write."""
     text = str((body or {}).get("text") or "")[:MAX_EXAMPLE]
@@ -409,6 +421,8 @@ def handle(req):
         ends = (brain.today - dt.timedelta(days=1)).isoformat()
         findings = audit.run(brain.brand, {"ends_on": ends, "days": 1, "trailing": 0}, BRAIN_ROOT)
         return {"findings": findings, "rules": audit.RULES, "brain_version": brain.version()}
+    if req.method == "GET" and len(parts) == 3 and parts[0] == "avatar" and parts[2] == "brief":
+        return avatar_brief(brain, parts[1])
     if req.method == "POST" and parts == ["voice", "check"]:
         return check_line(brain, req.body)
     if req.method == "POST" and parts == ["messaging", "approve"]:
