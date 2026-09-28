@@ -9,6 +9,14 @@
   const api = (u, o) => UI.api(BRAND && u.startsWith('/api/02-') ? u + (u.includes('?') ? '&' : '?') + 'brand=' + encodeURIComponent(BRAND) : u, o);
   const SLUG = '02-customers-avatars';
   const SNOOZE = { days: null };   // from the api: the shared snooze days
+  // every chart names the decision it changes (depth.md anti-pattern: charts for their own sake)
+  const DECIDES = {
+    cohort: 'Decides: the day of the second-order email, the day win-back starts, and the month to plan a return for.',
+    health: 'Decides: whether a brand line needs a move this month.',
+    mixLine: 'Decides: whether returning buyers are slipping and a win-back plan is due.',
+    mixWaterfall: 'Decides: which channel to fix first when returning orders move.',
+    served: 'Decides: which avatar to fix first and which to park.',
+  };
   const BASE = '/api/' + SLUG + '/';
   const NA = 'unavailable';
   const pretty = (s) => String(s || '').replace(/_/g, ' ');
@@ -272,7 +280,7 @@
       title: 'Active again, by months since the first order',
       note: 'Simulated. From cohorts.json as of ' + fmt.date(c.as_of) + '. Grey is a month that has not ended. ' +
         (cb ? 'Calendar break: ' + cb.month + ', ' + Math.round(cb.share * 100) + ' percent of ' + cb.cohorts + ' cohorts fell together. ' : '') +
-        (ab ? 'Age break: month ' + ab.month + ' to ' + (ab.month + 1) + ', down ' + Math.round(ab.drop * 100) + ' percent.' : '') }));
+        (ab ? 'Age break: month ' + ab.month + ' to ' + (ab.month + 1) + ', down ' + Math.round(ab.drop * 100) + ' percent. ' : '') + DECIDES.cohort }));
     mount('#cohort-moves', el('span', { class: 'kicker', text: 'Retention moves from the breaks' }),
       ...c.moves.map((m) => UI.actionCard(m, { compact: true, screen: SLUG })));
   }
@@ -281,7 +289,7 @@
   function renderHealth(x) {
     if (!x.available) { mount('#health', UI.emptyState({ screen: SLUG, title: 'Health line unavailable', text: x.reason })); }
     else mount('#health', Charts.trendStrip({ rows: x.rows, title: 'Brand health, ' + x.months[0] + ' to ' + x.months[x.months.length - 1] }),
-      el('p', { class: 'micro faint', text: 'A gap in a line is a month with no full cohort yet, not a zero.' }));
+      el('p', { class: 'micro faint', text: 'A gap in a line is a month with no full cohort yet, not a zero. ' + DECIDES.health }));
     const connect = x.missing.map(([label, src, fix]) => UI.actionCard({ id: SLUG + '.health.connect.' + label.replace(/\W+/g, '_'), title: 'Connect ' + src + ' for the ' + label + ' line',
       why: 'The ' + label + ' line is unavailable until ' + src + ' is connected.', severity: 'low', status: 'unavailable', owner: 'person',
       steps: [{ n: 1, who: 'person', text: fix }, { n: 2, who: 'agent', text: 'Backfill 12 months and add the line here.' }],
@@ -299,9 +307,9 @@
       { label: 'email and SMS growth', value: x.owned_growth, unit: '%' },
     ]));
     mount('#mix-line', Charts.line({ labels: x.months, series: [{ name: 'this year', values: x.series.this_year }, { name: 'last year', values: x.series.last_year }], unit: '%',
-      title: 'Returning share of orders', note: 'Simulated. Full months only, to ' + x.latest + '. Holiday months dip because new buyers flood in.' }));
+      title: 'Returning share of orders', note: 'Simulated. Full months only, to ' + x.latest + '. Holiday months dip because new buyers flood in. ' + DECIDES.mixLine }));
     mount('#mix-wf', Charts.waterfall({ steps: x.waterfall, unit: 'n', title: 'Returning orders, ' + x.last_year_month + ' to ' + x.latest + ', by channel',
-      note: 'Simulated. Returning orders are orders minus new-customer orders per channel. A channel absent last year counts in full.' }));
+      note: 'Simulated. Returning orders are orders minus new-customer orders per channel. A channel absent last year counts in full. ' + DECIDES.mixWaterfall }));
     mount('#mix-moves', el('span', { class: 'kicker', text: 'Moves from the mix' }),
       ...(x.moves.length ? x.moves.map((m) => UI.actionCard(m, { compact: true, screen: SLUG })) : [el('p', { class: 'muted small', text: 'No mix rule fired. Returning share is steady and owned channels keep pace.' })]));
   }
@@ -317,7 +325,7 @@
       points: x.points, midX: x.mid_x, midY: x.mid_y, width: 560, height: 360, sizeUnit: 'n', usLabel: 'our avatars', themLabel: 'category',
       quadrants: ['Small, served well: scale', 'Core: grow', 'Small, served poorly: park', 'Big, served poorly: fix first'],
       title: 'Avatars by reach and how well we serve them',
-      note: 'Share is a rough estimate from public reviews. Not placed: ' + (x.unplaced.map((u) => u.name + ' (' + u.why + ')').join(', ') || 'none') + '.' }),
+      note: 'Share is a rough estimate from public reviews. Not placed: ' + (x.unplaced.map((u) => u.name + ' (' + u.why + ')').join(', ') || 'none') + '. ' + DECIDES.served }),
       UI.verdictTable({
         columns: [{ key: 'name', label: 'Avatar' }, { key: 'share', label: 'Share', unit: '%' }, { key: 'served', label: 'Served', unit: '%' }],
         rows: x.verdicts.map((v) => Object.assign({}, v, { actions: byKey[v.key] ? [{ label: 'Next build', onClick: () => briefPanel(Object.assign({ kind: byKey[v.key].next.kind }, byKey[v.key].next)) }] : [] })),

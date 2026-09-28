@@ -2417,3 +2417,15 @@ class EmptyBrand(unittest.TestCase):
             self.assertEqual(rank_engine.validate_action(a), [], a['id'])
         top = sorted(acts, key=rank_engine.sort_key)[0]
         self.assertEqual(top['title'], 'Find the first avatars: 5 quotes each from 2 sources')
+
+
+class ChartsDecide(unittest.TestCase):
+    """Feature 10.9: depth.md anti-pattern "charts for their own sake". Every chart on the page names the decision it changes."""
+
+    def test_every_chart_names_its_decision(self):
+        js = (ROOT / 'app' / 'screens' / '02-customers-avatars' / 'screen.js').read_text(encoding='utf-8')
+        charts = re.findall(r'Charts\.(\w+)\(', js)
+        self.assertEqual(len(charts), 5)
+        self.assertEqual(js.count('+ DECIDES.'), len(charts))
+        decides = js[js.index('const DECIDES = {'):js.index('};', js.index('const DECIDES = {'))]
+        self.assertEqual(decides.count("'Decides: "), len(charts))
