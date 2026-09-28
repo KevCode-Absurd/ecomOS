@@ -179,6 +179,9 @@ _pspec.loader.exec_module(parity)
 _sspec = importlib.util.spec_from_file_location("brand_brain_sitediff", HERE / "sitediff.py")
 sitediff = importlib.util.module_from_spec(_sspec)
 _sspec.loader.exec_module(sitediff)
+_vbspec = importlib.util.spec_from_file_location("brand_brain_visibility", HERE / "visibility.py")
+visibility = importlib.util.module_from_spec(_vbspec)
+_vbspec.loader.exec_module(visibility)
 _nbspec = importlib.util.spec_from_file_location("brand_brain_newbrand", HERE / "newbrand.py")
 newbrand = importlib.util.module_from_spec(_nbspec)
 _nbspec.loader.exec_module(newbrand)
@@ -1384,6 +1387,44 @@ def handle(req):
         ends = (brain.today - dt.timedelta(days=1)).isoformat()
         findings = audit.run(brain.brand, {"ends_on": ends, "days": 1, "trailing": 0}, BRAIN_ROOT)
         return {"findings": findings, "rules": audit.RULES, "brain_version": brain.version()}
+    if req.method == "GET" and parts == ["visibility"]:
+        v = visibility.audit(brain)
+        v["capability"] = {"id": "LOOP-C22", "autonomy": "founder_gate"}
+        return v
+    if req.method == "POST" and parts == ["visibility"]:
+        body = req.body or {}
+        ids = body.get("ids") if isinstance(body.get("ids"), list) else ([body.get("id")] if body.get("id") else [])
+        vis = str(body.get("visibility") or "")
+        if not ids:
+            return 400, {"error": "send id or ids"}
+        before_v = brain.version()
+        done, failed = [], []
+        for rid in [str(x) for x in ids][:200]:
+            res = visibility.set_visibility(brain, rid, vis)
+            if isinstance(res, tuple):
+                failed.append({"id": rid, "error": res[1].get("error")})
+            else:
+                done.append(res)
+                if res["changed"]:
+                    changes.log(brain, "visibility", rid.split(".")[1], rid, f"{rid}: visibility {res['before']} to {vis}", before=res["before"], after=vis)
+        changes.version_step(brain, before_v, f"visibility set on {len(done)} records")
+        return 201, {"ok": not failed, "done": done, "failed": failed, "changed": sum(1 for d in done if d["changed"]), "version": brain.version()}
+    if req.method == "POST" and parts == ["visibility", "fix"]:
+        v = visibility.audit(brain)
+        which = str((req.body or {}).get("which") or "all")
+        todo = (v["leaks"] if which in ("all", "leaks") else []) + (v["restricted"] if which in ("all", "restricted") else [])
+        before_v = brain.version()
+        done, failed = [], []
+        for x in todo[:200]:
+            res = visibility.set_visibility(brain, x["id"], x["fix"])
+            if isinstance(res, tuple):
+                failed.append({"id": x["id"], "error": res[1].get("error")})
+            else:
+                done.append(x["id"])
+                changes.log(brain, "visibility", x["section"], x["id"], f"{x['id']}: visibility to {x['fix']} ({x['why']})", before=("public" if x["fix"] == "private" else "private"), after=x["fix"])
+        changes.version_step(brain, before_v, f"visibility fixed on {len(done)} records")
+        left = visibility.audit(brain)
+        return 201, {"ok": not failed, "fixed": len(done), "failed": failed, "left": {"leaks": len(left["leaks"]), "restricted": len(left["restricted"])}, "version": brain.version()}
     if req.method == "GET" and parts == ["newbrand"]:
         root = BRAIN_ROOT or (APP / "brain")
         return {"brains": newbrand.brains(root), "lanes": newbrand.lanes(), "markets": list(newbrand.MARKETS), "capability": {"id": "BRN-C13", "autonomy": "founder_gate"},

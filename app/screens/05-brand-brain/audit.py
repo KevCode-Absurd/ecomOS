@@ -138,6 +138,12 @@ BRN-R27 visual identity gaps. No colour token in the visual section, no
     logo rules record, or a text-on-background pair under the 4.5 WCAG
     contrast ratio (visual.py). One low finding naming the gaps. Capability
     CREA-C12 (image accuracy; the palette is the brain's). Owner: 05-brand-brain.
+BRN-R28 visibility mismatch. Records marked public whose source is not a
+    public one, in a section that is private by nature (a leak to any
+    public-facing agent), or private records from public sources in sections
+    public by nature (visibility.py). Severity medium with a leak, else low.
+    Capability LOOP-C22 (offboarding and access; what leaves the brain).
+    Owner: 05-brand-brain.
 BRN-R07 competitor snapshot stale. A configured Ad Library page was captured
     more than SNAPSHOT_STALE_DAYS (7) ago, or never. Severity low. Capability
     BRN-C11 (competitor snapshot, signals only). Owner: 05-brand-brain.
@@ -224,10 +230,12 @@ RULES = [
      "inputs": ["calendar", "offers", "policies", "products", "identity", "claims", "learnings", "assumptions.json"], "capability": "BRN-C07", "owner_screen": SCREEN},
     {"rule_id": "BRN-R27", "name": "visual identity gaps", "entity_type": "brand",
      "inputs": ["visual"], "capability": "CREA-C12", "owner_screen": SCREEN},
+    {"rule_id": "BRN-R28", "name": "visibility mismatch", "entity_type": "brand",
+     "inputs": ["every section"], "capability": "LOOP-C22", "owner_screen": SCREEN},
 ]
 AUTONOMY = {"BRN-C12": "agent_does", "BRN-C07": "founder_gate", "BRN-C03": "agent_does",
             "CREA-C19": "agent_does", "CREA-C04": "agent_does", "BRN-C11": "agent_does", "CREA-C06": "agent_does",
-            "BRAND-C57": "agent_does", "CREA-C03": "agent_does", "BRN-C05": "founder_gate", "BRN-C01": "agent_does", "PROD-C46": "agent_does", "LOOP-C28": "agent_does", "LOOP-C27": "agent_does", "LOOP-C29": "agent_does", "PROP-C06": "agent_does", "CREA-C12": "agent_does"}
+            "BRAND-C57": "agent_does", "CREA-C03": "agent_does", "BRN-C05": "founder_gate", "BRN-C01": "agent_does", "PROD-C46": "agent_does", "LOOP-C28": "agent_does", "LOOP-C27": "agent_does", "LOOP-C29": "agent_does", "PROP-C06": "agent_does", "CREA-C12": "agent_does", "LOOP-C22": "founder_gate"}
 
 _uspec = importlib.util.spec_from_file_location("brand_brain_assumptions", Path(__file__).resolve().parent / "assumptions.py")
 assumptions = importlib.util.module_from_spec(_uspec)
@@ -241,6 +249,9 @@ _lspec.loader.exec_module(legal)
 _pspec = importlib.util.spec_from_file_location("brand_brain_parity", Path(__file__).resolve().parent / "parity.py")
 parity = importlib.util.module_from_spec(_pspec)
 _pspec.loader.exec_module(parity)
+_vbspec = importlib.util.spec_from_file_location("brand_brain_visibility", Path(__file__).resolve().parent / "visibility.py")
+visibility = importlib.util.module_from_spec(_vbspec)
+_vbspec.loader.exec_module(visibility)
 _vispec = importlib.util.spec_from_file_location("brand_brain_visual", Path(__file__).resolve().parent / "visual.py")
 visual = importlib.util.module_from_spec(_vispec)
 _vispec.loader.exec_module(visual)
@@ -691,6 +702,23 @@ def rule_ladder_proof(brain: Brain, ends_on: str) -> list[dict]:
     return out
 
 
+def rule_visibility(brain: Brain, ends_on: str) -> list[dict]:
+    v = visibility.audit(brain)
+    if not v["leaks"] and not v["restricted"]:
+        return []
+    ev = [_row("public_records_from_private_sources", len(v["leaks"]), "n", ends_on, None, 0, "every section"),
+          _row("private_records_from_public_sources", len(v["restricted"]), "n", ends_on, None, 0, "every section")]
+    parts = []
+    if v["leaks"]:
+        secs = sorted({x["section"].replace("_", " ") for x in v["leaks"]})
+        parts.append(f"{len(v['leaks'])} record{'s' if len(v['leaks']) != 1 else ''} marked public would reach a public-facing agent from {', '.join(secs[:3])}")
+    if v["restricted"]:
+        parts.append(f"{len(v['restricted'])} public-source record{'s' if len(v['restricted']) != 1 else ''} {'are' if len(v['restricted']) != 1 else 'is'} marked private")
+    f = _finding("BRN-R28", "medium" if v["leaks"] else "low", {"type": "brand", "id": "visibility", "label": "public and private flags"}, ev, "; ".join(parts) + ".", [x["id"] for x in (v["leaks"] + v["restricted"])[:6]], ends_on, 0.9)
+    f["visibility"] = {"leaks": [{"id": x["id"], "why": x["why"]} for x in v["leaks"][:8]], "restricted": [{"id": x["id"], "why": x["why"]} for x in v["restricted"][:8]]}
+    return [f]
+
+
 def rule_visual(brain: Brain, ends_on: str) -> list[dict]:
     pal = visual.palette(brain)
     gaps = []
@@ -792,7 +820,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
         bank = keeper.load_bank()
     except (OSError, ValueError, KeyError):
         bank = None
-    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_untiered_claims(brain, ends_on) + rule_site_changes(brain, ends_on) + rule_parity(brain, ends_on) + rule_contracts(brain, ends_on) + rule_legal(brain, ends_on) + rule_picked_ideas(brain, ends_on) + rule_ladder_proof(brain, ends_on) + rule_self_audit(brain, ends_on) + rule_peaks(brain, ends_on) + rule_visual(brain, ends_on) + rule_permissions(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
+    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_untiered_claims(brain, ends_on) + rule_site_changes(brain, ends_on) + rule_parity(brain, ends_on) + rule_contracts(brain, ends_on) + rule_legal(brain, ends_on) + rule_picked_ideas(brain, ends_on) + rule_ladder_proof(brain, ends_on) + rule_self_audit(brain, ends_on) + rule_peaks(brain, ends_on) + rule_visual(brain, ends_on) + rule_visibility(brain, ends_on) + rule_permissions(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
     if bank is None:
         for rid, sev in (("BRN-R02", "medium"), ("BRN-R03", "medium")):
             f = _finding(rid, sev, {"type": "brand", "id": "question_bank", "label": "question bank"},

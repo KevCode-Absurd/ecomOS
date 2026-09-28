@@ -64,6 +64,7 @@
     loadPeaks(m.actions || []);
     loadVisual(m.actions || []);
     loadNewBrand();
+    loadVisibility(m.actions || []);
     const con = m.connect || [];
     const cw = document.getElementById('connect-wrap');
     if (con.length) {
@@ -168,6 +169,25 @@
     const st = el('span', { class: 'micro muted' });
     exp.addEventListener('click', async () => { exp.disabled = true; try { const b = await api(BASE + 'export'); const blob = new Blob([JSON.stringify(b, null, 1)], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = b.brand + '-brain-' + b.exported_at + '.json'; a.click(); st.textContent = b.counts.records + ' records, ' + b.counts.documents + ' documents, ' + b.counts.conflicts + ' conflicts. ' + b.note; } catch (e) { st.textContent = 'Could not export: ' + e.message; } exp.disabled = false; });
     mount('#perm', matrix, el('div', { class: 'row', style: { marginTop: '10px' } }, exp, UI.decisionRow({ capability: 'LOOP-C22', autonomy: 'founder_gate', owner: 'agent_drafts', screen: SCREEN, compact: true, stub: 'Offboarding: export the brain and the registry as a handoff package, list every connector to revoke in Setup, and confirm no external write access stays open. You approve each revoke.' }), st));
+  }
+
+  // ---------- 8b. what stays inside ----------
+  async function loadVisibility(actions) {
+    let v;
+    try { v = await api(BASE + 'visibility'); } catch (e) { mount('#visibility', el('p', { class: 'muted', text: 'Visibility audit unavailable: ' + e.message })); return; }
+    const act = (actions || []).find((a) => a.rule_id === 'BRN-R28');
+    const c = v.counts;
+    mount('#visibility-tools', UI.orientation([{ label: 'public', value: c.public, unit: 'n' }, { label: 'private', value: c.private, unit: 'n' }, { label: 'public share', value: c.public_share, unit: '%' }, { label: 'leaks', value: c.leaks, unit: 'n', tone: c.leaks ? 'bad' : 'good' }, { label: 'over-restricted', value: c.restricted, unit: 'n', tone: c.restricted ? 'warn' : 'good' }]));
+    const status = el('span', { class: 'micro muted' });
+    const fixAll = el('button', { class: 'btn sm' + (c.leaks || c.restricted ? ' primary' : ''), type: 'button', text: 'Fix all ' + (c.leaks + c.restricted), disabled: !(c.leaks || c.restricted) });
+    fixAll.addEventListener('click', async () => { fixAll.disabled = true; try { const r = await api(BASE + 'visibility/fix', { method: 'POST', body: { which: 'all' } }); status.textContent = 'Fixed ' + r.fixed + '. Left: ' + r.left.leaks + ' leaks, ' + r.left.restricted + ' over-restricted.'; loadVisibility(actions); loadPlan(); } catch (e) { fixAll.disabled = false; status.textContent = 'Could not fix: ' + e.message; } });
+    const one = (x) => { const b = el('button', { class: 'btn xs', type: 'button', text: 'Make ' + x.fix }); b.addEventListener('click', async () => { b.disabled = true; try { await api(BASE + 'visibility', { method: 'POST', body: { id: x.id, visibility: x.fix } }); loadVisibility(actions); } catch (e) { b.disabled = false; status.textContent = 'Could not set: ' + e.message; } }); return b; };
+    const list = (items, kind) => items.length ? el('div', { class: 'stack' }, ...items.map((x) => el('div', { class: 'row card flat' }, el('span', { class: 'chip ' + (kind === 'leak' ? 'bad' : 'warn'), text: kind === 'leak' ? 'leak' : 'over-restricted' }), el('span', { class: 'chip mono', text: x.id }), el('span', { class: 'chip', text: pretty(x.source || 'unknown') + ', ' + pretty(x.tier) }), el('span', { class: 'small', text: x.why + '. ' + x.text }), one(x)))) : el('p', { class: 'muted small', text: kind === 'leak' ? 'No private-source record is marked public in a private section.' : 'No public-source record is marked private in a public section.' });
+    const table = UI.table({ columns: [{ key: 'section', label: 'Section', format: (x) => pretty(x) }, { key: 'public', label: 'Public', num: true }, { key: 'private', label: 'Private', num: true }, { key: 'leaks', label: 'Leaks', num: true }, { key: 'restricted', label: 'Over-restricted', num: true }], rows: v.rows, sort: false });
+    const preview = el('div', { class: 'stack' }, el('div', { class: 'row' }, el('span', { class: 'small', text: 'The brand card built from public records only: what a public-facing capability reads first.' }), UI.copyButton({ label: 'Copy the public card', text: () => v.preview || '' })), el('pre', { class: 'card sunken brief', text: v.preview || 'unavailable' }));
+    mount('#visibility', el('div', { class: 'row' }, fixAll, act ? UI.decisionRow({ capability: 'LOOP-C22', autonomy: 'founder_gate', owner: 'person', screen: SCREEN, compact: true, finding_id: act.id, current: act.decision, stub: act.title + '. ' + act.artefact.label + '.' }) : null, status),
+      UI.tabs({ items: [{ key: 'leaks', label: 'Leaks', n: c.leaks, panel: list(v.leaks, 'leak') }, { key: 'restricted', label: 'Over-restricted', n: c.restricted, panel: list(v.restricted, 'restricted') }, { key: 'by', label: 'By section', panel: table }, { key: 'preview', label: 'Public brand card', panel: preview }] }),
+      el('p', { class: 'micro faint', text: v.note }));
   }
 
   // ---------- 9. start a new brain ----------

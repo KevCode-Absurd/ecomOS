@@ -159,6 +159,15 @@ def build(f: dict, nr: float | None) -> dict:
                         {"n": 3, "who": "person", "text": "Pick the record as proof, or approve the drafted fact as an approved record."},
                         {"n": 4, "who": "agent", "text": f"Attach it to the rung. The surfaces that use the rung ({surfaces or 'copy, page, listing, macro'}) read the proof on their next brief."}],
                  check_on=_check_on(f, 7), time_to_ship_hours=1)
+    elif rid == "BRN-R28":
+        vb = f.get("visibility") or {}
+        nl, nr = len(vb.get("leaks") or []), len(vb.get("restricted") or [])
+        a.update(title=("Keep " + str(_ev(f, "public_records_from_private_sources")) + " records inside: flip them to private" if nl else "Open " + str(_ev(f, "private_records_from_public_sources")) + " public-source records to public-facing agents"), owner="person",
+                 artefact={"kind": "brain_record", "label": "every record on the right side of the public line", "draft": "\n".join(f"{x['id']}: {x['why']}" for x in (vb.get("leaks") or []) + (vb.get("restricted") or []))[:1200] or None},
+                 steps=[{"n": 1, "who": "agent", "text": "List each record with its source and why the flag looks wrong, leaks first."},
+                        {"n": 2, "who": "person", "text": "Fix all, or unpick the ones that should stay as they are."},
+                        {"n": 3, "who": "agent", "text": "Flip the flags and log each change. Public-facing packages rebuild on the next load."}],
+                 check_on=_check_on(f, 7), time_to_ship_hours=0.5)
     elif rid == "BRN-R27":
         vz = f.get("visual") or {}
         steps = []

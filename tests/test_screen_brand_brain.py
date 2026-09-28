@@ -1838,10 +1838,49 @@ class Round4NewBrand(TempBrain):
         self.assertEqual(api.handle(Req(['newbrand', 'dryrun'], 'POST', body={'slug': 'x y'}))[0], 400)
 
 
+class Round4Visibility(TempBrain):
+    """Round 4 feature 10: the public and private audit, the fix, the public brand card; rule BRN-R28."""
+
+    def test_clean_brain_reads_zero_mismatches_and_a_public_card(self):
+        v = api.handle(Req(['visibility']))
+        self.assertEqual((v['counts']['leaks'], v['counts']['restricted']), (0, 0))
+        self.assertEqual(v['counts']['public'] + v['counts']['private'], sum(r['public'] + r['private'] for r in v['rows']))
+        self.assertTrue(v['preview'].startswith('# bombas: brand card (T0)'))
+        self.assertNotIn('Diagnosis: ' + 'durability', v['preview'])  # the diagnosis is private
+        self.assertFalse([f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R28'])
+
+    def test_leak_and_restricted_then_fix(self):
+        rows = self.section('economics')
+        rows.append({'id': 'bombas.economics.gross_margin_pct', 'brand': 'bombas', 'section': 'economics', 'field': 'gross_margin_pct', 'value': 58, 'text': 'Gross margin is 58 percent after product cost, shipping and payment fees.',
+                     'tier': 'reported', 'confidence': 0.9, 'visibility': 'public', 'source': {'type': 'connector', 'ref': 'finance_inputs', 'captured_at': '2026-09-28'}})
+        self.write('economics', rows)
+        status, res = api.handle(Req(['visibility'], 'POST', body={'id': 'bombas.identity.category', 'visibility': 'private'}))
+        self.assertEqual((status, res['changed']), (201, 1))
+        v = api.handle(Req(['visibility']))
+        self.assertEqual([x['id'] for x in v['leaks']], ['bombas.economics.gross_margin_pct'])
+        self.assertEqual(v['leaks'][0]['fix'], 'private')
+        self.assertIn('bombas.identity.category', [x['id'] for x in v['restricted']])
+        f = next(f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R28')
+        self.assertEqual((f['severity'], f['capability']['id']), ('medium', 'LOOP-C22'))
+        self.assertIn('would reach a public-facing agent', f['sentence'])
+        a = next(a for a in api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions'] if a['rule_id'] == 'BRN-R28')
+        self.assertTrue(a['title'].startswith('Keep 1 records inside') or a['title'].startswith('Keep 1 record'))
+        self.assertEqual((a['owner'], api.rank_mod.validate_action(a)), ('person', []))
+        self.assertNotIn('58 percent', v['preview'] or '')  # the card is built from public records; the leak is a number the card does not carry
+        status, res = api.handle(Req(['visibility', 'fix'], 'POST', body={'which': 'all'}))
+        self.assertEqual((status, res['fixed'], res['left']), (201, 2, {'leaks': 0, 'restricted': 0}))
+        self.assertEqual(next(r['visibility'] for r in self.section('economics') if r['id'] == 'bombas.economics.gross_margin_pct'), 'private')
+        self.assertEqual(next(r['visibility'] for r in self.section('identity') if r['id'] == 'bombas.identity.category'), 'public')
+        self.assertFalse([f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R28'])
+        self.assertGreaterEqual(sum(1 for c in api.handle(Req(['changes']))['changes'] if c['kind'] == 'visibility'), 3)
+        self.assertEqual(api.handle(Req(['visibility'], 'POST', body={'id': 'bombas.identity.nope', 'visibility': 'public'}))[1]['failed'][0]['error'], 'no such record')
+        self.assertEqual(api.handle(Req(['visibility'], 'POST', body={}))[0], 400)
+
+
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
-    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'],
+    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'],
               ['decisions'], ['flows'], ['claims'], ['site', 'diff'], ['parity'], ['contracts'], ['legal'], ['voice'], ['battlecards'], ['permissions'],
               ['export'], ['assumptions'], ['facts'], ['summaries'], ['changes'], ['learn'], ['report'], ['digest'], ['review'], ['bottlenecks'], ['audit']]
 
