@@ -963,7 +963,7 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
         rows = {r['key']: r for r in p['rows']}
         self.assertEqual(set(rows), {'reddit', 'amazon_reviews', 'ad_library', 'amazon_listings', 'listing_seller', 'instagram', 'web_pass'})
         self.assertEqual(rows['instagram']['verdict'], 'mock')
-        self.assertEqual(rows['listing_seller']['verdict'], 'unset')
+        self.assertEqual(rows['listing_seller']['verdict'], 'mock')   # the mock listing pull is on file
         self.assertEqual(rows['reddit']['verdict'], 'fresh')
         self.assertEqual(rows['reddit']['age_days'], 0)                      # captured after the window end reads as 0 days, never negative
         self.assertEqual(rows['reddit']['next_due'], '2026-10-28')
@@ -973,11 +973,44 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
         late = audit.pulls(br, 'bombas', date(2026, 11, 30))
         self.assertEqual({r['key']: r['verdict'] for r in late['rows'] if r['key'] in ('reddit', 'amazon_reviews')}, {'reddit': 'due', 'amazon_reviews': 'due'})
         found = audit.pull_findings(br, 'bombas', D)
-        self.assertEqual(sorted(f['id'].split('.')[-1] for f in found), ['instagram', 'listing_seller'])
+        self.assertEqual(sorted(f['id'].split('.')[-1] for f in found), ['instagram', 'listing_seller'])   # both mock today
         for f in found:
             self.assertIsNone(f['money_at_stake'])
             self.check_shape(f)
         self.assertNotIn('APIFY', json.dumps(found))                        # no token, no key, ever
+
+    def test_listing_pull(self):
+        import importlib.util as iu
+        spec = iu.spec_from_file_location('listing_pull_t', SCREEN / 'listing_pull.py')
+        mod = iu.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        rows = mod.rows_from([{'asin': 'X1', 'title': 'T', 'url': 'u', 'price': {'value': 30.0, 'currency': '$'}, 'stars': 4.4, 'reviewsCount': 12, 'brand': 'Fake', 'seller': {'name': 'Fake'}, 'userName': 'never'},
+                              {'asin': 'X2', 'title': 'T2', 'price': 20, 'seller': 'Some Outlet'}], 'Fake')
+        self.assertEqual((rows[0]['seller'], rows[0]['third_party_seller'], rows[0]['price_usd'], rows[0]['ratings']), ('Fake', False, 30.0, 12))
+        self.assertEqual((rows[1]['seller'], rows[1]['third_party_seller'], rows[1]['price_usd']), ('Some Outlet', True, 20.0))
+        self.assertNotIn('userName', json.dumps(rows))
+        fx = json.loads((SCREEN / 'fixtures' / 'amazon_listings.json').read_text(encoding='utf-8'))
+        self.assertEqual((fx['brand'], fx['mode']), ('bombas', 'mock'))
+        self.assertIsNone(audit.listing_pull_for(None))
+        br = audit.brain('bombas')
+        m = audit.marketplace_read(br, None)
+        self.assertEqual(m['pull']['mode'], 'mock')
+        self.assertFalse(m['pull']['sellers_used'])
+        self.assertTrue(all(r['seller'] is None for r in m['rows']))      # a mock seller is never read as fact
+        saved = audit.listing_pull
+        try:
+            audit.listing_pull = lambda: {'brand': 'bombas', 'mode': 'live', 'captured_at': '2026-09-27', 'actor': 'x', 'usd': 1.0,
+                                          'rows': [{'asin': 'B08CS397JX', 'seller': 'Coastal Co. Goods', 'price_usd': 23.23, 'stars': 4.5, 'ratings': 2914}]}
+            live = audit.marketplace_read(br, None)
+            row = next(r for r in live['rows'] if r['asin'] == 'B08CS397JX')
+            self.assertEqual((row['seller'], row['seller_read'], row['sold_by_brand']), ('Coastal Co. Goods', True, False))
+            self.assertTrue(live['pull']['sellers_used'])
+            pr = {r['key']: r for r in audit.pulls(br, 'bombas', date(2026, 9, 27))['rows']}['listing_seller']
+            self.assertEqual(pr['verdict'], 'fresh')
+        finally:
+            audit.listing_pull = saved
+        pr = {r['key']: r for r in audit.pulls(br, 'bombas', date(2026, 9, 27))['rows']}['listing_seller']
+        self.assertEqual(pr['verdict'], 'mock')
 
     def test_demand_pattern_tags(self):
         even = {'rows': [{'category': 'socks', 'series': [100] * 12}], 'months': [f'2026-{m:02d}' for m in range(1, 13)], 'last': '2026-12'}

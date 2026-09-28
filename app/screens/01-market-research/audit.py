@@ -893,6 +893,20 @@ def lanes_for(x):
     return list(SUBCATS)
 
 
+def listing_pull():
+    path = HERE / 'fixtures' / 'amazon_listings.json'
+    return json.loads(path.read_text(encoding='utf-8')) if path.is_file() else None
+
+
+def listing_pull_for(x):
+    """The listing seller pull for this brand (fixtures/amazon_listings.json) when its brand matches; else None."""
+    lp = listing_pull()
+    if not lp:
+        return None
+    b = brand_of(x)
+    return lp if not lp.get('brand') or (b and lp.get('brand') == b) else None
+
+
 def social_pull_for(x):
     """The social pull fixture for this brand: the file when its brand field matches (or it names no brand); else None."""
     sp = social_pull()
@@ -2960,6 +2974,17 @@ def marketplace_read(br, prods):
                     l[k] = v[src]
     site = our_price_per_pair(prods, br)
     site_pp = site.get('value')
+    lp = listing_pull_for(br) or {}
+    pull = {'mode': lp.get('mode'), 'captured_at': lp.get('captured_at'), 'rows': len(lp.get('rows') or []), 'actor': lp.get('actor'), 'usd': lp.get('usd'),
+            'sellers_used': lp.get('mode') == 'live'} if lp else None
+    if lp.get('mode') == 'live':   # a mock row is an invented shape: its seller is never read as fact
+        for pr in lp.get('rows') or []:
+            l = listings.get(pr.get('asin'))
+            if l is None:
+                continue
+            for k, src in (('seller', 'seller'), ('price_usd', 'price_usd'), ('stars', 'stars'), ('ratings', 'ratings'), ('title', 'title'), ('url', 'url')):
+                if pr.get(src) is not None and (k == 'seller' or l.get(k) is None):
+                    l[k] = pr[src]
     rows = []
     for l in listings.values():
         l['pack_units'] = pack_units_from_title(l['title'])
@@ -2988,7 +3013,7 @@ def marketplace_read(br, prods):
     summary = {'listings': len(rows), 'judged': len(judged), 'unverified': len(rows) - len(judged), 'ratings': ratings,
                'median_per_pair': round(statistics.median(pps), 2) if pps else None, 'spread_listings': sum(1 for l in rows if l['verdict'] == 'price_spread'),
                'sellers_read': sum(1 for l in rows if l['seller_read'])}
-    return {'presence': presence, 'rows': rows, 'site_per_pair': site, 'summary': summary,
+    return {'presence': presence, 'rows': rows, 'site_per_pair': site, 'summary': summary, 'pull': pull,
             'rule': f'the brand should be the seller of record or hold the brand store on its own listings; a listing per-pair price {int(PRICE_SPREAD * 100)} percent off the site price either way on {LISTING_MIN_RATINGS} or more ratings is a spread; under {UNVERIFIED_MAX_RATINGS} ratings with no seller read is unverified as the brand\'s'}
 
 
@@ -3422,8 +3447,11 @@ def pulls(br, brand, ends_on):
     r = had.get(listing_actor, {})
     add('amazon_listings', 'Amazon listings (title, price, stars, ratings)', listing_actor, len(am.get('asins') or []) or None, PULL_WINDOW_DAYS['amazon_listings'], ['marketplaces'],
         ['marketplace', 'complaints'], r.get('newest'), note=f'{r.get("records", 0)} records cite it; the search pull, expensive per result' if r else 'no record cites it')
-    add('listing_seller', 'Amazon seller of record per listing', am.get('listing_actor'), len(am.get('asins') or []) or None, PULL_WINDOW_DAYS['listing_seller'], ['marketplaces'],
-        ['marketplace'], None, note='no listing actor is set in the brand\'s apify.json; the seller column reads not read until one runs')
+    lp = listing_pull_for(br) or {}
+    add('listing_seller', 'Amazon seller of record per listing', lp.get('actor') or am.get('listing_actor') or 'junglee~amazon-crawler', len(am.get('asins') or []) or None, PULL_WINDOW_DAYS['listing_seller'],
+        ['fixtures.amazon_listings'], ['marketplace'], str(lp.get('captured_at') or '')[:10] or None, mode=lp.get('mode'),
+        command=f'python3 app/screens/01-market-research/listing_pull.py --brand {br.brand} --mode live',
+        note='a mock pull is on file; its sellers are never read as fact, the seller column waits for a live run' if lp.get('mode') == 'mock' else ('the seller column reads not read until it runs' if not lp else None))
     add('instagram', 'Instagram posts by hashtag', 'apify~instagram-hashtag-scraper', (sp.get('per_tag') or 25) * len(sp.get('hashtags') or ['x'] * 5), PULL_WINDOW_DAYS['instagram'], ['fixtures.social_pull'],
         ['conversation', 'surfaces', 'video'], str(sp.get('captured_at') or '')[:10] or None, mode=sp.get('mode'),
         command=f'python3 app/screens/01-market-research/social_pull.py --brand {br.brand} --mode live --per-tag {sp.get("per_tag") or 25}',

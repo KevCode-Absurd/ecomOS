@@ -803,6 +803,8 @@
         el('p', { class: 'small', text: p.text }),
         el('p', { class: 'micro muted', text: 'Read ' + (p.captured_at || 'undated') + '. ' + (p.lines_not_found.length ? 'Not found on Amazon: ' + p.lines_not_found.map((x) => x.replace('_', ' ')).join(', ') + '. ' : '') + sm.judged + ' listings judged, ' + fmt.int(sm.ratings || 0) + ' public ratings; ' + sm.unverified + ' thin rows read but not judged. Site price per pair: ' + (site.value == null ? NA : fmt.money(site.value)) + ' (' + (site.basis || '') + ').' }));
     } else head.append(el('p', { class: 'muted small', text: 'No presence record: whether the brand is the seller has not been read.' }));
+    const pull = m.pull;
+    head.append(el('div', { class: 'row', style: { gap: '6px', marginTop: '6px' } }, pull ? [chip('seller pull: ' + (pull.mode === 'live' ? 'live run ' + (pull.captured_at || '') : 'mock on file, sellers withheld'), pull.mode === 'live' ? 'good' : 'warn'), chip(pull.rows + ' rows'), chip(pull.usd != null ? fmt.money(pull.usd) + ' spent' : 'cost unavailable')] : chip('seller pull: not run', 'warn')));
     const vt = { price_spread: 'Off the site price', reseller: 'Reseller sells it', seller_not_read: 'Seller not read', brand_sells: 'Brand sells it', unverified: 'Thin read' };
     const vrows = m.rows.map((r) => { const a = actionFor(r.finding_id); return Object.assign({}, r, {
       pack: r.pack_units + (r.pack_units === 1 ? ' pair' : ' pairs'), priceText: r.price_usd == null ? NA : fmt.money(r.price_usd), ppText: r.per_pair == null ? NA : fmt.money(r.per_pair),
@@ -815,7 +817,7 @@
       actions: { label: 'Do', onClick: () => {} }, sort: false });
     const spreads = m.rows.filter((r) => r.verdict === 'price_spread');
     return el('div', { class: 'stack' }, head, el('div', { class: 'card scroll' }, tbl),
-      el('p', { class: 'micro faint', text: 'Rule: ' + m.rule + '. Pairs come from the listing title; a listing far under the site price with few ratings is checked as a possible copy, never assumed one. Listing records come from a public search pull; the seller of record is read by the listing actor, which has not run.' }),
+      el('p', { class: 'micro faint', text: 'Rule: ' + m.rule + '. Pairs come from the listing title; a listing far under the site price with few ratings is checked as a possible copy, never assumed one. Listing records come from a public search pull; the seller of record comes from the listing pull (listing_pull.py), and only a live run fills it.' }),
       gapLine(p && p.sold_by_brand === false ? 'The brand is not the seller on its own Amazon listings' + (spreads.length ? ', and ' + spreads.length + ' listings are priced ' + (spreads.length === 1 ? '' : '25 percent or more ') + 'off the site price' : '') + '. One stance decision covers it.' : spreads.length ? spreads.length + ' listings are priced off the site price.' : 'The brand is the seller of record and the listing prices track the site.',
         stance ? { label: 'Decide the stance', onClick: () => openAction(stance) } : spreads.length && actionFor(spreads[0].finding_id) ? { label: 'Check the first', onClick: () => openAction(actionFor(spreads[0].finding_id)) } : null));
   }
