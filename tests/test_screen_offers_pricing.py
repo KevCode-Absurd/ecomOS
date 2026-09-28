@@ -966,5 +966,23 @@ class ReferralTest(unittest.TestCase):
             self.assertTrue(a['stop_rule'])
 
 
+class LoyaltyTest(unittest.TestCase):
+    """Round 3 feature 3: loyalty paid in product against a gross margin cap."""
+
+    def test_loyalty(self):
+        rd = audit.Reader(None, 'bombas', audit.last_full_day(None, 'bombas'))
+        lo = audit.loyalty(rd)
+        self.assertFalse(lo['unavailable'])
+        self.assertAlmostEqual(lo['cash_share_of_margin'], round(lo['earn'] / lo['gross_margin'], 4), places=3)
+        self.assertLess(lo['product_share_of_margin'], lo['cash_share_of_margin'])
+        out = api.actions.rank('bombas')
+        f = next((f for f in out['findings'] if f['rule_id'] == 'OFFER-R24'), None)
+        has = api.model.has_program(rd, audit._playbook().PROGRAM_WORDS['loyalty'])
+        self.assertEqual(bool(f), not has and lo['product_clears'])
+        if f:
+            a = next(a for a in out['actions'] if a['rule_id'] == 'OFFER-R24')
+            self.assertIn('never cash', a['artefact']['draft'])
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -84,6 +84,7 @@ class Ctx:
         self.cohorts = audit.cohort_curve(rd)
         self.costs = audit.cost_moves(rd)
         self.referral = audit.referral(rd)
+        self.loyalty = audit.loyalty(rd)
         self.registry = model.registry(rd, playbook.REGISTRY_SURFACES, playbook.PRICE_TEST_WORDS)
         self.ship_rate = (model.brain_value(rd, 'offers.standard_shipping_cost')[0] or {}).get('cost_usd') if rd.brand else None
         self.scenarios = (model.threshold_scenarios(rd, self.threshold, self.ship_rate, self.be['value'], (self.po or {}).get('units') or 1)
@@ -519,6 +520,8 @@ def surfaces(a):
         return (['product page pack selector'] if ent == 'push' else ['pack price']), 35
     if r == 'OFFER-R09':
         return ['new packs'], 56
+    if r == 'OFFER-R24':
+        return ['loyalty'], 90
     if r == 'OFFER-R23':
         return ['referral'], 56
     if r == 'OFFER-R22':
@@ -847,6 +850,30 @@ def referral_action(f, a, ctx):
     return a
 
 
+def loyalty_action(f, a, ctx):
+    lo = ctx.loyalty
+    lines = ['Offer spec: points paid in product',
+             f'Earn: {lo["earn"] * 100:.0f} percent back in points on every order.',
+             f'Redeem: points buy product only, never cash off. In cash the program would cost {lo["cash_share_of_margin"] * 100:.1f} percent of '
+             f'gross margin; in product it costs {lo["product_share_of_margin"] * 100:.1f} percent, because a reward item costs its landed cost.',
+             'Tiers: none at launch. One rule is easier to read and to price.',
+             'Where: the account page, the order confirmation, the second-order flow.',
+             f'Stop: reward cost above {lo["cap"] * 100:.0f} percent of gross margin (our own cap, not a benchmark).',
+             'Win: month 2 active share up 1 point for members against non-members in 90 days.']
+    a.update({
+        'title': f'Launch {lo["earn"] * 100:.0f} percent back in points, paid in product',
+        'owner': 'agent_drafts',
+        'artefact': {'kind': 'offer', 'label': 'Loyalty offer spec', 'draft': '\n'.join(lines)},
+        'steps': steps(('agent', 'Price the earn rate against gross margin from finance inputs.'),
+                       ('agent', 'Draft the terms and the account page block.'),
+                       ('person', f'Approve. The retention lead sets it up in {tool(ctx, "loyalty_app", "the loyalty tool")}.'),
+                       ('agent', f'Read member repeat rate and reward cost monthly; call it on {ctx.check_on(90)}.')),
+        'size': {'text': f'{lo["product_share_of_margin"] * 100:.1f} percent of gross margin paid in product', 'usd': None},
+        'win_rule': 'Month 2 active share up 1 point for members against non-members in 90 days.',
+        'stop_rule': f'Reward cost above {lo["cap"] * 100:.0f} percent of gross margin.', 'check_on': ctx.check_on(90), 'time_to_ship_hours': 12})
+    return a
+
+
 def returns_block(rd):
     """returns_by_reason for the window, or the labelled fixture when the metric is unavailable."""
     m = rd.m('returns_by_reason', audit.WINDOW)
@@ -988,7 +1015,8 @@ def merge_ladder(actions, ctx):
 # Rubric overrides by rule (depth.md section 4 lets a screen raise reputation or satisfaction for a rule; the
 # override is written in audit.py's docstring next to the rule). Weights never change.
 RUBRIC_OVERRIDE = {'OFFER-R04': {'reputation': 4, 'satisfaction': 4}, 'OFFER-R14': {'reputation': 4, 'satisfaction': 4},
-                   'OFFER-R16': {'reputation': 5}, 'OFFER-R17': {'reputation': 4}, 'OFFER-R21': {'satisfaction': 3}}
+                   'OFFER-R16': {'reputation': 5}, 'OFFER-R17': {'reputation': 4}, 'OFFER-R21': {'satisfaction': 3},
+                   'OFFER-R24': {'satisfaction': 3}}
 
 
 def rescore(a, dims):
@@ -1008,7 +1036,7 @@ BUILDERS = {'OFFER-R01': threshold_action, 'OFFER-R04': rung_action, 'OFFER-R08'
             'OFFER-R14': guarantee_action, 'OFFER-R05': stale_action, 'OFFER-R06': pull_action, 'OFFER-R15': claims_action,
             'OFFER-R16': position_action, 'OFFER-R17': parity_action, 'OFFER-R18': discount_action,
             'OFFER-R19': discount_action, 'OFFER-R20': cart_action, 'OFFER-R21': second_order_action,
-            'OFFER-R22': cost_action, 'OFFER-R23': referral_action}
+            'OFFER-R22': cost_action, 'OFFER-R23': referral_action, 'OFFER-R24': loyalty_action}
 
 
 def build(f, rd, ctx, nr):
@@ -1049,4 +1077,4 @@ def rank(brand='bombas', window=None):
     return {'screen': SCREEN, 'brand': brand, 'window': w, 'simulated': True, 'net_revenue_28d': nr,
             'actions': actions, 'findings': findings, 'objections': ctx.objections, 'returns': returns_block(rd),
             'ladder': dict(ctx.ladder, moves=ctx.ladder_rows), 'first_order': ctx.first_order, 'waterfalls': ctx.waterfalls, 'calendar': ctx.calendar, 'gifting': ctx.gifting, 'guarantee': ctx.guarantee, 'position': ctx.position, 'parity': ctx.parity,
-            'discipline': dict(ctx.discipline, policy=discount_policy(ctx)), 'cart': ctx.cart, 'tests': calendar, 'depth': ctx.depth, 'cohorts': ctx.cohorts, 'costs': ctx.costs, 'registry': ctx.registry, 'referral': ctx.referral}
+            'discipline': dict(ctx.discipline, policy=discount_policy(ctx)), 'cart': ctx.cart, 'tests': calendar, 'depth': ctx.depth, 'cohorts': ctx.cohorts, 'costs': ctx.costs, 'registry': ctx.registry, 'referral': ctx.referral, 'loyalty': ctx.loyalty}

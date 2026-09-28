@@ -97,6 +97,10 @@ Rules
              referral program, and a give-one-get-one paid in product (model.referral_offer) costs under
              playbook.REFERRAL_CAC_SHARE of paid media per new customer. Money null: referral volume is what the
              launch finds. Capability LIFE-C45 (founder gate).
+  OFFER-R24  No loyalty offer: no brain offers or stack record names a loyalty program. model.loyalty_design
+             prices playbook.LOYALTY_EARN back paid in cash against paid in product (landed cost), each as a share of
+             gross margin, against playbook.LOYALTY_MARGIN_CAP (our heuristic). Evidence adds the cohort curve's month
+             1 share. Money null. Satisfaction 3. Capability LIFE-C36 (founder gate).
   OFFER-R03  Margin after discount per SKU. Needs cogs_landed keyed by the store's SKUs. Unavailable while no
              finance_inputs SKU key matches a product SKU. Capability MONEY-C05 (founder gate). Owner: 04.
   OFFER-R04  A deal-breaker rung with no proof: the top rung of an objection ladder whose proof is empty or
@@ -183,6 +187,8 @@ RULES = [
      'inputs': ['finance_inputs.cogs_landed', 'products_monthly'], 'capability': 'MONEY-C05', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R23', 'name': 'No referral offer', 'entity_type': 'offer', 'inputs': ['brain.offers', 'brain.stack', 'daily'],
      'capability': 'LIFE-C45', 'owner_screen': SCREEN},
+    {'rule_id': 'OFFER-R24', 'name': 'No loyalty offer', 'entity_type': 'offer', 'inputs': ['brain.offers', 'brain.stack',
+     'finance_inputs.cogs_landed', 'cohorts'], 'capability': 'LIFE-C36', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R03', 'name': 'Margin after discount per SKU', 'entity_type': 'sku',
      'inputs': ['finance_inputs.cogs_landed keyed by product SKU', 'products'], 'capability': 'MONEY-C05',
      'owner_screen': SCREEN},
@@ -210,6 +216,7 @@ CAPABILITY = {'OFFER-R01': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R21': {'id': 'LIFE-C36', 'autonomy': 'founder_gate'},
               'OFFER-R22': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R23': {'id': 'LIFE-C45', 'autonomy': 'founder_gate'},
+              'OFFER-R24': {'id': 'LIFE-C36', 'autonomy': 'founder_gate'},
               'OFFER-R06': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R04': {'id': 'LIFE-C36', 'autonomy': 'founder_gate'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
@@ -964,6 +971,31 @@ def rule_referral(rd):
                      None, 0.6, [], end, money_reason='referral volume is what the launch finds')]
 
 
+def loyalty(rd):
+    pb = _playbook()
+    return _model().loyalty_design(rd, pb.LOYALTY_EARN, pb.LOYALTY_MARGIN_CAP)
+
+
+def rule_loyalty(rd):
+    end = rd.ends_on
+    if _model().has_program(rd, _playbook().PROGRAM_WORDS['loyalty']):
+        return []
+    lo = loyalty(rd)
+    if lo.get('unavailable') or not lo['product_clears']:
+        return []
+    cc = cohort_curve(rd)
+    evidence = [_ev('reward_cost_share_of_margin_in_product', lo['product_share_of_margin'], 'ratio', end, baseline=lo['cap'],
+                    baseline_kind='heuristic_cap', window='3 full months', source='finance_inputs.cogs_landed'),
+                _ev('reward_cost_share_of_margin_in_cash', lo['cash_share_of_margin'], 'ratio', end, baseline=lo['cap'],
+                    baseline_kind='heuristic_cap', window='3 full months', source='finance_inputs.cogs_landed')]
+    if not cc.get('unavailable'):
+        evidence.append(_ev('active_share_month_1', cc['curve'][0], 'ratio', end, window=f'{cc["cohorts"]} cohorts', source='cohorts'))
+    sentence = (f'There is no loyalty offer. {lo["earn"] * 100:.0f} percent back costs {lo["cash_share_of_margin"] * 100:.1f} percent of gross '
+                f'margin in cash, or {lo["product_share_of_margin"] * 100:.1f} percent paid in product.')
+    return [_finding('OFFER-R24', {'type': 'offer', 'id': 'loyalty', 'label': 'Loyalty offer'}, 'low', evidence, sentence,
+                     None, 0.5, [], end, money_reason='repeat lift from points is what the launch finds')]
+
+
 def rule_ladder(rd):
     end = rd.ends_on
     pb = _playbook()
@@ -1135,7 +1167,7 @@ def run(brand, window=None, data=None):
     """Findings for one brand, sorted by severity then money at stake. `window` is {ends_on} or None."""
     ends_on = date.fromisoformat(window['ends_on']) if window and window.get('ends_on') else last_full_day(data, brand)
     rd = Reader(data, brand, ends_on)
-    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_cost(rd) + rule_referral(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
+    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_cost(rd) + rule_referral(rd) + rule_loyalty(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
            rule_unanswered(rd))
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f.get('money_at_stake') or {}).get('usd') or -1), f['id']))
     return out

@@ -69,6 +69,7 @@ Known gaps from round 0:
 |---|---|---|
 | 3.1 | Experiment registry: read from the shared `registry` table when it exists, else the seed file events.md names (data only). Each test is mapped to this screen's surfaces (`playbook.REGISTRY_SURFACES`). Running tests hold their surface in the test calendar until their read point; a move whose surface and brain records match a running test becomes "read EXP-xxx, then roll out"; a finished test that cites a ladder rung becomes its proof (EXP-003's fit finder for the fit doubt). Price elasticity reads from finished price tests, unavailable until one exists. Desk block in Launch next | done |
 | 3.2 | Referral offer: give one, get one, paid in product (2 gift items at landed cost plus the pick fee) against paid media per new customer, capped at half of paid CAC (room spec). New rule OFFER-R23 (no referral program named in the brain's offers or stack, and the offer clears the cap) with the spec, placements, win and stop rules; on the calendar as its own surface. Desk block "What do we offer people who already buy?" in Offers | done |
+| 3.3 | Loyalty offer: 5 percent back in points, priced as a share of gross margin paid in cash against paid in product at landed cost (the product route costs about a quarter as much), against a 25 percent cap flagged as our own heuristic. New rule OFFER-R24 (no loyalty program in the brain) with the spec, placements, win and stop rules; the tool name comes from the brain stack when present | done |
 
 ## Contract asks
 
@@ -203,7 +204,7 @@ Intelligems (threshold and price tests scored by profit per visitor), Rebuy (tie
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.9 | 2026-09-28 | S3.9; screenshot round0.png |
-| 3 | 3.1 registry, 3.2 referral | 2026-09-28 | in progress |
+| 3 | 3.1 registry, 3.2 referral, 3.3 loyalty | 2026-09-28 | in progress |
 | 2 | 2.1 to 2.10: position, parity, discipline, gift pick, cart ladder, test calendar, depth by line, second order, cost against price, desk tabs | 2026-09-28 | screenshot round2.png |
 | 1 | 1.1 plan first, 1.2 objection to offer map, 1.3 free shipping line, 1.4 pack ladder, 1.5 first-order offer, 1.6 margin waterfall, 1.7 promo calendar, 1.8 gifting and holiday, 1.9 guarantee as an offer, 1.10 rank complete | 2026-09-28 | manager session; screenshot round1.png (updated as the round lands) |
 

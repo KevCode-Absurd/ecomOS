@@ -289,19 +289,19 @@ def overview(data, brand):
         first, falls, cal, gift = ranked['first_order'], ranked['waterfalls'], ranked['calendar'], ranked['gifting']
         guar, pos, par, disc = ranked['guarantee'], ranked['position'], ranked['parity'], ranked['discipline']
         cart, tests, depth, coh = ranked['cart'], ranked['tests'], ranked['depth'], ranked['cohorts']
-        costs, reg, refl = ranked['costs'], ranked['registry'], ranked['referral']
+        costs, reg, refl, loy = ranked['costs'], ranked['registry'], ranked['referral'], ranked['loyalty']
     else:
         findings, plan = audit.run(brand, {'ends_on': ends_on.isoformat()}, data=data), []
         objections, returns = [], {'unavailable': True, 'reason': 'no brand folder', 'groups': []}
         lad = ladder(rd)
         first, falls, cal, gift, guar = {'unavailable': True, 'reason': 'no brand folder'}, [], [], None, None
         pos = par = disc = cart = None
-        tests, depth, coh, costs, reg, refl = [], None, None, None, None, None
+        tests, depth, coh, costs, reg, refl, loy = [], None, None, None, None, None, None
     months = discount_months(rd)
     th = threshold(rd)
     return {'brand': head, 'window': {'ends_on': ends_on.isoformat(), 'days': audit.WINDOW},
             'orientation': orientation(rd, th), 'plan': plan,
-            'stack': offer_stack(rd), 'threshold': th, 'bfcm': bfcm(rd), 'ladder': lad, 'first_order': first, 'waterfalls': falls, 'calendar': cal, 'gifting': gift, 'guarantee': guar, 'position': pos, 'parity': par, 'discipline': disc, 'cart': cart, 'tests': tests, 'depth': depth, 'cohorts': coh, 'costs': costs, 'registry': reg, 'referral': refl,
+            'stack': offer_stack(rd), 'threshold': th, 'bfcm': bfcm(rd), 'ladder': lad, 'first_order': first, 'waterfalls': falls, 'calendar': cal, 'gifting': gift, 'guarantee': guar, 'position': pos, 'parity': par, 'discipline': disc, 'cart': cart, 'tests': tests, 'depth': depth, 'cohorts': coh, 'costs': costs, 'registry': reg, 'referral': refl, 'loyalty': loy,
             'objections': objections, 'returns': returns, 'creep': creep_rule(months), 'chart': chart(months),
             'findings': findings, 'rules': audit.RULES}
 
@@ -309,7 +309,7 @@ def overview(data, brand):
 def rank(brand='bombas', window=None):
     """Ranked actions for app/rank.py and the master list (depth.md section 5)."""
     out = actions.rank(brand, window)
-    for k in ('findings', 'objections', 'returns', 'ladder', 'first_order', 'waterfalls', 'calendar', 'gifting', 'guarantee', 'position', 'parity', 'discipline', 'cart', 'tests', 'depth', 'cohorts', 'costs', 'registry', 'referral'):
+    for k in ('findings', 'objections', 'returns', 'ladder', 'first_order', 'waterfalls', 'calendar', 'gifting', 'guarantee', 'position', 'parity', 'discipline', 'cart', 'tests', 'depth', 'cohorts', 'costs', 'registry', 'referral', 'loyalty'):
         out.pop(k, None)
     return out
 
