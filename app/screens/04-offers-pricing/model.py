@@ -1239,3 +1239,63 @@ def order_bunches(groups, n=3, min_gap=20, above=10, step=5):
         if len(out) == n:
             break
     return sorted(out, key=lambda p: p['at'])
+
+
+# ---------------------------------------------------------------- welcome code: does it pay for itself
+
+def welcome_code(rd, days, flow_words):
+    """New customers' first orders in the last `days`: those with the welcome code against full-price ones.
+    The code is the brain's first-order code, else the code most used on new customers' first orders.
+    Required new share = code dollars / (margin after the code + code dollars): the share of code orders that must
+    not have happened without the code for the code to pay. Margin is subtotal minus code minus the order's cogs,
+    before shipping, fees and media. Signups are the welcome flow's first-message sends, a proxy."""
+    orders = rd.table('orders')
+    if not isinstance(orders, list) or not orders:
+        return {'unavailable': True, 'reason': 'the orders table is not connected', 'fix': 'shopify'}
+    start = (rd.ends_on - timedelta(days=days - 1)).isoformat()
+    end = rd.ends_on.isoformat()
+    seen, firsts = set(), []
+    for o in sorted(orders, key=lambda r: str(r.get('created_at'))):
+        c, day = o.get('customer_id'), str(o.get('created_at'))[:10]
+        if c is None or day > end or c in seen:
+            continue
+        seen.add(c)
+        if day >= start and not o.get('cancelled_at'):
+            firsts.append(o)
+    code_of = lambda o: ((o.get('discount') or {}).get('code') or '').upper() or None
+    brain, _ = brain_value(rd, 'offers.first_order_code')
+    code = (brain.get('code') if isinstance(brain, dict) else None)
+    source = 'brain offers.first_order_code'
+    if not code:
+        counts = {}
+        for o in firsts:
+            if code_of(o):
+                counts[code_of(o)] = counts.get(code_of(o), 0) + 1
+        code = max(sorted(counts), key=lambda k: counts[k]) if counts else None
+        source = 'most used code on first orders'
+    if not code:
+        return {'unavailable': True, 'reason': 'no code on new customers\' first orders in the window', 'fix': None}
+    code = code.upper()
+    coded = [o for o in firsts if code_of(o) == code]
+    full = [o for o in firsts if not code_of(o)]
+    if any(o.get('cogs') is None for o in coded):
+        return {'unavailable': True, 'reason': 'order cogs missing on code orders', 'fix': 'finance_inputs'}
+    dollars = round(sum(float((o.get('discount') or {}).get('amount') or 0) for o in coded), 2)
+    margin = round(sum(float(o.get('subtotal') or 0) - float((o.get('discount') or {}).get('amount') or 0) - float(o['cogs']) for o in coded), 2)
+    need = round(dollars / (margin + dollars), 4) if coded and (margin + dollars) > 0 else None
+    flows = rd.table('flows')
+    signups = None
+    if isinstance(flows, list) and flows:
+        welcome = [r for r in flows if any(w in str(r.get('flow') or r.get('flow_name') or '').lower() for w in flow_words)]
+        if welcome:
+            first_msg = min(str(r.get('message_id')) for r in welcome)
+            signups = sum(int(r.get('sends') or 0) for r in welcome
+                          if str(r.get('message_id')) == first_msg and start <= str(r.get('date'))[:10] <= end)
+    return {'unavailable': False, 'code': code, 'code_source': source, 'days': days, 'start': start, 'end': end,
+            'new_customers': len(firsts), 'code_orders': len(coded), 'full_price_orders': len(full),
+            'code_share': round(len(coded) / len(firsts), 4) if firsts else None,
+            'code_dollars': dollars, 'code_dollars_30d': round(dollars * 30 / days, 2),
+            'margin_after_code': margin, 'margin_per_order': round(margin / len(coded), 2) if coded else None,
+            'code_per_order': round(dollars / len(coded), 2) if coded else None, 'required_new_share': need,
+            'signups': signups, 'signup_to_order': round(len(coded) / signups, 4) if signups else None,
+            'basis': f'new customers\' first orders {start} to {end}; margin is subtotal minus code minus order cogs, before shipping, fees and media'}

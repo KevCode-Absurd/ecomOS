@@ -125,6 +125,12 @@ Rules
              playbook.COHORT_DAYS at least COHORT_GAP less (relative) than full-price first orders, each group at least
              COHORT_MIN customers (model.discount_cohorts). Unavailable without order rows. Rides on the first-order
              code test when it fires; else its own test brief. Capability LIFE-C02.
+  OFFER-R32  The welcome code has no holdout (room job LIFE-C02, the pop-up first-order offer): at least
+             playbook.WELCOME_MIN_ORDERS new customers used the first-order code in WELCOME_DAYS and no registry entry
+             names a holdout. The sentence gives the required new share, code dollars / (margin after the code + code
+             dollars) (model.welcome_code). Money: code dollars scaled to 28 days, what is at stake if no code order is
+             new. Medium at WELCOME_FLAG or more, else low. Unavailable without order rows while the brain names a
+             first-order code. Capability LIFE-C02.
   OFFER-R03  Margin after discount per SKU. Needs cogs_landed keyed by the store's SKUs. Unavailable while no
              finance_inputs SKU key matches a product SKU. Capability MONEY-C05 (founder gate). Owner: 04.
   OFFER-R04  A deal-breaker rung with no proof: the top rung of an objection ladder whose proof is empty or
@@ -228,6 +234,8 @@ RULES = [
      'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R31', 'name': 'Discount-acquired customers repeat less', 'entity_type': 'offer',
      'inputs': ['orders'], 'capability': 'LIFE-C02', 'owner_screen': SCREEN},
+    {'rule_id': 'OFFER-R32', 'name': 'Welcome code with no holdout', 'entity_type': 'offer',
+     'inputs': ['orders', 'flows', 'brain.offers.first_order_code', 'registry'], 'capability': 'LIFE-C02', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R03', 'name': 'Margin after discount per SKU', 'entity_type': 'sku',
      'inputs': ['finance_inputs.cogs_landed keyed by product SKU', 'products'], 'capability': 'MONEY-C05',
      'owner_screen': SCREEN},
@@ -263,6 +271,7 @@ CAPABILITY = {'OFFER-R01': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R29': {'id': 'LIFE-C46', 'autonomy': 'founder_gate'},
               'OFFER-R30': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R31': {'id': 'LIFE-C02', 'autonomy': 'founder_gate'},
+              'OFFER-R32': {'id': 'LIFE-C02', 'autonomy': 'founder_gate'},
               'OFFER-R06': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R04': {'id': 'LIFE-C36', 'autonomy': 'founder_gate'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
@@ -1218,6 +1227,45 @@ def rule_cohorts(rd):
                      None, 0.7, [], end, money_reason='lifetime value needs a longer read')]
 
 
+def welcome(rd):
+    pb = _playbook()
+    return _model().welcome_code(rd, pb.WELCOME_DAYS, pb.WELCOME_FLOW_WORDS)
+
+
+def rule_welcome(rd):
+    end = rd.ends_on
+    pb = _playbook()
+    w = welcome(rd)
+    entity = {'type': 'offer', 'id': 'welcome_code', 'label': 'Welcome code'}
+    if w.get('unavailable'):
+        code, rec = _model().brain_value(rd, 'offers.first_order_code')
+        if not code or w.get('fix') != 'shopify':
+            return []
+        return [_finding('OFFER-R32', entity, 'low', [], 'Whether the first-order code pays for itself is unknown without order rows.',
+                         None, 0.1, [rec['id']] if rec else [], end, status='unavailable', money_reason='no order rows',
+                         unavailable={'inputs': ['orders', 'flows'], 'connector': 'shopify',
+                                      'fix': 'Connect the store orders, read-only, with customer ids and discount codes.'})]
+    if w['code_orders'] < pb.WELCOME_MIN_ORDERS or w['required_new_share'] is None:
+        return []
+    reg = _model().registry(rd, pb.REGISTRY_SURFACES, pb.PRICE_TEST_WORDS)
+    if any(any(h in str(e.get('hypothesis') or '').lower() for h in pb.HOLDOUT_WORDS) for e in reg.get('entries') or []):
+        return []
+    need = w['required_new_share']
+    win = f'{w["days"]}d'
+    ev = [_ev('required_new_share', need, 'ratio', end, window=win),
+          _ev('code_dollars', w['code_dollars'], 'usd', end, window=win),
+          _ev('code_orders', w['code_orders'], 'count', end, baseline=w['new_customers'], baseline_kind='new_customers', window=win),
+          _ev('margin_per_code_order', w['margin_per_order'], 'usd_per_order', end, window=win)]
+    if w['signup_to_order'] is not None:
+        ev.append(_ev('signup_to_code_order', w['signup_to_order'], 'ratio', end, baseline=w['signups'], baseline_kind='welcome_signups', window=win, source='flows'))
+    money = {'usd': round(w['code_dollars'] * 28 / w['days'], 2), 'formula': 'code_dollars_90d x 28 / 90',
+             'window': '28d', 'note': 'at stake if no code order is new'}
+    return [_finding('OFFER-R32', entity, 'medium' if need >= pb.WELCOME_FLAG else 'low', ev,
+                     f'{w["code"]} cost ${w["code_dollars"]:,.0f} on {w["code_orders"]} first orders in {w["days"]} days. '
+                     f'It pays only if {need * 100:.0f} percent of them are truly new. No holdout has checked.',
+                     money, 0.6, [], end)]
+
+
 def rule_ladder(rd):
     end = rd.ends_on
     pb = _playbook()
@@ -1389,7 +1437,7 @@ def run(brand, window=None, data=None):
     """Findings for one brand, sorted by severity then money at stake. `window` is {ends_on} or None."""
     ends_on = date.fromisoformat(window['ends_on']) if window and window.get('ends_on') else last_full_day(data, brand)
     rd = Reader(data, brand, ends_on)
-    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_cost(rd) + rule_referral(rd) + rule_loyalty(rd) + rule_window_creep(rd) + rule_bundles(rd) + rule_launched(rd) + rule_upsell(rd) + rule_bnpl(rd) + rule_threshold_match(rd) + rule_cohorts(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
+    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_discount(rd) + rule_cart(rd) + rule_second_order(rd) + rule_cost(rd) + rule_referral(rd) + rule_loyalty(rd) + rule_window_creep(rd) + rule_bundles(rd) + rule_launched(rd) + rule_upsell(rd) + rule_bnpl(rd) + rule_threshold_match(rd) + rule_cohorts(rd) + rule_welcome(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
            rule_unanswered(rd))
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f.get('money_at_stake') or {}).get('usd') or -1), f['id']))
     return out

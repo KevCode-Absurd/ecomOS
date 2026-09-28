@@ -120,6 +120,7 @@ Known gaps from round 0:
 | 6.3 | Every desk block ends in a real next move (depth.md rule 9 and section 2): a rule map per block, so a block without its own line opens the move its rules made, or names why it is unavailable with the connect move. Fixed on the sample brand: "0 of 0 doubts", "Referral and loyalty are in place" when both were unavailable, a bare "Discount history unavailable", and "1 moves". The test calendar line opens the first move to approve. The promo-day ratio comes from settings | done |
 | 6.4 | What we cannot see yet: a small block under the connect strip names price sensitivity (no finished price test in the registry) and gift card balances (no gift card ledger) as unavailable, plus order rows and returns by reason when missing. Each line says what fills it, what it then shows, and opens the move that starts it (the cost pass-through price test, or the store connect task). Nothing is estimated in their place | done |
 | 6.5 | Phone width at 360 px: every desk tab and every opened action card checked in a 360 px browser, no element past the edge and no page side-scroll on Bombas or the sample brand. Buttons under 24 px tall (the kit's "How it gets done" and "Copy brief", this screen's small buttons) get a 32 px tap target on phones through screen.css only | done |
+| 6.6 | Does the welcome code pay for itself (room job LIFE-C02, the pop-up first-order offer): new customers' first orders over 90 days split by the welcome code, code dollars, margin per code order after the code, welcome signups (first welcome email sends, a proxy) and signup to code order. The required new share, code dollars over margin after the code plus code dollars, is the share of code orders that must not have happened without it. New rule OFFER-R32 when 100 or more code first orders and no holdout on record; the move is a 10 percent holdout for 28 days judged on profit per visitor. Sample brand: WELCOME10, $2,590 a month, needs 15 percent new. Bombas: a connect move (no order rows) | done |
 
 ## Contract asks
 
@@ -154,7 +155,7 @@ Intelligems (threshold and price tests scored by profit per visitor), Rebuy (tie
 | Place upsell and cross-sell offers | which placements convert, and do they hurt margin | LIFE-C41 | todo |
 | Design the guarantee and risk-reversal offer | does the guarantee remove risk without breaking margin | LIFE-C42 | todo (claims not tagged) |
 | Design the subscription offer and cancel flow | is the reason to subscribe stronger than a flat discount | LIFE-C43 | parked (non-subscription first) |
-| Design and model the pop-up first-order offer | does the pop-up offer pay for itself | LIFE-C02 | todo |
+| Design and model the pop-up first-order offer | does the pop-up offer pay for itself | LIFE-C02 | round 6: welcome code required new share, OFFER-R32 holdout |
 | Design referral and partner offers | is referral cheaper than paid media | LIFE-C45 | todo |
 | Design payment terms, BNPL and trial pricing | is trial-to-full matching the model | LIFE-C46 | todo |
 | Run the offer testing framework | what to test next, is any test untrustworthy | LIFE-C47 | todo |

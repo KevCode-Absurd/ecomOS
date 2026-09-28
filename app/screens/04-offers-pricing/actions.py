@@ -91,6 +91,7 @@ class Ctx:
         self.plans = _load('offers_pricing_approvals', HERE / 'approvals.py').planned(rd) if rd.brand else {}
         self.proposed_rows = (_load('offers_pricing_approvals', HERE / 'approvals.py').outbox_rows(rd.brand) if rd.brand else [])
         self.registry = model.registry(rd, playbook.REGISTRY_SURFACES, playbook.PRICE_TEST_WORDS)
+        self.welcome = audit.welcome(rd)
         self.ship_rate = (model.brain_value(rd, 'offers.standard_shipping_cost')[0] or {}).get('cost_usd') if rd.brand else None
         self.scenarios = (model.threshold_scenarios(rd, self.threshold, self.ship_rate, self.be['value'], (self.po or {}).get('units') or 1)
                           if self.threshold is not None and self.be.get('value') is not None else [])
@@ -535,6 +536,8 @@ def surfaces(a):
         return ['new packs'], 56
     if r == 'OFFER-R31':
         return ['first order offer', 'ad angle'], 35
+    if r == 'OFFER-R32':
+        return ['first order offer', 'pop-up'], 35
     if r == 'OFFER-R29':
         return ['product page price block'], 35
     if r == 'OFFER-R26':
@@ -1074,6 +1077,34 @@ def cohort_action(f, a, ctx):
     return a
 
 
+def welcome_action(f, a, ctx):
+    """OFFER-R32: a holdout on the welcome code, judged on profit per visitor over the first order."""
+    w = ctx.welcome
+    need = w['required_new_share']
+    hold = 10
+    draft = '\n'.join([
+        f'Test brief: does {w["code"]} pay for itself?',
+        f['sentence'],
+        f'Arms: A shows the pop-up and {w["code"]} as today. B, {hold} percent of new visitors, shows the pop-up with no code.',
+        f'Read: first orders per 1,000 new visitors, and profit per visitor after the code, per arm. 28 days.',
+        f'Win for the code: A beats B on profit per visitor. That means at least {need * 100:.0f} percent of code orders are new.',
+        f'Else: drop the code depth or swap it for a gift, and keep the email capture.',
+        f'Stop: B first orders down 40 percent against A for 7 days.',
+        f'Basis: {w["basis"]}.'])
+    a.update({'title': f'Hold {w["code"]} back from {hold} percent of new visitors for 28 days', 'owner': 'agent_drafts',
+              'artefact': {'kind': 'test_brief', 'label': f'{w["code"]} holdout test brief', 'draft': draft},
+              'steps': steps(('agent', 'Draft the holdout brief and the no-code pop-up copy.'),
+                             ('person', 'Approve the holdout share and the stop rule.'),
+                             ('person', f'Set the pop-up tool to hold back {hold} percent of new visitors.'),
+                             ('agent', f'Read profit per visitor per arm weekly; call it on {ctx.check_on(35)}.')),
+              'size': {'text': f'{money(w["code_dollars_30d"])} a month in code dollars; the code needs {need * 100:.0f} percent new orders',
+                       'usd': None},
+              'win_rule': f'Keep the code if A beats B on profit per visitor over 28 days.',
+              'stop_rule': 'B first orders down 40 percent against A for 7 days.',
+              'check_on': ctx.check_on(35), 'time_to_ship_hours': 3})
+    return a
+
+
 def bunches(rd):
     """Order-value bunches and the tiers above them, from real order bins only (never from the fixture)."""
     dist = rd.m('order_value_distribution', audit.WINDOW, step=5)
@@ -1250,7 +1281,7 @@ BUILDERS = {'OFFER-R01': threshold_action, 'OFFER-R04': rung_action, 'OFFER-R08'
             'OFFER-R22': cost_action, 'OFFER-R23': referral_action, 'OFFER-R24': loyalty_action,
             'OFFER-R25': discount_action, 'OFFER-R26': bundle_action,
             'OFFER-R27': launched_action, 'OFFER-R29': bnpl_action,
-            'OFFER-R30': match_action, 'OFFER-R31': cohort_action}
+            'OFFER-R30': match_action, 'OFFER-R31': cohort_action, 'OFFER-R32': welcome_action}
 
 
 def build(f, rd, ctx, nr):
@@ -1293,5 +1324,5 @@ def rank(brand='bombas', window=None, data=None):
     return {'screen': SCREEN, 'brand': brand, 'window': w, 'simulated': True, 'net_revenue_28d': nr,
             'actions': actions, 'findings': findings, 'objections': ctx.objections, 'returns': returns_block(rd),
             'ladder': dict(ctx.ladder, moves=ctx.ladder_rows), 'first_order': ctx.first_order, 'waterfalls': ctx.waterfalls, 'calendar': ctx.calendar, 'gifting': ctx.gifting, 'guarantee': ctx.guarantee, 'position': ctx.position, 'parity': ctx.parity,
-            'discipline': dict(ctx.discipline, policy=discount_policy(ctx), windows=ctx.depth_history, window_creep_points=playbook.WINDOW_CREEP_POINTS), 'cart': ctx.cart, 'tests': calendar, 'depth': ctx.depth, 'cohorts': ctx.cohorts, 'costs': ctx.costs, 'registry': ctx.registry, 'referral': ctx.referral, 'loyalty': ctx.loyalty, 'bundles': ctx.bundles, 'proposed_tests': ctx.proposed_rows, 'launched': ctx.launched, 'discount_cohorts': audit.discount_cohorts(rd), 'bunches': bunches(rd),
+            'discipline': dict(ctx.discipline, policy=discount_policy(ctx), windows=ctx.depth_history, window_creep_points=playbook.WINDOW_CREEP_POINTS), 'cart': ctx.cart, 'tests': calendar, 'depth': ctx.depth, 'cohorts': ctx.cohorts, 'costs': ctx.costs, 'registry': ctx.registry, 'referral': ctx.referral, 'loyalty': ctx.loyalty, 'bundles': ctx.bundles, 'proposed_tests': ctx.proposed_rows, 'launched': ctx.launched, 'discount_cohorts': audit.discount_cohorts(rd), 'welcome': ctx.welcome, 'bunches': bunches(rd),
             'subscription': model.subscription_note(rd, ctx.cohorts, (ctx.depth or {}).get('rows'), (ctx.depth or {}).get('target'))}

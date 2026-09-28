@@ -1552,5 +1552,58 @@ class PhoneTest(unittest.TestCase):
             self.assertLessEqual(int(w), 360, w)
 
 
+class WelcomeCodeTest(unittest.TestCase):
+    """Round 6 feature 6: room job LIFE-C02. The welcome code's required new share, OFFER-R32 and its holdout test."""
+
+    def reader(self, orders, flows=None, registry=None):
+        import datetime as dtm
+        class Src:
+            brand = {}
+        class R:
+            brand = None
+            ends_on = dtm.date(2026, 9, 24)
+            source = Src()
+            def table(self, name):
+                return {'orders': orders, 'flows': flows, 'registry': registry}.get(name)
+            def record(self, key):
+                return None
+            def records(self, section):
+                return []
+        return R()
+
+    def order(self, cid, day, code=None, amount=0, subtotal=100, cogs=40):
+        return {'customer_id': cid, 'created_at': day + 'T10:00:00Z', 'subtotal': subtotal, 'cogs': cogs,
+                'discount': {'code': code, 'amount': amount} if code else None}
+
+    def test_required_share(self):
+        orders = [self.order(1, '2026-09-01', 'HELLO', 10), self.order(2, '2026-09-02', 'HELLO', 10), self.order(3, '2026-09-03'),
+                  self.order(1, '2026-09-10'), self.order(4, '2026-01-01', 'HELLO', 10)]
+        flows = [{'flow': 'Welcome Series', 'message_id': 'F-01-M1', 'date': '2026-09-01', 'sends': 8},
+                 {'flow': 'Welcome Series', 'message_id': 'F-01-M2', 'date': '2026-09-01', 'sends': 7}]
+        w = api.model.welcome_code(self.reader(orders, flows), 90, ('welcome',))
+        self.assertEqual((w['code'], w['code_orders'], w['full_price_orders'], w['new_customers']), ('HELLO', 2, 1, 3))
+        self.assertEqual(w['code_dollars'], 20)
+        self.assertEqual(w['margin_after_code'], 100)          # 2 x (100 - 10 - 40)
+        self.assertAlmostEqual(w['required_new_share'], 20 / 120, 4)
+        self.assertEqual(w['signups'], 8)                      # first message only
+        self.assertEqual(w['signup_to_order'], 0.25)
+
+    def test_no_orders_unavailable(self):
+        self.assertTrue(api.model.welcome_code(self.reader([]), 90, ('welcome',))['unavailable'])
+
+    def test_sample_rule_and_action(self):
+        sys.path.insert(0, str(ROOT / 'app'))
+        import server
+        r = api.actions.rank(None, None, server.Data())
+        a = next(x for x in r['actions'] if x['rule_id'] == 'OFFER-R32')
+        self.assertEqual(a['artefact']['kind'], 'test_brief')
+        self.assertIn('profit per visitor', a['artefact']['draft'])
+        self.assertTrue(a['stop_rule'] and a['check_on'])
+
+    def test_bombas_connect(self):
+        f = [x for x in audit.run('bombas') if x['rule_id'] == 'OFFER-R32']
+        self.assertEqual([x['status'] for x in f], ['unavailable'])
+
+
 if __name__ == '__main__':
     unittest.main()

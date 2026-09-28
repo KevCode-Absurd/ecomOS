@@ -213,3 +213,12 @@ LOYALTY_ORDERS_TO_FIRST = (1, 3)      # and reachable in 1 to 3 orders
 COHORT_DAYS = 180
 COHORT_GAP = 0.20
 COHORT_MIN = 200          # customers needed in each group
+
+# Welcome code economics (screen 04, OFFER-R32; room job LIFE-C02, the pop-up first-order offer). A code on first
+# orders pays only if enough code orders are truly new: required share = code dollars / (margin after the code +
+# code dollars). With no holdout on record, the move is a holdout test. Our own rule, written down.
+WELCOME_DAYS = 90
+WELCOME_MIN_ORDERS = 100       # code first orders in the window before the rule reads
+WELCOME_FLAG = 0.25            # required new share at or above this is medium severity, else low
+WELCOME_FLOW_WORDS = ('welcome',)
+HOLDOUT_WORDS = ('holdout', 'hold-out', 'hold out', 'no code arm', 'pop-up', 'popup', 'welcome')
