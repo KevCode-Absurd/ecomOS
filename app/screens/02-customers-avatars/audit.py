@@ -1107,10 +1107,20 @@ def desk_for(brain: Brain, avatars: list[dict], all_rungs: list[dict]) -> dict:
     return dict(_DESK_CACHE[key])
 
 
+def thresholds(brain: Brain) -> dict:
+    """The thresholds this brand tunes in its brain (builds.TUNABLE), for brain_refs and for builds.tuned."""
+    return builds.thresholds_from(brain.records("learnings"))
+
+
 def run(brand: str, window: dict, brain_root: Path | None = None) -> list[dict]:
     ends_on = window["ends_on"]
-    today = dt.date.fromisoformat(ends_on) + dt.timedelta(days=1)
-    brain = ReadBrain(brand, brain_root, today)
+    brain = ReadBrain(brand, brain_root, dt.date.fromisoformat(ends_on) + dt.timedelta(days=1))
+    with builds.tuned(thresholds(brain)):
+        return _run(brand, window, brain)
+
+
+def _run(brand: str, window: dict, brain) -> list[dict]:
+    ends_on = window["ends_on"]
     avatars = avatar_rows(brain)
     all_rungs = rungs(brain)
     angles = ad_angles(brand, ends_on)

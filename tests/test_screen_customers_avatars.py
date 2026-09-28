@@ -2502,3 +2502,38 @@ class DepthSections(TempBrain):
             self.assertTrue(self.ACTION_KEYS <= set(a), (a['id'], self.ACTION_KEYS - set(a)))
             self.assertIn(a['owner'], ('agent', 'agent_drafts', 'person'))
             self.assertIn(a['artefact']['kind'], rank_engine.ARTEFACT_KINDS)
+
+
+class TunedThresholds(TempBrain):
+    """Feature 10.7: depth.md section 8. A brand tunes a threshold with a brain record; the rules, the rule line and the
+    findings follow it; a value out of bounds is ignored; the default comes back after the build."""
+
+    def put(self, field, value):
+        b = api.Brain('bombas', self.tmp)
+        errs = b.put({'id': f'bombas.learnings.{field}', 'brand': 'bombas', 'section': 'learnings', 'field': field, 'value': value,
+                      'text': 'Founder threshold for this screen.'})
+        self.assertEqual(errs, [])
+        api._OVERVIEW_CACHE.clear()
+        api._RANK_CACHE.clear()
+
+    def price_led(self):
+        return {f['entity']['id'] for f in api.audit.run('bombas', RANK_WINDOW, api.BRAIN_ROOT) if f['rule_id'] == 'CUST-R28'}
+
+    def test_record_moves_the_rule_and_the_line(self):
+        before = self.price_led()
+        self.put('threshold_price_led', 0.6)
+        after = self.price_led()
+        self.assertLess(len(after), len(before))
+        d = api.handle(Req(['overview']))
+        self.assertIn('60 percent', d['blocks']['price-wrap']['rule'])
+        self.assertEqual(api.builds.PRICE_LED, 0.3)
+
+    def test_out_of_bounds_is_ignored(self):
+        before = self.price_led()
+        self.put('threshold_price_led', 5)
+        self.assertEqual(self.price_led(), before)
+
+    def test_bounds_and_names(self):
+        self.assertEqual(api.builds.thresholds_from([{'field': 'threshold_sales_gap', 'value': 2.0},
+                                                     {'field': 'threshold_nope', 'value': 1},
+                                                     {'field': 'threshold_risk_high', 'value': True}]), {'SALES_GAP': 2.0})

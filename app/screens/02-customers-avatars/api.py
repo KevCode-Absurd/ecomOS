@@ -426,7 +426,12 @@ def overview(brain: Brain) -> dict:
     return copy.deepcopy(hit)
 
 
-def _build_overview(brain: Brain) -> dict:
+def _build_overview(brain) -> dict:
+    with builds.tuned(audit.thresholds(brain)):
+        return _build_overview_raw(brain)
+
+
+def _build_overview_raw(brain: Brain) -> dict:
     ends_on = (brain.today - dt.timedelta(days=1)).isoformat()
     avatars = audit.avatar_rows(brain)
     all_rungs = audit.rungs(brain)
@@ -758,6 +763,12 @@ def apply_decisions(actions: list[dict], today: dt.date) -> None:
 
 
 def _build_rank(brand: str, window: dict) -> dict:
+    brain = audit.ReadBrain(brand, BRAIN_ROOT, dt.date.fromisoformat(window["ends_on"]) + dt.timedelta(days=1))
+    with builds.tuned(audit.thresholds(brain)):
+        return _build_rank_raw(brand, window)
+
+
+def _build_rank_raw(brand: str, window: dict) -> dict:
     eng = _engine()
     findings = audit.run(brand, window, BRAIN_ROOT)
     nr = eng.net_revenue_28d(brand, window)

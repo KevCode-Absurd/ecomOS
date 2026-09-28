@@ -3190,3 +3190,44 @@ def block_rules(d: dict) -> dict:
     sv = d.get("survey_shares") or {}
     out["salesshare-wrap"]["line"] = ("Survey answers: " + (sv.get("line") or str(sv.get("reason") or "unavailable").rstrip(".")) + ". " + out["salesshare-wrap"]["line"]).strip()
     return out
+
+
+# ---------------------------------------------------------------- thresholds a brand can tune (depth.md section 8, 10.7)
+
+import threading as _threading
+from contextlib import contextmanager as _contextmanager
+
+# name -> (lowest, highest) a brand may set through a brain record `<brand>.learnings.threshold_<name>`
+TUNABLE = {"PRICE_LED": (0.1, 0.9), "SALES_GAP": (1.1, 4.0), "RISK_HIGH": (1.05, 3.0), "MARKET_SHARE": (0.2, 0.9),
+           "SPLIT_SHARE": (0.15, 0.5), "AD_UNDER": (0.1, 0.9), "SEASON_LIFT": (1.1, 3.0), "CLAIM_HITS": (1, 20),
+           "PAID_RETURNING": (0.05, 0.8), "WEAK_COHORT": (0.3, 0.95), "FOCUS_SOON": (20, 90), "RECHECK_DAYS": (7, 120)}
+_TUNE_LOCK = _threading.RLock()
+
+
+def thresholds_from(records: list[dict]) -> dict:
+    """The tunable thresholds a brand's learnings records set: field `threshold_<name>`, a number inside the bounds.
+    Anything else is ignored, so a bad record can never break a rule."""
+    out = {}
+    for r in records:
+        f = str(r.get("field") or "")
+        name = f[len("threshold_"):].upper() if f.startswith("threshold_") else None
+        v = r.get("value")
+        if name in TUNABLE and isinstance(v, (int, float)) and not isinstance(v, bool):
+            lo, hi = TUNABLE[name]
+            if lo <= v <= hi:
+                out[name] = v
+    return out
+
+
+@_contextmanager
+def tuned(overrides: dict):
+    """Run a build with the brand's thresholds in place, then put the defaults back. One build at a time holds the
+    lock, so two brands on a threaded server never see each other's thresholds."""
+    with _TUNE_LOCK:
+        g = globals()
+        saved = {k: g[k] for k in overrides}
+        g.update(overrides)
+        try:
+            yield
+        finally:
+            g.update(saved)
