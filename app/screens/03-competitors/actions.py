@@ -193,7 +193,8 @@ def act_lookalike(f: dict, m: dict) -> dict:
                         ("person", "File the report in Meta's IP form with the trademark number."),
                         ("agent", f"Re-check the page in the Ad Library on {_plus(f['last_seen'], 7)}.")),
         "size": {"text": f"{lk.get('ads_seen')} lookalike ads live", "count": lk.get("ads_seen")},
-        "win_rule": "0 active ads on the page", "stop_rule": None,
+        "win_rule": "0 active ads on the page",
+        "stop_rule": "Page still running ads 14 days after the report: escalate through the Meta business support channel",
         "check_on": _plus(f["last_seen"], 7), "time_to_ship_hours": 1,
     }
 
@@ -367,7 +368,7 @@ def act_refresh(f: dict, m: dict) -> dict:
 def act_no_id(f: dict, m: dict) -> dict:
     """COMP-R13: a tracked page with no page id. A person finds and pastes it; the agent adds it to the pull."""
     page = f["entity"]["label"].replace(" page id", "")
-    return {"title": f"Paste {page}'s Ad Library page id so it can be pulled", "owner": "person",
+    return {"title": f"Paste the Ad Library page id for {page} so it can be pulled", "owner": "person",
             "artefact": {"kind": "brain_record", "label": f"{page} page id in the pull config", "draft":
                          f"Open the Ad Library, search the page name {page}, open the page, copy view_all_page_id from the url. "
                          "Paste it here. The agent adds it to config/apify.json. Never pull by keyword."},
@@ -399,7 +400,8 @@ def act_lost(f: dict, m: dict) -> dict:
                             ("person", "Approve; legal checks any named comparison."),
                             ("agent", f"Publish the FAQ and macro; check the theme's one-star count on {_plus(f['last_seen'], 28)}.")),
             "size": {"text": f"{x.get('times')} Reddit recommendations, {x.get('upvotes')} upvotes"},
-            "win_rule": "Fewer one-star reviews on the theme next quarter", "stop_rule": None,
+            "win_rule": "Fewer one-star reviews on the theme next quarter",
+            "stop_rule": "Add to cart on the page with the compare block down 5 percent for 7 days: remove the block",
             "check_on": _plus(f["last_seen"], 28), "time_to_ship_hours": 3}
 
 
@@ -416,7 +418,8 @@ def act_attack(f: dict, m: dict) -> dict:
                             ("person", "Product owner takes the ticket on the top doubt."),
                             ("agent", f"Check one-star reviews on the theme on {_plus(f['last_seen'], 28)}.")),
             "size": {"text": f"{a.get('one_star')} one-star reviews on the theme", "count": a.get("one_star")},
-            "win_rule": "One-star share on the theme down next quarter", "stop_rule": None,
+            "win_rule": "One-star share on the theme down next quarter",
+            "stop_rule": "Add to cart on the pages with the block down 5 percent for 7 days: take the block down and review",
             "check_on": _plus(f["last_seen"], 28), "time_to_ship_hours": 4}
 
 
@@ -433,7 +436,8 @@ def act_undercut(f: dict, m: dict) -> dict:
                             ("person", "The marketplace owner acts on the flags."),
                             ("agent", f"Re-check the listings on {_plus(f['last_seen'], 14)}.")),
             "size": {"text": f"{(st or {}).get('listings')} listings, {round((st or {}).get('gap', 0) * 100)} percent gap"},
-            "win_rule": "Amazon price per pair within 10 percent of the site", "stop_rule": None,
+            "win_rule": "Amazon price per pair within 10 percent of the site",
+            "stop_rule": "No reseller found and no listing of ours below the site after 2 checks: close the finding",
             "check_on": _plus(f["last_seen"], 14), "time_to_ship_hours": 2}
 
 
@@ -510,7 +514,8 @@ def act_new_move(f: dict, m: dict) -> dict:
                             ("agent", "Decide overlap with our angles by rule; draft 2 counter ads if it overlaps."),
                             ("person", "Approve the counter."),
                             ("agent", f"Check their move is still live on {_plus(f['last_seen'], 14)}.")),
-            "size": {"text": "2 counter ads", "count": 2}, "win_rule": None, "stop_rule": None,
+            "size": {"text": "2 counter ads", "count": 2}, "win_rule": "Counter ads at or below control cost per order",
+            "stop_rule": "Counter ads 30 percent above control cost per order after 7 days",
             "check_on": _plus(f["last_seen"], 14), "time_to_ship_hours": 4}
 
 
@@ -554,7 +559,8 @@ def act_card(f: dict, m: dict) -> dict:
             "steps": _steps(("agent", f"Pull a fresh capture of {page} (page id, inside the caps) and its price feed."),
                             ("agent", "Check each line of the card; drop what no longer holds; date the rest."),
                             ("agent", "Publish the refreshed card to the support macros.")),
-            "size": None, "win_rule": None, "stop_rule": None, "check_on": _plus(f["last_seen"], 7), "time_to_ship_hours": 1}
+            "size": {"text": "1 card, every line re-checked"}, "win_rule": None,
+            "stop_rule": "A line that no longer holds is dropped the same day", "check_on": _plus(f["last_seen"], 7), "time_to_ship_hours": 1}
 
 
 def act_frames(f: dict, m: dict) -> dict:

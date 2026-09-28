@@ -1043,6 +1043,26 @@ class TestRank(TempBrain):
             self.assertEqual(a['owner'], 'person')
             self.assertEqual(a['artefact']['kind'], 'connector_setup')
 
+    def test_money_actions_are_sized_with_a_stop_rule(self):
+        """Depth rule 5: an action that changes money or traffic gives a size and a stop or check-again rule with a date."""
+        money = {'ad_brief', 'offer', 'test_brief', 'page_section', 'copy', 'price_change', 'listing_fix', 'ticket'}
+        for a in self.out['actions']:
+            if a['artefact']['kind'] in money and a['status'] != 'unavailable':
+                self.assertTrue(a.get('size') and a['size'].get('text'), a['id'])
+                self.assertTrue(a.get('stop_rule') or a.get('win_rule'), a['id'])
+                self.assertTrue(a.get('stop_rule'), a['id'])
+                self.assertRegex(a['check_on'], r'^\d{4}-\d{2}-\d{2}$')
+
+    def test_every_builder_sizes_money_actions(self):
+        """Builders for rules that do not fire on this capture still carry a stop rule when they change money."""
+        src = (SCREEN / 'actions.py').read_text(encoding='utf-8')
+        import re as _re
+        for name in ('act_new_move', 'act_card', 'act_above', 'act_corner', 'act_price_cut'):
+            body = src.split('def ' + name, 1)[1].split('\ndef ', 1)[0]
+            m = _re.search(r'"stop_rule": ([^,]+)', body)
+            self.assertIsNotNone(m, name)
+            self.assertNotEqual(m.group(1).strip(), 'None', name)
+
     def test_drafts_never_copy(self):
         for a in self.out['actions']:
             if a['artefact']['kind'] == 'ad_brief':
