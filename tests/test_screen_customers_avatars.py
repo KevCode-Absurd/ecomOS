@@ -2552,9 +2552,10 @@ class HandOff(unittest.TestCase):
                       'voice/examples', 'avatars/draft', 'messaging/approve', 'voice/check'):
             self.assertIn(route, t)
         for ask in ('survey_answers', 'customer_paths', 'SKU to product-line', 'Tickets and returns', 'Pack prices', 'last_year',
-                    '`avatar` entity', 'Angle and avatar tags', 'situations'):
+                    '`avatar` entity', 'Angle and avatar tags', 'situations', '`brand` field on hand-off', 'decision row sends',
+                    'shopper_runs'):
             self.assertIn(ask, t)
-        for rid in ('CUST-R07', 'CUST-R08', 'CUST-R09', 'CUST-R32'):
+        for rid in ('CUST-R07', 'CUST-R08', 'CUST-R09', 'CUST-R32', 'CUST-R34'):
             self.assertIn(rid, t)
         self.assertNotIn('—', t)
         self.assertNotRegex(t, r'\b(should|consider|leverage)\b')
