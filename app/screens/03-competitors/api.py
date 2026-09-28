@@ -330,7 +330,7 @@ SECTION_RULES = {"review": ["COMP-R32", "COMP-R28", "COMP-R11"], "season": ["COM
                  "category": ["COMP-R16"], "reviews": ["COMP-R17"], "coverage": ["COMP-R05", "COMP-R01"], "velocity": ["COMP-R19"],
                  "mix": ["COMP-R06", "COMP-R07", "COMP-R08"], "placements": [], "refs": ["COMP-R03"], "changes": ["COMP-R24", "COMP-R12"],
                  "niche": ["COMP-R20"], "map": ["COMP-R11"], "frames": ["COMP-R32", "COMP-R28"], "premium": ["COMP-R21"],
-                 "prices": ["COMP-R25", "COMP-R09", "COMP-R10", "COMP-R02"], "search": ["COMP-R22", "COMP-R23"], "presence": ["COMP-R18"],
+                 "prices": ["COMP-R25", "COMP-R33", "COMP-R09", "COMP-R10", "COMP-R02"], "search": ["COMP-R22", "COMP-R23"], "presence": ["COMP-R18"],
                  "fresh": ["COMP-R14", "COMP-R13"]}
 HOLD = {"handoff": "The snapshot is written with each capture; tests are proposed when you approve them.", "history": "Threat trend is drawn from the dated captures.", "pages": "No named loss on this capture; keep the battlecards fresh.", "placements": "Our placements are not in the brain; the pull fills them.",
         "refs": "No offer they keep live that we hold and do not run.", "map": "No open strong-claim corner; contest the one beside us.",

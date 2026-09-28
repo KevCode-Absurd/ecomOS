@@ -45,7 +45,7 @@
     const rows = lad.bands.map((b) => ({ label: b.name, band: b, us: false })).concat(lad.ladders.filter((l) => l.steps.length).map((l) => ({ label: 'Us: ' + l.style, ladder: l, us: true })));
     const W = 720, rowH = 24, pad = { l: 170, r: 24, t: 14, b: 40 };
     const H = pad.t + rows.length * rowH + pad.b;
-    const vals = lad.bands.flatMap((b) => [b.low, b.high, b.median]).concat(lad.ladders.flatMap((l) => l.steps.map((s) => s.per_pair))).filter((v) => v != null);
+    const vals = lad.bands.flatMap((b) => [b.low, b.high, b.median].concat((b.seen || []).map((x) => x.per_unit))).concat(lad.ladders.flatMap((l) => l.steps.map((s) => s.per_pair))).filter((v) => v != null);
     const xmax = Math.ceil(Math.max(...vals, 10) * 1.1 / 5) * 5;
     const X = (v) => pad.l + (v / xmax) * (W - pad.l - pad.r);
     const s = svg('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'aria-label': 'Price per ' + U + ': tracked bands against our pack ladders' });
@@ -66,6 +66,11 @@
         const d = svg('circle', { cx: X(b.median), cy: y, r: 5, class: 'dot' + (b.rough ? ' rough' : '') });
         d.append(svg('title', null, b.name + ': ' + b.text));
         s.append(d);
+        for (const x of b.seen || []) {   // prices the team logged from their site: squares, red when outside the band
+          const q = svg('rect', { x: X(x.per_unit) - 4, y: y - 4, width: 8, height: 8, class: 'seen' + (x.in_band === false ? ' out' : '') });
+          q.append(svg('title', null, x.product + ': ' + usd(x.per_unit) + ' a ' + U + ', seen ' + x.date + (x.in_band === false ? ', outside the band' : '')));
+          s.append(q);
+        }
       } else {
         const st = r.ladder.steps;
         if (st.length > 1) s.append(svg('line', { x1: X(Math.min(...st.map((x) => x.per_pair))), x2: X(Math.max(...st.map((x) => x.per_pair))), y1: y, y2: y, class: 'band brand' }));
@@ -108,7 +113,7 @@
         { key: 'price', label: 'Price in dollars', type: 'number', step: '0.01' }, { key: 'units', label: 'Units in the pack', type: 'number', value: '1' },
         { key: 'date', label: 'Date seen', type: 'date', value: new Date().toISOString().slice(0, 10) }, { key: 'url', label: 'Source link (https)' }], 'Log the price'),
       el('p', { class: 'micro faint', text: 'Log the same product each week. A price ' + Math.round((pm.threshold || 0.15) * 100) + ' percent or more below its own ' + (pm.trail_days || 30) + '-day average goes on the plan. Public prices only.' }));
-    mount('#prices', moves, seen, bandChart(lad), el('p', { class: 'micro faint', text: 'Our dots grow with pack size; hover for price per pack. Our prices are simulated net sales per unit for ' + lad.month + '. Hollow dots are rough public reads.' }),
+    mount('#prices', moves, seen, bandChart(lad), el('p', { class: 'micro faint', text: 'Our dots grow with pack size; hover for price per pack. Squares are prices the team logged from their sites; red is outside the band on file. Our prices are simulated net sales per unit for ' + lad.month + '. Hollow dots are rough public reads.' }),
       table, el('p', { class: 'small' }, el('b', { text: 'Pack ladder: ' }), 'our packs save a median ' + (lad.median_saving == null ? NA : Math.round(lad.median_saving * 100) + ' percent') + ' a ' + U + ' against a single' + (b ? '. ' + b.page + ' advertises ' + b.pct + ' percent off bundles.' : '.') + (lad.shallow ? ' The ladder offer is on the plan.' : '')), amz,
       el('ul', { class: 'small muted' }, ...lad.bands.map((x) => el('li', null, x.name + ': ' + x.text + '. ', x.ref ? el('a', { href: x.ref, target: '_blank', rel: 'noopener', text: 'source' }) : null))));
   }

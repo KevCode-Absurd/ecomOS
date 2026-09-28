@@ -1731,5 +1731,28 @@ class TestInterviewCoverage(TempInputs):
         self.assertNotIn('COMP-R29', [f['rule_id'] for f in api.handle(Req(['plan']))['findings']])
 
 
+class TestBandCheck(TempInputs):
+    """7.3: logged prices sit on the band chart; one outside the page's public band puts a band update on the plan."""
+    def price(self, price, product, page='Darn Tough Vermont'):
+        return self.post({'kind': 'price_seen', 'page': page, 'product': product, 'price': price, 'units': 1, 'date': DAY})
+
+    def test_in_and_out_of_band(self):
+        band = lambda: next(b for b in api.handle(Req(['overview']))['ladder']['bands'] if b['name'] == 'Darn Tough Vermont')
+        b = band()
+        self.assertEqual(b['seen'], [])
+        inside = (b['low'] + b['high']) / 2 if b['high'] is not None else b['low'] + 1
+        self.price(inside, 'Hiker')
+        self.assertEqual([x['in_band'] for x in band()['seen']], [True])
+        rank = lambda: api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions']
+        self.assertNotIn('COMP-R33', [a['rule_id'] for a in rank()])
+        self.price(b['low'] - 5, 'Light cushion')
+        self.assertEqual(len(band()['out_of_band']), 1)
+        a = next(a for a in rank() if a['rule_id'] == 'COMP-R33')
+        self.assertEqual((a['owner'], a['artefact']['kind']), ('person', 'brain_record'))
+        self.assertIn('outside the band on file', a['why'])
+        self.assertEqual(api.actions.ranker.validate_action(a), [])
+        self.assertIn('COMP-R33', api.SECTION_RULES['prices'])
+
+
 if __name__ == '__main__':
     unittest.main()
