@@ -624,6 +624,48 @@ KIND_TEAM = {"ad_brief": "creative", "copy": "copy", "test_brief": "growth", "of
              "connector_setup": "setup", "report": "founder"}
 
 
+# the `to` field of a hand-off (events.md): the team or screen that ships each artefact kind
+KIND_TO = {"ad_brief": "creative", "copy": "copy", "test_brief": "25-experiments", "offer": "04-offers-pricing",
+           "page_section": "landing pages", "listing_fix": "20-marketplaces", "ticket": "cx", "research_note": "research",
+           "brain_record": "05-brand-brain", "connector_setup": "22-measurement", "report": "founder"}
+
+
+def handoff_rows(brand: str, today: dt.date) -> dict:
+    """Rows for the shared hand-offs table (events.md, POST /api/handoffs): one per decided move with a draft, sent to the
+    team that ships it, plus one per battlecard and one support answer pack for cx. The page posts only rows not yet handed."""
+    window = actions.ranker.default_window(28, (today - dt.timedelta(days=1)).isoformat())
+    acts = actions.ranker.apply_decisions(actions.build(brand, window, BRAIN_ROOT)["actions"], today)
+    moves = []
+    for a in acts:
+        d = a.get("decision") or {}
+        if a.get("status") == "unavailable" or d.get("choice") not in ("agent", "person"):
+            continue   # a hand-off follows an approving decision, never before it
+        moves.append({"from_screen": audit.SCREEN, "to": KIND_TO.get(a["artefact"]["kind"], "founder"), "kind": a["artefact"]["kind"],
+                      "title": a["title"][:200], "why": a["why"][:600], "draft": (a["artefact"].get("draft") or a["artefact"]["label"])[:20000],
+                      "win_rule": a.get("win_rule"), "stop_rule": a.get("stop_rule"), "check_on": a.get("check_on"),
+                      "capability": a["capability"]["id"], "owner": a["owner"], "finding_id": a["id"], "status": "decided"})
+    m = audit.market_full(brand, today, BRAIN_ROOT)
+    m.pop("brain")
+    cards = battlecards(m, page_rows(m))
+    support = [{"from_screen": audit.SCREEN, "to": "cx", "kind": "copy", "title": f"Battlecard: {brand.capitalize()} against {c['name']}",
+                "why": f"Verified differences for support, facts checked {c['verified_on'] or 'unavailable'} by {c['checked_by']}.",
+                "draft": c["card"][:20000], "win_rule": None, "stop_rule": f"Re-check every line before {STALE_CARD_DAYS} days pass",
+                "check_on": (dt.date.fromisoformat(c["verified_on"]) + dt.timedelta(days=STALE_CARD_DAYS)).isoformat() if c["verified_on"] else None,
+                "capability": "BRAND-C57", "owner": "agent", "finding_id": f"{audit.SCREEN}.battlecard.{c['key']}.{c['verified_on']}",
+                "status": "decided"} for c in cards["rows"] if not c["stale"]]
+    mc = macros(m)
+    ready = [x for x in mc["rows"] if x["answer"]]
+    if ready:
+        support.append({"from_screen": audit.SCREEN, "to": "cx", "kind": "copy", "title": f"Support answers: {len(ready)} compare and doubt replies",
+                        "why": "Built from verified brain proof and the guarantee only.",
+                        "draft": "\n\n".join(f"Q: {x['question']}\nA: {x['answer']}" for x in ready)[:20000], "win_rule": None,
+                        "stop_rule": "Drop an answer the day its proof no longer holds", "check_on": (today + dt.timedelta(days=30)).isoformat(),
+                        "capability": "BRAND-C57", "owner": "agent", "finding_id": f"{audit.SCREEN}.macros.{today.isoformat()[:7]}",
+                        "status": "decided"})
+    return {"moves": moves, "support": support,
+            "rule": "A move is handed over once you decide it (agent or person). Battlecards go to cx while fresh; stale cards wait for a check."}
+
+
 def brief_pack(brand: str, today: dt.date) -> dict:
     """Every drafted artefact on the plan, grouped by the team that ships it, as one text per team."""
     window = actions.ranker.default_window(28, (today - dt.timedelta(days=1)).isoformat())
@@ -684,6 +726,8 @@ def handle(req):
                     "note": "Logged by the team on this screen. Local file, never sent anywhere. No names or quotes kept."}
         if req.method == "POST" and req.path == ["capture"]:
             return run_capture(brand, today)
+        if req.method == "GET" and req.path == ["handoffs"]:
+            return handoff_rows(brand, today)
         if req.method == "GET" and req.path == ["briefs"]:
             return brief_pack(brand, today)
         if req.method == "GET" and req.path == ["competitor_snapshot"]:

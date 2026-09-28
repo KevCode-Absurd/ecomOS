@@ -34,6 +34,12 @@ Round 0 notes (28 Sep 2026): brand price per pair is simulated net sales per uni
 
 Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `app/connectors/apify.py` (12 pages with ids, 1,800 items cap, estimate $2.08, inside the $4 run and $30 week caps). The live run was blocked by the session's permission check on 28 Sep, so round 1 builds on the brain's 28 Sep pulls (page-level formats, hook types, offers, run lengths and 3 quoted ads a page) and the page says so.
 
+## Round 10: the shared hand-offs, a depth pass since round 6, and pull-ready blocks
+
+| # | Feature | Status |
+|---|---|---|
+| 10.1 | Briefs and battlecards on the shared hand-offs table (events.md, `/api/handoffs`): `GET handoffs` builds the rows in code, one per decided move (agent or person) sent to the team or screen that ships its kind (creative, copy, landing pages, cx, 04-offers-pricing, 25-experiments, 20-marketplaces, 05-brand-brain, 22-measurement), one per fresh battlecard and one support answer pack for cx; under the brief pack the page shows what was sent by team and what waits, and "Hand over N" posts only rows not yet sent (matched by finding id and team); nothing is sent before a decision or a click; every row passes the server's own validator in a test. The proposed `briefs` table ask is closed | done |
+
 ## Round 9: a depth pass on rounds 6 to 8, then what is left of the room
 
 | # | Feature | Status |
@@ -250,7 +256,7 @@ Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permi
 
 - `server.py` serves only index.html, screen.js and screen.css (plus fixtures) from a screen folder; a report page or split JS files need an allow-list entry. Local fallback: the report is `?view=report` on the same page.
 
-- A shared `briefs` table: this screen drafts ad briefs, offers, page sections, copy and tickets that 09-creative, 04-offers-pricing, 10-copy, 07-landing-pages-cro and 15-customers-cx act on. Proposed row (served at `GET briefs`, field `rows`): id, brand, from_screen, team, kind, title, why, draft, win_rule, stop_rule, check_on, capability, autonomy, owner, status (proposed or decided), created. Local fallback: one copy per team, and the rows as JSON.
+- Answered (lead, 28 Sep): the shared `handoffs` table (`/api/handoffs`) replaces the proposed `briefs` table; this screen posts to it since 10.1.
 
 - A way to propose brain records: the brand-brain contract names `POST /brain/<brand>/records` (proposed, into the review queue), not built yet. This screen drafts one learnings record per read move (served in `overview` as `learning_drafts`) and offers them as a copy. Local fallback: paste into the review queue by hand.
 
@@ -352,6 +358,7 @@ Where each job lives now (round 9). The question column quotes the room spec.
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
+| 10 | 10.1 | 2026-09-28 | Shared hand-offs |
 | 9 | 9.1 to 9.10 | 2026-09-28 | Depth pass; room jobs map; price drift across captures; open corners with demand; traffic connect step; visits count as tracking; team exports; sized new rules; evidence on new rules; round close. Screenshot `round9.png` |
 | 8 | 8.1 to 8.10 | 2026-09-28 | Outcomes; lost moves held; overdue reads; scoreboard; site changes; bring back snoozed; results in the brief and report; learnings for the brain; second brand check; round close. Screenshot `round8.png` |
 | 7 | 7.1 to 7.10 | 2026-09-28 | Interview reasons; coverage by name; prices seen on the band chart; price re-check cadence; logged work in the brief; queue and log in the report; briefs as rows; second brand check; form access; round close. Screenshot `round7.png` |

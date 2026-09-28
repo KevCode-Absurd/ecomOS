@@ -831,9 +831,36 @@
     let b;
     try { b = await api(BASE + 'briefs'); } catch (e) { mount('#briefs', el('p', { class: 'na', text: 'Brief pack unavailable: ' + e.message })); return; }
     mount('#briefs', el('div', { class: 'row' }, el('b', { text: 'Brief pack: ' }), el('span', { class: 'small', text: b.total + ' moves, ' + b.drafted + ' with a draft, for ' + b.teams.length + ' teams.' }),
-      ...b.teams.map((t) => UI.copyButton({ label: t.team + ' (' + t.n + ')', text: () => t.text })),
-      UI.copyButton({ label: 'Copy as rows (JSON)', text: () => JSON.stringify(b.rows, null, 1) })),
-      el('p', { class: 'micro faint', text: 'Copy one team\'s pack and paste it into that team\'s channel. Snoozed moves are left out.' }));
+      ...b.teams.map((t) => UI.copyButton({ label: t.team + ' (' + t.n + ')', text: () => t.text }))),
+      el('p', { class: 'micro faint', text: 'Copy one team\'s pack and paste it into that team\'s channel. Snoozed moves are left out.' }),
+      handoffBlock());
+  }
+
+  // the shared hand-offs table (events.md): decided moves to the team that ships them, battlecards and answers to cx
+  function handoffBlock() {
+    const box = el('div', { class: 'card flat stack' }, el('span', { class: 'small muted', text: 'Loading the hand-offs.' }));
+    (async () => {
+      let mine, sent;
+      try { [mine, sent] = await Promise.all([api(BASE + 'handoffs'), api('/api/handoffs?from_screen=' + SCREEN)]); }
+      catch (e) { box.replaceChildren(el('p', { class: 'na', text: 'Hand-offs unavailable: ' + e.message })); return; }
+      const key = (r) => r.finding_id + '|' + r.to;
+      const done = new Set((sent.handoffs || []).map(key));
+      const rows = mine.moves.concat(mine.support);
+      const todo = rows.filter((r) => !done.has(key(r)));
+      const byTo = {};
+      for (const r of sent.handoffs || []) byTo[r.to] = (byTo[r.to] || 0) + 1;
+      const st = el('span', { class: 'micro muted', role: 'status', 'aria-live': 'polite' });
+      const b = el('button', { class: 'btn sm primary', type: 'button', text: 'Hand over ' + todo.length, disabled: !todo.length });
+      b.addEventListener('click', async () => {
+        b.disabled = true; let n = 0;
+        for (const r of todo) { try { await api('/api/handoffs', { method: 'POST', body: r }); n++; } catch (e) { st.textContent = 'Stopped: ' + e.message; break; } }
+        st.textContent = n + ' handed over. Reloading.'; setTimeout(() => location.reload(), 400);
+      });
+      box.replaceChildren(el('div', { class: 'row wrap' }, el('b', { text: 'Hand-offs: ' }),
+        el('span', { class: 'small', text: (sent.handoffs || []).length + ' sent' + (Object.keys(byTo).length ? ' (' + Object.entries(byTo).map(([t, n]) => t + ' ' + n).join(', ') + ')' : '') + '; ' + todo.length + ' waiting: ' + todo.filter((r) => mine.moves.includes(r)).length + ' decided moves, ' + todo.filter((r) => mine.support.includes(r)).length + ' for support.' }), b, st),
+        el('p', { class: 'micro faint', text: mine.rule + ' Receiving screens read their rows by team; nothing is sent until you press the button.' }));
+    })();
+    return box;
   }
 
   // ---------- 3. action lanes by owner, with the founder's decisions ----------

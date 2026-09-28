@@ -2202,5 +2202,41 @@ class TestEvidenceNewRules(TestSizedNewRules):
                     self.assertTrue(ok, f"{f['rule_id']}: {n} in '{f['sentence']}'")
 
 
+class TestHandoffRows(TempBrain):
+    """10.1: rows for the shared hand-offs table pass the server's own validator; moves need a decision first."""
+    def test_rows_validate(self):
+        server = load('ecomos_server_t', ROOT / 'app' / 'server.py')
+        api.BRAIN_ROOT = self.tmp
+        out = api.handle(Req(['handoffs']))
+        self.assertEqual(out['moves'], [])            # no decision logged in a fresh copy: nothing to hand over
+        self.assertTrue(out['support'])
+        for r in out['support']:
+            row = server.Handoffs.validate(r)
+            self.assertEqual((row['to'], row['kind'], row['status']), ('cx', 'copy', 'decided'))
+            self.assertTrue(row['finding_id'].startswith('03-competitors.'))
+        acts = api.handle(Req(['plan']))['actions']
+        for kind, to in api.KIND_TO.items():
+            self.assertIn(kind, server.Handoffs.KINDS)
+            server.Handoffs.validate({'from_screen': '03-competitors', 'to': to, 'kind': kind, 'title': 't'})
+
+    def test_decided_moves(self):
+        dec = self.tmp / 'decisions.json'
+        acts = api.handle(Req(['plan']))['actions']
+        dec.write_text(json.dumps([{'screen': '03-competitors', 'capability': acts[0]['capability']['id'], 'choice': 'agent',
+                                    'finding_id': acts[0]['id'], 'time': '2026-09-28T10:00:00Z'}]))
+        old = api.actions.ranker.DECISIONS
+        api.actions.ranker.DECISIONS = dec
+        try:
+            fn = api.actions.ranker.apply_decisions
+            default = fn.__defaults__
+            fn.__defaults__ = (default[0], dec)
+            out = api.handle(Req(['handoffs']))
+            fn.__defaults__ = default
+        finally:
+            api.actions.ranker.DECISIONS = old
+        self.assertEqual([r['finding_id'] for r in out['moves']], [acts[0]['id']])
+        self.assertEqual(out['moves'][0]['to'], api.KIND_TO[acts[0]['artefact']['kind']])
+
+
 if __name__ == '__main__':
     unittest.main()
