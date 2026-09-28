@@ -1641,3 +1641,50 @@ def hierarchy(themes: dict, perception_x: dict, ladders_rows: list[dict], all_ru
             "doubt": {"id": doubt["id"], "doubt": doubt["doubt"], "one_star": doubt["one_star"], "verdict": doubt["verdict"]} if doubt else None,
             "record": record,
             "line": "Built from buyer evidence: the theme that earns the most stars, the proof points behind the most five-star lines, the doubt that most needs an answer."}
+
+
+# ---------------------------------------------------------------- voice check: does a line sound like us
+
+MAX_SENTENCE_WORDS = 20
+MAX_GRADE = 10
+INFLATED = {"leverage", "unlock", "elevate", "revolutionary", "game-changing", "game changing", "ultimate", "world-class",
+            "unparalleled", "cutting-edge", "synergy", "empower", "seamless experience", "next-level", "should", "consider"}
+SUPERLATIVE = r"\b(best|#1|number one|most comfortable|perfect|guaranteed|never|always|100 ?%|clinically)\b"
+
+
+def _syllables(w: str) -> int:
+    w = w.lower()
+    groups = re.findall(r"[aeiouy]+", w)
+    n = len(groups) - (1 if w.endswith("e") and len(groups) > 1 else 0)
+    return max(1, n)
+
+
+def voice_check(text: str, forbidden: list[str], disliked: list[str], buyer_words: list[str], brand_tokens: set[str]) -> dict:
+    """Deterministic checks of one line against the writing rules, the voice sheet and the claims register."""
+    text = str(text or "").strip()
+    checks = []
+    add = lambda key, status, why: checks.append({"key": key, "status": status, "why": why})
+    if not text:
+        return {"verdict": "fail", "checks": [{"key": "empty", "status": "fail", "why": "Paste a line first."}]}
+    sents = [s for s in re.split(r"[.!?]+\s*", text) if s.strip()]
+    words = re.findall(r"[A-Za-z0-9'%$#-]+", text)
+    longest = max((len(s.split()) for s in sents), default=0)
+    add("length", "pass" if longest <= MAX_SENTENCE_WORDS else "fail", f"Longest sentence {longest} words; the rule is {MAX_SENTENCE_WORDS} or fewer.")
+    if words:
+        grade = 0.39 * (len(words) / max(1, len(sents))) + 11.8 * (sum(_syllables(w) for w in words) / len(words)) - 15.59
+        add("grade", "pass" if grade <= MAX_GRADE else "warn", f"Reading grade about {round(grade, 1)}; the rule is under {MAX_GRADE}.")
+    add("dash", "fail" if "—" in text else "pass", "Em dash found; use a full stop or a comma." if "—" in text else "No em dash.")
+    low = text.lower()
+    infl = sorted(w for w in INFLATED if re.search(r"\b" + re.escape(w) + r"\b", low))
+    add("inflated", "fail" if infl else "pass", f"Inflated or weak words: {', '.join(infl)}." if infl else "No inflated words.")
+    sup = sorted(set(m.group(0) for m in re.finditer(SUPERLATIVE, low)))
+    add("claim", "warn" if sup else "pass", f"Claim words need proof on file before this ships: {', '.join(sup)}." if sup else "No unproven claim words.")
+    tw = _lemmas(text, brand_tokens)
+    bad = [f for f in forbidden if f and len(_lemmas(f, brand_tokens) & tw) >= max(2, len(_lemmas(f, brand_tokens)) // 2)]
+    add("forbidden", "fail" if bad else "pass", f"Close to a forbidden claim: {bad[0]}" if bad else "No forbidden claim.")
+    near = [d for d in disliked if d and len(_lemmas(d, brand_tokens) & tw) / max(1, len(_lemmas(d, brand_tokens))) >= 0.6]
+    add("disliked", "warn" if near else "pass", f"Close to a line the founder marked not us: \"{near[0]}\"" if near else "Not close to any line marked not us.")
+    used = [w for w in buyer_words if w in tw]
+    add("buyer_words", "pass" if used else "warn", f"Uses buyer words: {', '.join(used)}." if used else f"Uses none of the buyer words, like {', '.join(buyer_words[:4])}.")
+    verdict = "fail" if any(c["status"] == "fail" for c in checks) else ("warn" if any(c["status"] == "warn" for c in checks) else "pass")
+    return {"verdict": verdict, "checks": checks}

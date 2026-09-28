@@ -922,5 +922,28 @@ class Hierarchy(TempBrain):
         self.assertTrue(api.handle(Req(['overview']))['hierarchy']['approved'])
 
 
+class VoiceCheck(TempBrain):
+    """Feature 3.6: a pasted line is checked against the rules; nothing is written."""
+
+    def test_bad_line_fails(self):
+        before = json.dumps(self.section('voice'))
+        r = api.handle(Req(['voice', 'check'], 'POST', body={'text': 'The most comfortable socks — leverage our revolutionary tech.'}))
+        self.assertEqual(r['verdict'], 'fail')
+        st = {c['key']: c['status'] for c in r['checks']}
+        self.assertEqual(st['dash'], 'fail')
+        self.assertEqual(st['inflated'], 'fail')
+        self.assertEqual(st['claim'], 'warn')
+        self.assertEqual(json.dumps(self.section('voice')), before)
+
+    def test_good_line_passes(self):
+        r = api.handle(Req(['voice', 'check'], 'POST', body={'text': 'Soft socks that stay in place. Worth it after every wash.'}))
+        self.assertEqual(r['verdict'], 'pass')
+
+    def test_disliked_line_warns(self):
+        api.handle(Req(['voice', 'examples'], 'POST', body={'kind': 'disliked', 'text': 'Crafted for the discerning modern sock lover.'}))
+        r = api.handle(Req(['voice', 'check'], 'POST', body={'text': 'Crafted for the discerning modern sock lover.'}))
+        self.assertEqual({c['key']: c['status'] for c in r['checks']}['disliked'], 'warn')
+
+
 if __name__ == '__main__':
     unittest.main()

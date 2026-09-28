@@ -554,6 +554,25 @@
     return card;
   }
 
+  function checkBox() {
+    const card = el('article', { class: 'card vo' });
+    const text = el('textarea', { placeholder: 'Paste a headline, ad line or email opener to check', maxlength: 600, 'aria-label': 'Line to check' });
+    const out = el('div', { class: 'checks', 'aria-live': 'polite' });
+    const V = { pass: 'good', warn: 'warn', fail: 'bad' };
+    const run = async () => {
+      if (!text.value.trim()) { out.textContent = 'Paste a line first.'; return; }
+      try {
+        const r = await api(BASE + 'voice/check', { method: 'POST', body: { text: text.value } });
+        mount(out, el('div', { class: 'row' }, el('b', { text: 'Verdict: ' }), el('span', { class: 'chip ' + V[r.verdict], text: r.verdict })),
+          el('ul', null, ...r.checks.map((c) => el('li', null, el('span', { class: 'chip ' + V[c.status], text: c.status }), ' ', c.why))));
+      } catch (e) { out.textContent = 'Could not check: ' + e.message; }
+    };
+    card.append(el('b', { text: 'Does this line sound like us?' }),
+      el('p', { class: 'muted small', text: 'Checks sentence length, reading grade, em dashes, inflated words, unproven claim words, forbidden claims, lines marked not us, and whether it uses buyer words. Nothing is saved.' }),
+      el('div', { class: 'examples' }, text, el('button', { class: 'btn primary sm', type: 'button', text: 'Check it', onclick: run })), out);
+    return card;
+  }
+
   function voiceCards(v, reload) {
     const sheet = el('article', { class: 'card vo' });
     sheet.append(el('b', { text: 'Do' }));
@@ -563,7 +582,7 @@
       : el('p', { class: 'muted small', text: 'No do-not rules on file yet. Mark a line as not us to start one.' }));
     sheet.append(el('b', { text: 'Tone by context' }));
     sheet.append(el('ul', null, ...v.contexts.map((c) => el('li', null, el('b', { text: c.context + ': ' }), c.tone.join('; ') + ' ', ...c.refs.slice(0, 1).map((r) => link(r))))));
-    return [sheet, exampleBox(v, reload)];
+    return [sheet, exampleBox(v, reload), checkBox()];
   }
 
   // ---------- 1. the plan ----------
