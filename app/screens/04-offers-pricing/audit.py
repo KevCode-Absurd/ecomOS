@@ -434,9 +434,32 @@ def last_full_day(data, brand):
     return date.fromisoformat(source.brand['as_of'])
 
 
+# audit.md allows three baseline kinds. This screen's baselines map to the nearest one; the exact comparison is kept
+# in the window text ("against ..."). Contract ask in FEATURES.md: own_segment and own_before.
+BASELINE_KINDS = ('own_median', 'peer_band', 'threshold')
+BASELINE_MAP = {
+    # rule constants and targets
+    'red_line': 'threshold', 'target': 'threshold', 'heuristic_cap': 'threshold', 'half_paid_cac': 'threshold',
+    'gwp': 'threshold', 'tier_gap': 'threshold', 'cost_move': 'threshold', 'usual_test_days': 'threshold',
+    'stress_multiple': 'threshold',
+    # this brand's own rows: another group in the same window, or the same metric before a date
+    '28d_before': 'own_median', '28d_before_launch': 'own_median', 'new_customers': 'own_median',
+    'welcome_signups': 'own_median', 'running_or_done_tests': 'own_median', 'median_product': 'own_median',
+    'returning_orders_without_code': 'own_median', 'full_price_orders': 'own_median', 'full_price_first_order': 'own_median',
+    'listings_compared': 'own_median', 'all_products': 'own_median', 'last_year': 'own_median',
+    # competitors' figures from the brain
+    'competitor_median': 'peer_band',
+}
+
+
 def _ev(metric, value, unit, ends_on, baseline=None, baseline_kind=None, window='28d', source='orders'):
+    kind = baseline_kind
+    if kind is not None and kind not in BASELINE_KINDS:
+        mapped = BASELINE_MAP.get(kind) or ('own_median' if str(kind).startswith(('price on', '28d')) else 'threshold')
+        window = f'{window}; against {str(kind).replace("_", " ")}'
+        kind = mapped
     return {'metric': metric, 'value': value, 'unit': unit, 'window': window, 'ends_on': ends_on.isoformat(),
-            'freshness_days': 1, 'baseline': baseline, 'baseline_kind': baseline_kind, 'source': source,
+            'freshness_days': 1, 'baseline': baseline, 'baseline_kind': kind, 'source': source,
             'simulated': True}
 
 

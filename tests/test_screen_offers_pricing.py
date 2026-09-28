@@ -1301,7 +1301,8 @@ class LaunchedReadTest(unittest.TestCase):
                 self.assertTrue(lo[0]['due'])
                 self.assertTrue(lo[0]['before'] and lo[0]['after'])
                 f = next(f for f in audit.run('bombas') if f['rule_id'] == 'OFFER-R27')
-                self.assertEqual(f['evidence'][0]['baseline_kind'], '28d_before_launch')
+                self.assertEqual(f['evidence'][0]['baseline_kind'], 'own_median')      # audit.md kinds (round 8)
+                self.assertIn('against 28d before launch', f['evidence'][0]['window'])
                 a = next(a for a in api.actions.rank('bombas')['actions'] if a['rule_id'] == 'OFFER-R27')
                 self.assertEqual(a['artefact']['kind'], 'report')
                 self.assertIn('store-wide', a['artefact']['draft'])
@@ -2058,6 +2059,17 @@ class PlanStaggerTest(unittest.TestCase):
             self.assertIn(t['id'], ids)
             if t['waits_for']:
                 self.assertGreater(t['start'], min(x['start'] for x in r['tests']))
+
+
+class BaselineKindTest(unittest.TestCase):
+    """Round 8 feature 6: every evidence row uses an audit.md baseline kind; the exact comparison stays in the window."""
+
+    def test_both_brands(self):
+        sys.path.insert(0, str(ROOT / 'app'))
+        import server
+        for f in audit.run('bombas') + audit.run(None, None, server.Data()):
+            for e in f['evidence']:
+                self.assertIn(e['baseline_kind'], audit.BASELINE_KINDS + (None,), (f['rule_id'], e))
 
 
 if __name__ == '__main__':
