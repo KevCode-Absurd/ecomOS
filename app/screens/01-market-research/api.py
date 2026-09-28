@@ -34,6 +34,7 @@ def _load(name, path):
 audit = _load('market_research_audit', HERE / 'audit.py')
 rank_mod = _load('market_research_rank_engine', APP / 'rank.py')
 DEFAULT_BRAND = 'bombas'
+DECISIONS_PATH = rank_mod.DECISIONS   # the shared decisions log the kit's decision row writes; tests point this elsewhere
 CATEGORY_WORD = {'socks': 'sock', 'slippers': 'slipper', 'tshirts': 't-shirt', 'underwear': 'underwear', 'footwear': 'footwear'}
 
 # The candidate pipeline and its margin gate, from the room spec (candidate_pipeline, margin_gate_calc).
@@ -1026,7 +1027,16 @@ def rank(brand, window=None):
         r = a['rubric']
         r['total'] = round(sum(rank_mod.WEIGHTS[k] * (r[k] if r[k] is not None else 2.5) / 5 for k in rank_mod.WEIGHTS), 1)
     actions.sort(key=rank_mod.sort_key)
-    return {'screen': SCREEN, 'brand': brand, 'window': window, 'actions': actions, 'net_revenue_28d': nr}
+    # the founder's decisions (the shared log app/data/decisions.json, written by the decision row): a "not now" parks the
+    # action for 14 days and it leaves the plan; an "agent" or "person" choice rides on the card so it is not re-argued
+    before = list(actions)
+    actions = rank_mod.apply_decisions(actions, today=dt.date.fromisoformat(window['ends_on']), path=DECISIONS_PATH)
+    parked = [a for a in before if a.get('status') == 'snoozed']
+    for a in parked:
+        when = dt.date.fromisoformat(str((a.get('decision') or {}).get('time') or window['ends_on'])[:10])
+        a['returns_on'] = (when + dt.timedelta(days=rank_mod.SNOOZE_DAYS)).isoformat()
+    return {'screen': SCREEN, 'brand': brand, 'window': window, 'actions': actions, 'parked': parked, 'net_revenue_28d': nr,
+            'decided': sum(1 for a in actions if a.get('decision'))}
 
 
 # ---------------------------------------------------------------- overview
@@ -1389,6 +1399,9 @@ def handle(req):
             return overview(data, brand)
         if req.path == ['findings']:
             return {'findings': audit.run(brand, None, data=data), 'rules': audit.RULES}
+        if req.path == ['parked']:
+            r = rank(brand or 'sample', None)
+            return {'parked': r['parked'], 'decided': r['decided'], 'snooze_days': rank_mod.SNOOZE_DAYS, 'window': r['window']}
     except ValueError as exc:
         return 400, {'error': str(exc)}
-    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank']}
+    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank', 'parked']}

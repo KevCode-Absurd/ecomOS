@@ -183,6 +183,21 @@ The candidate side of the desk: the pipeline with its gates, boxes and scorecard
 | 3.9 | Second brand test (Tallgrass Goods, the sample brand: kitchen goods, no brain, no web pass): the web pass and social pull fixtures now carry a brand field and another brand reads none of them (`web_pass`, `lanes_for`, `social_pull_for`), the lanes moved from a code constant into the web pass fixture, the rank route serves the sample brand through the server's data reader, the window never runs past the data's last full day, the empty funnel no longer draws NaN bars; every block on the sample renders its honest empty state and every action is a connect action; tests `SecondBrandTest` | done |
 | 3.10 | Recipes for PROD-R26 to R33 (every rule has a recipe or a connect action; totals recomputed after every merge), tests for each feature (74 in the file), `round3.png`, `round3b.png`, `round3c.png` (the Bombas page, 35,117 px tall, each part under 1 MB) and `round3s.png` (the sample brand, every block in its empty state), the round 3 founder note | done |
 
+## Round 4: decision memory, the pulls, and a brand with no brain (from 28 Sep 2026)
+
+| # | Feature | Status |
+|---|---|---|
+| 4.1 | Decision memory: the founder's choices from the shared decisions log ride on the plan. A "not now" parks the action for 14 days (it leaves the plan, a "Decided" strip under the plan lists it with the note, the date it comes back and its card so it can be decided again); agent and person choices stay on their cards as "Saved"; an expired park returns on its own; route `parked` | done |
+| 4.2 | Category mix from orders when a brand has no monthly product table (the sample brand): units and net sales by product type per month from order line items, labelled as such | todo |
+| 4.3 | Return rate by line from orders and reversed orders (room metric `sku_return_rate`); rule PROD-R34 line returning 1.5 times the store median on 20 or more returns, with the reasons | todo |
+| 4.4 | Open questions the brain holds, each tied to its theme and complaint count; rule PROD-R35 question with 5 or more complaint quotes never asked, merged into the theme card | todo |
+| 4.5 | Pulls and their freshness: every pull this desk depends on with its last capture, age, refresh window, estimate under the caps; rule PROD-R36 pull due or never run | todo |
+| 4.6 | Amazon listing seller pull (mock through the connector, actor to be set) feeding the seller of record into the marketplace read | todo |
+| 4.7 | Web pass runner: a per-brand template and checker so a new brand gets lanes, markets and launches without a hand-written fixture; the connect action names the command | todo |
+| 4.8 | Candidate brief: one page per candidate assembled from every block, copyable, the artefact that goes to creative and sourcing | todo |
+| 4.9 | Idea bank pass: BRD-249 lower-MOQ first run as a gate on the candidate | todo |
+| 4.10 | Recipes, tests, round4.png, founder note | todo |
+
 ## Round 3 note for the founder (28 Sep 2026)
 
 1. The desk now reads the outside as well as the inside: who launches and how often (a lane we sell where competitors keep launching and we have not is in play), who sells us on Amazon and at what price a pair (every offer read is a reseller, no brand store, 11 listings priced 25 percent or more off the site), where buyers talk and where no record shows us (r/BuyItForLife with 22,968 upvotes, Trustpilot with 31 quotes), whether a candidate's demand is one clip or a pattern, and whether a lane's trend rests on history or a forecast (today every lane is forecast only, so the check is open).

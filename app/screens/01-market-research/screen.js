@@ -30,6 +30,22 @@
   function actionFor(findingId) { return state.byFinding[findingId] || null; }
 
   // ---------- 1. the plan ----------
+  async function loadParked() {
+    let r;
+    try { r = await api(BASE + 'parked' + Q); } catch (e) { return; }
+    const parked = r.parked || [];
+    const host = document.getElementById('parked') || el('div', { id: 'parked' });
+    host.innerHTML = '';
+    document.getElementById('plan').append(host);
+    if (!parked.length && !r.decided) return;
+    const rows = parked.map((a) => ({ title: a.title, choice: 'not now', on: fmt.date(((a.decision || {}).time || '').slice(0, 10)), back: fmt.date(a.returns_on), reason: (a.decision || {}).reason || '', a }));
+    host.append(el('div', { class: 'card flat', style: { marginTop: '10px' } },
+      el('div', { class: 'sec-head' }, el('h2', { text: 'Decided: ' + (r.decided || 0) + ' on the plan, ' + parked.length + ' parked' }),
+        el('span', { class: 'sub', text: 'A "not now" parks an action for ' + r.snooze_days + ' days and it leaves the plan; it comes back on its own or when you decide again here. Agent and person choices stay on their cards.' })),
+      parked.length ? UI.table({ columns: [{ key: 'title', label: 'Parked action' }, { key: 'on', label: 'Parked on' }, { key: 'back', label: 'Back on the plan' }, { key: 'reason', label: 'Your note' }], rows }) : null,
+      parked.length ? el('div', { class: 'stack', style: { marginTop: '8px' } }, parked.slice(0, 3).map((a) => UI.actionCard(a, { compact: true, screen: SLUG }))) : null));
+  }
+
   async function loadPlan(o) {
     let r;
     try { r = await api(BASE + 'rank' + Q + '&window=28d'); }
@@ -46,6 +62,7 @@
       foot: el('div', { class: 'row', style: { gap: '14px' } }, UI.rubricLegend(), el('span', { class: 'micro faint', text: 'Ranking: critical first by stake, then rubric total, severity, stake, days open. "Not now" snoozes 14 days.' })),
       empty: 'No open finding on this desk for the window. The desk below shows the gaps still worth a look.',
     }));
+    loadParked();
     if (connect.length) {
       document.getElementById('plan').append(el('div', { class: 'card flat', style: { marginTop: '10px' } },
         el('div', { class: 'sec-head' }, el('h2', { text: 'Connect first: ' + connect.length + ' rules wait on a source' }),

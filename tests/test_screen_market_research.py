@@ -1017,6 +1017,46 @@ class ApiTest(unittest.TestCase):
         self.assertIsNone(rows['Tee']['position'])  # no competitor for tees
 
 
+class DecisionMemoryTest(unittest.TestCase):
+    """The founder's choices in the shared decisions log ride on the plan: a "not now" parks an action for 14 days."""
+
+    def test_not_now_parks_and_returns(self):
+        base = api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions']
+        target = base[0]
+        tmp = ROOT / 'tests' / '_decisions_test.json'
+        saved = api.DECISIONS_PATH
+        try:
+            tmp.write_text(json.dumps([
+                {'screen': '01-market-research', 'capability': target['capability']['id'], 'choice': 'not_now', 'reason': 'after the holiday push', 'time': '2026-09-20T10:00:00Z', 'finding_id': target['id']},
+                {'screen': '01-market-research', 'capability': base[1]['capability']['id'], 'choice': 'person', 'reason': '', 'time': '2026-09-21T10:00:00Z', 'finding_id': base[1]['id']},
+                {'screen': '01-market-research', 'capability': base[2]['capability']['id'], 'choice': 'not_now', 'reason': 'old', 'time': '2026-08-01T10:00:00Z', 'finding_id': base[2]['id']}]), encoding='utf-8')
+            api.DECISIONS_PATH = tmp
+            r = api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})
+            ids = [a['id'] for a in r['actions']]
+            self.assertNotIn(target['id'], ids)                       # parked, off the plan
+            self.assertEqual([a['id'] for a in r['parked']], [target['id']])
+            self.assertEqual(r['parked'][0]['returns_on'], '2026-10-04')
+            self.assertEqual(r['parked'][0]['decision']['reason'], 'after the holiday push')
+            kept = next(a for a in r['actions'] if a['id'] == base[1]['id'])
+            self.assertEqual(kept['decision']['choice'], 'person')     # a person choice stays, on the card
+            self.assertIn(base[2]['id'], ids)                          # an old "not now" has expired
+            self.assertEqual(r['decided'], 2)   # the person choice and the expired not-now both stay visible on their cards
+            self.assertEqual(api.handle(Req(['parked']))['parked'][0]['id'], target['id'])
+        finally:
+            api.DECISIONS_PATH = saved
+            tmp.unlink(missing_ok=True)
+
+    def test_no_log_means_nothing_parked(self):
+        saved = api.DECISIONS_PATH
+        try:
+            api.DECISIONS_PATH = ROOT / 'tests' / '_no_such_decisions.json'
+            r = api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})
+            self.assertEqual(r['parked'], [])
+            self.assertEqual(r['decided'], 0)
+        finally:
+            api.DECISIONS_PATH = saved
+
+
 class SecondBrandTest(unittest.TestCase):
     """The desk is not Bombas-shaped: the sample brand (Tallgrass Goods, kitchen goods, no brain, no web pass) reads
     nothing of Bombas and every route still answers."""
