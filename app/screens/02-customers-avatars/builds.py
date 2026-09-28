@@ -496,6 +496,31 @@ def _cliff_stake(rows: list[dict], cal: str, cliff_months: set, aov: dict) -> di
                      if seen_ly else "Against a normal month. The same month last year is outside the grid, so part of this may be the season.")}
 
 
+def _season_check(st: dict, monthly: list[dict], cal: str, aov: dict) -> dict:
+    """The same step a year earlier, from the monthly table: returning orders in the cliff month over the month before,
+    this year against last. When last year is there it is the baseline: the stake is only the fall beyond last
+    year's, x the month before's returning orders x the month's AOV. The stake against a normal month is kept as
+    `season_usd` so the page can say how big the season is."""
+    ret = {r["month"]: r.get("returning_customer_orders") for r in monthly}
+    step = lambda m: (ret[m] / ret[_add(m, -1)]) if ret.get(m) and ret.get(_add(m, -1)) else None
+    now, ly = step(cal), step(_add(cal, -12))
+    if now is None or ly is None:
+        return st
+    fall, fall_ly = round(1 - now, 4), round(1 - ly, 4)
+    season = st.get("usd")
+    base = {"season_usd": season, "fall": fall, "fall_last_year": fall_ly}
+    if fall <= fall_ly:
+        return dict(base, usd=None, reason=(f"no gap against last year: returning orders fell {round(fall * 100, 1)} percent into {cal}, "
+                                            f"against {round(fall_ly * 100, 1)} percent a year before, so the drop is the season"))
+    prev = ret[_add(cal, -1)]
+    usd = round((fall - fall_ly) * prev * aov[cal]) if aov.get(cal) else None
+    if not usd:
+        return dict(base, usd=None, reason=f"no AOV for {cal}")
+    return dict(base, usd=usd, formula="(fall_now - fall_same_month_last_year) * returning_orders_month_before * aov_month",
+                inputs={"fall_now": fall, "fall_same_month_last_year": fall_ly, "returning_orders_month_before": round(prev), "aov_month": aov[cal]},
+                window=cal, note=f"Against the same step a year earlier. Against a normal month it is ${season:,.0f}." if season else "Against the same step a year earlier.")
+
+
 def _age_stake(rows: list[dict], med_ex: list, drops: list, age_k: int, age_drop: float | None, aov: dict) -> dict:
     """Orders lost per cohort at the age break, above the median fall at other ages.
 
@@ -622,7 +647,12 @@ def cohort_grid(cohorts: list[dict], monthly: list[dict], as_of: str, avatars: l
             f"DRAFT post-purchase branch\nFor: first buyers in {names}\nEmail 1: thank you, and how the gift landed\n"
             "Email 2: a pair for you, with a five-star line on comfort\nEmail 3: the care guide", as_of=as_of))
     cols = [f"M{k}" for k in range(1, GRID_MONTHS + 1)]
-    cal_stake = _cliff_stake(rows, cliffs[0][0], cliff_months, aov) if cliffs else None
+    cal_stake = _season_check(_cliff_stake(rows, cliffs[0][0], cliff_months, aov), monthly, cliffs[0][0], aov) if cliffs else None
+    if cal_stake and cal_stake.get("fall_last_year") is not None:
+        for m in moves:
+            if m["id"].endswith(".calendar_" + cliffs[0][0]):
+                m["why"] += (f" Returning orders fell {round(cal_stake['fall'] * 100, 1)} percent into it, against {round(cal_stake['fall_last_year'] * 100, 1)} percent a year before"
+                             + (": the season, so plan for it." if cal_stake.get("usd") is None else "."))
     age_stake = _age_stake(rows, med_ex, drops, age_k, age_drop, aov) if age_k else None
     return {"available": True, "rows": rows, "columns": cols, "median_by_month": [round(x, 4) if x is not None else None for x in med_by_k],
             "peak_month": peak_k, "age_break": {"month": age_k, "drop": age_drop, "stake": age_stake} if age_k else None,

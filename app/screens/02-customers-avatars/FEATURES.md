@@ -137,7 +137,7 @@ Lead's review: rounds 1 to 4 passed. Focus: returns and tickets by avatar, depth
 | # | Feature | Status |
 |---|---|---|
 | 8.1 | Depth rule 5 inside the desk: every move in a block that changes money or traffic carries the size, stop rule and check date of the ranked action built from it (32), or a size from its own row (one-star mentions, share of buyers, praise reviews) with its kind's stop rule and a 7-day check (67). 9 say "size unavailable": avatars with no share yet and one cohort move. Brief panels show size, stop and check. The overview reuses the cached `rank`, so the page load stays the same | done |
-| 8.2 | The January cliff against last year: the same month-to-month step in the monthly table a year earlier, so the stake splits into the season and the rest | todo |
+| 8.2 | The January cliff against last year: when the monthly table holds the same step a year earlier, that is the baseline, and the stake is only the fall beyond last year's. Bombas: returning orders fell 42.5 percent into January 2026 against 44.2 percent a year before, so the drop is the season and no money is claimed; the 7.5 figure against a normal month ($5,842,578) stays as `season_usd` and in the reason. The finding and the January move now say it is the season. The January plan leaves the master top 10; that is the honest read. Contract ask: a `last_year` baseline kind | done |
 | 8.3 | Sales share in the scores: the focus score and the compare view use the share of sales where reviews give none, labelled as such | todo |
 | 8.4 | The avatar page from the compare view: open either avatar's page from the pair | todo |
 | 8.5 | Settle it lands in the survey: every "Settle it" question is in the survey block, closing its gap | todo |
@@ -212,6 +212,7 @@ Lead's review: rounds 1 to 4 passed. Focus: returns and tickets by avatar, depth
 
 ## Contract asks
 
+- A `last_year` value for `baseline_kind` in `audit.md` (same period a year earlier). 8.2 uses it for the January cliff and writes `threshold` until the contract has it.
 - Pack prices in the brain offers (price per pack size and line), so 5.9 can show the per-pair price at each pack. Fallback: unavailable, with the free shipping facts.
 
 - A tickets and returns aggregate by reason and product line (monthly), so 5.2 reads real return reasons per avatar. Fallback: the review-complaint proxy and a connect card.

@@ -608,12 +608,10 @@ class RankRound1(TempBrain):
             self.assertTrue(0 <= a['rubric']['total'] <= 100)
             self.assertNotIn('—', a['title'] + a['why'])
 
-    def test_top_actions_lead_with_money_then_the_compression_misread(self):
+    def test_top_unpriced_action_is_the_compression_misread(self):
         from_server = rank_engine.rank('02-customers-avatars', 'bombas', RANK_WINDOW, use_override=True)
         self.assertEqual(from_server['source'], 'screen')
         acts = from_server['actions']
-        self.assertEqual(acts[0]['rule_id'], 'CUST-R08')
-        self.assertTrue(acts[0]['money_at_stake']['usd'] > 0)
         top_unpriced = next(a for a in acts if not a.get('money_at_stake'))
         self.assertEqual(top_unpriced['rule_id'], 'CUST-R05')
         self.assertIn('compression', top_unpriced['title'])
@@ -1748,10 +1746,26 @@ class RetentionStake(unittest.TestCase):
         return api.builds.cohort_grid(cohorts if cohorts is not None else data.table('cohorts'), data.table('monthly'), '2026-09-27', [])
 
     def test_cliff_stake_redoes_from_inputs_and_names_the_season(self):
-        st = self.grid()['calendar_break']['stake']
-        self.assertGreater(st['usd'], 0)
+        g = self.grid()
+        from tables import brand_data
+        aov = {r['month']: r.get('aov') for r in brand_data('bombas').table('monthly') if r.get('aov')}
+        cal = g['calendar_break']['month']
+        st = api.builds._cliff_stake(g['rows'], cal, {cal}, aov)
         self.assertAlmostEqual(st['usd'], st['inputs']['lost_orders'] * st['inputs']['aov_month'], delta=st['inputs']['aov_month'])
         self.assertIn('season', st['note'])
+
+    def test_last_year_is_the_baseline_when_the_monthly_table_has_it(self):
+        st = self.grid()['calendar_break']['stake']
+        self.assertIsNone(st['usd'])
+        self.assertIn('the season', st['reason'])
+        self.assertGreater(st['season_usd'], 0)
+        self.assertLess(st['fall'], st['fall_last_year'])
+        monthly = [{'month': m, 'returning_customer_orders': v} for m, v in
+                   (('2024-12', 1000), ('2025-01', 600), ('2025-12', 1000), ('2026-01', 400))]
+        worse = api.builds._season_check({'usd': 9000}, monthly, '2026-01', {'2026-01': 50.0})
+        self.assertEqual(worse['usd'], round((0.6 - 0.4) * 1000 * 50))
+        self.assertEqual(worse['season_usd'], 9000)
+        self.assertEqual(api.builds._season_check({'usd': 9000}, monthly[2:], '2026-01', {}), {'usd': 9000})
 
     def test_age_stake_redoes_from_inputs(self):
         st = self.grid()['age_break']['stake']
@@ -1761,10 +1775,12 @@ class RetentionStake(unittest.TestCase):
 
     def test_findings_carry_the_stake_in_the_contract_shape(self):
         fs = {f['rule_id']: f for f in api.audit.run('bombas', RANK_WINDOW, api.BRAIN_ROOT)}
-        for rid in ('CUST-R08', 'CUST-R09'):
-            m = fs[rid]['money_at_stake']
-            self.assertTrue({'usd', 'formula', 'inputs', 'window'} <= set(m), rid)
-            self.assertIsNone(fs[rid]['money_reason'])
+        m = fs['CUST-R09']['money_at_stake']
+        self.assertTrue({'usd', 'formula', 'inputs', 'window'} <= set(m))
+        self.assertIsNone(fs['CUST-R09']['money_reason'])
+        self.assertIsNone(fs['CUST-R08']['money_at_stake'])
+        self.assertIn('last year', fs['CUST-R08']['money_reason'])
+        self.assertIn('the season', fs['CUST-R08']['sentence'])
         self.assertIsNone(fs['CUST-R07']['money_at_stake'])
         self.assertIn('median', fs['CUST-R07']['money_reason'])
 
@@ -1851,7 +1867,7 @@ class PrintPolish(TempBrain):
         rep = api.handle(Req(['report']))
         self.assertTrue(rep['header'].startswith('Bombas. Window to '))
         self.assertEqual((rep['header'] + rep['text']).lower().count('simulated sales data'), 1)
-        self.assertIn('at stake', ' '.join(rep['sections'][0]['lines']))
+        self.assertRegex(' '.join(rep['sections'][0]['lines']), r'at stake|Size: ')
         self.assertNotIn('1 and 2 star reviews)', rep['text'])
         av = api.handle(Req(['avatar', 'daily_compression_wearer', 'brief']))
         self.assertEqual(av['text'].lower().count('simulated'), 1)

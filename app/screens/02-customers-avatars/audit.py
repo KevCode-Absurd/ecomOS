@@ -51,6 +51,9 @@ CUST-R08 calendar retention cliff. Half or more of the cohorts alive in one cale
     Money (builds._cliff_stake): per cohort, (share the month before x the median step at that age outside cliff
     months, 4 or more, minus the share in the cliff month) x cohort size, summed, x that month's AOV. The note
     says whether the same month last year is in the grid, since part of a cliff can be the season.
+    When the monthly table holds the same step a year earlier (builds._season_check), that is the baseline:
+    the stake is only the fall beyond last year's x the month before's returning orders x AOV, null when the
+    fall is no worse (the season). The stake against a normal month stays as `season_usd`.
 CUST-R09 retention age break. After the peak return month, active share falls 20 percent or more
     from one month to the next, cliff months left out. Severity medium. Capability LIFE-C08.
     Money (builds._age_stake): share in month k x (the fall at the break minus the median fall at the other
@@ -785,7 +788,15 @@ def r08_r09(d, ends_on):
     if cb:
         ev = [_ev("cohorts_falling_together", cb["share"], "%", ends_on, "cohorts", baseline=builds.CLIFF_SHARE, simulated=True),
               _ev("cohorts_alive", cb["cohorts"], "n", ends_on, "cohorts", simulated=True)]
-        s = f"In {cb['month']}, {round(cb['share'] * 100)} percent of {cb['cohorts']} cohorts fell 40 percent or more at once. Every past buyer went quiet together."
+        st = cb.get("stake") or {}
+        s = f"In {cb['month']}, {round(cb['share'] * 100)} percent of {cb['cohorts']} cohorts fell 40 percent or more at once."
+        if st.get("fall_last_year") is not None:
+            ev.append(_ev("returning_fall_into_month", st["fall"], "%", ends_on, "monthly", baseline=st["fall_last_year"], simulated=True))
+            ev.append(_ev("returning_fall_same_month_last_year", st["fall_last_year"], "%", ends_on, "monthly", simulated=True))
+            s += (f" A year before, returning orders fell {round(st['fall_last_year'] * 100, 1)} percent too: the season."
+                  if st.get("usd") is None else f" That is more than last year's {round(st['fall_last_year'] * 100, 1)} percent.")
+        else:
+            s += " Every past buyer went quiet together."
         out.append(_with_stake(_finding("CUST-R08", "medium", {"type": "metric", "id": "calendar_" + cb["month"], "label": f"Retention cliff, {cb['month']}"},
                                         ev, s, "LIFE-C20", 0.5, [], ends_on), cb.get("stake")))
     ab = c.get("age_break")
