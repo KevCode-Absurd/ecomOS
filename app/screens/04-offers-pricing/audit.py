@@ -67,6 +67,12 @@ Rules
              playbook.MIN_PROOF_LED competitors priced above us show no discount in their ads. Competitor ads are
              signals only. Money null. Reputation 5 (a competitor position gap named in the brain). The action is
              3 ad briefs that lead with proof instead of the code. Capability BRN-C11 (founder gate).
+  OFFER-R17  Marketplace listings under the site price (room spec: MAP violation, competitor price move): a
+             listing in the brain's marketplaces section whose price over the pack count in its title is more than
+             playbook.PARITY_GAP under the site's paid price per item at the same pack size (main category, 12 full
+             months). One finding for all such listings. Money null: the sales they take are not in the data; the
+             channel's last full month from marketplace_monthly is shown for scale. Reputation 4 override (price
+             integrity across channels). Capability PROD-C46 (human assist): a person checks the seller.
   OFFER-R03  Margin after discount per SKU. Needs cogs_landed keyed by the store's SKUs. Unavailable while no
              finance_inputs SKU key matches a product SKU. Capability MONEY-C05 (founder gate). Owner: 04.
   OFFER-R04  A deal-breaker rung with no proof: the top rung of an objection ladder whose proof is empty or
@@ -138,6 +144,8 @@ RULES = [
     {'rule_id': 'OFFER-R16', 'name': 'Discount-led in a proof-led set', 'entity_type': 'offer',
      'inputs': ['brain.competitors', 'brain.offers.promo_share_active_ads', 'products_monthly'],
      'capability': 'BRN-C11', 'owner_screen': SCREEN},
+    {'rule_id': 'OFFER-R17', 'name': 'Marketplace listings under the site price', 'entity_type': 'offer',
+     'inputs': ['brain.marketplaces', 'products_monthly', 'marketplace_monthly'], 'capability': 'PROD-C46', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R03', 'name': 'Margin after discount per SKU', 'entity_type': 'sku',
      'inputs': ['finance_inputs.cogs_landed keyed by product SKU', 'products'], 'capability': 'MONEY-C05',
      'owner_screen': SCREEN},
@@ -158,6 +166,7 @@ CAPABILITY = {'OFFER-R01': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R14': {'id': 'LIFE-C42', 'autonomy': 'founder_gate'},
               'OFFER-R15': {'id': 'LIFE-C42', 'autonomy': 'founder_gate'},
               'OFFER-R16': {'id': 'BRN-C11', 'autonomy': 'founder_gate'},
+              'OFFER-R17': {'id': 'PROD-C46', 'autonomy': 'human_assist'},
               'OFFER-R06': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R04': {'id': 'LIFE-C36', 'autonomy': 'founder_gate'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
@@ -750,6 +759,31 @@ def rule_position(rd):
                      money_reason='the price a proof-led message could hold is what the ads test finds')]
 
 
+def marketplace_parity(rd):
+    pb = _playbook()
+    return _model().marketplace_parity(rd, pb.PACK_PATTERNS, pb.PARITY_GAP)
+
+
+def rule_parity(rd):
+    end = rd.ends_on
+    mp = marketplace_parity(rd)
+    under = [r for r in mp['rows'] if r['undercut']]
+    if not under:
+        return []
+    compared = [r for r in mp['rows'] if r['gap'] is not None]
+    worst = min(under, key=lambda r: r['gap'])
+    evidence = [_ev('listings_under_site_price', len(under), 'count', end, baseline=len(compared), baseline_kind='listings_compared',
+                    window='brain', source='brain.marketplaces, products_monthly'),
+                _ev('deepest_gap', worst['gap'], 'ratio', end, baseline=-_playbook().PARITY_GAP, baseline_kind='threshold',
+                    window='brain', source='brain.marketplaces')]
+    unknown = sum(1 for r in under if not r['seller'])
+    sentence = (f'{len(under)} of {len(compared)} marketplace listings sell under the site price per item by more than '
+                f'{_playbook().PARITY_GAP * 100:.0f} percent, down to {-worst["gap"] * 100:.0f} percent. Seller unknown on {unknown}.')
+    return [_finding('OFFER-R17', {'type': 'offer', 'id': 'marketplace_parity', 'label': 'Marketplace price parity'}, 'medium',
+                     evidence, sentence, None, 0.5, [r['id'] for r in under], end,
+                     money_reason='the sales these listings take from the site are not in the data')]
+
+
 def rule_ladder(rd):
     end = rd.ends_on
     pb = _playbook()
@@ -921,7 +955,7 @@ def run(brand, window=None, data=None):
     """Findings for one brand, sorted by severity then money at stake. `window` is {ends_on} or None."""
     ends_on = date.fromisoformat(window['ends_on']) if window and window.get('ends_on') else last_full_day(data, brand)
     rd = Reader(data, brand, ends_on)
-    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
+    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_first_order(rd) + rule_red_line(rd) + rule_promo(rd) + rule_gifting(rd) + rule_guarantee(rd) + rule_position(rd) + rule_parity(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
            rule_unanswered(rd))
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f.get('money_at_stake') or {}).get('usd') or -1), f['id']))
     return out

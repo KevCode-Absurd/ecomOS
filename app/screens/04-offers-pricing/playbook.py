@@ -146,3 +146,8 @@ CLAIM_OVER_PLAN = 1.5     # claims above 1.5 times the planned rate: the guarant
 # Competitor price and offer position (screen 04, OFFER-R16). Signals only: competitor ads are never copied.
 PROOF_HOOK_WORDS = ('guarantee', 'lab tested', 'made in usa', 'review')   # hook types that sell proof, not price
 MIN_PROOF_LED = 2         # at least 2 competitors priced above us run no discount in ads: the set is proof-led
+
+# Marketplace price parity (screen 04, OFFER-R17). A listing whose price per item is more than PARITY_GAP under the
+# site's paid price per item at the same pack size undercuts the site. Pack counts are read from listing titles.
+PARITY_GAP = 0.10
+PACK_PATTERNS = (r'(\d+)\s*-?\s*(?:pack|pairs?|pcs|pk)\b', r'\((\d+)\s*(?:pack|pairs?)\)')

@@ -356,6 +356,28 @@
       actionLine(a ? 'We are the cheap, discount-led dot in a proof-led set. Lead 3 ads with proof instead of the code.' : 'Our price and offer position matches the set.', a));
   }
 
+  function parityBlock(mp) {
+    const head = { title: 'Is anyone selling us cheaper than our own site?', sub: 'Marketplace listings in the brain: price over the pack count in the title, against the site\'s paid price per item at the same pack size. More than ' + (mp ? pct(mp.gap, 0) : '10 percent') + ' under is an undercut.' };
+    if (!mp || !mp.rows.length) return section('desk-parity', head, UI.emptyState({ screen: SLUG, title: 'No marketplace listings', text: 'Add marketplace listings to the brain.' }));
+    const a = ACTIONS.find((x) => x.rule_id === 'OFFER-R17');
+    const table = UI.verdictTable({
+      columns: [
+        { key: 'asin', label: 'Listing', format: (v, r) => r.channel + ' ' + v }, { key: 'title', label: 'Title' },
+        { key: 'pack', label: 'Pack', format: (v) => v == null ? NA : String(v) }, { key: 'price', label: 'Price', unit: '$' },
+        { key: 'per_item', label: 'Per item', unit: '$' }, { key: 'site_per_item', label: 'Site per item', unit: '$' },
+        { key: 'gap', label: 'Gap', format: (v, r) => v == null ? r.reason : pct(v, 0) },
+      ],
+      rows: mp.rows.filter((r) => r.gap != null), maxRows: 40,
+      verdict: { at: 1, kind: (r) => r.gap == null ? 'na' : r.undercut ? 'fix' : 'keep', text: (r) => r.gap == null ? 'Unmatched' : r.undercut ? 'Undercut' : 'In line', reason: (r) => 'seller ' + (r.seller || 'unknown') },
+      sort: false,
+    });
+    const n = mp.rows.filter((r) => r.undercut).length;
+    const scale = Object.entries(mp.channel_sales || {}).map(([k, v]) => k + ' ' + fmt.money(v)).join(', ');
+    return section('desk-parity', head, el('div', { class: 'card tight' }, table,
+      el('p', { class: 'micro faint', text: mp.basis + '. ' + (scale ? 'Channel sales in ' + mp.channel_month + ': ' + scale + '.' : '') + ' Site pack sizes compared: ' + Object.keys(mp.site_per_item_by_pack).join(', ') + '. ' + mp.rows.filter((r) => r.gap == null).length + ' more listings could not be matched: no price, no pack count in the title, or no site pack of that size.' })),
+      actionLine(n ? n + ' listings undercut the site. Check each seller, then price or report.' : 'No listing undercuts the site.', a));
+  }
+
   function returnsChart(r) {
     if (!r || !r.groups || !r.groups.length) return el('p', { class: 'muted small', text: 'Returns by reason ' + NA + '.' });
     const rows = r.groups.slice().sort((a, b) => b.per_1000 - a.per_1000);
@@ -410,7 +432,7 @@
     wrong(d);
     actionsList(d);
     mount('#desk', el('div', { class: 'desk-kicker' }, el('h3', { text: 'The desk' })), calendarBlock(d.calendar), giftingBlock(d.gifting),
-      stackBlock(d.stack || []), thresholdBlock(d.threshold), firstOrderBlock(d.first_order), positionBlock(d.position, d.brand || {}), waterfallBlock(d.waterfalls), discountBlock(d), ladderBlock(d.ladder), objectionBlock(d.objections || [], d.returns), guaranteeBlock(d.guarantee, d.returns));
+      stackBlock(d.stack || []), thresholdBlock(d.threshold), firstOrderBlock(d.first_order), positionBlock(d.position, d.brand || {}), parityBlock(d.parity), waterfallBlock(d.waterfalls), discountBlock(d), ladderBlock(d.ladder), objectionBlock(d.objections || [], d.returns), guaranteeBlock(d.guarantee, d.returns));
     auditBlock(d);
   }
 

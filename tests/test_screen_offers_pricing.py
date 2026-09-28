@@ -617,7 +617,7 @@ class RankCompleteTest(unittest.TestCase):
             self.assertTrue(a.get('win_rule') or a.get('stop_rule'), a['id'])
             self.assertTrue(a.get('check_on'), a['id'])
             self.assertTrue(any(s['who'] == 'person' for s in a['steps']), a['id'])   # a person approves before anything ships
-            self.assertEqual(a['owner'], 'agent_drafts')
+            self.assertIn(a['owner'], ('agent_drafts', 'person'))   # nothing ships without a person
             self.assertLess(len(a['title'].split()), 20)
 
     def test_connect_actions_merge_by_source(self):
@@ -670,6 +670,44 @@ class PositionTest(unittest.TestCase):
             self.assertEqual(a['artefact']['kind'], 'ad_brief')
             self.assertEqual(a['rubric']['reputation'], 5)
             self.assertIn('nothing is copied', a['artefact']['draft'])
+
+
+class ParityTest(unittest.TestCase):
+    """Round 2 feature 2: marketplace listings against the site price per item."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.rd = audit.Reader(None, 'bombas', audit.last_full_day(None, 'bombas'))
+        cls.mp = audit.marketplace_parity(cls.rd)
+        cls.out = api.actions.rank('bombas')
+
+    def test_title_pack(self):
+        pats = audit._playbook().PACK_PATTERNS
+        m = api.model
+        self.assertEqual(m.title_pack("Men's Originals Ankle Socks White Large (4 Pair)", pats), 4)
+        self.assertEqual(m.title_pack('Ankle Socks, 6-Pack Cushioned', pats), 6)
+        self.assertEqual(m.title_pack('Socks 7 Pairs, 6 Black + 1 Grey', pats), 7)
+        self.assertEqual(m.title_pack('Womens No Show Socks,(Black,Medium, 2pcs)', pats), 2)
+        self.assertIsNone(m.title_pack('Women\'s Originals Ankle Socks, (Grey/Blue)', pats))
+
+    def test_gap_and_rule(self):
+        gap = audit._playbook().PARITY_GAP
+        for r in self.mp['rows']:
+            if r['gap'] is not None:
+                self.assertAlmostEqual(r['per_item'], round(r['price'] / r['pack'], 2))
+                self.assertEqual(r['undercut'], r['per_item'] < r['site_per_item'] * (1 - gap))
+            else:
+                self.assertTrue(r['reason'])
+                self.assertFalse(r['undercut'])
+        under = [r for r in self.mp['rows'] if r['undercut']]
+        f = next((f for f in self.out['findings'] if f['rule_id'] == 'OFFER-R17'), None)
+        self.assertEqual(bool(f), bool(under))
+        if f:
+            self.assertEqual(set(f['brain_refs']), {r['id'] for r in under})
+            a = next(a for a in self.out['actions'] if a['rule_id'] == 'OFFER-R17')
+            self.assertEqual(a['owner'], 'person')
+            self.assertEqual(a['artefact']['kind'], 'listing_fix')
+            self.assertNotIn('(-', a['artefact']['draft'])
 
 
 if __name__ == '__main__':

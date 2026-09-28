@@ -75,6 +75,7 @@ class Ctx:
         self.gifting = audit.gifting(rd)
         self.guarantee = audit.guarantee(rd)
         self.position = audit.competitor_position(rd)
+        self.parity = audit.marketplace_parity(rd)
         self.ship_rate = (model.brain_value(rd, 'offers.standard_shipping_cost')[0] or {}).get('cost_usd') if rd.brand else None
         self.scenarios = (model.threshold_scenarios(rd, self.threshold, self.ship_rate, self.be['value'], (self.po or {}).get('units') or 1)
                           if self.threshold is not None and self.be.get('value') is not None else [])
@@ -536,6 +537,30 @@ def position_action(f, a, ctx):
     return a
 
 
+def parity_action(f, a, ctx):
+    mp = ctx.parity
+    under = [r for r in mp['rows'] if r['undercut']]
+    rows = [f'- {r["channel"]} {r["asin"]}: {r["pack"]} items at {money(r["price"])}, {money(r["per_item"])} an item against '
+            f'{money(r["site_per_item"])} on the site ({-r["gap"] * 100:.0f} percent under). Seller: {r["seller"] or "unknown"}.' for r in under]
+    a.update({
+        'title': f'Check the sellers on {len(under)} marketplace listings priced under the site',
+        'owner': 'person',
+        'artefact': {'kind': 'listing_fix', 'label': f'Price parity list for {len(under)} listings', 'draft': '\n'.join(
+            ['Price parity list: listings under the site price per item'] + rows + [
+             'For each: an authorised seller gets the minimum advertised price; an unknown seller goes to brand protection; '
+             'a lookalike gets the real-product proof on our own listing.',
+             'Win: no listing more than 10 percent under the site in 28 days. Stop: none; recheck monthly.'])},
+        'steps': steps(('person', 'Open each listing and note the seller and whether it is our product and pack.'),
+                       ('agent', 'Draft the parity policy line and the brand protection report for unknown sellers.'),
+                       ('person', 'Send the minimum price to authorised sellers; file the report for the rest.'),
+                       ('agent', f'Recheck the listing prices on {ctx.check_on(28)}.')),
+        'size': {'text': f'{len(under)} listings, down to {-min(r["gap"] for r in under) * 100:.0f} percent under the site' +
+                         ''.join(f'; {k} sold {money(v)} in {mp["channel_month"]}' for k, v in (mp.get('channel_sales') or {}).items()), 'usd': None},
+        'win_rule': 'No listing more than 10 percent under the site price per item in 28 days.',
+        'stop_rule': None, 'check_on': ctx.check_on(28), 'time_to_ship_hours': 6})
+    return a
+
+
 def returns_block(rd):
     """returns_by_reason for the window, or the labelled fixture when the metric is unavailable."""
     m = rd.m('returns_by_reason', audit.WINDOW)
@@ -677,7 +702,7 @@ def merge_ladder(actions, ctx):
 # Rubric overrides by rule (depth.md section 4 lets a screen raise reputation or satisfaction for a rule; the
 # override is written in audit.py's docstring next to the rule). Weights never change.
 RUBRIC_OVERRIDE = {'OFFER-R04': {'reputation': 4, 'satisfaction': 4}, 'OFFER-R14': {'reputation': 4, 'satisfaction': 4},
-                   'OFFER-R16': {'reputation': 5}}
+                   'OFFER-R16': {'reputation': 5}, 'OFFER-R17': {'reputation': 4}}
 
 
 def rescore(a, dims):
@@ -695,7 +720,7 @@ def rescore(a, dims):
 BUILDERS = {'OFFER-R01': threshold_action, 'OFFER-R04': rung_action, 'OFFER-R08': first_order_action,
             'OFFER-R10': red_line_action, 'OFFER-R11': promo_action, 'OFFER-R12': gifting_action,
             'OFFER-R14': guarantee_action, 'OFFER-R05': stale_action, 'OFFER-R06': pull_action, 'OFFER-R15': claims_action,
-            'OFFER-R16': position_action}
+            'OFFER-R16': position_action, 'OFFER-R17': parity_action}
 
 
 def build(f, rd, ctx, nr):
@@ -732,4 +757,4 @@ def rank(brand='bombas', window=None):
     actions.sort(key=RANK.sort_key)
     return {'screen': SCREEN, 'brand': brand, 'window': w, 'simulated': True, 'net_revenue_28d': nr,
             'actions': actions, 'findings': findings, 'objections': ctx.objections, 'returns': returns_block(rd),
-            'ladder': dict(ctx.ladder, moves=ctx.ladder_rows), 'first_order': ctx.first_order, 'waterfalls': ctx.waterfalls, 'calendar': ctx.calendar, 'gifting': ctx.gifting, 'guarantee': ctx.guarantee, 'position': ctx.position}
+            'ladder': dict(ctx.ladder, moves=ctx.ladder_rows), 'first_order': ctx.first_order, 'waterfalls': ctx.waterfalls, 'calendar': ctx.calendar, 'gifting': ctx.gifting, 'guarantee': ctx.guarantee, 'position': ctx.position, 'parity': ctx.parity}

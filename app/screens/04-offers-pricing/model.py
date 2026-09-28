@@ -740,3 +740,57 @@ def competitor_position(rd, proof_words):
     return {'us': us, 'competitors': comps, 'set_median_price': round(sorted(priced)[len(priced) // 2], 2) if priced else None,
             'basis': 'competitor price bands and hooks from the brain (public pages and the Ad Library); ours is net sales '
                      'over items sold in our main category, 12 full months'}
+
+
+# ---------------------------------------------------------------- marketplace price parity
+
+def title_pack(title, patterns):
+    t = str(title or '').lower()
+    for p in patterns:
+        m = re.search(p, t)
+        if m:
+            n = int(m.group(1))
+            return n if 0 < n <= 24 else None
+    return None
+
+
+def marketplace_parity(rd, patterns, gap):
+    """Marketplace listings in the brain with a price and a pack count in the title, their price per item, and
+    the site's paid price per item at the same pack size in the main category (12 full months)."""
+    lad = ladder(rd)
+    site = {}
+    if not lad.get('unavailable'):
+        cats = {}
+        for r in lad['rows']:
+            cats[r['category']] = cats.get(r['category'], 0) + r['revenue']
+        main = max(cats, key=cats.get) if cats else None
+        for r in lad['rows']:
+            if r['category'] == main and r['pack']:
+                s = site.setdefault(r['pack'], {'rev': 0.0, 'items': 0.0})
+                s['rev'] += r['revenue']
+                s['items'] += r['packs'] * r['pack']
+    site = {k: round(v['rev'] / v['items'], 2) for k, v in site.items() if v['items']}
+    rows = []
+    for rec in rd.records('marketplaces'):
+        v = rec.get('value')
+        if not isinstance(v, dict) or not v.get('asin') or 'price_usd' not in v:
+            continue
+        n = title_pack(v.get('title'), patterns)
+        price = v.get('price_usd')
+        per = round(price / n, 2) if price and n else None
+        ref = site.get(n) if n else None
+        rows.append({'id': rec['id'], 'channel': v.get('channel'), 'asin': v['asin'], 'title': v.get('title'), 'price': price,
+                     'pack': n, 'per_item': per, 'site_per_item': ref, 'seller': v.get('seller'),
+                     'stars': v.get('stars'), 'reviews': v.get('reviews_count'),
+                     'gap': round(per / ref - 1, 4) if per and ref else None,
+                     'undercut': bool(per and ref and per < ref * (1 - gap)),
+                     'reason': None if per and ref else ('no price' if not price else 'no pack count in the title' if not n else
+                                                        f'no {n}-pack on the site to compare')})
+    rows.sort(key=lambda r: (r['gap'] is None, r['gap'] if r['gap'] is not None else 0))
+    ms = full_months(rd, rd.ends_on, 1)
+    chans = sorted({r['channel'] for r in rows if r['channel']})
+    sales = {r['marketplace']: r['net_sales'] for r in (rd.table('marketplace_monthly') or [])
+             if ms and r['month'] == ms[-1] and r['marketplace'] in chans}
+    return {'site_per_item_by_pack': site, 'rows': rows, 'gap': gap, 'channel_sales': sales,
+            'channel_month': ms[-1] if ms else None,
+            'basis': 'listing price over the pack count in its title, against the site\'s net sales over items sold for the same pack size'}
