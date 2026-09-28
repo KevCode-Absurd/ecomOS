@@ -1310,5 +1310,20 @@ class Rechecks(TempBrain):
         self.assertEqual(x['rows'][0]['status'], 'expired')
 
 
+class Strength(TempBrain):
+    """Feature 5.7: the sample behind each desk block."""
+
+    def test_strength(self):
+        rows = api.handle(Req(['overview']))['strength']
+        for r in rows:
+            if r['n'] is None:
+                self.assertEqual(r['verdict'], 'unavailable')
+            else:
+                self.assertEqual(r['verdict'], 'thin' if r['n'] < r['thin_at'] else 'strong')
+        by = {r['block']: r for r in rows}
+        self.assertEqual(by['Avatar cards']['verdict'], 'thin')
+        self.assertEqual(by['Theme costs']['n'], 300)
+
+
 if __name__ == '__main__':
     unittest.main()

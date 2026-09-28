@@ -2263,3 +2263,32 @@ def rechecks(avatars: list[dict], ladder_records: list[dict], today: str) -> dic
     return {"rows": rows, "due": len(due), "no_date": sum(1 for r in rows if r["status"] == "no_date"), "action": action,
             "line": (f"{len(due)} records stop being trusted within {RECHECK_DAYS} days; the first on {min(r['expires'] for r in due)}." if due
                      else "No avatar or ladder record expires within 30 days.")}
+
+
+# ---------------------------------------------------------------- how strong is each read
+
+THIN_REVIEWS = 100        # a block that rests on fewer than 100 reviews is thin
+THIN_ITEMS = 30           # a block that rests on fewer than 30 lines or quotes is thin
+
+
+def strength(d: dict) -> list[dict]:
+    """The sample behind each desk block, so a reader knows which reads to trust and which to widen first."""
+    def row(block, tab, n, basis, thin_at):
+        verdict = "unavailable" if n is None else ("thin" if n < thin_at else "strong")
+        return {"block": block, "tab": tab, "n": n, "basis": basis, "thin_at": thin_at, "verdict": verdict}
+    lad = d["ladders"]["rows"]
+    out = [
+        row("Avatar cards", "avatars", sum(a["quote_count"] for a in d["avatars"]), "customer quotes across avatars", THIN_ITEMS * 2),
+        row("Doubts rung by rung", "doubts", sum((r["one_star"] or 0) + (r["five_star"] or 0) for r in lad), "one and five star mentions on rungs", THIN_REVIEWS),
+        row("Theme costs", "doubts", d["themes"].get("rated"), "rated reviews", THIN_REVIEWS),
+        row("Copy gap and hooks", "doubts", d["copy_gap"].get("praise_reviews"), "praise reviews", THIN_REVIEWS),
+        row("Perception gap", "brand", d["perception"].get("praise_reviews"), "praise reviews", THIN_REVIEWS),
+        row("Claims under fire", "offers", d["claims_fire"].get("complaints"), "1 and 2 star reviews", THIN_REVIEWS),
+        row("Doubt seasons", "offers", sum(v["us"] or 0 for c in d["timing"]["cells"].values() for v in c.values()), "complaints with a date", THIN_REVIEWS),
+        row("Four forces", "avatars", sum(r["lines"] for r in d["forces"]["rows"]), "lines tied to avatars; a line can count for more than one", THIN_REVIEWS),
+        row("Where avatars speak", "avatars", sum(r["reviews"] for r in d["marketplace"]["rows"]), "linked reviews", THIN_REVIEWS),
+        row("Who our ads speak to", "avatars", d["ad_voice"].get("total_ads"), "live ads read", THIN_ITEMS),
+        row("Cohorts", "retention", sum(r["customers"] for r in d["cohorts"].get("rows", [])) if d["cohorts"].get("available") else None,
+            "first-time buyers, simulated", 1000),
+    ]
+    return out

@@ -418,7 +418,7 @@ def overview(brain: Brain) -> dict:
     win = daily_window(brain.brand, ends_on)
     opd = sum(r.get("orders") or 0 for r in win["rows"]) / len(win["rows"]) if not win["unavailable"] else None
     focus = builds.focus(avatars, srv, builds.ad_voice(avatars, brain.records("learnings")), lad["rows"])
-    return {"brand": brain.brand, "today": brain.today.isoformat(), "ends_on": ends_on, "version": brain.version(), "focus": focus,
+    out = {"brand": brain.brand, "today": brain.today.isoformat(), "ends_on": ends_on, "version": brain.version(), "focus": focus,
             "simulated_note": SIMULATED_NOTE, "orientation": orientation(brain, avatars, all_rungs, chart, ends_on),
             "avatars": avatars,
             "objections": objections, "angles": {k: angles[k] for k in ("available", "reason", "ads")},
@@ -447,6 +447,8 @@ def overview(brain: Brain) -> dict:
             "hooks": builds.hooks(brain.records("language_bank"), all_rungs, avatars, _brand_tokens(brain), audit.source_name),
             "themes": builds.theme_impact(brain.records("language_bank"), lad["rows"], ends_on),
             "words": builds.words(brain.records("language_bank"), all_rungs, avatars, _brand_tokens(brain), audit.source_name), "formats": _formats(brain, avatars)}
+    out["strength"] = builds.strength(out)
+    return out
 
 
 def handle(req):

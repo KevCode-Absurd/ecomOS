@@ -367,6 +367,20 @@
       artefact: { kind: r.action.kind, label: 'a dated plan: ad briefs and 2 emails', draft: r.action.draft } }, { compact: true, screen: SLUG })));
   }
 
+  // ---------- how strong is each read ----------
+  function renderStrength(rows) {
+    const thin = rows.filter((r) => r.verdict === 'thin');
+    document.getElementById('strength-sum').textContent = 'How strong is each read? ' + (thin.length ? thin.length + ' thin: ' + thin.map((r) => r.block).join(', ') + '.' : 'Every block rests on a fair sample.');
+    const widen = { id: SLUG + '.strength.widen', title: 'Widen the thin reads', kind: 'research_note', owner: 'agent_drafts', severity: 'low',
+      capability: { id: 'BRAND-C01', autonomy: 'agent_does' }, why: thin.map((r) => r.block + ': ' + r.n + ' ' + r.basis + ', under ' + r.thin_at).join('. '),
+      steps: [{ n: 1, who: 'agent', text: 'Plan the extra review and ad pulls, by page id, inside the weekly cap.' },
+        { n: 2, who: 'person', text: 'Approve the spend before any pull runs.' }, { n: 3, who: 'agent', text: 'Run the pulls and re-read the thin blocks.' }],
+      artefact: { kind: 'research_note', label: 'a pull plan with its cost', draft: 'DRAFT pull plan\n' + thin.map((r) => '- ' + r.block + ': from ' + r.n + ' to ' + (r.thin_at * 2) + ' ' + r.basis).join('\n') } };
+    mount('#strength', UI.table({ columns: [{ key: 'block', label: 'Block' }, { key: 'tab', label: 'Tab' }, { key: 'n', label: 'Sample', unit: 'n' }, { key: 'basis', label: 'Of what' },
+      { key: 'verdict', label: 'Read', format: (v, r) => v === 'thin' ? 'thin, under ' + r.thin_at : v } ], rows, sort: false }),
+      thin.length ? UI.actionCard(widen, { compact: true, screen: SLUG }) : null);
+  }
+
   // ---------- desk: re-check calendar ----------
   function renderRechecks(x) {
     document.getElementById('recheck-sub').textContent = 'Each avatar and ladder record stops being trusted on its expiry date. Due: within 30 days. ' + x.line +
@@ -937,6 +951,7 @@
     renderAdVoice(d.ad_voice);
     renderSplit(d.split);
     renderGate(d.gate);
+    renderStrength(d.strength);
     renderRechecks(d.rechecks);
     renderForces(d.forces);
     renderSurvey(d.survey);
