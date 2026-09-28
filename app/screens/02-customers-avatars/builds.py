@@ -22,7 +22,7 @@ import re
 from urllib.parse import urlparse
 
 SCREEN = "02-customers-avatars"
-CHANNEL_OF_SOURCE = {"Bombas site": "our site", "Trustpilot": "review sites", "Sitejabber": "review sites",
+CHANNEL_OF_SOURCE = {"Our site": "our site", "Trustpilot": "review sites", "Sitejabber": "review sites",
                      "Amazon": "Amazon", "Target": "retail stores", "Nordstrom": "retail stores",
                      "Other retailers": "retail stores", "Reddit": "Reddit", "Press": "press"}
 NOT_TESTIMONIAL = {"Reddit"}
@@ -1028,6 +1028,9 @@ def copy_gap(sections: dict[str, list[dict]], lang_records: list[dict], brand_to
                             {"n": 3, "who": "person", "text": "Approve and ship on the page."},
                             {"n": 4, "who": "agent", "text": "Mark the words as used so reuse can be counted."}]}
     used = sum(1 for r in top if r["verdict"] == "used")
+    if not n_docs:
+        return {"available": False, "reason": "no praise reviews in the language bank yet", "rows": [], "our_records": len(ours),
+                "praise_reviews": 0, "missing": 0, "used": 0, "action": None}
     return {"available": True, "rows": top, "our_records": len(ours), "praise_reviews": n_docs, "missing": len(missing), "used": used,
             "action": action,
             "line": f"Of the {len(top)} words buyers use most when they praise us, {len(missing)} never appear in our site and founder records."}
@@ -1647,7 +1650,7 @@ def hierarchy(themes: dict, perception_x: dict, ladders_rows: list[dict], all_ru
               "value": value, "text": lead + (f" Answer first: {doubt['doubt']}." if doubt else ""),
               "tier": "approved", "confidence": 1.0, "visibility": "private",
               "source": {"type": "founder", "ref": "02-customers-avatars messaging hierarchy", "captured_at": today}}
-    return {"lead": lead, "lead_theme": lead_theme, "words": words, "frame": frame, "proofs": proofs,
+    return {"available": bool(lead_theme), "lead": lead, "lead_theme": lead_theme, "words": words, "frame": frame, "proofs": proofs,
             "doubt": {"id": doubt["id"], "doubt": doubt["doubt"], "one_star": doubt["one_star"], "verdict": doubt["verdict"]} if doubt else None,
             "record": record,
             "line": "Built from buyer evidence: the theme that earns the most stars, the proof points behind the most five-star lines, the doubt that most needs an answer."}

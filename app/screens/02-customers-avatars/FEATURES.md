@@ -102,6 +102,21 @@ Lead's review: rounds 1 to 4 passed. Focus: returns and tickets by avatar, depth
 | 5.9 | Which avatars doubt the price and what answers it: the share of each avatar's one-star mentions on price rungs, price-led at 30 percent or more, with the facts the brain holds as orientation (free shipping point, lowest single pair, shipping as a share of one pair, pairs to free shipping) and a pack picker brief that shows the free shipping line; per-pair price by pack stays unavailable until pack prices are in the brain (Contract asks). Bombas: the In-Store Single Pair Trier, Price and Mission Skeptic and Guarantee Reassured Loyalist are price-led; one pair pays 61 percent on top in shipping | done |
 | 5.10 | Five more audit rules (CUST-R26 avatar with high return risk, satisfaction 4 per the docstring; R27 marketplace-led avatar; R28 price-led avatar; R29 records due for a re-check; R30 thin read, one per thin block), each with its drafted work in `rank` and a job. 30 rules, 29 firing on Bombas. Screenshot `round5.png` (avatar cards with the new chips and gaps) | done |
 
+## Round 6: any brand, any screen size, one weekly view (from 28 Sep 2026)
+
+| # | Feature | Status |
+|---|---|---|
+| 6.1 | Plug and play on a second brand: every route (overview, rank, audit, handoff, tests) renders for the sparse `example` brain with no sample-brand fact and honest unavailable states (tested). Fixed on the way: the simulated note reads the brand name from the brain; the brand's own site is found from its site map and identity urls instead of a coded host; the copy gap is unavailable with no praise reviews; the messaging hierarchy cannot be approved, and CUST-R22 does not fire, until a theme earns stars | done |
+| 6.2 | One merged action per artefact: findings that ask for the same draft (a rung's offer from R02 and R11, for example) become one action with both finding ids | todo |
+| 6.3 | This week and next: every dated move (ship-by, ads live, check on, re-check) on one list | todo |
+| 6.4 | Compare two avatars side by side | todo |
+| 6.5 | Each ladder rung opens its evidence: every one-star and five-star line, the avatars and the proof | todo |
+| 6.6 | Since your last visit: new and resolved moves, from the brain version and the action ids this browser saw | todo |
+| 6.7 | The page at phone width: 360 px with no horizontal scroll | todo |
+| 6.8 | A printable monthly customer report for the founder | todo |
+| 6.9 | Faster loads: the overview built once per brain version and window | todo |
+| 6.10 | Audit rules and `rank` for round 6, screenshot `round6.png` | todo |
+
 ### Round 5 founder note (28 Sep 2026)
 
 1. The screen now checks itself against the depth rules on every test run: no brand facts in page code, plain words, numbers on every finding, unavailable never zero.

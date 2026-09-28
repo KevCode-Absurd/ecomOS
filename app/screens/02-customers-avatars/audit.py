@@ -201,8 +201,9 @@ NO_DATA = "no revenue formula for this rule yet"
 
 # ---------------------------------------------------------------- shared builders
 
-SOURCE_NAMES = {"shop.bombas.com": "Bombas site", "bombas.com": "Bombas site", "own_site_yotpo": "Bombas site",
-                "own_site": "Bombas site", "trustpilot.com": "Trustpilot", "trustpilot": "Trustpilot",
+OWN = "Our site"
+OWN_HOSTS: set[str] = set()   # the brand's own hosts, read from the brain by own_hosts(brain) before any builder runs
+SOURCE_NAMES = {"own_site_yotpo": OWN, "own_site": OWN, "trustpilot.com": "Trustpilot", "trustpilot": "Trustpilot",
                 "amazon.com": "Amazon", "amazon": "Amazon", "amazon_customers_say": "Amazon",
                 "nordstrom.com": "Nordstrom", "target.com": "Target", "sitejabber.com": "Sitejabber",
                 "yahoo.com": "Press", "retailer": "Other retailers", "reddit": "Reddit", "reddit.com": "Reddit"}
@@ -214,7 +215,33 @@ def host(ref: str | None) -> str | None:
 
 
 def source_name(s: str | None) -> str:
+    if s and (s in OWN_HOSTS or any(s.endswith("." + h) for h in OWN_HOSTS)):
+        return OWN
     return SOURCE_NAMES.get(s or "", s or "unknown")
+
+
+def own_hosts(brain: Brain) -> set[str]:
+    """The brand's own web hosts from the brain (site map and identity urls), so its site reads as our site for any brand."""
+    hosts = set()
+    for sec in ("site_map", "identity", "sources"):
+        for r in brain.records(sec):
+            v = r.get("value")
+            for url in re.findall(r"https?://[^\s\"',\]]+", json_text(v) + " " + str((r.get("source") or {}).get("ref") or "")):
+                h = host(url)
+                if h and brain.brand.lower() in h:
+                    hosts.add(h)
+                    hosts.add(".".join(h.split(".")[-2:]))
+    OWN_HOSTS.clear()
+    OWN_HOSTS.update(hosts)
+    return hosts
+
+
+def json_text(v) -> str:
+    import json as _json
+    try:
+        return _json.dumps(v)
+    except (TypeError, ValueError):
+        return str(v)
 
 
 def key(rid: str) -> str:
@@ -228,6 +255,7 @@ def expired(rec: dict, today: dt.date) -> bool:
 
 def avatar_rows(brain: Brain) -> list[dict]:
     """One row per active avatar: share, intensity, job, quotes with links, grounding."""
+    own_hosts(brain)
     out = []
     for a in brain.records("avatars"):
         v = a.get("value") if isinstance(a.get("value"), dict) else {}
@@ -824,7 +852,7 @@ def r17_r23(d, ends_on):
         s = f"{m['theme'].replace('_', ' ').capitalize()} complaints peak in {m['season']}: {round(m['share'] * 100)} percent of all complaints then."
         out.append(_finding("CUST-R21", "high" if m["late"] else "medium", {"type": "ladder_rung", "id": "season_" + m["theme"], "label": f"{m['theme'].replace('_', ' ')}, {m['season']}"},
                             ev, s, "SITE-C38", 0.5, [], ends_on))
-    if not d["hierarchy_approved"]:
+    if not d["hierarchy_approved"] and any(r["impact"] > 0 for r in d["themes"].get("rows", [])):
         ev = [_ev("approved_hierarchy_records", 0, "n", ends_on, "brain.positioning", baseline=1)]
         out.append(_finding("CUST-R22", "low", {"type": "brand", "id": "messaging_hierarchy", "label": "Messaging hierarchy"}, ev,
                             "No approved lead line, proof points and first doubt to answer. Every page picks its own.", "BRAND-C33", 0.5, [], ends_on))

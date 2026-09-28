@@ -1371,5 +1371,43 @@ class Round5Rules(TempBrain):
             self.assertEqual(rank_engine.validate_action(a), [], a['id'])
 
 
+class SecondBrand(unittest.TestCase):
+    """Feature 6.1: plug and play. Every route renders for the sparse example brand, with no sample-brand fact and honest unavailable states."""
+
+    def setUp(self):
+        api.BRAIN_ROOT = None
+
+    def req(self, path, method='GET', body=None):
+        return api.handle(Req(path, method, query={'brand': ['example']}, body=body))
+
+    def test_every_route_renders(self):
+        d = self.req(['overview'])
+        text = json.dumps(d).lower()
+        self.assertNotIn('bombas', text)
+        self.assertIn('example is the sample brand', d['simulated_note'].lower())
+        self.assertFalse(d['cohorts']['available'])
+        self.assertFalse(d['copy_gap']['available'])
+        self.assertFalse(d['hierarchy']['available'])
+        for o in d['orientation'][:3]:
+            self.assertIsNone(o['value'])
+        for path in (['handoff'], ['tests'], ['audit']):
+            self.assertNotIn('bombas', json.dumps(self.req(path)).lower())
+        acts = api.rank('example', RANK_WINDOW)['actions']
+        self.assertNotIn('bombas', json.dumps(acts).lower())
+        for a in acts:
+            self.assertEqual(rank_engine.validate_action(a), [], a['id'])
+        self.assertNotIn('02-customers-avatars.CUST-R22.messaging_hierarchy', {a['id'] for a in acts})
+
+    def test_nothing_to_approve(self):
+        tmp = Path(tempfile.mkdtemp())
+        try:
+            shutil.copytree(BRAIN / 'example', tmp / 'example')
+            api.BRAIN_ROOT = tmp
+            self.assertEqual(self.req(['messaging', 'approve'], 'POST', {})[0], 409)
+        finally:
+            api.BRAIN_ROOT = None
+            shutil.rmtree(tmp)
+
+
 if __name__ == '__main__':
     unittest.main()

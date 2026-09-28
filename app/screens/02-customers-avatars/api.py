@@ -43,8 +43,8 @@ SAFE_BRAND = re.compile(r"^[a-z0-9_-]+$")
 MAX_EXAMPLE = 600
 REPEAT_MONTHS = 3
 CHART_COHORTS = 12
-SIMULATED_NOTE = ("Bombas is the sample brand. Avatars, objections and customer words come from public reviews "
-                  "and the Bombas site. Every sales and repeat number here is simulated.")
+SIMULATED_NOTE = ("{name} is the sample brand. Avatars, objections and customer words come from public reviews "
+                  "and its own site. Every sales and repeat number here is simulated.")
 PAGE_NAMES = {"": "Homepage", "pages/about-us": "About page", "policies/terms-of-service": "Legal terms",
               "pages/happiness-guarantee": "Guarantee page"}
 EXAMPLE_FIELD = re.compile(r"^(liked|disliked)_example_[0-9a-f]{8}$")
@@ -370,6 +370,8 @@ def approve_hierarchy(brain: Brain):
     avatars = audit.avatar_rows(brain)
     all_rungs = audit.rungs(brain)
     h = _hierarchy(brain, avatars, all_rungs, builds.ladders(all_rungs, avatars))
+    if not h["available"]:
+        return 409, {"error": "nothing to approve yet: no review theme earns stars"}
     errs = brain.put(h["record"])
     if errs:
         return 400, {"error": "record not valid", "details": errs}
@@ -419,7 +421,7 @@ def overview(brain: Brain) -> dict:
     opd = sum(r.get("orders") or 0 for r in win["rows"]) / len(win["rows"]) if not win["unavailable"] else None
     focus = builds.focus(avatars, srv, builds.ad_voice(avatars, brain.records("learnings")), lad["rows"])
     out = {"brand": brain.brand, "today": brain.today.isoformat(), "ends_on": ends_on, "version": brain.version(), "focus": focus,
-            "simulated_note": SIMULATED_NOTE, "orientation": orientation(brain, avatars, all_rungs, chart, ends_on),
+            "simulated_note": SIMULATED_NOTE.format(name=_brand_name(brain)), "orientation": orientation(brain, avatars, all_rungs, chart, ends_on),
             "avatars": avatars,
             "objections": objections, "angles": {k: angles[k] for k in ("available", "reason", "ads")},
             "language": audit.language_rows(brain), "voice": voice_sheet(brain),

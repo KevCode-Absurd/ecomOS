@@ -614,7 +614,7 @@
   function renderHierarchy(h) {
     document.getElementById('hier-sub').textContent = h.line + ' Approve it and it becomes a positioning record every screen reads.';
     const status = el('span', { class: 'micro muted', 'aria-live': 'polite' });
-    const btn = el('button', { class: 'btn primary sm', type: 'button', text: h.approved ? 'Approved' : 'Approve as our messaging hierarchy', disabled: h.approved });
+    const btn = el('button', { class: 'btn primary sm', type: 'button', text: h.approved ? 'Approved' : !h.available ? 'Nothing to approve yet' : 'Approve as our messaging hierarchy', disabled: h.approved || !h.available });
     btn.addEventListener('click', async () => {
       status.textContent = 'Saving';
       try { const r = await api(BASE + 'messaging/approve', { method: 'POST', body: {} }); status.textContent = 'Saved as ' + r.record + '.'; btn.disabled = true; btn.textContent = 'Approved'; }
