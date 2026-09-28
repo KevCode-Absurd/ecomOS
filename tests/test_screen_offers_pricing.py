@@ -1073,5 +1073,23 @@ class PlugAndPlayTest(unittest.TestCase):
                 self.assertIn(e['status'], ('running', 'done', 'parked', 'proposed', None))
 
 
+class PriorsTest(unittest.TestCase):
+    """Round 3 feature 8: moves cite the brand's finished tests on their surface."""
+
+    def test_priors_attach_by_surface(self):
+        class Ctx:
+            registry = {'entries': [{'id': 'EXP-9', 'status': 'done', 'surface': 'cart rewards', 'hypothesis': 'a lower line',
+                                     'result': {'note': 'margin per order down $2.40', 'lift': None}, 'learning': 'Keep the line.'}]}
+        a = {'status': 'open', 'rule_id': 'OFFER-R01', 'why': 'Base.', 'artefact': {'kind': 'test_brief', 'draft': 'Brief.'},
+             'entity': {'id': 'free_shipping_threshold'}, 'brain_refs': []}
+        b = {'status': 'open', 'rule_id': 'OFFER-R16', 'why': 'Base.', 'artefact': {'kind': 'ad_brief', 'draft': 'x'},
+             'entity': {'id': 'price_position'}, 'brain_refs': []}
+        out = api.actions.add_priors([a, b], Ctx())
+        self.assertEqual(out[0]['priors'], ['EXP-9'])
+        self.assertIn('Keep the line.', out[0]['why'])
+        self.assertIn('Priors from the registry', out[0]['artefact']['draft'])
+        self.assertNotIn('priors', out[1])
+
+
 if __name__ == '__main__':
     unittest.main()

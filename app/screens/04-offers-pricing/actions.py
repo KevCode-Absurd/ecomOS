@@ -607,6 +607,27 @@ def covered_by_registry(actions, ctx):
     return actions
 
 
+def add_priors(actions, ctx):
+    """Every open move cites the brand's finished tests on its surface: the result and the learning, as priors."""
+    done = [e for e in (ctx.registry.get('entries') or []) if e['status'] == 'done' and e['surface']]
+    for a in actions:
+        if a.get('status') != 'open':
+            continue
+        sf, _ = surfaces(a)
+        pri = [e for e in done if sf and e['surface'] in sf and e['id'] not in (a.get('brain_refs') or [])]
+        if not pri:
+            continue
+        lines = []
+        for e in pri:
+            res = e.get('result') or {}
+            what = res.get('note') or (f'{res.get("direction")} {abs(res["lift"]) * 100:.0f} percent' if res.get('lift') is not None else 'no read')
+            lines.append(f'{e["id"]} ({e["hypothesis"]}): {what}.' + (f' Learning: {e["learning"]}' if e.get('learning') else ''))
+        a['priors'] = [e['id'] for e in pri]
+        a['why'] = a['why'] + ' Prior on this surface: ' + ' '.join(lines)
+        a['artefact'] = dict(a['artefact'], draft=(a['artefact'].get('draft') or '') + '\n\nPriors from the registry:\n' + '\n'.join('- ' + x for x in lines))
+    return actions
+
+
 def merge_into(actions, child, parent):
     """A child rule's finding rides on the parent rule's action when both fire (one move fixes both)."""
     host = next((a for a in actions if a.get('rule_id') == parent and a.get('status') == 'open'), None)
@@ -1078,7 +1099,7 @@ def rank(brand='bombas', window=None, data=None):
     actions = merge_connect(merge_gifting(merge_red_line(merge_ladder(actions, ctx)), ctx))
     actions = merge_into(merge_into(actions, 'OFFER-R05', 'OFFER-R01'), 'OFFER-R06', 'OFFER-R01')
     actions = merge_into(actions, 'OFFER-R19', 'OFFER-R08')
-    actions = covered_by_registry(actions, ctx)
+    actions = add_priors(covered_by_registry(actions, ctx), ctx)
     actions = [a for a in actions if not RANK.validate_action(a)]
     actions.sort(key=RANK.sort_key)
     calendar = test_calendar(actions, ctx)
