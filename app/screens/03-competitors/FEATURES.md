@@ -47,6 +47,16 @@ Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `a
 | 7.7 | The brief pack as rows: `GET briefs` also returns one row per open move in a proposed shape for a shared briefs table (team, kind, title, why, draft, win and stop rules, check date, capability, owner, proposed or decided), with a "Copy as rows" button; the table itself is a Contract ask, since only the app level adds shared tables | done |
 | 7.8 | Second brand check for rounds 6 and 7: on a minimal hat brand every write-back validates against that brand's own names (a Bombas rival is refused), a poll with no challenger line is refused with the reason, the logged cut, the repeated loss reason and the band check fire from its own data, every action validates, and no Bombas word or "sock" appears on any route | done |
 | 7.9 | Form access and phone pass: each write-back form is a labelled group, every field keeps a visible label, Enter submits, the status line is announced to screen readers and a refused entry puts focus back on the form; each Remove button names the record it removes; every form checked open at 360 px on every tab with no page scroll | done |
+| 7.10 | Round close: 34 rules; interview reasons drive the loss answers; coverage by name; logged prices on the band chart with a band check and a re-check cadence; the brief and the report carry the team's work and the founder's queue; brief rows proposed for a shared table; second brand clean; forms accessible; no script errors on the page or the report; 360 px clean with every form open; screen tests green; screenshot `round7.png` | done |
+
+### Round 7 status for Kevin (28 Sep 2026)
+
+1. Once your team logs 3 losses to a rival, the reason and the compare answer come from those interviews, not from our guess from their ads.
+2. The interview task now wants 5 interviews for each of the top 3 rivals and says who is still short.
+3. Prices you log show on the price chart. One outside a rival's public band flags that band as out of date; prices older than 14 days come back as a re-check list.
+4. The weekly brief and the printable report now list what the team logged and the calls waiting on you.
+5. Every brief can be copied as rows for a shared table, which the app level still has to add (under Contract asks). A second test brand runs every new rule cleanly.
+6. Next, round 8: the ad-level pull once you run it, rival site captures, and a check that each move you approved got made and read on its date.
 
 ## Round 6: the page writes back (first-party records the rules read)
 
@@ -290,7 +300,7 @@ Round 2 notes: the lead authorised the $2.08 pull on 28 Sep; the session's permi
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
-| 7 | 7.1 to 7.9 | 2026-09-28 | Interview reasons; coverage by name; prices seen on the band chart; price re-check cadence; logged work in the brief; queue and log in the report; briefs as rows; second brand check; form access |
+| 7 | 7.1 to 7.10 | 2026-09-28 | Interview reasons; coverage by name; prices seen on the band chart; price re-check cadence; logged work in the brief; queue and log in the report; briefs as rows; second brand check; form access; round close. Screenshot `round7.png` |
 | 6 | 6.1 to 6.10 | 2026-09-28 | Win-loss log; repeated loss reason; rival prices seen; battlecard checks; positioning polls; thresholds on the page; capture from the page; the team log; waiting on you; round close (and the hand-off fix). Screenshot `round6.png` |
 | 5 | 5.1 to 5.10 | 2026-09-28 | Hand-offs; action lanes; season plan; quarterly review; exports (and the 5.4 load fix); browser smoke test; team notes; brief pack; check due lane; round close |
 | 4 | 4.1 to 4.10 | 2026-09-28 | Placements and new channel alerts; gap lines; stop rules; unit from the brain; never zero; phone width; threat history; support answers; room metrics. Screenshot `round4.png` |
