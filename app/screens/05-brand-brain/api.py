@@ -86,6 +86,10 @@ question, and accept or ignore on a proposed record. Nothing external.
   GET  package?capability=<id>  the package a capability gets (T0, T1, T2) with tokens against its budget
   GET  learn                    words the founder cut or added across their edits, proposed for the voice sheet
   POST learn/apply              {kind: avoided | used, words: [...]}: append to voice.words_avoided or words_used
+  GET  report?days=7            the weekly brain report in plain words: changes, decisions, questions, conflicts,
+                                site, files, competitors, health, top moves
+  GET  digest                   the founder round: 5 questions with hints, proposed updates, one health line, the
+                                top 3 moves; delivery unavailable until a Slack or email connector exists
   GET  records?section=<name>   one section's records with tier, date, source and evidence
   GET  audit                    findings from audit.py (app/contracts/audit.md shape)
   POST questions/<field>        {answer}: writes a founder record, marks the question answered
@@ -128,6 +132,9 @@ _spec.loader.exec_module(audit)
 _hspec = importlib.util.spec_from_file_location("brand_brain_health", HERE / "health.py")
 health = importlib.util.module_from_spec(_hspec)
 _hspec.loader.exec_module(health)
+_rpspec = importlib.util.spec_from_file_location("brand_brain_report", HERE / "report.py")
+report = importlib.util.module_from_spec(_rpspec)
+_rpspec.loader.exec_module(report)
 _nspec = importlib.util.spec_from_file_location("brand_brain_learn", HERE / "learn.py")
 learn = importlib.util.module_from_spec(_nspec)
 _nspec.loader.exec_module(learn)
@@ -347,7 +354,7 @@ def answer_bank(brain: Brain, qid: str, body: dict):
     rec = {"id": rid, "brand": brain.brand, "section": section, "field": field, "value": _coerce(text), "text": text,
            "tier": "approved", "confidence": 1.0, "visibility": "private",
            "source": {"type": "founder", "ref": f"05-brand-brain answer to {qid}", "captured_at": brain.today.isoformat()}}
-    errs = founder_put(brain, rec)
+    errs = founder_put(brain, rec, kind="answer", what=f"answered {qid}: {text[:100]}")
     if errs:
         return 400, {"error": "record not valid", "details": errs}
     return 201, {"ok": True, "record": rid, "question": qid, "also_fills": q["fills"][1:], "unblocks": sorted(q["unblocks_rooms"]), "version": brain.version()}
@@ -828,6 +835,31 @@ def claim_add(brain: Brain, body: dict):
     return 201, {"ok": True, "record": rid, "tier": tier, "flows_to": FLOWS_TO.get("claims", ""), "version": brain.version()}
 
 
+def report_view(brain: Brain, days: int) -> dict:
+    try:
+        actions = rank(brain.brand, _window_dict(brain))["actions"]
+    except Exception:  # noqa: BLE001
+        actions = []
+    out = report.weekly(brain, days, changes.recent(brain, days), decisions_log(brain), questions_ranked(brain), conflicts_view(brain), sitediff.diff(brain), documents(brain),
+                        health.heatmap(brain), actions, market.pages(brain) | {"gaps": market.gaps(brain)})
+    out.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())
+    return out
+
+
+def digest_view(brain: Brain) -> dict:
+    try:
+        actions = rank(brain.brand, _window_dict(brain))["actions"]
+    except Exception:  # noqa: BLE001
+        actions = []
+    out = report.digest(brain, questions_ranked(brain), review_queue(brain), health.heatmap(brain), actions, health.connectors(brain))
+    out.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())
+    return out
+
+
+def _window_dict(brain: Brain) -> dict:
+    return {"ends_on": (brain.today - dt.timedelta(days=1)).isoformat(), "days": 28, "trailing": 4}
+
+
 def learn_view(brain: Brain) -> dict:
     return learn.proposals(brain, voice.words_avoided(brain), [w.strip().lower() for w in re.split(r"[,;\n]+", voice._text(voice._rec(brain, "voice", "words_used")) or "") if w.strip()])
 
@@ -1145,6 +1177,14 @@ def handle(req):
         ends = (brain.today - dt.timedelta(days=1)).isoformat()
         findings = audit.run(brain.brand, {"ends_on": ends, "days": 1, "trailing": 0}, BRAIN_ROOT)
         return {"findings": findings, "rules": audit.RULES, "brain_version": brain.version()}
+    if req.method == "GET" and parts == ["report"]:
+        try:
+            days = max(1, min(90, int(req.arg("days", "7") or 7)))
+        except ValueError:
+            days = 7
+        return report_view(brain, days)
+    if req.method == "GET" and parts == ["digest"]:
+        return digest_view(brain)
     if req.method == "GET" and parts == ["learn"]:
         lv = learn_view(brain)
         lv.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())

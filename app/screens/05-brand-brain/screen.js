@@ -53,6 +53,7 @@
     } else pw.hidden = true;
     loadDecisions(m);
     loadChanges();
+    loadReport();
     const con = m.connect || [];
     const cw = document.getElementById('connect-wrap');
     if (con.length) {
@@ -200,6 +201,21 @@
     });
     mount('#decisions-tools', UI.orientation([{ label: 'approvals', value: d.counts.action, unit: 'n' }, { label: 'snoozed', value: d.counts.snoozed, unit: 'n' }, { label: 'brain decisions', value: d.counts.brain, unit: 'n' }, { label: 'last', value: null, unit: 'n', unavailable_label: d.last ? fmt.date(d.last) : 'none yet' }]));
     mount('#decisions', UI.timeline(items.slice(0, 30)), items.length > 30 ? el('div', { class: 'micro faint', text: (items.length - 30) + ' older entries not shown.' }) : null);
+  }
+
+  // ---------- 1b2. weekly report and founder digest ----------
+  async function loadReport() {
+    const wrap = el('div', { class: 'stack' });
+    mount('#report', wrap);
+    const [rp, dg] = await Promise.all([api(BASE + 'report?days=7').catch((e) => ({ error: e.message })), api(BASE + 'digest').catch((e) => ({ error: e.message }))]);
+    if (rp.error) { mount(wrap, el('p', { class: 'muted', text: 'Report unavailable: ' + rp.error })); return; }
+    mount('#report-tools', UI.orientation([{ label: 'changes', value: rp.counts.changes, unit: 'n' }, { label: 'approved', value: rp.counts.approved, unit: 'n' }, { label: 'questions open', value: rp.counts.questions_open, unit: 'n' }, { label: 'site changes open', value: rp.counts.site_open, unit: 'n' }, { label: 'weak sections', value: rp.counts.weak_sections, unit: 'n' }]));
+    const printBtn = el('button', { class: 'btn sm', type: 'button', text: 'Print the report' });
+    printBtn.addEventListener('click', () => { document.body.classList.add('print-report'); window.print(); setTimeout(() => document.body.classList.remove('print-report'), 500); });
+    mount(wrap, UI.tabs({ items: [
+      { key: 'report', label: 'Weekly report', panel: () => el('div', { class: 'stack' }, el('div', { class: 'row' }, UI.copyButton({ label: 'Copy the report', text: () => rp.text }), printBtn, el('span', { class: 'micro faint', text: rp.note })), el('pre', { class: 'card sunken brief report-text', text: rp.text })) },
+      { key: 'digest', label: 'Founder round', n: dg.questions, panel: () => dg.error ? el('p', { class: 'muted', text: 'Digest unavailable: ' + dg.error }) : el('div', { class: 'stack' }, el('div', { class: 'row' }, UI.copyButton({ label: 'Copy the digest', text: () => dg.text }), el('span', { class: 'chip', text: 'Slack: ' + (dg.delivery.slack || NA) }), el('span', { class: 'chip', text: 'email: ' + (dg.delivery.email || NA) }), el('span', { class: 'micro faint', text: dg.delivery.reason + '. ' + dg.note })), el('pre', { class: 'card sunken brief', text: dg.text })) },
+    ] }));
   }
 
   // ---------- 1c. what changed this week ----------

@@ -1304,3 +1304,31 @@ class Round3Learn(TempBrain):
         r = api.handle(Req(['scan'], 'POST', body={'text': 'Premium comfort.'}))
         self.assertTrue(any(h['kind'] == 'avoided_word' for h in r['hits']))
         self.assertEqual(api.handle(Req(['learn', 'apply'], 'POST', body={'kind': 'x', 'words': ['a']}))[0], 400)
+
+
+class Round3ReportDigest(TempBrain):
+    """Round 3 features 8 and 10: the weekly report and the founder round digest, in plain words."""
+
+    def test_report_reads_the_week(self):
+        api.handle(Req(['profile', 'offers', 'free_shipping_threshold_usd'], 'POST', body={'text': '80'}))
+        api.handle(Req(['questions', 'bank', 'q.economics.gross_margin'], 'POST', body={'answer': '58%'}))
+        rp = api.handle(Req(['report'], query={'days': ['7']}))
+        self.assertTrue(rp['text'].startswith('Brand brain, week to ' + DAY))
+        self.assertGreaterEqual(rp['counts']['changes'], 2)
+        self.assertEqual(rp['counts']['questions_answered'], 1)
+        self.assertIn('Top moves from the brain screen:', rp['text'])
+        self.assertGreaterEqual(rp['counts']['top'], 3)
+        self.assertNotIn('—', rp['text'])
+        self.assertIn('Site: 1 snapshot on file', rp['text'])
+        self.assertEqual(api.handle(Req(['report'], query={'days': ['x']}))['days'], 7)
+
+    def test_digest_is_the_founder_round(self):
+        dg = api.handle(Req(['digest']))
+        self.assertEqual(dg['questions'], 5)
+        self.assertIn('1. What is your gross margin', dg['text'])
+        self.assertIn('Pull first', dg['text'])
+        self.assertIn('Approve today:', dg['text'])
+        self.assertIsNone(dg['delivery']['slack'])
+        api.handle(Req(['documents'], 'POST', body={'name': 'n.md', 'text': '# Offers\nFree shipping threshold: $75\n- Bundles: 4 pack saves 10 percent'}))
+        dg = api.handle(Req(['digest']))
+        self.assertGreaterEqual(dg['proposed'], 1)
