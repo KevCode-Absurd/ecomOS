@@ -2515,10 +2515,48 @@ class Round6AskDeep(TempBrain):
         self.assertIn('answers', r)
 
 
+class Round6Owners(TempBrain):
+    """Round 6 feature 8: section owners and review cadence; overdue reviews on the plan; mark reviewed restarts the clock."""
+
+    def test_owners_cadence_rule_and_review(self):
+        ow = api.handle(Req(['owners']))
+        self.assertNotIn('freshness', [r['section'] for r in ow['rows']])
+        by = {r['section']: r for r in ow['rows']}
+        self.assertEqual((by['offers']['cadence_days'], by['offers']['cadence_default'], by['offers']['assigned']), (1, True, False))
+        self.assertEqual(by['offers']['basis'], 'update')
+        self.assertEqual(ow['counts']['assigned'], 0)
+        # offers was updated today with a 1 day shelf life: ok today; a section updated long ago with a short cadence is overdue
+        status, res = api.handle(Req(['owners', 'policies'], 'POST', body={'owner': 'in-house ops', 'cadence_days': 14}))
+        self.assertEqual((status, res['value']['owner'], res['value']['cadence_days']), (201, 'in-house ops', 14))
+        rows = self.section('team')
+        rec = next(r for r in rows if r['id'] == 'bombas.team.owner_policies')
+        rec['value']['last_reviewed'] = '2026-08-01'
+        self.write('team', rows)
+        ow = api.handle(Req(['owners']))
+        pol = next(r for r in ow['rows'] if r['section'] == 'policies')
+        self.assertEqual((pol['state'], pol['basis'], pol['days_since']), ('overdue', 'review', 58))
+        self.assertEqual(ow['rows'][0]['section'], 'policies')
+        f = next(f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R35' and f['entity']['id'] == 'review_policies')
+        self.assertEqual(f['severity'], 'medium')  # 58 days is past twice the 14 day cadence
+        self.assertIn('in-house ops', f['sentence'])
+        a = next(a for a in api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions'] if a['rule_id'] == 'BRN-R35' and a['entity']['id'] == 'review_policies')
+        self.assertTrue(a['title'].startswith('Review policies'))
+        self.assertEqual((a['owner'], api.rank_mod.validate_action(a)), ('person', []))
+        status, res = api.handle(Req(['owners', 'policies'], 'POST', body={'reviewed': True}))
+        self.assertEqual((status, res['value']['last_reviewed'], res['value']['owner']), (201, '2026-09-28', 'in-house ops'))
+        pol = next(r for r in api.handle(Req(['owners']))['rows'] if r['section'] == 'policies')
+        self.assertEqual((pol['state'], pol['due_in']), ('ok', 14))
+        self.assertNotIn('review_policies', [f['entity']['id'] for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R35'])
+        self.assertEqual(api.handle(Req(['owners', 'freshness'], 'POST', body={'owner': 'x'}))[0], 404)
+        self.assertEqual(api.handle(Req(['owners', 'policies'], 'POST', body={'cadence_days': 'weekly'}))[0], 400)
+        self.assertEqual(api.handle(Req(['owners', 'policies'], 'POST', body={'cadence_days': 900}))[0], 400)
+        self.assertIn('owner', [c['kind'] for c in api.handle(Req(['changes']))['changes']])
+
+
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
-    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'],
+    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'],
               ['decisions'], ['flows'], ['claims'], ['site', 'diff'], ['parity'], ['contracts'], ['legal'], ['voice'], ['battlecards'], ['permissions'],
               ['export'], ['assumptions'], ['facts'], ['summaries'], ['changes'], ['learn'], ['report'], ['digest'], ['review'], ['bottlenecks'], ['audit']]
 

@@ -8,6 +8,8 @@ question, and accept or ignore on a proposed record. Nothing external.
                                 judgement rules, the package, where to check (markdown)
   GET  agentfile/endpoints      this route table as JSON, for an agent or an MCP wrapper
   GET  brainmd                  the router BRAIN.md text
+  GET  owners                   section owners and review cadence; overdue reviews first
+  POST owners/<section>         {owner, cadence_days, reviewed}: set the owner or cadence, or mark reviewed today
   GET  redlines                 the red lines register: never say, required lines, blocking rules, logo, rejected ideas, decisions, with reasons
   POST redlines/reason          {record, reason}: the reason written onto a red line's record
   GET  package/public?capability=  the package as public-facing against as it stands: records dropped, summaries changed, tokens saved
@@ -208,6 +210,9 @@ _pspec.loader.exec_module(parity)
 _sspec = importlib.util.spec_from_file_location("brand_brain_sitediff", HERE / "sitediff.py")
 sitediff = importlib.util.module_from_spec(_sspec)
 _sspec.loader.exec_module(sitediff)
+_owspec = importlib.util.spec_from_file_location("brand_brain_owners", HERE / "owners.py")
+owners = importlib.util.module_from_spec(_owspec)
+_owspec.loader.exec_module(owners)
 _adspec = importlib.util.spec_from_file_location("brand_brain_askdeep", HERE / "askdeep.py")
 askdeep = importlib.util.module_from_spec(_adspec)
 _adspec.loader.exec_module(askdeep)
@@ -1920,6 +1925,22 @@ def handle(req):
         return cd
     if req.method == "POST" and parts == ["claims"]:
         return claim_add(brain, req.body)
+    if req.method == "GET" and parts == ["owners"]:
+        ow = owners.owners(brain, health.SHELF_DAYS, health.META_SECTIONS, brain.section_stats())
+        ow.update(brand=brain.brand, today=brain.today.isoformat(), roles=health.ROLES, capability={"id": "BRN-C12", "autonomy": "founder_gate"})
+        return ow
+    if req.method == "POST" and len(parts) == 2 and parts[0] == "owners":
+        sec = parts[1]
+        if sec not in SECTIONS or sec in health.META_SECTIONS:
+            return 404, {"error": "no such section, or a system section", "section": sec}
+        existing = next((r.get("value") for r in brain.records("team") if r.get("field") == f"owner_{sec}" and isinstance(r.get("value"), dict)), None)
+        rec = owners.record(brain, sec, req.body or {}, existing)
+        if isinstance(rec, tuple):
+            return rec
+        errs = founder_put(brain, rec, "owner", rec["text"][:160])
+        if errs:
+            return 400, {"error": "; ".join(errs)}
+        return 201, {"ok": True, "record": rec["id"], "value": rec["value"], "version": brain.version()}
     if req.method == "GET" and parts == ["redlines"]:
         reg = redlines.register(brain)
         reg.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "BRN-C08", "autonomy": "founder_gate"})

@@ -159,6 +159,13 @@ def build(f: dict, nr: float | None) -> dict:
                         {"n": 3, "who": "person", "text": "Pick the record as proof, or approve the drafted fact as an approved record."},
                         {"n": 4, "who": "agent", "text": f"Attach it to the rung. The surfaces that use the rung ({surfaces or 'copy, page, listing, macro'}) read the proof on their next brief."}],
                  check_on=_check_on(f, 7), time_to_ship_hours=1)
+    elif rid == "BRN-R35":
+        ow = f.get("owner_row") or {}
+        who = ow.get("owner") or "the founder"
+        a.update(title=f"Review {ow.get('label') or label}: {ow.get('days_since')} days since the last look, cadence {ow.get('cadence_days')}" + (f" ({who})" if ow.get("owner") else ", no owner yet"), owner="person",
+                 artefact={"kind": "brain_record", "label": "the section read through, stale records retired or refreshed, the review date written", "draft": None},
+                 steps=[{"n": 1, "who": "agent", "text": f"Open {ow.get('label')} in the records browser with the stale and unverified records first."}, {"n": 2, "who": "person", "text": f"{who.capitalize()} reads it: approve what is true, retire what is not, answer what is missing."}, {"n": 3, "who": "agent", "text": "Mark it reviewed; the clock restarts from today."}],
+                 check_on=_check_on(f, 7), time_to_ship_hours=0.5)
     elif rid == "BRN-R34":
         rl = f.get("redlines") or {}
         n = _ev(f, "red_lines_without_reason")
