@@ -1129,8 +1129,11 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
             self.assertEqual(sorted(f['id'].split('.')[-1] for f in found), ['a', 'd'])
             for f in found:
                 self.check_shape(f)
-            # the override write
+            # the override write (the hand-off file it rewrites goes to the temp folder)
+            saved_paths = (api.HANDOFF_PATH, api.TESTS_PATH)
+            api.HANDOFF_PATH, api.TESTS_PATH = self.tmp.parent / 'handoff.json', self.tmp.parent / 'tests.json'
             code = api.candidate_update('fake', 'a', {'override_reason': 'competition fail accepted: the rivals are resellers', 'who': 'person'}, D)
+            api.HANDOFF_PATH, api.TESTS_PATH = saved_paths
             self.assertEqual(code['changes'], ['override: competition fail accepted: the rivals are resellers'])
             self.assertEqual({r['candidate_id']: r['verdict'] for r in audit.override_read('fake', D)}['a'], 'logged')
         finally:
@@ -1271,6 +1274,33 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
             self.check_shape(f)
             self.assertEqual(f['capability']['id'], 'PROD-C34')
             self.assertIn('listing', api.recipe(f)['title'])
+
+    def test_research_log_and_owner(self):
+        D = date(2026, 9, 27)
+        self.real2 = audit.PIPELINE_PATH
+        saved_paths = (api.HANDOFF_PATH, api.TESTS_PATH)
+        api.HANDOFF_PATH, api.TESTS_PATH = self.tmp.parent / 'handoff.json', self.tmp.parent / 'tests.json'   # writes stay in the temp folder
+        try:
+            audit.PIPELINE_PATH = self.tmp
+            self.tmp.write_text(json.dumps({'rows': [{'candidate_id': 'a', 'brand': 'fake', 'name': 'A', 'stage': 'shortlisted', 'log': [{'on': '2026-09-20', 'who': 'person', 'what': 'shortlisted'}]},
+                                                     {'candidate_id': 'b', 'brand': 'fake', 'name': 'B', 'stage': 'go', 'owner': 'Sam', 'first_run': {'units': 500, 'moq_units': 500, 'format': 'box', 'cash_usd': 4000}},
+                                                     {'candidate_id': 'c', 'brand': 'fake', 'name': 'C', 'stage': 'researched'}]}), encoding='utf-8')
+            lg = audit.research_log('fake')
+            self.assertEqual(lg['columns'], audit.LOG_COLUMNS)
+            self.assertEqual(len(lg['rows']), 3)
+            self.assertTrue(all(set(r) == set(audit.LOG_COLUMNS) for r in lg['rows']))
+            b = next(r for r in lg['rows'] if r['candidate_id'] == 'b')
+            self.assertEqual((b['owner'], b['first_run_units'], b['first_run_cash_usd'], b['tech_pack_status']), ('Sam', 500, 4000, 'none'))
+            found = audit.owner_findings('fake', D)
+            self.assertEqual([f['id'].split('.')[-1] for f in found], ['a'])     # b has Sam, c is before shortlisted
+            self.check_shape(found[0])
+            api.candidate_update('fake', 'a', {'owner': 'Ana', 'who': 'person'}, D)
+            self.assertEqual(audit.owner_findings('fake', D), [])
+            r = api.candidate_update('fake', 'a', {'stage': 'go', 'who': 'person'}, D)
+            self.assertEqual(r['proposed_test']['owner'], 'Ana')
+        finally:
+            audit.PIPELINE_PATH = self.real2
+            api.HANDOFF_PATH, api.TESTS_PATH = saved_paths
 
     def test_demand_pattern_tags(self):
         even = {'rows': [{'category': 'socks', 'series': [100] * 12}], 'months': [f'2026-{m:02d}' for m in range(1, 13)], 'last': '2026-12'}

@@ -292,6 +292,7 @@
       angle: r.angle_text || 'no angle yet', price: r.planned_price, hours: r.hours_logged,
       actions: [].concat(acts.length ? [{ label: acts[0].rule_id === 'PROD-R15' ? 'Kill or fix' : 'Decide', onClick: () => openAction(acts[0]) }] : [],
         [{ label: 'Brief', cls: 'quiet', onClick: () => openBrief(r.candidate_id) }],
+        !r.closed ? [{ label: r.owner ? 'Owner: ' + r.owner : 'Owner', cls: 'quiet', onClick: () => { const v = prompt('Who owns ' + r.name + ' (reads the test and runs the diagnosis)?', r.owner || ''); if (v != null) candidatePost('candidates/' + r.candidate_id, { owner: v, who: 'person' }); } }] : [],
         !r.closed && (r.failed_checks || []).length ? [{ label: 'Log override', cls: 'quiet', onClick: () => { const v = prompt('Why does ' + r.name + ' move on with ' + r.failed_checks.join(', ') + ' failed? Name the signal.'); if (v != null && v.trim()) candidatePost('candidates/' + r.candidate_id, { override_reason: v, who: 'person' }); } }] : [],
         !r.closed && nx ? [{ label: 'Advance to ' + nx, cls: 'quiet', onClick: () => candidatePost('candidates/' + r.candidate_id, { stage: nx, who: 'person' }) }] : [],
         !r.closed ? [{ label: 'Log 1 h', cls: 'quiet', onClick: () => candidatePost('candidates/' + r.candidate_id, { hours_add: 1, who: 'person' }) }, { label: 'Kill', cls: 'quiet', onClick: () => { if (confirm('Kill ' + r.name + '? It stays killed 90 days.')) candidatePost('candidates/' + r.candidate_id, { stage: 'killed', who: 'person' }); } }] : []) }); });
@@ -1169,6 +1170,7 @@
     mount('#exports',
       el('button', { class: 'btn sm', type: 'button', text: 'Findings CSV', onclick: () => UI.csv(a.findings.map((f) => ({ id: f.id, severity: f.severity, status: f.status, sentence: f.sentence, stake_usd: f.money_at_stake ? f.money_at_stake.usd : null, confidence: f.confidence })), null, 'research-findings.csv') }),
       el('button', { class: 'btn sm', type: 'button', text: 'Print', onclick: () => window.print() }),
+      el('button', { class: 'btn sm', type: 'button', text: 'Research log CSV', onclick: async () => { const lg = await api(BASE + 'log' + Q); UI.csv(lg.rows.map((r) => { const o = {}; lg.columns.forEach((c) => { o[c] = r[c]; }); return o; }), null, 'research-log-' + brand + '.csv'); } }),
       el('button', { class: 'btn sm', type: 'button', text: 'Copy the desk report', onclick: async (ev) => { const b = ev.currentTarget; const rp = await api(BASE + 'report' + Q); const ok = await UI.copy(rp.text); b.textContent = ok ? 'Copied' : 'Could not copy'; setTimeout(() => { b.textContent = 'Copy the desk report'; }, 1500); } }),
       el('button', { class: 'btn sm', type: 'button', text: 'Download report (.md)', onclick: async () => { const rp = await api(BASE + 'report' + Q); const blob = new Blob([rp.text], { type: 'text/markdown' }); const u = URL.createObjectURL(blob); const l = el('a', { href: u, download: 'research-desk-' + rp.brand + '-' + rp.ends_on + '.md' }); document.body.append(l); l.click(); l.remove(); URL.revokeObjectURL(u); } }));
   }

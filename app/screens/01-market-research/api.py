@@ -1055,6 +1055,16 @@ def recipe(f):
             'size': {'text': f'{ent.get("total") or 0} quotes, {", ".join(ent.get("sources") or [])}', 'usd': None}, 'stop_rule': 'no claim the proof does not back', 'check_on': _check_on(f, 60), 'time_to_ship_hours': 3,
             'win_rule': f'{theme} under 30 percent of new complaint quotes on the line',
         }
+    if rid == 'PROD-R45':
+        ent = f.get('entity') or {}
+        return {
+            'title': f'Name the owner of {ent.get("label") or "the candidate"} before its test runs',
+            'owner': 'person',
+            'artefact': {'kind': 'ticket', 'label': f'the owner on {ent.get("label")}: the person who reads the test at its read point and runs the diagnosis if it underperforms (bank idea PRD-126)'},
+            'steps': [{'n': 1, 'who': 'person', 'text': 'Enter the owner on the pipeline row (Owner).'}, {'n': 2, 'who': 'agent', 'text': 'Put the owner on the proposed test and the calendar entry for the review date.'}],
+            'size': {'text': f'at {ent.get("stage")}', 'usd': None}, 'stop_rule': 'no go without an owner', 'check_on': _check_on(f, 3), 'time_to_ship_hours': 0.2,
+            'win_rule': 'an owner named on the candidate',
+        }
     return None
 
 
@@ -1206,7 +1216,7 @@ def merge_strength(actions):
     return keep
 
 
-CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28', 'PROD-R37', 'PROD-R38', 'PROD-R39', 'PROD-R40')
+CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28', 'PROD-R37', 'PROD-R38', 'PROD-R39', 'PROD-R40', 'PROD-R45')
 
 
 def merge_candidates(actions):
@@ -1548,6 +1558,9 @@ def candidate_update(brand, cid, body, today):
     if body.get('pack_units') is not None:
         row['pack_units'] = int(_num(body['pack_units'], 1) or 1)
         changes.append('pack units set')
+    if body.get('owner') is not None:
+        row['owner'] = str(body['owner']).strip()[:60] or None
+        changes.append(f'owner {row["owner"] or "cleared"}')
     if body.get('lead_time_days') is not None:
         row['lead_time_days'] = int(_num(body['lead_time_days'], 1) or 0) or None
         changes.append(f'lead time {row["lead_time_days"]} days')
@@ -1795,7 +1808,7 @@ def propose_test(brand, cand, today):
     read_point = cand.get('review_date') or (today + dt.timedelta(days=audit.REVIEW_DAYS)).isoformat()
     rows.append({'id': f'EXP-P-{cand.get("candidate_id")}', 'brand': brand, 'candidate_id': cand.get('candidate_id'), 'name': f'Launch test: {cand.get("name")}', 'screen': SCREEN, 'capability_id': 'PROD-C11',
                  'hypothesis': cand.get('angle_text') or f'{cand.get("name")} sells at its planned price with contribution margin at or above the gate',
-                 'source': {'type': 'finding', 'ref': cand.get('source_finding'), 'index': None}, 'idea_id': None, 'owner': 'person',
+                 'source': {'type': 'finding', 'ref': cand.get('source_finding'), 'index': None}, 'idea_id': None, 'owner': cand.get('owner') or 'person',
                  'metric': {'name': 'contribution_margin', 'direction': 'up', 'min_days': 28, 'registered_on': today.isoformat()},
                  'variant': {'control': 'the current line', 'treatment': cand.get('name')}, 'audience': [cand.get('category') or 'all'],
                  'start': None, 'read_point': read_point, 'end': None, 'status': 'proposed', 'result': None, 'decision': None, 'learnings_ref': None, 'retro': None, 'park': None,
@@ -2239,6 +2252,8 @@ def handle(req):
             return changes_since(data, brand)
         if req.path == ['report']:
             return desk_report(data, brand)
+        if req.path == ['log']:
+            return audit.research_log(brand or 'sample')
         if req.path == ['week']:
             return week_plan(data, brand)
         if req.path == ['calendar']:
@@ -2248,4 +2263,4 @@ def handle(req):
             return {'parked': r['parked'], 'decided': r['decided'], 'snooze_days': rank_mod.SNOOZE_DAYS, 'window': r['window']}
     except ValueError as exc:
         return 400, {'error': str(exc)}
-    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank', 'parked', 'calendar', 'week', 'report', 'changes', 'candidates/<id>/brief', 'handoff/<finding_id>', 'product_candidates', 'tests']}
+    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank', 'parked', 'calendar', 'week', 'report', 'changes', 'log', 'candidates/<id>/brief', 'handoff/<finding_id>', 'product_candidates', 'tests']}

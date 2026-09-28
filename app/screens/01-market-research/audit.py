@@ -167,6 +167,8 @@ Rules
   PROD-R44  Complaints concentrate: a line with 20 or more mined complaint quotes (Amazon issues by ASIN mapped to the line by
             the listing title, plus the own-site issue phrases) where one theme carries 40 percent or more. Severity medium.
             Money null. Capability PROD-C34 (build and optimise the listing, human assist). Owner: 01-market-research.
+  PROD-R45  No owner: a candidate at shortlisted or later with no named person to run the post-test diagnosis (bank idea
+            PRD-126). Severity low. Money null. Capability PROD-C11. Owner: 01-market-research.
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -279,6 +281,7 @@ RULES = [
      'inputs': ['brain.*', 'fixtures.market_trends', 'products_monthly', 'reversed_orders'], 'capability': 'PROD-C04', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R44', 'name': 'Line with 20 or more mined complaint quotes where one theme carries 40 percent or more', 'entity_type': 'sku',
      'inputs': ['brain.products', 'brain.marketplaces'], 'capability': 'PROD-C34', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R45', 'name': 'Candidate at shortlisted or later with no named owner', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C11', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -323,7 +326,8 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R41': {'id': 'PROD-C04', 'autonomy': 'agent_does'},
               'PROD-R42': {'id': 'PROD-C08', 'autonomy': 'agent_does'},
               'PROD-R43': {'id': 'PROD-C04', 'autonomy': 'agent_does'},
-              'PROD-R44': {'id': 'PROD-C34', 'autonomy': 'human_assist'}}
+              'PROD-R44': {'id': 'PROD-C34', 'autonomy': 'human_assist'},
+              'PROD-R45': {'id': 'PROD-C11', 'autonomy': 'founder_gate'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -818,6 +822,7 @@ def run(brand, window=None, data=None):
     out += assumption_findings(br, ends_on)
     out += strength_findings(br, brand, data, rd, ends_on)
     out += line_theme_findings(br, ends_on)
+    out += owner_findings(brand, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -4181,7 +4186,7 @@ def line_theme_matrix(br):
     rows.sort(key=lambda r: (order[r['verdict']], -r['total']))
     mx = max((n for c in cells.values() for n in c.values()), default=0)
     return {'rows': rows, 'cols': [{'key': th, 'label': THEME_LABEL.get(th, th)} for th in themes],
-            'cells': {line: {th: {'us': n, 'unit': 'n', 'label': f'{n} complaint quotes'} for th, n in c.items()} for line, c in cells.items()}, 'max': mx,
+            'cells': {line: {th: {'us': c.get(th, 0), 'unit': 'n', 'label': f'{c.get(th, 0)} complaint quotes'} for th in themes} for line, c in cells.items()}, 'max': mx,
             'rule': f'a line is judged on {LINE_MIN_QUOTES} or more mined complaint quotes (Amazon issues by ASIN mapped to the line by the listing title, plus the own-site issue phrases); concentrated when one theme carries {int(THEME_CONCENTRATION * 100)} percent or more of them'}
 
 
@@ -4199,5 +4204,51 @@ def line_theme_findings(br, ends_on):
         f = _finding('PROD-R44', r['key'], ends_on, 'medium', ev, sentence, None, 0.7, [], money_reason='the line\'s net sales are on the review-issue card; a listing fix has no order count until tested')
         f['entity'] = {'type': 'sku', 'id': r['key'], 'label': r['label'], 'theme': r['top_theme'], 'theme_label': r['top_label'], 'share': r['top_share'], 'total': r['total'], 'sources': r['sources']}
         f['id'] = r['finding_id']
+        out.append(f)
+    return out
+
+
+# ---------------------------------------------------------------- the research log and a named owner (round 6.8, bank ideas PRD-104 and PRD-126)
+
+LOG_COLUMNS = ['candidate_id', 'name', 'category', 'stage', 'owner', 'screen_in_date', 'time_box_days', 'hours_logged', 'demand', 'competition', 'store_fit', 'angle_text', 'angle_source',
+               'planned_price', 'cogs_estimate', 'pack_units', 'lead_time_days', 'cash_plan', 'first_run_units', 'first_run_moq', 'first_run_format', 'first_run_cash_usd', 'lower_moq_option',
+               'tech_pack_version', 'tech_pack_status', 'labelling', 'category_certification', 'review_date', 'source_finding', 'last_log_on', 'last_log']
+OWNER_STAGE_MIN = 3   # shortlisted or later: a named person owns the post-test diagnosis
+
+
+def research_log(brand):
+    """Every candidate as one row with a fixed set of columns (bank idea PRD-104): the same log whoever reads it, closed
+    candidates included."""
+    rows = []
+    for c in pipeline(brand):
+        fr = c.get('first_run') or {}
+        tp = tech_pack_status(c)
+        sr = c.get('screen_result') or {}
+        comp = c.get('compliance') or {}
+        log = c.get('log') or []
+        rows.append({'candidate_id': c.get('candidate_id'), 'name': c.get('name'), 'category': c.get('category'), 'stage': c.get('stage'), 'owner': c.get('owner'),
+                     'screen_in_date': c.get('screen_in_date'), 'time_box_days': c.get('time_box_days'), 'hours_logged': c.get('hours_logged'),
+                     'demand': sr.get('demand'), 'competition': sr.get('competition'), 'store_fit': sr.get('store_fit'), 'angle_text': c.get('angle_text'), 'angle_source': c.get('angle_source'),
+                     'planned_price': c.get('planned_price'), 'cogs_estimate': c.get('cogs_estimate'), 'pack_units': c.get('pack_units'), 'lead_time_days': c.get('lead_time_days'), 'cash_plan': c.get('cash_plan'),
+                     'first_run_units': fr.get('units'), 'first_run_moq': fr.get('moq_units'), 'first_run_format': fr.get('format'), 'first_run_cash_usd': fr.get('cash_usd'), 'lower_moq_option': fr.get('lower_moq_option'),
+                     'tech_pack_version': tp.get('version'), 'tech_pack_status': tp.get('status'), 'labelling': comp.get('labelling'), 'category_certification': comp.get('category_certification'),
+                     'review_date': c.get('review_date'), 'source_finding': c.get('source_finding'), 'last_log_on': log[-1].get('on') if log else None, 'last_log': log[-1].get('what') if log else None})
+    return {'columns': LOG_COLUMNS, 'rows': rows}
+
+
+def owner_findings(brand, ends_on):
+    """PROD-R45: a candidate at shortlisted or later with no named owner for the post-test diagnosis (bank idea PRD-126)."""
+    out = []
+    for c in pipeline(brand):
+        st = c.get('stage')
+        idx = STAGES.index(st) if st in STAGES else None
+        if st in CLOSED_STAGES or idx is None or idx < OWNER_STAGE_MIN or str(c.get('owner') or '').strip():
+            continue
+        cid = c.get('candidate_id')
+        ev = [_ev('owner_named', 0, 'flag', ends_on.isoformat(), 'candidate now', 1, 'threshold', source='fixtures.pipeline', simulated=False, freshness_days=0, stage=st)]
+        sentence = f'{c.get("name")} is at {st} with no named owner; if the test underperforms nobody is on the hook to diagnose it.'
+        f = _finding('PROD-R45', cid, ends_on, 'low', ev, sentence, None, 0.9, [], money_reason='a missing owner has no order count')
+        f['entity'] = {'type': 'sku', 'id': cid, 'label': c.get('name'), 'candidate': True, 'stage': st}
+        f['id'] = f'{SCREEN}.PROD-R45.{cid}'
         out.append(f)
     return out
