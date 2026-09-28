@@ -41,6 +41,7 @@ Round 1 notes: `snapshot.py` plans and runs a page-id Ad Library pull through `a
 | 9.1 | Depth pass against depth.md section 3 on everything built in rounds 6 to 8. Found and fixed: a held move (lost outcome) left its finding open with no action (rule 3), so a held finding now reads "held", like a snooze; 2 desk blocks (coverage, map) lacked a caveat line (rule 10); one heading used "should" (rule 12). The browser smoke test now fails on any desk block without a sub line, a gap line and a caveat, and a test scans the screen's files for should, consider, leverage, em dashes, GPT and .env | done |
 | 9.2 | The room jobs table says where each job lives now (features and rules), and what each still waits on, in place of the round 0 "todo" column | done |
 | 9.3 | The room's price drift rule: each capture now keeps our price index, and COMP-R02 counts the captures in a row outside the band (today's index as the latest; a capture without our index breaks the run, since unknown is never outside). One capture: medium, "a second outside the range confirms it". Two or more: high, with the room's sentence ("The brand's price is now N percent below the category range, for N captures in a row") | done |
+| 9.4 | The room's "open corner with real demand": when no tracked brand claims a map corner and the shopper frame that asks for it has mentions (strong durability: buy it for life), COMP-R11 turns high and says "shoppers ask for it: N Reddit mentions", with the count as evidence; a corner with no matching frame stays medium and shows the demand as unavailable. Reddit frames stand in until a keyword source gives search demand | done |
 
 ## Round 8: closing the loop on moves
 
@@ -336,7 +337,7 @@ Where each job lives now (round 9). The question column quotes the room spec.
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | 0.1 to 0.8 | 2026-09-28 | Bombas brain and simulated prices |
-| 9 | 9.1 to 9.3 | 2026-09-28 | Depth pass; room jobs map; price drift across captures |
+| 9 | 9.1 to 9.4 | 2026-09-28 | Depth pass; room jobs map; price drift across captures; open corners with demand |
 | 8 | 8.1 to 8.10 | 2026-09-28 | Outcomes; lost moves held; overdue reads; scoreboard; site changes; bring back snoozed; results in the brief and report; learnings for the brain; second brand check; round close. Screenshot `round8.png` |
 | 7 | 7.1 to 7.10 | 2026-09-28 | Interview reasons; coverage by name; prices seen on the band chart; price re-check cadence; logged work in the brief; queue and log in the report; briefs as rows; second brand check; form access; round close. Screenshot `round7.png` |
 | 6 | 6.1 to 6.10 | 2026-09-28 | Win-loss log; repeated loss reason; rival prices seen; battlecard checks; positioning polls; thresholds on the page; capture from the page; the team log; waiting on you; round close (and the hand-off fix). Screenshot `round6.png` |

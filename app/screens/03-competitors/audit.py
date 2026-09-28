@@ -534,6 +534,7 @@ TUNABLE = {"price_band_low": (_self, "PRICE_BAND", 0), "price_band_high": (_self
 
 
 # the range a threshold may be tuned to on the page (inputs.py kind threshold); outside it the change is refused
+CORNER_FRAME = {"durability": "buy_it_for_life", "comfort": None}   # the shopper frame that asks for a strong claim on each axis
 PRICE_STREAK = 2   # captures in a row outside the price band before the drift is confirmed (the room's rule)
 TUNE_RANGE = {"price_band_low": (50, 100), "price_band_high": (100, 200), "stale_days": (3, 90), "angle_share_max": (0.05, 0.6),
               "threat_points": (2, 6), "watch_points": (1, 5), "coverage_gap_min": (0.01, 0.2), "surge": (0.1, 1.0),
@@ -975,10 +976,19 @@ def rule_corners(m, ends_on):
                    "competitors"),
               _row("price_split", c["split"], "usd", "latest capture", ends_on, _fresh(m["competitors"]), None, "peer_band",
                    "competitors.price_band_usd")]
-        sentence = f"No tracked brand claims the {c['label']} corner. {c['placed']} brands are placed on the map."
+        frame = CORNER_FRAME.get(c["axis"])
+        frames = _value(m["brain"], "positioning.reddit_frames") or {}
+        demand = frames.get(frame) if frame and isinstance(frames, dict) else None
+        ev.append(_row("shopper_frame_mentions", demand, "n", "reddit capture", ends_on, None, 1, "threshold", "reddit"))
+        if demand:   # the room's "open quadrant with real demand"; search demand waits on a keyword source, Reddit frames stand in
+            sentence = (f"No tracked brand claims the {c['label']} corner, and shoppers ask for it: {demand} Reddit mentions "
+                        f"of {frame.replace('_', ' ')}.")
+        else:
+            sentence = f"No tracked brand claims the {c['label']} corner. {c['placed']} brands are placed on the map."
         ent = {"type": "brand", "id": f"corner_{c['axis']}_{'high' if c['hi_x'] else 'low'}", "label": c["label"]}
-        out.append(_finding("COMP-R11", "medium", ent, ev, sentence, [f"{m['brand']}.positioning.frame"], ends_on, 0.3,
-                            "no baseline: demand for the corner is not measured yet"))
+        out.append(_finding("COMP-R11", "high" if demand else "medium", ent, ev, sentence,
+                            [f"{m['brand']}.positioning.frame"] + ([f"{m['brand']}.positioning.reddit_frames"] if demand else []), ends_on,
+                            0.5 if demand else 0.3, "no baseline: search demand for the corner is not measured yet"))
     return out
 
 

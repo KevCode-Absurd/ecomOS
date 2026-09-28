@@ -491,6 +491,15 @@ class TestMap(TempBrain):
         acts = api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions']
         a = next(a for a in acts if a['rule_id'] == 'COMP-R11')
         self.assertEqual(a['artefact']['kind'], 'test_brief')
+        # 9.4: the durability corner has demand from the buy it for life frame; comfort has no frame
+        dur = [f for f in r11 if 'durability' in f['entity']['id']]
+        self.assertTrue(dur)
+        for f in dur:
+            self.assertEqual(f['severity'], 'high')
+            self.assertIn('shoppers ask for it', f['sentence'])
+        for f in [f for f in r11 if 'comfort' in f['entity']['id']]:
+            self.assertEqual(f['severity'], 'medium')
+            self.assertIsNone(next(e['value'] for e in f['evidence'] if e['metric'] == 'shopper_frame_mentions'))
 
 
 class TestChanges(TempBrain):
