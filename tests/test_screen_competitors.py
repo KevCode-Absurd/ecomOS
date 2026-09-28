@@ -2365,5 +2365,33 @@ class TestNewCreativeCount(TestPullLightsUp):
         self.assertIsNone(m['unavailable'])
 
 
+class TestSecondBrandRound10(TestSecondBrandInputs):
+    """10.7: round 10 on the second brand: hand-off rows pass the server validator, the dated report and the pull table
+    carry only that brand."""
+    def test_round10_on_acme(self):
+        server = load('ecomos_server_t3', ROOT / 'app' / 'server.py')
+        q = {'brand': ['acme']}
+        ho = api.handle(Req(['handoffs'], query=q))
+        for r in ho['moves'] + ho['support']:
+            server.Handoffs.validate(r)
+        old = api.REPORTS
+        api.REPORTS = self.tmp / 'reports'
+        try:
+            r = Req(['reports'], method='POST', query=q)
+            r.body = {}
+            code, out = api.handle(r)
+            self.assertEqual(out['file'], 'report_acme_2026-09-28.md')
+            text = (self.tmp / 'reports' / out['file']).read_text(encoding='utf-8')
+        finally:
+            api.REPORTS = old
+        self.assertIn('# Competitor report, Acme', text)
+        fr = api.handle(Req(['overview'], query=q))['freshness']
+        self.assertEqual(fr['pull']['snapshots'], 0)
+        self.assertIn('--brand acme', fr['pull']['command'])
+        blob = json.dumps([ho, fr]) + text
+        for word in ('Bombas', 'bombas', 'Stance', 'Darn Tough', 'COMFORT20', 'sock'):
+            self.assertNotIn(word, blob)
+
+
 if __name__ == '__main__':
     unittest.main()
