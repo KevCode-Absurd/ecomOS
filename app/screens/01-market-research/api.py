@@ -697,6 +697,23 @@ def recipe(f):
             'stop_rule': 'a hold without a new review date is a kill', 'check_on': _check_on(f, 1), 'time_to_ship_hours': 1,
             'win_rule': 'a logged go, hold with a new date, or kill',
         }
+    if rid == 'PROD-R26':
+        ent = f.get('entity') or {}
+        label = (ent.get('label') or '').lower()
+        other = {'reddit': 'an Instagram or TikTok keyword pull and the creator ads on the lane', 'instagram': 'Reddit threads and the creator ads on the lane', 'creator ads': 'Reddit threads and an Instagram or TikTok keyword pull'}.get(ent.get('platform'), 'a second platform')
+        return {
+            'title': f'Confirm {label} demand on a second platform before funding {", ".join((ent.get("candidates") or [])[:1]) or "the candidate"}',
+            'owner': 'agent',
+            'artefact': {'kind': 'research_note', 'label': f'a demand read on {label}: what each platform shows (posts, mentions, creators, run lengths) and whether it is one clip or a pattern'},
+            'steps': [
+                {'n': 1, 'who': 'agent', 'text': f'Read {other}; the keyword pull runs under the brand\'s Apify caps and stores no usernames.'},
+                {'n': 2, 'who': 'agent', 'text': 'Count the independent sources above the floor and check the 180-day view, not the 30-day spike (bank idea PRD-018).'},
+                {'n': 3, 'who': 'agent', 'text': 'Write pattern or single source with the numbers; a single source keeps the candidate at its stage with the demand check marked fail.'},
+                {'n': 4, 'who': 'person', 'text': 'Confirm from the card.'}],
+            'size': {'text': f'1 platform ({ent.get("platform")}) against 2 needed', 'usd': None},
+            'stop_rule': 'no funding on one platform\'s demand', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 2,
+            'win_rule': '2 or more platforms above the floor, or the demand check set to fail',
+        }
     return None
 
 
@@ -924,7 +941,8 @@ def overview(data, brand):
                      'pipeline': pipeline_block(brand, ends_on, findings, floor), 'margin': margin_block(brand, data, br, rd, ends_on, findings),
                      'pattern': pattern_block(brand, data, rd, findings), 'lane_map': audit.lane_map(br, ends_on), 'spend': audit.spend_signal(br, brand, ends_on),
                      'price_signal': price_signal_block(br, brand, data, findings), 'complaints': audit.listing_complaints(br),
-                     'gates': gates_block(brand, data, br, rd, ends_on, findings), 'scorecard': scorecard_block(brand, data, br, rd, ends_on, findings)},
+                     'gates': gates_block(brand, data, br, rd, ends_on, findings), 'scorecard': scorecard_block(brand, data, br, rd, ends_on, findings),
+                     'video': audit.video_signals(br, brand, ends_on)},
             'audit': {'findings': findings, 'rules': audit.RULES}}
 
 

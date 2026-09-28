@@ -102,6 +102,10 @@ Rules
             end by default) is on or before the window end. The scorecard scores demand, margin, differentiation,
             compliance and cash timing 0 to 5 in code with the brand's weights (learnings.shortlist_weights, else
             30, 30, 20, 10, 10). Capability PROD-C11 (go or no-go memo, founder gate). Owner: 01-market-research.
+  PROD-R26  Single-source video signal: a lane with an open candidate where demand shows on exactly one platform
+            (5 or more Instagram posts on the lane tag, 3 or more Reddit mentions, or a competitor page running
+            creator-style ads). One platform's demand is a lead, not proof (bank idea PRD-022). Severity low.
+            Capability PROD-C02 (validate demand on video-commerce platforms, agent does). Owner: 01-market-research.
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -176,6 +180,8 @@ RULES = [
     {'rule_id': 'PROD-R24', 'name': 'Candidate with 2 or more go-live gates passed and the compliance check not run', 'entity_type': 'sku',
      'inputs': ['fixtures.pipeline', 'finance_inputs', 'brain.products'], 'capability': 'PROD-C10', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R25', 'name': 'Open candidate whose scheduled review date has arrived', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C11', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R26', 'name': 'Lane with an open candidate whose demand shows on exactly one platform (Instagram pull, Reddit, creator ads)', 'entity_type': 'metric',
+     'inputs': ['fixtures.social_pull', 'brain.language_bank', 'brain.content', 'fixtures.pipeline'], 'capability': 'PROD-C02', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -201,7 +207,8 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R22': {'id': 'PROD-C31', 'autonomy': 'agent_does'},
               'PROD-R23': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
               'PROD-R24': {'id': 'PROD-C10', 'autonomy': 'agent_does'},
-              'PROD-R25': {'id': 'PROD-C11', 'autonomy': 'founder_gate'}}
+              'PROD-R25': {'id': 'PROD-C11', 'autonomy': 'founder_gate'},
+              'PROD-R26': {'id': 'PROD-C02', 'autonomy': 'agent_does'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -677,6 +684,7 @@ def run(brand, window=None, data=None):
     out += complaint_findings(br, ends_on)
     out += gate_findings(brand, data, br, rd, ends_on)
     out += shortlist_findings(brand, data, br, rd, ends_on)
+    out += video_findings(br, brand, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -2315,5 +2323,93 @@ def shortlist_findings(brand, data, br, rd, ends_on):
         f = _finding('PROD-R25', cid, ends_on, 'medium', ev, sentence, None, 0.9, [], money_reason='a decision, not a revenue gap')
         f['entity'] = {'type': 'sku', 'id': cid, 'label': r['name'], 'candidate': True, 'total': r['total'], 'verdict': r['verdict'], 'memo': memo_text(r, sc['weights'])}
         f['id'] = f'{SCREEN}.PROD-R25.{cid}'
+        out.append(f)
+    return out
+
+
+# ---------------------------------------------------------------- video-commerce demand signals per lane (PROD-C02: one clip or a real pattern)
+
+LANE_TAGS = {'compression': ['compressionsocks'], 'merino': ['merinosocks'], 'performance': ['runningsocks'], 'gifting': ['sockgift'], 'guarantee': ['buyitforlife'],
+             'style': ['sockstyle'], 'underwear': ['underwear'], 'footwear': ['slippers'], 'apparel': ['tshirt'], 'creator': []}
+SOCIAL_MIN_POSTS = 5
+REDDIT_MIN_MENTIONS = 3
+PATTERN_MIN_PLATFORMS = 2
+
+
+def reddit_lane_mentions(br):
+    """Reddit language bank records whose text carries a lane's terms: mentions and upvotes per lane."""
+    out = {k: {'mentions': 0, 'upvotes': 0} for k, _, _ in SUBCATS}
+    if br is None:
+        return out
+    for rec in br.records('language_bank'):
+        v = rec.get('value') or {}
+        if not v.get('subreddit'):
+            continue
+        text = (str(v.get('phrase') or '') + ' ' + ' '.join(str(q.get('quote') or '') for q in v.get('reviews') or [])).lower()
+        for key, _, terms in SUBCATS:
+            if any(t in text for t in terms):
+                out[key]['mentions'] += 1
+                out[key]['upvotes'] += int(v.get('weight') or 0)
+    return out
+
+
+def video_signals(br, brand, ends_on):
+    """Per lane: the independent platforms that show demand (Instagram pull by hashtag, Reddit mentions, competitor creator-style
+    ads, our own creator ads) and the verdict: pattern (2 or more platforms above the floor), single source (exactly 1), none."""
+    social = social_pull() or {}
+    by_tag = {k.lower(): v for k, v in (social.get('posts_by_tag') or {}).items()}
+    themes = social.get('themes') or {}
+    reddit = reddit_lane_mentions(br)
+    creator_pages = {}
+    if br is not None:
+        for rec in br.records('content'):
+            v = rec.get('value') or {}
+            if isinstance(v, dict) and v.get('creator_style_ads') and v.get('page'):
+                creator_pages[v['page'].lower().replace(' socks', '').replace(' vermont', '').strip()] = int(v['creator_style_ads'])
+        own = br.get(f'{br.brand}.learnings.creator_ads')
+        own_n = len(((own or {}).get('value') or {}).get('ads') or []) if own else 0
+    else:
+        own_n = 0
+    cands = candidate_lanes(brand)
+    out = []
+    for row in subcategory_table(br, ends_on):
+        key = row['key']
+        posts = sum(by_tag.get(t, 0) for t in LANE_TAGS.get(key, []))
+        r = reddit.get(key, {'mentions': 0, 'upvotes': 0})
+        creators = [c['name'] for c in row['competitors'] if c['name'].lower().replace(' socks', '').replace(' vermont', '').strip() in creator_pages]
+        platforms = []
+        if posts >= SOCIAL_MIN_POSTS:
+            platforms.append('instagram')
+        if r['mentions'] >= REDDIT_MIN_MENTIONS:
+            platforms.append('reddit')
+        if creators:
+            platforms.append('creator ads')
+        verdict = 'pattern' if len(platforms) >= PATTERN_MIN_PLATFORMS else 'single' if len(platforms) == 1 else 'none'
+        out.append({'key': key, 'label': row['label'], 'kind': row['kind'], 'instagram_posts': posts if LANE_TAGS.get(key) else None, 'instagram_mode': social.get('mode'),
+                    'reddit_mentions': r['mentions'], 'reddit_upvotes': r['upvotes'], 'creator_pages': creators, 'own_creator_ads': own_n if row['advertised'] else 0,
+                    'platforms': platforms, 'verdict': verdict, 'candidates': cands.get(key, []), 'finding_id': f'{SCREEN}.PROD-R26.{key}'})
+    order = {'pattern': 0, 'single': 1, 'none': 2}
+    out.sort(key=lambda x: (order[x['verdict']], -len(x['platforms']), -x['reddit_mentions']))
+    return {'rows': out, 'rule': f'a platform counts at {SOCIAL_MIN_POSTS} or more Instagram posts on the lane tag, {REDDIT_MIN_MENTIONS} or more Reddit mentions, or a competitor page running creator-style ads on the lane; pattern at {PATTERN_MIN_PLATFORMS} platforms, single source at 1',
+            'social_mode': social.get('mode'), 'social_note': social.get('note')}
+
+
+def video_findings(br, brand, ends_on):
+    """PROD-R26: a lane with an open candidate whose demand shows on exactly one platform: unverified until a second source confirms."""
+    out = []
+    if br is None:
+        return out
+    for r in video_signals(br, brand, ends_on)['rows']:
+        if r['verdict'] != 'single' or not r['candidates']:
+            continue
+        ev = [_ev('video_commerce_demand_signal', len(r['platforms']), 'count', ends_on.isoformat(), 'pulls on file', PATTERN_MIN_PLATFORMS, 'threshold', source='fixtures.social_pull, brain.language_bank, brain.content',
+                  simulated=False, freshness_days=0, platforms=r['platforms']),
+              _ev('reddit_mentions', r['reddit_mentions'], 'count', ends_on.isoformat(), 'past year', source='brain.language_bank', simulated=False, freshness_days=0, upvotes=r['reddit_upvotes']),
+              _ev('instagram_posts', r['instagram_posts'], 'count', ends_on.isoformat(), 'hashtag pull', source='fixtures.social_pull', simulated=False, freshness_days=0, mode=r['instagram_mode'])]
+        sentence = (f'{", ".join(r["candidates"][:2])}: demand on {r["label"].lower()} shows on one platform only ({r["platforms"][0]}). '
+                    f'Treat it as unverified until a second source confirms it.')
+        f = _finding('PROD-R26', r['key'], ends_on, 'low', ev, sentence, None, 0.5, [], money_reason='a demand signal has no order count')
+        f['entity'] = {'type': 'metric', 'id': r['key'], 'label': r['label'], 'platform': r['platforms'][0], 'candidates': r['candidates']}
+        f['id'] = f'{SCREEN}.PROD-R26.{r["key"]}'
         out.append(f)
     return out

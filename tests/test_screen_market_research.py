@@ -769,6 +769,26 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
         self.assertIn('Decision: go', fs[0]['entity']['memo'])
         self.check_shape(fs[0])
 
+    def test_video_signals_count_platforms(self):
+        br = audit.brain('bombas')
+        if br is None:
+            self.skipTest('no bombas brain')
+        v = audit.video_signals(br, 'bombas', date(2026, 9, 27))
+        for r in v['rows']:
+            n = len(r['platforms'])
+            self.assertEqual(r['verdict'], 'pattern' if n >= 2 else 'single' if n == 1 else 'none')
+            if 'reddit' in r['platforms']:
+                self.assertGreaterEqual(r['reddit_mentions'], audit.REDDIT_MIN_MENTIONS)
+            if 'creator ads' in r['platforms']:
+                self.assertTrue(r['creator_pages'])
+        fs = audit.video_findings(br, 'bombas', date(2026, 9, 27))
+        for f in fs:
+            self.check_shape(f)
+            row = next(r for r in v['rows'] if r['key'] == f['entity']['id'])
+            self.assertEqual(row['verdict'], 'single')
+            self.assertTrue(row['candidates'])
+        self.assertEqual(audit.reddit_lane_mentions(None)['merino'], {'mentions': 0, 'upvotes': 0})
+
     def test_demand_pattern_tags(self):
         even = {'rows': [{'category': 'socks', 'series': [100] * 12}], 'months': [f'2026-{m:02d}' for m in range(1, 13)], 'last': '2026-12'}
         peaked = {'rows': [{'category': 'socks', 'series': [50] * 10 + [300, 400]}], 'months': even['months'], 'last': '2026-12'}

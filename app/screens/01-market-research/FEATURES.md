@@ -173,7 +173,7 @@ The candidate side of the desk: the pipeline with its gates, boxes and scorecard
 | # | Feature | Status |
 |---|---|---|
 | 3.1 | Readability: what is wrong shows 2 findings per rule with show-more and a severity filter (pills), the actions beyond the top 10 fold into a table with an Open button, and the desk opens with a jump strip to its blocks; the page drops from 31,822 to about 27,300 px with nothing hidden | done |
-| 3.2 | Video-commerce demand signals (PROD-C02) | todo |
+| 3.2 | Video-commerce demand signals per lane: the Instagram hashtag pull (mock, said so), Reddit mentions and upvotes on the lane's words, competitor creator-style ads and our own creator ads; platforms above a floor counted, verdict real pattern, single source or no signal, with the candidates resting on each lane; rule PROD-R26 (a candidate lane on exactly one platform) with a confirm-on-a-second-platform recipe (bank ideas PRD-018, PRD-022) | done |
 | 3.3 | Tech pack and spec versions per candidate (PROD-C13) | todo |
 | 3.4 | Research hours budget per stage (PROD-C04) | todo |
 | 3.5 | 12-month against multi-year trend checks per lane (bank PRD-044, PRD-045) | todo |
@@ -212,5 +212,5 @@ The candidate side of the desk: the pipeline with its gates, boxes and scorecard
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.11 | 28 Sep 2026 | S3.6, Bombas simulated set at scale 0.1 |
 | 1 | 1.1 to 1.10 | 28 Sep 2026 | plan first, 13 rules (PROD-R01 to R13), rank with a recipe per rule, web pass and social pull fixtures, round1.png and round1b.png |
-| 3 | 3.1 | 28 Sep 2026 | readability pass; in progress |
+| 3 | 3.1, 3.2 | 28 Sep 2026 | readability pass, video signals, PROD-R26; in progress |
 | 2 | 2.1 to 2.10 | 28 Sep 2026 | the candidate side of the desk: pipeline writes, margin gate, demand pattern, lane map, spend signal, price signal, complaint bars, angle and gates, scorecard; 25 rules (PROD-R01 to R25), one card per candidate; round2.png, round2b.png and round2c.png |

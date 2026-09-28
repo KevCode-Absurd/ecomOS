@@ -666,6 +666,25 @@
         due.length ? { label: 'Decide the first', onClick: () => openMemo(due[0]) } : rows.length ? { label: 'Open the top memo', onClick: () => openMemo(rows[0]) } : null));
   }
 
+  function videoBlock(v) {
+    const rows = (v && v.rows) || [];
+    if (!rows.length) return UI.emptyState({ screen: SLUG, title: 'No demand signals', text: 'No social pull, Reddit language or creator ads on file.', missing: ['reddit', 'social_pull'] });
+    const vrows = rows.map((r) => { const a = actionFor(r.finding_id); return Object.assign({}, r, {
+      ig: r.instagram_posts == null ? NA : r.instagram_posts + ' posts' + (r.instagram_mode === 'live' ? '' : ' (mock pull)'), rd: r.reddit_mentions ? r.reddit_mentions + ' (' + fmt.int(r.reddit_upvotes) + ' upvotes)' : 'none',
+      cr: r.creator_pages.length ? r.creator_pages.join(', ') : 'none', own: r.own_creator_ads || 'none', plat: r.platforms.length ? r.platforms.join(', ') : 'none', cand: r.candidates.length ? r.candidates.join(', ') : 'none',
+      actions: [a ? { label: 'Confirm on a second platform', onClick: () => openAction(a) } : { label: r.verdict === 'pattern' ? 'Pattern' : r.verdict === 'single' ? 'One source' : 'No signal', cls: 'quiet', onClick: () => {} }] }); });
+    const t = UI.verdictTable({
+      columns: [{ key: 'label', label: 'Lane' }, { key: 'ig', label: 'Instagram pull' }, { key: 'rd', label: 'Reddit' }, { key: 'cr', label: 'Competitor creator ads' }, { key: 'own', label: 'Our creator ads' }, { key: 'plat', label: 'Platforms above the floor' }, { key: 'cand', label: 'Our candidates' }],
+      rows: vrows,
+      verdict: { at: 1, kind: (r) => r.verdict === 'pattern' ? 'keep' : r.verdict === 'single' ? 'watch' : 'na', text: (r) => r.verdict === 'pattern' ? 'Real pattern' : r.verdict === 'single' ? 'Single source' : 'No signal', reason: (r) => r.platforms.length + ' platforms; ' + v.rule },
+      actions: { label: 'Do', onClick: () => {} }, sort: false });
+    const single = rows.filter((r) => r.verdict === 'single' && r.candidates.length);
+    return el('div', { class: 'stack' }, el('div', { class: 'card scroll' }, t),
+      el('p', { class: 'micro faint', text: 'Rule: ' + v.rule + '. ' + (v.social_mode === 'live' ? 'Instagram counts are from the live hashtag pull.' : 'Instagram counts come from the mock hashtag pull (a sample shape, not the market); the live pull needs a session that allows paid calls.') + ' One platform\'s demand is a lead for another platform, never proof (bank idea PRD-022).' }),
+      gapLine(single.length ? single.length + ' candidate lane' + (single.length === 1 ? ' rests' : 's rest') + ' on one platform: ' + single.map((r) => r.label.toLowerCase()).join(', ') + '.' : 'Every candidate lane shows demand on 2 or more platforms, or none at all.',
+        single.length && actionFor(single[0].finding_id) ? { label: 'Confirm the first', onClick: () => openAction(actionFor(single[0].finding_id)) } : null));
+  }
+
   function loadDesk(o) {
     const d = o.desk || {};
     const w = (o.window || {}).trend;
@@ -688,6 +707,7 @@
     parts.push(section('desk-complaints', 'What do buyers hate about what exists, listing by listing?', 'Complaint themes mined from the brand\'s own Amazon listings as a share of reviews mined, against praise, with the listing\'s public stars, ratings and price. One complaint over 15 percent is the angle to build on.', complaintBlock(d.complaints)));
     parts.push(section('desk-gates', 'Is each candidate ready to fund: an owned angle and the 5 go-live gates?', 'Angle confidence (filled, sourced, not a competitor claim) and the gates per candidate: provable claim, owned difference, brand threshold, contribution margin, ad-cost ceiling, plus the compliance check.', gatesBlock(d.gates)));
     parts.push(section('desk-scorecard', 'Which candidates does the founder decide on this week?', 'The fixed scorecard with the brand\'s weights: demand, margin, differentiation, compliance and cash timing, each scored in code, ranked, with the go or no-go memo drafted from the numbers and the review date.', scorecardBlock(d.scorecard)));
+    parts.push(section('desk-video', 'Is the demand one clip or a real pattern?', 'Independent platforms showing demand per lane: the Instagram hashtag pull, Reddit mentions and upvotes, competitor creator-style ads and our own, with the candidates that rest on each lane.', videoBlock(d.video)));
     parts.push(section('desk-pattern', 'Is each candidate evergreen, seasonal or a trend, and when does cash move?', 'The demand pattern from our own 12-month series by category and the web pass, with the cash timing it implies and the cash plan attached to each candidate.', patternBlock(d.pattern)));
     parts.push(section('desk-pipeline', 'What is in the next-SKU pipeline, and what is past its time box?', 'Candidates screened in from the gaps above or by hand, their stage, fast checks, time box and hours. Advance, log hours or kill from the card; every write lands in the pipeline log.', pipelineBlock(d.pipeline || { rows: [] })));
     const jumps = UI.pills({ items: parts.map((p) => ({ key: p.id, label: p.querySelector('h2').textContent.replace(/\?.*$/, '?').split(',')[0].slice(0, 42) })), onChange: (key) => { const t = document.getElementById(key); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); } });
