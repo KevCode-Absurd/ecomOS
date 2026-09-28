@@ -1332,3 +1332,31 @@ class Round3ReportDigest(TempBrain):
         api.handle(Req(['documents'], 'POST', body={'name': 'n.md', 'text': '# Offers\nFree shipping threshold: $75\n- Bundles: 4 pack saves 10 percent'}))
         dg = api.handle(Req(['digest']))
         self.assertGreaterEqual(dg['proposed'], 1)
+
+
+class Round3Review(TempBrain):
+    """Round 3 feature 9: the review queue grouped by source with the record each proposal would replace, and bulk actions."""
+
+    def test_grouped_with_before_and_bulk(self):
+        api.handle(Req(['documents'], 'POST', body={'name': 'call.md', 'text': '# Offers\nFree shipping threshold: $75\nFirst order code: WELCOME25\n- Bundles: 4 pack saves 10 percent\n\n# Voice\nWe write like a friend who knows socks and never oversells.'}))
+        rv = api.handle(Req(['review']))
+        self.assertEqual(rv['counts']['groups'], 1)
+        g = rv['groups'][0]
+        self.assertTrue(g['source'].endswith('call.md'))
+        fs = next(r for r in g['records'] if r['id'].endswith('_free_shipping_threshold'))
+        self.assertEqual((fs['change'], fs['before']['id']), ('same value', 'bombas.offers.free_shipping_threshold_usd'))
+        fo = next(r for r in g['records'] if r['id'].endswith('_first_order_code'))
+        self.assertEqual((fo['change'], fo['before']['id']), ('replaces', 'bombas.offers.first_order_code_confirmed'))
+        voice = next(r for r in g['records'] if r['section'] == 'voice')
+        self.assertEqual(voice['change'], 'new field')
+        self.assertEqual(rv['counts']['duplicates'], 1)
+        adds = [r['id'] for r in g['records'] if r['change'] != 'same value']
+        status, res = api.handle(Req(['review', 'bulk'], 'POST', body={'choice': 'accept', 'ids': adds}))
+        self.assertEqual((status, res['ok'], len(res['done'])), (201, True, len(adds)))
+        status, res = api.handle(Req(['review', 'bulk'], 'POST', body={'choice': 'ignore', 'ids': [fs['id']]}))
+        self.assertEqual(status, 201)
+        self.assertEqual(api.handle(Req(['review']))['counts']['proposed'], 0)
+        self.assertEqual(api.handle(Req(['review', 'bulk'], 'POST', body={'choice': 'accept', 'ids': []}))[0], 400)
+        kinds = [x['kind'] for x in api.handle(Req(['changes']))['changes']]
+        self.assertIn('accepted', kinds)
+        self.assertIn('ignored', kinds)

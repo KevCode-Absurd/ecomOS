@@ -90,6 +90,8 @@ question, and accept or ignore on a proposed record. Nothing external.
                                 site, files, competitors, health, top moves
   GET  digest                   the founder round: 5 questions with hints, proposed updates, one health line, the
                                 top 3 moves; delivery unavailable until a Slack or email connector exists
+  GET  review                   the review queue grouped by source, each proposal with the record it would replace
+  POST review/bulk              {choice: accept | ignore, ids}: clear many proposals at once
   GET  records?section=<name>   one section's records with tier, date, source and evidence
   GET  audit                    findings from audit.py (app/contracts/audit.md shape)
   POST questions/<field>        {answer}: writes a founder record, marks the question answered
@@ -430,6 +432,67 @@ def conflict_resolve(brain: Brain, cid: str, body: dict):
 def review_queue(brain: Brain) -> list[dict]:
     return [dict(record_view(r), section=r["section"])
             for r in brain.records(include_retired=True) if r["status"] == "proposed"]
+
+
+def review_view(brain: Brain) -> dict:
+    """Proposed records grouped by where they came from, each with the current winning record for the same field as the before."""
+    active = {}
+    for r in brain.records():
+        key = (r["section"], r.get("field") or "value")
+        cur = active.get(key)
+        rank = (TIER_RANK.get(r["tier"], 9), "" if r["date"] == "undated" else "-" + r["date"])
+        if cur is None or rank < cur[0]:
+            active[key] = (rank, r)
+    groups: dict[str, dict] = {}
+    for r in brain.records(include_retired=True):
+        if r["status"] != "proposed":
+            continue
+        src = r.get("source") or {}
+        ref = src.get("ref") or src.get("type") or "unknown"
+        key = Path(ref).name if ref.startswith("documents/") else ref
+        g = groups.setdefault(key, {"source": key, "type": src.get("type") or "unknown", "date": None if r["date"] == "undated" else r["date"], "records": []})
+        field = r.get("field") or "value"
+        base_field = field
+        if src.get("type") == "document":
+            doc_slug = ingest.slug(Path(key).stem, 30)
+            if doc_slug and field.startswith(doc_slug + "_"):
+                base_field = field[len(doc_slug) + 1:]
+        before = None
+        hit = active.get((r["section"], field)) or active.get((r["section"], base_field))
+        if hit:
+            before = hit[1]
+        elif src.get("type") == "document":
+            # the file's key names the fact loosely: match an active field that starts with it, or that it starts with
+            for (sec, f), (_, rec) in active.items():
+                if sec == r["section"] and f != "value" and len(base_field) >= 8 and (f.startswith(base_field) or base_field.startswith(f)):
+                    before = rec
+                    break
+        item = dict(record_view(r), section=r["section"])
+        item["before"] = None if before is None else {"id": before["id"], "text": before.get("text") or (before["value"] if isinstance(before.get("value"), str) else json.dumps(before.get("value"))[:200]), "tier": before["tier"], "date": None if before["date"] == "undated" else before["date"]}
+        item["change"] = "new field" if before is None else ("same value" if json.dumps(before.get("value"), sort_keys=True) == json.dumps(r.get("value"), sort_keys=True) else "replaces")
+        g["records"].append(item)
+    out = sorted(groups.values(), key=lambda g: (-(len(g["records"])), g["source"]))
+    total = sum(len(g["records"]) for g in out)
+    return {"groups": out, "counts": {"proposed": total, "groups": len(out), "new_fields": sum(1 for g in out for r in g["records"] if r["change"] == "new field"),
+                                       "replacing": sum(1 for g in out for r in g["records"] if r["change"] == "replaces"), "duplicates": sum(1 for g in out for r in g["records"] if r["change"] == "same value")},
+            "note": "Accept makes a record active; ignore retires it (never deleted). Before is the record that wins the field today. Same value means the proposal adds nothing: ignore it."}
+
+
+def review_bulk(brain: Brain, body: dict):
+    choice = (body or {}).get("choice")
+    ids = [str(i) for i in ((body or {}).get("ids") or []) if isinstance(i, str)]
+    if choice not in ("accept", "ignore"):
+        return 400, {"error": "choice must be accept or ignore"}
+    if not ids:
+        return 400, {"error": "ids is empty"}
+    done, failed = [], []
+    for rid in ids[:200]:
+        res = review(brain, rid, {"choice": choice})
+        if isinstance(res, tuple):
+            failed.append({"id": rid, "error": res[1].get("error")})
+        else:
+            done.append(rid)
+    return 201, {"ok": not failed, "choice": choice, "done": done, "failed": failed, "version": brain.version()}
 
 
 def ladders(brain: Brain) -> list[dict]:
@@ -1327,6 +1390,12 @@ def handle(req):
         return answer_bank(brain, parts[2], req.body)
     if req.method == "POST" and len(parts) == 2 and parts[0] == "questions":
         return answer(brain, parts[1], req.body)
+    if req.method == "GET" and parts == ["review"]:
+        rv = review_view(brain)
+        rv.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())
+        return rv
+    if req.method == "POST" and parts == ["review", "bulk"]:
+        return review_bulk(brain, req.body)
     if req.method == "POST" and len(parts) == 2 and parts[0] == "review":
         return review(brain, parts[1], req.body)
     return 404, {"error": "not found", "path": parts}

@@ -36,7 +36,7 @@ def weekly(brain, days: int, changes: dict, decisions: dict, questions: dict, co
     if site.get("pair"):
         lines.append(f"Site: {site['counts']['changes']} changes between {site['old']} and {site['new']}, {len(site_open)} not reviewed.")
     else:
-        lines.append("Site: " + (site.get("unavailable_reason") or "no diff yet") + ".")
+        lines.append("Site: " + (site.get("unavailable_reason") or "no diff yet").rstrip(".") + ".")
     lines.append(f"Files in: {len(new_docs)} this week, {docs.get('proposed_total', 0)} records waiting in the review queue.")
     lines.append(f"Competitors: snapshot {market.get('snapshot_age_days', 'unavailable')} days old, {len(market.get('gaps') or [])} format or hook gaps.")
     strong = health.get("strong_share")

@@ -836,6 +836,39 @@
     return card;
   }
 
+  // ---------- 5h. review queue with before and after, grouped, bulk ----------
+  function proposalCard(r, reload) {
+    const card = el('article', { class: 'card flat rec proposal' });
+    card.append(el('div', { class: 'meta' }, el('span', { class: 'chip ' + (r.change === 'replaces' ? 'warn' : r.change === 'same value' ? '' : 'accent'), text: r.change }), el('span', { class: 'chip', text: pretty(r.section) }), tierChip(r.tier), el('span', { class: 'chip mono', text: r.id })));
+    const vs = el('div', { class: 'vs' },
+      el('div', null, el('div', { class: 'meta' }, el('span', { class: 'chip', text: 'before' }), r.before ? tierChip(r.before.tier) : null, r.before && r.before.date ? el('span', { text: fmt.date(r.before.date) }) : null), el('div', { text: r.before ? r.before.text : 'no record on this field yet' })),
+      el('div', { class: 'kept' }, el('div', { class: 'meta' }, el('span', { class: 'chip accent', text: 'proposed' }), r.date ? el('span', { text: fmt.date(r.date) }) : null), el('div', { text: r.text || '' }), (r.evidence || []).length ? el('blockquote', { text: '"' + r.evidence[0].quote + '"' }) : null));
+    card.append(vs);
+    const status = el('span', { class: 'muted small' });
+    const act = (choice) => async () => { try { await api(BASE + 'review/' + encodeURIComponent(r.id), { method: 'POST', body: { choice } }); reload(); } catch (e) { status.textContent = 'Could not save: ' + e.message; } };
+    card.append(el('div', { class: 'row' }, el('button', { class: 'btn primary sm', type: 'button', text: 'Accept', onclick: act('accept') }), el('button', { class: 'btn sm', type: 'button', text: 'Ignore', onclick: act('ignore') }), status));
+    return card;
+  }
+  async function loadReview() {
+    let rv;
+    try { rv = await api(BASE + 'review'); } catch (e) { mount('#review', el('p', { class: 'muted', text: 'Review queue unavailable: ' + e.message })); return; }
+    mount('#review-tools', UI.orientation([{ label: 'proposed', value: rv.counts.proposed, unit: 'n', tone: rv.counts.proposed ? 'bad' : 'good' }, { label: 'sources', value: rv.counts.groups, unit: 'n' }, { label: 'new fields', value: rv.counts.new_fields, unit: 'n' }, { label: 'replacing', value: rv.counts.replacing, unit: 'n' }, { label: 'same value', value: rv.counts.duplicates, unit: 'n' }]));
+    if (!rv.groups.length) { mount('#review', el('p', { class: 'muted', text: 'Nothing proposed. Agent updates and file extractions land here before they reach the brain.' })); return; }
+    const groups = rv.groups.map((g) => {
+      const status = el('span', { class: 'micro muted' });
+      const bulk = (choice, ids) => async () => { try { const r = await api(BASE + 'review/bulk', { method: 'POST', body: { choice, ids } }); status.textContent = r.done.length + ' ' + choice + 'ed' + (r.failed.length ? ', ' + r.failed.length + ' failed' : '') + '.'; loadReview(); loadDesk(); loadDocs(); } catch (e) { status.textContent = 'Could not save: ' + e.message; } };
+      const adds = g.records.filter((r) => r.change !== 'same value').map((r) => r.id);
+      const dupes = g.records.filter((r) => r.change === 'same value').map((r) => r.id);
+      const head = el('div', { class: 'sec-head' }, el('h4', { text: 'From ' + g.source + ' (' + pretty(g.type) + ')' }), el('div', { class: 'tools' },
+        adds.length ? el('button', { class: 'btn sm primary', type: 'button', text: 'Accept ' + adds.length + ' that add something', onclick: bulk('accept', adds) }) : null,
+        dupes.length ? el('button', { class: 'btn sm', type: 'button', text: 'Ignore ' + dupes.length + ' same value', onclick: bulk('ignore', dupes) }) : null,
+        el('button', { class: 'btn sm quiet', type: 'button', text: 'Ignore all', onclick: bulk('ignore', g.records.map((r) => r.id)) }), status),
+        el('span', { class: 'sub', text: g.records.length + ' proposed' + (g.date ? ', ' + fmt.date(g.date) : '') }));
+      return el('div', { class: 'card tight review-group' }, head, el('div', { class: 'grid' }, ...g.records.map((r) => proposalCard(r, loadReview))));
+    });
+    mount('#review', ...groups, el('div', { class: 'micro faint', text: rv.note }));
+  }
+
   // ---------- 5b1. contracts ----------
   function contractForm(cr, reload, preset) {
     const vendor = el('input', { class: 'text sm', placeholder: 'Vendor', value: preset ? preset.vendor : '', style: { maxWidth: '160px' } });
@@ -1278,7 +1311,7 @@
     mount('#insights', ...(d.insights.length ? d.insights.map((i) => UI.insight(Object.assign({ screen: SCREEN }, i)))
       : [el('p', { class: 'muted', text: 'No rule fired today.' })]));
     mount('#ladders', ...d.ladders.map(ladderCard));
-    mount('#review', ...(d.review.length ? d.review.map((r) => reviewCard(r, loadDesk)) : [el('p', { class: 'muted', text: 'Nothing proposed. Agent updates land here before they reach the brain.' })]));
+    loadReview();
     try {
       const a = await api(BASE + 'audit');
       mount('#audit', el('p', { class: 'muted small', text: a.findings.length + ' findings from ' + a.rules.length + ' rules.' }), auditTable(a.findings));
