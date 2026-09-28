@@ -420,6 +420,23 @@ def act_attack(f: dict, m: dict) -> dict:
             "check_on": _plus(f["last_seen"], 28), "time_to_ship_hours": 4}
 
 
+def act_undercut(f: dict, m: dict) -> dict:
+    """COMP-R18: Amazon price per pair below our site. The agent checks every listing's seller and price."""
+    style = f["entity"]["label"].replace(" on Amazon", "")
+    st = next((x for x in m["presence"]["styles"] if x["style"] == style), None)
+    return {"title": f"Check who sells {style} on Amazon {round((st or {}).get('gap', 0) * 100)} percent below our site",
+            "owner": "agent",
+            "artefact": {"kind": "listing_fix", "label": f"a seller and price check of the {style} listings",
+                         "draft": audit.mktmod.draft(st, m["brand"].capitalize()) if st else None},
+            "steps": _steps(("agent", "Read each listing's seller, pack size and price per pair (read only)."),
+                            ("agent", "Flag resellers for the brand registry and MAP team; flag our own listings for a pack price fix."),
+                            ("person", "The marketplace owner acts on the flags."),
+                            ("agent", f"Re-check the listings on {_plus(f['last_seen'], 14)}.")),
+            "size": {"text": f"{(st or {}).get('listings')} listings, {round((st or {}).get('gap', 0) * 100)} percent gap"},
+            "win_rule": "Amazon price per pair within 10 percent of the site", "stop_rule": None,
+            "check_on": _plus(f["last_seen"], 14), "time_to_ship_hours": 2}
+
+
 def act_connect(f: dict, m: dict) -> dict:
     un = f.get("unavailable") or {}
     con = un.get("connector") or "the missing source"
@@ -437,7 +454,7 @@ BUILDERS = {"COMP-R01": act_angle, "COMP-R02": act_price, "COMP-R03": act_offer_
             "COMP-R09": act_ladder, "COMP-R10": act_above, "COMP-R11": act_corner,
             "COMP-R12": act_refresh, "COMP-R13": act_no_id, "COMP-R14": act_stale,
             "COMP-R15": act_lost, "COMP-R16": act_connect,
-            "COMP-R17": act_attack}   # R16 has no data source yet: always a connect action
+            "COMP-R17": act_attack, "COMP-R18": act_undercut}   # R16 has no data source yet: always a connect action
 
 
 def action(f: dict, m: dict, net_revenue: float | None) -> dict:

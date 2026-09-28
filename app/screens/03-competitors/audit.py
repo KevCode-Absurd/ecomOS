@@ -91,6 +91,11 @@ COMP-R17 they attack where we are weak. One of our 2 review themes with the most
     Severity high: a deal-breaker theme under a competitor's lead claim.
     Capability LIFE-C42 (guarantee and risk reversal, founder gate).
     Reputation 4, satisfaction 4. Owner: 03-competitors.
+COMP-R18 Amazon undercuts our site. A style with 2 or more Amazon listings whose
+    median price per pair is 15 percent or more below our site's net price per
+    pair (market_presence.py). Severity medium. Capability PROD-C46 (agent
+    checks sellers and prices). Confidence 0.3: site prices are simulated.
+    Owner: 03-competitors.
 
 Rubric overrides (depth.md section 4 allows reputation and satisfaction per rule):
 COMP-R01 reputation 5: an unclaimed angle is a competitor position gap named in
@@ -144,6 +149,7 @@ changemod = _local("changes")
 lossmod = _local("losses")
 catmod = _local("category")
 revmod = _local("reviews")
+mktmod = _local("market_presence")
 
 SCREEN = "03-competitors"
 SEVERITY_ORDER = {"critical": 0, "high": 1, "medium": 2, "low": 3}
@@ -210,6 +216,8 @@ RULES = [
      "inputs": ["search trends by rung"], "capability": "BRAND-C18", "owner_screen": SCREEN},
     {"rule_id": "COMP-R17", "name": "they lead with the theme we get the most one-star reviews on", "entity_type": "ladder_rung",
      "inputs": ["brain objection_ladders", "tracked page angles and offers"], "capability": "LIFE-C42", "owner_screen": SCREEN},
+    {"rule_id": "COMP-R18", "name": "Amazon price per pair undercuts our site", "entity_type": "sku",
+     "inputs": ["brain marketplaces", "products_monthly"], "capability": "PROD-C46", "owner_screen": SCREEN},
     {"rule_id": "COMP-R08", "name": "discount on most ads while direct peers run none", "entity_type": "offer",
      "inputs": ["brain offers.promo_share_active_ads", "brain competitors offers_seen"], "capability": "LIFE-C38",
      "owner_screen": SCREEN},
@@ -217,12 +225,12 @@ RULES = [
 # what a strategist groups the findings by on the page (depth.md section 2: grouped by bottleneck)
 RULE_GROUP = {"COMP-R01": "creative", "COMP-R05": "creative", "COMP-R06": "creative", "COMP-R03": "offer", "COMP-R07": "offer",
               "COMP-R08": "offer", "COMP-R09": "offer", "COMP-R02": "price", "COMP-R10": "price", "COMP-R11": "position",
-              "COMP-R04": "watch", "COMP-R12": "watch", "COMP-R13": "watch", "COMP-R14": "watch", "COMP-R15": "lost", "COMP-R16": "lost", "COMP-R17": "lost"}
+              "COMP-R04": "watch", "COMP-R12": "watch", "COMP-R13": "watch", "COMP-R14": "watch", "COMP-R15": "lost", "COMP-R16": "lost", "COMP-R17": "lost", "COMP-R18": "price"}
 GROUP_LABEL = {"lost": "Shoppers we lose, by name", "creative": "Ads they run that we do not", "offer": "Offers they say that we do not",
                "price": "Price against theirs", "position": "Corners of the map", "watch": "Watch and protect"}
 RUBRIC_OVERRIDES = {"COMP-R01": {"reputation": 5}, "COMP-R02": {"reputation": 3}, "COMP-R04": {"reputation": 5, "satisfaction": 4},
                     "COMP-R15": {"reputation": 4}, "COMP-R17": {"reputation": 4, "satisfaction": 4}}
-AUTONOMY = {"LIFE-C42": "founder_gate", "BRAND-C18": "agent_does", "BRAND-C57": "agent_does", "BRN-C11": "agent_does", "BRAND-C20": "agent_does", "LIFE-C39": "founder_gate", "CREA-C31": "agent_does", "CREA-C06": "agent_does", "CREA-C04": "agent_does", "LIFE-C47": "agent_does", "LIFE-C38": "founder_gate", "BRAND-C21": "founder_gate", "BRAND-C24": "founder_gate", "MONEY-C48": "human_assist"}
+AUTONOMY = {"PROD-C46": "agent_does", "LIFE-C42": "founder_gate", "BRAND-C18": "agent_does", "BRAND-C57": "agent_does", "BRN-C11": "agent_does", "BRAND-C20": "agent_does", "LIFE-C39": "founder_gate", "CREA-C31": "agent_does", "CREA-C06": "agent_does", "CREA-C04": "agent_does", "LIFE-C47": "agent_does", "LIFE-C38": "founder_gate", "BRAND-C21": "founder_gate", "BRAND-C24": "founder_gate", "MONEY-C48": "human_assist"}
 
 
 # ---------------------------------------------------------------- reading
@@ -456,6 +464,7 @@ def market_full(brand: str, today: dt.date, root: Path | None = None) -> dict:
     m["changes"] = changemod.build(m, m["brain"], prev, cur, today)
     m["losses"] = lossmod.build(m, m["brain"])
     m["category"] = catmod.build(m, m["brain"])
+    m["presence"] = mktmod.build(m, m["brain"], laddermod.pairs_in_title)
     m["reviews"] = revmod.build(m, m["brain"], lambda texts: mixmod.offer_types(texts, snap.OFFERS))
     return m
 
@@ -806,6 +815,25 @@ def rule_attack(m, ends_on):
                      "no baseline: reviews are not tied to order value in the brain")]
 
 
+def rule_presence(m, ends_on):
+    out = []
+    for st in (m.get("presence") or {}).get("styles", []):
+        if not st["undercut"]:
+            continue
+        ev = [_row("amazon_price_per_pair", st["amazon_per_pair"], "usd", "latest capture", ends_on, None, st["site_per_pair"],
+                   "threshold", "marketplaces"),
+              _row("site_price_per_pair", st["site_per_pair"], "usd", m["packs"]["month"], ends_on, None, None, "threshold",
+                   "products_monthly", True),
+              _row("amazon_listings", st["listings"], "n", "latest capture", ends_on, None, mktmod.MIN_LISTINGS, "threshold",
+                   "marketplaces")]
+        sentence = (f"{st['style'].capitalize()} sells on Amazon at ${st['amazon_per_pair']:.2f} a pair. Our site nets "
+                    f"${st['site_per_pair']:.2f}, {round(st['gap'] * 100)} percent more.")
+        ent = {"type": "sku", "id": f"amazon_{pagemod.slug(st['style'])}", "label": f"{st['style']} on Amazon"}
+        out.append(_finding("COMP-R18", "medium", ent, ev, sentence, [f"{m['brand']}.marketplaces"], ends_on, 0.3,
+                            "no baseline: orders lost to the cheaper channel are not measured"))
+    return out
+
+
 def packs_month_end(packs):
     if not packs.get("available"):
         return None
@@ -832,7 +860,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
         out += [_unavailable("COMP-R16", "low", {"type": "ladder_rung", "id": "lower_rungs", "label": "lower rungs of the ladder"},
                              ["search trends by rung"], "a search trends source (read only)",
                              "Connect a search trends source for the category and each lower rung.", ends_on)]
-        out += rule_ladder(m, ends_on) + rule_corners(m, ends_on) + rule_refresh(m, ends_on) + rule_freshness(m, ends_on) + rule_losses(m, ends_on) + rule_attack(m, ends_on)
+        out += rule_ladder(m, ends_on) + rule_corners(m, ends_on) + rule_refresh(m, ends_on) + rule_freshness(m, ends_on) + rule_losses(m, ends_on) + rule_attack(m, ends_on) + rule_presence(m, ends_on)
     out += rule_price(m, ends_on) + rule_lookalike(m, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f["severity"]], f["id"]))
     return out

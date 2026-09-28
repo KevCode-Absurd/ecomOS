@@ -664,6 +664,28 @@ class TestReviews(TempBrain):
         self.assertEqual(acts[0]['rule_id'], 'COMP-R17')
 
 
+class TestPresence(TempBrain):
+    """2.4: Amazon listings by style against our site's price per pair; theirs unavailable."""
+    def setUp(self):
+        super().setUp()
+        api.BRAIN_ROOT = self.tmp
+        self.pr = api.handle(Req(['overview']))['presence']
+
+    def test_styles(self):
+        by = {s['style']: s for s in self.pr['styles']}
+        self.assertTrue(by['ankle']['undercut'])
+        self.assertFalse(by['no show']['undercut'])
+        self.assertAlmostEqual(by['ankle']['gap'], round(1 - by['ankle']['amazon_per_pair'] / by['ankle']['site_per_pair'], 3))
+        self.assertIsNone(self.pr['theirs'])
+        self.assertEqual(audit.mktmod.style_of_title("Women's Cushioned No Show Socks - 4 Pack"), 'no show')
+
+    def test_rule_r18(self):
+        out = audit.run('bombas', WINDOW, self.tmp)
+        f = next(f for f in out if f['rule_id'] == 'COMP-R18')
+        self.assertEqual(f['confidence'], 0.3)
+        self.assertTrue(any(e['simulated'] for e in f['evidence']))
+
+
 class TestRank(TempBrain):
     """Depth contract rules 2, 3 and 13: owner, steps and artefact on every action; every finding ends in one."""
     W = {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4}

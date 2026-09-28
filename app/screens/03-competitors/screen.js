@@ -396,13 +396,26 @@
   function reviewSection(rv) {
     const t = UI.verdictTable({
       columns: [{ key: 'label', label: 'Our review theme' }, { key: 'one_star', label: 'One-star', unit: 'n' }, { key: 'five_star', label: 'Five-star', unit: 'n' },
-        { key: 'praise_share', label: 'Praise share', format: (v) => v == null ? NA : Math.round(v * 100) + ' percent' },
-        { key: 'leaders', label: 'Pages leading with it', format: (v) => v.length ? v.join(', ') : 'none' }],
+        { key: 'leaders', label: 'Pages leading with it', format: (v) => v.length ? v.length + ': ' + v.slice(0, 3).join(', ') + (v.length > 3 ? ' and more' : '') : 'none' }],
       rows: rv.rows,
       verdict: { at: 1, kind: (r) => rv.attack && r.theme === rv.attack.theme ? 'stop' : r.direct_leaders >= 2 ? 'watch' : 'keep', text: (r) => rv.attack && r.theme === rv.attack.theme ? 'Attacked' : r.direct_leaders >= 2 ? 'Contested' : 'Quiet', reason: (r) => r.direct_leaders + ' direct pages lead with it' },
       reason: { key: 'doubt', label: 'Top doubt', text: (r) => r.top_doubt || NA }, sort: false });
     mount('#reviews', t, el('p', { class: 'small' }, el('b', { text: 'Their review counts: ' }), 'unavailable, ' + rv.their_reviews_reason + '.'),
       el('p', { class: 'micro faint', text: rv.rule + (rv.attack ? ' The answer is on the plan.' : '') }));
+  }
+
+  // ---------- 5l. marketplace presence ----------
+  function presenceSection(pr) {
+    const t = UI.verdictTable({
+      columns: [{ key: 'style', label: 'Style' }, { key: 'listings', label: 'Amazon listings', unit: 'n' },
+        { key: 'amazon_per_pair', label: 'Amazon, a pair', format: (v) => usd(v) }, { key: 'site_per_pair', label: 'Our site, a pair', format: (v) => usd(v) },
+        { key: 'unknown_sellers', label: 'Seller unknown', unit: 'n' }],
+      rows: pr.styles, verdict: { at: 1, kind: (r) => r.undercut ? 'fix' : r.gap == null ? 'na' : 'keep', text: (r) => r.undercut ? 'Undercut' : r.gap == null ? 'No match' : 'In line', reason: (r) => r.gap == null ? 'no site price for the style' : Math.round(r.gap * 100) + ' percent below the site' },
+      reason: { key: 'why', label: 'Gap', text: (r) => r.gap == null ? NA : Math.round(r.gap * 100) + ' percent below our site' }, sort: false });
+    mount('#presence', UI.orientation([{ label: 'our listings', value: pr.listings, unit: 'n' }, { label: 'priced by pair', value: pr.priced, unit: 'n' },
+      { label: 'median stars', value: pr.median_stars, unit: 'n' }, { label: 'reviews', value: pr.reviews, unit: 'n' }]), t,
+      el('p', { class: 'small' }, el('b', { text: 'Their marketplace listings: ' }), 'unavailable, ' + pr.theirs_reason + '.'),
+      el('p', { class: 'micro faint', text: pr.rule + ' Amazon prices are public list prices; ours are simulated net.' }));
   }
 
   // ---------- 6. the audit ----------
@@ -433,6 +446,7 @@
     lossSection(d.losses);
     categorySection(d.category);
     reviewSection(d.reviews);
+    presenceSection(d.presence);
     document.getElementById('audit-sub').textContent = p.findings.length + ' findings from ' + p.rules.length + ' rules. Public signals, one capture.';
     mount('#audit', auditTable(p.findings));
     mount('#rules', el('h4', { text: 'Rules' }), rulesTable(p.rules));
