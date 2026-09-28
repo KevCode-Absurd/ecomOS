@@ -531,6 +531,8 @@ def handle(req):
             if req.method == "POST":
                 return add_note(brand, req.body)
             return {"notes": read_notes(brand, req.arg("entity"))}
+        if req.method == "POST" and req.path == ["inputs", "remove"]:
+            return audit.inpmod.remove(brand, str((req.body or {}).get("id") or "") if isinstance(req.body, dict) else "")
         if req.path == ["inputs"]:
             if req.method == "POST":
                 body = req.body if isinstance(req.body, dict) else {}
@@ -540,7 +542,8 @@ def handle(req):
                                         "tunable": audit.TUNE_RANGE,
                                         "lines": [x["key"] for x in m["frames"]["lines"] if x["key"] != "A"],
                                         "direct": [p["name"] for p in m["pages"] if p["role"] != "self" and p["frame"] == "direct" and p["source"] != "none"]}, today)
-            return {"records": audit.inpmod.read(brand, req.arg("kind")), "reason_codes": audit.inpmod.REASON_CODES,
+            recs = sorted(audit.inpmod.read(brand, req.arg("kind")), key=lambda r: (r.get("logged_at", ""), r["id"]), reverse=True)
+            return {"records": [dict(r, summary=audit.inpmod.summary(r)) for r in recs], "reason_codes": audit.inpmod.REASON_CODES,
                     "note": "Logged by the team on this screen. Local file, never sent anywhere. No names or quotes kept."}
         if req.method == "POST" and req.path == ["capture"]:
             return run_capture(brand, today)

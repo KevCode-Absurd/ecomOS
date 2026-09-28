@@ -1636,5 +1636,28 @@ class TestRunCapture(TempInputs):
         self.assertIn("api(BASE + 'capture', { method: 'POST'", js)
 
 
+class TestInputsLog(TempInputs):
+    """6.8: every logged record listed with a summary; a mistake can be removed and the rules read the file again."""
+    def test_list_and_remove(self):
+        self.interview('loss', 'Stance', 'style')
+        self.post({'kind': 'threshold', 'name': 'stale_days', 'value': 30})
+        recs = api.handle(Req(['inputs']))['records']
+        self.assertEqual([r['kind'] for r in recs], ['threshold', 'interview'])
+        self.assertEqual(recs[1]['summary'], 'loss against Stance: style')
+        self.assertEqual(recs[0]['summary'], 'stale days set to 30')
+        r = Req(['inputs', 'remove'], method='POST')
+        r.body = {'id': recs[0]['id']}
+        self.assertEqual(api.handle(r)[0], 200)
+        self.assertEqual(api.handle(r)[0], 404)
+        self.assertEqual(api.handle(Req(['plan']))['thresholds']['values']['stale_days']['source'], 'default')
+        self.assertEqual(len(api.handle(Req(['inputs']))['records']), 1)
+
+    def test_every_kind_has_a_summary_and_label(self):
+        js = (SCREEN / 'screen.js').read_text(encoding='utf-8')
+        for kind in api.audit.inpmod.VALIDATE:
+            self.assertIn(kind + ':', js)
+        self.assertIn('id="inputs"', (SCREEN / 'index.html').read_text(encoding='utf-8'))
+
+
 if __name__ == '__main__':
     unittest.main()

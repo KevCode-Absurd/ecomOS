@@ -213,6 +213,31 @@ def add(brand: str, kind: str, body, known: dict, today: dt.date) -> tuple[int, 
     return 201, {"ok": True, "record": rec}
 
 
+def remove(brand: str, rec_id: str) -> tuple[int, dict]:
+    """Take back one record logged by mistake. The rules read the file again on the next load."""
+    rows = read(brand)
+    keep = [r for r in rows if r.get("id") != rec_id]
+    if len(keep) == len(rows):
+        return 404, {"error": "no record with that id"}
+    path(brand).write_text(json.dumps(keep, indent=1), encoding="utf-8")
+    return 200, {"ok": True, "removed": rec_id}
+
+
+def summary(r: dict) -> str:
+    k = r.get("kind")
+    if k == "interview":
+        return f"{r['outcome']} against {r['competitor']}: {r['reason']}"
+    if k == "price_seen":
+        return f"{r['page']} {r['product']}: ${r['price']:.2f} for {r['units']} (${r['per_unit']:.2f} each)"
+    if k == "card_check":
+        return f"{r['page']} battlecard checked, {r['dropped']} lines dropped"
+    if k == "frame_test":
+        return f"line {r['line']}: {r['prefer_new']} to {r['prefer_current']} of {r['asked']} asked"
+    if k == "threshold":
+        return f"{r['name'].replace('_', ' ')} set to {r['value']:g}"
+    return k or "record"
+
+
 def win_loss(rows: list[dict], names: list[str], repeat_at: int = 3) -> dict:
     """Win rate by named competitor (wins / (wins + losses)) and loss reasons counted; a reason at repeat_at or more
     losses against one name is a repeat."""

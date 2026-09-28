@@ -810,6 +810,22 @@
       rows: rules, sort: false });
   }
 
+  // everything the team logged on this screen, newest first, with a way to take a mistake back
+  const KIND_LABEL = { interview: 'Win-loss interview', price_seen: 'Price seen', card_check: 'Battlecard check', frame_test: 'Positioning poll', threshold: 'Threshold change' };
+  async function inputsLog() {
+    let r;
+    try { r = await api(BASE + 'inputs'); } catch (e) { mount('#inputs', el('h4', { text: 'What the team logged' }), el('p', { class: 'na', text: 'Unavailable: ' + e.message })); return; }
+    const rows = r.records.map((x) => Object.assign({}, x, { what: KIND_LABEL[x.kind] || pretty(x.kind), row_actions: [{ label: 'Remove', onClick: async () => {
+      if (!window.confirm('Remove this record? Every rule reads the file again.')) return;
+      try { await api(BASE + 'inputs/remove', { method: 'POST', body: { id: x.id } }); location.reload(); } catch (e) { window.alert('Not removed: ' + e.message); }
+    } }] }));
+    const tbl = rows.length ? el('table', { class: 'kit dense' }, el('thead', null, el('tr', null, ...['Logged', 'What', 'Record', 'By', ''].map((h) => el('th', { text: h })))),
+      el('tbody', null, ...rows.map((x) => el('tr', null, el('td', { text: fmt.date(x.logged_at) }), el('td', { text: x.what }), el('td', { text: x.summary + (x.date ? ', ' + fmt.date(x.date) : '') }),
+        el('td', { text: x.by }), el('td', null, el('button', { class: 'btn sm quiet', type: 'button', text: 'Remove', onclick: x.row_actions[0].onClick })))))) : null;
+    mount('#inputs', el('h4', { text: 'What the team logged (' + rows.length + ')' }), tbl ? el('div', { class: 'table-wrap' }, tbl) : el('p', { class: 'small muted', text: 'Nothing logged yet. Interviews, prices seen, card checks, polls and threshold changes show here.' }),
+      el('p', { class: 'micro faint', text: r.note }));
+  }
+
   async function load() {
     let d, p;
     try { [d, p] = await Promise.all([api(BASE + 'overview'), api(BASE + 'plan')]); } catch (e) { mount('#badge', 'Could not load: ' + e.message); return; }
@@ -854,6 +870,7 @@
     mount('#audit', auditTable(p.findings));
     gapLines(d.gap_lines);
     exportsSection(d);
+    inputsLog();
     deskTabs();
     const fmtM = (r) => r.value == null ? NA : r.unit === '%' ? fmt.pct(r.value) : fmt.num(r.value) + (r.unit === 'days' ? ' days' : r.unit === 'points' ? ' points' : '');
     mount('#metrics', el('h4', { text: 'Room metrics' }), UI.table({ columns: [{ key: 'key', label: 'Metric', format: (v) => pretty(v) }, { key: 'v', label: 'Value' },
