@@ -1560,6 +1560,31 @@ class ChangesTest(unittest.TestCase):
             api.SEEN_DIR = saved
 
 
+class WeeklyNoteTest(unittest.TestCase):
+    def test_weekly_note_writes_and_lists(self):
+        import importlib.util as iu, tempfile
+        spec = iu.spec_from_file_location('weekly_t', SCREEN / 'weekly.py')
+        wk = iu.module_from_spec(spec)
+        spec.loader.exec_module(wk)
+        saved = wk.REPORTS_DIR
+        wk.REPORTS_DIR = Path(tempfile.mkdtemp())
+        try:
+            note = wk.build('bombas', api)
+            self.assertIn('# Research desk', note['text'])
+            self.assertIn('WEEK PLAN', note['text'])
+            p = wk.write('bombas', api)
+            self.assertTrue(p.is_file())
+            self.assertEqual(p.stem, note['date'])
+            self.assertEqual([r['date'] for r in wk.past('bombas')], [note['date']])
+            self.assertEqual(wk.past('nobody'), [])
+            s = wk.build(None, api)
+            self.assertIn('Tallgrass Goods', s['text'])
+        finally:
+            wk.REPORTS_DIR = saved
+        r = api.handle(Req(['reports']))
+        self.assertIn('weekly.py --brand bombas', r['command'])
+
+
 class WeekPlanTest(unittest.TestCase):
     def test_week_plan(self):
         w = api.handle(Req(['week']))

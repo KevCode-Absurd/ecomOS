@@ -2302,6 +2302,13 @@ def handle(req):
             return changes_since(data, brand)
         if req.path == ['report']:
             return desk_report(data, brand)
+        if req.path == ['reports']:
+            if 'weekly' not in _SAMPLE:
+                spec = importlib.util.spec_from_file_location('ecomos_research_weekly', HERE / 'weekly.py')
+                _SAMPLE['weekly'] = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(_SAMPLE['weekly'])
+            return {'brand': brand or 'sample', 'reports': _SAMPLE['weekly'].past(brand), 'command': f'python3 app/screens/01-market-research/weekly.py --brand {brand or "sample"}',
+                    'note': 'Each note is the desk report and the week plan on that day. Scheduling the command is the lead\'s call; nothing here runs on its own.'}
         if req.path == ['log']:
             return audit.research_log(brand or 'sample')
         if req.path == ['week']:
@@ -2313,4 +2320,4 @@ def handle(req):
             return {'parked': r['parked'], 'decided': r['decided'], 'snooze_days': rank_mod.SNOOZE_DAYS, 'window': r['window']}
     except ValueError as exc:
         return 400, {'error': str(exc)}
-    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank', 'parked', 'calendar', 'week', 'report', 'changes', 'log', 'candidates/<id>/brief', 'handoff/<finding_id>', 'product_candidates', 'tests']}
+    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank', 'parked', 'calendar', 'week', 'report', 'reports', 'changes', 'log', 'candidates/<id>/brief', 'handoff/<finding_id>', 'product_candidates', 'tests']}
