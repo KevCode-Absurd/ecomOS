@@ -156,6 +156,17 @@
       (d.resolved || []).length ? el('p', { class: 'micro faint', text: 'Resolved in the last 28 days: ' + d.resolved.map((h) => (h.label || h.rule_id) + ' (' + fmt.date(h.resolved_on) + ')').join('; ') + '.' }) : null);
   }
 
+  /** Post an approved brief to the shared hand-offs table once (events.md); a second approval finds the first row. */
+  async function handOff(row) {
+    try {
+      const seen = await UI.api('/api/handoffs?from_screen=' + SLUG + '&to=' + encodeURIComponent(row.to));
+      const prev = (seen.handoffs || []).find((h) => h.finding_id === row.finding_id && h.title === row.title && h.status !== 'dropped');
+      if (prev) return 'Already handed to ' + row.to + ' as ' + prev.id + '.';
+      const r = await UI.api('/api/handoffs', { method: 'POST', body: row });
+      return 'Handed to ' + row.to + ' as ' + r.handoff.id + '.';
+    } catch (e) { return 'Hand-off not sent: ' + e.message; }
+  }
+
   /** Save a move to the brand brain as a plan record: proposed (review queue) or approved by the founder. */
   function saveRow(a) {
     const status = el('span', { class: 'micro muted' });
@@ -164,6 +175,7 @@
       try {
         const r = await UI.api('/api/' + SLUG + '/approve?brand=' + encodeURIComponent(brand), { method: 'POST', body: { id: a.id, mode } });
         status.textContent = 'Saved as ' + r.record + ' (' + r.status + ')' + (r.offer ? ', offer ' + r.offer + ' planned' : '') + (r.registry ? ', test proposed as ' + r.registry : '') + '.';
+        if (r.handoff) status.textContent += ' ' + await handOff(r.handoff);
       } catch (e) { status.textContent = 'Could not save: ' + e.message; }
     };
     return el('div', { class: 'row save-row' }, el('span', { class: 'kicker', text: 'Brand brain' }),

@@ -169,3 +169,23 @@ def planned(rd):
         if isinstance(v, dict) and v.get('move_id'):
             out[v['move_id']] = {'record': rec['id'], 'status': rec.get('status'), 'tier': rec.get('tier')}
     return out
+
+
+# Who receives an approved brief on the shared hand-offs table (events.md), by artefact kind. A test goes to the
+# experiments screen; store settings and offer terms go to the person who runs the store admin.
+HANDOFF_TO = {'page_section': 'landing pages', 'landing_page': 'landing pages', 'ad_brief': 'creative', 'creative': 'creative',
+              'copy': 'copy', 'email': 'email', 'flow': 'email', 'listing_fix': 'marketplaces', 'test_brief': '25-experiments',
+              'report': '25-experiments', 'offer': 'store admin', 'price_change': 'store admin', 'policy': 'store admin',
+              'research_note': 'founder'}
+
+
+def handoff_row(action):
+    """The hand-off row for an approved move, in the events.md shape; the page posts it to /api/handoffs once."""
+    art = action.get('artefact') or {}
+    to = HANDOFF_TO.get(art.get('kind'))
+    if not to:
+        return None
+    return {'from_screen': SCREEN, 'to': to, 'kind': art['kind'], 'title': action['title'], 'why': action.get('why'),
+            'draft': art.get('draft'), 'win_rule': action.get('win_rule'), 'stop_rule': action.get('stop_rule'),
+            'check_on': action.get('check_on'), 'capability': (action.get('capability') or {}).get('id'),
+            'owner': action.get('owner'), 'finding_id': action['id'], 'status': 'decided'}

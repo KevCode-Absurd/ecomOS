@@ -2275,5 +2275,38 @@ class RuleRegistryTest(unittest.TestCase):
             self.assertIn('"' + c + '"', cat)
 
 
+class HandoffTest(unittest.TestCase):
+    """Round 10 feature 1: a founder approval returns the events.md hand-off row, which the server accepts."""
+
+    def test_row_passes_server_validation(self):
+        import shutil, tempfile
+        from datetime import date
+        sys.path.insert(0, str(ROOT / 'app'))
+        import server
+        tmp = Path(tempfile.mkdtemp())
+        shutil.copytree(ROOT / 'app' / 'brain' / 'bombas', tmp / 'bombas')
+        try:
+            acts = api.actions.rank('bombas')['actions']
+            a = next(x for x in acts if x['status'] == 'open' and x['artefact']['kind'] == 'test_brief'
+                     and (x.get('margin_check') or {}).get('clears') is not False)
+            out = api.approve('bombas', {'id': a['id'], 'mode': 'founder'}, brain_root=tmp, outbox=tmp / 'out', today=date(2026, 9, 28))
+            row = out['handoff']
+            self.assertEqual((row['to'], row['status'], row['finding_id']), ('25-experiments', 'decided', a['id']))
+            checked = server.Handoffs.validate(row)
+            self.assertTrue(checked['id'].startswith('HO-'))
+            prop = api.approve('bombas', {'id': a['id'], 'mode': 'proposed'}, brain_root=tmp, outbox=tmp / 'out', today=date(2026, 9, 28))
+            self.assertNotIn('handoff', prop)          # only a founder decision hands a brief over
+        finally:
+            shutil.rmtree(tmp)
+
+    def test_every_kind_has_a_receiver_or_none(self):
+        for a in api.actions.rank('bombas')['actions']:
+            row = api.approvals.handoff_row(a)
+            if a['artefact']['kind'] == 'connector_setup':
+                self.assertIsNone(row)
+            else:
+                self.assertIsNotNone(row, a['artefact']['kind'])
+
+
 if __name__ == '__main__':
     unittest.main()

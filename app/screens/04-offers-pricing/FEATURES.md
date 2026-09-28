@@ -215,6 +215,12 @@ Known gaps from round 0:
 5. Every drafted brief now ends with its check date and stop rule, so it can be handed over as it is.
 6. Next (round 10): wait for Kevin's review of rounds 1 to 9 and act on it first; meanwhile keep the contract asks (findings table, registry table, baseline kinds) in front of the lead.
 
+## Round 10: hand-offs and the open gaps (from 28 Sep 2026)
+
+| # | Feature | Status |
+|---|---|---|
+| 10.1 | Approved briefs go on the shared hand-offs table (events.md, lead 28 Sep): "I approve" now also returns the hand-off row for the move (to the team its artefact needs: landing pages, creative, email, marketplaces, store admin, or 25-experiments for tests and test repairs), status decided, with the draft, win rule, stop rule, check date, capability and owner. The page posts it once to /api/handoffs and says "Handed to landing pages as HO-..."; a second approval finds the first row and does not post again. A proposal hands nothing over. The row passes the server's own validator in the tests | done |
+
 ## Contract asks
 
 - A shared `findings` table the server writes after each audit run (audit.md section 4, first_seen, last_seen, resolved_on). Local fallback: 04 keeps `outbox/findings.<brand>.json` (git-ignored) and reads its own history only.
@@ -354,6 +360,7 @@ Intelligems (threshold and price tests scored by profit per visitor), Rebuy (tie
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.9 | 2026-09-28 | S3.9; screenshot round0.png |
+| 10 | 10.1 onward: hand-offs | 2026-09-28 | in progress |
 | 9 | 9.1 to 9.10: promo stakes this year, window agreement, year rules, stale inputs, finding history, whole drafts, snoozed, rule register, since last run, close | 2026-09-28 | screenshot round9.png (sample brand) |
 | 8 | 8.1 to 8.10: one money scale, exposure, your week, unlocks, start dates, baseline kinds, stake inputs, severity and wording, confidence, close | 2026-09-28 | screenshot round8.png |
 | 7 | 7.1 to 7.10: paid prices, attach rate, returns by code, test power, code leaks, returning-buyer codes, code depth, app blind spots, one read of orders, close | 2026-09-28 | screenshot round7.png (sample brand) |
