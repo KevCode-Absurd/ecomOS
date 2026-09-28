@@ -200,6 +200,9 @@ Rules
             live listing pull shows 10 or more sellers of the identical item (the offer count, or distinct sellers across
             matching listings), with no cash-test plan noted (bank idea PRD-056: that is a short cash test, not a brand).
             A mock pull never counts. Money: null. Capability PROD-C01
+  PROD-R55  One sourcing channel: a candidate with a first run decided whose sourcing channel is not on file, or is on file
+            with no alternative compared on cost, days and branding (bank idea PRD-099: compare a private sourcing agent
+            against marketplace-direct or domestic on real numbers before the order). Money: null. Capability PROD-C13
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -327,6 +330,7 @@ RULES = [
     {'rule_id': 'PROD-R52', 'name': 'Candidate whose modelled margin passes at the planned price and fails at the low price', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline', 'finance_inputs'], 'capability': 'PROD-C08', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R53', 'name': 'Candidate at gated or later whose landed cost is not the brand\'s own supplier quote', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline', 'finance_inputs'], 'capability': 'PROD-C08', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R54', 'name': 'Candidate planned as a brand SKU whose identical item has 10 or more sellers in a live listing pull', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline', 'fixtures.amazon_listings'], 'capability': 'PROD-C01', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R55', 'name': 'Candidate with a first run decided on one sourcing channel with no alternative compared', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C13', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -381,7 +385,8 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R51': {'id': 'PROD-C08', 'autonomy': 'agent_does'},
               'PROD-R52': {'id': 'PROD-C08', 'autonomy': 'agent_does'},
               'PROD-R53': {'id': 'PROD-C08', 'autonomy': 'agent_does'},
-              'PROD-R54': {'id': 'PROD-C01', 'autonomy': 'agent_does'}}
+              'PROD-R54': {'id': 'PROD-C01', 'autonomy': 'agent_does'},
+              'PROD-R55': {'id': 'PROD-C13', 'autonomy': 'agent_does'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -973,6 +978,7 @@ def _run_audit(brand, ends_on, data):
     out += price_band_findings(brand, ends_on)
     out += margin_point_findings(brand, data, br, rd, ends_on)
     out += identical_seller_findings(brand, br, ends_on)
+    out += sourcing_findings(brand, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -4997,3 +5003,67 @@ def lane_opportunity(br, prods, ends_on):
         r['rank'] = i + 1
     return {'rows': rows, 'weights': OPP_WEIGHTS, 'labels': OPP_LABEL, 'strong': OPP_STRONG, 'min_parts': OPP_MIN_PARTS, 'site_per_pair': site, 'review_median_per_pair': price.get('median_per_pair'),
             'rule': f'score = weighted mean of the parts read (demand {OPP_WEIGHTS["demand"]}, room from competitors {OPP_WEIGHTS["competition"]}, price room {OPP_WEIGHTS["price_room"]}, complaint to build on {OPP_WEIGHTS["complaint_room"]}, room for us {OPP_WEIGHTS["presence"]}) times 100; fewer than {OPP_MIN_PARTS} parts read is thin; {OPP_STRONG} or more with no open candidate is a lane to screen a candidate into; the score ranks lanes, it never replaces the demand screen'}
+
+
+# ---------------------------------------------------------------- the sourcing channel, compared against at least one alternative
+
+SOURCING_CHANNELS = ('agent', 'marketplace_direct', 'domestic', 'own_factory', 'private_label', 'other')
+SOURCING_LABEL = {'agent': 'sourcing agent', 'marketplace_direct': 'marketplace direct', 'domestic': 'domestic supplier', 'own_factory': 'own factory', 'private_label': 'private label', 'other': 'other'}
+
+
+def _option(o):
+    """One sourcing option as read: channel, landed cost a unit, days to stock, branding options, note; compared when it has cost and days."""
+    o = o or {}
+    ch = str(o.get('channel') or '').strip().lower()
+    cost, days = o.get('cost_usd'), o.get('days')
+    return {'channel': ch if ch in SOURCING_CHANNELS else ('other' if ch else None), 'label': SOURCING_LABEL.get(ch, ch or None), 'cost_usd': cost if isinstance(cost, (int, float)) else None,
+            'days': int(days) if isinstance(days, (int, float)) else None, 'branding': str(o.get('branding') or '').strip() or None, 'note': str(o.get('note') or '').strip() or None,
+            'compared': isinstance(cost, (int, float)) and isinstance(days, (int, float))}
+
+
+def sourcing_read(brand):
+    """Per open candidate with a first run decided: the sourcing channel on file, its landed cost a unit, days to stock and
+    branding options, the alternatives compared, which option is cheapest and which fastest, and the verdict: no_channel,
+    one_channel (no alternative with cost and days), compared. Bank idea PRD-099."""
+    rows = []
+    for c in pipeline(brand):
+        st = c.get('stage')
+        if st in ('killed', 'kill') or not c.get('first_run'):
+            continue
+        sc = c.get('sourcing') or {}
+        chosen = _option(sc) if sc else None
+        alts = [_option(a) for a in (sc.get('alternatives') or []) if isinstance(a, dict)]
+        compared = [a for a in alts if a['compared']]
+        if not chosen or not chosen['channel']:
+            verdict = 'no_channel'
+        elif not compared:
+            verdict = 'one_channel'
+        else:
+            verdict = 'compared'
+        pool = [o for o in ([chosen] if chosen and chosen['compared'] else []) + compared]
+        cheapest = min(pool, key=lambda o: o['cost_usd'])['label'] if pool else None
+        fastest = min(pool, key=lambda o: o['days'])['label'] if pool else None
+        rows.append({'candidate_id': c.get('candidate_id'), 'name': c.get('name'), 'stage': st, 'chosen': chosen, 'alternatives': alts, 'compared_n': len(compared), 'cheapest': cheapest, 'fastest': fastest,
+                     'verdict': verdict, 'finding_id': f'{SCREEN}.PROD-R55.{c.get("candidate_id")}'})
+    order = {'no_channel': 0, 'one_channel': 1, 'compared': 2}
+    rows.sort(key=lambda r: (order[r['verdict']], r['name'] or ''))
+    return {'rows': rows, 'channels': [{'key': k, 'label': SOURCING_LABEL[k]} for k in SOURCING_CHANNELS],
+            'rule': 'once a first run is decided, the sourcing channel is on file with its landed cost a unit, days to stock and branding options, and at least one alternative is compared on the same three numbers before the order goes in (bank idea PRD-099)'}
+
+
+def sourcing_findings(brand, ends_on):
+    """PROD-R55: a candidate with a first run decided and no sourcing channel, or one channel with no alternative compared."""
+    out = []
+    for r in sourcing_read(brand)['rows']:
+        if r['verdict'] == 'compared':
+            continue
+        cid = r['candidate_id']
+        ev = [_ev('sourcing_alternatives_compared', r['compared_n'], 'count', ends_on.isoformat(), 'candidate now', 1, 'threshold', source='fixtures.pipeline', simulated=False, freshness_days=0,
+                  channel=(r['chosen'] or {}).get('channel'), stage=r['stage'])]
+        sentence = (f'{r["name"]} has a first run decided with no sourcing channel on file; the order has nowhere to go and no cost, speed or branding read behind it.' if r['verdict'] == 'no_channel'
+                    else f'{r["name"]} sources through {r["chosen"]["label"]} with no alternative compared on cost, days and branding; a recommended channel is not a chosen one.')
+        f = _finding('PROD-R55', cid, ends_on, 'medium', ev, sentence, None, 0.8, [], money_reason='the bet is the first run cash, priced on the first-run card')
+        f['entity'] = {'type': 'sku', 'id': cid, 'label': r['name'], 'candidate': True, 'stage': r['stage'], 'verdict': r['verdict'], 'channel': (r['chosen'] or {}).get('label')}
+        f['id'] = f'{SCREEN}.PROD-R55.{cid}'
+        out.append(f)
+    return out

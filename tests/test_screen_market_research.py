@@ -1594,6 +1594,36 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
             audit.listing_pull = saved
             audit.PIPELINE_PATH = self.real2
 
+    def test_sourcing_channel_comparison(self):
+        D = date(2026, 9, 27)
+        self.real2 = audit.PIPELINE_PATH
+        try:
+            audit.PIPELINE_PATH = self.tmp
+            self.tmp.write_text(json.dumps({'rows': [{'candidate_id': 'a', 'brand': 'fake', 'name': 'A', 'stage': 'gated', 'first_run': {'units': 500}},
+                                                     {'candidate_id': 'b', 'brand': 'fake', 'name': 'B', 'stage': 'gated', 'first_run': {'units': 500}, 'sourcing': {'channel': 'agent', 'cost_usd': 4.0, 'days': 45}},
+                                                     {'candidate_id': 'c', 'brand': 'fake', 'name': 'C', 'stage': 'go', 'first_run': {'units': 500}, 'sourcing': {'channel': 'agent', 'cost_usd': 4.0, 'days': 45, 'alternatives': [{'channel': 'domestic', 'cost_usd': 6.5, 'days': 12, 'branding': 'label only'}]}},
+                                                     {'candidate_id': 'd', 'brand': 'fake', 'name': 'D', 'stage': 'gated'}]}), encoding='utf-8')
+            read = audit.sourcing_read('fake')
+            by = {r['candidate_id']: r for r in read['rows']}
+            self.assertNotIn('d', by)                                   # no first run decided yet
+            self.assertEqual((by['a']['verdict'], by['b']['verdict'], by['c']['verdict']), ('no_channel', 'one_channel', 'compared'))
+            self.assertEqual((by['c']['cheapest'], by['c']['fastest']), ('sourcing agent', 'domestic supplier'))
+            self.assertEqual(read['rows'][0]['candidate_id'], 'a')
+            found = audit.sourcing_findings('fake', D)
+            self.assertEqual([f['id'].split('.')[-1] for f in found], ['a', 'b'])
+            self.assertIn('no sourcing channel', found[0]['sentence'])
+            self.check_shape(found[0])
+            self.assertIn('sourcing channel', api.recipe(found[0])['title'])
+            self.assertIn('Compare sourcing agent', api.recipe(found[1])['title'])
+            self.assertIn('PROD-R55', api.CANDIDATE_RULES)
+            self.assertEqual(api.candidate_update('fake', 'a', {'sourcing': {'channel': 'moon'}, 'who': 'person'}, D)[0], 400)
+            r = api.candidate_update('fake', 'a', {'sourcing': {'channel': 'marketplace_direct', 'cost_usd': '3.8', 'days': '60', 'alternatives': [{'channel': 'domestic', 'cost_usd': '6', 'days': '10'}, {'channel': ''}]}, 'who': 'person'}, D)
+            self.assertEqual(r['changes'], ['sourcing marketplace_direct, 1 alternative'])
+            self.assertEqual(audit.sourcing_read('fake')['rows'][-1]['verdict'], 'compared')
+            self.assertEqual([f['id'].split('.')[-1] for f in audit.sourcing_findings('fake', D)], ['b'])
+        finally:
+            audit.PIPELINE_PATH = self.real2
+
     def test_demand_pattern_tags(self):
         even = {'rows': [{'category': 'socks', 'series': [100] * 12}], 'months': [f'2026-{m:02d}' for m in range(1, 13)], 'last': '2026-12'}
         peaked = {'rows': [{'category': 'socks', 'series': [50] * 10 + [300, 400]}], 'months': even['months'], 'last': '2026-12'}

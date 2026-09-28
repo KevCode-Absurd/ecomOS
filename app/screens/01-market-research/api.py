@@ -1105,6 +1105,20 @@ def recipe(f):
             'size': {'text': f'{ent.get("variants")} variants planned', 'usd': None}, 'stop_rule': 'no MOQ per variant before the core product sells', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 1,
             'win_rule': 'one variant in the first run, the rest queued behind a sell-through read',
         }
+    if rid == 'PROD-R55':
+        ent = f.get('entity') or {}
+        none = ent.get('verdict') == 'no_channel'
+        return {
+            'title': (f'Put a sourcing channel on {ent.get("label") or "the candidate"} and compare one alternative before the order' if none
+                      else f'Compare {ent.get("channel")} against one alternative for {ent.get("label") or "the candidate"} on cost, days and branding'),
+            'owner': 'agent',
+            'artefact': {'kind': 'research_note', 'label': f'the sourcing comparison for {ent.get("label")}: 2 or more channels (a sourcing agent, marketplace direct, a domestic supplier) each with landed cost a unit at the first run, days to stock and the branding options, the pick and why, written on the candidate (bank idea PRD-099)'},
+            'steps': [{'n': 1, 'who': 'agent', 'text': 'Draft the same request for each channel from the tech pack: units at the first run, landed cost terms, lead time, branding options.'},
+                      {'n': 2, 'who': 'person', 'text': 'Get the numbers back and enter each channel on the candidate; the desk marks the cheapest and the fastest.'},
+                      {'n': 3, 'who': 'person', 'text': 'Pick the channel and write why (cost, speed or branding), then the order goes in.'}],
+            'size': {'text': 'no channel on file' if none else f'1 channel, 0 compared', 'usd': None}, 'stop_rule': 'no first order on a channel chosen without one comparison on real numbers', 'check_on': _check_on(f, 14), 'time_to_ship_hours': 2,
+            'win_rule': 'a chosen channel and at least one alternative on the candidate, each with cost, days and branding',
+        }
     if rid == 'PROD-R54':
         ent = f.get('entity') or {}
         return {
@@ -1336,7 +1350,7 @@ def merge_strength(actions):
 
 
 LANE_RULES = ('PROD-R06', 'PROD-R19', 'PROD-R20', 'PROD-R33', 'PROD-R26', 'PROD-R29')
-CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28', 'PROD-R37', 'PROD-R38', 'PROD-R39', 'PROD-R40', 'PROD-R45', 'PROD-R46', 'PROD-R47', 'PROD-R48', 'PROD-R49', 'PROD-R50', 'PROD-R51', 'PROD-R52', 'PROD-R53', 'PROD-R54')
+CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28', 'PROD-R37', 'PROD-R38', 'PROD-R39', 'PROD-R40', 'PROD-R45', 'PROD-R46', 'PROD-R47', 'PROD-R48', 'PROD-R49', 'PROD-R50', 'PROD-R51', 'PROD-R52', 'PROD-R53', 'PROD-R54', 'PROD-R55')
 
 
 def merge_candidates(actions):
@@ -1594,7 +1608,7 @@ def overview(data, brand):
                      'gates': gates_block(brand, data, br, rd, ends_on, findings), 'scorecard': scorecard_block(brand, data, br, rd, ends_on, findings),
                      'video': audit.video_signals(br, brand, ends_on), 'tech_packs': tech_pack_block(brand, findings),
                      'hours': dict(audit.hours_table(brand, br), findings={f['entity']['id']: f['id'] for f in findings if f['rule_id'] == 'PROD-R28'}),
-                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on), 'returns': audit.return_rates(data, brand, ends_on), 'questions': audit.open_questions(br, ends_on), 'pulls': audit.pulls(br, brand, ends_on), 'first_runs': audit.first_run_read(brand, ends_on, audit.net_28d(rd)), 'brain_freshness': audit.brain_freshness(br, ends_on), 'assumptions': audit.assumptions(br), 'strength': audit.read_strength(br, brand, data, rd, ends_on), 'line_themes': audit.line_theme_matrix(br), 'samples': audit.sample_read(brand or 'sample', ends_on), 'kills': audit.kill_memory(brand or 'sample', ends_on), 'packaging': audit.packaging_read(brand or 'sample', ends_on), 'readiness': audit.launch_readiness(brand, data, br, rd, ends_on), 'price_bands': audit.price_band_read(brand or 'sample'), 'margin_points': audit.margin_point_read(brand, data, br, rd, ends_on), 'identical_sellers': audit.identical_sellers_read(brand or 'sample', br), 'opportunity': audit.lane_opportunity(br, products(data, brand), ends_on), 'audit_memo': audit.memo_stats()},
+                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on), 'returns': audit.return_rates(data, brand, ends_on), 'questions': audit.open_questions(br, ends_on), 'pulls': audit.pulls(br, brand, ends_on), 'first_runs': audit.first_run_read(brand, ends_on, audit.net_28d(rd)), 'brain_freshness': audit.brain_freshness(br, ends_on), 'assumptions': audit.assumptions(br), 'strength': audit.read_strength(br, brand, data, rd, ends_on), 'line_themes': audit.line_theme_matrix(br), 'samples': audit.sample_read(brand or 'sample', ends_on), 'kills': audit.kill_memory(brand or 'sample', ends_on), 'packaging': audit.packaging_read(brand or 'sample', ends_on), 'readiness': audit.launch_readiness(brand, data, br, rd, ends_on), 'price_bands': audit.price_band_read(brand or 'sample'), 'margin_points': audit.margin_point_read(brand, data, br, rd, ends_on), 'identical_sellers': audit.identical_sellers_read(brand or 'sample', br), 'opportunity': audit.lane_opportunity(br, products(data, brand), ends_on), 'sourcing': audit.sourcing_read(brand or 'sample'), 'audit_memo': audit.memo_stats()},
             'audit': {'findings': findings, 'rules': audit.RULES}}
 
 
@@ -1690,6 +1704,19 @@ def candidate_update(brand, cid, body, today):
         if body.get(k) is not None:
             row[k] = _num(body[k])
             changes.append(k.replace('_', ' ') + (' set' if row[k] is not None else ' cleared'))
+    if isinstance(body.get('sourcing'), dict):
+        sc = body['sourcing']
+        def opt(o):
+            ch = str(o.get('channel') or '').strip().lower()
+            if ch and ch not in audit.SOURCING_CHANNELS:
+                raise ValueError('channel must be one of ' + ', '.join(audit.SOURCING_CHANNELS))
+            return {'channel': ch or None, 'cost_usd': _num(o.get('cost_usd')), 'days': int(_num(o.get('days')) or 0) or None, 'branding': str(o.get('branding') or '').strip()[:120] or None, 'note': str(o.get('note') or '').strip()[:200] or None}
+        try:
+            alts = [opt(a) for a in (sc.get('alternatives') or []) if isinstance(a, dict)]
+            row['sourcing'] = dict(opt(sc), alternatives=[a for a in alts if a['channel']], decided_on=today.isoformat())
+        except ValueError as e:
+            return 400, {'error': str(e)}
+        changes.append(f'sourcing {row["sourcing"]["channel"] or "cleared"}, {len(row["sourcing"]["alternatives"])} alternative' + ('' if len(row['sourcing']['alternatives']) == 1 else 's'))
     if body.get('cogs_source') is not None:
         src = str(body['cogs_source']).strip().lower()
         if src not in audit.COGS_SOURCES:

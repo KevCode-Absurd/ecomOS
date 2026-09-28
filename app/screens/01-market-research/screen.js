@@ -886,6 +886,34 @@
         top ? { label: 'Screen a candidate into ' + top.label, onClick: () => screenIn(top) } : null));
   }
 
+  function sourcingBlock(sr) {
+    const rows = (sr && sr.rows) || [];
+    if (!rows.length) return UI.emptyState({ screen: SLUG, title: 'No first run decided yet', text: 'Once a first run is decided on a candidate, its sourcing channel is compared here.', missing: ['pipeline'] });
+    const vt = { no_channel: 'No channel', one_channel: 'One channel, nothing compared', compared: 'Compared' };
+    const optText = (o) => !o || !o.channel ? 'none' : o.label + (o.cost_usd != null ? ', ' + fmt.money(o.cost_usd) + ' a unit' : ', cost not entered') + (o.days != null ? ', ' + o.days + ' days' : ', days not entered') + (o.branding ? ', ' + o.branding : '');
+    const enter = (r) => { const chans = (sr.channels || []).map((c) => c.key).join(', ');
+      const ask = (label, cur) => { const ch = prompt(label + ' channel (' + chans + ')', (cur && cur.channel) || ''); if (ch == null) return undefined; if (!ch.trim()) return null;
+        const cost = prompt(label + ': landed cost a unit at the first run, USD', (cur && cur.cost_usd) || ''); if (cost == null) return undefined;
+        const days = prompt(label + ': days to stock', (cur && cur.days) || ''); if (days == null) return undefined;
+        const branding = prompt(label + ': branding options (custom pack, label only, none)', (cur && cur.branding) || ''); if (branding == null) return undefined;
+        return { channel: ch.trim(), cost_usd: cost, days, branding }; };
+      const chosen = ask('Chosen', r.chosen); if (chosen === undefined || chosen === null) return;
+      const alts = []; for (let i = 0; i < 3; i++) { const a = ask('Alternative ' + (i + 1), (r.alternatives || [])[i]); if (a === undefined) return; if (a === null) break; alts.push(a); }
+      candidatePost('candidates/' + r.candidate_id, { sourcing: Object.assign({}, chosen, { alternatives: alts }), who: 'person' }); };
+    const vrows = rows.map((r) => { const a = actionFor(r.finding_id); return Object.assign({}, r, {
+      chosenText: optText(r.chosen), altText: (r.alternatives || []).length ? r.alternatives.map(optText).join('; ') : 'none', pickText: r.cheapest ? 'cheapest ' + r.cheapest + ', fastest ' + r.fastest : NA,
+      actions: [a ? { label: r.verdict === 'no_channel' ? 'Set the channel' : 'Compare one', onClick: () => openAction(a) } : null, { label: r.verdict === 'no_channel' ? 'Enter it' : 'Edit', cls: 'quiet', onClick: () => enter(r) }].filter(Boolean) }); });
+    const tbl = UI.verdictTable({
+      columns: [{ key: 'name', label: 'Candidate' }, { key: 'stage', label: 'Stage' }, { key: 'chosenText', label: 'Chosen channel' }, { key: 'altText', label: 'Alternatives compared' }, { key: 'pickText', label: 'Cheapest, fastest' }],
+      rows: vrows,
+      verdict: { at: 1, kind: (r) => r.verdict === 'compared' ? 'keep' : r.verdict === 'one_channel' ? 'watch' : 'fix', text: (r) => vt[r.verdict], reason: (r) => sr.rule },
+      actions: { label: 'Do', onClick: () => {} }, sort: false });
+    const open = rows.filter((r) => r.verdict !== 'compared');
+    return el('div', { class: 'stack' }, el('div', { class: 'card scroll' }, tbl), el('p', { class: 'micro faint', text: 'Rule: ' + sr.rule + '.' }),
+      gapLine(open.length ? open.length + ' first run' + (open.length === 1 ? ' has' : 's have') + ' no sourcing comparison: ' + open.map((r) => r.name).join(', ') + '.' : 'Every decided first run has a chosen channel and a comparison.',
+        open.length && actionFor(open[0].finding_id) ? { label: 'Open the first', onClick: () => openAction(actionFor(open[0].finding_id)) } : null));
+  }
+
   function scorecardBlock(sc) {
     const rows = (sc && sc.rows) || [];
     if (!rows.length) return el('p', { class: 'muted', text: 'No candidate to score.' });
@@ -1328,6 +1356,7 @@
     parts.push(section('desk-video', 'Is the demand one clip or a real pattern?', 'Independent platforms showing demand per lane: the Instagram hashtag pull, Reddit mentions and upvotes, competitor creator-style ads and our own, with the candidates that rest on each lane.', videoBlock(d.video)));
     parts.push(section('desk-tech-packs', 'Which candidates have a real, versioned spec ready for sourcing?', 'Tech pack versions per candidate: tolerances, the bill of materials and the packaging cost line. A pack saved from the card becomes the current version and supersedes the last.', techPackBlock(d.tech_packs)));
     parts.push(section('desk-first-run', 'How big is the first run, and does it have to be that big?', 'From gated on, the first production run per candidate: units wanted, the format and its MOQ, the cash it ties up as a share of 28-day net revenue, the lower-MOQ alternative considered (bank idea BRD-249), and whether the packaging is custom before the product has proven itself (bank idea PRD-100).', firstRunsBlock(d.first_runs, d.packaging)));
+    parts.push(section('desk-sourcing', 'Where does the first run come from, and against what was that compared?', 'Once a first run is decided: the sourcing channel on file (agent, marketplace direct, domestic, own factory, private label) with landed cost a unit, days to stock and branding options, and at least one alternative compared on the same three numbers before the order goes in (bank idea PRD-099).', sourcingBlock(d.sourcing)));
     parts.push(section('desk-samples', 'Has a sample run through our own chain?', 'From shortlisted on, or once a first run is decided: the sample ordered, received and tested through the store\'s own fulfilment before any MOQ order (bank idea PRD-098).', samplesBlock(d.samples)));
     parts.push(section('desk-hours', 'Has any candidate used up its research hours?', 'Hours logged per candidate against the hours allowed through its stage, from the brand\'s budget per stage. Research cannot sprawl past the box.', hoursBlock(d.hours)));
     parts.push(section('desk-trend-checks', 'Does each lane\'s trend rest on history, or on a forecast?', 'The 12-month rate against the multi-year rate per lane from the web pass series: a trend is trusted with 3 or more years of history on the exact term; a last year over twice the multi-year rate is a spike.', trendChecksBlock(d.trend_checks)));
