@@ -394,6 +394,30 @@ def launched(brand, body, brain_root=None, today=None):
     return approvals.launch(brand, act, brain_root=brain_root, today=today)
 
 
+def brief_pack(brand, data=None):
+    """Every open move as a plain-text brief: title, why, owner, steps with who, the drafted artefact, win and stop
+    rules, check date, stake. One file a founder can forward."""
+    ranked = actions.rank(brand, None, data=data)
+    owner = {'agent': 'Agent does it', 'agent_drafts': 'Agent drafts, you approve', 'person': 'A person does it'}
+    w = ranked['window']
+    parts = [f'Offers and pricing: the moves, {w["days"]} days to {w["ends_on"]}.', 'Simulated data where the brand is a sample.', '']
+    n = 0
+    for a in ranked['actions']:
+        if a.get('status') != 'open':
+            continue
+        n += 1
+        art = a.get('artefact') or {}
+        parts += [f'{n}. {a["title"]}', f'Why: {a["why"]}', f'Owner: {owner.get(a["owner"], a["owner"])}',
+                  f'Score: {round(a["rubric"]["total"])} of 100. Stake: {(a.get("size") or {}).get("text") or "unavailable"}.', 'Steps:']
+        parts += [f'  {s["n"]}. {s["text"]} ({s["who"]})' for s in a['steps']]
+        parts += [f'Artefact: {art.get("label") or art.get("kind")}']
+        if art.get('draft'):
+            parts += ['  ' + line for line in art['draft'].splitlines()]
+        parts += [f'Win if: {a.get("win_rule") or "not set"}', f'Stop if: {a.get("stop_rule") or "not set"}',
+                  f'Check on: {a.get("check_on") or "not set"}', '']
+    return {'moves': n, 'text': '\n'.join(parts)}
+
+
 def handle(req):
     if req.method == 'POST' and req.path == ['launched']:
         try:
@@ -422,10 +446,12 @@ def handle(req):
             audit.brand_data(brand)  # ValueError for an unknown brand
         if req.path == ['overview']:
             return overview(data, brand)
+        if req.path == ['briefs']:
+            return brief_pack(brand, data=None if brand else req.data)
         if req.path == ['rank'] and brand:
             return rank(brand, {'ends_on': req.arg('ends_on')} if req.arg('ends_on') else None)
         if req.path == ['findings']:
             return {'findings': audit.run(brand, None, data=data), 'rules': audit.RULES}
     except ValueError as exc:
         return 400, {'error': str(exc)}
-    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank', 'POST approve', 'POST launched']}
+    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank', 'briefs', 'POST approve', 'POST launched']}

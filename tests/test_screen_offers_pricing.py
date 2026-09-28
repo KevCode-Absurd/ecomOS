@@ -1317,5 +1317,16 @@ class UpsellConnectTest(unittest.TestCase):
             self.assertIn(app, a['title'])
 
 
+class BriefPackTest(unittest.TestCase):
+    def test_brief_pack_lists_every_open_move(self):
+        d = api.handle(Req(['briefs']))
+        acts = [a for a in api.actions.rank('bombas')['actions'] if a['status'] == 'open']
+        self.assertEqual(d['moves'], len(acts))
+        for a in acts:
+            self.assertIn(a['title'], d['text'])
+        self.assertIn('Stop if:', d['text'])
+        self.assertNotIn('\u2014', d['text'])
+
+
 if __name__ == '__main__':
     unittest.main()

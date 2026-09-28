@@ -59,7 +59,11 @@
       title: 'The plan: offer and price moves to approve',
       sub: w.days + ' days to ' + fmt.date(w.ends_on) + '. ' + open.length + ' moves, ranked by the rubric.',
       orient: d.orientation, actions: open, limit: 10, screen: SLUG,
-      tools: [el('button', { class: 'btn sm', type: 'button', text: 'Export CSV', onclick: () => UI.csv(d.plan.map((a, i) => ({ rank: i + 1, title: a.title, owner: a.owner, severity: a.severity, status: a.status, artefact: a.artefact.kind, total: a.rubric.total, stake_usd: a.money_at_stake && a.money_at_stake.usd, why: a.why })), null, 'offers-plan.csv') })],
+      tools: [el('button', { class: 'btn sm', type: 'button', text: 'Export all briefs', onclick: async () => {
+        const r = await UI.api('/api/' + SLUG + '/briefs?brand=' + encodeURIComponent(brand));
+        const aEl = el('a', { href: URL.createObjectURL(new Blob([r.text], { type: 'text/plain' })), download: 'offer-briefs.txt' });
+        document.body.append(aEl); aEl.click(); aEl.remove(); } }),
+        el('button', { class: 'btn sm', type: 'button', text: 'Export CSV', onclick: () => UI.csv(d.plan.map((a, i) => ({ rank: i + 1, title: a.title, owner: a.owner, severity: a.severity, status: a.status, artefact: a.artefact.kind, total: a.rubric.total, stake_usd: a.money_at_stake && a.money_at_stake.usd, why: a.why })), null, 'offers-plan.csv') })],
       foot: el('div', { class: 'row' }, UI.rubricLegend(), el('span', { class: 'micro faint', text: 'Ranking: critical first by stake, then rubric total, severity, stake. "Not now" snoozes 14 days.' })),
       empty: 'No open offer or price move for this window.',
     }));
