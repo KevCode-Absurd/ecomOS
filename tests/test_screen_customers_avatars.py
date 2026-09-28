@@ -1108,5 +1108,23 @@ class Naming(TempBrain):
         self.assertIn('AD NAMING CONVENTION', r03['artefact']['draft'])
 
 
+class SplitCheck(TempBrain):
+    """Feature 4.6: one avatar or two."""
+
+    def test_split(self):
+        x = {r['key']: r for r in api.handle(Req(['overview']))['split']['rows']}
+        kid = x['parent_buying_for_kids']
+        self.assertEqual(kid['verdict'], 'split')
+        self.assertEqual(sorted(kid['big_lines']), ['calf', 'slippers'])
+        self.assertEqual(kid['action']['owner'], 'agent_drafts')
+        self.assertEqual(kid['action']['steps'][-1]['who'], 'person')
+        self.assertEqual(x['daily_compression_wearer']['verdict'], 'focused')
+
+    def test_shared_complaints_do_not_split(self):
+        av = [{'id': 'b.avatars.x', 'key': 'x', 'name': 'X'}]
+        x = api.builds.split_check(av, [], {'b.avatars.x': {'a': 5, 'b': 5}}, {'a': ['heel slip'], 'b': ['heel slip']})
+        self.assertEqual(x['rows'][0]['verdict'], 'focused')
+
+
 if __name__ == '__main__':
     unittest.main()

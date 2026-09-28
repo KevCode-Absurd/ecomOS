@@ -757,6 +757,31 @@ def _issue_kind(issue: str) -> str:
     return "feel"
 
 
+OWN_WEIGHT = 3            # an avatar's own review naming a line counts 3 times a review linked through a doubt
+
+
+def avatar_lines(avatar_records: list[dict], all_rungs: list[dict], lang_records: list[dict], lines: set[str]) -> dict[str, dict[str, int]]:
+    """Which product lines each avatar buys: its own reviews (weight OWN_WEIGHT, direct evidence), then the reviews behind its doubts."""
+    buys: dict[str, dict[str, int]] = {}
+    for rec in avatar_records:
+        for rv in ((rec.get("value") or {}).get("reviews") or []) if isinstance(rec.get("value"), dict) else []:
+            if rv.get("line") in lines:
+                buys.setdefault(rec["id"], {}).setdefault(rv["line"], 0)
+                buys[rec["id"]][rv["line"]] += OWN_WEIGHT
+    phrase_lines = {}
+    for rec in lang_records:
+        for rv in ((rec.get("value") or {}).get("reviews") or []):
+            if rv.get("line") in lines:
+                phrase_lines.setdefault(rec["id"], set()).add(rv["line"])
+    for rg in all_rungs:
+        ls = set().union(*[phrase_lines.get(p, set()) for p in rg["derived_from"]]) if rg["derived_from"] else set()
+        for aid in rg["avatars"]:
+            for ln in ls:
+                buys.setdefault(aid, {}).setdefault(ln, 0)
+                buys[aid][ln] += 1
+    return buys
+
+
 def misreads(avatar_records: list[dict], avatars: list[dict], all_rungs: list[dict], lang_records: list[dict],
              product_records: list[dict]) -> dict:
     """Review themes by product line against what each avatar hires us for. A misread is a line the avatar buys
@@ -776,24 +801,7 @@ def misreads(avatar_records: list[dict], avatars: list[dict], all_rungs: list[di
     if not lines:
         return {"available": False, "reason": "no review summary by product line in the brain", "rows": [], "lines": []}
     med = _median([l["neg_share"] for l in lines.values()])
-    # which lines each avatar buys: its own reviews, then reviews linked to its doubts
-    buys: dict[str, dict[str, int]] = {}
-    for rec in avatar_records:
-        for rv in ((rec.get("value") or {}).get("reviews") or []) if isinstance(rec.get("value"), dict) else []:
-            if rv.get("line") in lines:
-                buys.setdefault(rec["id"], {}).setdefault(rv["line"], 0)
-                buys[rec["id"]][rv["line"]] += 1
-    phrase_lines = {}
-    for rec in lang_records:
-        for rv in ((rec.get("value") or {}).get("reviews") or []):
-            if rv.get("line") in lines:
-                phrase_lines.setdefault(rec["id"], set()).add(rv["line"])
-    for rg in all_rungs:
-        ls = set().union(*[phrase_lines.get(p, set()) for p in rg["derived_from"]]) if rg["derived_from"] else set()
-        for aid in rg["avatars"]:
-            for ln in ls:
-                buys.setdefault(aid, {}).setdefault(ln, 0)
-                buys[aid][ln] += 1
+    buys = avatar_lines(avatar_records, all_rungs, lang_records, set(lines))
     rows = []
     for a in avatars:
         need = _content(" ".join([a.get("job") or "", *a.get("pains", []), *a.get("triggers", [])]))
@@ -1929,3 +1937,60 @@ def naming(avatars: list[dict], all_rungs: list[dict], hooks_rows: list[dict]) -
                        "steps": [{"n": 1, "who": "person", "text": "Share the convention with whoever names ads."},
                                  {"n": 2, "who": "person", "text": "Rename live ads in the ad account, or tag new ones from today."},
                                  {"n": 3, "who": "agent", "text": "Read tags on the next pull and fill the coverage cells."}]}}
+
+
+# ---------------------------------------------------------------- one avatar or two (split check)
+
+SPLIT_SHARE = 0.30        # two product lines each hold 30 percent or more of the avatar's linked reviews
+BROAD_THEMES = 3          # or its doubts span 3 or more themes with none at half
+
+
+def split_check(avatars: list[dict], all_rungs: list[dict], buys: dict[str, dict[str, int]], line_issues: dict[str, list[str]]) -> dict:
+    """Flag avatars whose evidence splits across product lines with different complaints, or across many doubt themes."""
+    rows = []
+    for a in avatars:
+        ln = buys.get(a["id"]) or {}
+        tot = sum(ln.values())
+        big = sorted([k for k, n in ln.items() if tot and n / tot >= SPLIT_SHARE], key=lambda k: -ln[k])
+        themes: dict[str, int] = {}
+        for r in all_rungs:
+            if a["id"] in r["avatars"]:
+                themes[r["theme"]] = themes.get(r["theme"], 0) + (r["one_star"] or 0) + (r["five_star"] or 0)
+        tt = sum(themes.values())
+        top_share = max(themes.values()) / tt if tt else None
+        distinct = len(big) >= 2 and not (set().union(*[_content(i) for i in line_issues.get(big[0], [])]) &
+                                          set().union(*[_content(i) for i in line_issues.get(big[1], [])]))
+        if distinct:
+            verdict = "split"
+        elif len(themes) >= BROAD_THEMES and top_share is not None and top_share < 0.5:
+            verdict = "broad"
+        else:
+            verdict = "focused"
+        action = None
+        if verdict == "split":
+            names = [f"{a['name']}: {x.replace('_', ' ')}" for x in big[:2]]
+            action = {"id": f"{SCREEN}.split.{a['key']}", "kind": "brain_record", "owner": "agent_drafts",
+                      "title": f"Split {a['name']} into {names[0].split(': ')[1]} and {names[1].split(': ')[1]} buyers",
+                      "capability": {"id": "BRAND-C12", "autonomy": "agent_does"},
+                      "draft": "\n".join(["DRAFT avatar split", *[f"- {n}: {ln[x]} linked reviews; complaints: {', '.join(line_issues.get(x, [])[:2]) or 'none'}"
+                                                                   for n, x in zip(names, big)],
+                                          "Why: the two lines draw different complaints, so one brief cannot answer both.",
+                                          "Each new record keeps the parent's quotes that name its line."]),
+                      "steps": [{"n": 1, "who": "agent", "text": "Sort the parent's quotes and reviews by line."},
+                                {"n": 2, "who": "agent", "text": "Draft 2 avatar records with their own job, doubts and words."},
+                                {"n": 3, "who": "person", "text": "Approve the split. The parent retires."}]}
+        elif verdict == "broad":
+            action = {"id": f"{SCREEN}.split.{a['key']}", "kind": "research_note", "owner": "agent",
+                      "title": f"Check whether {a['name']} is really one buyer",
+                      "capability": {"id": "BRAND-C12", "autonomy": "agent_does"},
+                      "draft": f"DRAFT research note\n{a['name']} spreads over {len(themes)} doubt themes; the largest holds {round((top_share or 0) * 100)} percent.\n"
+                               "Look for 2 groups in the quotes by moment and product.",
+                      "steps": [{"n": 1, "who": "agent", "text": "Group the avatar's quotes by moment and product."},
+                                {"n": 2, "who": "agent", "text": "Propose a split or confirm it as one avatar, with numbers."}]}
+        rows.append({"key": a["key"], "name": a["name"], "lines": dict(sorted(ln.items(), key=lambda kv: -kv[1])), "big_lines": big,
+                     "themes": dict(sorted(themes.items(), key=lambda kv: -kv[1])), "top_theme_share": round(top_share, 4) if top_share is not None else None,
+                     "verdict": verdict, "action": action})
+    order = {"split": 0, "broad": 1, "focused": 2}
+    rows.sort(key=lambda r: (order[r["verdict"]], r["name"]))
+    n = sum(1 for r in rows if r["verdict"] != "focused")
+    return {"rows": rows, "line": f"{n} of {len(rows)} avatars may be more than one buyer."}

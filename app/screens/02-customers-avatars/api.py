@@ -298,6 +298,16 @@ def _health(brand: str, avatars: list[dict]) -> dict:
     return builds.health(monthly, audit.load_cohorts(brand, avatars).get("rows", []), as_of)
 
 
+def _split(brain: Brain, avatars: list[dict], all_rungs: list[dict]) -> dict:
+    issues = {}
+    for r in brain.records("products"):
+        v = r.get("value")
+        if r.get("field") == "review_summary" and isinstance(v, dict) and v.get("product_line"):
+            issues[v["product_line"]] = v.get("issues") or []
+    buys = builds.avatar_lines(brain.records("avatars"), all_rungs, brain.records("language_bank"), set(issues))
+    return builds.split_check(avatars, all_rungs, buys, issues)
+
+
 def _hierarchy(brain: Brain, avatars: list[dict], all_rungs: list[dict], lad: dict) -> dict:
     ends = (brain.today - dt.timedelta(days=1)).isoformat()
     th = builds.theme_impact(brain.records("language_bank"), lad["rows"], ends)
@@ -405,7 +415,7 @@ def overview(brain: Brain) -> dict:
             "coverage": builds.coverage(avatars, all_rungs), "ladders": lad,
             "copy_gap": builds.copy_gap({sec: brain.records(sec) for sec in ("voice", "claims", "identity", "offers", "policies", "products", "visual", "story_bank")},
                                         brain.records("language_bank"), _brand_tokens(brain), audit.source_name),
-            "paths": _paths(brain.brand), "gate": gate,
+            "paths": _paths(brain.brand), "gate": gate, "split": _split(brain, avatars, all_rungs),
             "naming": builds.naming(avatars, all_rungs, builds.hooks(brain.records("language_bank"), all_rungs, avatars, _brand_tokens(brain), audit.source_name)["rows"]),
             "timing": builds.doubt_timing(all_rungs, brain.records("language_bank"), ends_on, audit.source_name), "health": _health(brain.brand, avatars), "hierarchy": _hierarchy(brain, avatars, all_rungs, lad),
             "offer_map": builds.offer_map(avatars, all_rungs, brain.records("offers"), brain.records("policies") + brain.records("claims")),

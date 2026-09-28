@@ -385,6 +385,19 @@
       note: 'Blank: this lever answers none of the avatar\'s doubts. Columns after the policies are offers no ladder uses yet.' }));
   }
 
+  // ---------- desk: split check ----------
+  function renderSplit(x) {
+    document.getElementById('split-sub').textContent = 'Product lines behind each avatar (its own reviews count 3 times a review linked through a doubt) and its doubt themes. Split: 2 lines each hold 30 percent or more and draw different complaints. Broad: 3 or more doubt themes, none at half. ' + x.line;
+    const V = { split: ['fix', 'Two buyers'], broad: ['watch', 'Broad'], focused: ['keep', 'One buyer'] };
+    mount('#split', UI.verdictTable({
+      columns: [{ key: 'name', label: 'Avatar' }, { key: 'lines_t', label: 'Lines behind it' }, { key: 'themes_t', label: 'Doubt themes' }],
+      rows: x.rows.map((r) => Object.assign({}, r, { lines_t: Object.entries(r.lines).slice(0, 4).map(([k, n]) => pretty(k) + ' ' + n).join(', ') || 'none linked',
+        themes_t: Object.keys(r.themes).map(pretty).join(', ') || 'none',
+        actions: r.action ? [{ label: r.verdict === 'split' ? 'Split it' : 'Check it', onClick: () => briefPanel(r.action) }] : [{ label: 'Keep', cls: 'quiet', onClick: () => {} }] })),
+      verdict: { at: 1, kind: (r) => V[r.verdict][0], text: (r) => V[r.verdict][1] }, actions: { label: 'Do' }, sort: false,
+    }));
+  }
+
   // ---------- desk: evidence gate ----------
   function renderGate(g) {
     document.getElementById('gate-sub').textContent = 'Each avatar against the checks a researcher runs before a launch. Core checks (bold) must all pass to leave provisional. Every red cell is a task. ' + g.line;
@@ -769,7 +782,7 @@
 
   // ---------- the desk, grouped into tabs by job ----------
   const DESK = [
-    { key: 'avatars', label: 'Avatars', ids: ['avatars-wrap', 'gate-wrap', 'forces-wrap', 'survey-wrap', 'served-wrap', 'misread-wrap'] },
+    { key: 'avatars', label: 'Avatars', ids: ['avatars-wrap', 'split-wrap', 'gate-wrap', 'forces-wrap', 'survey-wrap', 'served-wrap', 'misread-wrap'] },
     { key: 'doubts', label: 'Doubts and words', ids: ['ladders-wrap', 'cover-wrap', 'themes-wrap', 'words-wrap', 'hooks-wrap', 'gap-wrap'] },
     { key: 'offers', label: 'Offers and claims', ids: ['offers-wrap', 'claims-wrap', 'timing-wrap'] },
     { key: 'retention', label: 'Retention', ids: ['paths-wrap', 'cohort-wrap', 'mix-wrap', 'moments-wrap', 'health-wrap'] },
@@ -804,6 +817,7 @@
     renderWrong(a, r);
     renderActions(r);
     renderOffers(d.offer_map);
+    renderSplit(d.split);
     renderGate(d.gate);
     renderForces(d.forces);
     renderSurvey(d.survey);
