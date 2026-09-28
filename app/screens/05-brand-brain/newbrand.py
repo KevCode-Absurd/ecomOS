@@ -45,8 +45,8 @@ LANE_TEXT = {"site": "crawl the store: products, prices, policies, claims, scrip
 def brains(root: Path) -> list[dict]:
     out = []
     for d in sorted(p for p in Path(root).iterdir() if p.is_dir() and not p.name.startswith(".")):
-        if not (d / "BRAIN.md").exists() and not any(d.glob("*.json")):
-            continue
+        if not (d / "BRAIN.md").exists() and not any((d / f"{sec}.json").exists() for sec in SECTIONS):
+            continue  # a folder of fixtures or code is not a brain
         try:
             b = Brain(d.name, root)
             n = len(b.records())

@@ -1385,11 +1385,11 @@ def handle(req):
         findings = audit.run(brain.brand, {"ends_on": ends, "days": 1, "trailing": 0}, BRAIN_ROOT)
         return {"findings": findings, "rules": audit.RULES, "brain_version": brain.version()}
     if req.method == "GET" and parts == ["newbrand"]:
-        root = BRAIN_ROOT or BRAIN_DIR
+        root = BRAIN_ROOT or (APP / "brain")
         return {"brains": newbrand.brains(root), "lanes": newbrand.lanes(), "markets": list(newbrand.MARKETS), "capability": {"id": "BRN-C13", "autonomy": "founder_gate"},
                 "note": "The intake writes a brain folder from your words only: name, store url, category, market, the Apify config with nothing confirmed, an empty documents manifest, the 5 opening questions and BRAIN.md. Nothing is crawled or paid. The dry run replays saved fixtures offline."}
     if req.method == "POST" and parts == ["newbrand"]:
-        root = BRAIN_ROOT or BRAIN_DIR
+        root = BRAIN_ROOT or (APP / "brain")
         res = newbrand.skeleton(Path(root), req.body or {}, brain.today)
         if isinstance(res, tuple):
             return res
