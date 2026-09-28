@@ -110,6 +110,11 @@ CUST-R31 reviews and sales disagree on who buys. An avatar's share of sales thro
     1.5x its share from reviews or under 1 / 1.5, or sales give it a share and reviews give none
     (builds.sales_share; products_monthly with the SKU to line fixture). One finding per avatar.
     Severity low. Capability LIFE-C29. Unavailable when the line sales cannot be read.
+CUST-R33 buyers drift the wrong way. A theme's share of complaint reviews rose, or of praise reviews fell, by 5 points
+    or more, the last 180 days against the 180 before (builds.drift). High with 10 or more mentions, low when thin (5 to
+    9). Capability BRAND-C13. One finding per theme and side.
+CUST-R34 no mystery shopper run on file. The brain holds facts to check a real order against and no run is recorded
+    (builds.shopper_run). Severity low. Capability BRAND-C67. A person runs it.
 CUST-R32 weak cohort. A first-order month repeats in months 1 to 3 at under 0.8x the grid's median
     (builds.cohort_grid). One finding per cohort. Severity medium. Capability LIFE-C07. Money
     (builds._weak_stake): (median repeat minus the cohort's) x cohort size x the cohort month's AOV; the note
@@ -209,6 +214,10 @@ RULES = [
      "inputs": ["products_monthly", "fixtures sku_lines", "brain avatars", "brain language_bank"], "capability": "LIFE-C29", "owner_screen": SCREEN},
     {"rule_id": "CUST-R32", "name": "weak cohort", "entity_type": "metric",
      "inputs": ["cohorts", "monthly"], "capability": "LIFE-C07", "owner_screen": SCREEN},
+    {"rule_id": "CUST-R33", "name": "buyers drift the wrong way", "entity_type": "brand",
+     "inputs": ["brain language_bank"], "capability": "BRAND-C13", "owner_screen": SCREEN},
+    {"rule_id": "CUST-R34", "name": "no mystery shopper run on file", "entity_type": "brand",
+     "inputs": ["brain policies", "brain offers", "brain objection_ladders"], "capability": "BRAND-C67", "owner_screen": SCREEN},
 ]
 AUTONOMY = {"BRAND-C11": "founder_gate", "BRAND-C13": "agent_does", "CREA-C03": "agent_does", "SITE-C38": "human_assist",
             "PROD-C73": "human_assist", "CREA-C24": "agent_does", "LIFE-C27": "human_assist", "BRAND-C16": "founder_gate",
@@ -217,7 +226,7 @@ AUTONOMY = {"BRAND-C11": "founder_gate", "BRAND-C13": "agent_does", "CREA-C03": 
             "BRN-C03": "founder_gate", "MONEY-C48": "human_assist", "LIFE-C42": "founder_gate", "BRAND-C33": "founder_gate",
             "BRAND-C12": "agent_does", "CREA-C06": "agent_does", "LIFE-C07": "founder_gate", "PROD-C34": "human_assist",
             "LIFE-C39": "founder_gate", "BRAND-C15": "agent_does", "BRAND-C01": "agent_does",
-            "LIFE-C29": "founder_gate"}
+            "LIFE-C29": "founder_gate", "BRAND-C67": "founder_gate"}
 SILENT_MIN_SHARE = 0.12
 MOMENT_WARN_DAYS = 45
 NO_DATA = "no revenue formula for this rule yet"
@@ -700,6 +709,16 @@ def with_tops(avatars, all_rungs):
 
 def desk(brain: Brain, avatars: list[dict], all_rungs: list[dict]) -> dict:
     """Every desk builder the page and the rules share, computed once."""
+    d = _desk(brain, avatars, all_rungs)
+    as_of = (brain.today - dt.timedelta(days=1)).isoformat()
+    d["drift"] = builds.drift(brain.records("language_bank"), d["themes"], as_of)
+    # the rule only needs to know a run is possible; the full run sheet, with the lead and support replies, is built by api
+    d["shopper"] = builds.shopper_run(brain.records("policies"), brain.records("offers"), {"available": False}, d["ladders"]["rows"],
+                                      {}, {}, {}, as_of)
+    return d
+
+
+def _desk(brain: Brain, avatars: list[dict], all_rungs: list[dict]) -> dict:
     return {"ladders": builds.ladders(all_rungs, avatars),
             "misreads": builds.misreads(brain.records("avatars"), avatars, all_rungs, brain.records("language_bank"), brain.records("products")),
             "served": builds.served(avatars, all_rungs, brain.records("competitors"), brain.records("positioning")),
@@ -1107,6 +1126,31 @@ def desk_for(brain: Brain, avatars: list[dict], all_rungs: list[dict]) -> dict:
     return dict(_DESK_CACHE[key])
 
 
+def r33_r34(d, ends_on):
+    out = []
+    dr = d.get("drift") or {}
+    for r in dr.get("rows", []) if dr.get("available") else []:
+        if r["verdict"] not in ("worse", "watch"):
+            continue
+        ev = [_ev("theme_share_now", r["now"], "%", ends_on, "brain.language_bank", baseline=r["then"]),
+              _ev("mentions_now", r["mentions_now"], "n", ends_on, "brain.language_bank", baseline=builds.DRIFT_MIN),
+              _ev("theme_share_before", r["then"], "%", ends_on, "brain.language_bank"),
+              _ev("window_days", dr["window_days"], "days", ends_on, "brain.language_bank")]
+        verb = "rose" if r["side"] == "complaint" else "fell"
+        s = (f"{r['theme'].replace('_', ' ').capitalize()} {verb} in {r['side']} reviews, from {round(r['then'] * 100, 1)} to "
+             f"{round(r['now'] * 100, 1)} percent over {dr['window_days']} days.")
+        out.append(_finding("CUST-R33", "high" if r["verdict"] == "worse" else "low",
+                            {"type": "brand", "id": f"drift_{r['side']}_{r['theme']}", "label": f"{r['theme'].replace('_', ' ')} {r['side']}s"},
+                            ev, s, "BRAND-C13", 0.5 if r["verdict"] == "worse" else 0.3, [], ends_on))
+    sh = d.get("shopper") or {}
+    if sh.get("available") and sh.get("run"):
+        ev = [_ev("shopper_runs_on_file", 0, "n", ends_on, "brain", baseline=1)]
+        out.append(_finding("CUST-R34", "low", {"type": "brand", "id": "shopper_run", "label": "Mystery shopper run"}, ev,
+                            "No mystery shopper run is on file. The brain holds the facts to check a real order against.",
+                            "BRAND-C67", 0.5, [], ends_on))
+    return out
+
+
 def thresholds(brain: Brain) -> dict:
     """The thresholds this brand tunes in its brain (builds.TUNABLE), for brain_refs and for builds.tuned."""
     return builds.thresholds_from(brain.records("learnings"))
@@ -1128,6 +1172,6 @@ def _run(brand: str, window: dict, brain) -> list[dict]:
     d["brand"] = brand
     findings = (r01(brain, avatars, ends_on) + r02(brain, avatars, all_rungs, ends_on) + r03(brain, all_rungs, angles, ends_on)
                 + r04(d, all_rungs, ends_on) + r05(d, ends_on) + r06(d, ends_on) + r07(d, ends_on) + r08_r09(d, ends_on) + r10(d, ends_on)
-                + r11_r12(d, ends_on) + r13_r14(d, ends_on) + r15_r16(d, ends_on) + r17_r23(d, ends_on) + r24_r25(d, ends_on) + r26_r30(d, avatars, ends_on) + r31(d, ends_on) + r32(d, ends_on))
+                + r11_r12(d, ends_on) + r13_r14(d, ends_on) + r15_r16(d, ends_on) + r17_r23(d, ends_on) + r24_r25(d, ends_on) + r26_r30(d, avatars, ends_on) + r31(d, ends_on) + r32(d, ends_on) + r33_r34(d, ends_on))
     findings.sort(key=lambda f: (SEVERITY_ORDER[f["severity"]], f["rule_id"], f["id"]))
     return findings

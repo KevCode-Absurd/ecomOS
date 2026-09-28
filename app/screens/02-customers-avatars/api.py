@@ -572,7 +572,7 @@ RULE_JOB = {"CUST-R01": "avatars", "CUST-R05": "avatars", "CUST-R06": "avatars",
             "CUST-R10": "offers", "CUST-R18": "offers", "CUST-R20": "offers", "CUST-R21": "offers",
             "CUST-R07": "retention", "CUST-R08": "retention", "CUST-R09": "retention", "CUST-R15": "retention", "CUST-R16": "retention",
             "CUST-R23": "retention", "CUST-R24": "avatars", "CUST-R25": "avatars", "CUST-R26": "avatars", "CUST-R27": "avatars", "CUST-R28": "offers",
-            "CUST-R29": "avatars", "CUST-R30": "avatars", "CUST-R31": "avatars", "CUST-R32": "retention", "CUST-R17": "brand", "CUST-R19": "brand", "CUST-R22": "brand"}
+            "CUST-R29": "avatars", "CUST-R30": "avatars", "CUST-R31": "avatars", "CUST-R32": "retention", "CUST-R33": "brand", "CUST-R34": "brand", "CUST-R17": "brand", "CUST-R19": "brand", "CUST-R22": "brand"}
 EASE = {"agent": 5, "agent_drafts": 4, "person_draft": 3, "person": 2}
 
 
@@ -677,6 +677,15 @@ def _plans(brand: str, window: dict) -> dict:
     for m in d["mix"].get("moves", []):
         if m["id"].endswith(".paid_returning"):
             plans[("CUST-R07", "returning_via_paid")] = m
+    for r in (d.get("drift") or {}).get("rows", []):
+        if r["verdict"] in ("worse", "watch") and r.get("action"):
+            plans[("CUST-R33", f"drift_{r['side']}_{r['theme']}")] = r["action"]
+    if (d.get("shopper") or {}).get("run"):
+        lad = builds.ladders(all_rungs, avatars)
+        macros = builds.macros(lad["rows"], all_rungs, {r["id"]: r.get("text") for r in brain.records("policies") if r.get("text")})
+        full = builds.shopper_run(brain.records("policies"), brain.records("offers"), _hierarchy(brain, avatars, all_rungs, lad),
+                                  lad["rows"], macros, {}, {}, ends)
+        plans[("CUST-R34", "shopper_run")] = full["run"] if full.get("run") else d["shopper"]["run"]
     for m in d["cohorts"].get("moves", []):
         if ".retention.calendar_" in m["id"]:
             plans[("CUST-R08", "calendar_" + m["id"].split("calendar_")[1])] = m
