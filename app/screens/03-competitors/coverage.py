@@ -135,7 +135,7 @@ def matrix(pages: list[dict], angle_defs, snapshot: dict | None, brain, direct_o
     gaps.sort(key=lambda g: (g["proof"] is None, -g["them"], -g["n"], g["angle"], g["format"]))
     rows = [{"key": a, "label": labels[a], "sub": _row_sub(us, a)} for a in keys]
     return {"rows": rows, "cols": [{"key": f, "label": f.capitalize()} for f in FORMATS], "cells": cells, "gaps": gaps,
-            "estimated": estimated, "their_ads": their_total, "our_ads": us_total, "pages": [p["name"] for p in comps],
+            "estimated": estimated, "their_ads": their_total or None, "our_ads": us_total or None, "pages": [p["name"] for p in comps],
             "gap_min": GAP_MIN, "over_x": OVER_X}
 
 

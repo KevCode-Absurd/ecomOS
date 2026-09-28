@@ -56,7 +56,7 @@ def build(m: dict, brain, pairs_in_title) -> dict:
                        "unknown_sellers": sum(1 for x in rows if not x["seller"])})
     stars = [x["stars"] for x in listings if isinstance(x["stars"], (int, float))]
     reviews = [x["reviews"] for x in listings if isinstance(x["reviews"], int)]
-    return {"listings": len(listings), "priced": sum(1 for x in listings if x["per_pair"] is not None),
+    return {"listings": len(listings) or None, "priced": sum(1 for x in listings if x["per_pair"] is not None) if listings else None,
             "median_stars": round(statistics.median(stars), 2) if stars else None, "reviews": sum(reviews) if reviews else None,
             "styles": styles, "top": sorted(listings, key=lambda x: -(x["reviews"] or 0))[:5],
             "theirs": None, "theirs_reason": "competitor marketplace listings are not captured; an Amazon search by brand would fill it",

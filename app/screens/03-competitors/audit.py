@@ -555,7 +555,8 @@ def market(brand: str, today: dt.date, root: Path | None = None) -> dict:
         users = [c["name"] for c in comps if _hits(" ".join(c["_texts"]), a["keys"])]
         angles.append({"key": a["key"], "label": a["label"], "held": held,
                        "brain_ref": f"{brand}.{a['brain_ref']}", "competitors_using": users,
-                       "brand_ads": brand_ads_with(brain, prof, a["keys"]), "brand_active_ads": prof["active_ads"]})
+                       "brand_ads": brand_ads_with(brain, prof, a["keys"]) if prof["active_ads"] is not None else None,
+                       "brand_active_ads": prof["active_ads"]})
     for c in comps:
         c["gap_to_own"] = [a["label"] for a in angles if a["held"] and c["name"] not in a["competitors_using"]]
 

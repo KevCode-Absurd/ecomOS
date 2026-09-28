@@ -255,7 +255,7 @@
       box.replaceChildren(UI.coverageMatrix({
         rows: c.rows, cols: c.cols, cells: c.cells, unit: '%', corner: 'Angle, our ads',
         gapRule: (cell) => cell ? cell.kind : '', action: { label: 'Brief it', onClick: briefPanel },
-        note: (c.estimated ? 'Estimated from page-level mixes: a page\'s format mix split over the angles it runs; ours from hook counts times our format mix. ' : 'Counted from the ad-level snapshot. ') + 'Them: ' + fmt.num(c.their_ads) + ' ads on ' + c.pages.length + ' pages. Us: ' + fmt.num(c.our_ads) + ' ads.',
+        note: (c.estimated ? 'Estimated from page-level mixes: a page\'s format mix split over the angles it runs; ours from hook counts times our format mix. ' : 'Counted from the ad-level snapshot. ') + 'Them: ' + (c.their_ads == null ? NA : fmt.num(c.their_ads)) + ' ads on ' + c.pages.length + ' pages. Us: ' + (c.our_ads == null ? NA : fmt.num(c.our_ads)) + ' ads.',
       }));
       const g = c.gaps.slice(0, 4);
       next.replaceChildren(el('b', { text: 'Next to try: ' }), g.length ? g.map((x) => x.angle_label.toLowerCase() + ' in ' + x.format + ' (' + Math.round(x.them * 100) + '% of theirs' + (x.proof ? '' : ', proof missing') + ')').join('; ') + '.' : 'no cell passes the gap rule on this capture.');
@@ -468,12 +468,12 @@
 
   // ---------- 5p. premium signals and discount depth ----------
   function premiumSection(pr) {
-    const rows = pr.rows.map((r) => ({ key: r.name, label: r.name + (r.role === 'self' ? ' (us)' : ''), sub: 'score ' + Math.round(r.score * 100) + '%, discount ' + (r.depth == null ? NA : r.depth + '%') }));
+    const rows = pr.rows.map((r) => ({ key: r.name, label: r.name + (r.role === 'self' ? ' (us)' : ''), sub: 'score ' + (r.score == null ? NA : Math.round(r.score * 100) + '%') + ', discount ' + (r.depth == null ? NA : r.depth + '%') }));
     const cells = {};
-    for (const r of pr.rows) { cells[r.name] = {}; for (const s of pr.signals) cells[r.name][s.key] = { us: r.signals[s.key] ? 1 : 0, unit: 'n' }; }
+    for (const r of pr.rows) { cells[r.name] = {}; for (const s of pr.signals) cells[r.name][s.key] = r.signals[s.key] == null ? null : { us: r.signals[s.key] ? 1 : 0, unit: 'n' }; }
     const heat = UI.coverageMatrix({ rows, cols: pr.signals, cells, single: true, max: 1, unit: 'n', corner: 'Page', note: '1 = the signal is present, 0 = not seen.' });
     mount('#premium', heat, el('p', { class: 'small' }, el('b', { text: 'Against the direct median: ' }),
-      'our score ' + Math.round(pr.our_score * 100) + ' percent against ' + Math.round(pr.direct_median_score * 100) + '; our discount ' + pr.our_depth + ' percent against ' + pr.direct_median_depth + '.' + (pr.fires ? ' The code cap policy is on the plan.' : '')),
+      'our score ' + (pr.our_score == null ? NA : Math.round(pr.our_score * 100) + ' percent') + ' against ' + (pr.direct_median_score == null ? NA : Math.round(pr.direct_median_score * 100)) + '; our discount ' + (pr.our_depth == null ? NA : pr.our_depth + ' percent') + ' against ' + (pr.direct_median_depth == null ? NA : pr.direct_median_depth) + '.' + (pr.fires ? ' The code cap policy is on the plan.' : '')),
       el('p', { class: 'micro faint', text: pr.rule }));
   }
 

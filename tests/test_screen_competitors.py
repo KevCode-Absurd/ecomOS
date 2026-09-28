@@ -963,6 +963,12 @@ class TestSecondBrand(unittest.TestCase):
         self.assertFalse(o['ladder']['available'])
         self.assertIsNone(o['niche']['bar'])
         self.assertIn('error', o['freshness']['plan'])
+        # unavailable, never zero: nothing read means None, not 0
+        self.assertIsNone(o['coverage']['all']['our_ads'])
+        self.assertIsNone(o['presence']['listings'])
+        self.assertIsNone(o['premium']['our_depth'])
+        self.assertIsNone(o['premium']['rows'][-1]['signals']['no_discount'])
+        self.assertIsNone(o['angles'][0]['brand_ads'])
         self.assertIn('hats', o['category']['rungs'][1]['label'].lower().replace('hat ', 'hats '))
         for a in api.rank('acme', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions']:
             self.assertEqual(api.actions.ranker.validate_action(a), [])

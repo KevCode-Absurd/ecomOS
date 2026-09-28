@@ -44,17 +44,21 @@ def build(m: dict, brain, offer_types) -> dict:
         offers = p.get("offers_seen") or []
         kinds = offer_types(offers)
         has = {k: any(w in t for w in words) for k, _, words in SIGNALS}
-        has["no_discount"] = not ({"percent_off", "code"} & set(kinds))
-        score = round(sum(has.values()) / len(has), 3)
+        known_offers = bool(offers) or p.get("sample_ads") or p.get("offer_share") is not None
+        # a page with no ads read and no offer record cannot say it shows no discount: unknown, not a signal
+        has["no_discount"] = (not ({"percent_off", "code"} & set(kinds))) if known_offers else None
+        known = [v for v in has.values() if v is not None]
+        score = round(sum(known) / len(known), 3) if known else None
         rows.append({"name": p["name"], "role": p["role"], "frame": p["frame"], "signals": has, "score": score,
-                     "depth": depth(offers) if (p.get("sample_ads") or p["role"] == "self") else None, "offers": offers})
+                     "depth": depth(offers) if known_offers else None, "offers": offers})
     direct = [r for r in rows if r["frame"] == "direct"]
     us = next((r for r in rows if r["role"] == "self"), None)
-    med_score = statistics.median(r["score"] for r in direct) if direct else None
+    scores = [r["score"] for r in direct if r["score"] is not None]
+    med_score = statistics.median(scores) if scores else None
     depths = [r["depth"] for r in direct if r["depth"] is not None]
     med_depth = statistics.median(depths) if depths else None
     gap = (us["depth"] - med_depth) if us and us["depth"] is not None and med_depth is not None else None
-    fires = bool(us and med_score is not None and us["score"] >= med_score and gap is not None and gap >= DEEPER)
+    fires = bool(us and med_score is not None and us["score"] is not None and us["score"] >= med_score and gap is not None and gap >= DEEPER)
     return {"rows": rows, "signals": [{"key": k, "label": lbl} for k, lbl, _ in SIGNALS] + [{"key": "no_discount", "label": "No discount seen"}],
             "direct_median_score": med_score, "direct_median_depth": med_depth, "our_score": us["score"] if us else None,
             "our_depth": us["depth"] if us else None, "depth_gap": gap, "fires": fires,
