@@ -68,6 +68,7 @@ class Ctx:
         self.totals = model.window_totals(rd)
         self.po = model.per_order(self.totals)
         self.objections = objection_map(rd)
+        self.ladder, self.ladder_rows = audit.ladder_moves(rd)
         self.ship_rate = (model.brain_value(rd, 'offers.standard_shipping_cost')[0] or {}).get('cost_usd') if rd.brand else None
         self.scenarios = (model.threshold_scenarios(rd, self.threshold, self.ship_rate, self.be['value'], (self.po or {}).get('units') or 1)
                           if self.threshold is not None and self.be.get('value') is not None else [])
@@ -234,6 +235,100 @@ def returns_block(rd):
             'groups': [dict(g, per_1000=round(g['returns'] / orders * 1000, 2)) for g in fx['groups']]}
 
 
+def ladder_group_action(members, rows, verdict, ctx):
+    """One action for every line that shares a pack ladder verdict (push, deepen or add)."""
+    by = {r['line']: r for r in rows}
+    lines = [by[m['entity']['id']] for m in members if m['entity']['id'] in by]
+    lines.sort(key=lambda r: -r['revenue'])
+    best = max(members, key=lambda m: m['rubric']['total'])
+    a = dict(best)
+    n = len(lines)
+    a.update({'id': f'{SCREEN}.{best["rule_id"]}.{verdict}', 'finding_ids': [m['id'] for m in members],
+              'severity': min((m['severity'] for m in members), key=lambda s: RANK.SEV_ORDER.get(s, 9)),
+              'entity': {'type': 'sku', 'id': verdict, 'label': f'{n} product lines'}})
+    if verdict == 'push':
+        body = [f'- {r["line"]}: single {money(r["single_per_item"])} an item, {r["pack"]}-pack {money(r["pack_per_item"])} '
+                f'({r["saving"] * 100:.1f} percent off). Singles {r["single_share"] * 100:.0f} percent of packs. '
+                f'Each trade-up adds {money(r["gain_per_trade_up"])} margin.' for r in lines]
+        worst = max(lines, key=lambda r: r['trade_up_needed'] or 0)
+        draft = '\n'.join(['Page spec: preselect the pack and show price per item', 'Lines, 12 full months:'] + body + [
+            f'Why not a deeper price: on {worst["line"]} a 15 percent saving gives {money(worst["give_away_12m"])} a year to '
+            f'shoppers who already buy the pack; {worst["trade_up_needed"] * 100:.0f} percent of single buyers would have to trade up to pay for it.',
+            'Page: preselect the pack. Show the price per item under each option. Add "Save N percent an item" on the pack.',
+            'Ads: one ad per line that leads with the pack price per item.',
+            'Win: single share of packs down 5 points in 28 days and margin per order up.',
+            'Stop: product page conversion down more than 3 percent relative for 7 days.'])
+        a.update({'title': f'Preselect the pack and show price per item on {n} lines',
+                  'why': f'Singles are {min(r["single_share"] for r in lines) * 100:.0f} to {max(r["single_share"] for r in lines) * 100:.0f} '
+                         f'percent of packs on these lines. A deeper pack price would give away more than it wins, so move shoppers with the page.',
+                  'owner': 'agent_drafts',
+                  'artefact': {'kind': 'page_section', 'label': f'Pack selector spec for {n} product pages, plus {n} ad briefs', 'draft': draft},
+                  'steps': steps(('agent', 'Pull each line\'s pack sales and margin per pack for 12 months.'),
+                                 ('agent', 'Draft the pack selector: pack preselected, price per item under each option.'),
+                                 ('agent', 'Draft one ad brief per line that leads with the pack price per item.'),
+                                 ('person', 'Approve the page spec and the briefs. The site team ships the selector.'),
+                                 ('agent', f'Read single share of packs and margin per order weekly; call it on {ctx.check_on(35)}.')),
+                  'size': {'text': 'Each shopper who moves from a single to the pack adds '
+                                   f'{money(min(r["gain_per_trade_up"] for r in lines))} to {money(max(r["gain_per_trade_up"] for r in lines))} margin', 'usd': None},
+                  'win_rule': 'Single share of packs down 5 points in 28 days and margin per order up.',
+                  'stop_rule': 'Product page conversion down more than 3 percent relative for 7 days.',
+                  'check_on': ctx.check_on(35), 'time_to_ship_hours': 8})
+    elif verdict == 'deepen':
+        body = [f'- {r["line"]}: {r["pack"]}-pack from {money(r["pack_price"])} to {money(r["test_price"])} '
+                f'(15 percent off per item). Gives {money(r["give_away_12m"])} a year to current pack buyers. Each trade-up adds '
+                f'{money(r["gain_per_trade_up_at_test"])}. Pays when {r["trade_up_needed"] * 100:.0f} percent of single buyers trade up.' for r in lines]
+        draft = '\n'.join(['Test brief: a deeper pack price', 'Lines, 12 full months:'] + body + [
+            'Arms: A keeps today\'s pack price. B shows the test price. 50/50 by visitor, 28 days.',
+            'Win: trade-ups in B pass the pay-back share above, measured as single orders that became pack orders.',
+            'Stop: margin per order in B down more than 5 percent for 7 days.'])
+        a.update({'title': f'Test a deeper pack price on {n} line' + ('s' if n > 1 else ''),
+                  'why': ' '.join(m['why'] for m in members[:2]) + ' The price cut pays back if enough singles trade up.',
+                  'owner': 'agent_drafts',
+                  'artefact': {'kind': 'price_change', 'label': 'Pack price test brief', 'draft': draft},
+                  'steps': steps(('agent', 'Confirm the pack and single sales and cost per pack for 12 months.'),
+                                 ('agent', 'Draft the test brief with the pay-back share.'),
+                                 ('person', 'Approve the test price. Set arm B in the store.'),
+                                 ('agent', f'Read trade-ups and margin per order weekly; call it on {ctx.check_on(35)}.')),
+                  'size': {'text': f'{money(sum(r["give_away_12m"] for r in lines))} a year given to pack buyers if it ships without enough trade-ups', 'usd': None},
+                  'win_rule': 'Trade-ups pass the pay-back share.', 'stop_rule': 'Margin per order in B down more than 5 percent for 7 days.',
+                  'check_on': ctx.check_on(35), 'time_to_ship_hours': 4})
+    else:
+        body = [f'- {r["line"]} ({r["category"]}): a {r["new_pack"]}-pack at {money(r["new_price"])} '
+                f'({money(r["single_per_item"] * 0.9)} an item, 10 percent off). Margin per pack {money(r["new_margin"])} against '
+                f'{money(r["single_margin"])} on a single. Each trade-up adds {money(r["gain_per_trade_up"])}.' for r in lines]
+        draft = '\n'.join(['Offer spec: add a multi-pack to lines sold only as singles', 'Lines, 12 full months:'] + body + [
+            'Where: the product page pack selector, the cart upsell, one ad per line.',
+            'Win: pack takes 20 percent of the line\'s packs in 56 days with margin per order up.',
+            'Stop: line revenue down for 4 weeks after launch.'])
+        a.update({'title': f'Add a multi-pack to {n} basics lines sold only as singles',
+                  'why': f'{n} lines in repeat-buy categories sell {sum(r["single_packs"] for r in lines):,} singles a year and no pack.',
+                  'owner': 'agent_drafts',
+                  'artefact': {'kind': 'offer', 'label': f'Pack offer spec for {n} lines', 'draft': draft},
+                  'steps': steps(('agent', 'Confirm single sales and landed cost per item for each line.'),
+                                 ('agent', 'Draft the pack spec, price and page copy for each line.'),
+                                 ('person', 'Approve the packs and prices. Ops creates the SKUs.'),
+                                 ('agent', 'Add the packs to the selector, the cart upsell and one ad per line.'),
+                                 ('agent', f'Read pack share of the line weekly; call it on {ctx.check_on(56)}.')),
+                  'size': {'text': f'Each trade-up adds {money(min(r["gain_per_trade_up"] for r in lines))} to '
+                                   f'{money(max(r["gain_per_trade_up"] for r in lines))} margin', 'usd': None},
+                  'win_rule': 'Pack takes 20 percent of the line\'s packs in 56 days with margin per order up.',
+                  'stop_rule': 'Line revenue down for 4 weeks after launch.', 'check_on': ctx.check_on(56), 'time_to_ship_hours': 16})
+    return a
+
+
+def merge_ladder(actions, ctx):
+    rows = {r['line']: r for r in ctx.ladder_rows}
+    keep, groups = [], {}
+    for a in actions:
+        if a.get('rule_id') in ('OFFER-R07', 'OFFER-R09') and a.get('status') == 'open' and a['entity']['id'] in rows:
+            groups.setdefault(rows[a['entity']['id']]['verdict'], []).append(a)
+        else:
+            keep.append(a)
+    for verdict, members in groups.items():
+        keep.append(ladder_group_action(members, ctx.ladder_rows, verdict, ctx))
+    return keep
+
+
 # Rubric overrides by rule (depth.md section 4 lets a screen raise reputation or satisfaction for a rule; the
 # override is written in audit.py's docstring next to the rule). Weights never change.
 RUBRIC_OVERRIDE = {'OFFER-R04': {'reputation': 4, 'satisfaction': 4}}
@@ -282,7 +377,9 @@ def rank(brand='bombas', window=None):
     ctx = Ctx(rd)
     nr = RANK.net_revenue_28d(brand, w)
     actions = [build(f, rd, ctx, nr) for f in findings if f.get('status') in ('open', 'unavailable', None)]
+    actions = merge_ladder(actions, ctx)
     actions = [a for a in actions if not RANK.validate_action(a)]
     actions.sort(key=RANK.sort_key)
     return {'screen': SCREEN, 'brand': brand, 'window': w, 'simulated': True, 'net_revenue_28d': nr,
-            'actions': actions, 'findings': findings, 'objections': ctx.objections, 'returns': returns_block(rd)}
+            'actions': actions, 'findings': findings, 'objections': ctx.objections, 'returns': returns_block(rd),
+            'ladder': dict(ctx.ladder, moves=ctx.ladder_rows)}

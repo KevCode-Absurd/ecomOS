@@ -21,6 +21,16 @@ Rules
   OFFER-R06  Threshold not pulling: the $10 just over the line holds no more orders than the $10 just under
              (order_value_distribution, 28 days). Unavailable without order rows. Money: orders just under
              times the listed shipping rate they pay, a floor on the shipping friction. Capability MONEY-C05.
+  OFFER-R07  Pack ladder not moving shoppers up: a line with a single and a multi-pack where the pack saves less
+             than MIN_SAVING per item or singles are over SINGLE_SHARE_PUSH of the line's packs (12 full months,
+             products_monthly). The finding carries the deeper price test's arithmetic: the cut given to shoppers
+             who already buy the pack, the margin each trade-up adds, and the share of single buyers who must trade
+             up to pay for it. Verdict `deepen` when that share is under VIABLE_TRADE_UP, else `push` (keep the price,
+             preselect the pack and show price per item). Money null: the trade-up rate is what the test finds.
+             Capability LIFE-C39 (founder gate). Thresholds in playbook.py.
+  OFFER-R09  A line in a repeat-buy category (playbook.REPEAT_CATEGORIES) sold only as a single. Proposal: a pack of
+             the most common multi-pack size in that category (else 3) at NEW_PACK_SAVING off per item, with its
+             margin per pack from cogs_landed x size. Capability LIFE-C39 (founder gate).
   OFFER-R03  Margin after discount per SKU. Needs cogs_landed keyed by the store's SKUs. Unavailable while no
              finance_inputs SKU key matches a product SKU. Capability MONEY-C05 (founder gate). Owner: 04.
   OFFER-R04  A deal-breaker rung with no proof: the top rung of an objection ladder whose proof is empty or
@@ -67,6 +77,10 @@ RULES = [
                 'finance_inputs.target_gross_margin'], 'capability': 'MONEY-C05', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R06', 'name': 'Free shipping threshold not pulling baskets up', 'entity_type': 'offer',
      'inputs': ['brain.offers.free_shipping_threshold_usd', 'orders'], 'capability': 'MONEY-C05', 'owner_screen': SCREEN},
+    {'rule_id': 'OFFER-R07', 'name': 'Pack ladder not moving shoppers up', 'entity_type': 'sku',
+     'inputs': ['products_monthly', 'finance_inputs.cogs_landed'], 'capability': 'LIFE-C39', 'owner_screen': SCREEN},
+    {'rule_id': 'OFFER-R09', 'name': 'Basics line sold only as a single', 'entity_type': 'sku',
+     'inputs': ['products_monthly', 'finance_inputs.cogs_landed'], 'capability': 'LIFE-C39', 'owner_screen': SCREEN},
     {'rule_id': 'OFFER-R03', 'name': 'Margin after discount per SKU', 'entity_type': 'sku',
      'inputs': ['finance_inputs.cogs_landed keyed by product SKU', 'products'], 'capability': 'MONEY-C05',
      'owner_screen': SCREEN},
@@ -77,6 +91,8 @@ RULES = [
 CAPABILITY = {'OFFER-R01': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R03': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R05': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
+              'OFFER-R07': {'id': 'LIFE-C39', 'autonomy': 'founder_gate'},
+              'OFFER-R09': {'id': 'LIFE-C39', 'autonomy': 'founder_gate'},
               'OFFER-R06': {'id': 'MONEY-C05', 'autonomy': 'founder_gate'},
               'OFFER-R04': {'id': 'LIFE-C36', 'autonomy': 'founder_gate'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
@@ -358,6 +374,100 @@ def rule_pull(rd):
                      [f'{rd.brand}.offers.free_shipping_threshold_usd'], end, money_reason=None if money else 'no shipping rate')]
 
 
+def _playbook():
+    if 'playbook' not in _MODS:
+        _MODS['playbook'] = _load('offers_pricing_playbook_audit', HERE / 'playbook.py')
+    return _MODS['playbook']
+
+
+def _model():
+    if 'model' not in _MODS:
+        _MODS['model'] = _load('offers_pricing_model_audit', HERE / 'model.py')
+    return _MODS['model']
+
+
+def ladder_moves(rd):
+    """Per line: the pack ladder verdict and its arithmetic. Shared with actions.py and the desk."""
+    pb, lad = _playbook(), _model().ladder(rd)
+    if lad.get('unavailable'):
+        return lad, []
+    rows = []
+    for ln in lad['lines']:
+        if ln['single_sku'] and ln['pack_sku'] and ln['saving'] is not None:
+            weak = ln['saving'] < pb.MIN_SAVING
+            stuck = ln['single_share'] is not None and ln['single_share'] > pb.SINGLE_SHARE_PUSH
+            if not (weak or stuck):
+                rows.append(dict(ln, verdict='keep'))
+                continue
+            n = ln['pack']
+            new_price = round(ln['single_per_item'] * n * (1 - pb.TARGET_SAVING), 2)
+            cut = round(ln['pack_price'] - new_price, 2)
+            pack_packs = ln['packs'] - ln['single_packs']
+            give = round(max(cut, 0) * pack_packs, 2)
+            gain_now = (round(ln['pack_margin'] - ln['single_margin'], 2)
+                        if ln['pack_margin'] is not None and ln['single_margin'] is not None else None)
+            gain_new = (round(new_price - ln['pack_cogs'] - ln['single_margin'], 2)
+                        if ln['pack_cogs'] is not None and ln['single_margin'] is not None else None)
+            need = round(give / gain_new / ln['single_packs'], 4) if gain_new and gain_new > 0 and ln['single_packs'] else None
+            verdict = 'deepen' if need is not None and need <= pb.VIABLE_TRADE_UP else 'push'
+            rows.append(dict(ln, verdict=verdict, weak=weak, stuck=stuck, test_price=new_price, test_cut=cut,
+                             give_away_12m=give, gain_per_trade_up=gain_now, gain_per_trade_up_at_test=gain_new,
+                             trade_up_needed=need))
+        elif ln['single_sku'] and not ln['pack_sku'] and (ln['category'] or '').lower() in pb.REPEAT_CATEGORIES:
+            sizes = [r['pack'] for r in lad['rows'] if r['category'] == ln['category'] and (r['pack'] or 0) > 1]
+            n = max(set(sizes), key=sizes.count) if sizes else pb.DEFAULT_NEW_PACK
+            price = round(ln['single_per_item'] * n * (1 - pb.NEW_PACK_SAVING), 2)
+            cogs = round(ln['single_cogs'] * n, 2) if ln['single_cogs'] is not None else None
+            rows.append(dict(ln, verdict='add', new_pack=n, new_price=price, new_cogs=cogs,
+                             new_margin=round(price - cogs, 2) if cogs is not None else None,
+                             gain_per_trade_up=round(price - cogs - ln['single_margin'], 2)
+                             if cogs is not None and ln['single_margin'] is not None else None))
+        else:
+            rows.append(dict(ln, verdict='keep'))
+    return lad, rows
+
+
+def rule_ladder(rd):
+    end = rd.ends_on
+    pb = _playbook()
+    lad, rows = ladder_moves(rd)
+    if lad.get('unavailable'):
+        entity = {'type': 'sku', 'id': 'pack_ladder', 'label': 'Pack ladder'}
+        return [_finding('OFFER-R07', entity, 'medium', [], 'The pack ladder cannot be read: ' + lad['reason'] + '.', None,
+                         0.1, [], end, status='unavailable', money_reason='no product sales',
+                         unavailable={'inputs': ['products_monthly'], 'connector': lad.get('fix') or 'shopify',
+                                      'fix': 'Connect the store orders, read-only, so sales by SKU can be read.'})]
+    out = []
+    refs = [f'{rd.brand}.offers.bundles_pack_ladder'] if rd.brand else []
+    for r in rows:
+        name = r['line']
+        if r['verdict'] in ('push', 'deepen'):
+            entity = {'type': 'sku', 'id': name, 'label': f'{name}: single and {r["pack"]}-pack'}
+            evidence = [_ev('pack_saving_per_item', r['saving'], 'ratio', end, baseline=pb.MIN_SAVING, baseline_kind='threshold',
+                            window='12 full months', source='products_monthly'),
+                        _ev('single_share_of_packs', r['single_share'], 'ratio', end, baseline=pb.SINGLE_SHARE_PUSH,
+                            baseline_kind='threshold', window='12 full months', source='products_monthly')]
+            if r['trade_up_needed'] is not None:
+                evidence.append(_ev('trade_up_needed_for_deeper_price', r['trade_up_needed'], 'ratio', end,
+                                    baseline=pb.VIABLE_TRADE_UP, baseline_kind='threshold', window='12 full months',
+                                    source='products_monthly, finance_inputs.cogs_landed'))
+            sentence = (f'{name}: the {r["pack"]}-pack saves {r["saving"] * 100:.1f} percent per item and singles are '
+                        f'{r["single_share"] * 100:.0f} percent of packs sold.')
+            sev = 'high' if r['single_share'] > pb.SINGLE_SHARE_PUSH and r['weak'] else 'medium'
+            out.append(_finding('OFFER-R07', entity, sev, evidence, sentence, None, 0.7, refs, end,
+                                money_reason='the trade-up rate is what the change finds; the arithmetic is in the action'))
+        elif r['verdict'] == 'add':
+            entity = {'type': 'sku', 'id': name, 'label': f'{name}: single only'}
+            evidence = [_ev('packs_sold', r['single_packs'], 'count', end, window='12 full months', source='products_monthly'),
+                        _ev('multi_pack_rungs', 0, 'count', end, baseline=1, baseline_kind='threshold', window='catalogue',
+                            source='products_monthly')]
+            sentence = (f'{name} sells {r["single_packs"]:,} singles a year and has no multi-pack. '
+                        f'Basics are bought in multiples.')
+            out.append(_finding('OFFER-R09', entity, 'medium', evidence, sentence, None, 0.6, refs, end,
+                                money_reason='a new pack has no sales yet; margin per pack is in the action'))
+    return out
+
+
 def sku_join(rd):
     """(matched, product_skus, cogs_skus) between finance_inputs cogs_landed and the products table."""
     f = rd.fin()
@@ -488,6 +598,7 @@ def run(brand, window=None, data=None):
     """Findings for one brand, sorted by severity then money at stake. `window` is {ends_on} or None."""
     ends_on = date.fromisoformat(window['ends_on']) if window and window.get('ends_on') else last_full_day(data, brand)
     rd = Reader(data, brand, ends_on)
-    out = rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_sku_margin(rd) + rule_unanswered(rd)
+    out = (rule_threshold(rd) + rule_stale(rd) + rule_pull(rd) + rule_ladder(rd) + rule_sku_margin(rd) +
+           rule_unanswered(rd))
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f.get('money_at_stake') or {}).get('usd') or -1), f['id']))
     return out

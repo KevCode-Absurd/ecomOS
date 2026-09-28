@@ -205,67 +205,8 @@ def bfcm(rd):
 
 # ---------------------------------------------------------------- pack ladder
 
-def pack_size(sku, products):
-    p = products.get(sku) or {}
-    if p.get('items_per_unit'):
-        return int(p['items_per_unit']), 'products.items_per_unit'
-    m = re.search(r'-(\d+)$', sku)
-    return (int(m.group(1)), 'sku suffix') if m else (None, None)
-
-
 def ladder(rd, months=12):
-    rows = rd.table('products_monthly')
-    if not rows:
-        return {'unavailable': True, 'reason': 'the products_monthly aggregate is missing', 'fix': 'shopify'}
-    full = [m['month'] for m in (discount_months(rd) or []) if m['full']][-months:]
-    products = {p['sku']: p for p in (rd.table('products') or []) if p.get('sku')}
-    agg = {}
-    for r in rows:
-        if r['month'] in full:
-            a = agg.setdefault(r['sku'], {'units': 0, 'net_sales': 0.0, 'category': r.get('category')})
-            a['units'] += r['units'] or 0
-            a['net_sales'] += r['net_sales'] or 0
-    total = sum(a['net_sales'] for a in agg.values())
-    lines = {}
-    for sku, a in agg.items():
-        size, basis = pack_size(sku, products)
-        line = sku.rsplit('-', 1)[0]
-        p = products.get(sku) or {}
-        per_pack = a['net_sales'] / a['units'] if a['units'] else None
-        lines.setdefault(line, []).append({
-            'sku': sku, 'line': line, 'title': p.get('title'), 'category': a['category'], 'pack': size,
-            'pack_basis': basis, 'packs': a['units'], 'revenue': round(a['net_sales'], 2),
-            'revenue_share': round(a['net_sales'] / total, 6) if total else None,
-            'price_per_pack': round(per_pack, 2) if per_pack else None,
-            'price_per_item': round(per_pack / size, 2) if per_pack and size else None,
-            'list_per_item': round(p['price'] / size, 2) if p.get('price') and size else None})
-    out = []
-    for line, rs in sorted(lines.items(), key=lambda kv: -sum(r['revenue'] for r in kv[1])):
-        rs.sort(key=lambda r: r['pack'] or 0)
-        single = next((r for r in rs if r['pack'] == 1), None)
-        prev = None
-        for r in rs:
-            bigger = (r['pack'] or 0) > 1  # two singles in a line are two products, not a rung
-            r['drop_vs_single'] = (round(1 - r['price_per_item'] / single['price_per_item'], 4)
-                                   if bigger and single and r['price_per_item'] else None)
-            r['drop_vs_prev_rung'] = (round(1 - r['price_per_item'] / prev['price_per_item'], 4)
-                                      if bigger and prev and (prev['pack'] or 0) < r['pack'] and r['price_per_item']
-                                      and prev['price_per_item'] else None)
-            if prev is None or (r['pack'] or 0) > (prev['pack'] or 0):
-                prev = r
-        out.extend(rs)
-    by_size = {}
-    for r in out:
-        s = by_size.setdefault(r['pack'], {'pack': r['pack'], 'revenue': 0.0, 'packs': 0})
-        s['revenue'] += r['revenue']
-        s['packs'] += r['packs']
-    sizes = [dict(s, revenue=round(s['revenue'], 2), revenue_share=round(s['revenue'] / total, 6) if total else None)
-             for _, s in sorted(by_size.items(), key=lambda kv: kv[0] or 0)]
-    multi = sum(s['revenue'] for s in sizes if (s['pack'] or 0) > 1)
-    return {'unavailable': False, 'months': f'{full[0]} to {full[-1]}' if full else None, 'rows': out,
-            'by_size': sizes, 'multi_share': round(multi / total, 6) if total else None,
-            'basis': 'net sales over packs sold, 12 full months; price per pair is after discounts',
-            'margin': 'unavailable: cost per SKU does not join to products yet'}
+    return model.ladder(rd, months)
 
 
 # ---------------------------------------------------------------- rules behind the desk lines, chart
@@ -341,15 +282,16 @@ def overview(data, brand):
     if brand:
         ranked = actions.rank(brand, {'ends_on': ends_on.isoformat()})
         findings, plan = ranked['findings'], ranked['actions']
-        objections, returns = ranked['objections'], ranked['returns']
+        objections, returns, lad = ranked['objections'], ranked['returns'], ranked['ladder']
     else:
         findings, plan = audit.run(brand, {'ends_on': ends_on.isoformat()}, data=data), []
         objections, returns = [], {'unavailable': True, 'reason': 'no brand folder', 'groups': []}
+        lad = ladder(rd)
     months = discount_months(rd)
     th = threshold(rd)
     return {'brand': head, 'window': {'ends_on': ends_on.isoformat(), 'days': audit.WINDOW},
             'orientation': orientation(rd, th), 'plan': plan,
-            'stack': offer_stack(rd), 'threshold': th, 'bfcm': bfcm(rd), 'ladder': ladder(rd),
+            'stack': offer_stack(rd), 'threshold': th, 'bfcm': bfcm(rd), 'ladder': lad,
             'objections': objections, 'returns': returns, 'creep': creep_rule(months), 'chart': chart(months),
             'findings': findings, 'rules': audit.RULES}
 
@@ -357,7 +299,7 @@ def overview(data, brand):
 def rank(brand='bombas', window=None):
     """Ranked actions for app/rank.py and the master list (depth.md section 5)."""
     out = actions.rank(brand, window)
-    for k in ('findings', 'objections', 'returns'):
+    for k in ('findings', 'objections', 'returns', 'ladder'):
         out.pop(k, None)
     return out
 

@@ -73,3 +73,15 @@ DEFAULT_OFFER = {
 
 def offer_for(theme):
     return THEME_OFFERS.get(theme) or DEFAULT_OFFER
+
+
+# Pack ladder judgement (screen 04, OFFER-R07 and OFFER-R09).
+# Categories bought in multiples, where a line with no multi-pack is a gap. Category names come from the brand's
+# products table; these are the generic apparel basics names the data layer uses.
+REPEAT_CATEGORIES = ('socks', 'underwear', 'tshirts', 't-shirts', 'basics')
+MIN_SAVING = 0.10         # a multi-pack that saves less than 10 percent per item gives little reason to trade up
+TARGET_SAVING = 0.15      # the per-item saving a deeper pack price would test
+SINGLE_SHARE_PUSH = 0.30  # singles above 30 percent of a line's packs: the ladder is not moving shoppers up
+VIABLE_TRADE_UP = 0.25    # a price test is worth running when under 25 percent of single buyers must trade up to pay
+NEW_PACK_SAVING = 0.10    # a new pack on a single-only basics line starts at 10 percent off per item
+DEFAULT_NEW_PACK = 3

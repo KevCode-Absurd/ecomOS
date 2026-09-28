@@ -36,6 +36,9 @@
     return node;
   }
 
+  /** Per-row buttons for a verdict table: the kit reads row.actions; the column header stays a plain word. */
+  function withActs(rows, fn) { return rows.map((r) => Object.assign({}, r, { actions: fn(r) })); }
+
   // ---------- 0. head ----------
   function badge(b) {
     const name = b.name || b.brand || 'This brand';
@@ -143,10 +146,11 @@
         { key: 'contribution_free', label: 'Contribution, band order', format: (v, r) => r.current ? '' : v == null ? NA : fmt.money(v) },
         { key: 'text', label: 'What must be true' },
       ],
-      rows: th.scenarios.map((r) => Object.assign({ be: '' }, r)),
+      rows: withActs(th.scenarios.map((r) => Object.assign({ be: '' }, r)), (r) => [r.kind === 'raise' && r.covers_break_even && a
+        ? { label: 'Open test brief', onClick: () => openAction(a) } : { label: 'Copy', cls: 'quiet', onClick: () => UI.copy('Free shipping at $' + r.threshold + ': ' + r.text) }]),
       verdict: { at: 1, kind: (r) => r.current ? 'keep' : r.kind === 'raise' && r.covers_break_even ? 'new' : r.kind === 'raise' ? 'watch' : 'wait',
         text: (r) => r.current ? 'Today' : r.kind === 'raise' && r.covers_break_even ? 'Test' : r.kind === 'raise' ? 'Partial' : 'Needs lift', reason: (r) => r.text },
-      actions: { label: (r) => r.kind === 'raise' && r.covers_break_even && a ? 'Open test brief' : 'Copy', onClick: (r) => { if (r.kind === 'raise' && r.covers_break_even && a) openAction(a); else UI.copy('Free shipping at $' + r.threshold + ': ' + r.text); } },
+      actions: { label: 'Do' },
       sort: false,
     });
     const line = th.suggested ? 'The line sits ' + fmt.money(th.gap) + ' under break-even. Test $' + th.suggested + ' against ' + fmt.money(th.threshold) + '.' : 'The line sits at or over break-even. Keep it; watch the orders just under it.';
@@ -175,21 +179,36 @@
   }
 
   function ladderBlock(l) {
-    const head = { title: 'Does every pack size earn its place?', sub: 'Price per pair after discounts, 12 full months. A rung that saves the shopper nothing per pair gives no reason to trade up.' };
+    const head = { title: 'Does every pack size earn its place?', sub: 'Price per item after discounts, 12 full months. Singles over 30 percent of a line, or a pack saving under 10 percent per item, means the ladder is not moving shoppers up.' };
     if (l.unavailable) return section('desk-ladder', head, UI.emptyState({ screen: SLUG, title: 'No product sales', text: l.reason, missing: [l.fix] }));
-    const rung = (v, r) => r.pack === 1 ? 'base' : v == null ? 'no single' : fmt.unit(v, '%');
-    return section('desk-ladder', head, el('div', { class: 'card tight' },
-      el('p', { class: 'micro faint', text: l.months + '. ' + l.basis + '.' }),
-      UI.table({ columns: [
-        { key: 'sku', label: 'SKU' },
-        { key: 'category', label: 'Category' },
-        { key: 'pack', label: 'Pack', unit: 'n' },
-        { key: 'packs', label: 'Packs sold', unit: 'n' },
-        { key: 'revenue', label: 'Revenue', unit: '$' },
-        { key: 'price_per_item', label: 'Paid per pair', unit: '$' },
-        { key: 'drop_vs_prev_rung', label: 'Drop vs rung below', unit: '%', format: (v, r) => rung(v, r) },
-        { key: 'drop_vs_single', label: 'Drop vs single', unit: '%', format: (v, r) => rung(v, r) },
-      ], rows: l.rows, sort: false, maxRows: 40 })));
+    const moves = l.moves || [];
+    const two = moves.filter((r) => r.single_sku && r.pack_sku);
+    const chart = Charts.bar({ labels: two.map((r) => r.line.split('-').slice(-2).join('-')), unit: '$', values: false, width: 1100, height: 200,
+      series: [{ name: 'Single, per item', values: two.map((r) => r.single_per_item) }, { name: 'Best-selling pack, per item', values: two.map((r) => r.pack_per_item) }],
+      title: 'Price per item: single against the pack', note: 'Net sales over items sold, 12 full months, after discounts. Close bars mean the pack gives little reason to trade up.' });
+    const V = { push: ['fix', 'Push'], deepen: ['new', 'Test price'], add: ['new', 'Add pack'], keep: ['keep', 'Keep'] };
+    const act = (r) => ACTIONS.find((x) => x.id === SLUG + '.' + (r.verdict === 'add' ? 'OFFER-R09' : 'OFFER-R07') + '.' + r.verdict);
+    const table = UI.verdictTable({
+      columns: [
+        { key: 'line', label: 'Line', format: (v, r) => v + ' (' + r.category + ', ' + (r.rungs || []).join('/') + ')' },
+        { key: 'single_share', label: 'Singles', unit: '%' },
+        { key: 'saving', label: 'Pack saving', unit: '%' },
+        { key: 'gain_per_trade_up', label: 'Margin per trade-up', unit: '$' },
+      ],
+      rows: withActs(moves.filter((r) => r.verdict !== 'keep'), (r) => act(r) ? [{ label: 'Open action', onClick: () => openAction(act(r)) }] : []), maxRows: 30,
+      verdict: { at: 1, kind: (r) => V[r.verdict][0], text: (r) => V[r.verdict][1],
+        reason: (r) => r.verdict === 'push' ? 'A 15 percent pack price needs ' + pct(r.trade_up_needed, 0) + ' of single buyers to trade up' : r.verdict === 'deepen' ? 'Pays back at ' + pct(r.trade_up_needed, 0) + ' trade-up' : r.verdict === 'add' ? 'Proposed ' + r.new_pack + '-pack at ' + fmt.money(r.new_price) : 'Ladder works' },
+      reason: { key: 'why', label: 'Why', text: (r) => r.verdict === 'push' ? 'Deeper price gives ' + fmt.money(r.give_away_12m) + ' a year to pack buyers; ' + pct(r.trade_up_needed, 0) + ' of singles must trade up.' :
+        r.verdict === 'deepen' ? 'Test ' + fmt.money(r.test_price) + '; pays back at ' + pct(r.trade_up_needed, 0) + ' trade-up.' :
+        r.verdict === 'add' ? r.new_pack + '-pack at ' + fmt.money(r.new_price) + ', margin ' + fmt.money(r.new_margin) + ' a pack.' : '' },
+      actions: { label: 'Do' },
+      sort: false,
+    });
+    const push = moves.filter((r) => r.verdict === 'push').length, add = moves.filter((r) => r.verdict === 'add').length;
+    return section('desk-ladder', head,
+      el('div', { class: 'card' }, chart), el('div', { class: 'card tight' }, table,
+        el('p', { class: 'micro faint', text: moves.filter((r) => r.verdict === 'keep').length + ' more lines keep their ladder: a single pack size, or singles and saving inside the rule. ' + l.margin + '.' })),
+      actionLine(push + ' lines need the pack preselected, not a lower price. ' + add + ' basics lines need a pack.', act({ verdict: 'push' }) || act({ verdict: 'add' })));
   }
 
   function returnsChart(r) {
@@ -214,9 +233,9 @@
         { key: 'cost_per_1000_orders', label: 'Per 1,000 orders', format: (v, r) => r.claim === 'none' ? 'none' : v == null ? 'rate ' + NA : fmt.money(v) },
         { key: 'ret', label: 'Returns per 1,000', format: (v, r) => r.returns.per_1000 != null ? r.returns.per_1000.toFixed(1) : (r.returns.reasons.length ? NA : 'no reason maps') },
       ],
-      rows: rows.map((r) => Object.assign({ covered: '', ret: '' }, r)),
+      rows: withActs(rows.map((r) => Object.assign({ covered: '', ret: '' }, r)), (r) => [findA(r) ? { label: 'Open action', onClick: () => openAction(findA(r)) } : { label: 'Copy spec', cls: 'quiet', onClick: () => UI.copy(r.spec) }]),
       verdict: { at: 1, kind: (r) => r.answered ? 'keep' : 'fix', text: (r) => r.answered ? 'Answered' : 'No proof', reason: (r) => 'rung ' + r.rung },
-      actions: { label: (r) => findA(r) ? 'Open action' : 'Copy spec', onClick: (r) => { const a = findA(r); if (a) openAction(a); else UI.copy(r.spec); } },
+      actions: { label: 'Do' },
       sort: false,
     });
     const open = rows.filter((r) => !r.answered);

@@ -31,6 +31,7 @@ Known gaps from round 0:
 | 1.1 | Plan first: round 0 tiles, insight cards and the AOV chart removed; plan board from `rank` with 6 orientation numbers (AOV, threshold, orders under it, refunds share, ads with the code, contribution margin); what is wrong ranked; action cards with owner, steps and artefact; desk; audit at the bottom. `actions.py` (rank override), `model.py` (offer economics), `screen.css`. OFFER-R01 now fires from the aggregates and finance inputs when order rows are absent (money null with its reason) | done |
 | 1.2 | Objection ladder to offer map: the top rung of every ladder with the offer or proof that answers it (`playbook.py`, brand-agnostic), what in the brain already covers it, cost per claim from finance inputs (item or returns processing, label, pick and pack, box), cost per 1,000 orders at the brain's planned claim rate, returns behind it (labelled fixture while `returns_by_reason` is unavailable). Each open rung is an action with the drafted spec, win and stop rules. OFFER-R04 severity high at 20 one-star mentions; rubric override reputation 4, satisfaction 4 | done |
 | 1.3 | Free shipping line: order value bins with the $10 under the line shaded (labelled fixture while order rows are absent), break-even by month against the line (step chart), the gap, and a table of nearby lines with what each must achieve to pay: a higher line pays while fewer than N percent of orders between the lines walk away, a lower one only if orders in the band rise N percent (contribution before media from finance inputs, listed shipping rate from the brain). The test brief carries the walk-away limit. New rules OFFER-R05 (break-even moved more than 5 percent in a year, line did not) and OFFER-R06 (line not pulling, unavailable without order rows) | done |
+| 1.4 | Pack ladder: per line, singles' share of packs, the pack saving per item, margin per pack from cogs_landed, and the deeper price test's arithmetic (money given to current pack buyers against margin per trade-up, so the share of single buyers who must trade up). Verdicts push (keep price, preselect the pack, show price per item), deepen (a price test pays back under 25 percent trade-up), add (a basics line sold only as a single gets a pack). New rules OFFER-R07 and OFFER-R09, one merged action per verdict with the drafted page spec, test brief or pack offer; thresholds in `playbook.py`. Ladder math moved to `model.py` | done |
 
 ## Room jobs
 
@@ -148,7 +149,7 @@ Known gaps from round 0:
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.9 | 2026-09-28 | S3.9; screenshot round0.png |
-| 1 | 1.1 plan first, 1.2 objection to offer map, 1.3 free shipping line | 2026-09-28 | manager session; screenshot round1.png (updated as the round lands) |
+| 1 | 1.1 plan first, 1.2 objection to offer map, 1.3 free shipping line, 1.4 pack ladder | 2026-09-28 | manager session; screenshot round1.png (updated as the round lands) |
 
 
 ## Round 1 candidates (ranked 28 Sep 2026 by the lead session)

@@ -7,6 +7,7 @@ nothing is filled with a default or an industry average.
 """
 import calendar
 import math
+import re
 from datetime import date, timedelta
 
 WINDOW = 28
@@ -258,3 +259,105 @@ def threshold_scenarios(rd, threshold, ship_rate, break_even, units, groups=None
                         'text': f'Pays only if orders between ${lo:,.0f} and ${hi:,.0f} rise {need * 100:.0f} percent.'})
         out.append(row)
     return out
+
+
+# ---------------------------------------------------------------- pack ladder
+
+def pack_size(sku, products):
+    p = products.get(sku) or {}
+    if p.get('items_per_unit'):
+        return int(p['items_per_unit']), 'products.items_per_unit'
+    m = re.search(r'-(\d+)$', sku)
+    return (int(m.group(1)), 'sku suffix') if m else (None, None)
+
+
+def ladder(rd, months=12):
+    rows = rd.table('products_monthly')
+    if not rows:
+        return {'unavailable': True, 'reason': 'the products_monthly aggregate is missing', 'fix': 'shopify'}
+    full = full_months(rd, rd.ends_on, months)
+    products = {p['sku']: p for p in (rd.table('products') or []) if p.get('sku')}
+    cogs = cogs_by_sku(rd, rd.ends_on)
+    agg = {}
+    for r in rows:
+        if r['month'] in full:
+            a = agg.setdefault(r['sku'], {'units': 0, 'net_sales': 0.0, 'category': r.get('category')})
+            a['units'] += r['units'] or 0
+            a['net_sales'] += r['net_sales'] or 0
+    total = sum(a['net_sales'] for a in agg.values())
+    lines = {}
+    for sku, a in agg.items():
+        size, basis = pack_size(sku, products)
+        line = sku.rsplit('-', 1)[0]
+        p = products.get(sku) or {}
+        per_pack = a['net_sales'] / a['units'] if a['units'] else None
+        lines.setdefault(line, []).append({
+            'sku': sku, 'line': line, 'title': p.get('title'), 'category': a['category'], 'pack': size,
+            'pack_basis': basis, 'packs': a['units'], 'revenue': round(a['net_sales'], 2),
+            'revenue_share': round(a['net_sales'] / total, 6) if total else None,
+            'price_per_pack': round(per_pack, 2) if per_pack else None,
+            'price_per_item': round(per_pack / size, 2) if per_pack and size else None,
+            'list_per_item': round(p['price'] / size, 2) if p.get('price') and size else None,
+            'cogs_per_pack': cogs.get(sku), 'margin_per_pack': round(per_pack - cogs[sku], 2) if per_pack and sku in cogs else None,
+            'margin_per_item': round((per_pack - cogs[sku]) / size, 2) if per_pack and size and sku in cogs else None})
+    out = []
+    for line, rs in sorted(lines.items(), key=lambda kv: -sum(r['revenue'] for r in kv[1])):
+        rs.sort(key=lambda r: r['pack'] or 0)
+        single = next((r for r in rs if r['pack'] == 1), None)
+        prev = None
+        for r in rs:
+            bigger = (r['pack'] or 0) > 1  # two singles in a line are two products, not a rung
+            r['drop_vs_single'] = (round(1 - r['price_per_item'] / single['price_per_item'], 4)
+                                   if bigger and single and r['price_per_item'] else None)
+            r['drop_vs_prev_rung'] = (round(1 - r['price_per_item'] / prev['price_per_item'], 4)
+                                      if bigger and prev and (prev['pack'] or 0) < r['pack'] and r['price_per_item']
+                                      and prev['price_per_item'] else None)
+            if prev is None or (r['pack'] or 0) > (prev['pack'] or 0):
+                prev = r
+        out.extend(rs)
+    by_size = {}
+    for r in out:
+        s = by_size.setdefault(r['pack'], {'pack': r['pack'], 'revenue': 0.0, 'packs': 0})
+        s['revenue'] += r['revenue']
+        s['packs'] += r['packs']
+    sizes = [dict(s, revenue=round(s['revenue'], 2), revenue_share=round(s['revenue'] / total, 6) if total else None)
+             for _, s in sorted(by_size.items(), key=lambda kv: kv[0] or 0)]
+    multi = sum(s['revenue'] for s in sizes if (s['pack'] or 0) > 1)
+    return {'unavailable': False, 'months': f'{full[0]} to {full[-1]}' if full else None, 'rows': out,
+            'by_size': sizes, 'multi_share': round(multi / total, 6) if total else None,
+            'basis': 'net sales over packs sold, 12 full months; price per item is after discounts',
+            'margin': ('margin per pack is price paid minus cogs_landed in force today' if cogs else
+                       'unavailable: no cogs_landed keyed by SKU'),
+            'lines': line_summary(out)}
+
+
+def line_summary(rows):
+    """One row per product line: its rungs, the single's share of the line's packs, the deepest saving per item,
+    and the margin per order of the single and of the best-selling multi-pack."""
+    lines = {}
+    for r in rows:
+        lines.setdefault(r['line'], []).append(r)
+    out = []
+    for line, rs in lines.items():
+        packs = sum(r['packs'] for r in rs)
+        single = next((r for r in rs if r['pack'] == 1), None)
+        multis = [r for r in rs if (r['pack'] or 0) > 1]
+        top = max(multis, key=lambda r: r['packs']) if multis else None
+        out.append({'line': line, 'category': rs[0]['category'], 'rungs': [r['pack'] for r in rs],
+                    'packs': packs, 'revenue': round(sum(r['revenue'] for r in rs), 2),
+                    'single_sku': single['sku'] if single else None, 'pack_sku': top['sku'] if top else None,
+                    'pack': top['pack'] if top else None,
+                    'single_share': round(single['packs'] / packs, 4) if single and packs else None,
+                    'single_packs': single['packs'] if single else None,
+                    'saving': top['drop_vs_single'] if top else None,
+                    'single_per_item': single['price_per_item'] if single else None,
+                    'pack_per_item': top['price_per_item'] if top else None,
+                    'single_margin': single['margin_per_pack'] if single else None,
+                    'pack_margin': top['margin_per_pack'] if top else None,
+                    'pack_price': top['price_per_pack'] if top else None,
+                    'single_cogs': single['cogs_per_pack'] if single else None,
+                    'pack_cogs': top['cogs_per_pack'] if top else None})
+    out.sort(key=lambda r: -r['revenue'])
+    return out
+
+

@@ -342,5 +342,48 @@ class ThresholdTest(unittest.TestCase):
         self.assertIn('walk away', a['artefact']['draft'])
 
 
+class PackLadderTest(unittest.TestCase):
+    """Round 1 feature 4: the pack ladder verdict per line and its arithmetic, merged into one action per verdict."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.rd = audit.Reader(None, 'bombas', audit.last_full_day(None, 'bombas'))
+        cls.lad, cls.rows = audit.ladder_moves(cls.rd)
+        cls.pb = audit._playbook()
+        cls.out = api.actions.rank('bombas')
+
+    def test_trade_up_arithmetic(self):
+        for r in self.rows:
+            if r['verdict'] in ('push', 'deepen'):
+                self.assertTrue(r['saving'] < self.pb.MIN_SAVING or r['single_share'] > self.pb.SINGLE_SHARE_PUSH)
+                self.assertAlmostEqual(r['test_price'], round(r['single_per_item'] * r['pack'] * (1 - self.pb.TARGET_SAVING), 2))
+                self.assertAlmostEqual(r['give_away_12m'], round(max(r['test_cut'], 0) * (r['packs'] - r['single_packs']), 2))
+                if r['trade_up_needed'] is not None:
+                    self.assertEqual(r['verdict'] == 'deepen', r['trade_up_needed'] <= self.pb.VIABLE_TRADE_UP)
+            if r['verdict'] == 'add':
+                self.assertIn(r['category'], self.pb.REPEAT_CATEGORIES)
+                self.assertAlmostEqual(r['new_margin'], round(r['new_price'] - r['new_cogs'], 2))
+
+    def test_one_action_per_verdict_covers_every_ladder_finding(self):
+        fids = {f['id'] for f in self.out['findings'] if f['rule_id'] in ('OFFER-R07', 'OFFER-R09') and f['status'] == 'open'}
+        acts = [a for a in self.out['actions'] if a['rule_id'] in ('OFFER-R07', 'OFFER-R09')]
+        self.assertEqual(len({a['id'] for a in acts}), len(acts))
+        covered = {fid for a in acts for fid in a['finding_ids']}
+        self.assertEqual(fids, covered)
+        kinds = {a['id'].rsplit('.', 1)[-1]: a['artefact']['kind'] for a in acts}
+        want = {'push': 'page_section', 'deepen': 'price_change', 'add': 'offer'}
+        for k, v in kinds.items():
+            self.assertEqual(v, want[k])
+        for a in acts:
+            self.assertTrue(a['artefact']['draft'])
+            self.assertTrue(a['stop_rule'] and a['win_rule'])
+
+    def test_margin_uses_finance_cost(self):
+        cogs = api.model.cogs_by_sku(self.rd, self.rd.ends_on)
+        for r in self.lad['rows']:
+            if r['margin_per_pack'] is not None:
+                self.assertAlmostEqual(r['margin_per_pack'], round(r['price_per_pack'] - cogs[r['sku']], 2))
+
+
 if __name__ == '__main__':
     unittest.main()
