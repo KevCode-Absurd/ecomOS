@@ -1999,5 +1999,21 @@ class OneScaleTest(unittest.TestCase):
         self.assertEqual(api.model.net_revenue_orders(R(), 28), 90.0)
 
 
+class ExposureTest(unittest.TestCase):
+    """Round 8 feature 2: moves with no counted stake show the 28-day sales they touch; never as money at stake."""
+
+    def test_bombas(self):
+        acts = api.actions.rank('bombas')['actions']
+        exp = [a for a in acts if a.get('exposure')]
+        self.assertTrue(exp)
+        for a in exp:
+            self.assertIsNone((a.get('money_at_stake') or {}).get('usd'))
+            self.assertGreater(a['exposure']['usd_28d'], 0)
+            self.assertTrue(a['exposure']['basis'])
+        t = next(a for a in exp if a['rule_id'] == 'OFFER-R01')
+        rd = audit.Reader(None, 'bombas', audit.last_full_day(None, 'bombas'))
+        self.assertEqual(t['exposure']['usd_28d'], round(api.model.window_totals(rd)['net_sales'], 2))
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -1351,6 +1351,38 @@ def returners_action(f, a, ctx):
     return a
 
 
+STORE_WIDE = ('OFFER-R01', 'OFFER-R20', 'OFFER-R14')   # moves that change what every order sees
+
+
+def add_exposure(actions, ctx, nr):
+    """One scale for moves with no counted stake: the 28-day sales each move touches, from the same sources as the
+    desk (line revenue over 12 months, the channel's last month, first orders, or all net sales). Shown beside the
+    rubric; it never enters money_at_stake, so a touched dollar is never read as a won dollar."""
+    t = model.window_totals(ctx.rd, ctx.end)
+    net = t['net_sales'] if t else nr
+    lines = {r['line']: r for r in (ctx.ladder or {}).get('lines') or []}
+    for a in actions:
+        if (a.get('money_at_stake') or {}).get('usd') is not None or a.get('status') == 'unavailable':
+            continue
+        r, usd, basis = a.get('rule_id'), None, None
+        if r in ('OFFER-R07', 'OFFER-R09'):
+            ids = [fid.split('.')[-1] for fid in a.get('finding_ids') or []]
+            revs = [lines[i]['revenue'] for i in ids if i in lines]
+            if revs:
+                usd, basis = sum(revs) * 28 / 365, 'these lines\' net sales over 12 months, per 28 days'
+        elif r == 'OFFER-R17':
+            ch = (ctx.parity or {}).get('channel_sales') or {}
+            if ch:
+                usd, basis = sum(ch.values()) * 28 / 30, f'marketplace sales in {ctx.parity.get("channel_month")}, per 28 days'
+        elif r == 'OFFER-R21' and t and t['orders']:
+            usd, basis = t['new_customer_orders'] * t['net_sales'] / t['orders'], 'first orders in the last 28 days at the average net order'
+        elif r in STORE_WIDE and net:
+            usd, basis = net, 'all net sales in the last 28 days'
+        if usd:
+            a['exposure'] = {'usd_28d': round(usd, 2), 'basis': basis}
+    return actions
+
+
 def bunches(rd):
     """Order-value bunches and the tiers above them, from real order bins only (never from the fixture)."""
     dist = rd.m('order_value_distribution', audit.WINDOW, step=5)
@@ -1570,6 +1602,7 @@ def rank(brand='bombas', window=None, data=None):
     actions = merge_into(actions, 'OFFER-R38', 'OFFER-R32')
     actions = flag_stale_inputs(attach_margin_checks(add_priors(covered_by_registry(actions, ctx), ctx), ctx), ctx)
     actions = [a for a in actions if not RANK.validate_action(a)]
+    actions = add_exposure(actions, ctx, nr)
     actions.sort(key=RANK.sort_key)
     calendar = test_calendar(actions, ctx)
     for row in calendar:   # the change a sitewide test of this length can see; a single page sees less

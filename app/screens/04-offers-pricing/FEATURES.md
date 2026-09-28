@@ -172,6 +172,7 @@ Known gaps from round 0:
 | # | Feature | Status |
 |---|---|---|
 | 8.1 | One money scale: a brand with no daily aggregate (the sample brand) now sizes every stake against its 28-day net sales from order rows ($92,398), so the rubric's revenue and profit dimensions read the money, not only the severity. The welcome code holdout ($2,417 a 28 days, 2.6 percent of net) moves from 8th to 1st; the goes-with block ($423) drops to 8th | done |
+| 8.2 | What each unmeasured move touches: a move with no counted stake (its lift is what the test finds) now shows the 28-day sales it touches, from the desk's own sources: the lines' net sales for pack moves, the marketplace's last month for parity, first orders for the second-order offer, all net sales for the threshold, cart and guarantee moves. Shown as "touches $X of 28-day sales" in the size line; kept out of money at stake so a touched dollar is never read as a won dollar. Bombas: 8 moves, from $860,715 (new packs) to $28.6 million (store-wide) | done |
 
 ## Contract asks
 

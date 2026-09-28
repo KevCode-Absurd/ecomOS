@@ -770,6 +770,8 @@
   }
 
   function render(d) {
+    // one scale: a move with no counted stake says how much of the last 28 days' sales it touches
+    (d.plan || []).forEach((a) => { if (a.exposure && a.size && a.size.text.indexOf('touches') < 0) a.size = Object.assign({}, a.size, { text: a.size.text + '; touches ' + fmt.money(a.exposure.usd_28d, 0) + ' of 28-day sales' }); });
     ACTIONS = d.plan || [];
     SET = d.settings || {};
     d_market = (d.brand || {}).market || null;
