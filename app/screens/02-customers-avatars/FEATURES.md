@@ -171,7 +171,7 @@ Lead's review: rounds 1 to 4 passed. Focus: returns and tickets by avatar, depth
 | 10.3 | Anti-patterns walked against the page (depth.md section 7), each tied to a test: a report (plan first, desk, audit last), tiles without a next step (3 to 6 orientation numbers inside the plan, no tile row), findings without an owner (every open or unavailable finding sits in an action with an owner), charts for their own sake (10.9), long prose (every rule and caveat line at most 3 sentences under 20 words; the focus rule shortened), buttons that lead nowhere (9.7), brand facts in code (10.1, 6.1), zero for unknown (10.2, 8.8), one voice for every screen (this desk has its own verdicts and moves), asking the founder to pick features (never done) | done |
 | 10.4 | Depth.md sections 1 to 5 last pass. Sections 1 to 3 were under test (section order, the first screen, all 14 rules). Now also: section 4, every rubric dimension 1 to 5, the total the weighted sum and confidence the finding's times 5 on all 67 actions; section 5, the rank route's shape and every action's 20 fields, owners and artefact kinds | done |
 | 10.5 | Hand-off note `HANDOFF.md` in this folder: what the screen does, how each number is made, the contract asks and their fallbacks, what to do when each table lands | todo |
-| 10.6 | Loose ends in this file: every parked or open item closed, moved to the hand-off, or marked | todo |
+| 10.6 | Loose ends in this file: the room's 14 questions marked built (8), partial (4) or open (2) with where each lives; the contract asks made one list of 9, each with its fallback. The 2 open questions (drift over time, mystery shopper and pretests) and the 4.7 park go to `HANDOFF.md` | done |
 | 10.7 | Thresholds a brand can tune (depth.md section 8): a brain `learnings` record with field `threshold_<name>` and a number sets one of 12 thresholds (price-led, sales gap, high return risk, marketplace share, split share, ads under, season lift, claim hits, paid returning, weak cohort, focus soon, re-check days), each inside fixed bounds; anything else is ignored. The build runs with the brand's values under a lock and puts the defaults back, so a threaded server never mixes two brands. The rules, the findings and the rule lines follow (tested: price-led at 60 percent drops avatars from CUST-R28 and the line says 60 percent) | done |
 | 10.8 | The plan's connect strip (depth.md section 5): already built, now under the browser test. Unavailable actions never enter the plan; they sit in their own "Connect first" strip, one card each. Bombas: 2 (the store's channel orders for paid returning, and the customer paths table), 0 connect items in the plan | done |
 | 10.9 | Charts: each of the 5 charts sits beside the moves it drives, so none goes; each now names the decision it changes in its note (the cohort grid: the day of the second-order email, the day win-back starts and the month to plan for; brand health: whether a line needs a move; the returning-share line: whether win-back is due; the channel waterfall: which channel to fix first; the served map: which avatar to fix first and which to park). Tested: every chart has its line | done |
@@ -260,16 +260,14 @@ Lead's review: rounds 1 to 4 passed. Focus: returns and tickets by avatar, depth
 
 ## Contract asks
 
+Each ask has a local fallback, so the screen works today. `HANDOFF.md` says what to change when each lands.
+
 - A `survey_answers` table in the data layer (the post-purchase survey tool, read-only): per question, answer counts by option and the window. 9.4 reads it by that name, falls back to `fixtures/survey_answers/<brand>.json`, and shows unavailable until either exists.
 - A `last_year` value for `baseline_kind` in `audit.md` (same period a year earlier). 8.2 uses it for the January cliff and writes `threshold` until the contract has it.
 - Pack prices in the brain offers (price per pack size and line), so 5.9 can show the per-pair price at each pack. Fallback: unavailable, with the free shipping facts.
-
 - A tickets and returns aggregate by reason and product line (monthly), so 5.2 reads real return reasons per avatar. Fallback: the review-complaint proxy and a connect card.
-
 - A SKU to product-line map in the brain's products section (for example BMB-SK-CMP-3 to compression), so avatar value can read revenue by line from `products_monthly`. Fallback: 4.9 scores avatars without revenue; from 7.8, `fixtures/sku_lines/<brand>.json` maps SKU style codes to lines locally, and unmapped sales are counted as unmapped. Retire the fixture when the data layer carries the map.
-
 - A `customer_paths` aggregate from `generate.py` (first product repeat and next product, order gaps, RFM cells; shape in `builds.PATHS_SHAPE`). Fallback: 2.9 shows the rules and unavailable.
-
 - A `situations` brain record per category (buying situations as word patterns), so 1.8 reads them from the brain instead of the category-level constant in `builds.py`. Fallback: the constant.
 - An `avatar` entity type in `audit.md` (round 0 note). Fallback: type `brand` with the avatar key.
 - An angle and avatar tag per ad in `ad_rows`, so coverage in ads can be counted (CUST-R03). Fallback: unavailable finding.
@@ -294,6 +292,25 @@ Lead's review: rounds 1 to 4 passed. Focus: returns and tickets by avatar, depth
 | keep every page and channel leading with the same one idea | what is the one message this page or email should lead with | BRAND-C33 |
 
 The job to be done for each avatar is brand data: it lives in `app/brain/<brand>/avatars.json` (`value.job`) and shows on the avatar cards, not here.
+
+## The room's questions after 10 rounds
+
+| Question | Status | Where |
+|---|---|---|
+| who is my customer and what job did they hire us for | built | avatar cards 0.4 and 5.8, gate 3.x, focus 4.9, avatar page 7.6 |
+| what exact words do our customers use for this | built | language bank 0.6, words per doubt, hooks, copy gap, voice check |
+| is this really one customer or three | built | split 4.8, compare 6.4 |
+| what actually gets someone past this objection | built | ladders with rung evidence 6.5, offer map, support replies 5.3 |
+| does this hold up outside the sample we already read | partial | strength of each read 5.7, sales against reviews 7.8, survey answers 9.4 wait on a survey table |
+| is there a customer nobody else is claiming | built | served map and segments 1.8 |
+| does this sound like us, and is every claim in it safe | built | voice sheet and line check, claims under fire |
+| where has the brand drifted since last quarter | open | needs dated scans of the live site, ads and email; the brain holds one capture (4.7 parked) |
+| is the brand getting stronger or weaker | partial | brand health from store data; branded search, mentions and review stars wait on connectors |
+| what does the brand stand for right now, in one place | partial | messaging hierarchy here; the brand brain screen owns the rest |
+| do customers describe us the way we describe ourselves | built | perception gap |
+| would a real shopper get stuck, and does this message land | open | mystery shopper runs and persona pretests are not built; no table for them yet |
+| is anyone about to take something that is ours | partial | lookalike pages from the Ad Library; trademark, domain and handle watch has no table |
+| what is the one message this page or email should lead with | built | messaging hierarchy with approve |
 
 ## Candidates from the room spec (pick 10 per round)
 
