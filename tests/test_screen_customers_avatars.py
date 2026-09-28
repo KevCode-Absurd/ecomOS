@@ -1984,3 +1984,75 @@ class SettleInSurvey(TempBrain):
         for r in d['sales_share']['rows']:
             if r.get('action'):
                 self.assertIn('survey question 1', r['action']['steps'][0]['text'])
+
+
+SMOKE_JS = r"""
+const { chromium } = require(process.env.PW_MODULE);
+(async () => {
+  const b = await chromium.launch({ executablePath: process.env.PW_CHROME || undefined, args: ['--no-sandbox'] });
+  const p = await b.newPage({ viewport: { width: 1280, height: 900 } });
+  const errs = [];
+  p.on('pageerror', (e) => errs.push(e.message));
+  p.on('console', (m) => { if (m.type() === 'error' && !/^Failed to load resource/.test(m.text())) errs.push(m.text()); });
+  p.on('response', (r) => { if (r.status() >= 400 && r.url().startsWith(process.env.BASE)) errs.push(r.status() + ' ' + r.url()); });
+  const base = process.env.BASE + '/screens/02-customers-avatars/';
+  await p.goto(base, { waitUntil: 'networkidle' });
+  await p.waitForSelector('#plan .plan-item', { timeout: 20000 });
+  const out = { plan: await p.$$eval('#plan .plan-item', (n) => n.length), tabs: {} };
+  for (const t of ['avatars', 'doubts', 'offers', 'retention', 'brand']) {
+    await p.goto(base + '#tab=' + t); await p.waitForTimeout(300);
+    out.tabs[t] = await p.$$eval('#desk .section', (n) => n.filter((x) => x.offsetParent !== null).length);
+  }
+  await p.click('#report-btn'); await p.waitForSelector('.panel .report', { timeout: 10000 });
+  out.report = await p.$$eval('.panel .report section', (n) => n.length);
+  await p.keyboard.press('Escape');
+  await p.goto(base + '#tab=avatars'); await p.waitForTimeout(300);
+  await p.locator('text=One page to take away').first().click();
+  await p.waitForSelector('.panel .report', { timeout: 10000 });
+  out.avatar = await p.$$eval('.panel .report section', (n) => n.length);
+  out.errors = errs;
+  console.log(JSON.stringify(out));
+  await b.close();
+})().catch((e) => { console.log(JSON.stringify({ fatal: String(e) })); process.exit(1); });
+"""
+
+
+class BrowserSmoke(unittest.TestCase):
+    """Feature 8.6: load the page, every desk tab, the report and an avatar page in Chromium against a real server.
+    Fails on any script error or a missing plan, desk block or report. Skipped without Node and Playwright."""
+
+    def test_page_loads_clean(self):
+        import os
+        import socket
+        import subprocess
+        import time
+        node = shutil.which('node')
+        mods = [p for p in (os.environ.get('PW_MODULE'), '/opt/node22/lib/node_modules/playwright') if p and Path(p).exists()]
+        if not node or not mods:
+            self.skipTest('no Node or Playwright here')
+        with socket.socket() as s_:
+            s_.bind(('127.0.0.1', 0))
+            port = s_.getsockname()[1]
+        srv = subprocess.Popen([sys.executable, str(ROOT / 'app' / 'server.py'), '--port', str(port)], cwd=str(ROOT),
+                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        try:
+            for _ in range(50):
+                try:
+                    socket.create_connection(('127.0.0.1', port), timeout=0.2).close()
+                    break
+                except OSError:
+                    time.sleep(0.2)
+            env = dict(os.environ, PW_MODULE=mods[0], BASE=f'http://127.0.0.1:{port}',
+                       PW_CHROME='/opt/pw-browsers/chromium' if Path('/opt/pw-browsers/chromium').exists() else '')
+            r = subprocess.run([node, '-e', SMOKE_JS], env=env, capture_output=True, text=True, timeout=180)
+            out = json.loads((r.stdout.strip().splitlines() or ['{}'])[-1])
+        finally:
+            srv.terminate()
+            srv.wait(timeout=10)
+        self.assertNotIn('fatal', out, out)
+        self.assertEqual(out['errors'], [])
+        self.assertGreater(out['plan'], 0)
+        for tab, n in out['tabs'].items():
+            self.assertGreater(n, 0, tab)
+        self.assertGreaterEqual(out['report'], 6)
+        self.assertEqual(out['avatar'], 8)
