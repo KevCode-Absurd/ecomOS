@@ -82,6 +82,8 @@ question, and accept or ignore on a proposed record. Nothing external.
                                 proposed, approved, stale or unavailable
   POST facts/<key>              {answer, question?}: approve the wording as content.faq_<key>
   GET  facts/export             FAQPage JSON-LD and plain text of the approved pairs
+  GET  summaries                what an agent reads first: the T1 summary per section with its token count
+  GET  package?capability=<id>  the package a capability gets (T0, T1, T2) with tokens against its budget
   GET  records?section=<name>   one section's records with tier, date, source and evidence
   GET  audit                    findings from audit.py (app/contracts/audit.md shape)
   POST questions/<field>        {answer}: writes a founder record, marks the question answered
@@ -106,6 +108,7 @@ if str(APP / "brain") not in sys.path:
     sys.path.insert(0, str(APP / "brain"))
 
 import keeper  # noqa: E402
+import package as package_mod  # noqa: E402
 from package import t0_card  # noqa: E402
 from store import SECTIONS, Brain  # noqa: E402
 
@@ -820,6 +823,32 @@ def claim_add(brain: Brain, body: dict):
     return 201, {"ok": True, "record": rid, "tier": tier, "flows_to": FLOWS_TO.get("claims", ""), "version": brain.version()}
 
 
+def summaries(brain: Brain) -> dict:
+    rows = []
+    for sec in SECTIONS:
+        if sec in health.META_SECTIONS:
+            continue
+        text = package_mod.t1_summary(brain, sec)
+        rows.append({"section": sec, "label": sec.replace("_", " "), "records": len(brain.records(sec)), "tokens": package_mod.tokens(text), "text": text})
+    t0 = t0_card(brain, False)
+    return {"t0_tokens": package_mod.tokens(t0), "sections": rows, "total_tokens": sum(r["tokens"] for r in rows) + package_mod.tokens(t0),
+            "note": "T0 is the brand card every agent reads. T1 is one derived paragraph per section, built in code from the strongest records until 480 characters. T2 is the records themselves, only for the sections a capability names."}
+
+
+def package_view(brain: Brain, cap_id: str):
+    if not re.fullmatch(r"[A-Z]{2,6}-C\d{2,3}", cap_id or ""):
+        return 400, {"error": "capability must be an id like CREA-C06"}
+    try:
+        pkg = package_mod.package(brain.brand, cap_id, root=BRAIN_ROOT, today=brain.today, use_cache=False)
+    except KeyError as exc:
+        return 404, {"error": str(exc), "capability": cap_id}
+    cat = rank_mod.catalogue().get(cap_id, {})
+    return {"capability": cap_id, "name": cat.get("name"), "autonomy": cat.get("autonomy"), "budget": pkg["budget"], "tokens": pkg["tokens"], "public_facing": pkg["public_facing"],
+            "share": round(pkg["tokens"] / pkg["budget"], 2) if pkg["budget"] else None,
+            "parts": [{"tier": p["tier"], "section": p.get("section"), "tokens": package_mod.tokens(p["text"]), "text": p["text"]} for p in pkg["parts"]],
+            "records": len(pkg["records"]), "version": pkg["version"], "text": pkg["text"]}
+
+
 def fact_approve(brain: Brain, key: str, body: dict):
     if key not in facts.KEYS:
         return 404, {"error": "no such fact", "key": key}
@@ -1085,6 +1114,12 @@ def handle(req):
         ends = (brain.today - dt.timedelta(days=1)).isoformat()
         findings = audit.run(brain.brand, {"ends_on": ends, "days": 1, "trailing": 0}, BRAIN_ROOT)
         return {"findings": findings, "rules": audit.RULES, "brain_version": brain.version()}
+    if req.method == "GET" and parts == ["summaries"]:
+        sm = summaries(brain)
+        sm.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())
+        return sm
+    if req.method == "GET" and parts == ["package"]:
+        return package_view(brain, req.arg("capability", "") or "")
     if req.method == "GET" and parts == ["facts"]:
         fp = facts.pairs(brain)
         fp.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())

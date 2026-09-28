@@ -1257,3 +1257,21 @@ class Round3Channels(TempBrain):
         r = api.handle(Req(['scan'], 'POST', body={'text': 'Plain line.', 'channel': 'nope'}))
         self.assertIsNone(r['channel'])
         self.assertEqual(r['channels'], ['amazon', 'email', 'google', 'meta', 'sms'])
+
+
+class Round3Package(TempBrain):
+    """Round 3 feature 6: what an agent reads, the T1 summaries and the package for a capability."""
+
+    def test_summaries_and_package(self):
+        sm = api.handle(Req(['summaries']))
+        by = {r['section']: r for r in sm['sections']}
+        self.assertTrue(by['claims']['text'].startswith('## claims (T1): 6 records'))
+        self.assertGreater(by['claims']['tokens'], 20)
+        self.assertGreater(sm['t0_tokens'], 50)
+        p = api.handle(Req(['package'], query={'capability': ['CREA-C06']}))
+        self.assertEqual(p['capability'], 'CREA-C06')
+        self.assertLessEqual(p['tokens'], p['budget'])
+        self.assertEqual(p['parts'][0]['tier'], 'T0')
+        self.assertTrue(any(x['tier'] == 'T1' for x in p['parts']))
+        self.assertEqual(api.handle(Req(['package'], query={'capability': ['nope']}))[0], 400)
+        self.assertEqual(api.handle(Req(['package'], query={'capability': ['ZZZ-C99']}))[0], 404)

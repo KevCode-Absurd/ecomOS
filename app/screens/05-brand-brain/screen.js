@@ -989,6 +989,33 @@
     mount('#site', ...items);
   }
 
+  // ---------- 5g. what an agent reads ----------
+  function packageBox() {
+    const input = el('input', { class: 'text sm', placeholder: 'Capability id, like CREA-C06', value: 'CREA-C06', style: { maxWidth: '200px' } });
+    const btn = el('button', { class: 'btn sm primary', type: 'button', text: 'Show the package' });
+    const out = el('div', { class: 'stack' });
+    btn.addEventListener('click', async () => {
+      btn.disabled = true;
+      try {
+        const p = await api(BASE + 'package?capability=' + encodeURIComponent(input.value.trim().toUpperCase()));
+        mount(out, el('div', { class: 'row' }, el('b', { text: p.capability + (p.name ? ': ' + p.name : '') }), el('span', { class: 'chip ' + (p.share > 0.9 ? 'warn' : ''), text: p.tokens + ' of ' + p.budget + ' tokens' }), p.public_facing ? el('span', { class: 'chip', text: 'public facing: private records left out' }) : null, el('span', { class: 'chip', text: p.records + ' T2 records' }), UI.copyButton({ label: 'Copy the package', text: () => p.text })),
+          UI.table({ columns: [{ key: 'tier', label: 'Tier' }, { key: 'section', label: 'Section', format: (v) => v ? pretty(v) : 'brand card' }, { key: 'tokens', label: 'Tokens', unit: 'n', align: 'right' }, { key: 'text', label: 'Text', format: (v) => v.length > 160 ? v.slice(0, 157) + '...' : v }], rows: p.parts, sort: false }),
+          el('pre', { class: 'card sunken brief', text: p.text }));
+      } catch (e) { mount(out, el('p', { class: 'muted', text: 'Could not build: ' + e.message })); }
+      btn.disabled = false;
+    });
+    return el('div', { class: 'stack' }, el('div', { class: 'row' }, input, btn, el('span', { class: 'micro faint', text: 'Any capability id from the catalogue with brain sections in the overlay.' })), out);
+  }
+  async function loadPackage() {
+    let sm;
+    try { sm = await api(BASE + 'summaries'); } catch (e) { mount('#package', el('p', { class: 'muted', text: 'Summaries unavailable: ' + e.message })); return; }
+    mount('#package-tools', UI.orientation([{ label: 'brand card', value: sm.t0_tokens, unit: 'n', title: 'tokens' }, { label: 'summaries', value: sm.sections.length, unit: 'n' }, { label: 'all summaries', value: sm.total_tokens, unit: 'n', title: 'tokens if every section were loaded' }]));
+    mount('#package', UI.tabs({ items: [
+      { key: 'summaries', label: 'Summary per section', n: sm.sections.length, panel: () => UI.table({ columns: [{ key: 'label', label: 'Section' }, { key: 'records', label: 'Records', unit: 'n', align: 'right' }, { key: 'tokens', label: 'Tokens', unit: 'n', align: 'right' }, { key: 'text', label: 'What an agent reads', format: (v) => v.replace(/\nCites:.*$/s, '').replace(/^## /, '') }], rows: sm.sections, sort: false, maxRows: 40 }) },
+      { key: 'package', label: 'Package for a capability', panel: packageBox },
+    ] }), el('div', { class: 'micro faint', text: sm.note }));
+  }
+
   // ---------- 5c2b. store facts for AI shopping agents ----------
   function factPanel(r, reload) {
     const q = el('input', { class: 'text sm', value: r.question, 'aria-label': 'Question' });
@@ -1242,6 +1269,7 @@
     loadPermissions();
     loadAssumptions();
     loadFacts();
+    loadPackage();
     const [prof] = await Promise.all([loadProfile(), loadDesk()]);
     await loadPlan(prof);
   }
