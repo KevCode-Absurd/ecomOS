@@ -878,7 +878,7 @@
   // ---------- 3. actions ----------
   function renderActions(r) {
     const acts = r.actions || [];
-    const cards = acts.map((a, i) => UI.actionCard(a, { expanded: i === 0, screen: SLUG }));
+    const cards = acts.map((a, i) => UI.actionCard(a, { expanded: i === 0, screen: SLUG, onDecision: () => load() }));
     const LIMIT = 6;
     const list = document.getElementById('actions');
     mount(list, ...cards.slice(0, LIMIT));
@@ -887,6 +887,19 @@
       more.addEventListener('click', () => { mount(list, ...cards); more.remove(); });
       mount('#actions-tools', more);
     }
+    renderSnoozed(r.snoozed || []);
+  }
+
+  // ---------- depth rule 14: what the founder put off, with the date and the day it comes back
+  function renderSnoozed(rows) {
+    const box = document.getElementById('snoozed');
+    if (!rows.length) { mount(box); box.hidden = true; return; }
+    box.hidden = false;
+    mount(box, el('details', null,
+      el('summary', { text: rows.length + ' put off with "Not now". Each comes back after 14 days.' }),
+      el('ul', { class: 'snoozed-list' }, ...rows.map((a) => el('li', null,
+        el('b', { text: a.title }), ' ',
+        el('span', { class: 'muted', text: 'Not now on ' + fmt.date(a.decision.time) + '. Back on ' + fmt.date(a.decision.back_on) + '.' + (a.decision.reason ? ' ' + a.decision.reason : '') }))))));
   }
 
   // ---------- 6. the audit ----------
@@ -1057,6 +1070,8 @@
       mount('#badge', 'Could not load customers: ' + e.message); return;
     }
     mount('#badge', el('span', null, el('b', { text: 'Simulated data. ' }), d.simulated_note));
+    r.snoozed = (r.actions || []).filter((x) => x.status === 'snoozed');
+    r.actions = (r.actions || []).filter((x) => x.status !== 'snoozed');
     renderPlan(d, r);
     renderSince(d, r);
     renderWrong(a, r);
@@ -1105,7 +1120,7 @@
     if (!deskTabs) buildDesk(r.actions || []);
     renderAgenda();
     renderTests();
-    renderDecided(r.actions || []);
+    renderDecided((r.actions || []).concat(r.snoozed || []));
     renderHandoff();
     document.getElementById('audit-sub').textContent = a.findings.length + ' findings from ' + a.rules.length + ' rules. Brain version ' + String(a.brain_version || '').slice(0, 7) + '.';
     mount('#audit', auditTable(a.findings));

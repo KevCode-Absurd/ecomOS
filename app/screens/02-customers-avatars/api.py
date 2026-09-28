@@ -504,7 +504,7 @@ def handle(req):
     if req.method == "GET" and parts == ["report"]:
         d = overview(brain)
         w = {"ends_on": d["ends_on"], "days": 28, "trailing": 4}
-        acts = rank(brain.brand, w)["actions"]
+        acts = [a for a in rank(brain.brand, w)["actions"] if a.get("status") != "snoozed"]
         eng = _engine()
         acts.sort(key=eng.sort_key)
         ag = builds.agenda(d, acts, builds.proposed_tests(d, brain.brand, d["ends_on"]), brain.today.isoformat())
@@ -512,7 +512,7 @@ def handle(req):
     if req.method == "GET" and parts == ["agenda"]:
         d = overview(brain)
         w = {"ends_on": d["ends_on"], "days": 28, "trailing": 4}
-        acts = rank(brain.brand, w)["actions"]
+        acts = [a for a in rank(brain.brand, w)["actions"] if a.get("status") != "snoozed"]
         return builds.agenda(d, acts, builds.proposed_tests(d, brain.brand, d["ends_on"]), brain.today.isoformat())
     if req.method == "GET" and parts == ["tests"]:
         return proposed(brain)
@@ -710,7 +710,35 @@ def rank(brand: str, window: dict) -> dict:
         if len(_RANK_CACHE) >= _CACHE_MAX:
             _RANK_CACHE.pop(next(iter(_RANK_CACHE)))
         _RANK_CACHE[key] = _build_rank(brand, window)
-    return copy.deepcopy(_RANK_CACHE[key])
+    out = copy.deepcopy(_RANK_CACHE[key])
+    apply_decisions(out["actions"], dt.date.fromisoformat(window["ends_on"]) + dt.timedelta(days=1))
+    return out
+
+
+DECISIONS_PATH = None   # None reads the shared log, app/data/decisions.json; tests point it at a temp file
+
+
+def apply_decisions(actions: list[dict], today: dt.date) -> None:
+    """Depth rule 14: the latest founder decision on any finding an action carries shows on the action with its date.
+    "Not now" snoozes it for the shared snooze days: status snoozed, with the day it comes back. Read fresh on every call,
+    after the cache, so a decision shows on the next load."""
+    eng = _engine()
+    dec = eng.decisions_by_finding(DECISIONS_PATH or eng.DECISIONS)
+    for a in actions:
+        rows = [dec[f] for f in [a["id"]] + list(a.get("finding_ids") or []) if f in dec]
+        if not rows:
+            continue
+        d = max(rows, key=lambda r: str(r.get("time") or ""))
+        when = str(d.get("time") or "")[:10]
+        a["decision"] = {"choice": d.get("choice"), "time": d.get("time"), "reason": d.get("reason"), "back_on": None}
+        if d.get("choice") == "not_now":
+            try:
+                back = dt.date.fromisoformat(when) + dt.timedelta(days=eng.SNOOZE_DAYS)
+            except ValueError:
+                continue
+            a["decision"]["back_on"] = back.isoformat()
+            if today < back:
+                a["status"] = "snoozed"
 
 
 def _build_rank(brand: str, window: dict) -> dict:

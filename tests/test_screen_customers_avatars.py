@@ -1682,3 +1682,52 @@ class GapsNotTotals(unittest.TestCase):
     def test_page_draws_the_gap(self):
         js = (ROOT / 'app' / 'screens' / '02-customers-avatars' / 'screen.js').read_text(encoding='utf-8')
         self.assertIn("'block-gap gap-' + b.gap.kind", js)
+
+
+class FounderCanDisagree(unittest.TestCase):
+    """Feature 7.4: depth rule 14. A decision shows on its action with the date; "Not now" snoozes it 14 days, then it comes back."""
+
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp())
+        self.log = self.tmp / 'decisions.json'
+        api.DECISIONS_PATH = self.log
+        self.acts = api.rank('bombas', RANK_WINDOW)['actions']
+
+    def tearDown(self):
+        api.DECISIONS_PATH = None
+        shutil.rmtree(self.tmp, ignore_errors=True)
+
+    def write(self, rows):
+        self.log.write_text(json.dumps(rows), encoding='utf-8')
+
+    def test_not_now_snoozes_with_the_day_it_comes_back(self):
+        a = self.acts[0]
+        self.write([{'finding_id': a['id'], 'choice': 'not_now', 'time': RANK_WINDOW['ends_on'] + 'T10:00:00Z', 'screen': '02-customers-avatars'}])
+        got = {x['id']: x for x in api.rank('bombas', RANK_WINDOW)['actions']}[a['id']]
+        self.assertEqual(got['status'], 'snoozed')
+        back = (api.dt.date.fromisoformat(RANK_WINDOW['ends_on']) + api.dt.timedelta(days=14)).isoformat()
+        self.assertEqual(got['decision']['back_on'], back)
+        later = dict(RANK_WINDOW, ends_on=back)
+        again = {x['id']: x for x in api.rank('bombas', later)['actions']}.get(a['id'])
+        if again:
+            self.assertNotEqual(again['status'], 'snoozed')
+
+    def test_decision_on_a_merged_finding_shows_on_the_lead(self):
+        merged = next(x for x in self.acts if len(x['finding_ids']) > 1)
+        self.write([{'finding_id': merged['finding_ids'][-1], 'choice': 'agent', 'time': '2026-09-27T09:00:00Z'}])
+        got = {x['id']: x for x in api.rank('bombas', RANK_WINDOW)['actions']}[merged['id']]
+        self.assertEqual(got['decision']['choice'], 'agent')
+        self.assertNotEqual(got['status'], 'snoozed')
+
+    def test_no_log_leaves_actions_open_and_the_cache_clean(self):
+        self.assertTrue(all(x['decision'] is None for x in self.acts))
+        self.write([{'finding_id': self.acts[0]['id'], 'choice': 'not_now', 'time': '2026-09-27T09:00:00Z'}])
+        api.rank('bombas', RANK_WINDOW)
+        self.log.unlink()
+        self.assertIsNone(api.rank('bombas', RANK_WINDOW)['actions'][0]['decision'])
+
+    def test_report_and_agenda_skip_snoozed(self):
+        a = self.acts[0]
+        self.write([{'finding_id': a['id'], 'choice': 'not_now', 'time': RANK_WINDOW['ends_on'] + 'T10:00:00Z'}])
+        rep = api.handle(Req(['report']))
+        self.assertNotIn(a['title'], json.dumps(rep))
