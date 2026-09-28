@@ -6,9 +6,28 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | # | Feature | Status |
 |---|---|---|
-| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | todo |
-| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | todo |
-| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | todo |
+| 0.1 | Page shell in the shared UI kit: header, empty-state tiles, insight list, action buttons | done |
+| 0.2 | `api.py` serving this screen's metrics from `app/data/` with unavailable states | done |
+| 0.3 | 3 metric tiles, 2 insights, 1 chart from the sample brand | done |
+| 0.4 | `audit.py`: 10 rules in the contract shape, registry seed in `fixtures/registry.json` | done |
+
+## Jobs to be done and the audit rules behind them
+
+| Job (room spec) | Question | Capability | Audit rule |
+|---|---|---|---|
+| see everything running, and what each tests | what are we actually testing right now | REG-C03 | registry table, tile `running` |
+| see which reads are due and which are overdue | what result am I waiting on, and is anything late | REG-C08, REG-C02 | EXP-R06 read overdue |
+| see the plain-word result when a read lands | did it work, in numbers I can read in one line | REG-C03 | EXP-R09 unreadable read; insight "read point reached" |
+| see the brand's own belief about an idea after it was tried | does this idea work for this brand | REG-C04 | EXP-R04 learning not written back |
+| see what was parked and why, and when that expires | what did we put off, and is it time to look again | REG-C05 | EXP-R05 stale hypothesis |
+| catch two running tests that contaminate each other | are two experiments about to step on each other | LOOP-C35 | EXP-R08 overlap |
+| agree metric, read point and kill or scale rule before start | did we agree what winning looks like before we started | LOOP-C08 | EXP-R01 no pre-registered metric, EXP-R02 read before minimum sample, EXP-R07 read point too small |
+| act on a winner | did the winner actually ship | REG-C03 | EXP-R03 winner not rolled out (money from returns_by_reason) |
+| run the same retro every time something closes | what did we learn, and would we do it again | LOOP-C25 | EXP-R10 retro missing |
+| see why one candidate ranks above another | why is a web idea beating a bank idea | LOOP-C09 | later round (needs ranker) |
+| see founder reasons turned into weights | why does the system know I dislike this | LOOP-C10 | later round (needs decision log) |
+| check the ranked pick against my likely pick | would the top pick be my pick | LOOP-C36 | later round (needs prediction log) |
+| hand a new person the reasoning behind decisions | why did we do it this way | LOOP-C10 | later round |
 
 ## Candidates from the room spec (pick 10 per round)
 
@@ -87,3 +106,14 @@ Status: todo | doing | done | parked. One feature per commit. The first round is
 
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
+| 0 | shell, api, 3 tiles, 2 insights, 1 chart, audit | 2026-09-28 | registry seeded with 6 simulated Bombas tests |
+
+## Round 0 status
+
+1. Shell, `api.py` (overview, findings), 3 tiles (running, reads due this week, past read point), 2 rule insights, 1 chart (days run against minimum days); all labelled simulated.
+2. Registry seeded in `fixtures/registry.json`: 6 simulated tests from `bombas.diagnosis.test_queue` and `strength_2`; shape in `contracts/events.md`. `app/data/decisions.json` was absent, so decisions are simulated.
+3. `audit.py` has 10 rules (EXP-R01 to EXP-R10); 9 fire on Bombas, EXP-R07 is tested on fed entries. Outcomes come from `app/metrics.py` (aov, add_to_cart_rate, returns_by_reason); others read unavailable.
+4. Money at stake only on EXP-R03 (returns avoided by the unshipped fit finder, a floor); every other rule gives null with a reason, never 0.
+5. `data.sqlite` was rebuilt at scale 0.1 (git-ignored); committed aggregates were restored untouched. Screenshot `round0.png` at 1280 wide.
+6. Next: a shared `registry` table and brand priors (REG-C04), founder reason weights (LOOP-C10), overlap matrix and read point timeline visuals.
+
