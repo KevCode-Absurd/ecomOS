@@ -263,6 +263,14 @@
         el('pre', { class: 'small', style: { whiteSpace: 'pre-wrap', margin: 0 }, text: b.text })) });
   }
 
+  async function answerQuestion(r) {
+    const answer = prompt('Your answer to "' + (r.doubt || r.question) + '" (one or two lines; it becomes a brain record):');
+    if (answer == null || !answer.trim()) return;
+    const kind = (prompt('What kind of proof is it? claim, policy, offer, or none (no proof exists yet):', 'claim') || 'none').trim().toLowerCase();
+    try { const res = await api(BASE + 'answers' + Q, { method: 'POST', body: { question_id: r.id, answer, kind, who: 'founder' } }); alert('Written: ' + ((res.written || []).join(', ') || 'the question is marked answered, no proof record') + '.'); load(); }
+    catch (e) { alert('Not written: ' + e.message); }
+  }
+
   async function candidatePost(path, body) {
     try { await api(BASE + path + Q, { method: 'POST', body }); load(); }
     catch (e) { alert('Could not save: ' + e.message); }
@@ -956,7 +964,8 @@
       q: r.doubt ? '"' + r.doubt + '"' : r.question.slice(0, 80), quotesText: r.quotes == null ? NA : String(r.quotes), theme: r.theme_label || NA,
       state: r.answered_on ? 'answered ' + fmt.date(r.answered_on) : r.asked_on ? 'asked ' + fmt.date(r.asked_on) + (r.days_open != null ? ' (' + r.days_open + ' d)' : '') : 'not asked yet',
       site: r.records_answer_theme == null ? NA : r.records_answer_theme ? 'the theme, yes; this doubt, no' : 'no',
-      actions: [a ? { label: 'Ask the founder', onClick: () => openAction(a) } : { label: r.verdict === 'answered' ? 'Done' : 'Thin', cls: 'quiet', onClick: () => {} }] }); });
+      actions: [a ? { label: 'Ask the founder', onClick: () => openAction(a) } : { label: r.verdict === 'answered' ? 'Done' : 'Thin', cls: 'quiet', onClick: () => {} },
+        r.verdict !== 'answered' ? { label: 'Answer', cls: 'quiet', onClick: () => answerQuestion(r) } : null].filter(Boolean) }); });
     const tbl = UI.verdictTable({
       columns: [{ key: 'q', label: 'The doubt' }, { key: 'theme', label: 'Theme' }, { key: 'quotesText', label: 'Complaint quotes' }, { key: 'who', label: 'Who can answer' }, { key: 'state', label: 'State' }, { key: 'site', label: 'Records answer it' }],
       rows: vrows,

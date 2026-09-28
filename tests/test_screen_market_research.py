@@ -1376,6 +1376,46 @@ class DecisionMemoryTest(unittest.TestCase):
             api.DECISIONS_PATH = saved
 
 
+class AnswerTest(unittest.TestCase):
+    """A founder answer goes through the brain store into a temp brain root, never the shared one."""
+
+    def _brain(self):
+        import tempfile, sys
+        root = Path(tempfile.mkdtemp())
+        (root / 'fake').mkdir()
+        (root / 'fake' / 'open_questions.json').write_text(json.dumps([{'id': 'fake.open_questions.ladder_durability_3', 'brand': 'fake', 'section': 'open_questions', 'field': 'ladder_durability_3',
+            'value': {'question': 'What proof answers "will it last"?', 'who_can_answer': 'the founder', 'asked_on': None, 'answered_on': None}, 'text': 'What proof answers "will it last"?', 'tier': 'unverified', 'status': 'active'}]), encoding='utf-8')
+        (root / 'fake' / 'claims.json').write_text('[]', encoding='utf-8')
+        sys.path.insert(0, str(ROOT / 'app' / 'brain'))
+        import store
+        return store.Brain('fake', root=root), root
+
+    def test_claim_written_and_question_closed(self):
+        br, root = self._brain()
+        code, out = api.answer_question('fake', {'question_id': 'fake.open_questions.ladder_durability_3', 'answer': 'Every pair carries the Happiness Guarantee: a hole inside a year is replaced.', 'kind': 'claim', 'who': 'kevin'}, date(2026, 9, 28), brain=br)
+        self.assertEqual(code, 201, out)
+        self.assertEqual(out['written'], ['fake.claims.answer_ladder_durability_3'])
+        rec = br.get('fake.claims.answer_ladder_durability_3')
+        self.assertEqual((rec['tier'], rec['status'], rec['source']['type'], rec['added_by']), ('approved', 'active', 'founder', 'kevin'))
+        q = br.get('fake.open_questions.ladder_durability_3')
+        self.assertEqual((q['value']['answered_on'], q['value']['asked_on'], q['value']['answer_kind']), ('2026-09-28', '2026-09-28', 'claim'))
+        self.assertEqual(audit.open_questions(br, date(2026, 9, 28))['rows'][0]['verdict'], 'answered')
+
+    def test_none_marks_answered_without_a_record(self):
+        br, root = self._brain()
+        code, out = api.answer_question('fake', {'question_id': 'fake.open_questions.ladder_durability_3', 'answer': 'No proof yet; it is a product problem.', 'kind': 'none'}, date(2026, 9, 28), brain=br)
+        self.assertEqual((code, out['written']), (201, []))
+        self.assertEqual(br.get('fake.open_questions.ladder_durability_3')['value']['answered_on'], '2026-09-28')
+        self.assertEqual(br.records('claims'), [])
+
+    def test_refusals(self):
+        br, root = self._brain()
+        self.assertEqual(api.answer_question('fake', {'question_id': 'fake.open_questions.nope', 'answer': 'x', 'kind': 'claim'}, date(2026, 9, 28), brain=br)[0], 404)
+        self.assertEqual(api.answer_question('fake', {'question_id': 'fake.open_questions.ladder_durability_3', 'answer': '', 'kind': 'claim'}, date(2026, 9, 28), brain=br)[0], 400)
+        self.assertEqual(api.answer_question('fake', {'question_id': 'fake.open_questions.ladder_durability_3', 'answer': 'x', 'kind': 'rumour'}, date(2026, 9, 28), brain=br)[0], 400)
+        self.assertEqual(api.answer_question(None, {'question_id': 'x', 'answer': 'x'}, date(2026, 9, 28))[0], 400)
+
+
 class ChangesTest(unittest.TestCase):
     def test_snapshot_and_diff(self):
         saved = api.SEEN_DIR

@@ -2091,6 +2091,60 @@ def changes_since(data, brand):
             'quiet': not (new or gone or worse or better or stake_moves)}
 
 
+# ---------------------------------------------------------------- founder answers written back (round 6.5)
+
+ANSWER_SECTIONS = {'claim': 'claims', 'policy': 'policies', 'offer': 'offers'}
+
+
+def answer_question(brand, body, today, brain=None):
+    """The founder's answer to an open question, written back through the brain store: the answer becomes an approved,
+    founder-sourced record in claims, policies or offers (kind), or a note that no proof exists (kind none); the question's
+    record gets answered_on. Validation errors come back as 400; nothing is written when there are any."""
+    if not brand:
+        return 400, {'error': 'the sample brand has no brain to write to'}
+    if not isinstance(body, dict):
+        return 400, {'error': 'body must be an object'}
+    qid = str(body.get('question_id') or '')
+    answer = str(body.get('answer') or '').strip()[:600]
+    kind = str(body.get('kind') or 'none')
+    who = str(body.get('who') or 'founder').strip()[:40] or 'founder'
+    if kind not in ('none', *ANSWER_SECTIONS):
+        return 400, {'error': 'kind must be claim, policy, offer or none'}
+    if not answer:
+        return 400, {'error': 'answer is empty'}
+    br = brain or audit.brain(brand)
+    if br is None:
+        return 400, {'error': f'no brain for {brand}'}
+    q = br.get(qid)
+    if not q or q.get('section') != 'open_questions':
+        return 404, {'error': f'no open question {qid}'}
+    field = q.get('field') or qid.split('.')[-1]
+    written = []
+    if kind != 'none':
+        section = ANSWER_SECTIONS[kind]
+        rec = {'id': f'{brand}.{section}.answer_{field}', 'brand': brand, 'section': section, 'field': f'answer_{field}', 'value': answer, 'text': answer,
+               'source': {'type': 'founder', 'ref': f'{who}, research desk answer, {today.isoformat()}', 'captured_at': today.isoformat()},
+               'confidence': 1.0, 'tier': 'approved', 'status': 'active', 'visibility': 'public', 'added_by': who,
+               'notes': f'Answers the open question {qid}: {(q.get("value") or {}).get("question") or ""}'[:300]}
+        errs = br.put(rec)
+        if errs:
+            return 400, {'error': 'the brain refused the record', 'details': errs}
+        written.append(rec['id'])
+    qv = dict(q.get('value') or {})
+    qv['asked_on'] = qv.get('asked_on') or today.isoformat()
+    qv['answered_on'] = today.isoformat()
+    qv['answer'] = answer
+    qv['answer_kind'] = kind
+    keep = ('id', 'brand', 'section', 'field', 'value', 'text', 'source', 'confidence', 'tier', 'status', 'visibility', 'added_by', 'notes', 'evidence', 'expires_at', 'valid_from')
+    qrec = {k: v for k, v in q.items() if k in keep}   # the store decorates a read record with dates the validator does not accept
+    qrec['value'] = qv
+    qrec['notes'] = (f'Answered by {who} on {today.isoformat()}: {answer}' if kind == 'none' else f'Answered by {who} on {today.isoformat()}; record {written[-1]}')[:300]
+    errs = br.put(qrec)
+    if errs:
+        return 400, {'error': 'the brain refused the question update', 'details': errs}
+    return 201, {'ok': True, 'question_id': qid, 'answered_on': today.isoformat(), 'written': written, 'kind': kind}
+
+
 def _brand(req):
     brand = req.arg('brand', DEFAULT_BRAND)
     if brand in ('', 'sample'):
@@ -2110,11 +2164,13 @@ def handle(req):
             today = audit.last_full_day(data, brand) + dt.timedelta(days=1)
             if req.path == ['snapshot']:
                 return 201, take_snapshot(data, brand, today)
+            if req.path == ['answers']:
+                return answer_question(brand, req.body, today)
             if req.path == ['candidates']:
                 return candidate_add(brand or 'sample', req.body, today)
             if len(req.path) == 2 and req.path[0] == 'candidates':
                 return candidate_update(brand or 'sample', req.path[1], req.body, today)
-            return 405, {'error': 'read only, except the candidate pipeline and the seen snapshot'}
+            return 405, {'error': 'read only, except the candidate pipeline, the seen snapshot and a founder answer'}
         if req.path == ['overview']:
             return overview(data, brand)
         if req.path == ['findings']:
