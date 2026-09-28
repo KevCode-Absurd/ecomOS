@@ -60,7 +60,7 @@ def quotes_check(text: str, brain=None, ugc_mod=None) -> list[dict]:
     return hits
 
 
-def review(brain, text: str, channel: str | None, kind: str | None, claims_mod, legal_mod, voice_mod, visual_mod, ugc_mod=None) -> dict:
+def review(brain, text: str, channel: str | None, kind: str | None, claims_mod, legal_mod, voice_mod, visual_mod, ugc_mod=None, locks_mod=None) -> dict:
     text = text or ""
     checks = []
     hits: list[dict] = []
@@ -87,7 +87,11 @@ def review(brain, text: str, channel: str | None, kind: str | None, claims_mod, 
     except Exception:  # noqa: BLE001
         sn = {"snippets": []}
     l_hits = locked_lines_check(text, sn)
-    checks.append({"key": "locked", "label": "Locked lines word for word", "status": "warn" if l_hits else "pass", "hits": len(l_hits)})
+    if locks_mod is not None:
+        gk_scope = kind if kind in ("email", "ad", "pdp", "policy", "subscription") else KIND_BY_CHANNEL.get(channel or "")
+        z_hits = locks_mod.check(brain, text, channel, gk_scope, voice_mod)
+        l_hits = [h for h in l_hits if not any(x["record"] == h.get("record") for x in z_hits)] + z_hits
+    checks.append({"key": "locked", "label": "Locked zones", "status": "fail" if any(h["severity"] == "fail" for h in l_hits) else ("warn" if l_hits else "pass"), "hits": len(l_hits)})
     hits += l_hits
     if re.search(r"#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{3}\b|rgba?\(", text):
         v = visual_mod.check_text(brain, text)

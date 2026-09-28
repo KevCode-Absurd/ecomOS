@@ -8,6 +8,9 @@ question, and accept or ignore on a proposed record. Nothing external.
                                 judgement rules, the package, where to check (markdown)
   GET  agentfile/endpoints      this route table as JSON, for an agent or an MCP wrapper
   GET  brainmd                  the router BRAIN.md text
+  GET  locks                    locked zones: locked lines, locked facts, logo rules; the review route enforces them
+  POST locks                    {label, text, scope, required}: a line an agent never rewrites, word for word
+  POST locks/<key>/retire       unlock a founder line (retired, never deleted)
   GET  drift                    positioning drift: the frame's words against the words customers use, with the brief
   GET  ugc                      UGC permission on file: consents with channel, scope, term and state
   POST ugc                      {name, handle, channel, what, scope, granted_on, term_months, evidence}: a consent on file
@@ -196,6 +199,9 @@ _pspec.loader.exec_module(parity)
 _sspec = importlib.util.spec_from_file_location("brand_brain_sitediff", HERE / "sitediff.py")
 sitediff = importlib.util.module_from_spec(_sspec)
 _sspec.loader.exec_module(sitediff)
+_lkspec = importlib.util.spec_from_file_location("brand_brain_locks", HERE / "locks.py")
+locks = importlib.util.module_from_spec(_lkspec)
+_lkspec.loader.exec_module(locks)
 _drspec = importlib.util.spec_from_file_location("brand_brain_drift", HERE / "drift.py")
 drift = importlib.util.module_from_spec(_drspec)
 _drspec.loader.exec_module(drift)
@@ -1872,6 +1878,28 @@ def handle(req):
         return cd
     if req.method == "POST" and parts == ["claims"]:
         return claim_add(brain, req.body)
+    if req.method == "GET" and parts == ["locks"]:
+        z = locks.zones(brain, voice)
+        z.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "BRN-C03", "autonomy": "founder_gate"})
+        return z
+    if req.method == "POST" and parts == ["locks"]:
+        rec = locks.record(brain, req.body or {})
+        if isinstance(rec, tuple):
+            return rec
+        errs = founder_put(brain, rec, "lock", rec["text"][:160])
+        if errs:
+            return 400, {"error": "; ".join(errs)}
+        return 201, {"ok": True, "record": rec["id"], "version": brain.version(), "next": "Locked. The review route fails a draft in its scope that drops or alters the line; the brain file lists it under strict rules."}
+    if req.method == "POST" and len(parts) == 3 and parts[0] == "locks" and parts[2] == "retire":
+        key = re.sub(r"[^a-z0-9_]+", "", parts[1])
+        raw = next((r for r in brain.raw("content") if r.get("field") == f"locked_{key}" and r.get("status", "active") != "retired"), None)
+        if raw is None:
+            return 404, {"error": "no locked line with that key", "key": key}
+        before_v = brain.version()
+        brain.retire(raw["id"])
+        changes.log(brain, "lock", "content", raw["id"], f"locked line {key} unlocked (retired)")
+        changes.version_step(brain, before_v, f"unlocked {key}")
+        return 201, {"ok": True, "retired": raw["id"], "version": brain.version()}
     if req.method == "GET" and parts == ["drift"]:
         d = drift.analysis(brain)
         d.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "BRAND-C57", "autonomy": "agent_does"})
@@ -1976,7 +2004,7 @@ def handle(req):
             return 413, {"error": "text is over 20,000 characters"}
         channel = (req.body or {}).get("channel") or None
         kind = (req.body or {}).get("kind") or None
-        return reviewer.review(brain, text, channel, kind, claims_mod, legal, voice, visual, ugc)
+        return reviewer.review(brain, text, channel, kind, claims_mod, legal, voice, visual, ugc, locks)
     if req.method == "POST" and parts == ["scan"]:
         text = str((req.body or {}).get("text") or "")
         if not text.strip():

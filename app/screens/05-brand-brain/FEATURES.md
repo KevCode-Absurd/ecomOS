@@ -169,6 +169,23 @@ Sources: the 5 things no tool does (`WEB-PASS.md`): rejected ideas with a reason
 | 5.9 | Who said we could quote them (`ugc.py`, `GET ugc`, `POST ugc`, `POST ugc/request`, `POST ugc/<key>/retire`): consents on file as founder content records with the person, the channel they agreed on, what they granted, the scope, the date and the term (expiry computed); the permission ask drafted in plain words to send yourself; the review route now passes a quoted line that matches a consent by word overlap, fails one whose consent expired, warns on one with none, and still fails any review-site line; rule BRN-R31 (medium when expired) drafts the renewal ask | done | Run a customer's words in an ad with the yes on file, and never a review-site line as a testimonial |
 | 5.10 | Do customers say what we say (`drift.py`, `GET drift`): the words in the positioning frame, the pitch, the voice adjectives and the proof points against the words customers use in praise and in complaints, counted over the language bank with synonyms grouped; each of our words is echoed, not echoed or contradicted (more complaints than praise); the customers' words we do not carry are candidates (generic praise excluded); the echo share; a drift brief drafted from the counts; rule BRN-R32 (echo under 20 percent or a contradicted word) puts the redraft on the master list | done | Learn that customers give us comfort but not durability, and redraft the frame in their words, without a survey |
 
+## Round 6 (manager, 28 Sep 2026): 10 features, one commit each
+
+Sources: round 5's candidates (locked zones, the example brain walkthrough, public-facing previews), the web pass leftovers (23 locked fields, 22 audience profiles, 11 remember-this facts from chats), the room jobs not yet ending in a build, and the lead's review notes.
+
+| # | Feature | Status | What a founder can do |
+|---|---|---|---|
+| 6.1 | What an agent never rewrites (`locks.py`, `GET locks`, `POST locks`, `POST locks/<key>/retire`): the locked zones from records (the locked snippet lines, the approved or site-backed facts with their values, the logo rules) plus your own required lines by kind or channel (a disclaimer, the legal footer) as founder content records; the review route fails a draft in scope that drops a required line or alters a locked one (a sentence with most of the line's words but not the line), the brain file lists them under strict rules | done | Lock the disclaimer once and no agent draft ships without it, or with a reworded version |
+| 6.2 | Remember this: facts and decisions from pasted notes | todo | |
+| 6.3 | Audience profiles every generator picks one of | todo | |
+| 6.4 | The example brain, end to end | todo | |
+| 6.5 | Public-facing preview per capability | todo | |
+| 6.6 | Red lines register | todo | |
+| 6.7 | Ask the brain, deeper: numbers and comparisons | todo | |
+| 6.8 | Section owners and review cadence | todo | |
+| 6.9 | The brain in one page for a new team member | todo | |
+| 6.10 | Founder notes in the router, editable | todo | |
+
 ### Round 5 status for Kevin (28 Sep 2026)
 
 1. What you can do now: reject an idea with a reason and a review date so it stops coming back; see which competitor moves hit the bottleneck that matters, with match, hold and counter for each; teach the scanner your own channel rules and mute the built-in ones that do not apply; put the reviewer before the person, so the agent fixes what blocks and you only read what needs a human; hand any agent one brain file with strict rules apart from judgement rules; drop an earlier export back in and see exactly what moved since; see which agent was handed which fact and whether a private one reached a public-facing agent; keep every licensed asset and every customer quote inside its rights and its consent, with the request drafted; learn which of our positioning words customers echo, which they contradict, and which of theirs we do not use.

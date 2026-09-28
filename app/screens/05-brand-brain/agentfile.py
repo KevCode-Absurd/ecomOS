@@ -44,7 +44,13 @@ def strict_rules(brain, claims_mod, voice_mod, visibility_mod, public: bool) -> 
     except Exception:  # noqa: BLE001
         locked = []
     if locked:
-        rules.append({"key": "locked_lines", "label": "Locked lines, word for word", "lines": [f"{r['key'].replace('_', ' ')}: {r['locked']}" for r in locked], "check": "the review route warns when the topic appears without the line"})
+        rules.append({"key": "locked_lines", "label": "Locked lines, word for word", "lines": [f"{r['key'].replace('_', ' ')}: {r['locked']}" for r in locked], "check": "the review route fails a draft that alters the line"})
+    try:
+        fl = [r for r in brain.records("content") if (r.get("field") or "").startswith("locked_") and isinstance(r.get("value"), dict) and r["value"].get("text")]
+    except Exception:  # noqa: BLE001
+        fl = []
+    if fl:
+        rules.append({"key": "locked_zones", "label": "Locked zones: never rewrite, add word for word where required", "lines": [f"{r['value'].get('label')} ({', '.join(r['value'].get('scope') or ['all'])}{', required' if r['value'].get('required', True) else ''}): {r['value']['text']}" for r in fl], "check": "the review route fails a draft in scope that drops or alters it"})
     try:
         avoided = voice_mod.words_avoided(brain)
     except Exception:  # noqa: BLE001

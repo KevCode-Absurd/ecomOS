@@ -65,6 +65,7 @@
     loadAssets(m.actions || []);
     loadUgc(m.actions || []);
     loadDrift(m.actions || []);
+    loadLocks();
     loadSelfAudit(m.actions || []);
     loadPeaks(m.actions || []);
     loadVisual(m.actions || []);
@@ -1416,6 +1417,22 @@
     const add = el('button', { class: 'btn primary sm', type: 'button', text: 'Put the yes on file' });
     add.addEventListener('click', async () => { add.disabled = true; try { const r = await api(BASE + 'ugc', { method: 'POST', body: { name: name.value.trim(), handle: handle.value.trim(), channel: channel.value, what: what.value.trim(), scope: scope.value, term_months: term.value || null, granted_on: granted.value || null, evidence: evidence.value.trim() } }); status.textContent = r.next; loadUgc(actions); loadPlan(); } catch (e) { add.disabled = false; status.textContent = 'Could not save: ' + e.message; } });
     mount('#ugc', table, el('div', { class: 'row', style: { marginTop: '8px' } }, name, handle, channel, what), el('div', { class: 'row' }, scope, term, granted, evidence, draft, add, status), out, el('p', { class: 'micro faint', text: ug.note }));
+  }
+  async function loadLocks() {
+    let z;
+    try { z = await api(BASE + 'locks'); } catch (e) { mount('#locks', el('p', { class: 'muted', text: 'Locks unavailable: ' + e.message })); return; }
+    mount('#locks-tools', UI.orientation([{ label: 'locked lines', value: z.counts.lines, unit: 'n' }, { label: 'required', value: z.counts.required, unit: 'n' }, { label: 'locked facts', value: z.counts.facts, unit: 'n' }, { label: 'logo rules', value: z.logo.available ? z.counts.logo_rules : null, unit: 'n', unavailable_label: 'not set' }]));
+    const status = el('span', { class: 'micro muted' });
+    const lines = el('div', { class: 'stack' }, ...(z.lines.length ? z.lines.map((l) => { const x = l.kind === 'line' ? el('button', { class: 'btn xs soft', type: 'button', text: 'Unlock' }) : null; if (x) x.addEventListener('click', async () => { x.disabled = true; try { await api(BASE + 'locks/' + l.key + '/retire', { method: 'POST' }); loadLocks(); } catch (e) { x.disabled = false; status.textContent = 'Could not: ' + e.message; } }); return el('div', { class: 'row card flat small' }, el('span', { class: 'chip ' + (l.required ? 'warn' : ''), text: l.required ? 'required' : 'locked' }), el('span', { class: 'chip', text: l.kind === 'snippet' ? 'snippet' : (l.scope || []).join(', ') }), el('b', { text: l.label + ': ' }), el('span', { class: 'mono', text: l.text }), x); }) : [el('p', { class: 'muted small', text: 'No locked line yet. Lock a snippet in the voice block, or add a required line below.' })]));
+    const facts = el('div', { class: 'row' }, ...(z.facts.length ? z.facts.map((f) => el('span', { class: 'chip', title: f.record + ', ' + pretty(f.tier), text: f.label + ': ' + (typeof f.value === 'object' ? JSON.stringify(f.value) : f.value) })) : [el('span', { class: 'muted small', text: 'No approved or site-backed fact to lock yet.' })]));
+    const logo = el('div', { class: 'small' }, el('b', { text: 'Logo: ' }), z.logo.available ? ('never ' + (z.logo.never || []).join('; ')) : 'no logo rules on file (set them in Does it look like us).');
+    const label = el('input', { class: 'text sm', placeholder: 'label, like: FTC disclaimer', style: { flex: '1 1 160px' } });
+    const text = el('input', { class: 'text sm', placeholder: 'the line, word for word', style: { flex: '2 1 320px' } });
+    const scope = el('input', { class: 'text sm', placeholder: 'scope: all, email, ad, pdp, amazon, meta, sms', style: { flex: '1 1 200px' } });
+    const req = el('label', { class: 'small' }, el('input', { type: 'checkbox', checked: true }), ' required in scope');
+    const add = el('button', { class: 'btn primary sm', type: 'button', text: 'Lock it' });
+    add.addEventListener('click', async () => { if (!text.value.trim()) { status.textContent = 'Type the line first.'; return; } add.disabled = true; try { const r = await api(BASE + 'locks', { method: 'POST', body: { label: label.value.trim(), text: text.value.trim(), scope: scope.value || 'all', required: req.firstChild.checked } }); status.textContent = r.next; loadLocks(); } catch (e) { add.disabled = false; status.textContent = 'Could not lock: ' + e.message; } });
+    mount('#locks', lines, el('div', { class: 'small', style: { marginTop: '6px' } }, el('b', { text: 'Locked facts: ' })), facts, logo, el('div', { class: 'row', style: { marginTop: '8px' } }, label, text, scope, req, add, status), el('p', { class: 'micro faint', text: z.note }));
   }
   async function loadDrift(actions) {
     let d;

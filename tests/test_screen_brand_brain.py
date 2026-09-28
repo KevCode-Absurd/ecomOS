@@ -2254,10 +2254,50 @@ class Round5Drift(TempBrain):
         self.assertFalse([f for f in api.handle(Req(['audit'], query={'brand': ['example']}))['findings'] if f['rule_id'] == 'BRN-R32'])
 
 
+class Round6Locks(TempBrain):
+    """Round 6 feature 1: locked zones an agent never rewrites, enforced in the review route and listed in the brain file."""
+
+    def test_zones_and_review_enforcement(self):
+        z = api.handle(Req(['locks']))
+        self.assertGreaterEqual(z['counts']['facts'], 3)
+        self.assertIn('free_shipping_threshold_usd', [f['key'] for f in z['facts']])
+        self.assertEqual(z['counts']['lines'], 0)
+        status, res = api.handle(Req(['locks'], 'POST', body={'label': 'FTC disclaimer', 'text': 'Results vary. Socks are not a medical device.', 'scope': 'ad, email', 'required': True}))
+        self.assertEqual((status, res['record']), (201, 'bombas.content.locked_ftc_disclaimer'))
+        api.handle(Req(['voice', 'snippet', 'free_shipping'], 'POST', body={'text': 'Free standard shipping on orders over $75.'}))
+        z = api.handle(Req(['locks']))
+        self.assertEqual((z['counts']['lines'], z['counts']['required']), (2, 1))
+        # an ad without the required line fails; with it, passes the locked check
+        r = api.handle(Req(['review', 'draft'], 'POST', body={'text': 'Soft socks for every day. Shop the 4 pack.', 'channel': 'meta'}))
+        self.assertEqual(next(c['status'] for c in r['checks'] if c['key'] == 'locked'), 'fail')
+        self.assertTrue(any(h['kind'] == 'locked_missing' for h in r['hits']))
+        r = api.handle(Req(['review', 'draft'], 'POST', body={'text': 'Soft socks for every day. Shop the 4 pack. Results vary. Socks are not a medical device.', 'channel': 'meta'}))
+        self.assertEqual(next(c['status'] for c in r['checks'] if c['key'] == 'locked'), 'pass')
+        # a page is out of scope for the disclaimer: no missing hit
+        r = api.handle(Req(['review', 'draft'], 'POST', body={'text': 'Soft socks for every day.', 'kind': 'pdp'}))
+        self.assertFalse(any(h['kind'] == 'locked_missing' for h in r['hits']))
+        # an altered locked line fails anywhere
+        r = api.handle(Req(['review', 'draft'], 'POST', body={'text': 'Free standard shipping on all orders over $75, always.'}))
+        self.assertTrue(any(h['kind'] == 'locked_altered' for h in r['hits']))
+        self.assertEqual(r['verdict'], 'fail')
+        self.assertEqual(r['route'][0]['who'], 'agent')
+        r = api.handle(Req(['review', 'draft'], 'POST', body={'text': 'Free standard shipping on orders over $75. Soft socks.'}))
+        self.assertFalse(any(h['kind'] in ('locked_altered', 'locked_missing') for h in r['hits']))
+        f = api.handle(Req(['agentfile'], query={'capability': ['CREA-C06']}))
+        self.assertIn('Results vary. Socks are not a medical device.', f['text'])
+        self.assertIn('locked_zones', [x['key'] for x in f['strict']])
+        self.assertEqual(api.handle(Req(['locks', 'ftc_disclaimer', 'retire'], 'POST'))[0], 201)
+        self.assertEqual(api.handle(Req(['locks']))['counts']['required'], 0)
+        self.assertEqual(api.handle(Req(['locks'], 'POST', body={'text': 'x'}))[0], 400)
+        self.assertEqual(api.handle(Req(['locks'], 'POST', body={'text': 'a real line here', 'scope': 'tiktok'}))[0], 400)
+        self.assertEqual(api.handle(Req(['locks', 'nope', 'retire'], 'POST'))[0], 404)
+        self.assertIn('lock', [c['kind'] for c in api.handle(Req(['changes']))['changes']])
+
+
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
-    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'],
+    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'],
               ['decisions'], ['flows'], ['claims'], ['site', 'diff'], ['parity'], ['contracts'], ['legal'], ['voice'], ['battlecards'], ['permissions'],
               ['export'], ['assumptions'], ['facts'], ['summaries'], ['changes'], ['learn'], ['report'], ['digest'], ['review'], ['bottlenecks'], ['audit']]
 
