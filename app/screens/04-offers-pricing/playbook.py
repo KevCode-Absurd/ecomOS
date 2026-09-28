@@ -156,3 +156,7 @@ PACK_PATTERNS = (r'(\d+)\s*-?\s*(?:pack|pairs?|pcs|pk)\b', r'\((\d+)\s*(?:pack|p
 CREEP_POINTS = 5          # room spec: discount share of gross up more than 5 points over 3 months is creep
 PROMO_DAY_RATIO = 1.5     # a day whose discount share is 1.5 times the year's median is a promo day
 ALWAYS_ON = 0.75          # more than 75 percent of discount dollars spent on ordinary days: the discount is always on
+
+# Gift with purchase pick (screen 04, feature 2.4): a single item whose paid price is at least GWP_RATIO times its
+# landed cost reads as worth a lot and costs little to give.
+GWP_RATIO = 4.0

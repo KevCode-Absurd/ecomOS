@@ -244,7 +244,12 @@
       ['Paid media per new customer', fmt.money(fo.new_cac) + (fo.target_cac != null ? ' against a ' + fmt.money(fo.target_cac) + ' target' : '')],
       ['Discounts on new orders, 28 days', fmt.money(fo.new_discounts_28d) + ' (all discounts times the ' + pct(fo.new_share, 0) + ' new-customer share; orders do not carry the code yet)'],
     ]);
-    return section('desk-first', head, el('div', { class: 'card tight' }, table, el('p', { class: 'micro faint', text: fo.basis + '.' })), el('div', { class: 'card' }, facts),
+    const gifts = (fo.gifts || []).slice(0, 6);
+    const giftTable = gifts.length ? UI.verdictTable({ columns: [{ key: 'sku', label: 'Single item' }, { key: 'category', label: 'Category' }, { key: 'value', label: 'Paid price', unit: '$' }, { key: 'cost', label: 'Landed cost', unit: '$' }, { key: 'ratio', label: 'Value over cost', format: (v) => v.toFixed(1) + 'x' }],
+      rows: gifts, verdict: { at: 1, kind: (r) => r.sku === gifts[0].sku ? 'new' : r.qualifies ? 'keep' : 'watch', text: (r) => r.sku === gifts[0].sku ? 'Give this' : r.qualifies ? 'Also works' : 'Under the bar', reason: (r) => 'value over cost ' + r.ratio + 'x' }, sort: false }) : null;
+    return section('desk-first', head, el('div', { class: 'card tight' }, table, el('p', { class: 'micro faint', text: fo.basis + '.' })),
+      el('div', { class: 'grid two' }, el('div', { class: 'card' }, facts), giftTable ? el('div', { class: 'card tight' }, el('h4', { text: 'Which item to give?' }), giftTable,
+        el('p', { class: 'micro faint', text: 'Ranked by paid price over landed cost. The bar is ' + fo.gift_bar + 'x; ' + (gifts[0].qualifies ? 'the top item clears it.' : 'no item clears it, so the test uses the best one and says so.') })) : null),
       actionLine(best ? 'Test ' + best.name.toLowerCase() + ' against the code. It keeps ' + fmt.money(fo.best_gain) + ' more per first order.' : 'No price-keeping offer beats the code today.', a));
   }
 

@@ -55,6 +55,7 @@ Known gaps from round 0:
 | 2.1 | Price and offer position against the set (`Charts.positioningMap`): each competitor's median price per item from its price band in the brain, the discount its ads show (Ad Library offers seen), the proof its ads sell (hook types), against our paid price per item in the main category and the code share of our ads. New rule OFFER-R16 (discount-led in a proof-led set; reputation 5) with 3 ad briefs that lead with proof (guarantee terms, the top open doubt, the brand's price frame), competitor ads as signals only. Idea bank: MULTI-154, BRD-036 | done |
 | 2.2 | Marketplace price parity: every marketplace listing in the brain with a price and a pack count in its title, its price per item against the site's paid price per item at the same pack size, the gap, the seller, and the channel's last full month from `marketplace_monthly` for scale. New rule OFFER-R17 (listings more than 10 percent under the site; reputation 4) with a person-owned parity list: check each seller, then minimum advertised price for authorised sellers, brand protection for unknown ones. Web pass: Prisync MAP and SmartPrice | done |
 | 2.3 | Discount discipline: discount share by month (24 months) and a scorecard for the last 365 days against the 365 before (median day, promo days at 1.5 times the median, net sales on promo days, discount dollars spent on ordinary days, blended 90-day rate), and a discount policy drafted from the brand's own history (depth cap at last Black Friday, promo days cap, no stacking, the always-on code, a monthly review). New rules OFFER-R18 (room spec creep, money = extra points times gross) and OFFER-R19 (more than 75 percent of discount dollars on ordinary days while the code is in most ads; rides on the first-order code test). Web pass: Metricuno blended discount rate, Common Thread BFCM depth | done |
+| 2.4 | Which item to give: single items ranked by paid price over landed cost (bar 4x, from the web pass; flagged when no item clears it). The first-order test, its money and the free-item waterfall now use the named item instead of a median item cost. Web pass: Common Thread (high perceived value, low cost gifts) | done |
 
 ## Room jobs
 
@@ -172,7 +173,7 @@ Known gaps from round 0:
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.9 | 2026-09-28 | S3.9; screenshot round0.png |
-| 2 | 2.1 price and offer position, 2.2 marketplace parity, 2.3 discount discipline | 2026-09-28 | in progress |
+| 2 | 2.1 price and offer position, 2.2 marketplace parity, 2.3 discount discipline, 2.4 gift pick | 2026-09-28 | in progress |
 | 1 | 1.1 plan first, 1.2 objection to offer map, 1.3 free shipping line, 1.4 pack ladder, 1.5 first-order offer, 1.6 margin waterfall, 1.7 promo calendar, 1.8 gifting and holiday, 1.9 guarantee as an offer, 1.10 rank complete | 2026-09-28 | manager session; screenshot round1.png (updated as the round lands) |
 
 

@@ -519,7 +519,8 @@ def first_order(rd):
     lad, _ = ladder_moves(rd)
     lines = [] if lad.get('unavailable') else [r for r in lad['lines'] if r['pack_sku']]
     top = max(lines, key=lambda r: r['packs'] - (r['single_packs'] or 0)) if lines else None
-    return _model().first_order_options(rd, _playbook().FIRST_ORDER_OPTIONS, top)
+    cands = _model().gwp_candidates(rd, _playbook().GWP_RATIO)   # best value over cost first; qualifying or not
+    return _model().first_order_options(rd, _playbook().FIRST_ORDER_OPTIONS, top, gift=cands[0] if cands else None)
 
 
 def rule_first_order(rd):
@@ -572,7 +573,8 @@ def offer_waterfalls(rd, objections=None):
     cac = fo['new_cac']
     g, units = po['gross'], po['units']
     code_pct = fo['code_pct'] or 0
-    ic = model.item_cost(rd).get('value')
+    gwp = next((r for r in fo['rows'] if r['key'] == 'gwp' and not r.get('unavailable')), None)
+    ic = gwp['extra_item'] if gwp else model.item_cost(rd).get('value')
     out = [
         {'key': 'average', 'name': 'The average order today', 'status': 'live',
          'note': 'All orders, 28 days: discounts, shipping charged and paid media per order as they ran.',

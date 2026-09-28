@@ -746,5 +746,25 @@ class DisciplineTest(unittest.TestCase):
         self.assertIn(f'{self.d["this_year"]["always_on_share"] * 100:.0f} percent', pol)
 
 
+class GiftPickTest(unittest.TestCase):
+    """Round 2 feature 4: the first-order gift is a named item picked by value over landed cost."""
+
+    def test_pick_and_use(self):
+        rd = audit.Reader(None, 'bombas', audit.last_full_day(None, 'bombas'))
+        cands = api.model.gwp_candidates(rd, audit._playbook().GWP_RATIO)
+        self.assertTrue(cands)
+        self.assertEqual([c['ratio'] for c in cands], sorted([c['ratio'] for c in cands], reverse=True))
+        for c in cands:
+            self.assertAlmostEqual(c['ratio'], round(c['value'] / c['cost'], 2))
+            self.assertEqual(c['qualifies'], c['value'] / c['cost'] >= audit._playbook().GWP_RATIO)
+        fo = audit.first_order(rd)
+        g = next(r for r in fo['rows'] if r['key'] == 'gwp')
+        self.assertEqual(g['gift']['sku'], cands[0]['sku'])
+        self.assertAlmostEqual(g['extra_item'], cands[0]['cost'])
+        w = next(w for w in audit.offer_waterfalls(rd) if w['key'] == 'first_gwp')
+        cost = next(s['value'] for s in w['steps'] if s['label'] == 'Landed cost')
+        self.assertAlmostEqual(cost, round(fo['cogs'] + cands[0]['cost'], 2), places=1)
+
+
 if __name__ == '__main__':
     unittest.main()

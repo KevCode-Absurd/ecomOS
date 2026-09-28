@@ -70,6 +70,8 @@ class Ctx:
         self.objections = objection_map(rd)
         self.ladder, self.ladder_rows = audit.ladder_moves(rd)
         self.first_order = audit.first_order(rd)
+        self.first_order['gifts'] = model.gwp_candidates(rd, playbook.GWP_RATIO)
+        self.first_order['gift_bar'] = playbook.GWP_RATIO
         self.waterfalls = audit.offer_waterfalls(rd, self.objections)
         self.calendar = audit.promo_calendar(rd)
         self.gifting = audit.gifting(rd)

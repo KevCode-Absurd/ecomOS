@@ -365,7 +365,7 @@ def line_summary(rows):
 
 # ---------------------------------------------------------------- first-order offer
 
-def first_order_options(rd, options, pack=None, end=None):
+def first_order_options(rd, options, pack=None, end=None, gift=None):
     """Per-order money of each first-order offer at the average list-price order: price paid, extra cost, label net
     of shipping charged (the free shipping line counts after discount), contribution before media and payback on
     the paid media spent per new customer. Returns dict with the inputs and rows, or dict(unavailable, reason)."""
@@ -416,8 +416,13 @@ def first_order_options(rd, options, pack=None, end=None):
             m = money(g * (1 - pct_off / 100))
             m['terms'] = f'{pct_off:.0f} percent off the first order'
         elif k == 'gwp':
-            m = money(g, extra_item=ic['value'], extra_units=1)
-            m['terms'] = 'one free item in the box (median landed cost per item)'
+            if gift:
+                m = money(g, extra_item=gift['cost'], extra_units=1)
+                m['terms'] = f'a free {gift["category"]} single ({gift["sku"]}, worth ${gift["value"]:,.2f}, costs ${gift["cost"]:,.2f})'
+                m['gift'] = gift
+            else:
+                m = money(g, extra_item=ic['value'], extra_units=1)
+                m['terms'] = 'one free item in the box (median landed cost per item)'
         elif k == 'free_ship':
             # costs the label only on first orders under the line; their share needs order rows
             dist = rd.m('order_value_distribution', WINDOW, end, step=5)
@@ -833,3 +838,18 @@ def discount_discipline(rd, promo_ratio):
     return {'this_year': now, 'last_year': before, 'blended_90d': blended(end),
             'blended_90d_last_year': blended(end - timedelta(days=364)), 'promo_ratio': promo_ratio,
             'basis': 'discounts over gross sales per day from the daily aggregate, all channels'}
+
+
+def gwp_candidates(rd, ratio):
+    """Single items ranked by paid price over landed cost, 12 full months: the best gifts to give with an order."""
+    lad = ladder(rd)
+    if lad.get('unavailable'):
+        return []
+    out = []
+    for r in lad['rows']:
+        if r['pack'] == 1 and r['price_per_item'] and r['cogs_per_pack']:
+            x = r['price_per_item'] / r['cogs_per_pack']
+            out.append({'sku': r['sku'], 'line': r['line'], 'category': r['category'], 'value': r['price_per_item'],
+                        'cost': r['cogs_per_pack'], 'ratio': round(x, 2), 'qualifies': x >= ratio})
+    out.sort(key=lambda r: (-r['ratio'], r['cost']))
+    return out
