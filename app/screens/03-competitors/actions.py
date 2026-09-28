@@ -484,6 +484,19 @@ def act_premium(f: dict, m: dict) -> dict:
             "stop_rule": "New customer orders down 10 percent for 5 days", "check_on": _plus(f["last_seen"], 14), "time_to_ship_hours": 4}
 
 
+def act_search(f: dict, m: dict) -> dict:
+    """COMP-R22: terms they go after that we never say. A keyword check brief for the Google Ads and SEO screens."""
+    s = m["search"]
+    return {"title": "Check the search terms they go after and we never say; hand the live ones to ads and SEO",
+            "owner": "agent",
+            "artefact": {"kind": "research_note", "label": "a keyword check brief", "draft": audit.searchmod.draft(s, m["brand"].capitalize())},
+            "steps": _steps(("agent", "Take the seed list: gaps first, then contested terms."),
+                            ("agent", "Check volume and cost per click once a keyword source is connected; until then, mark them unchecked."),
+                            ("agent", "Hand the terms with volume to the Google Ads and SEO screens as a brief.")),
+            "size": {"text": f"{sum(1 for r in s['rows'] if not r['ours'])} terms to check"},
+            "win_rule": None, "stop_rule": None, "check_on": _plus(f["last_seen"], 14), "time_to_ship_hours": 1}
+
+
 def act_connect(f: dict, m: dict) -> dict:
     un = f.get("unavailable") or {}
     con = un.get("connector") or "the missing source"
@@ -503,7 +516,7 @@ BUILDERS = {"COMP-R01": act_angle, "COMP-R02": act_price, "COMP-R03": act_offer_
             "COMP-R15": act_lost, "COMP-R16": act_connect,
             "COMP-R17": act_attack, "COMP-R18": act_undercut,
             "COMP-R19": act_velocity, "COMP-R20": act_niche,
-            "COMP-R21": act_premium}   # R16 has no data source yet: always a connect action
+            "COMP-R21": act_premium, "COMP-R22": act_search, "COMP-R23": act_connect}   # R16 has no data source yet: always a connect action
 
 
 def action(f: dict, m: dict, net_revenue: float | None) -> dict:

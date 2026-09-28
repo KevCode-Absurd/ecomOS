@@ -464,6 +464,17 @@
       el('p', { class: 'micro faint', text: pr.rule }));
   }
 
+  // ---------- 5q. search seeds and overlap ----------
+  const SKIND = { contested: ['stop', 'Contested'], gap: ['watch', 'Gap'], shared: ['keep', 'Ours too'] };
+  function searchSection(s) {
+    const t = UI.verdictTable({ columns: [{ key: 'term', label: 'Search term (seed)' }, { key: 'n', label: 'Pages', unit: 'n' }],
+      rows: s.rows, verdict: { at: 1, kind: (r) => SKIND[r.kind][0], text: (r) => SKIND[r.kind][1], reason: (r) => r.pages.join(', ') },
+      reason: { key: 'who', label: 'Who uses it', text: (r) => r.pages.join(', ') }, sort: false, maxRows: 20 });
+    mount('#search', t, el('p', { class: 'small' }, el('b', { text: 'Only in our lines: ' }), (s.ours_only.join(', ') || 'none') + '.'),
+      el('p', { class: 'small' }, el('b', { text: 'Rankings, bids and volume: ' }), 'unavailable, ' + s.overlap_reason + '. The connect step is in the plan\'s connect strip.'),
+      el('p', { class: 'micro faint', text: s.rule }));
+  }
+
   // ---------- 6. the audit ----------
   function rulesTable(rules) {
     return UI.table({ columns: [{ key: 'rule_id', label: 'Rule' }, { key: 'name', label: 'What it checks' }, { key: 'inputs', label: 'Reads', format: (v) => (v || []).join(', ') }, { key: 'capability', label: 'Capability' }],
@@ -496,6 +507,7 @@
     velocitySection(d.velocity);
     nicheSection(d.niche);
     premiumSection(d.premium);
+    searchSection(d.search);
     digestSection();
     document.getElementById('audit-sub').textContent = p.findings.length + ' findings from ' + p.rules.length + ' rules. Public signals, one capture.';
     mount('#audit', auditTable(p.findings));

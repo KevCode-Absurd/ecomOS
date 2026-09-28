@@ -767,6 +767,29 @@ class TestPremium(TempBrain):
         self.assertTrue([f for f in out if f['rule_id'] == 'COMP-R21'])
 
 
+class TestSearch(TempBrain):
+    """2.9: search seeds from public lines; overlap unavailable as a connect action."""
+    def setUp(self):
+        super().setUp()
+        api.BRAIN_ROOT = self.tmp
+        self.s = api.handle(Req(['overview']))['search']
+
+    def test_seeds(self):
+        by = {r['term']: r for r in self.s['rows']}
+        self.assertEqual(by['running socks']['kind'], 'contested')
+        self.assertTrue(by['merino socks']['ours'])
+        self.assertEqual(by['nurse socks']['kind'], 'gap')
+        self.assertIsNone(self.s['overlap'])
+        self.assertEqual(audit.searchmod.seeds_from(['Elite running socks, plantar fasciitis relief sock'], []),
+                         {'running socks', 'relief socks'})
+
+    def test_rules(self):
+        out = audit.run('bombas', WINDOW, self.tmp)
+        r23 = next(f for f in out if f['rule_id'] == 'COMP-R23')
+        self.assertEqual(r23['status'], 'unavailable')
+        self.assertTrue([f for f in out if f['rule_id'] == 'COMP-R22'])
+
+
 class TestRank(TempBrain):
     """Depth contract rules 2, 3 and 13: owner, steps and artefact on every action; every finding ends in one."""
     W = {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4}

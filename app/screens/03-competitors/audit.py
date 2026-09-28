@@ -108,6 +108,13 @@ COMP-R21 discounting undercuts a premium position. Our premium signal score
     (premium.py) is at or above the direct median while our discount runs 10
     points or more deeper than theirs. Severity medium. Capability LIFE-C38
     (discount policy, founder gate). Reputation 3. Owner: 03-competitors.
+COMP-R22 search terms they go after that we never say. 3 or more seed terms
+    (search.py) from the tracked pages' public lines that our own lines never
+    say. Severity low. Capability BRAND-C07 (the agent writes a keyword
+    check brief for the Google Ads and SEO screens). Owner: 03-competitors.
+COMP-R23 search overlap unknown. Rankings, bids and volumes need a keyword
+    source, so the overlap reads unavailable: a connect action. Capability
+    BRAND-C07. Owner: 03-competitors.
 
 Rubric overrides (depth.md section 4 allows reputation and satisfaction per rule):
 COMP-R01 reputation 5: an unclaimed angle is a competitor position gap named in
@@ -165,6 +172,7 @@ mktmod = _local("market_presence")
 velmod = _local("velocity")
 nichemod = _local("niche")
 premmod = _local("premium")
+searchmod = _local("search")
 
 SCREEN = "03-competitors"
 SEVERITY_ORDER = {"critical": 0, "high": 1, "medium": 2, "low": 3}
@@ -240,6 +248,11 @@ RULES = [
     {"rule_id": "COMP-R21", "name": "discount deeper than the category while showing premium signals", "entity_type": "offer",
      "inputs": ["brain competitors offers and hooks", "brain offers", "brain positioning.proof_points"], "capability": "LIFE-C38",
      "owner_screen": SCREEN},
+    {"rule_id": "COMP-R22", "name": "search terms they go after that we never say", "entity_type": "brand",
+     "inputs": ["brain competitors positioning, push, hook_types", "brain products.materials"], "capability": "BRAND-C07",
+     "owner_screen": SCREEN},
+    {"rule_id": "COMP-R23", "name": "search overlap: rankings and bids", "entity_type": "brand",
+     "inputs": ["keyword rankings and bids"], "capability": "BRAND-C07", "owner_screen": SCREEN},
     {"rule_id": "COMP-R08", "name": "discount on most ads while direct peers run none", "entity_type": "offer",
      "inputs": ["brain offers.promo_share_active_ads", "brain competitors offers_seen"], "capability": "LIFE-C38",
      "owner_screen": SCREEN},
@@ -247,13 +260,13 @@ RULES = [
 # what a strategist groups the findings by on the page (depth.md section 2: grouped by bottleneck)
 RULE_GROUP = {"COMP-R01": "creative", "COMP-R05": "creative", "COMP-R06": "creative", "COMP-R03": "offer", "COMP-R07": "offer",
               "COMP-R08": "offer", "COMP-R09": "offer", "COMP-R02": "price", "COMP-R10": "price", "COMP-R11": "position",
-              "COMP-R04": "watch", "COMP-R12": "watch", "COMP-R13": "watch", "COMP-R14": "watch", "COMP-R15": "lost", "COMP-R16": "lost", "COMP-R17": "lost", "COMP-R18": "price", "COMP-R19": "creative", "COMP-R20": "position", "COMP-R21": "offer"}
+              "COMP-R04": "watch", "COMP-R12": "watch", "COMP-R13": "watch", "COMP-R14": "watch", "COMP-R15": "lost", "COMP-R16": "lost", "COMP-R17": "lost", "COMP-R18": "price", "COMP-R19": "creative", "COMP-R20": "position", "COMP-R21": "offer", "COMP-R22": "position", "COMP-R23": "position"}
 GROUP_LABEL = {"lost": "Shoppers we lose, by name", "creative": "Ads they run that we do not", "offer": "Offers they say that we do not",
                "price": "Price against theirs", "position": "Corners of the map", "watch": "Watch and protect"}
 RUBRIC_OVERRIDES = {"COMP-R01": {"reputation": 5}, "COMP-R02": {"reputation": 3}, "COMP-R04": {"reputation": 5, "satisfaction": 4},
                     "COMP-R15": {"reputation": 4}, "COMP-R17": {"reputation": 4, "satisfaction": 4},
                     "COMP-R21": {"reputation": 3}}
-AUTONOMY = {"BRAND-C23": "agent_does", "PROD-C46": "agent_does", "LIFE-C42": "founder_gate", "BRAND-C18": "agent_does", "BRAND-C57": "agent_does", "BRN-C11": "agent_does", "BRAND-C20": "agent_does", "LIFE-C39": "founder_gate", "CREA-C31": "agent_does", "CREA-C06": "agent_does", "CREA-C04": "agent_does", "LIFE-C47": "agent_does", "LIFE-C38": "founder_gate", "BRAND-C21": "founder_gate", "BRAND-C24": "founder_gate", "MONEY-C48": "human_assist"}
+AUTONOMY = {"BRAND-C07": "agent_does", "BRAND-C23": "agent_does", "PROD-C46": "agent_does", "LIFE-C42": "founder_gate", "BRAND-C18": "agent_does", "BRAND-C57": "agent_does", "BRN-C11": "agent_does", "BRAND-C20": "agent_does", "LIFE-C39": "founder_gate", "CREA-C31": "agent_does", "CREA-C06": "agent_does", "CREA-C04": "agent_does", "LIFE-C47": "agent_does", "LIFE-C38": "founder_gate", "BRAND-C21": "founder_gate", "BRAND-C24": "founder_gate", "MONEY-C48": "human_assist"}
 
 
 # ---------------------------------------------------------------- reading
@@ -489,6 +502,7 @@ def market_full(brand: str, today: dt.date, root: Path | None = None) -> dict:
     m["category"] = catmod.build(m, m["brain"])
     m["velocity"] = velmod.build(m, m["brain"])
     m["niche"] = nichemod.build(m, m["brain"])
+    m["search"] = searchmod.build(m, m["brain"])
     m["premium"] = premmod.build(m, m["brain"], lambda texts: mixmod.offer_types(texts, snap.OFFERS))
     m["presence"] = mktmod.build(m, m["brain"], laddermod.pairs_in_title)
     m["reviews"] = revmod.build(m, m["brain"], lambda texts: mixmod.offer_types(texts, snap.OFFERS))
@@ -906,6 +920,23 @@ def rule_premium(m, ends_on):
                      [f"{m['brand']}.offers.first_order_code"], ends_on, 0.5, "no baseline: margin given to the code is not in the brain")]
 
 
+def rule_search(m, ends_on):
+    s = m.get("search") or {}
+    gaps = [r for r in s.get("rows", []) if not r["ours"]]
+    out = [_unavailable("COMP-R23", "low", {"type": "brand", "id": "search_overlap", "label": "search overlap"},
+                        ["keyword rankings and bids"], "a search data source (read only)",
+                        "Connect Search Console for us and a keyword tool for the tracked domains.", ends_on)]
+    if len(gaps) >= searchmod.GAP_TERMS:
+        ev = [_row("their_terms_we_never_say", len(gaps), "n", "latest capture", ends_on, _fresh(m["competitors"]), searchmod.GAP_TERMS,
+                   "threshold", "competitors"),
+              _row("contested_terms", sum(1 for r in gaps if r["n"] >= 2), "n", "latest capture", ends_on, None, None, "threshold",
+                   "competitors")]
+        sentence = f"The tracked pages go after {len(gaps)} search terms our own lines never say, like {gaps[0]['term']}."
+        out.append(_finding("COMP-R22", "low", {"type": "brand", "id": "search_seeds", "label": "search seeds"}, ev, sentence,
+                            [f"{m['brand']}.products.materials"], ends_on, 0.3, "no baseline: search volume is not connected"))
+    return out
+
+
 def packs_month_end(packs):
     if not packs.get("available"):
         return None
@@ -932,7 +963,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
         out += [_unavailable("COMP-R16", "low", {"type": "ladder_rung", "id": "lower_rungs", "label": "lower rungs of the ladder"},
                              ["search trends by rung"], "a search trends source (read only)",
                              "Connect a search trends source for the category and each lower rung.", ends_on)]
-        out += rule_ladder(m, ends_on) + rule_corners(m, ends_on) + rule_refresh(m, ends_on) + rule_freshness(m, ends_on) + rule_losses(m, ends_on) + rule_attack(m, ends_on) + rule_presence(m, ends_on) + rule_velocity(m, ends_on) + rule_niche(m, ends_on) + rule_premium(m, ends_on)
+        out += rule_ladder(m, ends_on) + rule_corners(m, ends_on) + rule_refresh(m, ends_on) + rule_freshness(m, ends_on) + rule_losses(m, ends_on) + rule_attack(m, ends_on) + rule_presence(m, ends_on) + rule_velocity(m, ends_on) + rule_niche(m, ends_on) + rule_premium(m, ends_on) + rule_search(m, ends_on)
     out += rule_price(m, ends_on) + rule_lookalike(m, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f["severity"]], f["id"]))
     return out
