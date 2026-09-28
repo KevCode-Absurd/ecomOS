@@ -185,7 +185,7 @@ Lead's review: rounds 1 to 4 passed. Focus: returns and tickets by avatar, depth
 | 11.2 | Decisions by brand: `rank`, the avatar page and the decisions list read only this brand's decisions, the latest per finding winning; a row with no brand is the default brand's, as the server reads it. The page learns only whether it is the default brand, so no brand name leaks to another brand. Posting still has no brand: the kit's decision row does not send one yet (contract ask) | done |
 | 11.3 | Depth second pass, walked block by block in the browser for both brands. Every block already had a gap line; now every block also ends in an action. An unavailable block gets "Fill this block" on its gap line: a drafted brief with owner, steps and a check date (brain records drafted for a person to approve, the store connected read-only by a person, or an Ad Library pull by page id with spend approved). Bombas: the customer paths block was the one without an action; the example brand had 21. The browser test now fails on any block with no button; sized moves and unavailable-not-zero stay under their round 7 to 10 tests | done |
 | 11.4 | Drift over time, as far as the brain allows: a new Brand-tab block, "What changed in what buyers say about us?", compares each theme's share of praise and complaint reviews in the last 180 days against the 180 before, from dated public reviews. Worse at 5 points with 10 or more mentions, watch with 5 to 9 (thin), each with its answer brief. Bombas: durability complaints 5 to 13 percent (thin, 1 to 6 mentions); price complaints fell. Our own site, ads and email stay unavailable (one capture in the brain), with a drafted quarterly scan plan to start the series | done |
-| 11.5 | Mystery shopper and pretests, as far as the brain allows: a drafted run plan and pretest briefs from the doubts, sent as hand-offs | todo |
+| 11.5 | Mystery shopper and pretests, as far as the brain allows: a new Brand-tab block, "Would a real shopper get stuck, and does our message land?". The run sheet has 8 checkpoints (home, product page, size help, cart, checkout, order email, support, return), each against the brain fact it must match (the lead message, the top doubt, the free shipping line, the first-order code, the returns window and refund method, our drafted support reply); a person runs it, support passes inside 24 hours. A message pretest per top avatar puts our line against one in the avatar's words on its own top doubt, shown to 5 matching buyers. No model runs here. Results are unavailable until a runs table exists; the run sheet goes to cx and the pretests to creative in the hand-off packs | done |
 | 11.6 to 11.10 | Picked after 11.5 from what the pass finds | todo |
 
 ### Round 10 founder note (28 Sep 2026)
@@ -282,6 +282,7 @@ Lead's review: rounds 1 to 4 passed. Focus: returns and tickets by avatar, depth
 
 Each ask has a local fallback, so the screen works today. `HANDOFF.md` says what to change when each lands.
 
+- A `shopper_runs` table (run id, checkpoint, pass or fail, note, date) and a `pretests` table (avatar, line A, line B, choices, date), so 11.5 reads results instead of marking them on the sheet.
 - The kit's decision row (`web/ui-kit.js`) to send `brand` when a screen passes one, now that decisions take it. Until then a decision made on `?brand=example` is logged as the default brand's.
 - A `brand` field on hand-off rows (as decisions now have). 11.1 sends only for the default brand until then; another brand copies the pack.
 - A `survey_answers` table in the data layer (the post-purchase survey tool, read-only): per question, answer counts by option and the window. 9.4 reads it by that name, falls back to `fixtures/survey_answers/<brand>.json`, and shows unavailable until either exists.
@@ -330,7 +331,7 @@ The job to be done for each avatar is brand data: it lives in `app/brain/<brand>
 | is the brand getting stronger or weaker | partial | brand health from store data; branded search, mentions and review stars wait on connectors |
 | what does the brand stand for right now, in one place | partial | messaging hierarchy here; the brand brain screen owns the rest |
 | do customers describe us the way we describe ourselves | built | perception gap |
-| would a real shopper get stuck, and does this message land | open | mystery shopper runs and persona pretests are not built; no table for them yet |
+| would a real shopper get stuck, and does this message land | partial | run sheet and pretests drafted from the brain (11.5); results wait on a runs table |
 | is anyone about to take something that is ours | partial | lookalike pages from the Ad Library; trademark, domain and handle watch has no table |
 | what is the one message this page or email should lead with | built | messaging hierarchy with approve |
 

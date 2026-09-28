@@ -490,6 +490,8 @@ def _build_overview_raw(brain: Brain) -> dict:
             "themes": builds.theme_impact(brain.records("language_bank"), lad["rows"], ends_on),
             "words": builds.words(brain.records("language_bank"), all_rungs, avatars, _brand_tokens(brain), audit.source_name), "formats": _formats(brain, avatars)}
     out["drift"] = builds.drift(brain.records("language_bank"), out["themes"], ends_on)
+    out["shopper"] = builds.shopper_run(brain.records("policies"), brain.records("offers"), out["hierarchy"], out["ladders"]["rows"],
+                                        out["macros"], out["focus"], out["words"], ends_on)
     out["strength"] = builds.strength(out)
     builds.card_meta(out)
     out["compare"] = builds.compare_rows(out)

@@ -2050,7 +2050,10 @@ def handoff(d: dict) -> list[dict]:
     email += [item(m["action"]["title"], "email", m["action"]["draft"],
                    dict(m["action"], why=m["action"].get("why") or f"{m['label']} starts {m['starts']}. Ads live by {m['ad_by']}, emails by {m['email_by']}.")) for m in d["moments"].get("rows", [])]
     email.append(item(d["survey"]["action"]["title"], "research_note", d["survey"]["action"]["draft"], dict(d["survey"]["action"], why=d["survey"].get("line"))))
-    cx = [item(m["action"]["title"], "copy", m["draft"], m["action"]) for m in (d.get("macros") or {}).get("rows", [])]
+    sh = d.get("shopper") or {}
+    creative += [item(p["action"]["title"], "test_brief", p["action"]["draft"], p["action"]) for p in sh.get("pretests", [])]
+    cx = [item(sh["run"]["title"], "research_note", sh["run"]["draft"], sh["run"])] if sh.get("run") else []
+    cx += [item(m["action"]["title"], "copy", m["draft"], m["action"]) for m in (d.get("macros") or {}).get("rows", [])]
     return [{"screen": "09-creative", "label": "Creative", "to": "creative", "items": creative},
             {"screen": "10-copy", "label": "Copy", "to": "copy", "items": copy},
             {"screen": "07-landing-pages-cro", "label": "Landing pages", "to": "landing pages", "items": pages},
@@ -2736,6 +2739,7 @@ BLOCKS = {
     "gap-wrap": ("brain", "Copy gap and hooks", "A word we never say may still be on a page the brain has not read."),
     "perc-wrap": ("brain", "Perception gap", "Our side is the positioning records, not every page we run."),
     "drift-wrap": ("brain", None, "Dated public reviews only; our own site, ads and email need a dated scan each quarter."),
+    "shopper-wrap": ("brain", None, "The run sheet checks against brain facts; a fact missing from the brain is marked, not guessed."),
     "hier-wrap": ("brain", "Theme costs", "The order follows stars earned per theme, not a tested result."),
     "hooks-wrap": ("brain", "Copy gap and hooks", "A repeated line is a hook to test, not a proven winner."),
     "themes-wrap": ("brain", "Theme costs", "Stars move with the product and the season as well as the theme."),
@@ -2946,6 +2950,9 @@ def block_gaps(d: dict) -> dict:
     if ok(mx):
         g["mix-wrap"] = ("cross_source", f"Channels this year against last: {round(mx['paid_share_returning'] * 100, 1)} percent of returning orders came through paid ads."
                          if isinstance(mx.get("paid_share_returning"), (int, float)) else "Channels this year against last.")
+    sh = d.get("shopper") or {}
+    if sh.get("rows"):
+        g["shopper-wrap"] = ("never_tried", f"No mystery shopper run and no message pretest on file; {len(sh['rows'])} checkpoints are ready to run.")
     dr = d.get("drift") or {}
     if ok(dr):
         n_w = sum(1 for r in dr["rows"] if r["verdict"] in ("worse", "watch"))
@@ -2961,7 +2968,7 @@ def block_gaps(d: dict) -> dict:
         if sid in g:
             kind, text = g[sid]
         else:
-            src = {"drift-wrap": "drift", "salesshare-wrap": "sales_share", "paths-wrap": "paths", "cohort-wrap": "cohorts", "mix-wrap": "mix", "health-wrap": "health", "gap-wrap": "copy_gap",
+            src = {"shopper-wrap": "shopper", "drift-wrap": "drift", "salesshare-wrap": "sales_share", "paths-wrap": "paths", "cohort-wrap": "cohorts", "mix-wrap": "mix", "health-wrap": "health", "gap-wrap": "copy_gap",
                    "perc-wrap": "perception", "hier-wrap": "hierarchy", "misread-wrap": "misreads", "themes-wrap": "themes"}.get(sid)
             reason = (d.get(src) or {}).get("reason") if src else None
             kind, text = "unavailable", (str(reason).rstrip(".").capitalize() + "." if reason else EMPTY_REASON.get(sid, "No input for this block yet."))
@@ -3225,6 +3232,7 @@ def block_rules(d: dict) -> dict:
         "price-wrap": f"Price-led: price rungs hold {pc(PRICE_LED)} or more of its one-star mentions.",
         "claims-wrap": f"Under fire: {CLAIM_HITS} or more bad reviews use the claim's own feature words.",
         "look-wrap": "Pages the Ad Library pull flags as likely impostors: our name, ads, links elsewhere.",
+    "shopper-wrap": f"A real order, support question and return, each checked against the brain. Support passes inside {SUPPORT_REPLY_HOURS} hours.",
     "drift-wrap": f"Theme share of praise and complaint reviews, the last {DRIFT_DAYS} days against the {DRIFT_DAYS} before. Moved: {round(DRIFT_PTS * 100)} points.",
         "timing-wrap": f"A season: 3 months hold {SEASON_LIFT:g}x the theme's share of all complaints, with {SEASON_WIN_MIN} or more.",
         "moments-wrap": f"Moments from avatar triggers on US dates, {HORIZON_MONTHS} months ahead. Ads live {LEAD_DAYS['ad']} days before, emails {LEAD_DAYS['email']}.",
@@ -3242,7 +3250,7 @@ def block_rules(d: dict) -> dict:
              "hier-wrap": "hierarchy", "hooks-wrap": "hooks", "themes-wrap": "themes", "words-wrap": "words", "served-wrap": "served",
              "price-wrap": "price", "claims-wrap": "claims_fire", "look-wrap": "lookalikes", "timing-wrap": "timing", "moments-wrap": "moments",
              "market-wrap": "marketplace", "returns-wrap": "returns", "misread-wrap": "misreads", "paths-wrap": "paths", "cohort-wrap": "cohorts",
-             "health-wrap": "health", "mix-wrap": "mix", "drift-wrap": "drift"}
+             "health-wrap": "health", "mix-wrap": "mix", "drift-wrap": "drift", "shopper-wrap": "shopper"}
     out = {}
     for sid, rule in R.items():
         x = d.get(lines[sid]) or {}
@@ -3364,3 +3372,92 @@ def drift(lang_records: list[dict], themes_x: dict, as_of: str) -> dict:
                       {"n": 4, "who": "agent", "text": "From the second scan on, list what changed against the voice sheet and claims."}]}
     return {"available": True, "rows": rows, "n": n, "window_days": DRIFT_DAYS, "line": line, "own_assets": "unavailable",
             "own_reason": "our site, ads and email have one capture in the brain; drift needs a dated scan each quarter", "scan": scan}
+
+
+# ---------------------------------------------------------------- mystery shopper runs and message pretests (11.5)
+
+SUPPORT_REPLY_HOURS = 24      # a support reply inside 24 hours passes
+PRETEST_N = 5                 # buyers who match the avatar see both lines
+PRETEST_PASS = 0.6            # the buyer-words line wins with 3 of 5 or more
+
+
+def shopper_run(policies: list[dict], offers: list[dict], hierarchy_x: dict, ladders_rows: list[dict], macros_x: dict,
+                focus_x: dict, words_x: dict, as_of: str) -> dict:
+    """A mystery shopper run sheet from the brain: each checkpoint names what a real shopper checks and the brain
+    fact the page, cart, email or support reply must match. Plus a message pretest per top avatar: our current line
+    against a line in the avatar's own words. Results are unavailable until a runs table exists; no model runs here."""
+    import datetime as _dt
+    def fact(recs, field):
+        r = next((x for x in recs if x.get("field") == field), None)
+        return (r.get("text"), r["id"]) if r else (None, None)
+    open_doubts = [r for r in ladders_rows if r["verdict"] in ("answer", "not_landing")]
+    top = open_doubts[0] if open_doubts else None
+    fit = next((r for r in ladders_rows if "fit" in r["theme"] or "siz" in r["theme"]), None)
+    reply = next((m for m in (macros_x or {}).get("rows", []) if top and m.get("doubt") == top["doubt"]), None)
+    lead = hierarchy_x.get("lead") if hierarchy_x.get("available") else None
+    ship, ship_id = fact(offers, "free_shipping_threshold_usd")
+    code, code_id = fact(offers, "first_order_code")
+    ret, ret_id = fact(policies, "returns_window_days")
+    refund, refund_id = fact(policies, "refund_method")
+    steps = [
+        ("Home", "Does the first screen lead with our one message?", lead, "brain.hierarchy"),
+        ("Product page", f"Is \"{top['doubt']}\" answered above the fold?" if top else None,
+         (f"Proof on file: {top['proof']}" if top and top.get("proof") else "No proof on file: note what the page says instead.") if top else None,
+         top["id"] if top else None),
+        ("Size help", "Can a shopper find size help in one click from the product page?" if fit else None,
+         f"The size doubt \"{fit['doubt']}\" has {fit['one_star']} one-star mentions." if fit else None, fit["id"] if fit else None),
+        ("Cart", "Does the cart show how far the order is from free shipping?", ship, ship_id),
+        ("Checkout", "Does the first-order code from the ads work at checkout?", code, code_id),
+        ("Order email", "Does the confirmation state the returns window?", ret, ret_id),
+        ("Support", f"Ask support: \"{top['doubt']}\" Time the reply; compare it with our drafted reply." if top else None,
+         (reply or {}).get("draft"), (reply or {}).get("id")),
+        ("Return", "Start a return. Does it match the returns window and refund method?", " ".join(x for x in (ret, refund) if x) or None, ret_id or refund_id),
+    ]
+    rows = []
+    for step, check, expect, ref in steps:
+        if not check:
+            continue
+        rows.append({"step": step, "check": check, "expect": expect, "ref": ref,
+                     "verdict": "ready" if expect else "no_fact", "result": None})
+    ready = sum(1 for r in rows if r["verdict"] == "ready")
+    if not ready:
+        return {"available": False, "reason": "no brain fact to check a shopper run against yet", "rows": [], "pretests": [], "run": None}
+    check_on = (_dt.date.fromisoformat(as_of) + _dt.timedelta(days=14)).isoformat()
+    sheet = "\n".join(f"{i + 1}. {r['step']}: {r['check']}\n   Expect: {r['expect'] or 'no brain fact yet; note what you see'}\n   Result: pass | fail | note"
+                      for i, r in enumerate(rows))
+    run = {"id": f"{SCREEN}.shopper.run", "kind": "research_note", "owner": "person", "check_on": check_on,
+           "title": f"Run a mystery shopper pass on {len(rows)} checkpoints", "capability": {"id": "BRAND-C67", "autonomy": "founder_gate"},
+           "why": f"{ready} of {len(rows)} checkpoints have a brain fact to check against. No run is on file.",
+           "stop_rule": f"a checkpoint fails twice in a row, or support takes over {SUPPORT_REPLY_HOURS} hours",
+           "draft": "DRAFT mystery shopper run sheet\nPlace a real order as a new buyer, on a phone.\n" + sheet,
+           "steps": [{"n": 1, "who": "agent", "text": "Print the run sheet with the brain facts to check against."},
+                     {"n": 2, "who": "person", "text": "Shop, order, ask support and start a return as a new buyer."},
+                     {"n": 3, "who": "person", "text": "Mark each checkpoint pass or fail with a note."},
+                     {"n": 4, "who": "agent", "text": "Turn each fail into a move on this screen."}]}
+    pre = []
+    word_rows = (words_x or {}).get("rows", [])
+    frame = hierarchy_x.get("frame")
+    for r in (focus_x or {}).get("rows", [])[:3]:
+        mine = sorted((x for x in ladders_rows if r["key"] in x["avatars"]), key=lambda x: -(x["one_star"] or 0))
+        by_rung = {wr["id"]: wr for wr in word_rows}
+        ordered = [by_rung[x["id"]] for x in mine if x["id"] in by_rung] + [wr for wr in word_rows if r["key"] in wr["avatars"]]
+        cands = [(w["text"], wr.get("theme") or "") for wr in ordered for w in wr["win_words"] if not w["language_only"]]
+        on_theme = [t for t, th in cands if th and th.split("_")[0][:5] in t.lower()]
+        win = (on_theme or [t for t, _ in cands] or [None])[0]
+        if not win or not frame:
+            continue
+        pre.append({"key": r["key"], "name": r["name"], "a": frame, "b": win, "result": None,
+                    "action": {"id": f"{SCREEN}.pretest.{r['key']}", "kind": "test_brief", "owner": "agent_drafts", "check_on": check_on,
+                               "title": f"Pretest a line in their words for {r['name']}", "capability": {"id": "BRAND-C66", "autonomy": "agent_does"},
+                               "why": f"Our line against theirs, shown to {PRETEST_N} buyers like {r['name']}.",
+                               "stop_rule": f"the buyer-words line wins under {int(PRETEST_PASS * PRETEST_N)} of {PRETEST_N}",
+                               "draft": f"DRAFT message pretest\nFor: {r['name']}\nLine A (ours now): {frame}\nLine B (their words): \"{win}\"\n"
+                                        f"Ask {PRETEST_N} buyers who match: which makes you want to buy, and why?\n"
+                                        f"Win: B chosen by {int(PRETEST_PASS * PRETEST_N)} or more. Then B leads the ads and page for this avatar.",
+                               "steps": [{"n": 1, "who": "agent", "text": "Find buyers who match the avatar from survey answers or reviews."},
+                                         {"n": 2, "who": "person", "text": "Approve the two lines and who sees them."},
+                                         {"n": 3, "who": "person", "text": "Show both lines and record the choice and the reason."},
+                                         {"n": 4, "who": "agent", "text": "Write the result to the brain learnings."}]}})
+    return {"available": True, "rows": rows, "run": run, "pretests": pre, "results": "unavailable",
+            "results_reason": "no mystery shopper or pretest table yet; results are marked on the run sheet",
+            "line": f"{len(rows)} checkpoints, {ready} with a brain fact to check against. {len(pre)} message pretests drafted. No run is on file."}

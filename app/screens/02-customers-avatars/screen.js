@@ -608,6 +608,26 @@
     }));
   }
 
+  // ---------- desk: mystery shopper and message pretests ----------
+  function renderShopper(x) {
+    if (!x.available) { mount('#shopper', el('p', { class: 'muted', text: 'Unavailable: ' + x.reason + '.' })); return; }
+    const V = { ready: ['wait', 'Ready'], no_fact: ['watch', 'No brain fact'] };
+    mount('#shopper',
+      el('div', { class: 'row', style: { gap: '8px', 'margin-bottom': '8px' } },
+        el('button', { class: 'btn soft sm', type: 'button', text: 'Open the run sheet', onclick: () => briefPanel(x.run) }),
+        el('span', { class: 'small muted', text: 'Results: unavailable. ' + x.results_reason.replace(/^./, (c) => c.toUpperCase()) + '.' })),
+      UI.verdictTable({
+        columns: [{ key: 'step', label: 'Checkpoint' }, { key: 'check', label: 'What the shopper checks' }, { key: 'expect_t', label: 'Brain fact to match' }],
+        rows: x.rows.map((r) => Object.assign({}, r, { expect_t: r.expect ? (r.expect.length > 120 ? r.expect.slice(0, 117) + '...' : r.expect) : 'none: note what you see',
+          actions: r.expect ? [keep('On the sheet', 'This checkpoint is on the run sheet with its brain fact.')] : [keep('Add the fact', 'The brain holds no fact for this checkpoint. The shopper notes what they see; add the fact on the brand brain screen.')] })),
+        verdict: { at: 1, kind: (r) => V[r.verdict][0], text: (r) => V[r.verdict][1] }, actions: { label: 'Do' }, sort: false,
+      }),
+      x.pretests.length ? el('h4', { text: 'Message pretests' }) : null,
+      ...x.pretests.map((p) => el('div', { class: 'card flat' }, el('b', { text: p.name }),
+        el('div', { class: 'small', text: 'A, ours now: ' + p.a }), el('div', { class: 'small', text: 'B, their words: "' + p.b + '"' }),
+        el('button', { class: 'btn soft xs', type: 'button', text: 'Brief the pretest', onclick: () => briefPanel(p.action) }))));
+  }
+
   // ---------- desk: drift in what buyers say ----------
   function renderDrift(x) {
     if (!x.available) { mount('#drift', el('p', { class: 'muted', text: 'Unavailable: ' + x.reason + '.' })); return; }
@@ -1115,7 +1135,7 @@
     { key: 'doubts', label: 'Doubts and words', ids: ['ladders-wrap', 'cover-wrap', 'themes-wrap', 'words-wrap', 'hooks-wrap', 'gap-wrap', 'macros-wrap'] },
     { key: 'offers', label: 'Offers and claims', ids: ['offers-wrap', 'price-wrap', 'claims-wrap', 'timing-wrap'] },
     { key: 'retention', label: 'Retention', ids: ['paths-wrap', 'cohort-wrap', 'mix-wrap', 'moments-wrap', 'health-wrap'] },
-    { key: 'brand', label: 'Brand and voice', ids: ['drift-wrap', 'perc-wrap', 'hier-wrap', 'look-wrap', 'voice-wrap'] },
+    { key: 'brand', label: 'Brand and voice', ids: ['drift-wrap', 'shopper-wrap', 'perc-wrap', 'hier-wrap', 'look-wrap', 'voice-wrap'] },
   ];
   let deskTabs = null;
   function buildDesk(actions) {
@@ -1187,6 +1207,7 @@
     renderLadders(d.ladders, d.avatars);
     renderGap(d.copy_gap);
     renderDrift(d.drift);
+    renderShopper(d.shopper);
     renderPerception(d.perception);
     renderHierarchy(d.hierarchy);
     renderHooks(d.hooks);

@@ -2744,3 +2744,34 @@ class Drift(TempBrain):
     def test_too_few_reviews(self):
         x = api.builds.drift(self.recs([(['fit'], 1, '2026-08-01')] * 3), {}, '2026-09-27')
         self.assertFalse(x['available'])
+
+
+class ShopperAndPretests(TempBrain):
+    """Feature 11.5: a mystery shopper run sheet checked against brain facts, and message pretests per top avatar;
+    results unavailable until a runs table exists; both go into the hand-off packs."""
+
+    def test_run_sheet_and_pretests(self):
+        d = api.handle(Req(['overview']))
+        x = d['shopper']
+        self.assertTrue(x['available'])
+        self.assertGreaterEqual(len(x['rows']), 6)
+        for r in x['rows']:
+            if r['verdict'] == 'ready':
+                self.assertTrue(r['expect'])
+        self.assertEqual(x['results'], 'unavailable')
+        self.assertIn('Expect:', x['run']['draft'])
+        self.assertEqual(x['run']['owner'], 'person')
+        self.assertTrue(x['pretests'])
+        for p in x['pretests']:
+            self.assertNotEqual(p['a'], p['b'])
+            self.assertIn(p['b'], p['action']['draft'])
+        self.assertEqual(d['blocks']['shopper-wrap']['gap']['kind'], 'never_tried')
+        h = api.handle(Req(['handoff']))
+        cx = next(p for p in h['packs'] if p['to'] == 'cx')
+        self.assertEqual(cx['rows'][0]['title'], x['run']['title'])
+        creative = next(p for p in h['packs'] if p['to'] == 'creative')
+        self.assertTrue(any(r['title'].startswith('Pretest a line') for r in creative['rows']))
+
+    def test_no_facts_is_unavailable(self):
+        x = api.builds.shopper_run([], [], {'available': False}, [], {}, {}, {}, '2026-09-27')
+        self.assertFalse(x['available'])
