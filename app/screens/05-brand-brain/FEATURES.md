@@ -210,9 +210,9 @@ Sources: round 7's candidates (the brand book, the round schedule, the new-hire 
 | # | Feature | Status | What a founder can do |
 |---|---|---|---|
 | 8.1 | The brand book (`brandbook.py`, `GET brandbook`): one printable document from the records, in the order a brand book reads (who we are, what we stand for, who we speak to, how we speak, our words, the lines we never cross, the lines and numbers that never change, what we look like with hex codes and logo rules, what we say about the basics, where it lives); every empty section says so; copy, download or print from the package block; the read is logged | done | Hand an agency or a new designer the brand book, true to the records, without writing it |
-| 8.2 | The round schedule | todo | |
-| 8.3 | Ten questions for a new hire, with the answer key | todo | |
-| 8.4 | Check an agent's answers against the brain | todo | |
+| 8.2 | The round schedule (`GET schedule`, `POST schedule`): the founder round's weekday and hour as a founder record; the round tab shows the day, whether it is due today and the next date; set it from the tab | done | Know which day the round is, and see it flagged when it is due |
+| 8.3 | Ten questions for a new hire or agent (`quiz.py`, `GET quiz`): the facts anyone on the brand must know (returns window, free shipping threshold, first order code, the guarantee, the giving model, a line we never say, the default audience, the positioning frame, a locked line, the product lines), each only when the brain holds the answer, with the answer key naming the record; copy the questions and the key from the package block | done | Test a new hire or an agent on day one against the records, not against memory |
+| 8.4 | Check an agent's answers (`POST quiz/check`): paste the answers, one per line, from a person or an agent; each is scored in code (numbers as numbers, codes exactly, lines by word overlap, lists by half named) with why and the right answer with its record; a miss can be recorded as a correction (7.5) so every agent reads it | done | See in a minute what an agent got wrong about the brand before it writes for it |
 | 8.5 | Trust over time | todo | |
 | 8.6 | Where every fact came from: the sources register | todo | |
 | 8.7 | A contradiction check before a write | todo | |

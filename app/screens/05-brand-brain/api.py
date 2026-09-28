@@ -9,6 +9,9 @@ question, and accept or ignore on a proposed record. Nothing external.
   GET  agentfile/endpoints      this route table as JSON, for an agent or an MCP wrapper
   GET  brainmd                  the router BRAIN.md text
   GET|POST brainmd/notes        the founder notes block in BRAIN.md, read and set; kept across regeneration
+  GET  quiz                     ten questions for a new hire or agent with the answer key from the records
+  POST quiz/check               {text | answers, who}: pasted answers scored in code against the key
+  GET|POST schedule             the founder round's day and hour, read and set
   GET  brandbook                the brand book from the records (markdown): identity, positioning, audiences, voice, glossary, red lines, locks, palette, facts
   GET  round                    the founder round as a checklist: questions, the review queue, moves, reviews due, carried over
   POST round/tick               {key, done}: tick or untick an item; POST round/close closes the round with one dated decision
@@ -231,6 +234,9 @@ _pspec.loader.exec_module(parity)
 _sspec = importlib.util.spec_from_file_location("brand_brain_sitediff", HERE / "sitediff.py")
 sitediff = importlib.util.module_from_spec(_sspec)
 _sspec.loader.exec_module(sitediff)
+_qzspec = importlib.util.spec_from_file_location("brand_brain_quiz", HERE / "quiz.py")
+quiz = importlib.util.module_from_spec(_qzspec)
+_qzspec.loader.exec_module(quiz)
 _bbspec = importlib.util.spec_from_file_location("brand_brain_brandbook", HERE / "brandbook.py")
 brandbook = importlib.util.module_from_spec(_bbspec)
 _bbspec.loader.exec_module(brandbook)
@@ -2041,6 +2047,45 @@ def handle(req):
         return cd
     if req.method == "POST" and parts == ["claims"]:
         return claim_add(brain, req.body)
+    if req.method == "GET" and parts == ["quiz"]:
+        q = quiz.questions(brain, {"redlines": redlines.register(brain)["lines"], "audiences": audiences.profiles(brain, ladderproof), "locks": locks.zones(brain, voice)})
+        q.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "BRN-C12", "autonomy": "agent_does"})
+        return q
+    if req.method == "POST" and parts == ["quiz", "check"]:
+        body = req.body or {}
+        answers = body.get("answers") if isinstance(body.get("answers"), list) else [ln for ln in str(body.get("text") or "").splitlines()]
+        answers = [re.sub(r"^\s*\d+[.)]\s*", "", str(a)) for a in answers]
+        q = quiz.questions(brain, {"redlines": redlines.register(brain)["lines"], "audiences": audiences.profiles(brain, ladderproof), "locks": locks.zones(brain, voice)})
+        if not q["questions"]:
+            return 400, {"error": "the brain holds no question to check against yet"}
+        res = quiz.check(brain, q["questions"], answers)
+        res.update(brand=brain.brand, who=str(body.get("who") or "")[:40] or None)
+        return res
+    if req.method == "GET" and parts == ["schedule"]:
+        r = next((x for x in brain.records("team") if x.get("field") == "round_schedule" and isinstance(x.get("value"), dict)), None)
+        v = r["value"] if r else {}
+        wd = v.get("weekday")
+        nxt = None
+        if isinstance(wd, int) and 0 <= wd <= 6:
+            delta = (wd - brain.today.weekday()) % 7
+            nxt = (brain.today + dt.timedelta(days=delta)).isoformat()
+        return {"weekday": wd, "hour": v.get("hour"), "next": nxt, "due_today": nxt == brain.today.isoformat(), "set": bool(r), "note": "The founder round's day. The digest and the round read it; delivery stays copy until a connector exists."}
+    if req.method == "POST" and parts == ["schedule"]:
+        body = req.body or {}
+        try:
+            wd = int(body.get("weekday"))
+            hour = int(body.get("hour", 9))
+        except (TypeError, ValueError):
+            return 400, {"error": "weekday (0 Monday to 6 Sunday) and hour are numbers"}
+        if not (0 <= wd <= 6 and 0 <= hour <= 23):
+            return 400, {"error": "weekday 0 to 6, hour 0 to 23"}
+        names = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+        rec = {"id": f"{brain.brand}.team.round_schedule", "brand": brain.brand, "section": "team", "field": "round_schedule", "value": {"weekday": wd, "hour": hour}, "text": f"The founder round is on {names[wd]} at {hour:02d}:00.", "tier": "approved", "confidence": 1.0, "visibility": "private",
+               "source": {"type": "founder", "ref": "05-brand-brain founder round", "captured_at": brain.today.isoformat()}}
+        errs = founder_put(brain, rec, "founder_edit", rec["text"])
+        if errs:
+            return 400, {"error": "; ".join(errs)}
+        return 201, {"ok": True, "weekday": wd, "hour": hour, "version": brain.version(), "next": f"Set. The round and the digest read {names[wd]} as the day."}
     if req.method == "GET" and parts == ["brandbook"]:
         ident = {}
         for r in brain.records("identity"):

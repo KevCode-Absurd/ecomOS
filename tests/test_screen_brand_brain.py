@@ -2893,10 +2893,49 @@ class Round8BrandBook(TempBrain):
         self.assertIn('_no red line yet_', b['text'])
 
 
+class Round8QuizAndSchedule(TempBrain):
+    """Round 8 features 2, 3 and 4: the round schedule; ten questions with the key; pasted answers scored in code."""
+
+    def test_quiz_key_and_check(self):
+        api.handle(Req(['claims'], 'POST', body={'text': 'waterproof', 'tier': 'forbidden'}))
+        q = api.handle(Req(['quiz']))
+        keys = [x['key'] for x in q['questions']]
+        self.assertTrue({'returns', 'free_shipping', 'code', 'giving', 'never_say', 'frame', 'lines'} <= set(keys), keys)
+        self.assertTrue(all(x['record'] for x in q['questions']))
+        self.assertIn('1. How many days', q['text'])
+        self.assertIn('bombas.policies.returns_window_days', q['key'])
+        answers = []
+        for x in q['questions']:
+            answers.append({'returns': '30 days', 'free_shipping': 'over $75', 'code': 'COMFORT20 for 20 percent', 'never_say': 'we never say waterproof'}.get(x['key'], x['answer']))
+        r = api.handle(Req(['quiz', 'check'], 'POST', body={'answers': answers, 'who': 'a new hire'}))
+        self.assertEqual((r['score'], r['of'], r['who']), (r['of'], len(q['questions']), 'a new hire'))
+        wrong = list(answers)
+        wrong[keys.index('free_shipping')] = 'free shipping on every order over $50'
+        wrong[keys.index('returns')] = '60 days'
+        r = api.handle(Req(['quiz', 'check'], 'POST', body={'text': '\n'.join(f'{i + 1}. {a}' for i, a in enumerate(wrong))}))
+        self.assertEqual(r['score'], r['of'] - 2)
+        misses = {m['question'][:8] for m in r['misses']}
+        self.assertEqual(len(r['misses']), 2)
+        self.assertTrue(any('the brain says $75' in m['why'] for m in r['misses']))
+        self.assertEqual(api.handle(Req(['quiz', 'check'], 'POST', body={'answers': []}))['score'], 0)
+
+    def test_schedule(self):
+        sc = api.handle(Req(['schedule']))
+        self.assertFalse(sc['set'])
+        status, res = api.handle(Req(['schedule'], 'POST', body={'weekday': 0, 'hour': 9}))
+        self.assertEqual(status, 201)
+        sc = api.handle(Req(['schedule']))
+        self.assertEqual((sc['weekday'], sc['next'], sc['due_today']), (0, '2026-09-28', True))  # 28 Sep 2026 is a Monday
+        api.handle(Req(['schedule'], 'POST', body={'weekday': 3}))
+        self.assertEqual(api.handle(Req(['schedule']))['next'], '2026-10-01')
+        self.assertEqual(api.handle(Req(['schedule'], 'POST', body={'weekday': 9}))[0], 400)
+        self.assertEqual(api.handle(Req(['schedule'], 'POST', body={'weekday': 'x'}))[0], 400)
+
+
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
-    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'], ['onepage'], ['brainmd', 'notes'], ['alerts'], ['glossary'], ['expiring'], ['feedback'], ['numbers'], ['proofs'], ['trust'], ['round'], ['brandbook'],
+    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'], ['onepage'], ['brainmd', 'notes'], ['alerts'], ['glossary'], ['expiring'], ['feedback'], ['numbers'], ['proofs'], ['trust'], ['round'], ['brandbook'], ['quiz'], ['schedule'],
               ['decisions'], ['flows'], ['claims'], ['site', 'diff'], ['parity'], ['contracts'], ['legal'], ['voice'], ['battlecards'], ['permissions'],
               ['export'], ['assumptions'], ['facts'], ['summaries'], ['changes'], ['learn'], ['report'], ['digest'], ['review'], ['bottlenecks'], ['audit']]
 
