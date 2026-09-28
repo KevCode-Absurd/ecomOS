@@ -781,6 +781,29 @@
         blocked.length ? { label: 'Open the first', onClick: () => openAction(actionFor(blocked[0].finding_id)) } : null));
   }
 
+  function priceBandBlock(pb) {
+    const rows = (pb && pb.rows) || [];
+    if (!rows.length) return UI.emptyState({ screen: SLUG, title: 'No open candidate', text: 'Screen a candidate in; its planned price is checked here.', missing: ['pipeline'] });
+    const vt = { reject: 'Reject band, no offer', caution: 'Caution band, no check', no_price: 'No price yet', not_yet: 'Before researched', below_target: 'Below target', in_target: 'In target', above_target: 'Above target' };
+    const note = (r, key, q) => { const v = prompt(q, r[key] || ''); if (v == null) return; const body = { who: 'person' }; body[key] = v; candidatePost('candidates/' + r.candidate_id, body); };
+    const vrows = rows.map((r) => { const a = actionFor(r.finding_id); return Object.assign({}, r, {
+      priceText: r.planned_price == null ? NA : fmt.money(r.planned_price) + (r.pack_units > 1 ? ' (' + r.pack_units + ' units)' : ''), bandText: r.band ? r.band.replace(/_/g, ' ') : NA,
+      offerText: r.offer_structure || 'none noted', checkText: r.price_band_check || 'none noted',
+      actions: [a ? { label: r.verdict === 'reject' ? 'Build the offer' : 'Check the band', onClick: () => openAction(a) } : null,
+        { label: 'Offer structure', cls: 'quiet', onClick: () => note(r, 'offer_structure', 'Offer structure for ' + r.name + ' (bundle, multi-pack, subscription) that raises the checkout price') },
+        { label: 'Band check', cls: 'quiet', onClick: () => note(r, 'price_band_check', 'Band check for ' + r.name + ': the checkout price against the target band, and where it sells if it stays below') }].filter(Boolean) }); });
+    const tbl = UI.verdictTable({
+      columns: [{ key: 'name', label: 'Candidate' }, { key: 'stage', label: 'Stage' }, { key: 'priceText', label: 'Planned price' }, { key: 'bandText', label: 'Band' }, { key: 'offerText', label: 'Offer structure' }, { key: 'checkText', label: 'Band check' }],
+      rows: vrows,
+      verdict: { at: 1, kind: (r) => r.verdict === 'reject' ? 'fix' : r.verdict === 'caution' ? 'watch' : r.verdict === 'in_target' ? 'keep' : 'na', text: (r) => vt[r.verdict], reason: (r) => pb.rule },
+      actions: { label: 'Do', onClick: () => {} }, sort: false });
+    const open = rows.filter((r) => r.verdict === 'reject' || r.verdict === 'caution');
+    return el('div', { class: 'stack' }, el('div', { class: 'card scroll' }, tbl),
+      el('p', { class: 'micro faint', text: 'Rule: ' + pb.rule + '. The price is the checkout price of the offer, packs included; the margin gate reads the same number.' }),
+      gapLine(open.length ? open.length + ' candidate' + (open.length === 1 ? ' is' : 's are') + ' priced where paid acquisition cannot pay back without a note: ' + open.map((r) => r.name).join(', ') + '.' : 'No open candidate sits in the reject or caution band without a note.',
+        open.length && actionFor(open[0].finding_id) ? { label: 'Open the first', onClick: () => openAction(actionFor(open[0].finding_id)) } : null));
+  }
+
   function scorecardBlock(sc) {
     const rows = (sc && sc.rows) || [];
     if (!rows.length) return el('p', { class: 'muted', text: 'No candidate to score.' });
@@ -1207,6 +1230,7 @@
     parts.push(section('desk-reviews', 'What do reviews praise and fail, line by line?', 'Public site review totals per line, with the objection ladder rungs built from them.', reviewBlock(d.reviews || [])));
     parts.push(section('desk-returns', 'Which lines come back, and why?', 'Return rate per line over the last 12 whole months from orders and the return leg of reversed orders, against the store median, with the reasons. Room metric sku_return_rate.', returnsBlock(d.returns)));
     parts.push(section('desk-margin', 'Does each candidate make money after real costs?', 'The margin gate per candidate: planned price stepping down through landed cost, the donated item, fulfilment and payment fees to contribution, every term from the finance inputs or the brain.', marginBlock(d.margin)));
+    parts.push(section('desk-price-band', 'Is each candidate priced where paid acquisition can pay back?', 'The planned checkout price per candidate against the reject line ($9.99 or under needs an offer structure), the $9 to $20 caution band (needs a band check) and the $50 to $150 target band for a paid-acquisition launch (bank ideas PRD-077, PRD-078). Below the target a candidate sells on organic, retention or as a bundle part.', priceBandBlock(d.price_bands)));
     parts.push(section('desk-lane-map', 'Which lanes are growing with room left, and which are growing and already full?', 'Trend direction against competitive saturation per lane, read together as one go or no-go signal: market growth and launches from the web pass, sellers from the competitor pages in the brain.', laneMapBlock(d.lane_map)));
     parts.push(section('desk-spend', 'Who is actually funding which lane, not just posting about it?', 'Competitor pages by the longest run of their active ads per lane. Three or more advertisers at 90 days is a funded test; one at 14 days is a live test; the rest is noise.', spendBlock(d.spend)));
     parts.push(section('desk-price-signal', 'What would buyers actually pay for a pair?', 'Price mentions mined from review quotes across Amazon, the brand site, Trustpilot and retailers, as a median per pair, against the competitor band, our own pair and each candidate\'s planned price.', priceSignalBlock(d.price_signal)));

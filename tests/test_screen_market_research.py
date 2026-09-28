@@ -1495,6 +1495,38 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
         finally:
             audit.PIPELINE_PATH = self.real2
 
+    def test_price_band_gate(self):
+        D = date(2026, 9, 27)
+        self.real2 = audit.PIPELINE_PATH
+        try:
+            audit.PIPELINE_PATH = self.tmp
+            self.tmp.write_text(json.dumps({'rows': [{'candidate_id': 'a', 'brand': 'fake', 'name': 'A', 'stage': 'researched', 'planned_price': 8.0},
+                                                     {'candidate_id': 'b', 'brand': 'fake', 'name': 'B', 'stage': 'gated', 'planned_price': 14.0},
+                                                     {'candidate_id': 'c', 'brand': 'fake', 'name': 'C', 'stage': 'gated', 'planned_price': 14.0, 'price_band_check': 'sells as a bundle part'},
+                                                     {'candidate_id': 'd', 'brand': 'fake', 'name': 'D', 'stage': 'screened', 'planned_price': 8.0},
+                                                     {'candidate_id': 'e', 'brand': 'fake', 'name': 'E', 'stage': 'gated', 'planned_price': 68.0, 'pack_units': 4},
+                                                     {'candidate_id': 'f', 'brand': 'fake', 'name': 'F', 'stage': 'gated'},
+                                                     {'candidate_id': 'g', 'brand': 'fake', 'name': 'G', 'stage': 'researched', 'planned_price': 8.0, 'offer_structure': '3-pack at 24'}]}), encoding='utf-8')
+            read = audit.price_band_read('fake')
+            by = {r['candidate_id']: r['verdict'] for r in read['rows']}
+            self.assertEqual(by, {'a': 'reject', 'b': 'caution', 'c': 'below_target', 'd': 'not_yet', 'e': 'in_target', 'f': 'no_price', 'g': 'caution'})
+            self.assertEqual(read['rows'][0]['candidate_id'], 'a')
+            found = audit.price_band_findings('fake', D)
+            self.assertEqual([f['id'].split('.')[-1] for f in found], ['a', 'b', 'g'])
+            fa = next(f for f in found if f['id'].endswith('.a'))
+            self.assertEqual(fa['severity'], 'high')
+            self.assertIn('$8', fa['sentence'])
+            self.check_shape(fa)
+            self.assertIn('offer structure', api.recipe(fa)['title'])
+            fb = next(f for f in found if f['id'].endswith('.b'))
+            self.assertIn('caution band', api.recipe(fb)['title'])
+            self.assertIn('PROD-R51', api.CANDIDATE_RULES)
+            r = api.candidate_update('fake', 'b', {'price_band_check': 'checked: bundle part', 'who': 'person'}, D)
+            self.assertIn('price band check set', r['changes'])
+            self.assertEqual([f['id'].split('.')[-1] for f in audit.price_band_findings('fake', D)], ['a', 'g'])
+        finally:
+            audit.PIPELINE_PATH = self.real2
+
     def test_demand_pattern_tags(self):
         even = {'rows': [{'category': 'socks', 'series': [100] * 12}], 'months': [f'2026-{m:02d}' for m in range(1, 13)], 'last': '2026-12'}
         peaked = {'rows': [{'category': 'socks', 'series': [50] * 10 + [300, 400]}], 'months': even['months'], 'last': '2026-12'}

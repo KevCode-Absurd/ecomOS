@@ -186,6 +186,10 @@ Rules
             launch checklist (demand screen run, angle with a source, margin gate, compliance, tech pack, sample passed,
             first run sized, owner). Bank ideas PRD-121 and PRD-112: every hard stop clear before sample or ad money.
             Money: null (the bet is the first run cash). Capability PROD-C10
+  PROD-R51  Price band: an open candidate at researched or later whose planned price is at or under $9.99 with no offer
+            structure noted (bank idea PRD-077: too low to cover paid acquisition), or inside the $9 to $20 caution band
+            with no band check noted (bank idea PRD-078: the target band for a paid-acquisition launch is $50 to $150).
+            Money: null (an unlaunched SKU has no baseline). Capability PROD-C08
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -309,6 +313,7 @@ RULES = [
     {'rule_id': 'PROD-R48', 'name': 'Candidate with a first run decided whose first launch carries more than one variant', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C07', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R49', 'name': 'Candidate with a first run decided in a custom or printed format before a passed sample and any sell-through', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C07', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R50', 'name': 'Candidate at go, or shortlisted with a first run decided, with a hard stop open on the launch checklist', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline', 'finance_inputs', 'brain.competitors'], 'capability': 'PROD-C10', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R51', 'name': 'Candidate at researched or later priced at or under $9.99 with no offer structure, or in the $9 to $20 caution band with no band check', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C08', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -359,7 +364,8 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R47': {'id': 'PROD-C01', 'autonomy': 'agent_does'},
               'PROD-R48': {'id': 'PROD-C07', 'autonomy': 'agent_does'},
               'PROD-R49': {'id': 'PROD-C07', 'autonomy': 'agent_does'},
-              'PROD-R50': {'id': 'PROD-C10', 'autonomy': 'founder_gate'}}
+              'PROD-R50': {'id': 'PROD-C10', 'autonomy': 'founder_gate'},
+              'PROD-R51': {'id': 'PROD-C08', 'autonomy': 'agent_does'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -948,6 +954,7 @@ def _run_audit(brand, ends_on, data):
     out += variant_findings(brand, ends_on)
     out += packaging_findings(brand, ends_on)
     out += readiness_findings(brand, data, br, rd, ends_on)
+    out += price_band_findings(brand, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -4693,5 +4700,69 @@ def readiness_findings(brand, data, br, rd, ends_on):
         f = _finding('PROD-R50', cid, ends_on, 'high' if r['stage'] == 'go' else 'medium', ev, sentence, None, 0.9, [], money_reason='the bet is the first run cash, priced on the first-run card')
         f['entity'] = {'type': 'sku', 'id': cid, 'label': r['name'], 'candidate': True, 'stage': r['stage'], 'hard_open': r['hard_open'], 'open_labels': [labels[k] for k in r['hard_open']], 'passed': r['passed'], 'of': r['of']}
         f['id'] = f'{SCREEN}.PROD-R50.{cid}'
+        out.append(f)
+    return out
+
+
+# ---------------------------------------------------------------- the price band for a paid-acquisition launch
+
+PRICE_REJECT_MAX = 9.99          # at or under: too low to cover paid acquisition without an offer structure (bank idea PRD-077)
+PRICE_CAUTION = (9.0, 20.0)      # inside: check the band before the margin gate is trusted (bank idea PRD-078)
+PRICE_TARGET = (50.0, 150.0)     # the bank's target band for a paid-acquisition launch (bank idea PRD-078)
+PRICE_BAND_STAGE_MIN = 1         # researched or later
+
+
+def price_band_read(brand):
+    """Per open candidate: the planned price (the checkout price of the offer, packs included), where it sits against the
+    reject line, the caution band and the target band, the offer structure and band check noted, and the verdict: no_price,
+    not_yet (before researched), reject (at or under the line, no offer structure), caution (in the caution band, no band
+    check), below_target, in_target, above_target."""
+    rows = []
+    for c in pipeline(brand):
+        st = c.get('stage')
+        if st in CLOSED_STAGES:
+            continue
+        idx = STAGES.index(st) if st in STAGES else None
+        price = c.get('planned_price')
+        offer = str(c.get('offer_structure') or '').strip() or None
+        check = str(c.get('price_band_check') or '').strip() or None
+        if price is None:
+            band, verdict = None, 'no_price'
+        elif price <= PRICE_REJECT_MAX:
+            band, verdict = 'reject', 'reject' if not offer else 'caution' if not check else 'below_target'
+        elif PRICE_CAUTION[0] < price < PRICE_CAUTION[1]:
+            band, verdict = 'caution', 'caution' if not check else 'below_target'
+        elif price < PRICE_TARGET[0]:
+            band, verdict = 'below_target', 'below_target'
+        elif price <= PRICE_TARGET[1]:
+            band, verdict = 'in_target', 'in_target'
+        else:
+            band, verdict = 'above_target', 'above_target'
+        if idx is None or idx < PRICE_BAND_STAGE_MIN:
+            verdict = 'not_yet' if verdict in ('reject', 'caution') else verdict
+        rows.append({'candidate_id': c.get('candidate_id'), 'name': c.get('name'), 'stage': st, 'planned_price': price, 'pack_units': c.get('pack_units') or 1, 'band': band,
+                     'offer_structure': offer, 'price_band_check': check, 'verdict': verdict, 'finding_id': f'{SCREEN}.PROD-R51.{c.get("candidate_id")}'})
+    order = {'reject': 0, 'caution': 1, 'no_price': 2, 'not_yet': 3, 'below_target': 4, 'in_target': 5, 'above_target': 6}
+    rows.sort(key=lambda r: (order[r['verdict']], r['name'] or ''))
+    return {'rows': rows, 'reject_max': PRICE_REJECT_MAX, 'caution': list(PRICE_CAUTION), 'target': list(PRICE_TARGET),
+            'rule': f'a planned price at or under ${PRICE_REJECT_MAX} needs an offer structure that raises the order value (a bundle, a multi-pack, a subscription) or the candidate is rejected; ${PRICE_CAUTION[0]:g} to ${PRICE_CAUTION[1]:g} needs a band check before the margin gate is trusted; the target band for a paid-acquisition launch is ${PRICE_TARGET[0]:g} to ${PRICE_TARGET[1]:g}; below it the candidate sells on organic, retention or as a bundle part (bank ideas PRD-077, PRD-078)'}
+
+
+def price_band_findings(brand, ends_on):
+    """PROD-R51: an open candidate at researched or later priced at or under $9.99 with no offer structure, or inside the caution band with no band check."""
+    out = []
+    for r in price_band_read(brand)['rows']:
+        if r['verdict'] not in ('reject', 'caution'):
+            continue
+        cid = r['candidate_id']
+        ev = [_ev('planned_price_usd', r['planned_price'], 'usd', ends_on.isoformat(), 'candidate now', PRICE_REJECT_MAX if r['verdict'] == 'reject' else PRICE_CAUTION[1], 'threshold', source='fixtures.pipeline', simulated=False, freshness_days=0,
+                  band=r['band'], target=list(PRICE_TARGET), offer_structure=r['offer_structure'], price_band_check=r['price_band_check'])]
+        if r['verdict'] == 'reject':
+            sentence = f'{r["name"]} is planned at ${r["planned_price"]:g}, at or under the ${PRICE_REJECT_MAX} line, with no offer structure to raise the order value; paid acquisition cannot pay back at that price.'
+        else:
+            sentence = f'{r["name"]} is planned at ${r["planned_price"]:g}, inside the ${PRICE_CAUTION[0]:g} to ${PRICE_CAUTION[1]:g} caution band, with no band check noted; the target band for a paid launch is ${PRICE_TARGET[0]:g} to ${PRICE_TARGET[1]:g}.'
+        f = _finding('PROD-R51', cid, ends_on, 'high' if r['verdict'] == 'reject' else 'medium', ev, sentence, None, 0.7, [], money_reason='an unlaunched SKU has no baseline to price the gap')
+        f['entity'] = {'type': 'sku', 'id': cid, 'label': r['name'], 'candidate': True, 'stage': r['stage'], 'planned_price': r['planned_price'], 'verdict': r['verdict'], 'pack_units': r['pack_units']}
+        f['id'] = f'{SCREEN}.PROD-R51.{cid}'
         out.append(f)
     return out

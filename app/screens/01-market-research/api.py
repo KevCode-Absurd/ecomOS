@@ -1105,6 +1105,21 @@ def recipe(f):
             'size': {'text': f'{ent.get("variants")} variants planned', 'usd': None}, 'stop_rule': 'no MOQ per variant before the core product sells', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 1,
             'win_rule': 'one variant in the first run, the rest queued behind a sell-through read',
         }
+    if rid == 'PROD-R51':
+        ent = f.get('entity') or {}
+        reject = ent.get('verdict') == 'reject'
+        return {
+            'title': (f'Raise the order value on {ent.get("label") or "the candidate"} with an offer structure, or drop it: ${(ent.get("planned_price") or 0):g} cannot pay for paid acquisition' if reject
+                      else f'Check the price band on {ent.get("label") or "the candidate"}: ${(ent.get("planned_price") or 0):g} sits in the caution band'),
+            'owner': 'agent',
+            'artefact': {'kind': 'research_note', 'label': (f'the offer structure for {ent.get("label")}: the bundle, multi-pack or subscription that lifts the checkout price out of the reject band, with the new planned price and pack units written on the candidate (bank idea PRD-077)' if reject
+                                                            else f'the band check for {ent.get("label")}: the checkout price against the ${audit.PRICE_TARGET[0]:g} to ${audit.PRICE_TARGET[1]:g} target, the channel that sells it if it stays below (organic, retention, a bundle part), and the note written on the candidate (bank idea PRD-078)')},
+            'steps': [{'n': 1, 'who': 'agent', 'text': 'Price the offer at the checkout, not the unit: pack units times price, plus any add-on the category sells.' if reject else 'Write the band check: the checkout price, the target band, and where this candidate sells if it stays below it.'},
+                      {'n': 2, 'who': 'agent', 'text': 'Re-run the margin gate at the new checkout price; the gate reads pack units.' if reject else 'Re-run the margin gate and the ad-cost ceiling at the checkout price.'},
+                      {'n': 3, 'who': 'person', 'text': 'Approve the offer structure, or kill the candidate with the reason "priced for paid acquisition".' if reject else 'Approve the band check, or move the price.'}],
+            'size': {'text': f'${(ent.get("planned_price") or 0):g} planned', 'usd': None}, 'stop_rule': 'no paid acquisition on a checkout price in the reject band', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 1,
+            'win_rule': 'the checkout price clears the caution band with an offer structure or a band check on the candidate',
+        }
     if rid == 'PROD-R50':
         ent = f.get('entity') or {}
         opens = ent.get('open_labels') or []
@@ -1283,7 +1298,7 @@ def merge_strength(actions):
     return keep
 
 
-CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28', 'PROD-R37', 'PROD-R38', 'PROD-R39', 'PROD-R40', 'PROD-R45', 'PROD-R46', 'PROD-R47', 'PROD-R48', 'PROD-R49', 'PROD-R50')
+CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28', 'PROD-R37', 'PROD-R38', 'PROD-R39', 'PROD-R40', 'PROD-R45', 'PROD-R46', 'PROD-R47', 'PROD-R48', 'PROD-R49', 'PROD-R50', 'PROD-R51')
 
 
 def merge_candidates(actions):
@@ -1536,7 +1551,7 @@ def overview(data, brand):
                      'gates': gates_block(brand, data, br, rd, ends_on, findings), 'scorecard': scorecard_block(brand, data, br, rd, ends_on, findings),
                      'video': audit.video_signals(br, brand, ends_on), 'tech_packs': tech_pack_block(brand, findings),
                      'hours': dict(audit.hours_table(brand, br), findings={f['entity']['id']: f['id'] for f in findings if f['rule_id'] == 'PROD-R28'}),
-                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on), 'returns': audit.return_rates(data, brand, ends_on), 'questions': audit.open_questions(br, ends_on), 'pulls': audit.pulls(br, brand, ends_on), 'first_runs': audit.first_run_read(brand, ends_on, audit.net_28d(rd)), 'brain_freshness': audit.brain_freshness(br, ends_on), 'assumptions': audit.assumptions(br), 'strength': audit.read_strength(br, brand, data, rd, ends_on), 'line_themes': audit.line_theme_matrix(br), 'samples': audit.sample_read(brand or 'sample', ends_on), 'kills': audit.kill_memory(brand or 'sample', ends_on), 'packaging': audit.packaging_read(brand or 'sample', ends_on), 'readiness': audit.launch_readiness(brand, data, br, rd, ends_on), 'audit_memo': audit.memo_stats()},
+                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on), 'returns': audit.return_rates(data, brand, ends_on), 'questions': audit.open_questions(br, ends_on), 'pulls': audit.pulls(br, brand, ends_on), 'first_runs': audit.first_run_read(brand, ends_on, audit.net_28d(rd)), 'brain_freshness': audit.brain_freshness(br, ends_on), 'assumptions': audit.assumptions(br), 'strength': audit.read_strength(br, brand, data, rd, ends_on), 'line_themes': audit.line_theme_matrix(br), 'samples': audit.sample_read(brand or 'sample', ends_on), 'kills': audit.kill_memory(brand or 'sample', ends_on), 'packaging': audit.packaging_read(brand or 'sample', ends_on), 'readiness': audit.launch_readiness(brand, data, br, rd, ends_on), 'price_bands': audit.price_band_read(brand or 'sample'), 'audit_memo': audit.memo_stats()},
             'audit': {'findings': findings, 'rules': audit.RULES}}
 
 
@@ -1620,7 +1635,7 @@ def candidate_update(brand, cid, body, today):
             return 400, {'error': 'hours_add must be a number'}
         row['hours_logged'] = round((row.get('hours_logged') or 0) + h, 2)
         changes.append(f'{h:g} hours logged')
-    for k in ('angle_text', 'angle_source', 'cash_plan', 'source_finding'):
+    for k in ('angle_text', 'angle_source', 'cash_plan', 'source_finding', 'offer_structure', 'price_band_check'):
         if body.get(k) is not None:
             row[k] = str(body[k]).strip()[:300] or None
             changes.append(k.replace('_', ' ') + ' set')
