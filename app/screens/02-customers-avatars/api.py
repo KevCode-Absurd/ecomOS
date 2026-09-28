@@ -1,20 +1,20 @@
 """Customers and avatars screen API: /api/02-customers-avatars/...
 
-Brand facts come from app/brain/<brand>/ through app/brain/store.py (avatars, objections,
-objection_ladders, language_bank, voice, claims). Repeat by cohort comes from the brand's
-simulated aggregates (cohorts.json) through app/data/tables.py. The only write is a
-founder-marked voice example, through Brain.put. Nothing external, no model.
+Brand facts come from app/brain/<brand>/ through app/brain/store.py. Numbers come from the brand's
+aggregates through app/data/tables.py. Writes go through Brain.put only: a founder-marked voice
+example, a drafted avatar, the approved messaging hierarchy. Nothing external, no model.
+HANDOFF.md in this folder explains how each number is made.
 
   GET  overview          orientation numbers, avatar cards, objection map, language bank,
                          voice sheet
   GET  rank              served by app/rank.py, which calls `rank(brand, window)` below when present
   GET  audit             findings from audit.py (app/contracts/audit.md shape) and RULES
   POST avatars/draft      {segment}: writes the drafted avatar for an unserved situation, tier inferred
-  GET  handoff             ready artefacts for 09-creative, 10-copy, 07-landing-pages-cro and 14-email-messaging
+  GET  handoff             ready artefacts for 09-creative, 10-copy, 07-landing-pages-cro, 14-email-messaging and 15-customers-cx
   GET  report              a plain-words monthly customer report for the founder, printable
   GET  agenda              every dated move in the next 30 days, and anything overdue
   GET  tests               tests this screen proposes, as experiment registry rows with status proposed
-  GET  avatar/<key>/brief  a plain-text one-pager for one avatar, for a creator or agency
+  GET  avatar/<key>/brief  one page per avatar in 9 sections, with its sized moves and decisions, plus plain text
   POST voice/check        {text}: pass, warn or fail against the writing rules, voice sheet and claims; no write
   POST messaging/approve  writes the drafted messaging hierarchy as an approved founder positioning record
   POST voice/examples    {kind: liked | disliked, text, note?}: writes a founder voice record

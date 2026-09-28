@@ -2537,3 +2537,20 @@ class TunedThresholds(TempBrain):
         self.assertEqual(api.builds.thresholds_from([{'field': 'threshold_sales_gap', 'value': 2.0},
                                                      {'field': 'threshold_nope', 'value': 1},
                                                      {'field': 'threshold_risk_high', 'value': True}]), {'SALES_GAP': 2.0})
+
+
+class HandOff(unittest.TestCase):
+    """Feature 10.5: the hand-off note covers every route, every contract ask and the stake rules, in plain words."""
+
+    def test_handoff_covers_the_screen(self):
+        t = (SCREEN / 'HANDOFF.md').read_text(encoding='utf-8')
+        for route in ('overview', 'rank', 'audit', 'report', 'agenda', 'tests', 'handoff', 'avatar/<key>/brief',
+                      'voice/examples', 'avatars/draft', 'messaging/approve', 'voice/check'):
+            self.assertIn(route, t)
+        for ask in ('survey_answers', 'customer_paths', 'SKU to product-line', 'Tickets and returns', 'Pack prices', 'last_year',
+                    '`avatar` entity', 'Angle and avatar tags', 'situations'):
+            self.assertIn(ask, t)
+        for rid in ('CUST-R07', 'CUST-R08', 'CUST-R09', 'CUST-R32'):
+            self.assertIn(rid, t)
+        self.assertNotIn('—', t)
+        self.assertNotRegex(t, r'\b(should|consider|leverage)\b')
