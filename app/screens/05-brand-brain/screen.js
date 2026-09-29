@@ -74,7 +74,7 @@
     loadRedlines(m.actions || []);
     loadOwners(m.actions || []);
     loadSelfAudit(m.actions || []);
-    loadExpiring(m.actions || []);
+    loadExpiring(m.actions || []); loadInbox(m.actions || []);
     loadTrust();
     loadSources();
     loadPeaks(m.actions || []);
@@ -442,6 +442,24 @@
     let chart = null;
     try { const h = await api(BASE + 'trust/history'); chart = h.available ? el('div', { class: 'stack' }, Charts.line({ title: 'Trust over time (one point a day)', labels: h.labels, series: h.series, unit: 'n', height: 160, note: h.note + (h.change != null ? ' Change since the first point: ' + (h.change >= 0 ? '+' : '') + h.change + '.' : '') })) : el('p', { class: 'micro faint', text: 'Trust over time: ' + h.reason + '.' }); } catch (e) { chart = null; }
     mount('#trust', el('p', { class: 'small', text: 'Formula: ' + t.formula + '.' }), table, chart, el('p', { class: 'micro faint', text: t.note }));
+  }
+  // 10.4: the hand-offs inbox
+  async function loadInbox(actions) {
+    let ib;
+    try { ib = await api(BASE + 'inbox'); } catch (e) { mount('#inbox', el('p', { class: 'muted', text: 'Inbox unavailable: ' + e.message })); return; }
+    const byAct = {}; for (const a of actions || []) if (a.rule_id === 'BRN-R43') byAct.inbox = a;
+    mount('#inbox-tools', UI.orientation([{ label: 'briefs', value: ib.available ? ib.counts.briefs : null, unit: 'n' }, { label: 'new', value: ib.available ? ib.counts.new : null, unit: 'n', tone: ib.counts.new ? 'warn' : null }, { label: 'waiting 3 days', value: ib.available ? ib.counts.overdue : null, unit: 'n', tone: ib.counts.overdue ? 'bad' : 'good' }]));
+    if (!ib.available) { mount('#inbox', el('p', { class: 'muted small', text: 'Unavailable: ' + ib.reason + '.' })); return; }
+    const status = el('span', { class: 'micro muted' });
+    const rows = ib.items.slice(0, 30).map((x) => {
+      const ac = el('button', { class: 'btn xs primary', type: 'button', text: 'Accept into the review queue', disabled: x.state !== 'new' });
+      const dm = el('button', { class: 'btn xs soft', type: 'button', text: 'Dismiss', disabled: x.state !== 'new' });
+      ac.addEventListener('click', async () => { ac.disabled = true; try { const r = await api(BASE + 'inbox/accept', { method: 'POST', body: { id: x.id } }); status.textContent = r.next; loadInbox(actions); loadReview(); loadPlan(); } catch (e) { ac.disabled = false; status.textContent = 'Could not accept: ' + e.message; } });
+      dm.addEventListener('click', async () => { const why = prompt('Why dismiss "' + x.title + '"?', 'not a brain fact'); if (!why) return; dm.disabled = true; try { await api(BASE + 'inbox/dismiss', { method: 'POST', body: { id: x.id, why } }); status.textContent = 'Dismissed.'; loadInbox(actions); loadPlan(); } catch (e) { dm.disabled = false; status.textContent = 'Could not dismiss: ' + e.message; } });
+      return el('div', { class: 'card flat stack' }, el('div', { class: 'row' }, el('span', { class: 'chip ' + (x.state === 'new' ? (x.overdue ? 'bad' : 'warn') : x.state === 'accepted' ? 'good' : ''), text: x.state }), el('b', { text: x.title }), el('span', { class: 'micro faint', text: 'from ' + x.from_screen + ', ' + pretty(x.kind) + (x.day ? ', ' + fmt.date(x.day) : '') + (x.records.length ? ', ' + x.records.length + ' records proposed' : '') + (x.note ? ', ' + x.note : '') }), ac, dm),
+        x.why ? el('p', { class: 'small muted', text: x.why }) : null, x.draft ? el('pre', { class: 'card sunken brief', style: { maxHeight: '160px', overflow: 'auto' }, text: x.draft.slice(0, 1500) + (x.draft_chars > 1500 ? '\n...' : '') }) : el('p', { class: 'micro faint', text: 'No draft on the brief.' }));
+    });
+    mount('#inbox', el('div', { class: 'row' }, byAct.inbox ? UI.decisionRow({ capability: 'BRN-C07', autonomy: 'founder_gate', owner: byAct.inbox.owner, screen: SCREEN, compact: true, finding_id: byAct.inbox.id, current: byAct.inbox.decision, stub: byAct.inbox.title }) : null, status), ...(rows.length ? rows : [el('p', { class: 'muted small', text: 'No brief handed to the brain yet. Other screens post to /api/handoffs with the brain as the receiver.' })]), el('p', { class: 'micro faint', text: ib.note }));
   }
   async function loadExpiring(actions) {
     let ex;

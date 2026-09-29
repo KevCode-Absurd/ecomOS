@@ -15,6 +15,9 @@ question, and accept or ignore on a proposed record. Nothing external.
   GET  brandbook                the brand book from the records (markdown): identity, positioning, audiences, voice, glossary, red lines, locks, palette, facts
   GET  products/sheets          one fact sheet per product line: claims by tier, price and packs, materials, reviews, objections, red lines
   GET  handoff                  every person handed the brain, with the quiz state (waiting, overdue, passed, failed)
+  GET  inbox                    briefs other screens handed to the brain on the shared hand-offs table, with what was done with each
+  POST inbox/accept             {id}: the brief's draft goes through the document extractor into the review queue as proposed records
+  POST inbox/dismiss            {id, why}: mark a brief dismissed in the brain's own ledger
   GET  handoff/pack             ?to=&role=: the pack for a person (one page, brand book, red lines, questions) without recording it
   POST handoff                  {to, role}: build the pack and record the hand-off on the team section
   GET  round                    the founder round as a checklist: questions, the review queue, moves, reviews due, carried over
@@ -316,6 +319,9 @@ _egspec.loader.exec_module(evidencegaps)
 _snspec = importlib.util.spec_from_file_location("brand_brain_since", HERE / "since.py")
 since_mod = importlib.util.module_from_spec(_snspec)
 _snspec.loader.exec_module(since_mod)
+_ibspec = importlib.util.spec_from_file_location("brand_brain_inbox", HERE / "inbox.py")
+inbox = importlib.util.module_from_spec(_ibspec)
+_ibspec.loader.exec_module(inbox)
 
 
 def _shelf(brain: Brain) -> dict:
@@ -2364,6 +2370,43 @@ def handle(req):
         if errs:
             return 400, {"error": "; ".join(errs)}
         return 201, {"ok": True, "weekday": wd, "hour": hour, "version": brain.version(), "next": f"Set. The round and the digest read {names[wd]} as the day."}
+    if req.method == "GET" and parts == ["inbox"]:
+        table = _handoffs_table()
+        if table is None:
+            return {"available": False, "reason": "the shared hand-offs table could not load", "items": [], "counts": {"briefs": 0, "new": 0, "overdue": 0, "accepted": 0}, "brand": brain.brand}
+        v = inbox.view(brain, table.read())
+        v.update(available=True, brand=brain.brand, today=brain.today.isoformat(), capability={"id": "BRN-C07", "autonomy": "founder_gate"})
+        return v
+    if req.method == "POST" and parts in (["inbox", "accept"], ["inbox", "dismiss"]):
+        body = req.body or {}
+        hid = str(body.get("id") or "").strip()
+        table = _handoffs_table()
+        row = next((r for r in (table.read() if table else []) if r.get("id") == hid), None)
+        if row is None or row not in inbox.for_us([row]):
+            return 404, {"error": "no brief with that id is addressed to the brain", "id": hid}
+        if inbox.ledger(brain).get(hid):
+            return 400, {"error": "that brief is already handled", "id": hid}
+        if parts[1] == "dismiss":
+            why = str(body.get("why") or "").strip()
+            if len(why) < 4:
+                return 400, {"error": "say why in a few words"}
+            rec = inbox.ledger_record(brain, hid, "dismissed", [], why, str(row.get("title") or ""))
+            errs = founder_put(brain, rec, "handoff", rec["text"][:160])
+            return (400, {"error": "; ".join(errs)}) if errs else (201, {"ok": True, "id": hid, "state": "dismissed", "version": brain.version()})
+        draft = str(row.get("draft") or "")
+        if len(draft.strip()) < 12:
+            return 400, {"error": "the brief has no draft to read; nothing to propose", "id": hid}
+        recs = ingest.extract(draft, brain.brand, f"handoffs/{hid}.md", brain.today.isoformat())
+        written, errors = [], []
+        for r in recs:
+            r["source"]["ref"] = f"hand-off {hid} from {row.get('from_screen')}"
+            errs = brain.put(r)
+            (errors if errs else written).append(r["id"] if not errs else {"id": r["id"], "errors": errs})
+        rec = inbox.ledger_record(brain, hid, "accepted", written, "", str(row.get("title") or ""))
+        founder_put(brain, rec, "handoff", rec["text"][:160])
+        changes.log(brain, "proposed", None, None, f"{len(written)} record{'s' if len(written) != 1 else ''} proposed from hand-off {hid} ({str(row.get('title'))[:60]})")
+        return 201, {"ok": True, "id": hid, "state": "accepted", "proposed": written, "errors": errors, "version": brain.version(),
+                     "next": (f"{len(written)} record{'s' if len(written) != 1 else ''} wait in the review queue." if written else "Nothing in the draft read as a record; the brief is marked accepted.")}
     if req.method == "GET" and parts == ["handoff"]:
         return {"handoffs": handoff.handoffs(brain), "brand": brain.brand, "today": brain.today.isoformat(), "due_days": handoff.QUIZ_DUE_DAYS, "pass_pct": handoff.PASS_PCT, "capability": {"id": "BRN-C12", "autonomy": "agent_does"},
                 "note": "One record per person handed the brain. Their quiz answers, scored with their name in the quiz panel, close it; after 7 days without, or under 70 percent, it is on the plan."}

@@ -195,6 +195,7 @@ is past its shelf life.
 from __future__ import annotations
 
 import datetime as dt
+import json
 import importlib.util
 import json
 import sys
@@ -300,6 +301,8 @@ RULES = [
      "inputs": ["fact sections (tier, evidence)"], "capability": "BRN-C02", "owner_screen": SCREEN},
     {"rule_id": "BRN-R42", "name": "old approvals never confirmed", "entity_type": "brand",
      "inputs": ["approved founder records (captured_at, confirmed_on)"], "capability": "BRN-C02", "owner_screen": SCREEN},
+    {"rule_id": "BRN-R43", "name": "a brief to the brain unread for 3 days", "entity_type": "brand",
+     "inputs": ["data/handoffs.json", "team.inbox_*"], "capability": "BRN-C07", "owner_screen": SCREEN},
 ]
 AUTONOMY = {"BRN-C12": "agent_does", "BRN-C07": "founder_gate", "BRN-C03": "agent_does",
             "CREA-C19": "agent_does", "CREA-C04": "agent_does", "BRN-C11": "agent_does", "CREA-C06": "agent_does",
@@ -324,6 +327,20 @@ _slspec.loader.exec_module(shelf)
 _egspec = importlib.util.spec_from_file_location("brand_brain_evidencegaps", Path(__file__).resolve().parent / "evidencegaps.py")
 evidencegaps = importlib.util.module_from_spec(_egspec)
 _egspec.loader.exec_module(evidencegaps)
+
+_ibspec = importlib.util.spec_from_file_location("brand_brain_inbox", Path(__file__).resolve().parent / "inbox.py")
+inbox = importlib.util.module_from_spec(_ibspec)
+_ibspec.loader.exec_module(inbox)
+HANDOFFS_PATH = None  # tests point it at a temp file; the app reads app/data/handoffs.json
+
+
+def _handoff_rows() -> list[dict]:
+    try:
+        p = HANDOFFS_PATH or (Path(__file__).resolve().parents[2] / "data" / "handoffs.json")
+        rows = json.loads(p.read_text(encoding="utf-8")) if p.is_file() else []
+        return rows if isinstance(rows, list) else []
+    except (OSError, ValueError):
+        return []
 
 _uspec = importlib.util.spec_from_file_location("brand_brain_assumptions", Path(__file__).resolve().parent / "assumptions.py")
 assumptions = importlib.util.module_from_spec(_uspec)
@@ -979,6 +996,18 @@ def rule_old_approvals(brain: Brain, ends_on: str) -> list[dict]:
     return [f]
 
 
+def rule_inbox(brain: Brain, ends_on: str) -> list[dict]:
+    v = inbox.view(brain, _handoff_rows())
+    late = [x for x in v["items"] if x["overdue"]]
+    if not late:
+        return []
+    ev = [_row("briefs_unread", len(late), "n", ends_on, None, 0, "data/handoffs.json"), _row("oldest_days", max(x["age_days"] or 0 for x in late), "days", ends_on, None, inbox.UNREAD_DAYS, "data/handoffs.json")]
+    sent = f"{len(late)} brief{'s' if len(late) != 1 else ''} handed to the brain {'have' if len(late) != 1 else 'has'} waited {inbox.UNREAD_DAYS} days or more: " + "; ".join(f"{x['title'][:50]} from {x['from_screen']}" for x in late[:3]) + ("..." if len(late) > 3 else "") + "."
+    f = _finding("BRN-R43", "low", {"type": "brand", "id": "inbox", "label": "hand-offs inbox"}, ev, sent, [], ends_on, 0.95)
+    f["inbox"] = [{"id": x["id"], "title": x["title"], "from_screen": x["from_screen"], "age_days": x["age_days"]} for x in late[:8]]
+    return [f]
+
+
 def rule_expiring(brain: Brain, ends_on: str) -> list[dict]:
     out = []
     ex = expiring.expiring(brain, shelf.table(brain, health.SHELF_DAYS))
@@ -1130,7 +1159,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
         bank = keeper.load_bank()
     except (OSError, ValueError, KeyError):
         bank = None
-    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_untiered_claims(brain, ends_on) + rule_site_changes(brain, ends_on) + rule_parity(brain, ends_on) + rule_contracts(brain, ends_on) + rule_legal(brain, ends_on) + rule_picked_ideas(brain, ends_on) + rule_ladder_proof(brain, ends_on) + rule_self_audit(brain, ends_on) + rule_peaks(brain, ends_on) + rule_visual(brain, ends_on) + rule_visibility(brain, ends_on) + rule_rejected_due(brain, ends_on) + rule_assets(brain, ends_on) + rule_consents(brain, ends_on) + rule_drift(brain, ends_on) + rule_audiences(brain, ends_on) + rule_redlines(brain, ends_on) + rule_owners(brain, ends_on) + rule_expiring(brain, ends_on) + rule_number_dependents(brain, ends_on) + rule_contradictions(brain, ends_on) + rule_handoffs(brain, ends_on) + rule_misses(brain, ends_on) + rule_evidence_gaps(brain, ends_on) + rule_old_approvals(brain, ends_on) + rule_permissions(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
+    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_untiered_claims(brain, ends_on) + rule_site_changes(brain, ends_on) + rule_parity(brain, ends_on) + rule_contracts(brain, ends_on) + rule_legal(brain, ends_on) + rule_picked_ideas(brain, ends_on) + rule_ladder_proof(brain, ends_on) + rule_self_audit(brain, ends_on) + rule_peaks(brain, ends_on) + rule_visual(brain, ends_on) + rule_visibility(brain, ends_on) + rule_rejected_due(brain, ends_on) + rule_assets(brain, ends_on) + rule_consents(brain, ends_on) + rule_drift(brain, ends_on) + rule_audiences(brain, ends_on) + rule_redlines(brain, ends_on) + rule_owners(brain, ends_on) + rule_expiring(brain, ends_on) + rule_number_dependents(brain, ends_on) + rule_contradictions(brain, ends_on) + rule_handoffs(brain, ends_on) + rule_misses(brain, ends_on) + rule_evidence_gaps(brain, ends_on) + rule_old_approvals(brain, ends_on) + rule_inbox(brain, ends_on) + rule_permissions(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
     if bank is None:
         for rid, sev in (("BRN-R02", "medium"), ("BRN-R03", "medium")):
             f = _finding(rid, sev, {"type": "brand", "id": "question_bank", "label": "question bank"},

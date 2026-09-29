@@ -159,6 +159,12 @@ def build(f: dict, nr: float | None) -> dict:
                         {"n": 3, "who": "person", "text": "Pick the record as proof, or approve the drafted fact as an approved record."},
                         {"n": 4, "who": "agent", "text": f"Attach it to the rung. The surfaces that use the rung ({surfaces or 'copy, page, listing, macro'}) read the proof on their next brief."}],
                  check_on=_check_on(f, 7), time_to_ship_hours=1)
+    elif rid == "BRN-R43":
+        ib = f.get("inbox") or []
+        a.update(title=f"Read {len(ib)} brief{'s' if len(ib) != 1 else ''} other screens handed to the brain", owner="person",
+                 artefact={"kind": "brain_record", "label": "each brief accepted into the review queue or dismissed with a why", "draft": "\n".join(f"- {x['title']} from {x['from_screen']} ({x['age_days']} days)" for x in ib) or None},
+                 steps=[{"n": 1, "who": "person", "text": "Open the inbox on the brain screen and read each brief."}, {"n": 2, "who": "person", "text": "Accept the ones that carry facts (the extractor proposes records) or dismiss with a why."}, {"n": 3, "who": "agent", "text": "Proposed records wait in the review queue; the ledger shows what was done."}],
+                 check_on=_check_on(f, 3), time_to_ship_hours=0.25)
     elif rid == "BRN-R42":
         rows = f.get("old_approvals") or []
         a.update(title=f"Still true? Confirm or retire {len(rows)} approval{'s' if len(rows) != 1 else ''} older than 3 shelf lives", owner="person",

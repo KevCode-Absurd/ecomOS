@@ -52,6 +52,7 @@ class TempBrain(unittest.TestCase):
             (self.tmp / 'bombas' / log).unlink(missing_ok=True)
         api.BRAIN_ROOT = self.tmp
         api.HANDOFFS_PATH = self.tmp / 'handoffs.json'
+        api.audit.HANDOFFS_PATH = self.tmp / 'handoffs.json'
 
     def tearDown(self):
         api.BRAIN_ROOT = None
@@ -2938,6 +2939,55 @@ class Round8QuizAndSchedule(TempBrain):
         self.assertEqual(api.handle(Req(['schedule'], 'POST', body={'weekday': 'x'}))[0], 400)
 
 
+class Round10Inbox(TempBrain):
+    """Round 10 feature 4: briefs other screens hand to the brain."""
+
+    def _post(self, **kw):
+        row = {'from_screen': '04-offers-pricing', 'to': '05-brand-brain', 'kind': 'brain_record', 'title': 'Free shipping threshold moves to $80 on 1 Oct', 'why': 'approved on the offers screen',
+               'draft': '# Offers\nFree shipping threshold: $80 from 1 October.\nFirst order code: WELCOME25\n\n# Policies\nReturns window: 60 days.', 'owner': 'person', 'status': 'decided'}
+        row.update(kw)
+        return api._handoffs_table().append(row)
+
+    def test_inbox_accept_dismiss_and_rule(self):
+        ib = api.handle(Req(['inbox']))
+        self.assertEqual((ib['available'], ib['counts']['briefs']), (True, 0))
+        h1 = self._post()
+        h2 = self._post(title='A creative brief, not for the brain', to='creative', kind='ad_brief')
+        h3 = self._post(title='Old note for the brain', kind='research_note', draft='Nothing here')
+        ib = api.handle(Req(['inbox']))
+        self.assertEqual(ib['counts']['briefs'], 2)
+        self.assertEqual({x['id'] for x in ib['items']}, {h1['id'], h3['id']})
+        self.assertTrue(all(x['state'] == 'new' for x in ib['items']))
+        status, r = api.handle(Req(['inbox', 'accept'], 'POST', body={'id': h1['id']}))
+        self.assertEqual(status, 201)
+        self.assertGreaterEqual(len(r['proposed']), 2)
+        prop = [x for x in self.section('offers') if x.get('status') == 'proposed' and 'hand-off ' + h1['id'] in x['source']['ref']]
+        self.assertTrue(prop)
+        rv = api.handle(Req(['review']))
+        self.assertGreaterEqual(rv['counts']['proposed'], 2)
+        self.assertEqual(api.handle(Req(['inbox', 'accept'], 'POST', body={'id': h1['id']}))[0], 400)
+        self.assertEqual(api.handle(Req(['inbox', 'accept'], 'POST', body={'id': h2['id']}))[0], 404)
+        self.assertEqual(api.handle(Req(['inbox', 'dismiss'], 'POST', body={'id': h3['id'], 'why': 'no'}))[0], 400)
+        status, r = api.handle(Req(['inbox', 'dismiss'], 'POST', body={'id': h3['id'], 'why': 'a note, not a fact'}))
+        self.assertEqual((status, r['state']), (201, 'dismissed'))
+        ib = api.handle(Req(['inbox']))
+        self.assertEqual((ib['counts']['new'], ib['counts']['accepted']), (0, 1))
+        self.assertEqual(next(x for x in ib['items'] if x['id'] == h1['id'])['state'], 'accepted')
+        self.assertEqual(len(next(x for x in ib['items'] if x['id'] == h1['id'])['records']), len(r.get('proposed', [])) if False else len(prop) + len([x for x in self.section('policies') if x.get('status') == 'proposed' and 'hand-off ' + h1['id'] in x['source']['ref']]))
+        self.assertFalse([f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R43'])
+
+    def test_unread_brief_after_three_days_on_the_plan(self):
+        h = self._post()
+        rows = self.handoffs_table()
+        rows[-1]['time'] = '2026-09-20T10:00:00Z'
+        (self.tmp / 'handoffs.json').write_text(json.dumps(rows), encoding='utf-8')
+        ib = api.handle(Req(['inbox']))
+        self.assertTrue(ib['items'][0]['overdue'])
+        acts = [a for a in api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions'] if a['rule_id'] == 'BRN-R43']
+        self.assertEqual(len(acts), 1)
+        self.assertTrue(acts[0]['title'].startswith('Read 1 brief'))
+
+
 class Round10Since(TempBrain):
     """Round 10 feature 3: what is new for a reader since its last read."""
 
@@ -3519,7 +3569,7 @@ class Round8SourcesTrustHistory(TempBrain):
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
-    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'], ['onepage'], ['brainmd', 'notes'], ['alerts'], ['glossary'], ['expiring'], ['feedback'], ['numbers'], ['proofs'], ['trust'], ['round'], ['brandbook'], ['quiz'], ['schedule'], ['sources'], ['records', 'csv'], ['trust', 'history'], ['contradict'], ['changes'], ['handoff'], ['ask', 'misses'], ['products', 'sheets'], ['shelf'], ['round', 'report'], ['evidence', 'gaps'],
+    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'], ['onepage'], ['brainmd', 'notes'], ['alerts'], ['glossary'], ['expiring'], ['feedback'], ['numbers'], ['proofs'], ['trust'], ['round'], ['brandbook'], ['quiz'], ['schedule'], ['sources'], ['records', 'csv'], ['trust', 'history'], ['contradict'], ['changes'], ['handoff'], ['ask', 'misses'], ['products', 'sheets'], ['shelf'], ['round', 'report'], ['evidence', 'gaps'], ['inbox'],
               ['decisions'], ['flows'], ['claims'], ['site', 'diff'], ['parity'], ['contracts'], ['legal'], ['voice'], ['battlecards'], ['permissions'],
               ['export'], ['assumptions'], ['facts'], ['summaries'], ['changes'], ['learn'], ['report'], ['digest'], ['review'], ['bottlenecks'], ['audit']]
 
