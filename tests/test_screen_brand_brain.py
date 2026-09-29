@@ -2939,6 +2939,39 @@ class Round8QuizAndSchedule(TempBrain):
         self.assertEqual(api.handle(Req(['schedule'], 'POST', body={'weekday': 'x'}))[0], 400)
 
 
+class Round10BuyerWords(TempBrain):
+    """Round 10 feature 6: what buyers say most, and a review-backed claim from it."""
+
+    def test_counts_claimable_draft_and_rule(self):
+        rp = api.handle(Req(['quotes', 'repeats']))
+        self.assertGreater(rp['counts']['phrases'], 100)
+        praise = next(t for t in rp['themes'] if t['theme'] == 'praise')
+        self.assertGreaterEqual(praise['words'][0]['mentions'], praise['words'][-1]['mentions'])
+        self.assertTrue(any(w['times'] >= 2 for w in rp['repeats']))
+        self.assertGreaterEqual(rp['counts']['claimable'], 1)
+        w = rp['claimable'][0]
+        self.assertTrue(w['mentions'] >= 5 and not w['covered_by'])
+        acts = [a for a in api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions'] if a['rule_id'] == 'BRN-R44']
+        self.assertEqual(len(acts), 1)
+        self.assertIn(w['word'], acts[0]['title'])
+        status, r = api.handle(Req(['quotes', 'claim'], 'POST', body={'word': w['word']}))
+        self.assertEqual((status, r['tier'], r['record']), (201, 'evidence', 'bombas.claims.buyers_say_' + w['word']))
+        self.assertGreaterEqual(r['quotes'], 1)
+        rec = next(x for x in self.section('claims') if x['id'] == r['record'])
+        self.assertEqual((rec['source']['type'], rec['value']['mentions']), ('review', w['mentions']))
+        self.assertTrue(all(q['ref'].startswith('language bank ') for q in rec['evidence']))
+        self.assertEqual(api.handle(Req(['quotes', 'claim'], 'POST', body={'word': w['word']}))[0], 400)
+        self.assertEqual(api.handle(Req(['quotes', 'claim'], 'POST', body={'word': 'zzzz'}))[0], 404)
+        covered = next(x for x in rp['themes'] if x['theme'] == 'praise')['words']
+        cov = next((x for x in covered if x['covered_by']), None)
+        if cov:
+            self.assertEqual(api.handle(Req(['quotes', 'claim'], 'POST', body={'word': cov['word']}))[0], 404)
+        api.handle(Req(['approve', r['record']], 'POST', body={'choice': 'approve'}))
+        rp2 = api.handle(Req(['quotes', 'repeats']))
+        w2 = next(x for x in next(t for t in rp2['themes'] if t['theme'] == 'praise')['words'] if x['word'] == w['word'])
+        self.assertEqual((w2['covered_by'], w2['claimable']), (r['record'], False))
+
+
 class Round10Snapshots(TempBrain):
     """Round 10 feature 5: a snapshot before every bulk move, and a restore from it."""
 
@@ -3603,7 +3636,7 @@ class Round8SourcesTrustHistory(TempBrain):
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
-    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'], ['onepage'], ['brainmd', 'notes'], ['alerts'], ['glossary'], ['expiring'], ['feedback'], ['numbers'], ['proofs'], ['trust'], ['round'], ['brandbook'], ['quiz'], ['schedule'], ['sources'], ['records', 'csv'], ['trust', 'history'], ['contradict'], ['changes'], ['handoff'], ['ask', 'misses'], ['products', 'sheets'], ['shelf'], ['round', 'report'], ['evidence', 'gaps'], ['inbox'], ['snapshots'],
+    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'], ['onepage'], ['brainmd', 'notes'], ['alerts'], ['glossary'], ['expiring'], ['feedback'], ['numbers'], ['proofs'], ['trust'], ['round'], ['brandbook'], ['quiz'], ['schedule'], ['sources'], ['records', 'csv'], ['trust', 'history'], ['contradict'], ['changes'], ['handoff'], ['ask', 'misses'], ['products', 'sheets'], ['shelf'], ['round', 'report'], ['evidence', 'gaps'], ['inbox'], ['snapshots'], ['quotes', 'repeats'],
               ['decisions'], ['flows'], ['claims'], ['site', 'diff'], ['parity'], ['contracts'], ['legal'], ['voice'], ['battlecards'], ['permissions'],
               ['export'], ['assumptions'], ['facts'], ['summaries'], ['changes'], ['learn'], ['report'], ['digest'], ['review'], ['bottlenecks'], ['audit']]
 

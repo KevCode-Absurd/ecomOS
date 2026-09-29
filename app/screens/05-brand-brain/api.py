@@ -17,6 +17,8 @@ question, and accept or ignore on a proposed record. Nothing external.
   GET  handoff                  every person handed the brain, with the quiz state (waiting, overdue, passed, failed)
   GET  inbox                    briefs other screens handed to the brain on the shared hand-offs table, with what was done with each
   GET  snapshots                the snapshots taken before bulk moves (file, reason, sections, records)
+  GET  quotes/repeats           what buyers say most: review words and lines counted per theme against the strong claims
+  POST quotes/claim             {word}: draft a review-backed claim (tier evidence, quotes attached) from a praise word no claim carries
   POST snapshots/restore        {file, sections, dry_run}: plan or apply a restore from a snapshot; the restore snapshots first
   POST inbox/accept             {id}: the brief's draft goes through the document extractor into the review queue as proposed records
   POST inbox/dismiss            {id, why}: mark a brief dismissed in the brain's own ledger
@@ -327,6 +329,9 @@ _ibspec.loader.exec_module(inbox)
 _sspspec = importlib.util.spec_from_file_location("brand_brain_snapshots", HERE / "snapshots.py")
 snapshots = importlib.util.module_from_spec(_sspspec)
 _sspspec.loader.exec_module(snapshots)
+_rpspec = importlib.util.spec_from_file_location("brand_brain_repeats", HERE / "repeats.py")
+repeats = importlib.util.module_from_spec(_rpspec)
+_rpspec.loader.exec_module(repeats)
 
 
 def _shelf(brain: Brain) -> dict:
@@ -2377,6 +2382,27 @@ def handle(req):
         if errs:
             return 400, {"error": "; ".join(errs)}
         return 201, {"ok": True, "weekday": wd, "hour": hour, "version": brain.version(), "next": f"Set. The round and the digest read {names[wd]} as the day."}
+    if req.method == "GET" and parts == ["quotes", "repeats"]:
+        v = repeats.build(brain)
+        v.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "BRN-C03", "autonomy": "agent_does"})
+        _log_read(brain, ["language_bank", "claims"], req.arg("reader") or "buyers-say")
+        return v
+    if req.method == "POST" and parts == ["quotes", "claim"]:
+        word = re.sub(r"[^a-z0-9]+", "", str((req.body or {}).get("word") or "").lower())[:40]
+        if not word:
+            return 400, {"error": "word is the buyer word to claim"}
+        rec = repeats.claim_record(brain, word, repeats.build(brain))
+        if rec is None:
+            return 404, {"error": "that word is not a claimable praise word (under the count, or a strong claim already carries it)", "word": word}
+        if next((r for r in brain.raw("claims") if r.get("id") == rec["id"] and r.get("status", "active") != "retired"), None):
+            return 400, {"error": "that claim is already drafted; approve or retire it in the claims block", "record": rec["id"]}
+        before_v = brain.version()
+        errs = brain.put(rec)
+        if errs:
+            return 400, {"error": "record not valid", "details": errs}
+        changes.log(brain, "proposed", "claims", rec["id"], f"review-backed claim drafted: {rec['text'][:100]}")
+        changes.version_step(brain, before_v, f"buyers say {word}")
+        return 201, {"ok": True, "record": rec["id"], "tier": rec["tier"], "quotes": len(rec["evidence"]), "version": brain.version(), "next": f"Drafted at tier evidence with {len(rec['evidence'])} quotes attached. Approve it in the claims block to let agents use it."}
     if req.method == "GET" and parts == ["snapshots"]:
         v = snapshots.listing(brain)
         v.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "BRN-C07", "autonomy": "founder_gate"})

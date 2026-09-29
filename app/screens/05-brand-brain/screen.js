@@ -74,7 +74,7 @@
     loadRedlines(m.actions || []);
     loadOwners(m.actions || []);
     loadSelfAudit(m.actions || []);
-    loadExpiring(m.actions || []); loadInbox(m.actions || []);
+    loadExpiring(m.actions || []); loadInbox(m.actions || []); loadRepeats(m.actions || []);
     loadTrust();
     loadSources();
     loadPeaks(m.actions || []);
@@ -442,6 +442,17 @@
     let chart = null;
     try { const h = await api(BASE + 'trust/history'); chart = h.available ? el('div', { class: 'stack' }, Charts.line({ title: 'Trust over time (one point a day)', labels: h.labels, series: h.series, unit: 'n', height: 160, note: h.note + (h.change != null ? ' Change since the first point: ' + (h.change >= 0 ? '+' : '') + h.change + '.' : '') })) : el('p', { class: 'micro faint', text: 'Trust over time: ' + h.reason + '.' }); } catch (e) { chart = null; }
     mount('#trust', el('p', { class: 'small', text: 'Formula: ' + t.formula + '.' }), table, chart, el('p', { class: 'micro faint', text: t.note }));
+  }
+  // 10.6: what buyers say most
+  async function loadRepeats(actions) {
+    let rp;
+    try { rp = await api(BASE + 'quotes/repeats'); } catch (e) { mount('#repeats', el('p', { class: 'muted', text: 'Buyer words unavailable: ' + e.message })); return; }
+    const act = (actions || []).find((a) => a.rule_id === 'BRN-R44');
+    mount('#repeats-tools', UI.orientation([{ label: 'phrases', value: rp.counts.phrases, unit: 'n' }, { label: 'lines said twice or more', value: rp.counts.repeats, unit: 'n' }, { label: 'praise no claim carries', value: rp.counts.claimable, unit: 'n', tone: rp.counts.claimable ? 'warn' : 'good' }]));
+    const status = el('span', { class: 'micro muted' });
+    const panels = rp.themes.map((t) => ({ key: t.theme, label: pretty(t.theme), n: t.phrases, panel: UI.table({ columns: [{ key: 'word', label: 'Word' }, { key: 'mentions', label: 'Phrases', num: true }, { key: 'products', label: 'Products', num: true }, { key: 'covered_by', label: 'Strong claim', format: (v) => v || 'none' }, { key: 'samples', label: 'Like', format: (v) => (v || []).slice(0, 2).join(' | ') }], rows: t.words, sort: false, actions: t.theme === 'praise' ? { label: 'Draft a claim', onClick: async (r) => { if (!r.claimable) { status.textContent = r.covered_by ? 'A strong claim already carries ' + r.word + '.' : 'Under ' + 5 + ' phrases; not a claim yet.'; return; } try { const res = await api(BASE + 'quotes/claim', { method: 'POST', body: { word: r.word } }); status.textContent = res.next; loadRepeats(actions); loadClaims(); loadPlan(); } catch (e) { status.textContent = 'Could not draft: ' + e.message; } } } : undefined }) }));
+    const reps = rp.repeats.length ? UI.table({ columns: [{ key: 'phrase', label: 'Line' }, { key: 'theme', label: 'Theme', format: pretty }, { key: 'times', label: 'Times', num: true }, { key: 'products', label: 'Products', num: true }], rows: rp.repeats, sort: false }) : el('p', { class: 'muted small', text: 'No line repeats word for word.' });
+    mount('#repeats', el('div', { class: 'row' }, act ? UI.decisionRow({ capability: 'BRN-C03', autonomy: 'agent_does', owner: act.owner, screen: SCREEN, compact: true, finding_id: act.id, current: act.decision, stub: act.title + '. ' + act.artefact.label + '.' }) : null, status), UI.tabs({ items: [...panels, { key: 'lines', label: 'Same line', n: rp.repeats.length, panel: reps }] }), el('p', { class: 'micro faint', text: rp.note }));
   }
   // 10.4: the hand-offs inbox
   async function loadInbox(actions) {

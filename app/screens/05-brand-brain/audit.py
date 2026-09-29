@@ -303,6 +303,8 @@ RULES = [
      "inputs": ["approved founder records (captured_at, confirmed_on)"], "capability": "BRN-C02", "owner_screen": SCREEN},
     {"rule_id": "BRN-R43", "name": "a brief to the brain unread for 3 days", "entity_type": "brand",
      "inputs": ["data/handoffs.json", "team.inbox_*"], "capability": "BRN-C07", "owner_screen": SCREEN},
+    {"rule_id": "BRN-R44", "name": "buyer praise no claim carries", "entity_type": "brand",
+     "inputs": ["language_bank", "claims"], "capability": "BRN-C03", "owner_screen": SCREEN},
 ]
 AUTONOMY = {"BRN-C12": "agent_does", "BRN-C07": "founder_gate", "BRN-C03": "agent_does",
             "CREA-C19": "agent_does", "CREA-C04": "agent_does", "BRN-C11": "agent_does", "CREA-C06": "agent_does",
@@ -341,6 +343,10 @@ def _handoff_rows() -> list[dict]:
         return rows if isinstance(rows, list) else []
     except (OSError, ValueError):
         return []
+
+_rpspec = importlib.util.spec_from_file_location("brand_brain_repeats", Path(__file__).resolve().parent / "repeats.py")
+repeats = importlib.util.module_from_spec(_rpspec)
+_rpspec.loader.exec_module(repeats)
 
 _uspec = importlib.util.spec_from_file_location("brand_brain_assumptions", Path(__file__).resolve().parent / "assumptions.py")
 assumptions = importlib.util.module_from_spec(_uspec)
@@ -1008,6 +1014,18 @@ def rule_inbox(brain: Brain, ends_on: str) -> list[dict]:
     return [f]
 
 
+def rule_buyer_words(brain: Brain, ends_on: str) -> list[dict]:
+    v = repeats.build(brain)
+    cl = v["claimable"]
+    if not cl:
+        return []
+    ev = [_row("praise_words_unclaimed", len(cl), "n", ends_on, None, 0, "language_bank"), _row("top_mentions", cl[0]["mentions"], "n", ends_on, None, repeats.MIN_MENTIONS, "language_bank")]
+    sent = (f"Buyers keep saying {len(cl)} thing{'s' if len(cl) != 1 else ''} no strong claim carries: " + ", ".join(f"{w['word']} ({w['mentions']}x)" for w in cl[:4]) + ("..." if len(cl) > 4 else "") + ". Each could be a review-backed claim.")
+    f = _finding("BRN-R44", "low", {"type": "brand", "id": "buyer_words", "label": "buyer praise no claim carries"}, ev, sent, [], ends_on, 0.8)
+    f["buyer_words"] = [{"word": w["word"], "mentions": w["mentions"], "products": w["products"], "sample": (w["samples"] or [""])[0]} for w in cl[:8]]
+    return [f]
+
+
 def rule_expiring(brain: Brain, ends_on: str) -> list[dict]:
     out = []
     ex = expiring.expiring(brain, shelf.table(brain, health.SHELF_DAYS))
@@ -1159,7 +1177,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
         bank = keeper.load_bank()
     except (OSError, ValueError, KeyError):
         bank = None
-    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_untiered_claims(brain, ends_on) + rule_site_changes(brain, ends_on) + rule_parity(brain, ends_on) + rule_contracts(brain, ends_on) + rule_legal(brain, ends_on) + rule_picked_ideas(brain, ends_on) + rule_ladder_proof(brain, ends_on) + rule_self_audit(brain, ends_on) + rule_peaks(brain, ends_on) + rule_visual(brain, ends_on) + rule_visibility(brain, ends_on) + rule_rejected_due(brain, ends_on) + rule_assets(brain, ends_on) + rule_consents(brain, ends_on) + rule_drift(brain, ends_on) + rule_audiences(brain, ends_on) + rule_redlines(brain, ends_on) + rule_owners(brain, ends_on) + rule_expiring(brain, ends_on) + rule_number_dependents(brain, ends_on) + rule_contradictions(brain, ends_on) + rule_handoffs(brain, ends_on) + rule_misses(brain, ends_on) + rule_evidence_gaps(brain, ends_on) + rule_old_approvals(brain, ends_on) + rule_inbox(brain, ends_on) + rule_permissions(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
+    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_untiered_claims(brain, ends_on) + rule_site_changes(brain, ends_on) + rule_parity(brain, ends_on) + rule_contracts(brain, ends_on) + rule_legal(brain, ends_on) + rule_picked_ideas(brain, ends_on) + rule_ladder_proof(brain, ends_on) + rule_self_audit(brain, ends_on) + rule_peaks(brain, ends_on) + rule_visual(brain, ends_on) + rule_visibility(brain, ends_on) + rule_rejected_due(brain, ends_on) + rule_assets(brain, ends_on) + rule_consents(brain, ends_on) + rule_drift(brain, ends_on) + rule_audiences(brain, ends_on) + rule_redlines(brain, ends_on) + rule_owners(brain, ends_on) + rule_expiring(brain, ends_on) + rule_number_dependents(brain, ends_on) + rule_contradictions(brain, ends_on) + rule_handoffs(brain, ends_on) + rule_misses(brain, ends_on) + rule_evidence_gaps(brain, ends_on) + rule_old_approvals(brain, ends_on) + rule_inbox(brain, ends_on) + rule_buyer_words(brain, ends_on) + rule_permissions(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
     if bank is None:
         for rid, sev in (("BRN-R02", "medium"), ("BRN-R03", "medium")):
             f = _finding(rid, sev, {"type": "brand", "id": "question_bank", "label": "question bank"},

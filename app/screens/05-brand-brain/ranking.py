@@ -159,6 +159,12 @@ def build(f: dict, nr: float | None) -> dict:
                         {"n": 3, "who": "person", "text": "Pick the record as proof, or approve the drafted fact as an approved record."},
                         {"n": 4, "who": "agent", "text": f"Attach it to the rung. The surfaces that use the rung ({surfaces or 'copy, page, listing, macro'}) read the proof on their next brief."}],
                  check_on=_check_on(f, 7), time_to_ship_hours=1)
+    elif rid == "BRN-R44":
+        bw = f.get("buyer_words") or []
+        a.update(title=f"Draft {len(bw)} review-backed claim{'s' if len(bw) != 1 else ''} from what buyers say most: " + ", ".join(w["word"] for w in bw[:3]) + ("..." if len(bw) > 3 else ""), owner="agent_drafts",
+                 artefact={"kind": "brain_record", "label": "one claims record per word at tier evidence, quotes attached, for the founder to approve", "draft": "\n".join(f"- {w['word']}: {w['mentions']} phrases across {w['products']} products, like \"{w['sample']}\"" for w in bw) or None},
+                 steps=[{"n": 1, "who": "agent", "text": "Draft each as a claims record: the count, the products, up to 5 quotes attached, tier evidence."}, {"n": 2, "who": "person", "text": "Approve the ones you would put on a page; leave the rest as evidence."}, {"n": 3, "who": "agent", "text": "Approved ones join every package; the word reads as covered."}],
+                 check_on=_check_on(f, 7), time_to_ship_hours=0.5)
     elif rid == "BRN-R43":
         ib = f.get("inbox") or []
         a.update(title=f"Read {len(ib)} brief{'s' if len(ib) != 1 else ''} other screens handed to the brain", owner="person",
