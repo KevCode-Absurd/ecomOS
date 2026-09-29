@@ -83,7 +83,11 @@ Not built yet: the brand brain and metric contract, the experiment registry, the
 
 The product is built screen by screen in `app/`, the way the Meta gallery was built: a skeleton, then features in rounds of 10 on a sample brand with generated data. Phase A (server, kit, generator, metric contract) was built on the fictional Tallgrass Goods. From 28 Sep 2026 the sample brand is Bombas: a public profile in `app/brain/bombas/` and simulated tables calibrated to it, per `PRODUCT-PLAN.md`. Data stays simulated until a real store connects. Read `app/CLAUDE.md` and `app/BUILD-PLAN.md`. Each screen folder under `app/screens/` has its own CLAUDE.md and FEATURES.md; a build session works in one folder and reads only `app/CLAUDE.md`, `app/contracts/` and that folder. The spec shelf is `agents/` (catalogue, rooms, workflows, skills); screens link to it by id and never copy it. US brand by default; market-only fields read null.
 
-## Next steps (28 Sep 2026)
+## Hold (29 Sep 2026)
+
+Kevin stopped the screen-by-screen build on 29 Sep 2026. The 28 screens, the five deep screens (round 10+), the managers and the lead are frozen as they stand; nothing resumes. Reason: the output had become jargon that a founder could not use. New direction: onboard the first real brand (India or US, the brain must work for any market), connect its accounts, then design from what that founder needs. The brain takes countries sold in and the industry as intake fields, and per-country fields split by market; revenue by country comes from the data. First artefact: `app/brain/FOUNDER-INTERVIEW.md`, the 45-minute founder interview that fills the brain with what the site, the ads and the connected data cannot. A new session starts the rebuild from scratch when the brand is onboarded.
+
+## Next steps (28 Sep 2026, superseded by the hold above)
 
 The order is in `PRODUCT-PLAN.md` section 9. Next: S1.1 brain schema (needs Kevin's brain skill file), and in parallel S2.1 field census of each platform API (Sonnet sessions, public docs only). Older tracks below stay valid but are not the focus.
 
