@@ -1,0 +1,1175 @@
+{
+ "screen": "18-answer-engines",
+ "title": "Answer engines",
+ "top_jobs": [
+  {
+   "id": "T1",
+   "job": "When a customer says 'ChatGPT told me your product does X' and it does not, help me find what assistants say about us, where they learned it, and fix it at the source everywhere the fact lives, so I stop selling a promise we cannot keep",
+   "metric": "share of prompt checks that state a wrong fact about us",
+   "from_v2": [
+    1,
+    6,
+    8,
+    9,
+    13,
+    21,
+    25
+   ]
+  },
+  {
+   "id": "T2",
+   "job": "When buyers ask an assistant for the best product in our category and it names 3 rivals and not us, help me see which questions and sources decide the answer and get our true answers onto them, so I get into the answer where buyers decide",
+   "metric": "share of buyer prompts where we are named or recommended",
+   "from_v2": [
+    3,
+    10,
+    15,
+    17,
+    22,
+    24,
+    28,
+    31,
+    32
+   ]
+  },
+  {
+   "id": "T3",
+   "job": "When everyone says AI search is the future, help me see how many visits, orders and tickets assistants bring us today and whether it is growing, so I give it the time it deserves and not more",
+   "metric": "sessions and orders from assistants per month, and tickets citing an assistant",
+   "from_v2": [
+    2,
+    7,
+    11,
+    14,
+    18,
+    26,
+    27,
+    34
+   ]
+  },
+  {
+   "id": "T4",
+   "job": "When an assistant has no information about us or shows a sold-out product at the wrong price, help me make sure bots can read our pages and our price, stock and new products are current, so I do not lose the buyer before they reach us",
+   "metric": "money pages readable by AI bots, and feed facts that match the site",
+   "from_v2": [
+    4,
+    5,
+    12,
+    16,
+    19,
+    35
+   ]
+  }
+ ],
+ "jobs": [
+  {
+   "id": "18-01",
+   "top": "T1",
+   "job": "Write the facts register: every fact buyers ask (price, sizes, materials, care, return window, warranty, shipping, founder story), its true value, and every place it lives",
+   "trigger": "once at onboarding, then on every product or policy change",
+   "enablers": [
+    "facts-register",
+    "brain-graph"
+   ],
+   "inputs": [
+    {
+     "need": "product facts and proof",
+     "from": "products shelf",
+     "status": "brain"
+    },
+    {
+     "need": "offers, returns and shipping terms",
+     "from": "offers shelf",
+     "status": "brain"
+    },
+    {
+     "need": "the facts page draft",
+     "from": "seo shelf",
+     "status": "brain"
+    },
+    {
+     "need": "Amazon and other listings",
+     "from": "Seller Central",
+     "status": "setup"
+    },
+    {
+     "need": "founder sign-off on each fact",
+     "from": "founder interview",
+     "status": "founder"
+    }
+   ],
+   "steps": [
+    "List the 40 facts buyers ask most, from the question matrix and tickets",
+    "Write the true value for each from the brain",
+    "Crawl the site, feeds and listings for every place each fact appears",
+    "Founder signs the true values",
+    "Publish a plain facts page on the site from the register"
+   ],
+   "output": "a signed register of 40 facts with every place each lives, and a live facts page",
+   "next": "feeds 18-03, 18-04, 18-05 and 18-15",
+   "watch": {
+    "metric": "places where a fact differs from the register",
+    "window": "30 day",
+    "source": "facts-register"
+   },
+   "drives": "assistants and support saying the same true thing",
+   "business": "risk",
+   "score": {
+    "money": 3,
+    "satisfaction": 5,
+    "speed": 3,
+    "ease": 3
+   },
+   "ready": 4,
+   "effort": "days"
+  },
+  {
+   "id": "18-02",
+   "top": "T1",
+   "job": "Run 40 buyer prompts each month across ChatGPT, Gemini, Perplexity and Google AI answers, and log whether we are named, where, which facts are stated and which sources are cited",
+   "trigger": "1st of each month",
+   "enablers": [
+    "search-feed",
+    "facts-register",
+    "citation-map"
+   ],
+   "inputs": [
+    {
+     "need": "40 buyer prompts from the question matrix and search terms",
+     "from": "question-matrix",
+     "status": "enabler"
+    },
+    {
+     "need": "access to the assistants, by hand or through a GEO tracking tool such as OpenSEO",
+     "from": "OpenSEO or similar",
+     "status": "buy"
+    },
+    {
+     "need": "the facts register",
+     "from": "facts-register",
+     "status": "enabler"
+    },
+    {
+     "need": "rival list",
+     "from": "competitors shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "Run each prompt in each assistant from a clean session, 2 times",
+    "Log named or not, position, rivals named, facts stated and links cited",
+    "Mark each stated fact right or wrong against the register",
+    "A person checks 10 answers by hand",
+    "Compare with last month and write 3 lines on what moved"
+   ],
+   "output": "a monthly prompt table with mention share, wrong facts and cited sources",
+   "next": "feeds 18-03 (fix at source), 18-09 (citation map) and 18-13 (rival claims)",
+   "watch": {
+    "metric": "share of prompts where we are named",
+    "window": "monthly",
+    "source": "prompt checks"
+   },
+   "drives": "buyers who hear about us from assistants",
+   "business": "revenue",
+   "score": {
+    "money": 3,
+    "satisfaction": 4,
+    "speed": 2,
+    "ease": 3
+   },
+   "ready": 1,
+   "effort": "days"
+  },
+  {
+   "id": "18-03",
+   "top": "T1",
+   "job": "Fix each wrong fact at its source: find the page the assistant learned it from (our old page, a listing, a review site, a thread), correct or answer it, and recheck in 30 days",
+   "trigger": "when the monthly check finds a wrong fact",
+   "enablers": [
+    "facts-register",
+    "citation-map"
+   ],
+   "inputs": [
+    {
+     "need": "wrong facts with the links cited",
+     "from": "citation-map",
+     "status": "enabler"
+    },
+    {
+     "need": "true values",
+     "from": "facts-register",
+     "status": "enabler"
+    },
+    {
+     "need": "access to edit our pages and listings",
+     "from": "trust and access shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "For each wrong fact, open the cited links and find the wrong text",
+    "Fix it where we own the page; ask the owner or reply publicly where we do not",
+    "Log the source, the fix and the date",
+    "Rerun the same prompts after 30 days",
+    "Mark fixed, partly fixed or still wrong"
+   ],
+   "output": "a fix log per wrong fact with its source and the 30 day recheck",
+   "next": "feeds 18-17 (proving what worked)",
+   "watch": {
+    "metric": "wrong facts still stated after 30 days",
+    "window": "30 day",
+    "source": "prompt checks"
+   },
+   "drives": "fewer disputes over promises we never made",
+   "business": "customer satisfaction",
+   "score": {
+    "money": 3,
+    "satisfaction": 5,
+    "speed": 2,
+    "ease": 3
+   },
+   "ready": 3,
+   "effort": "days"
+  },
+  {
+   "id": "18-04",
+   "top": "T1",
+   "job": "Find every place a fact differs, such as 60 day returns on the site and 30 on Amazon, and align them all to the register",
+   "trigger": "monthly, and after every listing change",
+   "enablers": [
+    "facts-register"
+   ],
+   "inputs": [
+    {
+     "need": "site pages and FAQ text",
+     "from": "site shelf",
+     "status": "brain"
+    },
+    {
+     "need": "Amazon and other marketplace listings",
+     "from": "Seller Central",
+     "status": "setup"
+    },
+    {
+     "need": "product feed values",
+     "from": "Merchant Center via Google Ads",
+     "status": "connected"
+    },
+    {
+     "need": "true values",
+     "from": "facts-register",
+     "status": "enabler"
+    }
+   ],
+   "steps": [
+    "Pull each fact from site, feed and listings",
+    "Mark every place that differs from the register",
+    "Fix the owned places first, then the listings",
+    "Log each fix with the date",
+    "Rerun the related prompts next month"
+   ],
+   "output": "a diff list with every mismatch fixed or owned",
+   "next": "feeds 20-marketplaces",
+   "watch": {
+    "metric": "facts that differ across places",
+    "window": "30 day",
+    "source": "facts-register"
+   },
+   "drives": "one true answer everywhere",
+   "business": "risk",
+   "score": {
+    "money": 2,
+    "satisfaction": 5,
+    "speed": 3,
+    "ease": 4
+   },
+   "ready": 3,
+   "effort": "hours"
+  },
+  {
+   "id": "18-05",
+   "top": "T1",
+   "job": "Before a price, policy or shipping change, list every place the old fact lives and update all of them on switch day",
+   "trigger": "2 weeks before any price, policy or shipping change",
+   "enablers": [
+    "facts-register"
+   ],
+   "inputs": [
+    {
+     "need": "the planned change and date",
+     "from": "decisions and goals shelf",
+     "status": "founder"
+    },
+    {
+     "need": "every place the fact lives",
+     "from": "facts-register",
+     "status": "enabler"
+    },
+    {
+     "need": "support macros",
+     "from": "operations shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "Pull every place the fact lives from the register",
+    "Assign each place to an owner",
+    "Change all on switch day, including feeds, listings, FAQ and macros",
+    "Check each place the next day",
+    "Rerun 5 related prompts after 30 days"
+   ],
+   "output": "a switch-day checklist done, with every place checked the next day",
+   "next": "none",
+   "watch": {
+    "metric": "places still showing the old fact after 7 days",
+    "window": "7 day",
+    "source": "facts-register"
+   },
+   "drives": "no customer arguments over an old promise",
+   "business": "customer satisfaction",
+   "score": {
+    "money": 2,
+    "satisfaction": 5,
+    "speed": 4,
+    "ease": 4
+   },
+   "ready": 3,
+   "effort": "hours"
+  },
+  {
+   "id": "18-06",
+   "top": "T1",
+   "job": "Correct any assistant answer that says our product is safe for a use it is not tested for, such as babies or a medical need, and keep a dated record",
+   "trigger": "within 48 hours of finding such an answer",
+   "enablers": [
+    "facts-register",
+    "citation-map"
+   ],
+   "inputs": [
+    {
+     "need": "safety limits and forbidden claims",
+     "from": "claims shelf",
+     "status": "brain"
+    },
+    {
+     "need": "the wrong answer with its sources",
+     "from": "search-feed",
+     "status": "enabler"
+    },
+    {
+     "need": "founder and legal contact",
+     "from": "trust and access shelf",
+     "status": "founder"
+    }
+   ],
+   "steps": [
+    "Screenshot the answer with date and prompt",
+    "Find the cited source and fix or answer it",
+    "Add a plain safety line to the product page and facts page",
+    "Tell support what to say",
+    "Log each step with dates and recheck weekly for 4 weeks"
+   ],
+   "output": "a dated record of the wrong answer, the fixes and the rechecks",
+   "next": "none",
+   "watch": {
+    "metric": "answers with an unsafe claim about us",
+    "window": "7 day",
+    "source": "prompt checks"
+   },
+   "drives": "protected if a customer is hurt or complains",
+   "business": "risk",
+   "score": {
+    "money": 2,
+    "satisfaction": 5,
+    "speed": 3,
+    "ease": 3
+   },
+   "ready": 3,
+   "effort": "hours"
+  },
+  {
+   "id": "18-07",
+   "top": "T2",
+   "job": "Build the buyer prompt list from the question coverage matrix: tickets, Amazon questions, reviews, site search and Search Console questions",
+   "trigger": "once, then each quarter",
+   "enablers": [
+    "question-matrix",
+    "search-feed"
+   ],
+   "inputs": [
+    {
+     "need": "tickets and chat questions",
+     "from": "helpdesk",
+     "status": "connected"
+    },
+    {
+     "need": "Amazon customer questions",
+     "from": "Seller Central",
+     "status": "setup"
+    },
+    {
+     "need": "review doubts",
+     "from": "reviews app",
+     "status": "connected"
+    },
+    {
+     "need": "site search terms and question queries",
+     "from": "GA4 and Search Console",
+     "status": "connected"
+    }
+   ],
+   "steps": [
+    "Pull questions from each source for 12 months",
+    "Group them into topics and count each",
+    "Rewrite the top 40 as a buyer would ask an assistant, with 'best', 'vs' and 'for' forms",
+    "Mark each by awareness level and product",
+    "Founder removes any prompt we do not want to win"
+   ],
+   "output": "40 buyer prompts ranked by how often the question is asked",
+   "next": "feeds 18-02 (monthly check) and 18-08 (answer blocks)",
+   "watch": {
+    "metric": "prompts covering the top 20 asked questions",
+    "window": "quarter",
+    "source": "question-matrix"
+   },
+   "drives": "checks that match what buyers really ask",
+   "business": "revenue",
+   "score": {
+    "money": 2,
+    "satisfaction": 3,
+    "speed": 3,
+    "ease": 4
+   },
+   "ready": 4,
+   "effort": "hours"
+  },
+  {
+   "id": "18-08",
+   "top": "T2",
+   "job": "Fill the blank cells in the coverage matrix: for the 15 most asked questions with no clear answer on our site, add a short answer block on the product page and the FAQ",
+   "trigger": "monthly",
+   "enablers": [
+    "question-matrix",
+    "article-brief",
+    "facts-register"
+   ],
+   "inputs": [
+    {
+     "need": "blank cells ranked by how often asked",
+     "from": "question-matrix",
+     "status": "enabler"
+    },
+    {
+     "need": "true values",
+     "from": "facts-register",
+     "status": "enabler"
+    },
+    {
+     "need": "voice rules",
+     "from": "voice shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "Pick 15 questions with no clear answer on the site",
+    "Write each answer in 2 to 3 plain sentences with the fact first",
+    "Add it to the product page and the FAQ with FAQ markup",
+    "Mark the matrix cell filled with the URL",
+    "Rerun the related prompts at 30 days"
+   ],
+   "output": "15 answer blocks live and the matrix updated",
+   "next": "feeds 17-11 and 15-customers-cx",
+   "watch": {
+    "metric": "prompts where our page is cited for those questions",
+    "window": "30 day",
+    "source": "prompt checks"
+   },
+   "drives": "win the buyer who is almost ready",
+   "business": "revenue",
+   "score": {
+    "money": 3,
+    "satisfaction": 4,
+    "speed": 3,
+    "ease": 4
+   },
+   "ready": 3,
+   "effort": "days"
+  },
+  {
+   "id": "18-09",
+   "top": "T2",
+   "job": "Map which sources assistants cite for our top 20 buyer prompts: rival pages, 'best of' lists, Reddit threads, review sites and marketplaces",
+   "trigger": "monthly, after the prompt check",
+   "enablers": [
+    "citation-map"
+   ],
+   "inputs": [
+    {
+     "need": "cited links per prompt",
+     "from": "search-feed",
+     "status": "enabler"
+    },
+    {
+     "need": "our and rival domains",
+     "from": "competitors shelf",
+     "status": "brain"
+    },
+    {
+     "need": "source type rules",
+     "from": "citation-map",
+     "status": "enabler"
+    }
+   ],
+   "steps": [
+    "Collect every cited link from the top 20 prompts",
+    "Group by source type and by site",
+    "Count how often each site shows",
+    "List the 10 sites that shape most answers and whether we appear on each",
+    "Compare with last month"
+   ],
+   "output": "a ranked list of the 10 sources that decide answers, with our presence on each",
+   "next": "feeds 18-10 (lists to pitch), 18-11 (threads) and 17-09 (links)",
+   "watch": {
+    "metric": "share of top 10 sources that mention us",
+    "window": "monthly",
+    "source": "citation-map"
+   },
+   "drives": "effort on the pages that decide the answer",
+   "business": "revenue",
+   "score": {
+    "money": 3,
+    "satisfaction": 3,
+    "speed": 2,
+    "ease": 3
+   },
+   "ready": 3,
+   "effort": "hours"
+  },
+  {
+   "id": "18-10",
+   "top": "T2",
+   "job": "Pitch the 5 'best of' lists and review sites that assistants cite most, with samples and real proof",
+   "trigger": "each quarter",
+   "enablers": [
+    "citation-map"
+   ],
+   "inputs": [
+    {
+     "need": "top cited lists and review sites",
+     "from": "citation-map",
+     "status": "enabler"
+    },
+    {
+     "need": "proof per product",
+     "from": "products shelf",
+     "status": "brain"
+    },
+    {
+     "need": "sample units budget",
+     "from": "finance shelf",
+     "status": "brain"
+    },
+    {
+     "need": "press contacts",
+     "from": "creators shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "Pick 5 lists or sites we are missing from",
+    "Find the editor or the way to be reviewed",
+    "Send a short pitch with proof and a sample offer",
+    "Follow up once after 10 days",
+    "Log replies and listings won, and rerun prompts after 60 days"
+   ],
+   "output": "5 pitches sent and a log of listings won",
+   "next": "feeds 27-wild-bets-pr",
+   "watch": {
+    "metric": "prompts that cite a list we are on",
+    "window": "90 day",
+    "source": "prompt checks"
+   },
+   "drives": "named in more buyer answers",
+   "business": "revenue",
+   "score": {
+    "money": 3,
+    "satisfaction": 2,
+    "speed": 1,
+    "ease": 3
+   },
+   "ready": 3,
+   "effort": "weeks"
+  },
+  {
+   "id": "18-11",
+   "top": "T2",
+   "job": "Answer the Reddit and forum threads that shape assistant answers about us, honestly, from a named brand account, and fix the cause when the complaint is real",
+   "trigger": "monthly",
+   "enablers": [
+    "citation-map",
+    "review-miner"
+   ],
+   "inputs": [
+    {
+     "need": "threads cited in answers about us",
+     "from": "citation-map",
+     "status": "enabler"
+    },
+    {
+     "need": "complaint themes and fixes",
+     "from": "review-miner",
+     "status": "enabler"
+    },
+    {
+     "need": "reply tone rules",
+     "from": "voice shelf",
+     "status": "brain"
+    },
+    {
+     "need": "a person with a named account",
+     "from": "team",
+     "status": "founder"
+    }
+   ],
+   "steps": [
+    "List the threads cited for our brand and category prompts",
+    "Read each and mark fair, unfair or out of date",
+    "Reply once, plainly, as the brand, with what changed",
+    "Send real complaints to the product or support owner",
+    "Recheck answers after 60 days"
+   ],
+   "output": "replies on the top threads and a list of real problems sent to owners",
+   "next": "feeds 15-customers-cx",
+   "watch": {
+    "metric": "answers about us that cite a negative thread",
+    "window": "60 day",
+    "source": "prompt checks"
+   },
+   "drives": "one old thread stops shaping every answer",
+   "business": "customer satisfaction",
+   "score": {
+    "money": 2,
+    "satisfaction": 4,
+    "speed": 1,
+    "ease": 3
+   },
+   "ready": 3,
+   "effort": "hours"
+  },
+  {
+   "id": "18-12",
+   "top": "T2",
+   "job": "Publish an honest comparison page for us vs the biggest rival, with a fair table and why we cost more where we do",
+   "trigger": "once, then refreshed each quarter",
+   "enablers": [
+    "article-brief",
+    "review-miner",
+    "facts-register"
+   ],
+   "inputs": [
+    {
+     "need": "rival reviews: where they win and fail",
+     "from": "review-miner",
+     "status": "enabler"
+    },
+    {
+     "need": "battlecards",
+     "from": "competitors shelf",
+     "status": "brain"
+    },
+    {
+     "need": "true values for our side",
+     "from": "facts-register",
+     "status": "enabler"
+    },
+    {
+     "need": "allowed claims",
+     "from": "claims shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "List 8 things buyers compare, from prompts and reviews",
+    "Fill a fair table for both, with dates and sources",
+    "Write who each product is for, including when the rival is the better pick",
+    "Explain why we cost more in plain facts",
+    "A person checks every rival fact; then publish and rerun 'us vs them' prompts at 60 days"
+   ],
+   "output": "a live comparison page with a checked table",
+   "next": "feeds 17-12 (buyer guides)",
+   "watch": {
+    "metric": "'us vs rival' prompts that cite our page",
+    "window": "60 day",
+    "source": "prompt checks"
+   },
+   "drives": "our side in the answer",
+   "business": "revenue",
+   "score": {
+    "money": 3,
+    "satisfaction": 3,
+    "speed": 2,
+    "ease": 3
+   },
+   "ready": 3,
+   "effort": "days"
+  },
+  {
+   "id": "18-13",
+   "top": "T2",
+   "job": "Watch weekly for a rival being called 'the best value' or repeating a new claim in answers, and respond before our share drops",
+   "trigger": "every Monday on 10 key prompts",
+   "enablers": [
+    "search-feed",
+    "competitor-feed"
+   ],
+   "inputs": [
+    {
+     "need": "10 key buyer prompts",
+     "from": "question-matrix",
+     "status": "enabler"
+    },
+    {
+     "need": "rival ads and new claims",
+     "from": "competitor-feed",
+     "status": "enabler"
+    },
+    {
+     "need": "battlecards",
+     "from": "competitors shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "Run the 10 prompts in the 2 assistants our buyers use most",
+    "Note any new claim or label about a rival",
+    "Find where it came from: their ads, a list, a press piece",
+    "Write our response: a page fix, a pitch or nothing",
+    "Log it"
+   ],
+   "output": "a weekly note of rival claims and our response",
+   "next": "feeds 03-competitors",
+   "watch": {
+    "metric": "our mention share on the 10 prompts",
+    "window": "7 day",
+    "source": "prompt checks"
+   },
+   "drives": "share of recommendations held",
+   "business": "revenue",
+   "score": {
+    "money": 2,
+    "satisfaction": 3,
+    "speed": 3,
+    "ease": 3
+   },
+   "ready": 3,
+   "effort": "hours"
+  },
+  {
+   "id": "18-14",
+   "top": "T3",
+   "job": "Set up a GA4 channel for AI assistants and read visits, orders and landing pages from them each month, next to Google organic",
+   "trigger": "once, then monthly",
+   "enablers": [
+    "search-feed"
+   ],
+   "inputs": [
+    {
+     "need": "GA4 with a custom channel for chatgpt.com, perplexity.ai, gemini.google.com and others",
+     "from": "GA4",
+     "status": "connected"
+    },
+    {
+     "need": "orders by source",
+     "from": "Shopify",
+     "status": "connected"
+    },
+    {
+     "need": "post-purchase survey with an 'AI assistant' option",
+     "from": "post-purchase survey app",
+     "status": "setup"
+    }
+   ],
+   "steps": [
+    "Add the assistant channel rule in GA4",
+    "Add 'an AI assistant' to the survey question",
+    "Each month, pull visits, orders, revenue and top landing pages",
+    "Compare growth with Google organic",
+    "Write 1 line: how much time AI search deserves this month"
+   ],
+   "output": "a monthly line: visits, orders and growth from assistants vs Google",
+   "next": "feeds 18-16 (which assistants) and 26-reports",
+   "watch": {
+    "metric": "orders from assistants",
+    "window": "30 day",
+    "source": "GA4"
+   },
+   "drives": "time spent in proportion to what it earns",
+   "business": "revenue",
+   "score": {
+    "money": 2,
+    "satisfaction": 4,
+    "speed": 2,
+    "ease": 5
+   },
+   "ready": 4,
+   "effort": "hours"
+  },
+  {
+   "id": "18-15",
+   "top": "T3",
+   "job": "Count tickets and returns that cite an assistant, name the fact behind each, and give support one true reply per fact",
+   "trigger": "monthly",
+   "enablers": [
+    "facts-register",
+    "question-matrix"
+   ],
+   "inputs": [
+    {
+     "need": "tickets and return reasons",
+     "from": "helpdesk",
+     "status": "connected"
+    },
+    {
+     "need": "return reasons in orders",
+     "from": "Shopify",
+     "status": "connected"
+    },
+    {
+     "need": "true values",
+     "from": "facts-register",
+     "status": "enabler"
+    }
+   ],
+   "steps": [
+    "Search tickets for 'ChatGPT', 'AI', 'Gemini', 'the assistant said'",
+    "Tag each with the fact it got wrong",
+    "Count tickets and refunds per fact",
+    "Write one kind reply per fact for support",
+    "Send the top fact to 18-03 for a fix at source"
+   ],
+   "output": "a count of 'AI said' tickets by fact, with one reply each",
+   "next": "feeds 18-03 and 15-customers-cx",
+   "watch": {
+    "metric": "tickets citing an assistant",
+    "window": "30 day",
+    "source": "helpdesk"
+   },
+   "drives": "fewer refunds from wrong promises",
+   "business": "customer satisfaction",
+   "score": {
+    "money": 2,
+    "satisfaction": 5,
+    "speed": 3,
+    "ease": 4
+   },
+   "ready": 3,
+   "effort": "hours"
+  },
+  {
+   "id": "18-16",
+   "top": "T3",
+   "job": "Pick the 1 to 3 assistants our buyers actually use, from survey answers and referral visits",
+   "trigger": "each quarter",
+   "enablers": [
+    "search-feed"
+   ],
+   "inputs": [
+    {
+     "need": "visits and orders by assistant",
+     "from": "GA4",
+     "status": "connected"
+    },
+    {
+     "need": "survey answers naming an assistant",
+     "from": "post-purchase survey app",
+     "status": "setup"
+    },
+    {
+     "need": "buyer country and device mix",
+     "from": "GA4",
+     "status": "connected"
+    }
+   ],
+   "steps": [
+    "Rank assistants by visits and orders",
+    "Add survey mentions",
+    "Check the mix fits our buyers' country and device",
+    "Pick 1 to 3 to check each month",
+    "Drop the rest from the prompt check"
+   ],
+   "output": "a short list of 1 to 3 assistants to watch",
+   "next": "feeds 18-02 (monthly check)",
+   "watch": {
+    "metric": "share of assistant visits covered by the short list",
+    "window": "quarter",
+    "source": "GA4"
+   },
+   "drives": "time only where buyers are",
+   "business": "gross profit",
+   "score": {
+    "money": 1,
+    "satisfaction": 4,
+    "speed": 2,
+    "ease": 5
+   },
+   "ready": 4,
+   "effort": "hours"
+  },
+  {
+   "id": "18-17",
+   "top": "T3",
+   "job": "Check a vendor's AI visibility claim, or our own belief that a change worked, against our prompt checks and visits before paying or giving credit",
+   "trigger": "each time a vendor pitches or a win is claimed",
+   "enablers": [
+    "search-feed",
+    "citation-map"
+   ],
+   "inputs": [
+    {
+     "need": "the claim and its numbers",
+     "from": "vendor or team",
+     "status": "founder"
+    },
+    {
+     "need": "our prompt check history",
+     "from": "search-feed",
+     "status": "enabler"
+    },
+    {
+     "need": "assistant visits and orders history",
+     "from": "GA4",
+     "status": "connected"
+    }
+   ],
+   "steps": [
+    "List each claim in the pitch or report",
+    "Check it against our own prompt history and visits",
+    "Look for a control: prompts or pages we did not change",
+    "Mark true, false or cannot tell",
+    "Write the verdict and 3 questions"
+   ],
+   "output": "a claim check with a verdict and 3 questions",
+   "next": "none",
+   "watch": {
+    "metric": "spend on AI visibility tools per assistant order",
+    "window": "90 day",
+    "source": "GA4"
+   },
+   "drives": "no money on noise",
+   "business": "gross profit",
+   "score": {
+    "money": 2,
+    "satisfaction": 4,
+    "speed": 3,
+    "ease": 4
+   },
+   "ready": 3,
+   "effort": "hours"
+  },
+  {
+   "id": "18-18",
+   "top": "T4",
+   "job": "Check that assistants can reach our pages (robots rules, bot blocks at the host, content only in JavaScript) and choose which AI bots to let in",
+   "trigger": "once, then after any theme, host or security change",
+   "enablers": [
+    "search-feed"
+   ],
+   "inputs": [
+    {
+     "need": "robots.txt and host bot settings",
+     "from": "store admin and host",
+     "status": "connected"
+    },
+    {
+     "need": "server or host logs of AI bot visits",
+     "from": "host",
+     "status": "setup"
+    },
+    {
+     "need": "money page list",
+     "from": "site shelf",
+     "status": "brain"
+    },
+    {
+     "need": "founder choice on training bots vs search bots",
+     "from": "decisions and goals shelf",
+     "status": "founder"
+    }
+   ],
+   "steps": [
+    "Read robots.txt and the host's bot rules",
+    "Fetch 10 money pages as the main AI bots and check the text shows",
+    "Check product facts are in the first HTML, not loaded later",
+    "Founder picks which bots to allow",
+    "Fix blocks and recheck in 7 days"
+   ],
+   "output": "a bot access table: each bot allowed or blocked, and 10 pages checked",
+   "next": "feeds 17-17 (change checks)",
+   "watch": {
+    "metric": "money pages readable by the main AI bots",
+    "window": "7 day",
+    "source": "host logs"
+   },
+   "drives": "found by assistants at all",
+   "business": "risk",
+   "score": {
+    "money": 3,
+    "satisfaction": 4,
+    "speed": 3,
+    "ease": 4
+   },
+   "ready": 4,
+   "effort": "hours"
+  },
+  {
+   "id": "18-19",
+   "top": "T4",
+   "job": "Check each week that the product feeds AI shopping reads carry the right price, stock and delivery date, matching the site",
+   "trigger": "every Monday",
+   "enablers": [
+    "facts-register"
+   ],
+   "inputs": [
+    {
+     "need": "Merchant Center feed and diagnostics",
+     "from": "Merchant Center via Google Ads",
+     "status": "connected"
+    },
+    {
+     "need": "live price, stock and shipping",
+     "from": "Shopify",
+     "status": "connected"
+    },
+    {
+     "need": "delivery times",
+     "from": "operations shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "Compare feed price, stock and shipping with the site for the top 50 products",
+    "Flag every mismatch",
+    "Fix at the source feed",
+    "Spot check 5 products in an AI shopping answer",
+    "Log fixes"
+   ],
+   "output": "a weekly mismatch list with fixes",
+   "next": "feeds 12-14 (daily feed check)",
+   "watch": {
+    "metric": "feed facts that differ from the site",
+    "window": "7 day",
+    "source": "Merchant Center"
+   },
+   "drives": "no lost sale from a stale price or stock",
+   "business": "revenue",
+   "score": {
+    "money": 3,
+    "satisfaction": 4,
+    "speed": 4,
+    "ease": 4
+   },
+   "ready": 5,
+   "effort": "hours"
+  },
+  {
+   "id": "18-20",
+   "top": "T4",
+   "job": "Ship a facts pack on launch day for every new product: facts page entry, product schema, FAQ, marketplace listing and press sheet, and 301 the old product if it replaces one",
+   "trigger": "on every product launch",
+   "enablers": [
+    "facts-register",
+    "article-brief"
+   ],
+   "inputs": [
+    {
+     "need": "launch facts and proof",
+     "from": "products shelf",
+     "status": "brain"
+    },
+    {
+     "need": "launch date",
+     "from": "calendar shelf",
+     "status": "brain"
+    },
+    {
+     "need": "old product it replaces",
+     "from": "products shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "Add the new product's facts to the register and facts page",
+    "Check schema and FAQ on the product page",
+    "Update listings and the press sheet",
+    "301 the old product and update links to it",
+    "Run 5 prompts on the new product at 30 days"
+   ],
+   "output": "a launch facts pack live on day 1",
+   "next": "none",
+   "watch": {
+    "metric": "prompts that describe the new product right",
+    "window": "30 day",
+    "source": "prompt checks"
+   },
+   "drives": "right answers from day one",
+   "business": "revenue",
+   "score": {
+    "money": 2,
+    "satisfaction": 4,
+    "speed": 2,
+    "ease": 4
+   },
+   "ready": 5,
+   "effort": "hours"
+  }
+ ],
+ "new_enablers": [
+  {
+   "id": "facts-register",
+   "name": "Facts register",
+   "what": "One list of every fact a buyer or assistant needs (price, sizes, materials, care, return window, warranty, shipping, safety limits, founder story), its true value signed by the founder, and every place it lives: site pages, FAQ, feeds, Amazon and other listings, press kit, old pages. Flags any place that differs.",
+   "inputs": [
+    "products, offers and claims shelves",
+    "site crawl",
+    "marketplace listings",
+    "product feeds",
+    "founder sign-off"
+   ],
+   "powers": [
+    "wrong facts found and fixed at every source",
+    "a change list before any price or policy switch",
+    "one true answer for support",
+    "a launch facts pack"
+   ],
+   "screens": [
+    "18-answer-engines",
+    "05-brand-brain",
+    "15-customers-cx",
+    "20-marketplaces"
+   ],
+   "note": null
+  },
+  {
+   "id": "citation-map",
+   "name": "Citation map",
+   "what": "For each buyer prompt, records which pages the assistants cite or lean on: our pages, rival pages, 'best of' lists, Reddit and forum threads, review sites, marketplaces. Counts how often each source shows across prompts and months.",
+   "inputs": [
+    "prompt check results with cited links",
+    "the buyer prompt list",
+    "our and rival domains"
+   ],
+   "powers": [
+    "which lists and threads decide the answer",
+    "where rivals get cited and we do not",
+    "which review sites to work on",
+    "whether a fix changed the sources"
+   ],
+   "screens": [
+    "18-answer-engines",
+    "17-seo",
+    "27-wild-bets-pr"
+   ],
+   "note": null
+  }
+ ]
+}
