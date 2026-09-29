@@ -298,6 +298,8 @@ RULES = [
      "inputs": ["review/ask-misses.jsonl", "open_questions"], "capability": "BRN-C03", "owner_screen": SCREEN},
     {"rule_id": "BRN-R41", "name": "strong records without evidence", "entity_type": "brand",
      "inputs": ["fact sections (tier, evidence)"], "capability": "BRN-C02", "owner_screen": SCREEN},
+    {"rule_id": "BRN-R42", "name": "old approvals never confirmed", "entity_type": "brand",
+     "inputs": ["approved founder records (captured_at, confirmed_on)"], "capability": "BRN-C02", "owner_screen": SCREEN},
 ]
 AUTONOMY = {"BRN-C12": "agent_does", "BRN-C07": "founder_gate", "BRN-C03": "agent_does",
             "CREA-C19": "agent_does", "CREA-C04": "agent_does", "BRN-C11": "agent_does", "CREA-C06": "agent_does",
@@ -965,6 +967,18 @@ def rule_evidence_gaps(brain: Brain, ends_on: str) -> list[dict]:
     return [f]
 
 
+def rule_old_approvals(brain: Brain, ends_on: str) -> list[dict]:
+    oa = expiring.old_approvals(brain, shelf.table(brain, health.SHELF_DAYS))
+    rows = oa["rows"]
+    if not rows:
+        return []
+    ev = [_row("old_approvals", len(rows), "n", ends_on, None, 0, "every section"), _row("oldest_days", max(x["age_days"] for x in rows), "days", ends_on, None, rows[0]["limit_days"], "every section")]
+    sent = (f"{len(rows)} approved record{'s' if len(rows) != 1 else ''} on your word {'have' if len(rows) != 1 else 'has'} not been confirmed for longer than 3 shelf lives: " + ", ".join(f"{x['id']} ({x['age_days']} days)" for x in rows[:3]) + ("..." if len(rows) > 3 else "") + ". Agents read them as current.")
+    f = _finding("BRN-R42", "low", {"type": "brand", "id": "old_approvals", "label": "old approvals"}, ev, sent, [x["id"] for x in rows[:10]], ends_on, 0.9)
+    f["old_approvals"] = [{"id": x["id"], "age_days": x["age_days"], "limit_days": x["limit_days"], "text": x["text"][:80]} for x in rows[:10]]
+    return [f]
+
+
 def rule_expiring(brain: Brain, ends_on: str) -> list[dict]:
     out = []
     ex = expiring.expiring(brain, shelf.table(brain, health.SHELF_DAYS))
@@ -1116,7 +1130,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
         bank = keeper.load_bank()
     except (OSError, ValueError, KeyError):
         bank = None
-    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_untiered_claims(brain, ends_on) + rule_site_changes(brain, ends_on) + rule_parity(brain, ends_on) + rule_contracts(brain, ends_on) + rule_legal(brain, ends_on) + rule_picked_ideas(brain, ends_on) + rule_ladder_proof(brain, ends_on) + rule_self_audit(brain, ends_on) + rule_peaks(brain, ends_on) + rule_visual(brain, ends_on) + rule_visibility(brain, ends_on) + rule_rejected_due(brain, ends_on) + rule_assets(brain, ends_on) + rule_consents(brain, ends_on) + rule_drift(brain, ends_on) + rule_audiences(brain, ends_on) + rule_redlines(brain, ends_on) + rule_owners(brain, ends_on) + rule_expiring(brain, ends_on) + rule_number_dependents(brain, ends_on) + rule_contradictions(brain, ends_on) + rule_handoffs(brain, ends_on) + rule_misses(brain, ends_on) + rule_evidence_gaps(brain, ends_on) + rule_permissions(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
+    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_untiered_claims(brain, ends_on) + rule_site_changes(brain, ends_on) + rule_parity(brain, ends_on) + rule_contracts(brain, ends_on) + rule_legal(brain, ends_on) + rule_picked_ideas(brain, ends_on) + rule_ladder_proof(brain, ends_on) + rule_self_audit(brain, ends_on) + rule_peaks(brain, ends_on) + rule_visual(brain, ends_on) + rule_visibility(brain, ends_on) + rule_rejected_due(brain, ends_on) + rule_assets(brain, ends_on) + rule_consents(brain, ends_on) + rule_drift(brain, ends_on) + rule_audiences(brain, ends_on) + rule_redlines(brain, ends_on) + rule_owners(brain, ends_on) + rule_expiring(brain, ends_on) + rule_number_dependents(brain, ends_on) + rule_contradictions(brain, ends_on) + rule_handoffs(brain, ends_on) + rule_misses(brain, ends_on) + rule_evidence_gaps(brain, ends_on) + rule_old_approvals(brain, ends_on) + rule_permissions(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
     if bank is None:
         for rid, sev in (("BRN-R02", "medium"), ("BRN-R03", "medium")):
             f = _finding(rid, sev, {"type": "brand", "id": "question_bank", "label": "question bank"},

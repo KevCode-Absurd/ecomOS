@@ -2937,6 +2937,32 @@ class Round8QuizAndSchedule(TempBrain):
         self.assertEqual(api.handle(Req(['schedule'], 'POST', body={'weekday': 'x'}))[0], 400)
 
 
+class Round10OldApprovals(TempBrain):
+    """Round 10 feature 2: old approvals asked again."""
+
+    def test_old_founder_fact_listed_ruled_confirmed(self):
+        ex = api.handle(Req(['expiring']))
+        self.assertEqual(ex['old_approvals']['counts']['records'], 0)
+        api.handle(Req(['profile', 'offers', 'gift_wrap_usd'], 'POST', body={'text': '5'}))
+        rows = self.section('offers')
+        rec = next(x for x in rows if x['field'] == 'gift_wrap_usd')
+        rec['source']['captured_at'] = '2026-03-01'
+        self.write('offers', rows)
+        ex = api.handle(Req(['expiring']))
+        oa = ex['old_approvals']
+        self.assertEqual((oa['counts']['records'], oa['rows'][0]['id'], oa['rows'][0]['limit_days']), (1, 'bombas.offers.gift_wrap_usd', 30))
+        self.assertGreater(oa['rows'][0]['age_days'], 200)
+        acts = [a for a in api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions'] if a['rule_id'] == 'BRN-R42']
+        self.assertEqual(len(acts), 1)
+        self.assertTrue(acts[0]['title'].startswith('Still true? Confirm or retire 1 approval'))
+        status, r = api.handle(Req(['expiring', 'confirm'], 'POST', body={'id': 'bombas.offers.gift_wrap_usd'}))
+        self.assertEqual(status, 201)
+        rec = next(x for x in self.section('offers') if x['field'] == 'gift_wrap_usd')
+        self.assertEqual((rec['expires_at'], rec['source']['confirmed_on'], rec['tier']), ('2026-09-29', '2026-09-28', 'approved'))
+        self.assertEqual(api.handle(Req(['expiring']))['old_approvals']['counts']['records'], 0)
+        self.assertFalse([f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R42'])
+
+
 class Round10AttachQuote(TempBrain):
     """Round 10 feature 1: attach the line that backs a record."""
 

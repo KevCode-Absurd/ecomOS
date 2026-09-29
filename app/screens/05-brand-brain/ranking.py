@@ -159,6 +159,12 @@ def build(f: dict, nr: float | None) -> dict:
                         {"n": 3, "who": "person", "text": "Pick the record as proof, or approve the drafted fact as an approved record."},
                         {"n": 4, "who": "agent", "text": f"Attach it to the rung. The surfaces that use the rung ({surfaces or 'copy, page, listing, macro'}) read the proof on their next brief."}],
                  check_on=_check_on(f, 7), time_to_ship_hours=1)
+    elif rid == "BRN-R42":
+        rows = f.get("old_approvals") or []
+        a.update(title=f"Still true? Confirm or retire {len(rows)} approval{'s' if len(rows) != 1 else ''} older than 3 shelf lives", owner="person",
+                 artefact={"kind": "brain_record", "label": "each old approval confirmed with an expiry, or retired", "draft": "\n".join(f"- {x['id']}: {x['text']} ({x['age_days']} days, limit {x['limit_days']})" for x in rows) or None},
+                 steps=[{"n": 1, "who": "agent", "text": "List each with what it says, when you approved it and the section's shelf life."}, {"n": 2, "who": "person", "text": "Confirm the ones that still hold in a click; retire the rest."}, {"n": 3, "who": "agent", "text": "A confirmed one gets an expiry and joins the weekly check from now on."}],
+                 check_on=_check_on(f, 7), time_to_ship_hours=0.25)
     elif rid == "BRN-R41":
         eg = f.get("evidence_gaps") or {}
         rows = eg.get("rows") or []

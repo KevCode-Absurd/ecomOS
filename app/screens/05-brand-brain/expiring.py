@@ -57,3 +57,37 @@ def confirmed(brain, rid: str, shelf_days: dict) -> dict | tuple[int, dict]:
     new_exp = (brain.today + dt.timedelta(days=days)).isoformat()
     new = dict(raw, expires_at=new_exp, source=dict(raw.get("source") or {}, confirmed_on=brain.today.isoformat()))
     return {"record": new, "expires_at": new_exp, "days": days}
+
+
+# ---------------------------------------------------------------- old approvals: still true? (10.2)
+
+OLD_FACTOR = 3
+OLD_MIN_DAYS, OLD_MAX_DAYS = 30, 365
+
+
+def old_limit(section: str, shelf_days: dict) -> int:
+    return max(OLD_MIN_DAYS, min(OLD_MAX_DAYS, (shelf_days.get(section) or 30) * OLD_FACTOR))
+
+
+def old_approvals(brain, shelf_days: dict) -> dict:
+    """Approved records on the founder's word with no expiry, last confirmed (or captured) longer ago than 3 times the
+    section's shelf life (30 to 365 days). They never enter the expiring flow, so nothing asks whether they still hold."""
+    rows = []
+    for r in brain.records():
+        src = r.get("source") or {}
+        if r.get("tier") != "approved" or src.get("type") != "founder" or r.get("expires_at") or r["section"] in ("changes", "freshness", "team", "decisions", "plans"):
+            continue
+        last = str(src.get("confirmed_on") or src.get("captured_at") or "")[:10]
+        if not last:
+            continue
+        try:
+            age = (brain.today - dt.date.fromisoformat(last)).days
+        except ValueError:
+            continue
+        limit = old_limit(r["section"], shelf_days)
+        if age > limit:
+            rows.append({"id": r["id"], "section": r["section"], "field": r.get("field"), "text": str(r.get("text") or r.get("value"))[:160], "last": last, "age_days": age, "limit_days": limit,
+                         "was": (src.get("was") or {}).get("type"), "confirmable": True})
+    rows.sort(key=lambda x: (-(x["age_days"] - x["limit_days"]), x["id"]))
+    return {"rows": rows, "counts": {"records": len(rows), "sections": len({x["section"] for x in rows})},
+            "note": "Approved on your word, never given an expiry, and not confirmed for longer than 3 times the section's shelf life. Confirm the ones that still hold (they get an expiry and join the weekly check); retire the rest."}

@@ -40,7 +40,7 @@ question, and accept or ignore on a proposed record. Nothing external.
   POST contradict/settle        {plan, record, how}: settle one contradicting record (retire, or done after fixing it)
   GET  feedback                 what agents got wrong: the corrections on record, by capability and kind
   POST feedback                 {capability, kind, wrong, what, right, fact}: a correction as a learning; the misused fact's section goes to review
-  GET  expiring                 records expiring within 7 days, by the source that refreshes them
+  GET  expiring                 records expiring within 7 days, by the source that refreshes them; with old_approvals: approved on your word, never confirmed since, past 3 shelf lives
   POST expiring/confirm         {ids}: confirm founder or document records still true; expiry moves on by the shelf life
   GET  glossary                 the brand's own words: names, programmes, codes and founder terms with wrong spellings
   POST glossary                 {term, wrong, note}: a founder term; POST glossary/<key>/retire removes it
@@ -2578,6 +2578,7 @@ def handle(req):
         return 201, {"ok": True, "record": rec["id"], "flagged": flagged, "version": brain.version(), "next": "On the record: the brain file lists it under mistakes agents made." + (" The section is flagged for review today." if flagged else "")}
     if req.method == "GET" and parts == ["expiring"]:
         ex = expiring.expiring(brain, _shelf(brain))
+        ex["old_approvals"] = expiring.old_approvals(brain, _shelf(brain))
         ex.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "BRN-C02", "autonomy": "agent_does"})
         return ex
     if req.method == "POST" and parts == ["expiring", "confirm"]:
