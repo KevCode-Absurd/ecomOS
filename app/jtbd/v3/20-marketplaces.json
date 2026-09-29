@@ -1,0 +1,1230 @@
+{
+  "screen": "20-marketplaces",
+  "title": "Marketplaces and quick commerce",
+  "top_jobs": [
+    {
+      "id": "T1",
+      "job": "When I sell on Amazon or TikTok Shop, or am asked to, help me decide which products go where, at what price and with what ads, so each marketplace adds profit and not just sales",
+      "metric": "contribution margin per unit by marketplace and product, after all fees, trailing 30 days",
+      "from_v2": [
+        5,
+        7,
+        14,
+        19,
+        22,
+        27,
+        29
+      ]
+    },
+    {
+      "id": "T2",
+      "job": "When a health warning, a suppressed listing or a reseller hits a top product, help me see it the same day and fix it, so I do not lose the account, the Buy Box or a week of sales",
+      "metric": "order defect rate against the limit, suppressed top listings, and Buy Box win rate",
+      "from_v2": [
+        1,
+        3,
+        4,
+        9,
+        13,
+        16,
+        18,
+        20
+      ]
+    },
+    {
+      "id": "T3",
+      "job": "When the payout lands short or fees creep up, help me find every dollar owed and claim it before the window closes, so the money comes back",
+      "metric": "settlement shortfall and reimbursement owed but not claimed, monthly",
+      "from_v2": [
+        2,
+        6,
+        15,
+        21,
+        26,
+        28,
+        30
+      ]
+    },
+    {
+      "id": "T4",
+      "job": "When marketplace shoppers ask, review and complain in their own words, help me use those words to fix listings and feed our ads, and bring ad winners back to the listing, so every channel sells with what buyers already told us",
+      "metric": "unit buy rate and star rating per top product, trailing 30 days",
+      "from_v2": [
+        8,
+        10,
+        17,
+        24,
+        25
+      ]
+    }
+  ],
+  "jobs": [
+    {
+      "id": "20-01",
+      "top": "T1",
+      "job": "Write the Amazon plan per product: margin per unit after referral fee, fulfilment fee, storage, returns and ads, next to site margin, then mark each product list, bundle only or do not list, with a price floor",
+      "trigger": "once before listing, then each quarter",
+      "enablers": [
+        "marketplace-plan",
+        "margin-view"
+      ],
+      "inputs": [
+        {
+          "need": "landed cost per unit",
+          "from": "finance shelf",
+          "status": "brain"
+        },
+        {
+          "need": "fee preview and size tier per product",
+          "from": "Amazon Seller Central",
+          "status": "setup"
+        },
+        {
+          "need": "ad cost of sale on Amazon today",
+          "from": "Amazon Ads",
+          "status": "setup"
+        },
+        {
+          "need": "site margin per product",
+          "from": "margin-view",
+          "status": "enabler"
+        },
+        {
+          "need": "marketplace rules and category limits",
+          "from": "market shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "List each product with price, landed cost, size tier and weight",
+        "Compute margin per unit after every fee and ads at today's cost of sale",
+        "Set it next to site margin and a 30 percent floor from the idea bank, which the founder can change",
+        "Mark each product: list, list only in a bundle, or do not list",
+        "Set a price floor per product that keeps the Amazon price at or above the site price",
+        "Founder signs the plan"
+      ],
+      "output": "a signed product by channel plan with margin per unit and price floors",
+      "next": "feeds 20-05 (ad cuts), 20-04 (price check) and 19-05 (stock split)",
+      "watch": {
+        "metric": "contribution margin per unit by marketplace and product, after all fees",
+        "window": "30 day",
+        "source": "settlement and fee reports"
+      },
+      "drives": "marketplace profit",
+      "business": "contribution margin",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 2,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "20-02",
+      "top": "T1",
+      "job": "Write the TikTok Shop plan: pick 3 to 5 products that sell on impulse, set shop price and creator commission inside the margin, send samples to 20 creators, and keep or cut each creator after 30 days on sales",
+      "trigger": "once to launch, then a 30 day read",
+      "enablers": [
+        "marketplace-plan",
+        "creator-roster",
+        "margin-view"
+      ],
+      "inputs": [
+        {
+          "need": "TikTok Shop seller account",
+          "from": "TikTok Shop",
+          "status": "setup"
+        },
+        {
+          "need": "margin per product",
+          "from": "margin-view",
+          "status": "enabler"
+        },
+        {
+          "need": "creator fit rules and past creators",
+          "from": "creators shelf",
+          "status": "brain"
+        },
+        {
+          "need": "sample budget and units",
+          "from": "founder",
+          "status": "founder"
+        },
+        {
+          "need": "product clips with usage rights",
+          "from": "content and brand kit shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pick 3 to 5 products under about $40 that show well in 15 seconds",
+        "Set the shop price and a commission of 10 to 20 percent that keeps margin above the floor",
+        "List 40 creators by fit, audience quality and past shop sales, and a person picks 20",
+        "Send samples with a 1 page brief: the hook that works on Meta, the claim rules, the offer",
+        "Track videos posted, views, orders and margin per creator for 30 days",
+        "Keep the top 5, cut the rest, and log what the winning videos share"
+      ],
+      "output": "a live shop with 3 to 5 products, 20 creators seeded, and a 30 day keep or cut list",
+      "next": "feeds 09-creative (creator hooks) and 22-measurement (TikTok Shop in total sales)",
+      "watch": {
+        "metric": "TikTok Shop orders and margin per creator",
+        "window": "30 day",
+        "source": "TikTok Shop seller center"
+      },
+      "drives": "new customers from TikTok",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 2,
+        "speed": 3,
+        "ease": 2
+      },
+      "ready": 2,
+      "effort": "weeks"
+    },
+    {
+      "id": "20-03",
+      "top": "T1",
+      "job": "Write a 1 page go or no go memo before adding a marketplace: 90 days of fees, stock needed, staff hours and the site sales it may take, next to what the current marketplaces earn per staff hour",
+      "trigger": "when someone proposes a new marketplace",
+      "enablers": [
+        "marketplace-plan",
+        "margin-view"
+      ],
+      "inputs": [
+        {
+          "need": "margin per live marketplace",
+          "from": "margin-view",
+          "status": "enabler"
+        },
+        {
+          "need": "team hours spent in each seller portal",
+          "from": "founder",
+          "status": "founder"
+        },
+        {
+          "need": "fee schedule of the new marketplace",
+          "from": "public fee page typed into a sheet",
+          "status": "setup"
+        },
+        {
+          "need": "goals and red lines",
+          "from": "decisions and goals shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Compute margin per staff hour for each live marketplace from last quarter",
+        "Model the new one at 3 sales levels: fees, ads, stock and hours",
+        "Estimate site sales it may take, from price gaps and buyer overlap",
+        "Write the memo: the number, the risk, and what we stop doing to make time",
+        "Founder decides, and the decision is logged"
+      ],
+      "output": "a 1 page memo with a go or no go, and the founder's logged decision",
+      "next": "feeds 20-02 (TikTok Shop plan), or none",
+      "watch": {
+        "metric": "contribution margin per marketplace per staff hour",
+        "window": "quarterly",
+        "source": "settlement reports and team time log"
+      },
+      "drives": "time and cash spent on channels that pay",
+      "business": "contribution margin",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 1,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "20-04",
+      "top": "T1",
+      "job": "Check marketplace prices against site prices for the top 20 products every week, counting coupons and resellers, and flag any gap more than 5 percent below the site",
+      "trigger": "every Monday",
+      "enablers": [
+        "listing-watch",
+        "marketplace-plan"
+      ],
+      "inputs": [
+        {
+          "need": "site prices",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "our marketplace prices and coupons",
+          "from": "Amazon Seller Central and TikTok Shop",
+          "status": "setup"
+        },
+        {
+          "need": "reseller offers on our listings",
+          "from": "Amazon Seller Central",
+          "status": "setup"
+        },
+        {
+          "need": "price floors",
+          "from": "marketplace-plan",
+          "status": "enabler"
+        }
+      ],
+      "steps": [
+        "Pull the final price a buyer pays on each channel, after coupons",
+        "Compute the gap to the site price",
+        "Flag gaps over 5 percent and say who set them: us, a coupon, or a reseller",
+        "Draft the fix: raise the coupon floor, end the deal, or report the reseller"
+      ],
+      "output": "a weekly price gap table with a fix for each flag",
+      "next": "feeds 20-09 (reseller removal) and 04-offers-pricing",
+      "watch": {
+        "metric": "price gap between site and each marketplace per top product",
+        "window": "weekly",
+        "source": "store catalogue and marketplace listings"
+      },
+      "drives": "site conversion and marketplace margin",
+      "business": "contribution margin",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "20-05",
+      "top": "T1",
+      "job": "Cut Amazon campaigns that spend more than the product earns: set each product's break-even ad cost of sale from its margin, list campaigns and search terms above it for 14 days, and draft negatives and bid cuts",
+      "trigger": "every Monday",
+      "enablers": [
+        "marketplace-plan",
+        "margin-view"
+      ],
+      "inputs": [
+        {
+          "need": "campaigns and search terms with spend and sales",
+          "from": "Amazon Ads",
+          "status": "setup"
+        },
+        {
+          "need": "margin per unit before ads",
+          "from": "margin-view",
+          "status": "enabler"
+        },
+        {
+          "need": "brand terms to protect",
+          "from": "ads shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Break-even ad cost of sale = margin before ads divided by price",
+        "List campaigns over break-even for 14 days, with spend and sales",
+        "List search terms with spend over 2 times the product's cost per sale and no sale, as negatives",
+        "Draft bid cuts and negatives in a sheet, and a person applies them",
+        "Recheck in 14 days and log the change"
+      ],
+      "output": "a draft list of negatives and bid cuts per campaign, applied by a person",
+      "next": "feeds 13-affiliate-marketplace-ads",
+      "watch": {
+        "metric": "ad cost of sale per campaign against the product's break-even",
+        "window": "14 day",
+        "source": "Amazon Ads"
+      },
+      "drives": "Amazon profit",
+      "business": "contribution margin",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "20-06",
+      "top": "T1",
+      "job": "Say yes or no to a Prime Day or Lightning Deal invite with one number: margin per unit at the deal price after the deal fee and ads, units needed, and stock left after",
+      "trigger": "when a deal invite arrives",
+      "enablers": [
+        "marketplace-plan",
+        "margin-view"
+      ],
+      "inputs": [
+        {
+          "need": "deal price and deal fee",
+          "from": "Amazon Seller Central",
+          "status": "setup"
+        },
+        {
+          "need": "margin per unit",
+          "from": "margin-view",
+          "status": "enabler"
+        },
+        {
+          "need": "Amazon stock",
+          "from": "Amazon Seller Central",
+          "status": "setup"
+        },
+        {
+          "need": "results of the last deals",
+          "from": "history shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Compute margin per unit at the deal price after fees and ads",
+        "Compute units needed to cover the fee, and stock left for 30 days after",
+        "Compare with the last 2 deals' lift and the dip that followed",
+        "Write yes or no with the number, and the founder decides"
+      ],
+      "output": "a yes or no note with margin per unit, units needed and stock left",
+      "next": "feeds 19-05 (stock split)",
+      "watch": {
+        "metric": "contribution margin per unit at the deal price",
+        "window": "per event",
+        "source": "fee and ad reports"
+      },
+      "drives": "deal profit",
+      "business": "contribution margin",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "20-07",
+      "top": "T2",
+      "job": "Check account health every day (order defect rate, late shipment, cancel rate, valid tracking and policy notices) against the limits, alert at half the limit, and draft the reply with cause and fix",
+      "trigger": "daily, and on every notice",
+      "enablers": [
+        "listing-watch"
+      ],
+      "inputs": [
+        {
+          "need": "account health and performance pages",
+          "from": "Amazon Seller Central and Walmart Seller Center",
+          "status": "setup"
+        },
+        {
+          "need": "marketplace orders with tracking",
+          "from": "Amazon Seller Central",
+          "status": "setup"
+        },
+        {
+          "need": "policy rules for the category",
+          "from": "market shelf",
+          "status": "brain"
+        },
+        {
+          "need": "who may send replies and change the account",
+          "from": "decisions and goals shelf (approval rules)",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pull each health number and its limit",
+        "Alert when any number passes half its limit, or when a notice lands",
+        "Find the orders behind the number: late, cancelled, no tracking, claim",
+        "Draft the plan of action: the cause, the fix done, and the fix that stops it again",
+        "A named person reviews and sends it"
+      ],
+      "output": "a daily health line and a drafted reply for each notice",
+      "next": "feeds 20-08 (listing problems) and 19-19 (warehouse speed)",
+      "watch": {
+        "metric": "order defect rate and late shipment rate against the limits",
+        "window": "60 day",
+        "source": "Amazon Seller Central account health"
+      },
+      "drives": "account safety and money held",
+      "business": "risk",
+      "score": {
+        "money": 4,
+        "satisfaction": 5,
+        "speed": 4,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "20-08",
+      "top": "T2",
+      "job": "Each morning list every top product that is suppressed, has an open listing error or holds the Buy Box under 90 percent, with the seller who holds it and the ad spend still running",
+      "trigger": "every morning",
+      "enablers": [
+        "listing-watch"
+      ],
+      "inputs": [
+        {
+          "need": "suppressed and errored listing reports",
+          "from": "Amazon Seller Central",
+          "status": "setup"
+        },
+        {
+          "need": "Buy Box share by product",
+          "from": "Seller Central business reports",
+          "status": "setup"
+        },
+        {
+          "need": "hourly Buy Box checks, if wanted",
+          "from": "a Buy Box tracker",
+          "status": "buy"
+        },
+        {
+          "need": "ad spend by product",
+          "from": "Amazon Ads",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "Pull suppressed and errored listings and read each error",
+        "Pull yesterday's Buy Box share per product",
+        "Join ad spend per product",
+        "Write the fix for each problem: the missing field, the image, or the seller to report",
+        "A person makes the fix and pauses ads on products with no Buy Box"
+      ],
+      "output": "a morning list: product, problem, fix, and ad spend at risk",
+      "next": "feeds 20-09 (reseller removal)",
+      "watch": {
+        "metric": "suppressed top listings, and Buy Box win rate per advertised product",
+        "window": "7 day",
+        "source": "Amazon Seller Central"
+      },
+      "drives": "marketplace sales",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 5,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "20-09",
+      "top": "T2",
+      "job": "Find every seller on our listings each week, test buy from any selling below our floor, and file a Brand Registry report with the proof",
+      "trigger": "every Monday",
+      "enablers": [
+        "listing-watch"
+      ],
+      "inputs": [
+        {
+          "need": "offers and sellers on our listings",
+          "from": "Amazon Seller Central",
+          "status": "setup"
+        },
+        {
+          "need": "Brand Registry access",
+          "from": "Amazon Brand Registry, needs a trademark",
+          "status": "setup"
+        },
+        {
+          "need": "list of authorised sellers",
+          "from": "founder",
+          "status": "founder"
+        },
+        {
+          "need": "price floors",
+          "from": "marketplace-plan",
+          "status": "enabler"
+        },
+        {
+          "need": "a small test buy budget",
+          "from": "founder",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "List sellers and prices on each of our listings",
+        "Mark authorised sellers from the founder's list",
+        "Test buy from the worst unauthorised seller and photograph what arrives",
+        "A person files the report with the photos, the order and the listing",
+        "Recheck 7 days later"
+      ],
+      "output": "a seller list, test buy proof, and filed reports",
+      "next": "feeds 20-04 (price gap)",
+      "watch": {
+        "metric": "unauthorised sellers on our listings",
+        "window": "weekly",
+        "source": "Amazon Seller Central and Brand Registry"
+      },
+      "drives": "Buy Box share, and bad reviews from fakes",
+      "business": "risk",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "20-10",
+      "top": "T2",
+      "job": "Keep a register of every safety certificate, test report and label each product needs on each marketplace, with expiry dates, and alert 60 days before one runs out",
+      "trigger": "monthly, and when a listing is pulled",
+      "enablers": [
+        "listing-watch"
+      ],
+      "inputs": [
+        {
+          "need": "documents per product",
+          "from": "founder",
+          "status": "founder"
+        },
+        {
+          "need": "category requirements per marketplace",
+          "from": "market shelf",
+          "status": "brain"
+        },
+        {
+          "need": "compliance notices",
+          "from": "Amazon Seller Central",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "List each product and marketplace, and the documents each needs",
+        "Link each document with its issue and expiry date",
+        "Mark documents missing or expiring within 60 days",
+        "Send the list to the owner with the lab or supplier to ask"
+      ],
+      "output": "a document register with gaps and owners",
+      "next": "none",
+      "watch": {
+        "metric": "listings with a missing or expired compliance document",
+        "window": "monthly",
+        "source": "brain document register and marketplace notices"
+      },
+      "drives": "listings pulled",
+      "business": "risk",
+      "score": {
+        "money": 2,
+        "satisfaction": 4,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "20-11",
+      "top": "T3",
+      "job": "Rebuild each Amazon, Walmart and TikTok Shop payout from orders, fee by fee, compare it with what landed, and list every gap over $50 with the line it sits on",
+      "trigger": "on every settlement",
+      "enablers": [
+        "settlement-check"
+      ],
+      "inputs": [
+        {
+          "need": "settlement and fee reports",
+          "from": "Amazon Seller Central and TikTok Shop",
+          "status": "setup"
+        },
+        {
+          "need": "orders and refunds per marketplace",
+          "from": "Amazon Seller Central and TikTok Shop",
+          "status": "setup"
+        },
+        {
+          "need": "expected fee per product",
+          "from": "marketplace-plan",
+          "status": "enabler"
+        },
+        {
+          "need": "reserve and payout rules",
+          "from": "market shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pull the settlement and every order, refund and fee in it",
+        "Compute the expected payout from orders and the fee schedule",
+        "Line up expected and actual, fee by fee",
+        "List gaps over $50 with the order and fee line, plus any reserve held and its release date",
+        "A person opens a case for each gap and logs the outcome"
+      ],
+      "output": "a reconciliation per settlement with gaps, reserves and cases opened",
+      "next": "feeds 21-02 (payout check) and 21-01 (cash forecast)",
+      "watch": {
+        "metric": "settlement shortfall: expected minus actual payout",
+        "window": "per settlement",
+        "source": "marketplace settlement reports"
+      },
+      "drives": "cash back",
+      "business": "cash",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "20-12",
+      "top": "T3",
+      "job": "Reconcile Amazon warehouse units sent, received, sold, returned and on hand each month, and list units lost, damaged or refunded but never returned, with the claim deadline for each",
+      "trigger": "monthly",
+      "enablers": [
+        "settlement-check"
+      ],
+      "inputs": [
+        {
+          "need": "shipments sent in",
+          "from": "Amazon Seller Central",
+          "status": "setup"
+        },
+        {
+          "need": "inventory ledger and past reimbursements",
+          "from": "Amazon Seller Central",
+          "status": "setup"
+        },
+        {
+          "need": "refunds and returns",
+          "from": "Amazon Seller Central",
+          "status": "setup"
+        },
+        {
+          "need": "unit cost",
+          "from": "finance shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Line up units per product through each step",
+        "Flag gaps: received short, lost in the warehouse, damaged, refunded with no return in 45 days",
+        "Value each gap and mark its claim deadline",
+        "Draft each claim with the shipment id and proof, and a person files it",
+        "Log money back each month"
+      ],
+      "output": "a monthly claim list with value and deadlines, and money recovered",
+      "next": "feeds 21-01 (cash forecast)",
+      "watch": {
+        "metric": "reimbursement owed and not yet claimed",
+        "window": "monthly",
+        "source": "Amazon inventory and reimbursement reports"
+      },
+      "drives": "cash back",
+      "business": "cash",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "20-13",
+      "top": "T3",
+      "job": "Check each product's Amazon size tier and weight against a measured box, dispute wrong tiers, and redesign packaging where one size tier down saves more than it costs",
+      "trigger": "once, then on every new product or fee change",
+      "enablers": [
+        "settlement-check"
+      ],
+      "inputs": [
+        {
+          "need": "measured size and weight of 3 units per product",
+          "from": "founder, with a tape and a scale",
+          "status": "founder"
+        },
+        {
+          "need": "Amazon's recorded size and fee per product",
+          "from": "Amazon Seller Central",
+          "status": "setup"
+        },
+        {
+          "need": "a quote for a smaller box",
+          "from": "founder",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "Measure 3 units per product and log the numbers",
+        "Compare them with Amazon's size and fee",
+        "Open a case wherever Amazon's numbers are bigger",
+        "For products within 1 inch of the next tier down, price a smaller box against the fee saved per year"
+      ],
+      "output": "a size tier table, cases opened, and a packaging change list",
+      "next": "feeds 19-10 (landed cost)",
+      "watch": {
+        "metric": "change in fulfilment fee per unit, per product",
+        "window": "30 day",
+        "source": "Amazon fee reports"
+      },
+      "drives": "fee per unit",
+      "business": "contribution margin",
+      "score": {
+        "money": 2,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "20-14",
+      "top": "T3",
+      "job": "Plan Amazon stock each week: days of cover against restock lead time, units over 150 days old, and the storage limit, and choose which products get the space before Q4",
+      "trigger": "every Monday, and when Amazon changes the storage limit",
+      "enablers": [
+        "marketplace-plan"
+      ],
+      "inputs": [
+        {
+          "need": "Amazon stock, stock age and storage limits",
+          "from": "Amazon Seller Central",
+          "status": "setup"
+        },
+        {
+          "need": "lead time to get stock into Amazon",
+          "from": "operations shelf (fulfilment)",
+          "status": "brain"
+        },
+        {
+          "need": "margin per product",
+          "from": "finance shelf",
+          "status": "brain"
+        },
+        {
+          "need": "Q4 targets",
+          "from": "calendar shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Compute days of cover per product at Amazon against lead time",
+        "List units over 150 days old and the date their fee starts",
+        "Rank products by profit per cubic foot",
+        "Give the space to the top products, and plan removal or price cuts for aged units",
+        "A person books the shipments"
+      ],
+      "output": "a weekly Amazon stock plan: send, hold or remove, per product",
+      "next": "feeds 19-05 (stock split)",
+      "watch": {
+        "metric": "top products with fewer days of stock at Amazon than lead time",
+        "window": "daily",
+        "source": "Amazon restock and stock reports"
+      },
+      "drives": "Amazon stockouts and storage fees",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "20-15",
+      "top": "T4",
+      "job": "Build the Amazon question coverage matrix: every question from customer questions, buyer messages, reviews and our helpdesk in rows, and title, bullets, images, A+ page and FAQ in columns, then fill the 10 biggest blanks",
+      "trigger": "once per top product, then monthly",
+      "enablers": [
+        "question-matrix",
+        "signal-bridge"
+      ],
+      "inputs": [
+        {
+          "need": "Amazon customer questions and buyer messages",
+          "from": "Amazon Seller Central",
+          "status": "setup"
+        },
+        {
+          "need": "reviews on our listings",
+          "from": "Amazon Seller Central",
+          "status": "setup"
+        },
+        {
+          "need": "helpdesk tickets about the product",
+          "from": "helpdesk",
+          "status": "connected"
+        },
+        {
+          "need": "current listing text and images",
+          "from": "Amazon Seller Central",
+          "status": "setup"
+        },
+        {
+          "need": "claims we may make",
+          "from": "claims shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pull the questions, merge duplicates and count them",
+        "Mark where each is answered in the listing: title, bullets, images, A+ page, or nowhere",
+        "Rank blanks by count and by how close to buying they are",
+        "Write each answer as a bullet line or an image caption, and a person checks it against the claims shelf",
+        "Update the listing and log the date to compare buy rate"
+      ],
+      "output": "a matrix per product, and a listing update with 10 answers placed",
+      "next": "feeds 20-19 (sales drop check) and 15-06 (site question matrix)",
+      "watch": {
+        "metric": "unit buy rate per top product",
+        "window": "30 day",
+        "source": "Seller Central business reports"
+      },
+      "drives": "marketplace conversion",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "20-16",
+      "top": "T4",
+      "job": "Turn Amazon reviews into Meta ads: pull 4 and 5 star reviews, take the buyers' exact words for before and after, tag each by avatar and awareness level, and write 10 hooks and 3 review ads to launch as one test",
+      "trigger": "once a month",
+      "enablers": [
+        "signal-bridge",
+        "review-miner",
+        "creative-tags"
+      ],
+      "inputs": [
+        {
+          "need": "our Amazon reviews",
+          "from": "Amazon Seller Central",
+          "status": "setup"
+        },
+        {
+          "need": "avatars and allowed claims",
+          "from": "customers shelf and claims shelf",
+          "status": "brain"
+        },
+        {
+          "need": "awareness levels where we run fewest ads",
+          "from": "awareness-map",
+          "status": "enabler"
+        },
+        {
+          "need": "Meta results to judge the test",
+          "from": "Meta Ads (read only)",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Pull 4 and 5 star reviews from the last 12 months",
+        "Cut each into the before state, the result and the exact phrase, and tag by avatar and awareness level",
+        "Pick phrases for the awareness level where we run the fewest ads",
+        "Write 10 hooks in the buyer's words and 3 static review ads that show the star rating as it is on Amazon",
+        "Founder approves every claim and quote",
+        "A person launches them on Meta as one test, and the result goes to the win and loss ledger"
+      ],
+      "output": "10 hooks and 3 approved ads, launched as one test",
+      "next": "feeds 09-creative, 11-paid-social and 25-experiments",
+      "watch": {
+        "metric": "cost per new customer of the review ads against the account average",
+        "window": "14 day",
+        "source": "Meta Ads"
+      },
+      "drives": "new customers per week",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "20-17",
+      "top": "T4",
+      "job": "Move Meta winners onto Amazon: take the top 3 Meta angles by cost per new customer, rewrite the listing's title, first bullet and 2 images around them, and run an A/B test in Amazon's listing test tool",
+      "trigger": "each quarter",
+      "enablers": [
+        "signal-bridge",
+        "creative-tags"
+      ],
+      "inputs": [
+        {
+          "need": "top Meta ads by cost per new customer over 90 days",
+          "from": "Meta Ads (read only)",
+          "status": "connected"
+        },
+        {
+          "need": "each winner's angle and hook",
+          "from": "creative-tags",
+          "status": "enabler"
+        },
+        {
+          "need": "Brand Registry and the listing test tool",
+          "from": "Amazon Seller Central",
+          "status": "setup"
+        },
+        {
+          "need": "product photos with rights",
+          "from": "content and brand kit shelf",
+          "status": "brain"
+        },
+        {
+          "need": "marketplace image and title rules",
+          "from": "market shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pick the top 3 angles on Meta by cost per new customer over 90 days",
+        "Write a title and first bullet for each, inside Amazon's rules",
+        "Design 2 listing images per angle from real product photos",
+        "A person sets up the test for 8 weeks",
+        "Keep the winner, and send the result to the win and loss ledger"
+      ],
+      "output": "a live listing test with 2 versions, and a readout",
+      "next": "feeds 25-experiments",
+      "watch": {
+        "metric": "unit buy rate on the tested product",
+        "window": "8 week",
+        "source": "Amazon listing test report"
+      },
+      "drives": "marketplace conversion",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 2,
+        "speed": 2,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "20-18",
+      "top": "T4",
+      "job": "Mine the 1 to 3 star reviews of the top 5 rival products on Amazon, group the complaints, mark which ones we solve, and add a comparison image to our listing and 3 lines to our ads",
+      "trigger": "once at onboarding, then each quarter",
+      "enablers": [
+        "review-miner",
+        "signal-bridge"
+      ],
+      "inputs": [
+        {
+          "need": "rival product links",
+          "from": "competitors shelf",
+          "status": "brain"
+        },
+        {
+          "need": "rival reviews",
+          "from": "a review export tool, or copied by hand",
+          "status": "buy"
+        },
+        {
+          "need": "our proof for each claim",
+          "from": "claims shelf",
+          "status": "brain"
+        },
+        {
+          "need": "listing images",
+          "from": "Amazon Seller Central",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "Pull 100 low star reviews per rival",
+        "Group the complaints and count them",
+        "Mark each: we solve it (with proof), same problem, or unknown",
+        "Draft a comparison image on 3 solved complaints, with no rival names or logos",
+        "Write 3 ad lines, and the founder approves every claim"
+      ],
+      "output": "a complaint table for 5 rivals, 1 comparison image and 3 ad lines",
+      "next": "feeds 10-copy and 03-competitors",
+      "watch": {
+        "metric": "unit buy rate on our listing",
+        "window": "30 day",
+        "source": "Seller Central business reports"
+      },
+      "drives": "marketplace and paid social conversion",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 2,
+        "speed": 3,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "20-19",
+      "top": "T4",
+      "job": "When marketplace sales fall, split units into visits and buy rate per top product week on week, then check rank on the top 10 search terms, price, Buy Box, reviews and stock, and write the 1 line cause",
+      "trigger": "when units fall 15 percent week on week",
+      "enablers": [
+        "listing-watch"
+      ],
+      "inputs": [
+        {
+          "need": "visits and unit buy rate per product",
+          "from": "Seller Central business reports",
+          "status": "setup"
+        },
+        {
+          "need": "rank on top search terms",
+          "from": "Brand Analytics, or a rank tracker",
+          "status": "setup"
+        },
+        {
+          "need": "price, Buy Box and stock history",
+          "from": "Amazon Seller Central",
+          "status": "setup"
+        },
+        {
+          "need": "ad spend and impressions",
+          "from": "Amazon Ads",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "Split the drop into fewer visits or a lower buy rate",
+        "If visits fell, check rank on the top terms, ad spend and impressions",
+        "If buy rate fell, check price changes, Buy Box share, new bad reviews and sizes out of stock",
+        "Write the cause in 1 line with the fix, and a person owns it"
+      ],
+      "output": "a 1 line cause and fix per product, with the numbers behind it",
+      "next": "feeds 20-08 (listing problems) or 20-05 (ad cuts)",
+      "watch": {
+        "metric": "visits and unit buy rate per top product",
+        "window": "weekly",
+        "source": "Seller Central business reports"
+      },
+      "drives": "marketplace revenue",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "20-20",
+      "top": "T4",
+      "job": "When a top product's Amazon rating slips, read the reviews since the slide, find the 1 complaint behind it and the return reasons that match, and send the fix to product or listing",
+      "trigger": "when a top product drops 0.2 stars in 30 days",
+      "enablers": [
+        "review-miner"
+      ],
+      "inputs": [
+        {
+          "need": "reviews since the drop",
+          "from": "Amazon Seller Central",
+          "status": "setup"
+        },
+        {
+          "need": "marketplace return reasons",
+          "from": "Amazon Seller Central",
+          "status": "setup"
+        },
+        {
+          "need": "batch dates",
+          "from": "operations shelf (supply)",
+          "status": "brain"
+        },
+        {
+          "need": "helpdesk tickets on the product",
+          "from": "helpdesk",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Pull reviews since the drop and group them",
+        "Match them to return reasons and batch dates",
+        "Name the 1 complaint behind most of the slide",
+        "Write the fix: a listing line, an image, a size note, or a supplier call",
+        "Reach unhappy buyers only through Amazon's allowed path, and never tie a refund to a review"
+      ],
+      "output": "a 1 page cause and fix note with an owner",
+      "next": "feeds 15-13 (bad batch alert) and 20-15 (Amazon question matrix)",
+      "watch": {
+        "metric": "star rating per top product and share of new reviews citing the top complaint",
+        "window": "30 day",
+        "source": "marketplace reviews"
+      },
+      "drives": "marketplace buy rate",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "hours"
+    }
+  ],
+  "new_enablers": [
+    {
+      "id": "listing-watch",
+      "name": "Listing watch",
+      "what": "A daily check of every marketplace listing: account health numbers against the limits, suppressed or errored listings, Buy Box share, sellers on our listings and their prices, rank on the top search terms, and compliance documents with expiry dates.",
+      "inputs": [
+        "seller portal reports (Amazon, Walmart, TikTok Shop)",
+        "Brand Registry",
+        "a Buy Box or rank tracker, optional",
+        "the document register"
+      ],
+      "powers": [
+        "same day alerts on health, suppression and Buy Box",
+        "unauthorised sellers and price gaps",
+        "the cause of a sales drop",
+        "listings about to be pulled"
+      ],
+      "screens": [
+        "20-marketplaces",
+        "13-affiliate-marketplace-ads",
+        "00-today"
+      ],
+      "note": null
+    },
+    {
+      "id": "settlement-check",
+      "name": "Settlement check",
+      "what": "Rebuilds each marketplace payout from orders, fee by fee, and compares it with what arrived. Reconciles units sent in, received, sold, returned and on hand, and checks size tiers, so lost units, wrong fees and refunds never returned become claims before the deadline.",
+      "inputs": [
+        "settlement and fee reports",
+        "inventory ledger and reimbursements",
+        "returns",
+        "measured size and weight per product"
+      ],
+      "powers": [
+        "money owed, per settlement",
+        "claims before deadlines",
+        "fee changes per product",
+        "reserves and release dates"
+      ],
+      "screens": [
+        "20-marketplaces",
+        "21-finance-cash"
+      ],
+      "note": null
+    }
+  ]
+}

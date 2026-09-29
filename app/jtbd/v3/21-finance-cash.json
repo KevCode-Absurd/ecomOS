@@ -1,0 +1,1208 @@
+{
+  "screen": "21-finance-cash",
+  "title": "Finance and cash",
+  "top_jobs": [
+    {
+      "id": "T1",
+      "job": "When the bank looks thin ahead of a supplier deposit and payroll, help me see the lowest cash day in the next 13 weeks and what to move, so I never scramble for a panic loan",
+      "metric": "lowest projected cash balance in the next 13 weeks against the cash floor, weekly",
+      "from_v2": [
+        1,
+        2,
+        8,
+        10,
+        14,
+        16,
+        18,
+        19
+      ]
+    },
+    {
+      "id": "T2",
+      "job": "When revenue is up but the bank is not, help me see what each product, channel and sale really made after every cost, so I grow the parts that make money",
+      "metric": "contribution margin per product and channel after marketing, monthly",
+      "from_v2": [
+        3,
+        5,
+        7,
+        11,
+        23,
+        24,
+        30
+      ]
+    },
+    {
+      "id": "T3",
+      "job": "When the agency asks for more ad budget, help me set the most I can spend and still make money, and see whether we are buying new customers or only rebuying old ones, so I say yes or no with a number",
+      "metric": "total sales divided by total ad spend against the break-even line, weekly",
+      "from_v2": [
+        4,
+        26,
+        27,
+        29,
+        31
+      ]
+    },
+    {
+      "id": "T4",
+      "job": "When costs creep up one bill at a time, from apps nobody uses to payment fees to sales tax, help me find the leaks and what we owe, so profit stops leaking and no letter surprises me",
+      "metric": "overhead against plan by line, monthly, and states near their sales tax limit",
+      "from_v2": [
+        6,
+        21,
+        33,
+        34
+      ]
+    }
+  ],
+  "jobs": [
+    {
+      "id": "21-01",
+      "top": "T1",
+      "job": "Build the 13 week cash forecast: bank balance today, payouts by day, bills, payroll, supplier deposits, ad plan and loan payments, and mark the lowest cash day against the floor",
+      "trigger": "once, then every Monday",
+      "enablers": [
+        "cash-forecast"
+      ],
+      "inputs": [
+        {
+          "need": "bank balance and 90 days of transactions",
+          "from": "a read-only bank feed or the accounting tool",
+          "status": "setup"
+        },
+        {
+          "need": "store payout schedule",
+          "from": "Shopify Payments",
+          "status": "connected"
+        },
+        {
+          "need": "other payouts: PayPal, marketplaces, installment lenders",
+          "from": "each processor or seller portal",
+          "status": "setup"
+        },
+        {
+          "need": "open bills, payroll and loan payments",
+          "from": "accounting tool (QuickBooks, Xero) or founder",
+          "status": "setup"
+        },
+        {
+          "need": "purchase orders with deposit and balance dates",
+          "from": "operations shelf (supply)",
+          "status": "brain"
+        },
+        {
+          "need": "ad budget per week and the cash floor",
+          "from": "finance shelf (budgets) and founder",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "Start from today's bank balance",
+        "Add expected payouts by day, from the sales run rate and each processor's payout delay",
+        "Subtract bills, payroll, rent, supplier deposits and balances, loan payments and planned ad spend, by week",
+        "Mark the lowest day and the gap to the floor",
+        "Founder checks the big lines and adds anything missing",
+        "Each Monday compare last week's forecast with what happened and note the miss"
+      ],
+      "output": "a 13 week table with the lowest cash day, the gap to the floor, and last week's forecast error",
+      "next": "feeds 21-03 (order test), 21-04 (which bills first), 21-05 (financing) and 19-02 (order size)",
+      "watch": {
+        "metric": "lowest projected cash balance in the next 13 weeks against the floor",
+        "window": "weekly",
+        "source": "bank feed and the forecast"
+      },
+      "drives": "cash runway",
+      "business": "cash",
+      "score": {
+        "money": 4,
+        "satisfaction": 5,
+        "speed": 3,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "21-02",
+      "top": "T1",
+      "job": "Check every payout each day against what was expected from orders and processor terms, and list the late or short ones with the reason: reserve, hold, chargeback or bank holiday",
+      "trigger": "every day",
+      "enablers": [
+        "money-match"
+      ],
+      "inputs": [
+        {
+          "need": "Shopify Payments payouts, disputes and reserves",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "PayPal, Stripe, installment lender and marketplace payouts",
+          "from": "each processor or seller portal",
+          "status": "setup"
+        },
+        {
+          "need": "bank deposits",
+          "from": "a read-only bank feed",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "Compute the expected payout per source per day from orders, fees and payout delay",
+        "Match each to a bank deposit by amount and date",
+        "List late or short payouts with the reason given in the processor report",
+        "Draft the chase note for each, and a person sends it"
+      ],
+      "output": "a daily payout table with gaps and reasons",
+      "next": "feeds 21-01 (cash forecast)",
+      "watch": {
+        "metric": "payouts late or short against expected, by source",
+        "window": "daily",
+        "source": "processor reports and bank feed"
+      },
+      "drives": "cash on hand",
+      "business": "cash",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 5,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "21-03",
+      "top": "T1",
+      "job": "Test a big purchase order against cash before signing: add its deposit and balance dates to a 26 week forecast, show the lowest point, and price 3 fixes: split shipment, longer terms, smaller first order",
+      "trigger": "before any order over 20 percent of monthly revenue",
+      "enablers": [
+        "cash-forecast"
+      ],
+      "inputs": [
+        {
+          "need": "the draft purchase order",
+          "from": "operations shelf (supply), or 19-02",
+          "status": "brain"
+        },
+        {
+          "need": "the cash forecast",
+          "from": "cash-forecast",
+          "status": "enabler"
+        },
+        {
+          "need": "supplier payment terms",
+          "from": "operations shelf (supply)",
+          "status": "brain"
+        },
+        {
+          "need": "sales plan for the stock",
+          "from": "finance shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Add the order's cash out dates, and the sales it brings in, by week",
+        "Show the lowest cash point over 26 weeks",
+        "Price 3 fixes: 2 shipments, 30/70 terms, 70 percent of units first",
+        "Founder picks one, and the ask to the supplier is drafted"
+      ],
+      "output": "a cash test for the order with 3 options and the founder's pick",
+      "next": "feeds 19-02 (order size)",
+      "watch": {
+        "metric": "lowest cash in 26 weeks with the order, against the floor",
+        "window": "per purchase order",
+        "source": "the forecast"
+      },
+      "drives": "cash runway",
+      "business": "cash",
+      "score": {
+        "money": 3,
+        "satisfaction": 5,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "21-04",
+      "top": "T1",
+      "job": "When several bills fall in a short week, rank them by late fee, supplier importance and grace days, and set the pay order that keeps cash above the floor",
+      "trigger": "weekly, when the forecast dips under the floor",
+      "enablers": [
+        "cash-forecast"
+      ],
+      "inputs": [
+        {
+          "need": "open bills with due dates",
+          "from": "accounting tool",
+          "status": "setup"
+        },
+        {
+          "need": "late fees and grace terms",
+          "from": "founder",
+          "status": "founder"
+        },
+        {
+          "need": "suppliers we cannot upset",
+          "from": "operations shelf (supply)",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "List bills due in the next 2 weeks with amount, due date, late fee and grace days",
+        "Mark the must-pay bills: payroll, tax, critical suppliers",
+        "Order the rest by cost of paying late",
+        "Show cash each day under the plan, and the founder approves"
+      ],
+      "output": "a pay now, pay later list with dates",
+      "next": "feeds 21-01 (cash forecast)",
+      "watch": {
+        "metric": "bills paid late and late fees paid",
+        "window": "monthly",
+        "source": "books and bank feed"
+      },
+      "drives": "supplier trust and fees",
+      "business": "cash",
+      "score": {
+        "money": 2,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "21-05",
+      "top": "T1",
+      "job": "Price every financing offer in plain terms: the true yearly cost of Shopify Capital, a revenue loan or a credit line, with the repayments dropped into the forecast to show the lowest cash with and without",
+      "trigger": "when an offer arrives",
+      "enablers": [
+        "cash-forecast"
+      ],
+      "inputs": [
+        {
+          "need": "offer terms: amount, fee, holdback share",
+          "from": "founder",
+          "status": "founder"
+        },
+        {
+          "need": "the cash forecast",
+          "from": "cash-forecast",
+          "status": "enabler"
+        },
+        {
+          "need": "daily sales run rate",
+          "from": "Shopify",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Turn the fee and holdback into a yearly cost, from how fast sales would repay it",
+        "Model repayments by day from the sales run rate",
+        "Show the lowest cash with and without the loan",
+        "Show what the money would buy (stock, ads) and the profit it should return",
+        "Founder decides, and the reason is logged"
+      ],
+      "output": "a 1 page note per offer: yearly cost, cash effect, profit case",
+      "next": "none",
+      "watch": {
+        "metric": "true yearly cost of each offer, and lowest cash with repayments",
+        "window": "per offer",
+        "source": "offer terms and the forecast"
+      },
+      "drives": "cost of money",
+      "business": "cash",
+      "score": {
+        "money": 2,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "21-06",
+      "top": "T1",
+      "job": "Each month set aside estimated income tax, and show the owner the amount they can safely draw without breaking the cash plan",
+      "trigger": "monthly",
+      "enablers": [
+        "cash-forecast"
+      ],
+      "inputs": [
+        {
+          "need": "profit to date",
+          "from": "accounting tool",
+          "status": "setup"
+        },
+        {
+          "need": "tax rate estimate and payment dates",
+          "from": "founder, from the accountant",
+          "status": "founder"
+        },
+        {
+          "need": "the cash forecast",
+          "from": "cash-forecast",
+          "status": "enabler"
+        }
+      ],
+      "steps": [
+        "Estimate tax due on profit to date and the next payment date",
+        "Move the set-aside amount out of free cash in the forecast",
+        "Safe draw = lowest cash in 13 weeks, minus the floor, minus the tax set aside, minus a margin",
+        "Founder confirms the draw, and it goes into the forecast"
+      ],
+      "output": "a monthly tax set-aside and a safe draw number",
+      "next": "feeds 21-01 (cash forecast)",
+      "watch": {
+        "metric": "tax set aside against estimated tax due",
+        "window": "monthly",
+        "source": "books and the forecast"
+      },
+      "drives": "surprise tax bills",
+      "business": "cash",
+      "score": {
+        "money": 1,
+        "satisfaction": 5,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "21-07",
+      "top": "T2",
+      "job": "Build contribution margin by product and channel every month: sales after discounts and returns, minus landed cost, shipping, packing, payment and marketplace fees, and ad spend, and mark the products that lose money",
+      "trigger": "monthly, in the first week",
+      "enablers": [
+        "margin-view"
+      ],
+      "inputs": [
+        {
+          "need": "orders, discounts and refunds",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "landed cost per unit",
+          "from": "finance shelf",
+          "status": "brain"
+        },
+        {
+          "need": "shipping and packing cost per order",
+          "from": "shipping app, or founder",
+          "status": "setup"
+        },
+        {
+          "need": "marketplace fees",
+          "from": "seller portals",
+          "status": "setup"
+        },
+        {
+          "need": "ad spend by campaign and landing page",
+          "from": "Meta Ads and Google Ads",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Compute each cost per order line",
+        "Assign ad spend to products by landing page and to channels by campaign",
+        "Compute contribution per product and channel from totals",
+        "Mark products with contribution under zero or under the floor",
+        "Founder reviews each loser: fix, reprice, or cut"
+      ],
+      "output": "a monthly margin table by product and channel, with a founder note on each loser",
+      "next": "feeds 21-12 (spend line), 04-offers-pricing and 11-paid-social",
+      "watch": {
+        "metric": "contribution margin per product and channel after marketing",
+        "window": "monthly",
+        "source": "orders, costs and ad spend"
+      },
+      "drives": "profit per order",
+      "business": "contribution margin",
+      "score": {
+        "money": 5,
+        "satisfaction": 4,
+        "speed": 2,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "21-08",
+      "top": "T2",
+      "job": "Before a sale runs, compute the extra orders it needs to break even after product cost, shipping, fees and returns, and set that next to the lift the last 3 sales really got",
+      "trigger": "before each promo",
+      "enablers": [
+        "margin-view"
+      ],
+      "inputs": [
+        {
+          "need": "promo depth, products and dates",
+          "from": "offers shelf",
+          "status": "brain"
+        },
+        {
+          "need": "margin per product",
+          "from": "margin-view",
+          "status": "enabler"
+        },
+        {
+          "need": "orders from the last 3 sales and the weeks after",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "return rate on sale orders",
+          "from": "Shopify",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Compute contribution per order at full price and at the sale price",
+        "Break-even lift = how many more orders the sale needs to make the same profit",
+        "Measure lift from the last 3 sales, after the dip in the weeks that followed",
+        "Write go, change the depth, or no, with the numbers",
+        "Founder decides"
+      ],
+      "output": "a 1 page promo check with break-even lift and past lift",
+      "next": "feeds 21-09 (sale readout)",
+      "watch": {
+        "metric": "profit per order at the sale price against break-even",
+        "window": "per promo",
+        "source": "orders and costs"
+      },
+      "drives": "promo profit",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "21-09",
+      "top": "T2",
+      "job": "Read each big sale 6 weeks after it ends: profit after returns, the dip in the weeks after, and the share of buyers who were new, next to a normal month",
+      "trigger": "6 weeks after each sale",
+      "enablers": [
+        "margin-view",
+        "funnel-mix"
+      ],
+      "inputs": [
+        {
+          "need": "orders and returns",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "ad spend during the sale",
+          "from": "Meta Ads and Google Ads",
+          "status": "connected"
+        },
+        {
+          "need": "costs per product",
+          "from": "finance shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Compute contribution for the sale weeks after returns and ad spend",
+        "Compare the 4 weeks after with a normal month to size the dip",
+        "Split buyers into new and returning",
+        "Write the verdict: made money or not, and what to change next time",
+        "Log it as a win or a fail in the ledger"
+      ],
+      "output": "a sale readout with profit, the dip after, new buyer share, and a win or fail note",
+      "next": "feeds 25-experiments and 21-08 (next promo check)",
+      "watch": {
+        "metric": "contribution margin of the sale period after returns",
+        "window": "6 weeks after the sale",
+        "source": "orders, returns and ad spend"
+      },
+      "drives": "the next sale plan",
+      "business": "contribution margin",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "21-10",
+      "top": "T2",
+      "job": "Count shipping honestly: net shipping cost per order (carrier bill minus shipping charged) by order size, and test moving the free shipping line to where most orders clear it with profit",
+      "trigger": "monthly",
+      "enablers": [
+        "margin-view"
+      ],
+      "inputs": [
+        {
+          "need": "carrier bills",
+          "from": "shipping app or carrier portal",
+          "status": "setup"
+        },
+        {
+          "need": "shipping charged per order",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "order value spread",
+          "from": "Shopify",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Compute net shipping cost per order and as a share of revenue",
+        "Split by order value band",
+        "Model 2 new free shipping lines: orders lost, order value gained, shipping saved",
+        "Founder picks one to test for 4 weeks"
+      ],
+      "output": "a shipping cost table, and a free shipping line test",
+      "next": "feeds 04-offers-pricing and 25-experiments",
+      "watch": {
+        "metric": "net shipping cost as a share of revenue",
+        "window": "monthly",
+        "source": "carrier invoices and orders"
+      },
+      "drives": "contribution per order",
+      "business": "contribution margin",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "21-11",
+      "top": "T2",
+      "job": "Each month, explain in 5 lines why profit and cash moved differently: stock bought, payouts in transit, loan principal, bills paid or owed, and tax",
+      "trigger": "monthly, after the books close",
+      "enablers": [
+        "money-match",
+        "cash-forecast"
+      ],
+      "inputs": [
+        {
+          "need": "profit and loss for the month",
+          "from": "accounting tool",
+          "status": "setup"
+        },
+        {
+          "need": "bank balance at start and end",
+          "from": "a read-only bank feed",
+          "status": "setup"
+        },
+        {
+          "need": "change in stock value",
+          "from": "Shopify inventory at landed cost",
+          "status": "connected"
+        },
+        {
+          "need": "loan schedule",
+          "from": "founder",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "Take profit for the month",
+        "Add and subtract: stock change, payouts not yet landed, loan principal, change in unpaid bills, tax paid",
+        "Check that the result equals the change in the bank, and name any gap left",
+        "Write 5 lines the founder can read in 1 minute"
+      ],
+      "output": "a monthly profit to cash bridge in 5 lines",
+      "next": "feeds 26-reports",
+      "watch": {
+        "metric": "gap between monthly profit and change in cash, with named causes",
+        "window": "monthly",
+        "source": "books and bank feed"
+      },
+      "drives": "founder trust in the numbers",
+      "business": "cash",
+      "score": {
+        "money": 2,
+        "satisfaction": 5,
+        "speed": 2,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "21-12",
+      "top": "T3",
+      "job": "Set the ad spend line from real margin: compute the break-even and target ratio of total sales to total ad spend, check it weekly, and answer the agency's next budget ask with it",
+      "trigger": "once, then weekly",
+      "enablers": [
+        "margin-view",
+        "funnel-mix"
+      ],
+      "inputs": [
+        {
+          "need": "total store sales",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "marketplace sales, if any",
+          "from": "seller portals",
+          "status": "setup"
+        },
+        {
+          "need": "total ad spend on every platform",
+          "from": "Meta Ads and Google Ads",
+          "status": "connected"
+        },
+        {
+          "need": "contribution before ads per order",
+          "from": "margin-view",
+          "status": "enabler"
+        },
+        {
+          "need": "profit goal",
+          "from": "decisions and goals shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Compute contribution margin before ads as a share of sales",
+        "Break-even ratio = 1 divided by that share; the target ratio leaves the profit goal",
+        "Compute the weekly ratio from totals and set it next to both lines",
+        "Split by new and returning customer sales, so repeat sales do not hide a weak first order",
+        "Write the budget answer: the most weekly spend that still clears the line"
+      ],
+      "output": "a weekly chart with break-even and target lines, and a 1 line budget answer",
+      "next": "feeds 11-paid-social and 00-today",
+      "watch": {
+        "metric": "total store sales divided by total ad spend against break-even",
+        "window": "weekly",
+        "source": "store orders and ad platforms"
+      },
+      "drives": "profit after ads",
+      "business": "contribution margin",
+      "score": {
+        "money": 5,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "21-13",
+      "top": "T3",
+      "job": "Split profit into new and returning customers: first order contribution per new customer minus the cost to get them, and the months each cohort takes to pay back",
+      "trigger": "monthly",
+      "enablers": [
+        "funnel-mix",
+        "margin-view"
+      ],
+      "inputs": [
+        {
+          "need": "orders flagged new or returning",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "ad spend by month",
+          "from": "Meta Ads and Google Ads",
+          "status": "connected"
+        },
+        {
+          "need": "costs per product",
+          "from": "finance shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Cost per new customer = total ad spend divided by new customers, from totals",
+        "Compute first order contribution per new customer",
+        "Add up contribution by month per cohort until it passes the cost to get them",
+        "Mark cohorts that never pay back within 12 months",
+        "Set the most we can pay for a new customer, and log it on the finance shelf"
+      ],
+      "output": "a payback table by cohort, and a cap on cost per new customer",
+      "next": "feeds 21-12 (spend line), 11-paid-social and 15-01 (cohort grid)",
+      "watch": {
+        "metric": "months for a new customer cohort to pay back its cost",
+        "window": "quarterly",
+        "source": "orders by cohort and ad spend"
+      },
+      "drives": "growth that funds itself",
+      "business": "cash",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "21-14",
+      "top": "T3",
+      "job": "Find where the next $10,000 of marketing earns the most profit: read the last 12 weeks of spend steps per channel and the profit that followed, and say which channel to add to, or whether to keep the cash",
+      "trigger": "monthly, or when extra budget appears",
+      "enablers": [
+        "funnel-mix",
+        "margin-view"
+      ],
+      "inputs": [
+        {
+          "need": "weekly spend per channel",
+          "from": "Meta Ads and Google Ads",
+          "status": "connected"
+        },
+        {
+          "need": "TikTok spend, if used",
+          "from": "TikTok Ads",
+          "status": "setup"
+        },
+        {
+          "need": "weekly new customers and contribution",
+          "from": "margin-view",
+          "status": "enabler"
+        },
+        {
+          "need": "tests running in those weeks",
+          "from": "history shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "For each channel, pair weeks where spend rose with the change in new customers and contribution",
+        "Estimate profit per extra dollar with a range, and mark weak reads",
+        "Compare with keeping the cash for stock or debt",
+        "Write 1 recommendation and a small test to confirm it"
+      ],
+      "output": "a table of profit per extra dollar per channel, and 1 recommendation",
+      "next": "feeds 22-09 (holdout test) and 11-paid-social",
+      "watch": {
+        "metric": "profit from added spend per channel",
+        "window": "30 day",
+        "source": "ad spend and store orders"
+      },
+      "drives": "marketing profit",
+      "business": "contribution margin",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 2,
+        "ease": 3
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "21-15",
+      "top": "T3",
+      "job": "Forecast next quarter's sales in 2 parts, returning sales from past cohorts' repeat curves and new sales from planned spend and cost per new customer, and check last quarter's forecast against actual",
+      "trigger": "each quarter",
+      "enablers": [
+        "funnel-mix",
+        "cash-forecast"
+      ],
+      "inputs": [
+        {
+          "need": "orders by cohort",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "planned ad spend",
+          "from": "finance shelf (budgets)",
+          "status": "brain"
+        },
+        {
+          "need": "cost per new customer trend",
+          "from": "Meta Ads, Google Ads and Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "peaks and launches next quarter",
+          "from": "calendar shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Project returning sales from each past cohort's repeat curve",
+        "Project new customers from planned spend divided by cost per new customer, with a range",
+        "Add peaks and launches from the calendar",
+        "Compare last quarter's forecast with actual and note the miss",
+        "Founder signs the number used for stock and hiring"
+      ],
+      "output": "a quarterly forecast split into new and returning, with last quarter's error",
+      "next": "feeds 21-01 (cash forecast) and 19-03 (peak stock plan)",
+      "watch": {
+        "metric": "forecast against actual sales, new and returning",
+        "window": "monthly",
+        "source": "orders by cohort"
+      },
+      "drives": "stock and hiring decisions",
+      "business": "cash",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 1,
+        "ease": 3
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "21-16",
+      "top": "T4",
+      "job": "List every app and subscription from the store admin and the card statement with its monthly cost, last use and owner, and cancel the ones nobody used in 60 days",
+      "trigger": "once, then each quarter",
+      "enablers": [
+        "app-audit",
+        "money-match"
+      ],
+      "inputs": [
+        {
+          "need": "installed apps and app charges",
+          "from": "Shopify admin and billing",
+          "status": "connected"
+        },
+        {
+          "need": "recurring card and bank lines",
+          "from": "a bank feed, or the founder's export",
+          "status": "setup"
+        },
+        {
+          "need": "owner of each tool",
+          "from": "operations shelf (apps and stack)",
+          "status": "brain"
+        },
+        {
+          "need": "last login or use per tool",
+          "from": "founder",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "Pull every app charge and recurring card line for 12 months",
+        "Match each to a tool, an owner and what it does",
+        "Mark last use, and whether another tool already does the same job",
+        "List cancels with monthly savings, and the founder approves each",
+        "A person cancels them and asks site speed to remove leftover code, and the saving is logged"
+      ],
+      "output": "an app and subscription list with cost and use, and a signed cancel list",
+      "next": "feeds 21-17 (revenue lost to slow pages) and 08-site-speed",
+      "watch": {
+        "metric": "monthly software cost",
+        "window": "monthly",
+        "source": "app charges and card feed"
+      },
+      "drives": "overhead",
+      "business": "contribution margin",
+      "score": {
+        "money": 2,
+        "satisfaction": 4,
+        "speed": 5,
+        "ease": 5
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "21-17",
+      "top": "T4",
+      "job": "Put a dollar number on revenue lost to app scripts, including code left behind by apps already deleted: time what each script adds to load, and turn the delay into lost orders using our own conversion by load time",
+      "trigger": "after 21-16, and after every app install",
+      "enablers": [
+        "app-audit"
+      ],
+      "inputs": [
+        {
+          "need": "theme code and scripts on the top 5 pages",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "load time with and without each script",
+          "from": "a free speed test tool on a copy of the theme",
+          "status": "setup"
+        },
+        {
+          "need": "conversion by load time and device",
+          "from": "GA4",
+          "status": "connected"
+        },
+        {
+          "need": "sessions and order value",
+          "from": "GA4 and Shopify",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Find every script on the top 5 pages and match it to an app, live or deleted",
+        "Test page load with and without each script on a copy of the theme",
+        "From GA4, read conversion by load time band on mobile",
+        "Lost revenue = sessions times the conversion drop for the added time, times order value",
+        "Rank apps by revenue lost plus monthly fee, and send the top 5 to site speed"
+      ],
+      "output": "a table: app, fee, load time added, revenue lost per month, keep or remove",
+      "next": "feeds 08-site-speed (theme twin test)",
+      "watch": {
+        "metric": "revenue lost to app load time per month",
+        "window": "28 day",
+        "source": "GA4 and speed tests"
+      },
+      "drives": "mobile conversion",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 3
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "21-18",
+      "top": "T4",
+      "job": "Each month group every bank and card line into 12 cost lines, compare them with plan, flag lines 10 percent over, and list every new recurring charge",
+      "trigger": "monthly",
+      "enablers": [
+        "money-match"
+      ],
+      "inputs": [
+        {
+          "need": "bank and card lines",
+          "from": "a read-only bank feed",
+          "status": "setup"
+        },
+        {
+          "need": "budget per cost line",
+          "from": "finance shelf (budgets)",
+          "status": "brain"
+        },
+        {
+          "need": "categories used in the books",
+          "from": "accounting tool",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "Put each line into one of 12 cost lines",
+        "Compare each line with plan and with last month",
+        "Flag lines 10 percent or more over plan",
+        "List charges that are new this month and repeat",
+        "Founder marks each flag: expected, cut, or ask"
+      ],
+      "output": "an overhead against plan table, and a new charges list",
+      "next": "feeds 21-16 (app list)",
+      "watch": {
+        "metric": "overhead against plan by line",
+        "window": "monthly",
+        "source": "books and card feed"
+      },
+      "drives": "profit leak",
+      "business": "contribution margin",
+      "score": {
+        "money": 2,
+        "satisfaction": 4,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "21-19",
+      "top": "T4",
+      "job": "Track sales and order counts by ship-to state over the last 12 months against each state's sales tax limit, and list states within 20 percent of the limit and states over it with no registration",
+      "trigger": "monthly",
+      "enablers": [
+        "tax-watch"
+      ],
+      "inputs": [
+        {
+          "need": "orders by ship-to state",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "each state's sales and order count limit",
+          "from": "public limits typed into a sheet once, checked yearly",
+          "status": "setup"
+        },
+        {
+          "need": "states where we are registered",
+          "from": "founder",
+          "status": "founder"
+        },
+        {
+          "need": "marketplace orders where the marketplace collects the tax",
+          "from": "seller portals",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "Sum sales and order counts by state over the rolling 12 months, leaving out orders where the marketplace collects",
+        "Compare each state with its limit",
+        "List states over the limit with no registration, and states within 20 percent",
+        "Send the list to the accountant, who registers or confirms"
+      ],
+      "output": "a monthly state list: over, near, registered",
+      "next": "none",
+      "watch": {
+        "metric": "states within 20 percent of their limit, and states over it with no registration",
+        "window": "monthly",
+        "source": "orders by ship-to state"
+      },
+      "drives": "back tax and penalties",
+      "business": "risk",
+      "score": {
+        "money": 2,
+        "satisfaction": 5,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "21-20",
+      "top": "T4",
+      "job": "Show what each payment method costs per order (card, PayPal, Shop Pay, buy now pay later) next to its order value and repeat rate, and decide which to keep",
+      "trigger": "each quarter",
+      "enablers": [
+        "money-match",
+        "margin-view"
+      ],
+      "inputs": [
+        {
+          "need": "fees and orders by payment method",
+          "from": "Shopify Payments",
+          "status": "connected"
+        },
+        {
+          "need": "PayPal and buy now pay later fee reports",
+          "from": "each processor",
+          "status": "setup"
+        },
+        {
+          "need": "checkout steps by payment method, where tracked",
+          "from": "GA4",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Compute fees as a share of revenue by method",
+        "Compute order value and repeat rate by method",
+        "Estimate sales lost if a method were removed, from its share of checkouts",
+        "Founder decides, and any change is tested for 4 weeks"
+      ],
+      "output": "a fee table by payment method, and a keep or drop decision",
+      "next": "none",
+      "watch": {
+        "metric": "payment fees as a share of revenue, by method",
+        "window": "monthly",
+        "source": "processor reports"
+      },
+      "drives": "fee per order",
+      "business": "contribution margin",
+      "score": {
+        "money": 2,
+        "satisfaction": 2,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    }
+  ],
+  "new_enablers": [
+    {
+      "id": "cash-forecast",
+      "name": "13 week cash forecast",
+      "what": "Starts from today's bank balance, adds expected payouts by day, and subtracts bills, payroll, supplier deposits and balances, the ad plan, loan payments and tax set aside. Marks the lowest day against the cash floor, and lets you try a change (an order, a loan, a draw) before you commit.",
+      "inputs": [
+        "bank feed",
+        "payout schedules per processor and marketplace",
+        "open bills and payroll",
+        "purchase orders with payment dates",
+        "ad plan",
+        "cash floor from the founder"
+      ],
+      "powers": [
+        "the lowest cash day and the gap to the floor",
+        "order and loan tests",
+        "safe owner draw",
+        "peak season cash plan"
+      ],
+      "screens": [
+        "21-finance-cash",
+        "19-supply-inventory",
+        "00-today",
+        "26-reports"
+      ],
+      "note": null
+    },
+    {
+      "id": "money-match",
+      "name": "Money match",
+      "what": "Checks every dollar in and out: expected payouts against bank deposits, store sales against processor and books, and each bank and card line against a cost line and its plan. Names each gap.",
+      "inputs": [
+        "store orders",
+        "processor and marketplace payouts",
+        "bank and card feed",
+        "the books"
+      ],
+      "powers": [
+        "late or short payouts",
+        "one sales number everyone agrees on",
+        "overhead creep and new charges",
+        "payment fees per method",
+        "profit to cash bridge"
+      ],
+      "screens": [
+        "21-finance-cash",
+        "20-marketplaces",
+        "22-measurement"
+      ],
+      "note": null
+    },
+    {
+      "id": "tax-watch",
+      "name": "Sales tax watch",
+      "what": "Sales and order counts by ship-to state over the rolling 12 months against each state's limit, with registration and filing status, so the brand registers before it owes. Other markets use the same watch with their own tax rules.",
+      "inputs": [
+        "orders by ship-to state",
+        "a table of state limits",
+        "registrations held",
+        "marketplace orders where the marketplace collects"
+      ],
+      "powers": [
+        "states near the limit",
+        "states owed with no registration",
+        "a list for the accountant"
+      ],
+      "screens": [
+        "21-finance-cash",
+        "24-security"
+      ],
+      "note": null
+    }
+  ]
+}

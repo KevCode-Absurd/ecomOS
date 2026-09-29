@@ -1,0 +1,1189 @@
+{
+  "screen": "22-measurement",
+  "title": "Measurement and data health",
+  "top_jobs": [
+    {
+      "id": "T1",
+      "job": "When a site change or a new app quietly breaks tracking, help me catch it the same day, so I do not spend 3 weeks cutting ads that were working",
+      "metric": "tracked purchases per platform divided by store orders, daily",
+      "from_v2": [
+        1,
+        5,
+        9,
+        10,
+        16,
+        23
+      ]
+    },
+    {
+      "id": "T2",
+      "job": "When Meta and Google together claim more sales than the store made, help me see what each one really drove, so I do not scale on sales counted twice",
+      "metric": "sum of platform-claimed revenue divided by store revenue, same window, monthly",
+      "from_v2": [
+        3,
+        4,
+        8,
+        12,
+        15,
+        17,
+        25,
+        26
+      ]
+    },
+    {
+      "id": "T3",
+      "job": "When the ads look great but the store is not growing, help me see whether we are buying new customers or rebuying old ones, so spend goes to growth and not to people who would come back anyway",
+      "metric": "share of orders from new customers, and cost per new customer from store orders, 28 day",
+      "from_v2": [
+        11,
+        21
+      ]
+    },
+    {
+      "id": "T4",
+      "job": "When numbers disagree or move and nobody knows why, help me have one meaning, one source and one owner per number, fresh every morning, so the Monday meeting is spent deciding",
+      "metric": "share of headline numbers that passed the freshness check this morning",
+      "from_v2": [
+        2,
+        6,
+        7,
+        13,
+        14,
+        27,
+        29
+      ]
+    }
+  ],
+  "jobs": [
+    {
+      "id": "22-01",
+      "top": "T1",
+      "job": "Match tracked purchases to store orders every morning (Meta, Google Ads and GA4 purchases, each divided by store orders) against their 28 day range, and alert when one falls out",
+      "trigger": "every morning at 8",
+      "enablers": [
+        "tracking-check"
+      ],
+      "inputs": [
+        {
+          "need": "yesterday's store orders",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "Meta purchases",
+          "from": "Meta Ads (read only)",
+          "status": "connected"
+        },
+        {
+          "need": "Google Ads conversions",
+          "from": "Google Ads",
+          "status": "connected"
+        },
+        {
+          "need": "GA4 purchases",
+          "from": "GA4",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Pull yesterday's purchases from each platform and the store's orders",
+        "Divide each platform's count by store orders, on the same day and time zone",
+        "Compare each ratio with its 28 day range",
+        "When one falls out of range, alert with the platform, the size of the drop and the hour it started",
+        "A person places a test order to confirm before anyone changes ads"
+      ],
+      "output": "a morning line per platform: in range or out, with the start time of any break",
+      "next": "feeds 22-05 (break report) and 11-paid-social",
+      "watch": {
+        "metric": "tracked purchases per platform divided by store orders",
+        "window": "daily",
+        "source": "Shopify, Meta Ads, Google Ads and GA4"
+      },
+      "drives": "ads cut for the wrong reason",
+      "business": "risk",
+      "score": {
+        "money": 4,
+        "satisfaction": 5,
+        "speed": 5,
+        "ease": 4
+      },
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "22-02",
+      "top": "T1",
+      "job": "Before any theme, checkout app or site change goes live, place a test order and check that view, add to cart, checkout and purchase each fire once, with the right value, on every platform",
+      "trigger": "before every site launch or app install",
+      "enablers": [
+        "tracking-check",
+        "theme-twin"
+      ],
+      "inputs": [
+        {
+          "need": "a copy of the theme or a test store",
+          "from": "Shopify",
+          "status": "setup"
+        },
+        {
+          "need": "a way to place test orders at no cost",
+          "from": "founder",
+          "status": "founder"
+        },
+        {
+          "need": "the event checklist per platform",
+          "from": "tracking-check",
+          "status": "enabler"
+        },
+        {
+          "need": "Meta's event test view",
+          "from": "Meta Ads (read only)",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Write the checklist: events, platforms, value, currency, order id",
+        "Place a test order on the copy of the theme",
+        "Check each event fired once with the right value on Meta, Google Ads and GA4",
+        "Mark pass or fail, and hold the launch on any fail",
+        "After launch, repeat on the live site and cancel the test order"
+      ],
+      "output": "a pass or fail sheet for each launch",
+      "next": "feeds 22-01 (daily match)",
+      "watch": {
+        "metric": "events passing the pre-launch check",
+        "window": "per launch",
+        "source": "tag test results"
+      },
+      "drives": "tracking breaks after launches",
+      "business": "risk",
+      "score": {
+        "money": 3,
+        "satisfaction": 5,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "22-03",
+      "top": "T1",
+      "job": "Check Meta's purchase event quality each week: browser and server events counted once, match quality, and the value sent (net sales, not with tax and shipping)",
+      "trigger": "weekly, and after any change to the pixel or checkout",
+      "enablers": [
+        "tracking-check"
+      ],
+      "inputs": [
+        {
+          "need": "Meta dataset quality and event counts",
+          "from": "Meta Events Manager (read only)",
+          "status": "connected"
+        },
+        {
+          "need": "orders with net sales, tax and shipping split",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "who owns tracking changes",
+          "from": "trust and access shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pull event counts, the share counted twice, and match quality for purchase",
+        "Compare Meta purchase value with store net sales for the same orders",
+        "Flag double counts, low match quality, and value that includes tax or shipping",
+        "Write the fix for the person who owns tracking; ecomOS changes nothing in Meta"
+      ],
+      "output": "a weekly event quality line with fixes",
+      "next": "feeds 11-paid-social",
+      "watch": {
+        "metric": "Meta purchases divided by store orders, and match quality",
+        "window": "7 day",
+        "source": "Meta Events Manager and Shopify"
+      },
+      "drives": "Meta bidding on the right buyers",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "22-04",
+      "top": "T1",
+      "job": "Find why GA4 shows fewer orders than the store each week (consent banner, checkout on another domain, duplicate tags, staff and test orders, or bots) and write the fix list",
+      "trigger": "weekly",
+      "enablers": [
+        "tracking-check"
+      ],
+      "inputs": [
+        {
+          "need": "GA4 purchases and sessions by day, device and browser",
+          "from": "GA4",
+          "status": "connected"
+        },
+        {
+          "need": "store orders with order ids",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "consent banner settings and change dates",
+          "from": "site shelf",
+          "status": "brain"
+        },
+        {
+          "need": "staff and agency IP addresses, and test orders",
+          "from": "founder",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "Divide GA4 purchases by store orders, by day, device and browser",
+        "Check the gap before and after any consent or checkout change",
+        "Match order ids to find purchases missing or counted twice",
+        "Filter out staff, agency, test traffic and bots, and recount",
+        "Write the fix list with an owner for each"
+      ],
+      "output": "a weekly gap table and a fix list",
+      "next": "feeds 22-01 (daily match)",
+      "watch": {
+        "metric": "GA4 purchases divided by Shopify orders",
+        "window": "weekly",
+        "source": "GA4 and Shopify"
+      },
+      "drives": "trust in channel and conversion reports",
+      "business": "risk",
+      "score": {
+        "money": 2,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "22-05",
+      "top": "T1",
+      "job": "When tracking was broken, list the days it touched, the budget and creative decisions made in those days, and the true numbers from store orders, so the wrong calls can be reversed",
+      "trigger": "after any tracking break",
+      "enablers": [
+        "tracking-check",
+        "metric-contract"
+      ],
+      "inputs": [
+        {
+          "need": "break start and end",
+          "from": "tracking-check",
+          "status": "enabler"
+        },
+        {
+          "need": "decisions log with dates",
+          "from": "decisions and goals shelf",
+          "status": "brain"
+        },
+        {
+          "need": "store orders and ad spend for those days",
+          "from": "Shopify, Meta Ads and Google Ads",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Mark the first and last day of the break",
+        "List every budget, pause and creative decision made in those days",
+        "Recompute each campaign's results from store orders by link tag",
+        "Mark decisions that would change with the true numbers",
+        "Founder reviews the list and a person reverses the wrong calls"
+      ],
+      "output": "a break report: days, decisions to review, and the true numbers",
+      "next": "feeds 11-paid-social",
+      "watch": {
+        "metric": "decisions made during a tracking break that were reviewed",
+        "window": "per break",
+        "source": "decision log"
+      },
+      "drives": "ads wrongly cut or scaled",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "22-06",
+      "top": "T2",
+      "job": "Each month add up the revenue every platform claims (Meta, Google, TikTok, email, affiliates) for the same window, and set it against store revenue to show how much is claimed twice",
+      "trigger": "monthly, and before any budget change over 20 percent",
+      "enablers": [
+        "tracking-check"
+      ],
+      "inputs": [
+        {
+          "need": "Meta and Google claimed revenue",
+          "from": "Meta Ads and Google Ads",
+          "status": "connected"
+        },
+        {
+          "need": "TikTok and email claimed revenue",
+          "from": "TikTok Ads and the email tool",
+          "status": "setup"
+        },
+        {
+          "need": "store revenue",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "attribution window used per platform",
+          "from": "metric-contract",
+          "status": "enabler"
+        }
+      ],
+      "steps": [
+        "Pull claimed revenue per platform for the same calendar window",
+        "Write down the attribution window each platform used",
+        "Divide the sum of claims by store revenue",
+        "Show which platforms claim most of the gap, and the orders more than one of them claim"
+      ],
+      "output": "a claim sheet: claimed revenue by platform, store revenue, and the over-claim ratio",
+      "next": "feeds 22-07 (check a great week) and 21-12 (spend line)",
+      "watch": {
+        "metric": "sum of platform-claimed revenue divided by store revenue",
+        "window": "monthly",
+        "source": "ad platforms and Shopify"
+      },
+      "drives": "scaling on sales counted twice",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "22-07",
+      "top": "T2",
+      "job": "Before doubling a campaign after one great week, match its claimed purchases to store orders by link tag and time, split new and returning buyers and codes used, and hold the raise if under 60 percent match",
+      "trigger": "before any budget raise over 30 percent",
+      "enablers": [
+        "tracking-check",
+        "funnel-mix"
+      ],
+      "inputs": [
+        {
+          "need": "the campaign's claimed purchases by day",
+          "from": "Meta Ads or Google Ads",
+          "status": "connected"
+        },
+        {
+          "need": "orders with link tags, codes and customer history",
+          "from": "Shopify",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Pull the campaign's claimed purchases for 7 days",
+        "Match them to store orders by link tag and order time",
+        "Split matched orders into new and returning buyers, and note discount codes from other channels",
+        "Write the verdict: real, partly real, or not, and hold the raise below 60 percent match"
+      ],
+      "output": "a 1 line verdict per campaign: real, partly real, or not",
+      "next": "feeds 11-paid-social",
+      "watch": {
+        "metric": "platform purchases matched to store orders for the campaign",
+        "window": "7 day",
+        "source": "Meta or Google and Shopify"
+      },
+      "drives": "scale decisions",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "22-08",
+      "top": "T2",
+      "job": "Check the agency's monthly report against the store: their revenue divided by store matched revenue, the window they used, and the numbers they left out, in a 1 page note",
+      "trigger": "monthly, when the report arrives",
+      "enablers": [
+        "tracking-check",
+        "metric-contract"
+      ],
+      "inputs": [
+        {
+          "need": "the agency report",
+          "from": "founder",
+          "status": "founder"
+        },
+        {
+          "need": "ad platform results",
+          "from": "Meta Ads and Google Ads",
+          "status": "connected"
+        },
+        {
+          "need": "store orders",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "the meaning of each number",
+          "from": "metric-contract",
+          "status": "enabler"
+        }
+      ],
+      "steps": [
+        "Read each number in the report and the window it uses",
+        "Rebuild the same numbers from store orders",
+        "Divide the agency's revenue by store matched revenue",
+        "List what the report leaves out: returns, new customer share, margin",
+        "Write a 1 page note the founder can send back"
+      ],
+      "output": "a 1 page note on the agency report",
+      "next": "feeds 26-reports",
+      "watch": {
+        "metric": "agency-reported revenue divided by store matched revenue",
+        "window": "monthly",
+        "source": "agency report, ad platforms and Shopify"
+      },
+      "drives": "trust, and fee talks with the agency",
+      "business": "risk",
+      "score": {
+        "money": 3,
+        "satisfaction": 5,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "22-09",
+      "top": "T2",
+      "job": "Run a holdout on brand search or retargeting: switch it off in a third of states for 3 weeks, compare store orders with the rest, and decide from the extra sales it really adds",
+      "trigger": "once per channel every 6 months, when a channel claims over 20 percent of sales",
+      "enablers": [
+        "holdout-test"
+      ],
+      "inputs": [
+        {
+          "need": "brand and retargeting campaigns",
+          "from": "Google Ads and Meta Ads (read only; a person makes the change)",
+          "status": "connected"
+        },
+        {
+          "need": "12 weeks of orders by state",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "approval of the test and the sales at risk",
+          "from": "founder",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "Pick matched groups of states from 12 weeks of orders",
+        "Estimate the sales at risk, and the founder approves",
+        "A person switches the channel off in the test states for 3 weeks",
+        "Compare orders per state with the forecast from the control states",
+        "Write the extra sales per dollar and the decision, and log it in the ledger"
+      ],
+      "output": "a holdout readout: extra sales per dollar with a range, and a keep, cut or trim decision",
+      "next": "feeds 21-14 (next $10,000) and 12-google-ads",
+      "watch": {
+        "metric": "extra sales from the holdout, per channel",
+        "window": "per test",
+        "source": "store orders in test and holdout states"
+      },
+      "drives": "spend on sales we already had",
+      "business": "contribution margin",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 2,
+        "ease": 2
+      },
+      "ready": 3,
+      "effort": "weeks"
+    },
+    {
+      "id": "22-10",
+      "top": "T2",
+      "job": "Add a post-purchase question, where did you first hear about us, with 8 fixed answers, and count the answers each month next to what the trackers credit",
+      "trigger": "once to set up, then monthly",
+      "enablers": [
+        "tracking-check"
+      ],
+      "inputs": [
+        {
+          "need": "a post-purchase survey on the thank you page",
+          "from": "post-purchase survey app",
+          "status": "setup"
+        },
+        {
+          "need": "orders",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "channels we run, for the answer list",
+          "from": "ads shelf",
+          "status": "brain"
+        },
+        {
+          "need": "last click source per order",
+          "from": "GA4 and Shopify",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Write 8 answers from the channels we run, plus other with a text box",
+        "Put the question on the thank you page",
+        "Each month count answers by channel",
+        "Set survey share next to last click share by channel",
+        "Flag channels the trackers miss, such as podcasts or word of mouth"
+      ],
+      "output": "a monthly table: survey share against tracker share, by channel",
+      "next": "feeds 22-06 (claim sheet) and 21-14 (next $10,000)",
+      "watch": {
+        "metric": "share of orders answering the question, and answers by source",
+        "window": "monthly",
+        "source": "post-purchase survey and Shopify"
+      },
+      "drives": "cutting channels that work",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 5
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "22-11",
+      "top": "T2",
+      "job": "Audit every link in emails, SMS, bios, creator posts and affiliate pages for the right tracking tag, fix the broken ones, and publish one tag rule so direct and unknown orders fall",
+      "trigger": "once, then monthly",
+      "enablers": [
+        "metric-contract"
+      ],
+      "inputs": [
+        {
+          "need": "links in email and SMS flows",
+          "from": "email tool",
+          "status": "setup"
+        },
+        {
+          "need": "creator and affiliate links",
+          "from": "creators shelf",
+          "status": "brain"
+        },
+        {
+          "need": "orders with no known source",
+          "from": "Shopify and GA4",
+          "status": "connected"
+        },
+        {
+          "need": "the tag naming rule",
+          "from": "metric-contract",
+          "status": "enabler"
+        }
+      ],
+      "steps": [
+        "List every live link by channel",
+        "Check each for source, medium and campaign tags",
+        "Fix missing or wrong tags, and a person updates flows and bios",
+        "Publish the tag rule for the team and agencies",
+        "Recount orders with no known source a month later"
+      ],
+      "output": "a link audit with fixes, and one tag rule",
+      "next": "feeds 22-06 (claim sheet)",
+      "watch": {
+        "metric": "share of orders with no known source",
+        "window": "monthly",
+        "source": "Shopify and GA4"
+      },
+      "drives": "fair credit per channel",
+      "business": "revenue",
+      "score": {
+        "money": 2,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "22-12",
+      "top": "T2",
+      "job": "Measure how much Meta ads lift Amazon sales: set weekly Meta spend against Amazon orders and brand searches on Amazon, and read it through Amazon Attribution links or a regional Meta pause",
+      "trigger": "each quarter, or before a big Meta cut",
+      "enablers": [
+        "holdout-test"
+      ],
+      "inputs": [
+        {
+          "need": "weekly Meta spend",
+          "from": "Meta Ads",
+          "status": "connected"
+        },
+        {
+          "need": "Amazon orders and brand search volume",
+          "from": "Amazon Seller Central and Brand Analytics",
+          "status": "setup"
+        },
+        {
+          "need": "Amazon Attribution tags on some ads",
+          "from": "Amazon Attribution",
+          "status": "setup"
+        },
+        {
+          "need": "approval for a regional pause",
+          "from": "founder",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "Line up weekly Meta spend, Amazon orders and Amazon brand searches for 26 weeks",
+        "Tag a share of Meta ads with Amazon Attribution links",
+        "If the founder approves, a person pauses Meta in a few regions for 3 weeks",
+        "Estimate Amazon sales per Meta dollar, with a range",
+        "Write a rule for judging Meta with Amazon sales counted"
+      ],
+      "output": "a halo estimate with a range, and a rule for judging Meta",
+      "next": "feeds 21-12 (spend line) and 20-marketplaces",
+      "watch": {
+        "metric": "Amazon sales against Meta spend",
+        "window": "weekly",
+        "source": "Meta Ads and Amazon reports"
+      },
+      "drives": "good ads cut for the wrong reason",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 1,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "weeks"
+    },
+    {
+      "id": "22-13",
+      "top": "T3",
+      "job": "Split every ad dollar and every order by funnel stage (prospecting or retargeting on Meta, generic or brand search on Google, new or returning buyer in the store) in one weekly table",
+      "trigger": "every Monday",
+      "enablers": [
+        "funnel-mix"
+      ],
+      "inputs": [
+        {
+          "need": "Meta campaigns, audiences and spend",
+          "from": "Meta Ads (read only)",
+          "status": "connected"
+        },
+        {
+          "need": "Google campaigns and search terms",
+          "from": "Google Ads",
+          "status": "connected"
+        },
+        {
+          "need": "orders marked new or returning",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "which campaign serves which stage",
+          "from": "ads shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Map each campaign to a stage, and a person checks the map once",
+        "Split spend by stage on each platform",
+        "Split orders into new and returning by customer history",
+        "Show the share of spend on prospecting and generic, and the share of orders from new customers, for 12 weeks",
+        "Write the 1 line answer: are we buying new customers or rebuying old ones"
+      ],
+      "output": "a weekly funnel mix table with 12 weeks of trend, and the 1 line answer",
+      "next": "feeds 22-14 (cost per new customer), 11-paid-social and 12-google-ads",
+      "watch": {
+        "metric": "share of orders from new customers, and share of spend on prospecting",
+        "window": "28 day",
+        "source": "Meta Ads, Google Ads and Shopify"
+      },
+      "drives": "new customers per week",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 5
+      },
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "22-14",
+      "top": "T3",
+      "job": "Count new customers from store orders (first order ever, by email or phone), set that against what Meta and Google call new, and publish one cost per new customer",
+      "trigger": "monthly",
+      "enablers": [
+        "funnel-mix",
+        "tracking-check"
+      ],
+      "inputs": [
+        {
+          "need": "orders with full customer history",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "new customer counts the platforms claim",
+          "from": "Meta Ads and Google Ads",
+          "status": "connected"
+        },
+        {
+          "need": "total ad spend",
+          "from": "Meta Ads and Google Ads",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Define new: first order ever, by email or phone, across all channels",
+        "Count new customers per month from the store",
+        "Compare with each platform's claim, and list the gap",
+        "Cost per new customer = total ad spend divided by store new customers, from totals",
+        "Write the meaning into the metric contract"
+      ],
+      "output": "one cost per new customer, with the gap to platform claims",
+      "next": "feeds 21-13 (payback) and 15-19 (Meta buyers who already bought)",
+      "watch": {
+        "metric": "new customers from store orders against platform claims",
+        "window": "monthly",
+        "source": "Shopify and ad platforms"
+      },
+      "drives": "bid caps and budget",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 5
+      },
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "22-15",
+      "top": "T3",
+      "job": "Measure brand search inflation: the share of Google spend and conversions on brand terms, the share of those buyers who already bought, and what brand ads add that organic results would not",
+      "trigger": "monthly",
+      "enablers": [
+        "funnel-mix",
+        "holdout-test"
+      ],
+      "inputs": [
+        {
+          "need": "search terms and campaigns",
+          "from": "Google Ads",
+          "status": "connected"
+        },
+        {
+          "need": "brand clicks from organic search",
+          "from": "Search Console",
+          "status": "connected"
+        },
+        {
+          "need": "orders with Google click ids and customer history",
+          "from": "Shopify",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Split Google spend and conversions into brand and generic terms",
+        "Match brand search orders to customer history: new or returning",
+        "Set brand paid clicks next to brand organic clicks over 12 weeks",
+        "Write keep, trim or test, and send a test to 22-09 when brand spend is large"
+      ],
+      "output": "a brand search table and a keep, trim or test note",
+      "next": "feeds 22-09 (holdout) and 12-google-ads",
+      "watch": {
+        "metric": "share of Google conversions on brand terms from returning buyers",
+        "window": "28 day",
+        "source": "Google Ads and Shopify"
+      },
+      "drives": "spend on buyers who would come anyway",
+      "business": "contribution margin",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "22-16",
+      "top": "T3",
+      "job": "Watch 90 day repeat rate by first order month and new customers per week side by side, and flag when either falls 2 months in a row",
+      "trigger": "monthly",
+      "enablers": [
+        "funnel-mix"
+      ],
+      "inputs": [
+        {
+          "need": "orders with first order month per customer",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "weekly ad spend",
+          "from": "Meta Ads and Google Ads",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Compute 90 day repeat rate for each first order month",
+        "Count new customers per week and cost per new customer",
+        "Put both on one chart for 12 months",
+        "Flag when either falls 2 months in a row, and send the flag to the right screen"
+      ],
+      "output": "a pair of trend lines and a flag",
+      "next": "feeds 15-01 (cohort grid) and 11-paid-social",
+      "watch": {
+        "metric": "90 day repeat rate by first order month",
+        "window": "monthly",
+        "source": "Shopify orders"
+      },
+      "drives": "the quality of growth",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 2,
+        "ease": 5
+      },
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "22-17",
+      "top": "T4",
+      "job": "Write the metric contract for the top 15 numbers (name, meaning, formula, source, window, owner, and what shows when data is missing), fold marketplace and wholesale sales into total sales, and have the founder sign it",
+      "trigger": "once, then when a number is added or disputed",
+      "enablers": [
+        "metric-contract"
+      ],
+      "inputs": [
+        {
+          "need": "the numbers used in today's reports and meetings",
+          "from": "founder",
+          "status": "founder"
+        },
+        {
+          "need": "connected sources and their health",
+          "from": "trust and access shelf",
+          "status": "brain"
+        },
+        {
+          "need": "metric rules already written for the app",
+          "from": "app/contracts metric contract",
+          "status": "have"
+        },
+        {
+          "need": "revenue outside the store and where it lives",
+          "from": "finance shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "List the 15 numbers the team uses most",
+        "Write one meaning, formula, source, window and owner for each",
+        "Add sales from marketplaces and wholesale as their own source, so total sales counts every channel",
+        "Write what shows when a source is missing: unavailable, never zero",
+        "Founder signs, and every report links each number to the contract"
+      ],
+      "output": "a signed contract of 15 numbers",
+      "next": "feeds 26-reports and every screen",
+      "watch": {
+        "metric": "minutes of the weekly meeting spent on which number is right",
+        "window": "weekly",
+        "source": "meeting notes in the brain"
+      },
+      "drives": "faster decisions",
+      "business": "risk",
+      "score": {
+        "money": 3,
+        "satisfaction": 5,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 5,
+      "effort": "days"
+    },
+    {
+      "id": "22-18",
+      "top": "T4",
+      "job": "Check every feed each morning before the report goes out (last sync time, row counts against normal, missing days and time zone) and stamp each headline number fresh or stale",
+      "trigger": "every morning, before the report",
+      "enablers": [
+        "metric-contract"
+      ],
+      "inputs": [
+        {
+          "need": "sync logs for the store, ad platforms and GA4",
+          "from": "connected accounts",
+          "status": "connected"
+        },
+        {
+          "need": "sync log for the email tool",
+          "from": "email tool",
+          "status": "setup"
+        },
+        {
+          "need": "time zone and currency per tool",
+          "from": "trust and access shelf",
+          "status": "brain"
+        },
+        {
+          "need": "normal row counts per feed",
+          "from": "metric-contract",
+          "status": "enabler"
+        }
+      ],
+      "steps": [
+        "Read the last sync time and row count for each feed",
+        "Compare row counts with the normal range, and look for missing days",
+        "Check each tool's day ends at the same hour as the store's",
+        "Stamp each headline number fresh or stale, with the reason",
+        "Send stale feeds to the person who owns them"
+      ],
+      "output": "a freshness strip on each report",
+      "next": "feeds 00-today and 26-reports",
+      "watch": {
+        "metric": "share of headline numbers that passed the freshness check",
+        "window": "daily",
+        "source": "sync logs"
+      },
+      "drives": "acting on half a day of data",
+      "business": "risk",
+      "score": {
+        "money": 3,
+        "satisfaction": 5,
+        "speed": 5,
+        "ease": 4
+      },
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "22-19",
+      "top": "T4",
+      "job": "Keep a change log of every theme publish, app install, tag edit, price change and campaign restructure with the date, and when a number shifts, list what changed that day",
+      "trigger": "on every change, read when a number moves",
+      "enablers": [
+        "metric-contract",
+        "work-board"
+      ],
+      "inputs": [
+        {
+          "need": "theme publishes and app installs",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "account activity logs",
+          "from": "Meta Ads and Google Ads (read only)",
+          "status": "connected"
+        },
+        {
+          "need": "price changes",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "changes the team makes by hand",
+          "from": "founder",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "Pull changes from each connected account every day",
+        "Add hand entries from the team through the work board",
+        "Keep one dated list with who made each change",
+        "When a number shifts, list every change in the 48 hours before"
+      ],
+      "output": "a dated change log, and a what-changed list for any shift",
+      "next": "feeds 22-05 (break report) and 22-20 (revenue split)",
+      "watch": {
+        "metric": "hours to find the cause of a number shift",
+        "window": "per event",
+        "source": "change log in the brain"
+      },
+      "drives": "time lost chasing numbers",
+      "business": "risk",
+      "score": {
+        "money": 2,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "22-20",
+      "top": "T4",
+      "job": "When revenue drops, split the change into visits, buy rate and order size by channel and device, check stock and late returns, and name the part that moved in 1 line",
+      "trigger": "when daily revenue moves 15 percent against the same day last week",
+      "enablers": [
+        "metric-contract"
+      ],
+      "inputs": [
+        {
+          "need": "sessions and funnel steps",
+          "from": "GA4",
+          "status": "connected"
+        },
+        {
+          "need": "orders, returns and order value",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "in-stock share of top page sizes and colours",
+          "from": "Shopify inventory",
+          "status": "connected"
+        },
+        {
+          "need": "the change log",
+          "from": "metric-contract",
+          "status": "enabler"
+        }
+      ],
+      "steps": [
+        "Split the revenue change into visits, buy rate and order size",
+        "Split each by channel and device, and find the biggest mover",
+        "Check the funnel step that moved: product view, cart, or checkout",
+        "Check stock on top pages, and returns landing from last month's sale",
+        "Check the change log for that day, then write the 1 line cause and an owner"
+      ],
+      "output": "a 1 line cause with the numbers behind it, and an owner",
+      "next": "feeds 07-landing-pages-cro or 11-paid-social",
+      "watch": {
+        "metric": "change in revenue split into visits, buy rate and order size",
+        "window": "day and week",
+        "source": "Shopify and GA4"
+      },
+      "drives": "fixing the right thing",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 5,
+        "ease": 4
+      },
+      "ready": 5,
+      "effort": "hours"
+    }
+  ],
+  "new_enablers": [
+    {
+      "id": "tracking-check",
+      "name": "Tracking and claim check",
+      "what": "Every morning matches each platform's purchases and revenue (Meta, Google, TikTok, GA4, email) to store orders, checks event health (fires once, right value, match quality), and shows how much each platform claims against what the store sold.",
+      "inputs": [
+        "store orders",
+        "platform purchases and revenue",
+        "GA4 purchases",
+        "Meta event quality (read only)",
+        "an event checklist per platform"
+      ],
+      "powers": [
+        "same day alert on a tracking break",
+        "pre-launch tag checks",
+        "over-claim ratio per platform",
+        "verdict on a great week before scaling"
+      ],
+      "screens": [
+        "22-measurement",
+        "11-paid-social",
+        "12-google-ads",
+        "00-today"
+      ],
+      "note": null
+    },
+    {
+      "id": "metric-contract",
+      "name": "Metric contract and data health",
+      "what": "One meaning, formula, source, window, owner and missing-data rule for each headline number. A freshness stamp per feed each morning, a dated change log of site, app, tag and account changes, and the split of any move into visits, buy rate and order size.",
+      "inputs": [
+        "the numbers the team uses",
+        "sync logs per feed",
+        "account activity logs",
+        "team change entries"
+      ],
+      "powers": [
+        "one number everyone agrees on",
+        "fresh or stale stamps on reports",
+        "the cause of a shift in minutes",
+        "one tag rule for links"
+      ],
+      "screens": [
+        "22-measurement",
+        "26-reports",
+        "00-today",
+        "23-team-ops"
+      ],
+      "note": null
+    },
+    {
+      "id": "holdout-test",
+      "name": "Holdout test kit",
+      "what": "Designs and reads tests that switch a channel off for part of the country or part of the audience for 2 to 4 weeks, and measures store orders against the rest. Tells what a channel adds, not what it claims. A person makes every account change.",
+      "inputs": [
+        "orders by state or region",
+        "channel spend by week",
+        "founder approval of the sales at risk"
+      ],
+      "powers": [
+        "extra sales per dollar per channel",
+        "brand search and retargeting checks",
+        "Meta lift on Amazon",
+        "budget splits with proof"
+      ],
+      "screens": [
+        "22-measurement",
+        "21-finance-cash",
+        "12-google-ads",
+        "11-paid-social"
+      ],
+      "note": null
+    }
+  ]
+}

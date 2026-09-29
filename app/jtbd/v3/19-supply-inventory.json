@@ -1,0 +1,1245 @@
+{
+  "screen": "19-supply-inventory",
+  "title": "Supply and inventory",
+  "top_jobs": [
+    {
+      "id": "T1",
+      "job": "When a best seller is on track to run out before a peak or a promo, help me see it while there is still time to order and know how many to buy, so I never lose the biggest sales weeks",
+      "metric": "days of stock left against supplier lead time plus buffer, for the top 20 products by gross profit",
+      "from_v2": [
+        1,
+        4,
+        5,
+        8,
+        9,
+        17
+      ]
+    },
+    {
+      "id": "T2",
+      "job": "When the bank is low and the warehouse is full, help me find the cash stuck in stock that does not sell and turn it back into money, so I can pay for ads and the products that sell",
+      "metric": "value of stock with no sale in 180 days, at landed cost, monthly",
+      "from_v2": [
+        2,
+        24,
+        26,
+        28,
+        35
+      ]
+    },
+    {
+      "id": "T3",
+      "job": "When freight, duty, raw material or a supplier moves, help me know what each unit really costs to land and which suppliers are slipping, so I reprice or renegotiate before the next order",
+      "metric": "landed cost per unit against the cost used in the margin plan, per purchase order",
+      "from_v2": [
+        6,
+        7,
+        14,
+        20,
+        22,
+        27,
+        29,
+        31,
+        34
+      ]
+    },
+    {
+      "id": "T4",
+      "job": "When parcels arrive late, damaged or go back, help me see which carrier, region or warehouse fails and what it costs, so I set a promise I can keep and stop paying for their mistakes",
+      "metric": "on time share and cost per delivered parcel, by carrier and region, 30 day",
+      "from_v2": [
+        3,
+        12,
+        13,
+        15,
+        18,
+        19,
+        25,
+        30
+      ]
+    }
+  ],
+  "jobs": [
+    {
+      "id": "19-01",
+      "top": "T1",
+      "job": "Compute days of stock left for every product and size against supplier lead time plus a 2 week buffer, and list what must be ordered this week, ranked by gross profit at risk",
+      "trigger": "every Monday",
+      "enablers": [
+        "stock-cover"
+      ],
+      "inputs": [
+        {
+          "need": "stock on hand by variant and location",
+          "from": "Shopify inventory",
+          "status": "connected"
+        },
+        {
+          "need": "stock at a 3PL or warehouse system, if used",
+          "from": "3PL or WMS",
+          "status": "setup"
+        },
+        {
+          "need": "90 days of sales by variant",
+          "from": "Shopify orders",
+          "status": "connected"
+        },
+        {
+          "need": "lead time and minimum order per supplier",
+          "from": "operations shelf (supply), founder interview question 23",
+          "status": "brain"
+        },
+        {
+          "need": "open purchase orders with landing dates",
+          "from": "operations shelf (supply)",
+          "status": "brain"
+        },
+        {
+          "need": "gross profit per unit",
+          "from": "finance shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pull stock on hand and on order per variant",
+        "Compute sales per day from the last 28 and 90 days, and use the higher rate for best sellers",
+        "Days left = stock plus orders that land in time, divided by sales per day",
+        "Flag variants where days left is under lead time plus 14 days",
+        "Rank by gross profit per day that would be lost, and a person checks the top 10 against the shelf"
+      ],
+      "output": "a weekly order list: variant, days left, lead time, and profit at risk",
+      "next": "feeds 19-02 (order size) and 21-03 (cash test for the order)",
+      "watch": {
+        "metric": "top 20 products by gross profit with days of stock under lead time plus buffer",
+        "window": "weekly",
+        "source": "Shopify inventory and purchase order records"
+      },
+      "drives": "stockout days on best sellers",
+      "business": "revenue",
+      "score": {
+        "money": 5,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "19-02",
+      "top": "T1",
+      "job": "Size each reorder: forecast sales over lead time plus the cover target, subtract stock and open orders, round to the minimum order and case pack, and show the cash it needs and when",
+      "trigger": "when 19-01 flags a product",
+      "enablers": [
+        "stock-cover",
+        "po-ledger"
+      ],
+      "inputs": [
+        {
+          "need": "the weekly order list",
+          "from": "stock-cover",
+          "status": "enabler"
+        },
+        {
+          "need": "peaks and promos in the next 16 weeks",
+          "from": "calendar shelf and offers shelf",
+          "status": "brain"
+        },
+        {
+          "need": "minimum order, case pack, price breaks and payment terms",
+          "from": "operations shelf (supply)",
+          "status": "brain"
+        },
+        {
+          "need": "cash floor",
+          "from": "founder",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "Forecast weekly sales for lead time plus 8 weeks, lifted for known peaks and promos",
+        "Subtract stock on hand and open orders, and round up to the minimum order and case pack",
+        "Check the next price break: is ordering more cheaper per unit and still safe for cash",
+        "Show deposit and balance dates and amounts",
+        "Founder approves or changes the number, and the order is logged in the purchase order ledger"
+      ],
+      "output": "a draft purchase order per product with units, cost and payment dates, approved by the founder",
+      "next": "feeds 21-03 (cash test) and 19-10 (landed cost)",
+      "watch": {
+        "metric": "products below their reorder point with no open purchase order",
+        "window": "weekly",
+        "source": "Shopify inventory and purchase order records"
+      },
+      "drives": "stockouts and overstock",
+      "business": "cash",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "19-03",
+      "top": "T1",
+      "job": "Build the Black Friday stock plan 12 weeks out: target units per top product from last year's peak weeks, this year's growth and planned promos, the gap to stock and open orders, and the last safe order date per supplier",
+      "trigger": "once, 12 weeks before each peak",
+      "enablers": [
+        "stock-cover"
+      ],
+      "inputs": [
+        {
+          "need": "last year's orders by week and variant",
+          "from": "Shopify orders",
+          "status": "connected"
+        },
+        {
+          "need": "peak dates and when prep starts",
+          "from": "calendar shelf",
+          "status": "brain"
+        },
+        {
+          "need": "promo plan for the peak",
+          "from": "offers shelf",
+          "status": "brain"
+        },
+        {
+          "need": "lead times per supplier",
+          "from": "operations shelf (supply)",
+          "status": "brain"
+        },
+        {
+          "need": "3PL and carrier cut-off dates and peak capacity",
+          "from": "3PL",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "Take last year's 6 peak weeks by variant and adjust for this year's growth rate",
+        "Add the lift from each planned promo, based on the last 3 promos",
+        "Subtract stock and open orders to get the gap per product",
+        "Work back the last safe order date from each supplier's lead time",
+        "Ask the 3PL and carriers for peak cut-offs and capacity, and log them",
+        "Founder signs the plan and the buys"
+      ],
+      "output": "a peak plan: target, gap and last order date per top product, plus 3PL cut-offs",
+      "next": "feeds 19-02 (order size) and 21-01 (cash forecast)",
+      "watch": {
+        "metric": "top products with stock on hand against the peak target",
+        "window": "weekly",
+        "source": "Shopify inventory"
+      },
+      "drives": "peak week revenue",
+      "business": "revenue",
+      "score": {
+        "money": 5,
+        "satisfaction": 4,
+        "speed": 2,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "19-04",
+      "top": "T1",
+      "job": "List every ad and shopping product spending on a product with under 14 days of stock, and send the list to the ads team to move budget before the spend runs",
+      "trigger": "every Monday and Thursday",
+      "enablers": [
+        "stock-cover"
+      ],
+      "inputs": [
+        {
+          "need": "ads with landing page and 7 day spend",
+          "from": "Meta Ads (read only)",
+          "status": "connected"
+        },
+        {
+          "need": "Shopping spend by product",
+          "from": "Google Ads",
+          "status": "connected"
+        },
+        {
+          "need": "days of stock per variant",
+          "from": "stock-cover",
+          "status": "enabler"
+        },
+        {
+          "need": "which page and product id each product uses",
+          "from": "products shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Map each ad's landing page or product id to a product",
+        "Join the last 7 days of spend to days of stock left",
+        "List ads on products under 14 days of stock, with spend and days left",
+        "Suggest the in-stock product each ad could point to instead",
+        "Send to the ads owner; the person changes the account, ecomOS does not"
+      ],
+      "output": "a twice weekly list of ads on low stock, with spend and a swap",
+      "next": "feeds 11-paid-social and 12-google-ads",
+      "watch": {
+        "metric": "ad spend on products with under 14 days of stock",
+        "window": "weekly",
+        "source": "Meta Ads, Google Ads and Shopify inventory"
+      },
+      "drives": "wasted spend, and cancelled orders",
+      "business": "contribution margin",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 5,
+        "ease": 5
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "19-05",
+      "top": "T1",
+      "job": "Split stock cover between our warehouse and Amazon, list products where one side runs dry in under 21 days while the other has spare, and say how many units to move and by when",
+      "trigger": "every Monday, for sellers on Amazon",
+      "enablers": [
+        "stock-cover",
+        "marketplace-plan"
+      ],
+      "inputs": [
+        {
+          "need": "our stock and site sales",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "Amazon stock, inbound units and sales",
+          "from": "Amazon Seller Central",
+          "status": "setup"
+        },
+        {
+          "need": "Amazon restock limits",
+          "from": "Amazon Seller Central",
+          "status": "setup"
+        },
+        {
+          "need": "transit days from our warehouse to Amazon",
+          "from": "operations shelf (fulfilment)",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Compute days of cover per product on each channel from its own sales rate",
+        "Flag products under 21 days on one channel and over 60 days on the other",
+        "Units to move = sales per day times 45 days, capped by the spare and by Amazon's limit",
+        "Draft the inbound shipment, and a person books it"
+      ],
+      "output": "a transfer list: product, units, from, to, and ship-by date",
+      "next": "feeds 20-14 (Amazon stock plan)",
+      "watch": {
+        "metric": "stock cover in days per product, by channel",
+        "window": "weekly",
+        "source": "Shopify inventory and Amazon Seller Central"
+      },
+      "drives": "Amazon rank and sales lost to stockouts",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "19-06",
+      "top": "T2",
+      "job": "List every product with no sale in 180 days or over 120 days of cover, value it at landed cost, and show the total cash stuck on one line",
+      "trigger": "first Monday of each month",
+      "enablers": [
+        "stock-cover",
+        "po-ledger"
+      ],
+      "inputs": [
+        {
+          "need": "stock and last sale date per variant",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "landed cost per unit",
+          "from": "po-ledger",
+          "status": "enabler"
+        },
+        {
+          "need": "products being discontinued or seasonal",
+          "from": "products shelf (roadmap)",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pull stock and the last sale date per variant",
+        "Mark variants with no sale in 180 days, and those with over 120 days of cover",
+        "Value each at landed cost, and add storage cost per month",
+        "Total the cash stuck, split by product line",
+        "Founder marks which are discontinued, seasonal, or held on purpose"
+      ],
+      "output": "a dead stock list with value, storage cost and a founder mark",
+      "next": "feeds 19-07 (clearance) and 21-01 (cash forecast)",
+      "watch": {
+        "metric": "value of stock with no sale in 180 days, at landed cost",
+        "window": "monthly",
+        "source": "Shopify inventory and purchase order records"
+      },
+      "drives": "cash free for ads and best sellers",
+      "business": "cash",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 5
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "19-07",
+      "top": "T2",
+      "job": "Pick a clearance route for each dead product: bundle with a best seller, VIP-only offer, outlet price, liquidator quote or donation, with the cash each returns against landed cost",
+      "trigger": "after 19-06 each month",
+      "enablers": [
+        "margin-view",
+        "stock-cover"
+      ],
+      "inputs": [
+        {
+          "need": "the dead stock list",
+          "from": "stock-cover",
+          "status": "enabler"
+        },
+        {
+          "need": "margin per best seller for bundles",
+          "from": "margin-view",
+          "status": "enabler"
+        },
+        {
+          "need": "a liquidator quote",
+          "from": "founder",
+          "status": "founder"
+        },
+        {
+          "need": "brand rules on discounts",
+          "from": "offers shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "For each product, estimate units that would sell in 60 days on each route",
+        "Compute cash back after fees and shipping for each route",
+        "Drop routes the brand rules do not allow",
+        "Founder picks one route per product",
+        "Set a 60 day check on units cleared and cash back"
+      ],
+      "output": "a clearance plan per product with route, cash back and a check date",
+      "next": "feeds 14-email-messaging (VIP offer) and 04-offers-pricing (bundles)",
+      "watch": {
+        "metric": "cash recovered from cleared stock against landed cost",
+        "window": "60 day",
+        "source": "Shopify orders"
+      },
+      "drives": "cash",
+      "business": "cash",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "19-08",
+      "top": "T2",
+      "job": "Count returned units waiting at the warehouse, how long they have waited and how many are sellable, set a 5 day restock rule, and cut reorders that returns already cover",
+      "trigger": "every Monday",
+      "enablers": [
+        "stock-cover"
+      ],
+      "inputs": [
+        {
+          "need": "returns received",
+          "from": "Shopify returns",
+          "status": "connected"
+        },
+        {
+          "need": "warehouse returns log with grading",
+          "from": "3PL",
+          "status": "setup"
+        },
+        {
+          "need": "this week's reorder list",
+          "from": "stock-cover",
+          "status": "enabler"
+        }
+      ],
+      "steps": [
+        "Pull returns received and their restock status",
+        "Compute days from received to back in stock, per product",
+        "Count the share graded sellable, and the reasons for the rest",
+        "Agree a 5 day restock rule with the warehouse",
+        "Take returned sellable units off this week's reorder list"
+      ],
+      "output": "a returns backlog table and a trimmed reorder list",
+      "next": "feeds 19-02 (order size)",
+      "watch": {
+        "metric": "days from return received to back in stock",
+        "window": "30 day",
+        "source": "3PL returns log and Shopify returns"
+      },
+      "drives": "units bought that we already own",
+      "business": "cash",
+      "score": {
+        "money": 2,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "19-09",
+      "top": "T2",
+      "job": "Compare storage cost with gross profit per product at the 3PL and at Amazon over 90 days, and list products that cost more to store than they earn, plus Amazon units close to the aged stock fee",
+      "trigger": "monthly, and 60 days before Amazon's aged stock dates",
+      "enablers": [
+        "po-ledger",
+        "marketplace-plan"
+      ],
+      "inputs": [
+        {
+          "need": "storage invoice by SKU",
+          "from": "3PL",
+          "status": "setup"
+        },
+        {
+          "need": "Amazon storage and stock age reports",
+          "from": "Amazon Seller Central",
+          "status": "setup"
+        },
+        {
+          "need": "gross profit per product",
+          "from": "finance shelf",
+          "status": "brain"
+        },
+        {
+          "need": "size per unit",
+          "from": "products shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Split storage cost per product by the space it uses",
+        "Set it against 90 day gross profit",
+        "List products where storage is over 25 percent of gross profit",
+        "List Amazon units over 150 days old",
+        "Draft a move, removal or price cut for each, and the founder picks"
+      ],
+      "output": "a storage table and one action per product",
+      "next": "feeds 19-07 (clearance) and 20-14 (Amazon stock plan)",
+      "watch": {
+        "metric": "storage cost against gross profit per product",
+        "window": "90 day",
+        "source": "3PL and Amazon storage reports"
+      },
+      "drives": "storage fees",
+      "business": "contribution margin",
+      "score": {
+        "money": 2,
+        "satisfaction": 2,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "19-10",
+      "top": "T3",
+      "job": "Build landed cost for every purchase order: unit price, freight, duty, insurance, packaging and inbound handling split per unit, and flag any product 5 percent above the cost in the margin plan",
+      "trigger": "when each order lands, and once for the last 12 months",
+      "enablers": [
+        "po-ledger"
+      ],
+      "inputs": [
+        {
+          "need": "supplier invoices",
+          "from": "founder, or the accounting tool",
+          "status": "founder"
+        },
+        {
+          "need": "freight, customs and duty bills",
+          "from": "founder",
+          "status": "founder"
+        },
+        {
+          "need": "product cost used today",
+          "from": "Shopify cost field and finance shelf",
+          "status": "connected"
+        },
+        {
+          "need": "units received per order",
+          "from": "3PL receiving log",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "Enter each order with units and unit price",
+        "Add freight, duty, insurance and inbound bills; split freight per unit by volume and duty by value",
+        "Compare with the cost in the store and in the margin plan",
+        "Flag products 5 percent or more above plan, and a person approves the new cost in the store",
+        "Recompute gross margin per product at the new cost"
+      ],
+      "output": "a landed cost table per order and product, with updated margins and flags",
+      "next": "feeds 21-07 (margin by product) and 04-offers-pricing",
+      "watch": {
+        "metric": "landed cost per unit against the margin plan",
+        "window": "per purchase order",
+        "source": "purchase order records and Shopify cost field"
+      },
+      "drives": "gross margin per product",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 2,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "19-11",
+      "top": "T3",
+      "job": "When a duty rate changes, recompute landed cost and margin per product at the new rate, list products that fall under the margin floor, and lay out reprice, absorb or move options",
+      "trigger": "when a tariff change is announced",
+      "enablers": [
+        "po-ledger",
+        "margin-view"
+      ],
+      "inputs": [
+        {
+          "need": "tariff code and country of origin per product",
+          "from": "founder",
+          "status": "founder"
+        },
+        {
+          "need": "the new duty rate",
+          "from": "public tariff schedule, typed into a sheet",
+          "status": "setup"
+        },
+        {
+          "need": "landed cost per unit",
+          "from": "po-ledger",
+          "status": "enabler"
+        },
+        {
+          "need": "margin floor",
+          "from": "finance shelf",
+          "status": "brain"
+        },
+        {
+          "need": "how sales moved after past price changes",
+          "from": "Shopify orders",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Recompute duty per unit at the new rate",
+        "Compute the new gross margin per product against the floor",
+        "For each product under the floor, show the price needed to hold margin and the sales lost at past price response",
+        "Add the option to move production, with lead time and cost from the supply shelf",
+        "Founder picks one option per product"
+      ],
+      "output": "a table: product, old and new margin, price needed, and the founder's choice",
+      "next": "feeds 04-offers-pricing and 21-01 (cash forecast)",
+      "watch": {
+        "metric": "gross margin per unit at the new duty rate",
+        "window": "per purchase order",
+        "source": "purchase order records"
+      },
+      "drives": "gross profit per unit",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 2,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "19-12",
+      "top": "T3",
+      "job": "Log the price of the main raw material (such as cotton) every month next to the price last agreed with the supplier, and draft a cost-down ask when it falls 10 percent",
+      "trigger": "monthly",
+      "enablers": [
+        "market-pulse",
+        "po-ledger"
+      ],
+      "inputs": [
+        {
+          "need": "the 1 or 2 materials that drive each top product's cost",
+          "from": "products shelf",
+          "status": "brain"
+        },
+        {
+          "need": "a public price index for each material",
+          "from": "a monthly entry in a sheet",
+          "status": "setup"
+        },
+        {
+          "need": "last agreed price and its date",
+          "from": "po-ledger",
+          "status": "enabler"
+        },
+        {
+          "need": "supplier contract and price lock dates",
+          "from": "operations shelf (supply)",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Name the 1 or 2 materials that drive each top product's cost",
+        "Log the index each month since the last price was agreed",
+        "Compute the change since then",
+        "When it falls 10 percent or more, draft a cost-down letter with the numbers",
+        "When it rises 10 percent or more, tell finance the likely new price and when it lands"
+      ],
+      "output": "a monthly input cost line per top product, and a draft letter when it moves",
+      "next": "feeds 19-14 (supplier score) and 21-01 (cash forecast)",
+      "watch": {
+        "metric": "input cost index against the price when cost was last agreed",
+        "window": "monthly",
+        "source": "public index logged in the brain"
+      },
+      "drives": "cost per unit",
+      "business": "gross profit",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 1,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "19-13",
+      "top": "T3",
+      "job": "Match every supplier invoice to its purchase order and the units received before paying, and list mismatches by count and value",
+      "trigger": "when each supplier invoice arrives",
+      "enablers": [
+        "po-ledger"
+      ],
+      "inputs": [
+        {
+          "need": "the purchase order",
+          "from": "operations shelf (supply)",
+          "status": "brain"
+        },
+        {
+          "need": "units received",
+          "from": "3PL receiving log",
+          "status": "setup"
+        },
+        {
+          "need": "supplier invoice",
+          "from": "founder, or the accounting tool",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "Line up ordered units and price, received units, and invoiced units and price",
+        "Flag any line that differs by 1 unit or 1 percent",
+        "Hold payment on flagged lines and draft the note to the supplier",
+        "Log the outcome and the value saved"
+      ],
+      "output": "a match table per invoice, with holds and notes",
+      "next": "feeds 19-14 (supplier score) and 21-04 (which bills to pay)",
+      "watch": {
+        "metric": "purchase orders where invoice, order and goods do not match, by value",
+        "window": "monthly",
+        "source": "purchase order records"
+      },
+      "drives": "cash paid for stock that never came",
+      "business": "cash",
+      "score": {
+        "money": 2,
+        "satisfaction": 4,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "19-14",
+      "top": "T3",
+      "job": "Score each supplier over 90 days on on-time delivery, defects found at receiving and price drift, and list products that depend on one supplier or one country with no backup",
+      "trigger": "each quarter, and when a supplier is late again",
+      "enablers": [
+        "po-ledger"
+      ],
+      "inputs": [
+        {
+          "need": "promised and actual arrival dates per order",
+          "from": "po-ledger",
+          "status": "enabler"
+        },
+        {
+          "need": "defects found at receiving",
+          "from": "3PL receiving log",
+          "status": "setup"
+        },
+        {
+          "need": "returns tagged defective",
+          "from": "Shopify returns",
+          "status": "connected"
+        },
+        {
+          "need": "supplier and country per product",
+          "from": "operations shelf (supply)",
+          "status": "brain"
+        },
+        {
+          "need": "backup suppliers already vetted",
+          "from": "founder",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "For each supplier, compute on-time share, defect rate and price change per unit",
+        "Mark suppliers getting worse over their last 3 orders",
+        "Compute each supplier's and country's share of units bought in 12 months",
+        "List top products with over 50 percent from one source and no vetted backup",
+        "Founder picks 1 product to get a second quote for this quarter"
+      ],
+      "output": "a supplier scorecard and a single-source risk list",
+      "next": "feeds 19-15 (inspection) and 21-01 (cash forecast)",
+      "watch": {
+        "metric": "supplier on-time delivery and defect rate per order",
+        "window": "rolling 90 day",
+        "source": "purchase order records"
+      },
+      "drives": "stockouts and defects",
+      "business": "risk",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 1,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "19-15",
+      "top": "T3",
+      "job": "Book a third party inspection before paying the balance on any new supplier or any order over $20,000, with a checklist built from past defect tickets and return reasons",
+      "trigger": "when a factory says an order is ready to ship",
+      "enablers": [
+        "po-ledger",
+        "review-miner"
+      ],
+      "inputs": [
+        {
+          "need": "top defect reasons for the product over 12 months",
+          "from": "helpdesk tags and Shopify returns",
+          "status": "connected"
+        },
+        {
+          "need": "product spec and tolerances",
+          "from": "products shelf",
+          "status": "brain"
+        },
+        {
+          "need": "an inspection service, about $300 a visit",
+          "from": "inspection company",
+          "status": "buy"
+        },
+        {
+          "need": "order value and balance date",
+          "from": "po-ledger",
+          "status": "enabler"
+        }
+      ],
+      "steps": [
+        "Pull the top defect reasons for the product over 12 months",
+        "Turn them into a checklist with photos of good and bad units",
+        "Book the inspection 5 days before the ship date",
+        "Read the report: pass, fix and re-inspect, or refuse",
+        "Pay the balance only on a pass, and log the result on the supplier score"
+      ],
+      "output": "an inspection checklist, the report, and a pay or hold decision",
+      "next": "feeds 19-14 (supplier score) and 15-13 (bad batch alert)",
+      "watch": {
+        "metric": "defect rate found at receiving, per purchase order",
+        "window": "per quarter",
+        "source": "purchase order records"
+      },
+      "drives": "returns and refunds for defects",
+      "business": "gross profit",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 1,
+        "ease": 3
+      },
+      "ready": 2,
+      "effort": "days"
+    },
+    {
+      "id": "19-16",
+      "top": "T4",
+      "job": "Build the carrier scorecard for the last 30 days: on-time share, first attempt delivery, damage and loss, and cost per delivered parcel by carrier and region, and name the worst lane with a cheaper option",
+      "trigger": "monthly, and when failed deliveries jump in a region",
+      "enablers": [
+        "carrier-scorecard"
+      ],
+      "inputs": [
+        {
+          "need": "fulfilment events per order",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "carrier tracking scans",
+          "from": "tracking or shipping app (AfterShip, ShipStation)",
+          "status": "setup"
+        },
+        {
+          "need": "carrier invoices",
+          "from": "carrier portal export",
+          "status": "setup"
+        },
+        {
+          "need": "damage and loss tickets",
+          "from": "helpdesk",
+          "status": "connected"
+        },
+        {
+          "need": "rate cards from 2 other carriers",
+          "from": "founder",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "Join each order's tracking scans to its region and carrier",
+        "Compute on-time share against the date shown, first attempt success, and damage or loss rate",
+        "Divide the carrier bill by delivered parcels for each lane",
+        "Name the worst lane on cost and on service",
+        "Price the same lane with 2 other carriers, and draft the switch for the founder"
+      ],
+      "output": "a carrier by region table, and a switch proposal for the worst lane",
+      "next": "feeds 19-17 (delivery promise), 19-18 (invoice check) and 21-10 (shipping cost)",
+      "watch": {
+        "metric": "cost per delivered parcel and on-time share, by carrier and region",
+        "window": "30 day",
+        "source": "shipping app and carrier invoices"
+      },
+      "drives": "shipping cost per order, and delivery tickets",
+      "business": "contribution margin",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "19-17",
+      "top": "T4",
+      "job": "Set the delivery date shown on product and checkout pages from real door to door times, the 90th percentile by region and carrier, not the carrier's brochure",
+      "trigger": "once, then monthly",
+      "enablers": [
+        "carrier-scorecard"
+      ],
+      "inputs": [
+        {
+          "need": "order to delivery times",
+          "from": "Shopify fulfilment and the tracking app",
+          "status": "setup"
+        },
+        {
+          "need": "the delivery promise shown today",
+          "from": "site shelf",
+          "status": "brain"
+        },
+        {
+          "need": "order status tickets",
+          "from": "helpdesk",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Compute median and 90th percentile days from order to delivery by region and carrier",
+        "Compare them with the date shown on the site today",
+        "Draft the new promise per region, and a person updates the page and checkout",
+        "Watch order status tickets and conversion for 4 weeks"
+      ],
+      "output": "a delivery promise per region, live on the site, with a before and after",
+      "next": "feeds 15-10 (early delivery notes) and 07-landing-pages-cro",
+      "watch": {
+        "metric": "share of orders delivered by the date shown to the buyer",
+        "window": "30 day",
+        "source": "Shopify fulfilment and the tracking app"
+      },
+      "drives": "order status tickets and refunds",
+      "business": "customer satisfaction",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "19-18",
+      "top": "T4",
+      "job": "Check each carrier invoice against the expected charge from shipped weight, box size and zone, list overcharges, surcharges and late delivery refunds owed, and file the claims",
+      "trigger": "monthly, when the carrier invoice arrives",
+      "enablers": [
+        "carrier-scorecard"
+      ],
+      "inputs": [
+        {
+          "need": "carrier invoice lines",
+          "from": "carrier portal export",
+          "status": "setup"
+        },
+        {
+          "need": "shipped weight and box size per order",
+          "from": "shipping app",
+          "status": "setup"
+        },
+        {
+          "need": "the agreed rate card",
+          "from": "founder",
+          "status": "founder"
+        },
+        {
+          "need": "lost and damaged parcels",
+          "from": "helpdesk tags",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Compute the expected charge per parcel from the rate card",
+        "Flag parcels billed 5 percent or more over the expected charge",
+        "Add lost and damaged parcels not yet claimed",
+        "Draft claims with order numbers and proof, and a person files them",
+        "Log money recovered each month"
+      ],
+      "output": "a claim file per carrier and a monthly recovered total",
+      "next": "feeds 21-10 (shipping cost)",
+      "watch": {
+        "metric": "carrier invoice amount against expected charge",
+        "window": "monthly",
+        "source": "carrier invoices and shipping app"
+      },
+      "drives": "shipping cost per order",
+      "business": "contribution margin",
+      "score": {
+        "money": 2,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "19-19",
+      "top": "T4",
+      "job": "Measure the warehouse's real dispatch time against the contract, from order to label to first carrier scan, and send them a monthly scorecard with pick errors from tickets",
+      "trigger": "weekly, with a scorecard each month",
+      "enablers": [
+        "carrier-scorecard"
+      ],
+      "inputs": [
+        {
+          "need": "order time, label time and first scan",
+          "from": "Shopify fulfilment and the tracking app",
+          "status": "setup"
+        },
+        {
+          "need": "3PL contract terms and credits",
+          "from": "founder",
+          "status": "founder"
+        },
+        {
+          "need": "wrong item and missing item tickets",
+          "from": "helpdesk tags",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Compute hours from order to label and to first scan, per day",
+        "Compute the share shipped within the promised time, and the worst days",
+        "Count wrong item and missing item tickets per 1,000 orders",
+        "Send the warehouse a 1 page scorecard with the numbers and any credits owed under the contract"
+      ],
+      "output": "a monthly warehouse scorecard and a credit request",
+      "next": "feeds 19-16 (carrier scorecard) and 23-team-ops",
+      "watch": {
+        "metric": "share of orders shipped within the promised dispatch time",
+        "window": "weekly",
+        "source": "Shopify fulfilment and the tracking app"
+      },
+      "drives": "late delivery tickets",
+      "business": "customer satisfaction",
+      "score": {
+        "money": 2,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "19-20",
+      "top": "T4",
+      "job": "List delivery exceptions every morning (wrong address, failed attempt, held at depot) with the hours left to act, and have a person contact each customer the same day",
+      "trigger": "every morning",
+      "enablers": [
+        "carrier-scorecard"
+      ],
+      "inputs": [
+        {
+          "need": "open tracking exceptions",
+          "from": "tracking app",
+          "status": "setup"
+        },
+        {
+          "need": "customer phone and email",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "reply templates for each exception",
+          "from": "operations shelf (support)",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pull open exceptions and the hours left before the parcel goes back",
+        "Sort by hours left and order value",
+        "Text or email each customer with the step they need to take",
+        "A person updates the carrier and logs the outcome"
+      ],
+      "output": "a daily exception list with each one closed or returned",
+      "next": "feeds 15-10 (early delivery notes)",
+      "watch": {
+        "metric": "open delivery exceptions with under 24 hours left to act",
+        "window": "daily",
+        "source": "tracking app"
+      },
+      "drives": "return to sender cost and lost customers",
+      "business": "customer satisfaction",
+      "score": {
+        "money": 2,
+        "satisfaction": 4,
+        "speed": 5,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    }
+  ],
+  "new_enablers": [
+    {
+      "id": "stock-cover",
+      "name": "Stock cover and reorder engine",
+      "what": "Days of stock left per product, size and location (own warehouse, 3PL, Amazon) at the current sales rate, against supplier lead time plus a buffer. Sets reorder points and order sizes rounded to minimum order and case pack, plans peaks, and flags ads running on low stock and stock that does not sell.",
+      "inputs": [
+        "stock by variant and location",
+        "90 days of sales by variant",
+        "lead time and minimum order per supplier",
+        "open purchase orders",
+        "calendar of peaks and promos"
+      ],
+      "powers": [
+        "what to order this week and how much",
+        "peak stock plans",
+        "ad spend on products about to run out",
+        "dead stock and cash stuck",
+        "stock split between site and Amazon"
+      ],
+      "screens": [
+        "19-supply-inventory",
+        "20-marketplaces",
+        "11-paid-social",
+        "21-finance-cash",
+        "00-today"
+      ],
+      "note": null
+    },
+    {
+      "id": "po-ledger",
+      "name": "Purchase order and landed cost ledger",
+      "what": "Every purchase order with dates, units, unit price, freight, duty, packaging and inbound cost split per unit, units received, defects found and invoice match. Scores each supplier on time, defects and price drift, and holds the payment dates.",
+      "inputs": [
+        "purchase orders",
+        "supplier invoices",
+        "freight and duty bills",
+        "receiving counts",
+        "tariff codes and duty rates"
+      ],
+      "powers": [
+        "true cost per unit and margins that broke",
+        "supplier scores and single-source risk",
+        "invoice mismatches before paying",
+        "cash out dates for the forecast"
+      ],
+      "screens": [
+        "19-supply-inventory",
+        "21-finance-cash",
+        "04-offers-pricing"
+      ],
+      "note": null
+    },
+    {
+      "id": "carrier-scorecard",
+      "name": "Carrier and warehouse scorecard",
+      "what": "Per carrier, region and warehouse: time from order to dispatch to delivery, first attempt success, damage and loss, cost per delivered parcel, and billed against expected charges. Open exceptions with the hours left to act.",
+      "inputs": [
+        "fulfilment and tracking events",
+        "carrier invoices and rate cards",
+        "3PL dispatch log",
+        "damage and loss tickets"
+      ],
+      "powers": [
+        "a delivery promise we can keep",
+        "carrier switches",
+        "invoice claims",
+        "warehouse reviews",
+        "daily exception list"
+      ],
+      "screens": [
+        "19-supply-inventory",
+        "15-customers-cx",
+        "21-finance-cash"
+      ],
+      "note": null
+    }
+  ]
+}

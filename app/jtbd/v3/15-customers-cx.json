@@ -1,0 +1,1248 @@
+{
+  "screen": "15-customers-cx",
+  "title": "Customers and CX",
+  "top_jobs": [
+    {
+      "id": "T1",
+      "job": "When a month of new buyers came in on paid ads and 90 days later most never came back, help me find why and fix what they get in the first weeks, so I stop paying full price for every sale",
+      "metric": "second order rate within 90 days, by month of first order",
+      "from_v2": [
+        1,
+        17,
+        18,
+        27,
+        34
+      ]
+    },
+    {
+      "id": "T2",
+      "job": "When the inbox fills up and replies and follow-ups slip, help me answer faster, keep every promise and remove the questions at the source, so no customer waits and I stop paying to answer the same question",
+      "metric": "tickets per 100 orders, and median time to resolution",
+      "from_v2": [
+        2,
+        6,
+        10,
+        12,
+        15,
+        19,
+        28
+      ]
+    },
+    {
+      "id": "T3",
+      "job": "When returns, defects or bad reviews start to rise on a product, help me catch the cause early and send it to the person who can fix it, so the next 500 orders ship right",
+      "metric": "return rate by product and reason, 60 day",
+      "from_v2": [
+        3,
+        4,
+        8,
+        13,
+        20,
+        21,
+        26
+      ]
+    },
+    {
+      "id": "T4",
+      "job": "When I want to keep my best customers and stop paying ads to reach people who already buy, help me see who makes money and treat them quietly well, so they stay without learning to wait for a sale",
+      "metric": "repeat rate and gross profit of the top 2 percent of customers, 365 day",
+      "from_v2": [
+        5,
+        14,
+        23,
+        29,
+        30
+      ]
+    }
+  ],
+  "jobs": [
+    {
+      "id": "15-01",
+      "top": "T1",
+      "job": "Build the cohort grid: second order rate at 30, 60 and 90 days by month of first order, split by first product, channel and first discount, and name the 2 cohorts that fell most",
+      "trigger": "once at onboarding, then the first Monday of each month",
+      "enablers": [
+        "cohort-view"
+      ],
+      "inputs": [
+        {
+          "need": "24 months of orders with customer ids, refunds and discount codes",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "order source for each first order, from link tags",
+          "from": "GA4 and Shopify order source",
+          "status": "connected"
+        },
+        {
+          "need": "product cost per SKU",
+          "from": "finance shelf",
+          "status": "brain"
+        },
+        {
+          "need": "what happened each month: sales, stockouts, new ads",
+          "from": "calendar and history shelves",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pull 24 months of orders and tie each to one customer by email or phone",
+        "Mark each customer's first order month, first product, first channel and first discount code",
+        "Count who ordered again by day 30, 60 and 90 in each cohort, from totals",
+        "Split each cohort by first product, channel and discount, and hide cells under 50 customers",
+        "Name the 2 cohorts that fell most against the 6 month average, and the split that explains it",
+        "Check with the founder what changed that month: a sale, a new ad, a stockout"
+      ],
+      "output": "a cohort grid (first order month by day 30, 60 and 90) with splits, plus 2 lines on the cohorts that fell and why",
+      "next": "feeds 15-02 (why they hire and leave), 15-04 (reorder reminders) and 21-13 (payback by cohort)",
+      "watch": {
+        "metric": "second order rate within 90 days, by month of first order",
+        "window": "90 day",
+        "source": "Shopify orders"
+      },
+      "drives": "repeat revenue per customer, and blended cost per order",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 5,
+      "effort": "days"
+    },
+    {
+      "id": "15-02",
+      "top": "T1",
+      "job": "Find why customers hire the product and why one-time buyers never order again, from 200 reviews, 200 tickets and a 1 question survey on the thank you page",
+      "trigger": "once at onboarding, then each quarter",
+      "enablers": [
+        "customer-jobs",
+        "reason-tagger"
+      ],
+      "inputs": [
+        {
+          "need": "reviews with star rating and product",
+          "from": "reviews app",
+          "status": "connected"
+        },
+        {
+          "need": "tickets from one-time buyers and from repeat buyers",
+          "from": "helpdesk joined to Shopify orders",
+          "status": "connected"
+        },
+        {
+          "need": "a thank you page question: what made you buy today",
+          "from": "post-purchase survey",
+          "status": "setup"
+        },
+        {
+          "need": "list of one-time and repeat customers",
+          "from": "cohort-view",
+          "status": "enabler"
+        },
+        {
+          "need": "voice of customer quotes already filed",
+          "from": "customers shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pull 200 reviews and 200 tickets, half from repeat buyers and half from one-time buyers",
+        "Tag each by the moment that made them buy, the result they wanted, what they used before and what nearly stopped them",
+        "Add the 1 question survey on the thank you page and read the first 100 answers",
+        "Compare repeat buyers with one-time buyers: which moments and doubts differ",
+        "Write the top 3 hiring moments and the top 3 reasons for no second order, with 2 quotes each",
+        "Founder reads it and marks what rings true and what is wrong"
+      ],
+      "output": "a 1 page jobs map: 3 hiring moments, 3 reasons there is no second order, quotes, and what each suggests we change",
+      "next": "feeds 15-03 (first 14 days), 10-copy (hooks) and 02-customers-avatars",
+      "watch": {
+        "metric": "second order rate of the cohort after the fix ships",
+        "window": "90 day",
+        "source": "Shopify orders"
+      },
+      "drives": "repeat rate, and new angles for ads",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 2,
+        "ease": 3
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "15-03",
+      "top": "T1",
+      "job": "Write the first 14 days after delivery: take the top 10 how-to questions new buyers ask (use, wash, size, fit) and answer them in the delivery email, a day 5 email and a card in the box",
+      "trigger": "once, then when a new question enters the top 10",
+      "enablers": [
+        "question-matrix",
+        "reason-tagger"
+      ],
+      "inputs": [
+        {
+          "need": "tickets sent within 14 days of delivery",
+          "from": "helpdesk joined to Shopify orders",
+          "status": "connected"
+        },
+        {
+          "need": "product care, use and size rules",
+          "from": "products shelf (FAQ per product)",
+          "status": "brain"
+        },
+        {
+          "need": "email tool with shipping and delivery flows",
+          "from": "Klaviyo or similar",
+          "status": "setup"
+        },
+        {
+          "need": "a small print run of insert cards",
+          "from": "local printer",
+          "status": "buy"
+        }
+      ],
+      "steps": [
+        "Pull tickets sent within 14 days of delivery and tag each by question",
+        "Rank the top 10 questions by count per 100 orders",
+        "Write one short answer per question, with a photo or a 20 second clip",
+        "Put answers 1 to 3 in the delivery email, 4 to 6 in a day 5 email, and the rest on the insert card and the help page",
+        "Founder checks every answer against the product and the claims shelf",
+        "Compare how-to tickets and returns for 30 days before and after"
+      ],
+      "output": "2 live emails, 1 insert card and a help page, each answering named questions",
+      "next": "feeds 15-06 (fills blank cells in the matrix) and 14-email-messaging",
+      "watch": {
+        "metric": "how-to tickets in the first 14 days after delivery, per 100 orders",
+        "window": "30 day",
+        "source": "helpdesk joined to Shopify orders"
+      },
+      "drives": "returns from unsure buyers, and second order rate",
+      "business": "customer satisfaction",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "15-04",
+      "top": "T1",
+      "job": "Find the reorder window for each top product and send a reminder 5 days before it runs out, with no discount on the first touch, tested against a 20 percent holdout",
+      "trigger": "once per product, then read each month",
+      "enablers": [
+        "cohort-view",
+        "win-loss-ledger"
+      ],
+      "inputs": [
+        {
+          "need": "orders with repeat purchases per product",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "email or SMS tool",
+          "from": "Klaviyo or similar",
+          "status": "setup"
+        },
+        {
+          "need": "brand voice and banned words",
+          "from": "voice shelf",
+          "status": "brain"
+        },
+        {
+          "need": "discount rules",
+          "from": "offers shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "For each of the top 10 products, compute the median days from first to second order",
+        "Set the reminder at that median minus 5 days, and a second touch at plus 10 days",
+        "Write the reminder in brand voice: what they bought, when it usually runs out, one tap to reorder",
+        "Hold out 20 percent of customers who get nothing",
+        "After 60 days compare reorder rate and margin with the holdout, and log it as a win or a fail"
+      ],
+      "output": "live reorder flows per product, with a 60 day readout against a holdout",
+      "next": "feeds 25-experiments (win and loss ledger) and 14-email-messaging",
+      "watch": {
+        "metric": "reorder rate within 60 days, flow versus holdout",
+        "window": "60 day",
+        "source": "Shopify orders and the email tool"
+      },
+      "drives": "repeat revenue",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "15-05",
+      "top": "T1",
+      "job": "Ask customers who went quiet where they went: send a 2 question exit survey to anyone past 2 times their reorder window, and count the reasons and the rivals they name",
+      "trigger": "first Monday of each month",
+      "enablers": [
+        "reason-tagger",
+        "review-miner"
+      ],
+      "inputs": [
+        {
+          "need": "lapsed customers past 2 times their product's reorder window",
+          "from": "cohort-view",
+          "status": "enabler"
+        },
+        {
+          "need": "a short survey form sent by email",
+          "from": "email tool or a free form",
+          "status": "setup"
+        },
+        {
+          "need": "tickets and reviews that name a rival or say they stopped",
+          "from": "helpdesk and reviews app",
+          "status": "connected"
+        },
+        {
+          "need": "competitor names and brands to match",
+          "from": "competitors shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "List customers past 2 times their product's reorder window with no order",
+        "Send 2 questions: did you stop or switch, and if you switched, to what and why",
+        "Add tickets and reviews that name a rival or say they stopped",
+        "Tag every answer with one reason and the rival named, and check 20 tags by hand",
+        "Report the top 3 reasons and the top 2 rivals with counts and 3 quotes, and send product reasons to the product owner"
+      ],
+      "output": "a monthly list: reasons for leaving by count, rivals named, 3 quotes",
+      "next": "feeds 03-competitors and 15-14 (causes sent to an owner)",
+      "watch": {
+        "metric": "lapsed customers with a stated reason, by reason and rival",
+        "window": "90 day",
+        "source": "exit survey and helpdesk tags"
+      },
+      "drives": "win-back rate and repeat rate",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "15-06",
+      "top": "T2",
+      "job": "Build the question coverage matrix: every question from tickets, chat, Amazon questions, reviews and site search in rows, every place it could be answered in columns, then fill the 10 biggest blank cells",
+      "trigger": "once at onboarding, then every 2 weeks",
+      "enablers": [
+        "question-matrix",
+        "reason-tagger"
+      ],
+      "inputs": [
+        {
+          "need": "6 months of tickets and chat",
+          "from": "helpdesk",
+          "status": "connected"
+        },
+        {
+          "need": "Amazon customer questions and buyer messages",
+          "from": "Amazon Seller Central, when they sell there",
+          "status": "setup"
+        },
+        {
+          "need": "site search terms",
+          "from": "Shopify search and GA4",
+          "status": "connected"
+        },
+        {
+          "need": "reviews that ask or answer a question",
+          "from": "reviews app",
+          "status": "connected"
+        },
+        {
+          "need": "product page, FAQ and email text",
+          "from": "site shelf and email shelf",
+          "status": "brain"
+        },
+        {
+          "need": "claims we may make",
+          "from": "claims shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pull every question and merge the ones that mean the same thing",
+        "Count each question per 100 orders and mark the product it is about",
+        "Check each place (product page, FAQ, shipping email, ad, Amazon listing, help centre) and mark answered, half answered or blank",
+        "Rank blank cells by count and by how close the question is to buying: size, fit, delivery and returns first",
+        "Write the answer for the top 10 blanks, and a person checks each against the claims shelf",
+        "Publish the answers and log the date, so the next run shows tickets before and after"
+      ],
+      "output": "a matrix of questions by places, with the top 10 blanks filled and dated",
+      "next": "feeds 07-landing-pages-cro (page blocks), 17-seo (articles) and 20-15 (Amazon listing)",
+      "watch": {
+        "metric": "tickets on the 10 filled questions, per 100 orders",
+        "window": "30 day",
+        "source": "helpdesk tags"
+      },
+      "drives": "tickets per 100 orders, and product page conversion",
+      "business": "customer satisfaction",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "15-07",
+      "top": "T2",
+      "job": "Put a clock on every ticket: first reply time, time to resolution, follow-ups owed and reopens, with the order value at stake, and list every breach each morning",
+      "trigger": "every morning at 9",
+      "enablers": [
+        "ticket-clock"
+      ],
+      "inputs": [
+        {
+          "need": "tickets with every status change, tag and agent",
+          "from": "helpdesk",
+          "status": "connected"
+        },
+        {
+          "need": "orders and lifetime spend per customer",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "reply and resolution targets per ticket type",
+          "from": "operations shelf (support policies)",
+          "status": "brain"
+        },
+        {
+          "need": "team hours and who covers weekends",
+          "from": "founder",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "Pull every ticket opened or still open in the last 30 days, with each status change",
+        "Compute first reply time and time to resolution in business hours, per ticket and per agent",
+        "Mark tickets over target, tickets waiting on us, and follow-ups promised but not sent",
+        "Add the customer's lifetime spend and any open order value to each late ticket",
+        "Send one morning list: breaches first, sorted by value at stake, each with an owner"
+      ],
+      "output": "a daily breach list, and a 30 day table of median first reply and resolution time by reason and agent",
+      "next": "feeds 15-08 (follow-up rules) and 23-team-ops (staffing)",
+      "watch": {
+        "metric": "median time to resolution in hours",
+        "window": "7 day",
+        "source": "helpdesk"
+      },
+      "drives": "repeat rate of customers who had a ticket, and bad reviews",
+      "business": "customer satisfaction",
+      "score": {
+        "money": 3,
+        "satisfaction": 5,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 5,
+      "effort": "days"
+    },
+    {
+      "id": "15-08",
+      "top": "T2",
+      "job": "Give every promise made in a ticket a dated follow-up: when an agent writes we will reship, refund or check, create a task, check it happened, and write back to the customer",
+      "trigger": "on every ticket closed with a promise, checked each day",
+      "enablers": [
+        "ticket-clock",
+        "work-board"
+      ],
+      "inputs": [
+        {
+          "need": "closing replies and tags",
+          "from": "helpdesk",
+          "status": "connected"
+        },
+        {
+          "need": "list of promise phrases and the macros that use them",
+          "from": "operations shelf (support macros)",
+          "status": "brain"
+        },
+        {
+          "need": "refunds, reships and tracking numbers",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "owner for each promise type",
+          "from": "founder",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "Scan closing replies for promise phrases: reship, refund, replace, check with the warehouse, get back to you",
+        "Create a follow-up task with a due date and an owner",
+        "On the due date check the order: was the refund paid, did the reship get a tracking number",
+        "Send the customer a short note: done, with proof, or a new date and why",
+        "Report each week: promises made, kept on time, late, and the reopen rate for each"
+      ],
+      "output": "a follow-up list with every promise, its owner, its due date and whether it was kept",
+      "next": "feeds 15-07 (ticket clock) and 23-team-ops",
+      "watch": {
+        "metric": "reopen rate of tickets closed with a promise",
+        "window": "30 day",
+        "source": "helpdesk"
+      },
+      "drives": "repeat rate of customers who had a problem",
+      "business": "customer satisfaction",
+      "score": {
+        "money": 3,
+        "satisfaction": 5,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "15-09",
+      "top": "T2",
+      "job": "Tag the last 90 days of tickets with one reason from a fixed list of 15, find the reason growing fastest, and put a dollar cost on each reason",
+      "trigger": "once, then every Monday",
+      "enablers": [
+        "reason-tagger",
+        "ticket-clock"
+      ],
+      "inputs": [
+        {
+          "need": "tickets with text and handle time",
+          "from": "helpdesk",
+          "status": "connected"
+        },
+        {
+          "need": "refunds, reships and store credit",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "support cost per hour",
+          "from": "finance shelf",
+          "status": "brain"
+        },
+        {
+          "need": "reason list with 3 examples each",
+          "from": "reason-tagger",
+          "status": "enabler"
+        }
+      ],
+      "steps": [
+        "Draft the 15 reasons from 300 sample tickets and write 3 examples for each",
+        "Tag every ticket, then check 40 tags by hand and fix the list where it is wrong",
+        "Count each reason per 100 orders this week against the last 8 weeks",
+        "Cost each reason: agent minutes times cost per minute, plus refunds, reships and credits",
+        "Write the top 3 by cost and the 1 growing fastest, each with an owner who can fix the cause"
+      ],
+      "output": "a reason table with count per 100 orders, trend and cost, plus 3 named fixes",
+      "next": "feeds 15-10 (early delivery notes), 15-12 (returns) and 23-team-ops",
+      "watch": {
+        "metric": "share of tickets by top 5 reasons",
+        "window": "30 day",
+        "source": "helpdesk tags"
+      },
+      "drives": "support cost per order",
+      "business": "contribution margin",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "15-10",
+      "top": "T2",
+      "job": "Send delivery updates before customers ask: each morning find orders past their dispatch date or stuck in transit for 3 days, and send a 2 line note with a new date",
+      "trigger": "every morning",
+      "enablers": [
+        "ticket-clock",
+        "reason-tagger"
+      ],
+      "inputs": [
+        {
+          "need": "fulfilment status per order",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "carrier tracking scans",
+          "from": "tracking app (AfterShip or similar)",
+          "status": "setup"
+        },
+        {
+          "need": "promised dispatch and delivery days per region",
+          "from": "operations shelf (fulfilment)",
+          "status": "brain"
+        },
+        {
+          "need": "email or SMS tool to send the note",
+          "from": "Klaviyo or similar",
+          "status": "setup"
+        },
+        {
+          "need": "order status tickets",
+          "from": "helpdesk",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "List open orders past the promised dispatch date, and shipped orders with no scan for 3 days",
+        "Group them by cause: not packed, carrier delay, address problem",
+        "Send each customer a 2 line note with the cause in plain words and a new date",
+        "Send address problems to a person to call or text the same day",
+        "Compare order status tickets per 100 orders for 4 weeks before and after"
+      ],
+      "output": "a daily list of late orders, and a note sent for each",
+      "next": "feeds 19-16 (carrier scorecard) and 15-07",
+      "watch": {
+        "metric": "order status tickets per 100 orders",
+        "window": "30 day",
+        "source": "helpdesk joined to Shopify orders"
+      },
+      "drives": "support cost per order, and bad reviews",
+      "business": "customer satisfaction",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "15-11",
+      "top": "T2",
+      "job": "Write the support rulebook for a new hire or an AI agent: tone, what each may refund or reship alone and up to what amount, when to hand to a person, and 20 replies for the top reasons",
+      "trigger": "once, then when a rule is broken or a new person starts",
+      "enablers": [
+        "ticket-clock",
+        "brain-graph"
+      ],
+      "inputs": [
+        {
+          "need": "dollar caps for refund, reship, discount and credit",
+          "from": "founder",
+          "status": "founder"
+        },
+        {
+          "need": "tone and banned words",
+          "from": "voice shelf",
+          "status": "brain"
+        },
+        {
+          "need": "current macros, policies and escalation rules",
+          "from": "operations shelf (support)",
+          "status": "brain"
+        },
+        {
+          "need": "top reasons with example tickets",
+          "from": "reason-tagger",
+          "status": "enabler"
+        },
+        {
+          "need": "AI agent action log, if one is used",
+          "from": "helpdesk",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Ask the founder for limits: refund, reship, discount and credit, each with a dollar cap",
+        "Write 20 replies for the top reasons in brand voice, each with the facts to check first",
+        "Write the hand-over rules: angry customer, chargeback threat, press or creator, VIP, anything over the cap",
+        "A person loads the rules into the helpdesk and the AI agent settings",
+        "Each week read 20 closed tickets (AI and human), mark any action over a cap, and fix the rule"
+      ],
+      "output": "a 2 page rulebook, 20 replies in the helpdesk, and a weekly check of 20 tickets",
+      "next": "feeds 23-team-ops and 15-07",
+      "watch": {
+        "metric": "share of tickets answered by someone other than the founder",
+        "window": "30 day",
+        "source": "helpdesk"
+      },
+      "drives": "founder hours on support, and AI agent mistakes",
+      "business": "risk",
+      "score": {
+        "money": 2,
+        "satisfaction": 5,
+        "speed": 3,
+        "ease": 3
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "15-12",
+      "top": "T3",
+      "job": "Build the return table for each product and size: return rate and top reason over 60 days, the full cost of each return, and a flag on any product at 1.5 times its 6 month rate",
+      "trigger": "every Monday",
+      "enablers": [
+        "reason-tagger",
+        "margin-view"
+      ],
+      "inputs": [
+        {
+          "need": "returns and refunds with reason codes and notes",
+          "from": "Shopify returns, or the returns app",
+          "status": "connected"
+        },
+        {
+          "need": "full cost of a return: postage both ways, restock, write-off",
+          "from": "founder interview, question 7",
+          "status": "founder"
+        },
+        {
+          "need": "product cost per SKU",
+          "from": "finance shelf",
+          "status": "brain"
+        },
+        {
+          "need": "size chart and product page text",
+          "from": "products shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pull 60 days of returns and join each to product, size, colour and order date",
+        "Clean the reason codes into the fixed list and read 20 free text notes by hand",
+        "Compute return rate per product and size from totals, and the full cost of each return",
+        "Flag products at 1.5 times their 6 month rate, and name the size or reason behind it",
+        "Write 1 fix per flag: a size chart line, a photo, a product note, or a supplier call"
+      ],
+      "output": "a return table by product and size with cost, flags and 1 fix each",
+      "next": "feeds 15-13 (batch check), 07-landing-pages-cro (size chart) and 21-07 (margin)",
+      "watch": {
+        "metric": "return rate by product and return reason",
+        "window": "60 day",
+        "source": "Shopify returns"
+      },
+      "drives": "gross profit per order",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "15-13",
+      "top": "T3",
+      "job": "Catch a bad batch in days: count tickets, reviews and returns that name the same defect per product and purchase order, alert at 5 in 7 days, and list the unshipped orders from that batch",
+      "trigger": "every day",
+      "enablers": [
+        "reason-tagger"
+      ],
+      "inputs": [
+        {
+          "need": "tickets with customer photos",
+          "from": "helpdesk",
+          "status": "connected"
+        },
+        {
+          "need": "new reviews",
+          "from": "reviews app",
+          "status": "connected"
+        },
+        {
+          "need": "returns with reasons",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "purchase order and date received for each batch",
+          "from": "operations shelf (supply)",
+          "status": "brain"
+        },
+        {
+          "need": "stock by batch or date received",
+          "from": "3PL or warehouse system",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "Tag each defect mention with product, defect type and delivery date",
+        "Map the delivery date to the batch received just before it",
+        "Alert when 5 mentions of the same defect hit one batch within 7 days",
+        "List orders not yet shipped from that batch and hold them for a person to check",
+        "Send the supplier the count, photos and order numbers, and log the claim"
+      ],
+      "output": "a defect alert with batch, count, photos and a hold list",
+      "next": "feeds 19-14 (supplier score) and 19-15 (inspection before paying)",
+      "watch": {
+        "metric": "tickets and reviews with the same defect, per batch",
+        "window": "14 day",
+        "source": "helpdesk tags, reviews app and purchase order records"
+      },
+      "drives": "refunds and bad reviews",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "15-14",
+      "top": "T3",
+      "job": "Answer every 1 and 2 star review within 5 days with a fix, and send each cause to the person who can change the product or the page, tracking how many weeks it stays open",
+      "trigger": "daily for replies, every Monday for open causes",
+      "enablers": [
+        "review-miner",
+        "work-board"
+      ],
+      "inputs": [
+        {
+          "need": "new reviews with rating",
+          "from": "reviews app",
+          "status": "connected"
+        },
+        {
+          "need": "the reviewer's orders and tickets",
+          "from": "Shopify and helpdesk",
+          "status": "connected"
+        },
+        {
+          "need": "reply tone",
+          "from": "voice shelf",
+          "status": "brain"
+        },
+        {
+          "need": "owner for each cause type",
+          "from": "founder",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "Pull new 1 and 2 star reviews each day with the reviewer's order and tickets",
+        "Draft a reply that names the problem and the fix, and a person approves it",
+        "Contact the customer privately to make it right, and log what was done",
+        "Tag the cause and put it on the work board with an owner and a due date",
+        "Each Monday list causes open for over 2 weeks and how many reviews each caused"
+      ],
+      "output": "replies posted within 5 days, and a list of causes with owner and weeks open",
+      "next": "feeds 15-12 (returns) and 07-landing-pages-cro",
+      "watch": {
+        "metric": "share of 1 and 2 star reviews answered within 5 days",
+        "window": "30 day",
+        "source": "reviews app"
+      },
+      "drives": "star rating on best sellers, and conversion",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "15-15",
+      "top": "T3",
+      "job": "Mine 300 reviews of the top 3 rivals on Amazon and their own sites: list what buyers love, hate and wish for, mark the complaints we already solve, and hand 5 lines to copy and 3 notes to product",
+      "trigger": "once at onboarding, then each quarter",
+      "enablers": [
+        "review-miner"
+      ],
+      "inputs": [
+        {
+          "need": "the 3 rivals with product links",
+          "from": "competitors shelf",
+          "status": "brain"
+        },
+        {
+          "need": "rival reviews from Amazon and their sites",
+          "from": "a review export tool, or a person copies them by hand",
+          "status": "buy"
+        },
+        {
+          "need": "our own reviews",
+          "from": "reviews app",
+          "status": "connected"
+        },
+        {
+          "need": "proof we hold for each claim",
+          "from": "claims shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pull 100 reviews per rival, weighted to 1 to 3 stars",
+        "Group them into love, hate and wish themes and count each",
+        "Mark each hate theme: we solve it, we have the same problem, or unknown",
+        "Write 5 lines for ads and pages from the themes we solve, each with our proof",
+        "Send the 3 themes we share with rivals to the product owner",
+        "Founder checks every claim before it goes to copy"
+      ],
+      "output": "a theme table for 3 rivals, 5 approved lines and 3 product notes",
+      "next": "feeds 10-copy, 09-creative and 03-competitors",
+      "watch": {
+        "metric": "cost per new customer on ads that use the new lines",
+        "window": "14 day",
+        "source": "Meta Ads"
+      },
+      "drives": "conversion on paid traffic",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 2,
+        "speed": 3,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "15-16",
+      "top": "T3",
+      "job": "Compare each product's site rating with its Amazon rating, and list what Amazon reviewers complain about that site reviewers do not",
+      "trigger": "first Monday of each month, for sellers on Amazon",
+      "enablers": [
+        "review-miner",
+        "question-matrix"
+      ],
+      "inputs": [
+        {
+          "need": "site reviews and ratings",
+          "from": "reviews app",
+          "status": "connected"
+        },
+        {
+          "need": "Amazon reviews on our listings",
+          "from": "Amazon Seller Central",
+          "status": "setup"
+        },
+        {
+          "need": "Amazon return reasons",
+          "from": "Amazon Seller Central",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "Pull ratings and reviews per product from both places",
+        "For each product with a gap of 0.3 stars or more, group the Amazon complaints",
+        "Split complaints into product, listing (wrong expectation), delivery, and fake or reseller units",
+        "Write the fix per group: listing copy, image, size note, or a seller report",
+        "Recheck the gap 60 days later"
+      ],
+      "output": "a gap table with the Amazon-only complaints and a fix per product",
+      "next": "feeds 20-20 (fix the rating) and 20-15 (Amazon question matrix)",
+      "watch": {
+        "metric": "star rating per product on site and on Amazon",
+        "window": "90 day",
+        "source": "reviews app and Amazon Seller Central"
+      },
+      "drives": "Amazon buy rate",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "15-17",
+      "top": "T4",
+      "job": "Rank customers by gross profit over 365 days after returns, shipping and discounts, take the top 2 percent, and drop heavy returners and buyers who only order with a code",
+      "trigger": "once, then each quarter",
+      "enablers": [
+        "vip-list",
+        "margin-view"
+      ],
+      "inputs": [
+        {
+          "need": "orders, refunds and discounts per customer",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "product and shipping cost",
+          "from": "finance shelf",
+          "status": "brain"
+        },
+        {
+          "need": "tickets and reviews per customer",
+          "from": "helpdesk and reviews app",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Compute gross profit per customer for 365 days from orders, refunds, shipping and discounts",
+        "Rank and take the top 2 percent, with order count, first product and last order date",
+        "Drop customers with 3 or more returns, or with a code on every order",
+        "Add notes from tickets and reviews: what they bought and what they said",
+        "Founder reads the list and removes anyone who should not be on it"
+      ],
+      "output": "a VIP list of about 2 percent of customers, with profit, history and notes",
+      "next": "feeds 15-18 (letters) and 14-email-messaging (a quiet segment)",
+      "watch": {
+        "metric": "repeat rate and gross profit of the top 2 percent",
+        "window": "365 day",
+        "source": "Shopify orders"
+      },
+      "drives": "profit from repeat customers",
+      "business": "gross profit",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "15-18",
+      "top": "T4",
+      "job": "Mail a personal letter to the top 50 customers with quiet early access to the next launch through a private link, never announced, and compare what they do in 60 days with 50 similar customers who got nothing",
+      "trigger": "before each launch, at most once a quarter",
+      "enablers": [
+        "vip-list"
+      ],
+      "inputs": [
+        {
+          "need": "the VIP list",
+          "from": "vip-list",
+          "status": "enabler"
+        },
+        {
+          "need": "the founder's voice and signature",
+          "from": "voice shelf and founder",
+          "status": "founder"
+        },
+        {
+          "need": "next launch date and units set aside",
+          "from": "calendar shelf and products shelf (roadmap)",
+          "status": "brain"
+        },
+        {
+          "need": "letter printing or a handwriting service, and postage",
+          "from": "a letter service",
+          "status": "buy"
+        },
+        {
+          "need": "a hidden product page or a code that only works for these 50",
+          "from": "Shopify",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "Pick 50 VIPs, and hold out 50 with the same profit and recency who get nothing",
+        "Write the letter in the founder's voice, with 1 line from each customer's own history",
+        "A person reads every letter before it is printed",
+        "Set up the hidden page or code with access 7 days before the public launch",
+        "Mail the letters, and log who got what and when",
+        "At 60 days compare orders, spend and referrals with the holdout, and log it as a win or a fail"
+      ],
+      "output": "50 letters sent, a private access page, and a 60 day readout against the holdout",
+      "next": "feeds 25-experiments (win or fail note) and 15-17 (next quarter's list)",
+      "watch": {
+        "metric": "orders and spend from letter recipients versus the holdout",
+        "window": "60 day",
+        "source": "Shopify orders"
+      },
+      "drives": "repeat rate of top customers, and referrals",
+      "business": "gross profit",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 2,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "15-19",
+      "top": "T4",
+      "job": "Count how many Meta purchases come from people who already bought from us, per campaign, work out the cost per truly new customer, and give the ads team a list of campaigns that should exclude past buyers",
+      "trigger": "every Monday",
+      "enablers": [
+        "funnel-mix"
+      ],
+      "inputs": [
+        {
+          "need": "campaigns with spend and purchases",
+          "from": "Meta Ads (read only)",
+          "status": "connected"
+        },
+        {
+          "need": "orders with link tags and customer history",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "which campaigns are prospecting and which retargeting",
+          "from": "ads shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Match orders with a Meta link tag to the customer's order history",
+        "For each campaign, split purchases into first orders and repeat orders",
+        "Compute cost per new customer as spend divided by first orders, from totals",
+        "List prospecting campaigns where over 25 percent of buyers were past customers",
+        "Send the list to the person who runs ads to add a past buyer exclusion; ecomOS does not change the account"
+      ],
+      "output": "a campaign table with new and repeat share and cost per new customer, plus an exclusion list",
+      "next": "feeds 22-13 (funnel mix) and 11-paid-social",
+      "watch": {
+        "metric": "share of Meta purchases from existing customers",
+        "window": "30 day",
+        "source": "Meta Ads and Shopify orders"
+      },
+      "drives": "cost per new customer",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 2,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "15-20",
+      "top": "T4",
+      "job": "List customers with 3 or more returns in 180 days, show their share of all refunds, and draft a fair rule for the founder to sign, such as exchange only after the third return",
+      "trigger": "each quarter",
+      "enablers": [
+        "reason-tagger",
+        "margin-view"
+      ],
+      "inputs": [
+        {
+          "need": "returns and refunds per customer",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "full cost of a return",
+          "from": "founder interview, question 7",
+          "status": "founder"
+        },
+        {
+          "need": "current return policy",
+          "from": "operations shelf (returns)",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Count returns and refund value per customer for 180 days",
+        "Compute the share of all refunds from customers with 3 or more returns, and their reasons",
+        "Separate fit and defect returns from wear and return",
+        "Draft 2 rule options with the money each saves and the sales each could cost",
+        "Founder picks one, and it goes into the returns app and the support rulebook"
+      ],
+      "output": "a list of serial returners, their share of refunds, and a signed rule",
+      "next": "feeds 15-11 (rulebook) and 21-07 (margin)",
+      "watch": {
+        "metric": "share of refund value from customers with 3 or more returns",
+        "window": "180 day",
+        "source": "Shopify returns"
+      },
+      "drives": "refunds per order",
+      "business": "gross profit",
+      "score": {
+        "money": 2,
+        "satisfaction": 2,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    }
+  ],
+  "new_enablers": [
+    {
+      "id": "cohort-view",
+      "name": "Cohort and repeat view",
+      "what": "Groups customers by the month of their first order and tracks second order rate, orders, returns and gross profit per customer at 30, 60, 90, 180 and 365 days. Splits by first product, channel, market and first discount, and gives each product its reorder window.",
+      "inputs": [
+        "orders with customer ids for 24 months",
+        "refunds and returns",
+        "product costs",
+        "order source from link tags"
+      ],
+      "powers": [
+        "which cohorts stopped coming back and when",
+        "which first product makes repeat buyers",
+        "reorder window per product",
+        "lapsed customer lists",
+        "profit per customer by channel, for bid caps"
+      ],
+      "screens": [
+        "15-customers-cx",
+        "21-finance-cash",
+        "22-measurement",
+        "14-email-messaging",
+        "02-customers-avatars"
+      ],
+      "note": null
+    },
+    {
+      "id": "reason-tagger",
+      "name": "Reason tagger",
+      "what": "Gives every ticket, return, review and exit survey answer one reason from a fixed list of about 15, plus product, variant and batch. A person checks 20 to 40 tags a week. Counts each reason per 100 orders and puts a dollar cost on it.",
+      "inputs": [
+        "helpdesk tickets",
+        "returns with reason codes",
+        "reviews",
+        "purchase order and batch records",
+        "a reason list with 3 examples each"
+      ],
+      "powers": [
+        "the reason growing fastest this week",
+        "bad batch alerts",
+        "return cost by reason",
+        "what to fix in product, page or delivery"
+      ],
+      "screens": [
+        "15-customers-cx",
+        "19-supply-inventory",
+        "20-marketplaces",
+        "07-landing-pages-cro"
+      ],
+      "note": null
+    }
+  ]
+}
