@@ -2939,6 +2939,40 @@ class Round8QuizAndSchedule(TempBrain):
         self.assertEqual(api.handle(Req(['schedule'], 'POST', body={'weekday': 'x'}))[0], 400)
 
 
+class Round10Snapshots(TempBrain):
+    """Round 10 feature 5: a snapshot before every bulk move, and a restore from it."""
+
+    def test_source_retire_snapshots_then_restore_brings_records_back(self):
+        self.assertEqual(api.handle(Req(['snapshots']))['counts']['snapshots'], 0)
+        sr = api.handle(Req(['sources']))
+        g = next(g for g in sr['sources'] if g['type'] == 'site' and g['active'] >= 3)
+        status, r = api.handle(Req(['sources', 'retire'], 'POST', body={'ref': g['ref'], 'reason': 'the page moved and the old copy is wrong'}))
+        self.assertEqual(status, 201)
+        self.assertTrue(r['snapshot'] and r['snapshot']['file'].endswith('.json'))
+        ls = api.handle(Req(['snapshots']))
+        self.assertEqual(ls['counts']['snapshots'], 1)
+        snap = ls['snapshots'][0]
+        self.assertIn('before retiring source', snap['reason'])
+        self.assertTrue(set(snap['sections']) >= set(r['snapshot']['sections']))
+        pl = api.handle(Req(['snapshots', 'restore'], 'POST', body={'file': snap['file'], 'dry_run': True}))
+        self.assertTrue(pl['dry_run'])
+        self.assertGreaterEqual(pl['counts']['re_add'] + pl['counts']['change'], len(r['retired']))
+        self.assertEqual(api.handle(Req(['snapshots', 'restore'], 'POST', body={'file': '../x.json'}))[0], 404)
+        status, ap = api.handle(Req(['snapshots', 'restore'], 'POST', body={'file': snap['file'], 'dry_run': False}))
+        self.assertEqual(status, 201)
+        self.assertGreaterEqual(ap['counts']['written'], len(r['retired']))
+        g2 = next(x for x in api.handle(Req(['sources']))['sources'] if x['ref'] == g['ref'])
+        self.assertEqual(g2['active'], g['active'])
+        self.assertEqual(api.handle(Req(['snapshots']))['counts']['snapshots'], 2)  # the restore snapshots first
+        self.assertTrue(any(c['kind'] == 'restore' and 'snapshot' in c['what'] for c in api.handle(Req(['changes']))['changes']))
+
+    def test_section_undo_snapshots(self):
+        api.handle(Req(['profile', 'offers', 'free_shipping_threshold_usd'], 'POST', body={'text': '80', 'force': True}))
+        status, r = api.handle(Req(['changes', 'undo', 'section'], 'POST', body={'section': 'offers', 'since': '2026-09-28'}))
+        self.assertEqual((status, r['snapshot']['sections']), (201, ['offers']))
+        self.assertEqual(api.handle(Req(['snapshots']))['snapshots'][0]['sections'], ['offers'])
+
+
 class Round10Inbox(TempBrain):
     """Round 10 feature 4: briefs other screens hand to the brain."""
 
@@ -3569,7 +3603,7 @@ class Round8SourcesTrustHistory(TempBrain):
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
-    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'], ['onepage'], ['brainmd', 'notes'], ['alerts'], ['glossary'], ['expiring'], ['feedback'], ['numbers'], ['proofs'], ['trust'], ['round'], ['brandbook'], ['quiz'], ['schedule'], ['sources'], ['records', 'csv'], ['trust', 'history'], ['contradict'], ['changes'], ['handoff'], ['ask', 'misses'], ['products', 'sheets'], ['shelf'], ['round', 'report'], ['evidence', 'gaps'], ['inbox'],
+    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'], ['onepage'], ['brainmd', 'notes'], ['alerts'], ['glossary'], ['expiring'], ['feedback'], ['numbers'], ['proofs'], ['trust'], ['round'], ['brandbook'], ['quiz'], ['schedule'], ['sources'], ['records', 'csv'], ['trust', 'history'], ['contradict'], ['changes'], ['handoff'], ['ask', 'misses'], ['products', 'sheets'], ['shelf'], ['round', 'report'], ['evidence', 'gaps'], ['inbox'], ['snapshots'],
               ['decisions'], ['flows'], ['claims'], ['site', 'diff'], ['parity'], ['contracts'], ['legal'], ['voice'], ['battlecards'], ['permissions'],
               ['export'], ['assumptions'], ['facts'], ['summaries'], ['changes'], ['learn'], ['report'], ['digest'], ['review'], ['bottlenecks'], ['audit']]
 

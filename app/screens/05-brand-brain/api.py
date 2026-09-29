@@ -16,6 +16,8 @@ question, and accept or ignore on a proposed record. Nothing external.
   GET  products/sheets          one fact sheet per product line: claims by tier, price and packs, materials, reviews, objections, red lines
   GET  handoff                  every person handed the brain, with the quiz state (waiting, overdue, passed, failed)
   GET  inbox                    briefs other screens handed to the brain on the shared hand-offs table, with what was done with each
+  GET  snapshots                the snapshots taken before bulk moves (file, reason, sections, records)
+  POST snapshots/restore        {file, sections, dry_run}: plan or apply a restore from a snapshot; the restore snapshots first
   POST inbox/accept             {id}: the brief's draft goes through the document extractor into the review queue as proposed records
   POST inbox/dismiss            {id, why}: mark a brief dismissed in the brain's own ledger
   GET  handoff/pack             ?to=&role=: the pack for a person (one page, brand book, red lines, questions) without recording it
@@ -322,6 +324,9 @@ _snspec.loader.exec_module(since_mod)
 _ibspec = importlib.util.spec_from_file_location("brand_brain_inbox", HERE / "inbox.py")
 inbox = importlib.util.module_from_spec(_ibspec)
 _ibspec.loader.exec_module(inbox)
+_sspspec = importlib.util.spec_from_file_location("brand_brain_snapshots", HERE / "snapshots.py")
+snapshots = importlib.util.module_from_spec(_sspspec)
+_sspspec.loader.exec_module(snapshots)
 
 
 def _shelf(brain: Brain) -> dict:
@@ -2123,8 +2128,9 @@ def handle(req):
         rows = changes.recent(brain, days=100000)["changes"]
         if req.method == "GET":
             return undo.section_plan(brain, rows, section, since, changes)
+        snap = snapshots.take(brain, [section], f"before undoing {section} back to {since}")
         res = undo.section_apply(brain, rows, section, since, changes, history, founder_put)
-        return 201, dict(res, version=brain.version())
+        return 201, dict(res, version=brain.version(), snapshot=snap)
     if req.method == "GET" and parts == ["changes", "undo"]:
         cid = str(req.arg("change") or "")
         row = next((x for x in changes.recent(brain, days=100000)["changes"] if x["id"] == cid), None)
@@ -2209,6 +2215,7 @@ def handle(req):
                 return res
             return dict(res, dry_run=True, note="What the restore would do per section. Send dry_run false to apply; nothing is deleted, the current values go to history.")
         before_v = brain.version()
+        snapshots.take(brain, [str(x) for x in sections], 'before a restore from an export')
         res = restore.apply(brain, bundle, [str(x) for x in sections], SECTIONS)
         if isinstance(res, tuple):
             return res
@@ -2370,6 +2377,29 @@ def handle(req):
         if errs:
             return 400, {"error": "; ".join(errs)}
         return 201, {"ok": True, "weekday": wd, "hour": hour, "version": brain.version(), "next": f"Set. The round and the digest read {names[wd]} as the day."}
+    if req.method == "GET" and parts == ["snapshots"]:
+        v = snapshots.listing(brain)
+        v.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "BRN-C07", "autonomy": "founder_gate"})
+        return v
+    if req.method == "POST" and parts == ["snapshots", "restore"]:
+        body = req.body or {}
+        bundle = snapshots.load(brain, str(body.get("file") or ""))
+        if bundle is None:
+            return 404, {"error": "no snapshot with that file name", "file": body.get("file")}
+        sections = [str(x) for x in body.get("sections")] if isinstance(body.get("sections"), list) and body.get("sections") else sorted(bundle["sections"].keys())
+        if body.get("dry_run", True):
+            res = restore.plan(brain, bundle, sections, SECTIONS)
+            if isinstance(res, tuple):
+                return res
+            return dict(res, dry_run=True, file=body.get("file"), note="What restoring the snapshot would do per section. Send dry_run false to apply; the restore takes its own snapshot first and nothing is deleted.")
+        snap = snapshots.take(brain, sections, f"before restoring snapshot {str(body.get('file'))[:30]}")
+        before_v = brain.version()
+        res = restore.apply(brain, bundle, sections, SECTIONS)
+        if isinstance(res, tuple):
+            return res
+        changes.log(brain, "restore", None, None, f"{res['counts']['written']} records restored from snapshot {body.get('file')} ({bundle.get('reason') or 'no reason'})")
+        changes.version_step(brain, before_v, f"snapshot restore {body.get('file')}")
+        return 201, dict(res, dry_run=False, file=body.get("file"), snapshot=snap, version=brain.version(), next=f"{res['counts']['written']} records put back as they were before: {bundle.get('reason') or 'the move'}.")
     if req.method == "GET" and parts == ["inbox"]:
         table = _handoffs_table()
         if table is None:
@@ -2516,6 +2546,7 @@ def handle(req):
         plan = sources_mod.approve_source(brain, ref, secs, str(body.get("note") or ""))
         if not plan["records"]:
             return 400, {"error": "nothing to approve from that source: every record is already approved, forbidden or retired", "ref": ref}
+        snap = snapshots.take(brain, sorted({r["section"] for r in plan["records"]}), f"before approving source {sources_mod._key(ref)}")
         before_v = brain.version()
         written, errors = [], []
         for r in plan["records"]:
@@ -2524,7 +2555,7 @@ def handle(req):
         changes.log(brain, "approve", None, plan["review"]["id"], f"{len(written)} record{'s' if len(written) != 1 else ''} from {sources_mod._key(ref)} approved after review" + (f": {str(body.get('note'))[:80]}" if body.get("note") else ""))
         changes.version_step(brain, before_v, f"source review {sources_mod._key(ref)}")
         rerrs = founder_put(brain, plan["review"], "source_review", plan["review"]["text"][:160])
-        return 201, {"ok": True, "ref": sources_mod._key(ref), "approved": written, "errors": errors, "counts": dict(plan["counts"], written=len(written)), "review": None if rerrs else plan["review"]["id"], "version": brain.version(),
+        return 201, {"ok": True, "ref": sources_mod._key(ref), "approved": written, "errors": errors, "counts": dict(plan["counts"], written=len(written)), "review": None if rerrs else plan["review"]["id"], "version": brain.version(), "snapshot": snap,
                      "next": f"{len(written)} record{'s' if len(written) != 1 else ''} now approved. Every package and brain file reads them as approved from now."}
     if req.method == "GET" and parts == ["sources", "retire"]:
         ref = (req.arg("ref") or "").strip()
@@ -2548,13 +2579,14 @@ def handle(req):
         plan = sources_mod.retire_source(brain, ref, secs, reason)
         if not plan["records"]:
             return 400, {"error": "nothing to retire from that source: every record is already retired", "ref": ref}
+        snap = snapshots.take(brain, sorted({r["section"] for r in plan["records"]}), f"before retiring source {sources_mod._key(ref)}")
         before_v = brain.version()
         done = [r["id"] for r in plan["records"] if brain.retire(r["id"])]
         for rid in done:
             changes.log(brain, "retired", rid.split(".")[1], rid, f"retired with its source {sources_mod._key(ref)}: {reason[:120]}")
         changes.version_step(brain, before_v, f"source retire {sources_mod._key(ref)}")
         nerrs = founder_put(brain, plan["note"], "source_retire", plan["note"]["text"][:160])
-        return 201, {"ok": True, "ref": sources_mod._key(ref), "retired": done, "counts": dict(plan["counts"], retired=len(done)), "note": None if nerrs else plan["note"]["id"], "version": brain.version(),
+        return 201, {"ok": True, "ref": sources_mod._key(ref), "retired": done, "counts": dict(plan["counts"], retired=len(done)), "note": None if nerrs else plan["note"]["id"], "version": brain.version(), "snapshot": snap,
                      "next": f"{len(done)} record{'s' if len(done) != 1 else ''} retired. No package or brain file reads them from now; each has an undo on the changes list."}
     if req.method == "GET" and parts == ["sources"]:
         sr = sources_mod.register(brain)
@@ -3031,6 +3063,8 @@ def handle(req):
         items = (req.body or {}).get("items")
         if not isinstance(items, list) or not items:
             return 400, {"error": "items is a list of {id, kind, field, answer}"}
+        if len(items) > 1:
+            snapshots.take(brain, ["open_questions"] + sorted({str(it.get("section") or "") for it in items if isinstance(it, dict) and it.get("section")}), "before a batch of answers from a note")
         written, errors = [], []
         for it in items[:50]:
             if not isinstance(it, dict) or not str(it.get("answer") or "").strip():
