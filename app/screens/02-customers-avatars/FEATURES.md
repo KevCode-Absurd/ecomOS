@@ -197,7 +197,7 @@ Lead's review: rounds 1 to 4 passed. Focus: returns and tickets by avatar, depth
 | # | Feature | Status |
 |---|---|---|
 | 12.1 | What the teams did with our hand-offs: rows are append-only, so a receiving team's choice lives in the decisions log against the hand-off's id. Each pack's line now says how many sent briefs the team answered and how ("1 answered by the team: 1 agent does it, last on 26 Sep"), or that none is answered yet. Browser-tested with a seeded answer in a temp folder | done |
-| 12.2 | Shopper run and pretest results read back when a table or fixture holds them: pass and fail per checkpoint, the choice per pretest; a fail becomes a move; CUST-R34 resolves once a run is on file | todo |
+| 12.2 | Shopper run and pretest results read back from a `shopper_runs` table when the data layer has one, else `fixtures/shopper_runs/<brand>.json`. The latest run marks each checkpoint passed or failed. A fail becomes rule CUST-R35 (high) with a drafted fix by step, a page section for a page step, an email for the order email, a ticket for checkout, support or returns. CUST-R34 resolves while a run is under 90 days old and fires again after. A pretest the buyers' line wins with 3 of 5 votes or more becomes "Lead with it", a copy move with its stop rule. Bombas: no results yet, so nothing changes; tested on a temp fixture both ways. 35 rules | done |
 | 12.3 | The baseline for our own assets: what the brain captured of our site, ads and email, with dates, as scan one of the quarterly series | todo |
 | 12.4 | Watch what is ours: our name, domain and handles on file in the brain, lookalikes seen, and a drafted monthly watch | todo |
 | 12.5 to 12.10 | Picked after 12.4 | todo |

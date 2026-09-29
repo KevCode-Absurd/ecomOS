@@ -98,7 +98,7 @@ class AuditShape(unittest.TestCase):
         self.assertEqual(r03['status'], 'unavailable')
         self.assertEqual(r03['evidence'], [])
         self.assertEqual(set(r03['unavailable']), {'inputs', 'connector', 'fix'})
-        self.assertEqual({r['rule_id'] for r in audit.RULES}, {f'CUST-R{n:02d}' for n in range(1, 35)})
+        self.assertEqual({r['rule_id'] for r in audit.RULES}, {f'CUST-R{n:02d}' for n in range(1, 36)})
 
 
 class AuditRules(TempBrain):
@@ -595,7 +595,7 @@ class RankRound1(TempBrain):
 
     def test_every_rule_fires_on_bombas(self):
         rules = {f['rule_id'] for f in audit.run('bombas', RANK_WINDOW, self.tmp)}
-        self.assertEqual(rules, {f'CUST-R{n:02d}' for n in range(1, 35) if n not in (23, 32)})
+        self.assertEqual(rules, {f'CUST-R{n:02d}' for n in range(1, 36) if n not in (23, 32, 35)})
 
     def test_open_actions_carry_drafts(self):
         acts = api.rank('bombas', RANK_WINDOW)['actions']
@@ -2800,3 +2800,53 @@ class ReportNewBlocks(TempBrain):
         sec = {s['title']: s['lines'] for s in rep['sections']}
         self.assertTrue(any(l.startswith('Buyers drift: durability complaints') for l in sec['Risks to the brand']))
         self.assertTrue(any('mystery shopper' in l for l in sec['What we do not know yet']))
+
+
+class ShopperResults(TempBrain):
+    """Feature 12.2: shopper run and pretest results read back from a table or fixture. A fail becomes CUST-R35 with its
+    fix; a fresh run resolves CUST-R34; a pretest the buyers' line wins becomes a move to lead with it."""
+
+    def with_fixture(self, body, check):
+        folder = api.audit.FIXTURES / 'shopper_runs'
+        made = not folder.exists()
+        folder.mkdir(exist_ok=True)
+        f = folder / 'bombas.json'
+        try:
+            f.write_text(json.dumps(body), encoding='utf-8')
+            api._OVERVIEW_CACHE.clear(); api._RANK_CACHE.clear(); api.audit._DESK_CACHE.clear()
+            check()
+        finally:
+            f.unlink()
+            if made:
+                folder.rmdir()
+            api._OVERVIEW_CACHE.clear(); api._RANK_CACHE.clear(); api.audit._DESK_CACHE.clear()
+
+    def test_results_read_back(self):
+        body = {'runs': [{'date': '2026-09-20', 'checkpoints': [{'step': 'Cart', 'result': 'fail', 'note': 'no free shipping bar'},
+                                                                {'step': 'Home', 'result': 'pass'}]}],
+                'pretests': [{'avatar_key': 'durability_disappointed_repeat_customer', 'a_votes': 1, 'b_votes': 4, 'date': '2026-09-21'}]}
+
+        def check():
+            d = api.handle(Req(['overview']))
+            x = d['shopper']
+            self.assertEqual(x['results'], 'read')
+            self.assertTrue(x['fresh'])
+            cart = next(r for r in x['rows'] if r['step'] == 'Cart')
+            self.assertEqual(cart['result'], 'fail')
+            self.assertEqual(cart['fix']['kind'], 'page_section')
+            p = next(p for p in x['pretests'] if p['key'] == 'durability_disappointed_repeat_customer')
+            self.assertEqual(p['result']['verdict'], 'b_wins')
+            self.assertIn(p['b'], p['lead']['title'])
+            fs = {f['rule_id']: f for f in api.audit.run('bombas', RANK_WINDOW, api.BRAIN_ROOT)}
+            self.assertNotIn('CUST-R34', fs)
+            self.assertIn('CUST-R35', fs)
+            acts = api.rank('bombas', RANK_WINDOW)['actions']
+            fix = next(a for a in acts if any('CUST-R35' in f for f in a['finding_ids']))
+            self.assertEqual(fix['title'], 'Fix the cart step the shopper failed')
+        self.with_fixture(body, check)
+
+    def test_old_run_still_fires(self):
+        def check():
+            fs = {f['rule_id']: f for f in api.audit.run('bombas', RANK_WINDOW, api.BRAIN_ROOT)}
+            self.assertIn('days ago', fs['CUST-R34']['sentence'])
+        self.with_fixture({'runs': [{'date': '2026-03-01', 'checkpoints': [{'step': 'Home', 'result': 'pass'}]}]}, check)

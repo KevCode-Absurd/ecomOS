@@ -115,6 +115,8 @@ CUST-R33 buyers drift the wrong way. A theme's share of complaint reviews rose, 
     9). Capability BRAND-C13. One finding per theme and side.
 CUST-R34 no mystery shopper run on file. The brain holds facts to check a real order against and no run is recorded
     (builds.shopper_run). Severity low. Capability BRAND-C67. A person runs it.
+CUST-R35 a mystery shopper checkpoint failed on the last run (builds._apply_results). Severity high. Capability
+    BRAND-C67. One finding per failed step, mapped to its drafted fix. Silent until a run is on file.
 CUST-R32 weak cohort. A first-order month repeats in months 1 to 3 at under 0.8x the grid's median
     (builds.cohort_grid). One finding per cohort. Severity medium. Capability LIFE-C07. Money
     (builds._weak_stake): (median repeat minus the cohort's) x cohort size x the cohort month's AOV; the note
@@ -216,8 +218,10 @@ RULES = [
      "inputs": ["cohorts", "monthly"], "capability": "LIFE-C07", "owner_screen": SCREEN},
     {"rule_id": "CUST-R33", "name": "buyers drift the wrong way", "entity_type": "brand",
      "inputs": ["brain language_bank"], "capability": "BRAND-C13", "owner_screen": SCREEN},
-    {"rule_id": "CUST-R34", "name": "no mystery shopper run on file", "entity_type": "brand",
-     "inputs": ["brain policies", "brain offers", "brain objection_ladders"], "capability": "BRAND-C67", "owner_screen": SCREEN},
+    {"rule_id": "CUST-R34", "name": "no recent mystery shopper run on file", "entity_type": "brand",
+     "inputs": ["brain policies", "brain offers", "brain objection_ladders", "shopper_runs"], "capability": "BRAND-C67", "owner_screen": SCREEN},
+    {"rule_id": "CUST-R35", "name": "mystery shopper checkpoint failed", "entity_type": "brand",
+     "inputs": ["shopper_runs"], "capability": "BRAND-C67", "owner_screen": SCREEN},
 ]
 AUTONOMY = {"BRAND-C11": "founder_gate", "BRAND-C13": "agent_does", "CREA-C03": "agent_does", "SITE-C38": "human_assist",
             "PROD-C73": "human_assist", "CREA-C24": "agent_does", "LIFE-C27": "human_assist", "BRAND-C16": "founder_gate",
@@ -645,6 +649,22 @@ def load_line_sales(brain: Brain, lines: set[str]) -> dict:
     return builds.line_sales(rows, codes, lines, as_of)
 
 
+def load_shopper_results(brain: Brain) -> dict | None:
+    """Mystery shopper runs and pretest votes: the data layer's shopper_runs table when it exists, else a local fixture."""
+    import json
+    try:
+        from tables import brand_data
+        t = brand_data(brain.brand).table("shopper_runs")
+        if isinstance(t, dict):
+            return t
+    except (ImportError, ValueError, KeyError, FileNotFoundError):
+        pass
+    try:
+        return json.loads((FIXTURES / "shopper_runs" / f"{brain.brand}.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+
+
 def load_survey_answers(brain: Brain) -> dict | None:
     """The situation question's answers: the data layer's survey_answers table when it exists, else a local fixture.
     None when neither exists."""
@@ -714,7 +734,7 @@ def desk(brain: Brain, avatars: list[dict], all_rungs: list[dict]) -> dict:
     d["drift"] = builds.drift(brain.records("language_bank"), d["themes"], as_of)
     # the rule only needs to know a run is possible; the full run sheet, with the lead and support replies, is built by api
     d["shopper"] = builds.shopper_run(brain.records("policies"), brain.records("offers"), {"available": False}, d["ladders"]["rows"],
-                                      {}, {}, {}, as_of)
+                                      {}, {}, {}, as_of, load_shopper_results(brain))
     return d
 
 
@@ -1143,11 +1163,20 @@ def r33_r34(d, ends_on):
                             {"type": "brand", "id": f"drift_{r['side']}_{r['theme']}", "label": f"{r['theme'].replace('_', ' ')} {r['side']}s"},
                             ev, s, "BRAND-C13", 0.5 if r["verdict"] == "worse" else 0.3, [], ends_on))
     sh = d.get("shopper") or {}
-    if sh.get("available") and sh.get("run"):
-        ev = [_ev("shopper_runs_on_file", 0, "n", ends_on, "brain", baseline=1)]
-        out.append(_finding("CUST-R34", "low", {"type": "brand", "id": "shopper_run", "label": "Mystery shopper run"}, ev,
-                            "No mystery shopper run is on file. The brain holds the facts to check a real order against.",
+    if sh.get("available") and sh.get("run") and not sh.get("fresh"):
+        lr = sh.get("last_run")
+        sim = sh.get("simulated", True)
+        ev = [_ev("days_since_last_run", lr["age_days"], "days", ends_on, "shopper_runs", baseline=builds.RUN_FRESH_DAYS, simulated=sim)] if lr else \
+             [_ev("shopper_runs_on_file", 0, "n", ends_on, "shopper_runs", baseline=1, simulated=sim)]
+        s = (f"The last mystery shopper run was {lr['age_days']} days ago, over {builds.RUN_FRESH_DAYS}." if lr
+             else "No mystery shopper run is on file. The brain holds the facts to check a real order against.")
+        out.append(_finding("CUST-R34", "low", {"type": "brand", "id": "shopper_run", "label": "Mystery shopper run"}, ev, s,
                             "BRAND-C67", 0.5, [], ends_on))
+    for r in sh.get("fails") or []:
+        ev = [_ev("checkpoint_failed", 1, "n", ends_on, "shopper_runs", baseline=0, simulated=sh.get("simulated", True))]
+        out.append(_finding("CUST-R35", "high", {"type": "brand", "id": "shopper_fail_" + r["step"].lower().replace(" ", "_"),
+                                                 "label": f"Shopper step: {r['step']}"}, ev,
+                            f"The mystery shopper failed the {r['step'].lower()} step on the last run.", "BRAND-C67", 0.7, [], ends_on))
     return out
 
 

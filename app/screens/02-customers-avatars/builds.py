@@ -3384,8 +3384,13 @@ PRETEST_N = 5                 # buyers who match the avatar see both lines
 PRETEST_PASS = 0.6            # the buyer-words line wins with 3 of 5 or more
 
 
+RUN_FRESH_DAYS = 90         # a run older than this counts as no run
+STEP_FIX = {"Home": "page_section", "Product page": "page_section", "Size help": "page_section", "Cart": "page_section",
+            "Checkout": "ticket", "Order email": "email", "Support": "ticket", "Return": "ticket"}
+
+
 def shopper_run(policies: list[dict], offers: list[dict], hierarchy_x: dict, ladders_rows: list[dict], macros_x: dict,
-                focus_x: dict, words_x: dict, as_of: str) -> dict:
+                focus_x: dict, words_x: dict, as_of: str, results: dict | None = None) -> dict:
     """A mystery shopper run sheet from the brain: each checkpoint names what a real shopper checks and the brain
     fact the page, cart, email or support reply must match. Plus a message pretest per top avatar: our current line
     against a line in the avatar's own words. Results are unavailable until a runs table exists; no model runs here."""
@@ -3461,6 +3466,72 @@ def shopper_run(policies: list[dict], offers: list[dict], hierarchy_x: dict, lad
                                          {"n": 2, "who": "person", "text": "Approve the two lines and who sees them."},
                                          {"n": 3, "who": "person", "text": "Show both lines and record the choice and the reason."},
                                          {"n": 4, "who": "agent", "text": "Write the result to the brain learnings."}]}})
-    return {"available": True, "rows": rows, "run": run, "pretests": pre, "results": "unavailable",
-            "results_reason": "no mystery shopper or pretest table yet; results are marked on the run sheet",
-            "line": f"{len(rows)} checkpoints, {ready} with a brain fact to check against. {len(pre)} message pretests drafted. No run is on file."}
+    out = {"available": True, "rows": rows, "run": run, "pretests": pre, "results": "unavailable",
+           "results_reason": "no mystery shopper or pretest table yet; results are marked on the run sheet",
+           "line": f"{len(rows)} checkpoints, {ready} with a brain fact to check against. {len(pre)} message pretests drafted. No run is on file.",
+           "last_run": None, "fresh": False, "fails": [], "simulated": True}
+    return _apply_results(out, results, as_of)
+
+
+def _apply_results(out: dict, results: dict | None, as_of: str) -> dict:
+    """Read the latest run and each pretest's votes back (12.2). A fail becomes a drafted fix; a pretest where the
+    buyers' line wins becomes a move to lead with it. Nothing here writes."""
+    import datetime as _dt
+    runs = [r for r in (results or {}).get("runs") or [] if isinstance(r, dict) and r.get("date") and isinstance(r.get("checkpoints"), list)]
+    votes = {p.get("avatar_key"): p for p in (results or {}).get("pretests") or [] if isinstance(p, dict)}
+    if not runs and not votes:
+        return out
+    out["results"] = "read"
+    out["results_reason"] = None
+    out["simulated"] = (results or {}).get("simulated", True) is not False
+    if runs:
+        last = max(runs, key=lambda r: str(r["date"]))
+        age = (_dt.date.fromisoformat(as_of) - _dt.date.fromisoformat(str(last["date"])[:10])).days
+        out["last_run"] = {"date": str(last["date"])[:10], "age_days": age}
+        out["fresh"] = age <= RUN_FRESH_DAYS
+        got = {c.get("step"): c for c in last["checkpoints"] if isinstance(c, dict)}
+        check = (_dt.date.fromisoformat(as_of) + _dt.timedelta(days=MOVE_CHECK_DAYS)).isoformat()
+        for r in out["rows"]:
+            c = got.get(r["step"])
+            if not c or c.get("result") not in ("pass", "fail"):
+                continue
+            r["result"], r["note"] = c["result"], c.get("note")
+            if c["result"] == "fail":
+                kind = STEP_FIX.get(r["step"], "ticket")
+                r["fix"] = {"id": f"{SCREEN}.shopper.fix.{r['step'].lower().replace(' ', '_')}", "kind": kind,
+                            "owner": "person" if kind == "ticket" else "agent_drafts", "check_on": check,
+                            "title": f"Fix the {r['step'].lower()} step the shopper failed",
+                            "capability": {"id": "BRAND-C67", "autonomy": "founder_gate"},
+                            "why": f"The {last['date'][:10]} run failed it: {c.get('note') or 'no note'}.",
+                            "stop_rule": "the same checkpoint fails on the next run",
+                            "draft": f"DRAFT fix\nStep: {r['step']}\nChecked: {r['check']}\nExpected: {r['expect'] or 'no brain fact'}\n"
+                                     f"Seen: {c.get('note') or 'no note'}\nFix: make the step match the brain fact, or correct the fact",
+                            "steps": [{"n": 1, "who": "agent", "text": "Draft the change that makes the step match the brain fact."},
+                                      {"n": 2, "who": "person", "text": "Approve and ship it, or correct the fact in the brain."},
+                                      {"n": 3, "who": "person", "text": "Check the step again on the next run."}]}
+                out["fails"].append(r)
+    for p in out["pretests"]:
+        v = votes.get(p["key"])
+        if not v:
+            continue
+        a, b = v.get("a_votes"), v.get("b_votes")
+        if not isinstance(a, int) or not isinstance(b, int) or a + b < PRETEST_N:
+            p["result"] = {"verdict": "too_few", "a": a, "b": b, "date": v.get("date")}
+            continue
+        won = b / (a + b) >= PRETEST_PASS
+        p["result"] = {"verdict": "b_wins" if won else "a_holds", "a": a, "b": b, "date": v.get("date")}
+        if won:
+            p["lead"] = {"id": f"{SCREEN}.pretest.lead.{p['key']}", "kind": "copy", "owner": "agent_drafts",
+                         "title": f"Lead with \"{p['b']}\" for {p['name']}", "capability": {"id": "BRAND-C66", "autonomy": "agent_does"},
+                         "why": f"Buyers chose their words {b} to {a}.", "check_on": p["action"]["check_on"],
+                         "stop_rule": "click-through on the new line falls under the old one for 7 days",
+                         "draft": f"DRAFT copy change\nFor: {p['name']}\nFrom: {p['a']}\nTo: \"{p['b']}\"\nWhere: ads and the product page first screen for this avatar",
+                         "steps": [{"n": 1, "who": "agent", "text": "Draft the ad and page lines with the winning words."},
+                                   {"n": 2, "who": "person", "text": "Approve and ship."},
+                                   {"n": 3, "who": "agent", "text": "Read click-through against the old line after 7 days."}]}
+    fails = len(out["fails"])
+    lr = out["last_run"]
+    out["line"] = ((f"Last run {lr['date']}: {sum(1 for r in out['rows'] if r.get('result') == 'pass')} passed, {fails} failed." if lr else "No run is on file.")
+                   + (" The run is over 90 days old." if lr and not out["fresh"] else "")
+                   + f" {sum(1 for p in out['pretests'] if p.get('result'))} of {len(out['pretests'])} pretests have votes.")
+    return out
