@@ -1,0 +1,1339 @@
+{
+  "screen": "22-measurement",
+  "title": "Measurement and data health",
+  "purpose": "When I am about to move money on a number, open Measurement to check that the number is right, fresh and counted once, so I do not act on a broken tag, a double claim or a stale report.",
+  "fires": "the agency's platform screenshots, the analyst's monthly tracking audit, the Slack thread asking which number is right, and the habit of trusting whichever dashboard looks best.",
+  "not_for": "a store with one channel and small ad spend, where store orders and the bank balance are all the truth it needs.",
+  "jobs": [
+    {
+      "rank": 1,
+      "job": "When a site change quietly stops the purchase tag from firing, tell me the same day, so I do not spend 3 weeks cutting ads that were working",
+      "circumstance": "a theme update or new checkout app went live on Thursday, Meta shows sales falling, the store's orders are steady, nobody has connected the two",
+      "progress": {
+        "functional": "know the day tracking broke, which events stopped and on which platforms",
+        "emotional": "stop the dread that every number might be quietly wrong",
+        "social": "avoid the call where I explain to a partner we cut good ads for weeks"
+      },
+      "hire_today": "a developer or agency who checks when someone complains, a tracking app, or nothing",
+      "fire": "the monthly tracking audit and the habit of finding breaks only when a platform number looks strange",
+      "forces": {
+        "push": "every day it runs broken, ad platforms learn from the wrong data and budget decisions go wrong",
+        "pull": "a same-day flag when tracked purchases split from store orders, with the likely cause",
+        "habit": "the agency says the tracking is fine",
+        "anxiety": "what if it cries wolf on normal daily swings"
+      },
+      "little_hire": "every morning, and after every site, app or consent change",
+      "watch": {
+        "metric": "tracked purchases per platform divided by store orders, daily",
+        "unit": "percent",
+        "source": "Shopify orders, Meta events, GA4 purchases"
+      },
+      "drives": {
+        "metric": "days per quarter with a purchase tracking gap over 10 percent",
+        "unit": "days"
+      },
+      "business": "risk",
+      "now_after": "Example. Now: purchase tag broken for 21 days, 2 good campaigns paused. After: breaks found within 24 hours, 0 campaigns cut on broken data.",
+      "score": {
+        "money": 5,
+        "struggle": 5,
+        "satisfaction": 4,
+        "speed": 5,
+        "ease": 3
+      },
+      "not_for": "a store with no paid ads and no one reading platform numbers"
+    },
+    {
+      "rank": 2,
+      "job": "When I open the Monday report and something looks off, tell me if a number is a day stale or missing a feed before I act, so I do not cut budget on a half day of data",
+      "circumstance": "Monday 8 am, the weekly numbers look down 15 percent, a sync failed overnight, the media buyer is waiting for a call",
+      "progress": {
+        "functional": "know which numbers are fresh, which are late and which feeds failed",
+        "emotional": "stop acting on numbers I half trust",
+        "social": "give the buyer a call I will not have to take back"
+      },
+      "hire_today": "an analyst who checks the pipes, the agency, or nothing because freshness is invisible",
+      "fire": "the habit of assuming the report is current because it loaded",
+      "forces": {
+        "push": "a stale number leads to a wrong cut or a wrong scale",
+        "pull": "each number shown with its age and a pass or fail before I read it",
+        "habit": "reports have always just been there",
+        "anxiety": "what if the check itself is wrong"
+      },
+      "little_hire": "every morning before the first decision",
+      "watch": {
+        "metric": "share of headline numbers that passed the freshness check this morning, daily",
+        "unit": "percent",
+        "source": "sync logs for store, ad platforms, GA4 and email"
+      },
+      "drives": {
+        "metric": "decisions reversed because the data was stale, per quarter",
+        "unit": "count"
+      },
+      "business": "risk",
+      "now_after": "Example. Now: 2 budget cuts last quarter made on a report missing a day. After: every morning starts with a pass, warn or fail, 0 reversed calls.",
+      "score": {
+        "money": 4,
+        "struggle": 5,
+        "satisfaction": 4,
+        "speed": 5,
+        "ease": 4
+      },
+      "not_for": "a store that checks numbers once a month and makes no daily calls"
+    },
+    {
+      "rank": 3,
+      "job": "When Meta and Google together claim 140 percent of what the store sold, tell me what each one really drove, so I do not scale both on double-counted sales",
+      "circumstance": "the monthly budget review, each platform says it is winning, the store's revenue is less than their total",
+      "progress": {
+        "functional": "know each channel's share of real store sales and how much is double counted",
+        "emotional": "stop feeling played by every platform",
+        "social": "settle the agency argument with a number both sides accept"
+      },
+      "hire_today": "a media agency, an analyst, an attribution tool subscription, or gut feel",
+      "fire": "the platform screenshots in the agency deck and the habit of adding up platform claims",
+      "forces": {
+        "push": "budgets grow on sales that happened once",
+        "pull": "platform claims set against store orders, with the overlap shown",
+        "habit": "each platform's number is the one the agency reports",
+        "anxiety": "what if the true split makes my favourite channel look bad"
+      },
+      "little_hire": "monthly, and before every budget move",
+      "watch": {
+        "metric": "sum of platform-claimed revenue divided by store revenue, same window, monthly",
+        "unit": "ratio",
+        "source": "Meta, Google, TikTok reports and Shopify orders"
+      },
+      "drives": {
+        "metric": "total store sales divided by total ad spend, monthly",
+        "unit": "ratio"
+      },
+      "business": "gross profit",
+      "now_after": "Example. Now: platforms claim $1.4 for every $1 the store sold. After: claims set against store sales, $15,000 a month moved from the weakest channel.",
+      "score": {
+        "money": 5,
+        "struggle": 5,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 3
+      },
+      "not_for": "a store running ads on a single platform"
+    },
+    {
+      "rank": 4,
+      "job": "When I am about to double a campaign's budget because of one great week, tell me if the week was real or a tracking quirk, so I do not scale something that is not there",
+      "circumstance": "Friday, one campaign shows 3 times its normal return, the buyer wants to double it Monday",
+      "progress": {
+        "functional": "check the week against store orders, bots, duplicates and tracking changes",
+        "emotional": "stop the fear of scaling a fluke",
+        "social": "back the buyer with confidence or stop them with reasons"
+      },
+      "hire_today": "the agency's judgement, or gut feel",
+      "fire": "the habit of scaling on the platform's word",
+      "forces": {
+        "push": "a false win burns money at twice the pace",
+        "pull": "a quick check of the week against store orders and known quirks",
+        "habit": "a good week is a good week",
+        "anxiety": "what if I hold and miss the real win"
+      },
+      "little_hire": "before every budget increase",
+      "watch": {
+        "metric": "platform purchases matched to store orders for the scaled campaign, 7 day",
+        "unit": "percent",
+        "source": "Meta or Google purchases and Shopify orders"
+      },
+      "drives": {
+        "metric": "return on added spend after scaling, 14 day",
+        "unit": "ratio"
+      },
+      "business": "gross profit",
+      "now_after": "Example. Now: a campaign doubled on a week inflated by duplicate events. After: caught before scaling, $8,000 saved.",
+      "score": {
+        "money": 5,
+        "struggle": 4,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 4
+      },
+      "not_for": "a store that does not scale ad budgets"
+    },
+    {
+      "rank": 5,
+      "job": "When Meta's cost per purchase jumps after a site change, tell me whether sales are missing, doubled or poorly matched to people, so Meta stops bidding on the wrong buyers",
+      "circumstance": "cost per purchase up 40 percent in a week, creative unchanged, a new app went live",
+      "progress": {
+        "functional": "know if Meta sees each sale once and can match it to a real person",
+        "emotional": "stop blaming creative for a data problem",
+        "social": "tell the agency or developer exactly what to fix"
+      },
+      "hire_today": "a developer or media agency, or nothing",
+      "fire": "the creative refresh as the default fix",
+      "forces": {
+        "push": "bad signals raise cost on every sale",
+        "pull": "a check of missing, doubled and poorly matched sales with the fix",
+        "habit": "the agency blames creative",
+        "anxiety": "what if the fix takes a developer we do not have"
+      },
+      "little_hire": "weekly, and after any site change",
+      "watch": {
+        "metric": "Meta purchases divided by store orders and match quality, trailing 7 days",
+        "unit": "percent",
+        "source": "Meta Events Manager (read only) and Shopify orders"
+      },
+      "drives": {
+        "metric": "cost per purchase on Meta, 28 day",
+        "unit": "currency"
+      },
+      "business": "gross profit",
+      "now_after": "Example. Now: Meta sees 70 percent of sales and doubles 8 percent. After: 95 percent seen once, cost per purchase down 18 percent in 3 weeks.",
+      "score": {
+        "money": 5,
+        "struggle": 4,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 3
+      },
+      "not_for": "a store not running Meta ads"
+    },
+    {
+      "rank": 6,
+      "job": "When revenue drops 15 percent on a Tuesday and the team is already blaming the ads, tell me whether it was visits, buy rate or order size, so we change the right thing",
+      "circumstance": "Tuesday morning, a red number, a Slack thread with 4 theories",
+      "progress": {
+        "functional": "split the change into visits, buy rate and order size by channel",
+        "emotional": "stop the panic and the blame",
+        "social": "give the team one clear answer"
+      },
+      "hire_today": "an analyst, the founder digging for an hour, or gut feel",
+      "fire": "the Slack theory thread",
+      "forces": {
+        "push": "teams change the wrong thing",
+        "pull": "the change split into its parts with the biggest mover named",
+        "habit": "everyone has a theory",
+        "anxiety": "what if the split is too noisy on one day"
+      },
+      "little_hire": "whenever a headline number moves more than 10 percent",
+      "watch": {
+        "metric": "change in revenue split into visits, buy rate and order size, day and week",
+        "unit": "percent",
+        "source": "Shopify orders and GA4 sessions"
+      },
+      "drives": {
+        "metric": "revenue per week",
+        "unit": "currency"
+      },
+      "business": "revenue",
+      "now_after": "Example. Now: a drop blamed on ads, a campaign paused. After: traced to buy rate on mobile after a checkout change, fixed that day.",
+      "score": {
+        "money": 4,
+        "struggle": 4,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 4
+      },
+      "not_for": "a store too small for daily numbers to mean anything"
+    },
+    {
+      "rank": 7,
+      "job": "When cart to checkout drops by half overnight, tell me if it is a bug, a stock issue or shoppers, so the right person fixes it that day",
+      "circumstance": "morning, the funnel shows a cliff at one step, the developer is off",
+      "progress": {
+        "functional": "know which step broke, when and the likely cause",
+        "emotional": "stop losing a day to guessing",
+        "social": "send the right person the right problem"
+      },
+      "hire_today": "an analyst or developer, or nothing until sales drop",
+      "fire": "the habit of waiting for sales to fall",
+      "forces": {
+        "push": "each broken hour loses orders",
+        "pull": "a step-by-step funnel against our own history with the break flagged",
+        "habit": "we look at the funnel monthly",
+        "anxiety": "what if it flags normal swings"
+      },
+      "little_hire": "daily",
+      "watch": {
+        "metric": "each funnel step's rate against its 28 day range, daily",
+        "unit": "percent",
+        "source": "GA4 and Shopify checkout events"
+      },
+      "drives": {
+        "metric": "orders per day",
+        "unit": "count"
+      },
+      "business": "revenue",
+      "now_after": "Example. Now: a checkout bug ran 3 days. After: caught within 4 hours.",
+      "score": {
+        "money": 4,
+        "struggle": 4,
+        "satisfaction": 4,
+        "speed": 5,
+        "ease": 3
+      },
+      "not_for": "a store with too few visits for daily funnel rates to be stable"
+    },
+    {
+      "rank": 8,
+      "job": "When my agency's monthly report shows a 4 times return and my bank does not agree, check their number against the store, so I know what to believe",
+      "circumstance": "the agency report lands, the numbers look great, cash is tight, the founder feels something is off",
+      "progress": {
+        "functional": "set the agency's claims against store sales and spend",
+        "emotional": "stop the doubt and the awkward silence",
+        "social": "go into the agency call with facts"
+      },
+      "hire_today": "the agency's own report, a friend's review, or gut feel",
+      "fire": "the agency's self-graded report",
+      "forces": {
+        "push": "the fee and the spend are real, the return may not be",
+        "pull": "agency claims next to store truth, same window",
+        "habit": "the agency reports its own results",
+        "anxiety": "what if I push and they leave"
+      },
+      "little_hire": "monthly",
+      "watch": {
+        "metric": "agency-reported revenue divided by store-matched revenue, monthly",
+        "unit": "ratio",
+        "source": "agency report, ad platforms and Shopify orders"
+      },
+      "drives": {
+        "metric": "total store sales divided by total ad spend",
+        "unit": "ratio"
+      },
+      "business": "gross profit",
+      "now_after": "Example. Now: agency claims 4x, store supports 2.2x. After: targets reset on store numbers, fee tied to it.",
+      "score": {
+        "money": 4,
+        "struggle": 4,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 4
+      },
+      "not_for": "a store running ads in-house"
+    },
+    {
+      "rank": 9,
+      "job": "When I find out the tracking was broken for weeks, show me which days and decisions it touched and what the true numbers were, so I can reverse the wrong calls and explain it to my partner",
+      "circumstance": "the break is found, 3 weeks of reports are wrong, campaigns were paused and budgets moved on them",
+      "progress": {
+        "functional": "rebuild the true numbers for the broken days and list the decisions made on them",
+        "emotional": "stop the shame of not knowing what to trust",
+        "social": "explain what happened to a partner or client plainly"
+      },
+      "hire_today": "an analyst or agency rebuilding by hand, or nothing",
+      "fire": "the shrug and the habit of moving on without fixing past calls",
+      "forces": {
+        "push": "wrong decisions stay in place",
+        "pull": "a list of broken days, affected numbers and decisions to review",
+        "habit": "we fix it and move on",
+        "anxiety": "what if the rebuilt numbers are wrong too"
+      },
+      "little_hire": "after every tracking break",
+      "watch": {
+        "metric": "decisions made during a tracking break that were reviewed, per break",
+        "unit": "count",
+        "source": "decision log and tracking gap days"
+      },
+      "drives": {
+        "metric": "contribution margin after marketing, monthly",
+        "unit": "currency"
+      },
+      "business": "gross profit",
+      "now_after": "Example. Now: 3 weeks of broken data, 4 decisions never revisited. After: all 4 reviewed, 2 reversed within a week.",
+      "score": {
+        "money": 4,
+        "struggle": 4,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 3
+      },
+      "not_for": "a store that made no decisions on the broken numbers"
+    },
+    {
+      "rank": 10,
+      "job": "When GA4 shows 20 percent fewer orders than Shopify, tell me why and what to fix, so conversion and channel reports are right",
+      "circumstance": "a monthly review, GA4 and Shopify disagree, the team uses GA4 for channel decisions",
+      "progress": {
+        "functional": "know the gap and its causes",
+        "emotional": "stop distrusting GA4",
+        "social": "brief the developer precisely"
+      },
+      "hire_today": "a developer or agency, or nothing",
+      "fire": "the habit of ignoring GA4",
+      "forces": {
+        "push": "channel reports are wrong",
+        "pull": "the gap by day with the causes named",
+        "habit": "we just use Shopify",
+        "anxiety": "what if it is not fixable"
+      },
+      "little_hire": "weekly",
+      "watch": {
+        "metric": "GA4 purchases divided by Shopify orders, weekly",
+        "unit": "percent",
+        "source": "GA4 and Shopify"
+      },
+      "drives": {
+        "metric": "share of orders with a known source, monthly",
+        "unit": "percent"
+      },
+      "business": "risk",
+      "now_after": "Example. Now: GA4 sees 80 percent of orders, so email looks 20 percent smaller than it is. After: 97 percent within 2 weeks.",
+      "score": {
+        "money": 4,
+        "struggle": 4,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 3
+      },
+      "not_for": "a store that does not use GA4 for any decision"
+    },
+    {
+      "rank": 11,
+      "job": "When Meta says we got 800 new customers and Shopify says 450, tell me the real count, so cost per new customer is not a guess",
+      "circumstance": "a monthly review, 3 new customer numbers, the target is set on one of them",
+      "progress": {
+        "functional": "one count of new customers used everywhere",
+        "emotional": "stop the argument",
+        "social": "report the same number to a partner and agency"
+      },
+      "hire_today": "an analyst, or nothing",
+      "fire": "the habit of using each platform's own count",
+      "forces": {
+        "push": "cost per new customer is wrong",
+        "pull": "one definition from store orders",
+        "habit": "each tool counts its own way",
+        "anxiety": "what if it makes our cost look worse"
+      },
+      "little_hire": "monthly",
+      "watch": {
+        "metric": "new customers from store orders against platform claims, monthly",
+        "unit": "count",
+        "source": "Shopify orders and platform reports"
+      },
+      "drives": {
+        "metric": "cost per new customer, monthly",
+        "unit": "currency"
+      },
+      "business": "contribution margin",
+      "now_after": "Example. Now: target set on Meta's 800. After: 450 used, cost per new customer target reset.",
+      "score": {
+        "money": 4,
+        "struggle": 4,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 3
+      },
+      "not_for": "a store with no new customer targets"
+    },
+    {
+      "rank": 12,
+      "job": "When Google Ads reports more sales than the store had, tell me which conversions are fake or doubled, so its bidding learns from real sales",
+      "circumstance": "Google Ads shows 300 conversions, the store had 180 orders from Google",
+      "progress": {
+        "functional": "know which conversion actions count and which should not",
+        "emotional": "stop feeling fooled",
+        "social": "brief the agency on the fix"
+      },
+      "hire_today": "a media agency, or nothing",
+      "fire": "the default conversion settings",
+      "forces": {
+        "push": "bidding chases fake sales",
+        "pull": "a list of conversion actions with real and fake counts",
+        "habit": "the agency set it up",
+        "anxiety": "what if the fix drops reported results"
+      },
+      "little_hire": "monthly, and after any Google Ads change",
+      "watch": {
+        "metric": "Google Ads purchases divided by store orders from Google, 28 day",
+        "unit": "ratio",
+        "source": "Google Ads and Shopify"
+      },
+      "drives": {
+        "metric": "Google Ads cost per real purchase",
+        "unit": "currency"
+      },
+      "business": "gross profit",
+      "now_after": "Example. Now: Google counts add to carts as sales. After: only purchases counted, cost per real purchase down 20 percent.",
+      "score": {
+        "money": 4,
+        "struggle": 4,
+        "satisfaction": 2,
+        "speed": 4,
+        "ease": 4
+      },
+      "not_for": "a store not running Google Ads"
+    },
+    {
+      "rank": 13,
+      "job": "When a number changes shape and nobody knows why, show me what settings, tags or apps changed that day, so we find the cause in minutes",
+      "circumstance": "a sudden shift in a report, 4 people making changes across tools",
+      "progress": {
+        "functional": "see a dated log of changes next to the number",
+        "emotional": "stop the hunt",
+        "social": "none"
+      },
+      "hire_today": "asking around, or nothing",
+      "fire": "the Slack hunt",
+      "forces": {
+        "push": "hours lost to finding the cause",
+        "pull": "a change log shown on the chart",
+        "habit": "changes are not logged",
+        "anxiety": "what if the log misses changes"
+      },
+      "little_hire": "whenever a number jumps",
+      "watch": {
+        "metric": "hours to find the cause of a number shift, per event",
+        "unit": "hours",
+        "source": "change log in the brand brain and tool history"
+      },
+      "drives": {
+        "metric": "days with an unexplained number shift per quarter",
+        "unit": "days"
+      },
+      "business": "risk",
+      "now_after": "Example. Now: a full day spent finding why sessions doubled. After: cause found in under an hour from the change log.",
+      "score": {
+        "money": 3,
+        "struggle": 4,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 4
+      },
+      "not_for": "a store where one person makes every change"
+    },
+    {
+      "rank": 14,
+      "job": "When the Monday meeting turns into an argument about whose revenue number is right, give one meaning and one owner per number, so we spend the hour deciding",
+      "circumstance": "a weekly meeting, 3 revenue numbers, 20 minutes lost",
+      "progress": {
+        "functional": "one written meaning, source and owner per headline number",
+        "emotional": "stop the tension",
+        "social": "look organised to the team and agency"
+      },
+      "hire_today": "the founder or analyst ruling each time, or nothing",
+      "fire": "the meeting argument",
+      "forces": {
+        "push": "meetings end without decisions",
+        "pull": "a short list of numbers with meaning and owner",
+        "habit": "each tool has its own number",
+        "anxiety": "what if people keep using their own"
+      },
+      "little_hire": "weekly",
+      "watch": {
+        "metric": "minutes of the weekly meeting spent on which number is right",
+        "unit": "count",
+        "source": "meeting notes in the brand brain"
+      },
+      "drives": {
+        "metric": "decisions made per weekly meeting",
+        "unit": "count"
+      },
+      "business": "risk",
+      "now_after": "Example. Now: 20 minutes of every Monday meeting spent on whose number is right. After: under 2 minutes, one number per question.",
+      "score": {
+        "money": 3,
+        "struggle": 4,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 3
+      },
+      "not_for": "a solo founder with no meetings"
+    },
+    {
+      "rank": 15,
+      "job": "When I suspect podcasts or word of mouth drive sales that no tracker sees, ask buyers where they heard about us and count the answers, so I stop cutting channels that work",
+      "circumstance": "a podcast sponsorship is up for renewal, the tracking shows few sales from it",
+      "progress": {
+        "functional": "know sources from buyers' own answers",
+        "emotional": "stop doubting unseen channels",
+        "social": "defend a channel to a partner"
+      },
+      "hire_today": "nothing, because it seems too hard to set up",
+      "fire": "the habit of trusting only clicks",
+      "forces": {
+        "push": "good channels get cut",
+        "pull": "counted answers by source against tracked sales",
+        "habit": "clicks are the only proof",
+        "anxiety": "what if buyers misremember"
+      },
+      "little_hire": "monthly",
+      "watch": {
+        "metric": "share of orders answering the source question, and answers by source, monthly",
+        "unit": "percent",
+        "source": "post-purchase survey and Shopify orders"
+      },
+      "drives": {
+        "metric": "revenue credited to untracked channels, monthly",
+        "unit": "currency"
+      },
+      "business": "revenue",
+      "now_after": "Example. Now: a podcast shows 12 tracked sales. After: 90 buyers name it, renewed.",
+      "score": {
+        "money": 4,
+        "struggle": 3,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 4
+      },
+      "not_for": "a store with only tracked paid channels"
+    },
+    {
+      "rank": 16,
+      "job": "When a new theme, checkout app or site launch is about to go live, check that every sale and cart event still fires, so the launch does not blind us",
+      "circumstance": "launch day, a new theme ready, no tracking test in the plan",
+      "progress": {
+        "functional": "confirm every event fires on the new version",
+        "emotional": "stop the fear of a blind launch",
+        "social": "sign off the launch with the developer"
+      },
+      "hire_today": "a developer, or nothing",
+      "fire": "the launch without a test",
+      "forces": {
+        "push": "launches are when tracking breaks",
+        "pull": "a pre-launch check with pass or fail",
+        "habit": "tests slow launches",
+        "anxiety": "what if tests delay the launch"
+      },
+      "little_hire": "before every launch",
+      "watch": {
+        "metric": "events passing the pre-launch check, per launch",
+        "unit": "percent",
+        "source": "tag test results"
+      },
+      "drives": {
+        "metric": "tracking gap days after launches",
+        "unit": "days"
+      },
+      "business": "risk",
+      "now_after": "Example. Now: 2 of the last 3 launches broke purchase tracking for a week or more. After: 0 launches break tracking, each checked the day before.",
+      "score": {
+        "money": 4,
+        "struggle": 3,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 3
+      },
+      "not_for": "a store that rarely changes its site"
+    },
+    {
+      "rank": 17,
+      "job": "When branded search and retargeting claim a third of sales, tell me what they add that would not have happened anyway, so I stop paying for sales I already had",
+      "circumstance": "a budget review, branded search and retargeting look like the best channels",
+      "progress": {
+        "functional": "know the extra sales each adds with a holdout test",
+        "emotional": "stop paying for sales that would come anyway",
+        "social": "show the agency the test result"
+      },
+      "hire_today": "a media agency or measurement vendor, or nothing",
+      "fire": "the platform's claimed return",
+      "forces": {
+        "push": "money goes to sales we would have had",
+        "pull": "a holdout test with the extra sales",
+        "habit": "they look like the best channels",
+        "anxiety": "what if sales fall during the test"
+      },
+      "little_hire": "quarterly",
+      "watch": {
+        "metric": "extra sales from a holdout test per channel, per test",
+        "unit": "percent",
+        "source": "store orders in test and holdout groups"
+      },
+      "drives": {
+        "metric": "total store sales divided by total ad spend",
+        "unit": "ratio"
+      },
+      "business": "gross profit",
+      "now_after": "Example. Now: retargeting claims 20 percent of sales. After: holdout shows 4 percent extra, budget cut by half.",
+      "score": {
+        "money": 5,
+        "struggle": 3,
+        "satisfaction": 2,
+        "speed": 2,
+        "ease": 3
+      },
+      "not_for": "a store spending little on branded search and retargeting"
+    },
+    {
+      "rank": 18,
+      "job": "When 30 percent of orders show as direct or unknown, tell me where they came from, so budget decisions stop being made blind",
+      "circumstance": "a channel review, the biggest channel is unknown",
+      "progress": {
+        "functional": "shrink the unknown share and name the likely sources",
+        "emotional": "stop guessing",
+        "social": "report channels with confidence"
+      },
+      "hire_today": "an analyst or agency, or nothing",
+      "fire": "the habit of ignoring unknown",
+      "forces": {
+        "push": "each unknown order is a blind budget call",
+        "pull": "the unknown share with its likely causes",
+        "habit": "some unknown is normal",
+        "anxiety": "what if it cannot be fixed"
+      },
+      "little_hire": "monthly",
+      "watch": {
+        "metric": "share of orders with no known source, monthly",
+        "unit": "percent",
+        "source": "Shopify and GA4"
+      },
+      "drives": {
+        "metric": "revenue with a known source",
+        "unit": "currency"
+      },
+      "business": "revenue",
+      "now_after": "Example. Now: 30 percent of orders have no known source. After: 12 percent in 60 days, after link and tag fixes.",
+      "score": {
+        "money": 4,
+        "struggle": 4,
+        "satisfaction": 2,
+        "speed": 2,
+        "ease": 3
+      },
+      "not_for": "a store with one channel"
+    },
+    {
+      "rank": 19,
+      "job": "When conversion falls on a top page, tell me first if sizes or colours are out of stock, so we do not redesign a page that was fine",
+      "circumstance": "a CRO review, a top page drops, a redesign is proposed",
+      "progress": {
+        "functional": "check stock before blaming the page",
+        "emotional": "stop wasting weeks on redesigns that fix nothing",
+        "social": "none"
+      },
+      "hire_today": "a CRO agency or developer, or nothing",
+      "fire": "the redesign reflex",
+      "forces": {
+        "push": "redesigns waste weeks",
+        "pull": "stock status next to page conversion",
+        "habit": "pages get blamed first",
+        "anxiety": "what if stock was fine and the page really is the problem"
+      },
+      "little_hire": "whenever a page's conversion drops",
+      "watch": {
+        "metric": "conversion of top pages against in-stock share of their variants, weekly",
+        "unit": "percent",
+        "source": "GA4 and store stock levels"
+      },
+      "drives": {
+        "metric": "revenue per top page",
+        "unit": "currency"
+      },
+      "business": "revenue",
+      "now_after": "Example. Now: a redesign briefed for a page with 3 sizes out of stock. After: stock fixed first, conversion back in a week, redesign dropped.",
+      "score": {
+        "money": 3,
+        "struggle": 3,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 5
+      },
+      "not_for": "a store with one variant per product"
+    },
+    {
+      "rank": 20,
+      "job": "When sessions jump 40 percent but orders do not, tell me if it is bots, so I do not think a page broke or a campaign won",
+      "circumstance": "a traffic spike, conversion rate halves, the team is confused",
+      "progress": {
+        "functional": "know the non-human share of traffic",
+        "emotional": "stop false alarms",
+        "social": "report clean numbers"
+      },
+      "hire_today": "a developer, or nothing",
+      "fire": "the habit of reading raw sessions",
+      "forces": {
+        "push": "fake visits make good pages look broken",
+        "pull": "bot share shown and removed",
+        "habit": "sessions are sessions",
+        "anxiety": "what if real visits are removed"
+      },
+      "little_hire": "weekly, and on any spike",
+      "watch": {
+        "metric": "share of sessions flagged as bots, weekly",
+        "unit": "percent",
+        "source": "Cloudflare or host logs and GA4"
+      },
+      "drives": {
+        "metric": "conversion rate on human sessions",
+        "unit": "percent"
+      },
+      "business": "risk",
+      "now_after": "Example. Now: 25 percent of last week's sessions were bots, so a good page looked broken. After: bots removed from reports, conversion rate read on real visitors.",
+      "score": {
+        "money": 3,
+        "struggle": 3,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 4
+      },
+      "not_for": "a store with little traffic"
+    },
+    {
+      "rank": 21,
+      "job": "When the repeat rate looks steady but I feel new customers come back less, show me by cohort, so I catch a retention drop months early",
+      "circumstance": "a quarterly review, one blended repeat rate, a feeling something changed",
+      "progress": {
+        "functional": "see repeat rate by first order month",
+        "emotional": "stop the nagging doubt",
+        "social": "show the team the real trend"
+      },
+      "hire_today": "an analyst, or nothing",
+      "fire": "the blended rate",
+      "forces": {
+        "push": "a drop shows too late in the blend",
+        "pull": "cohort grid by month",
+        "habit": "blended rate is the norm",
+        "anxiety": "what if cohorts are too small"
+      },
+      "little_hire": "monthly",
+      "watch": {
+        "metric": "90 day repeat rate by first order month",
+        "unit": "percent",
+        "source": "Shopify orders"
+      },
+      "drives": {
+        "metric": "returning customer revenue per month",
+        "unit": "currency"
+      },
+      "business": "revenue",
+      "now_after": "Example. Now: blended 28 percent. After: newest cohorts at 19 percent, fixed with a new welcome flow.",
+      "score": {
+        "money": 4,
+        "struggle": 3,
+        "satisfaction": 3,
+        "speed": 1,
+        "ease": 3
+      },
+      "not_for": "a store with one-off purchases by design"
+    },
+    {
+      "rank": 22,
+      "job": "When revenue looks down but it is returns from last month's sale landing, tell me, so we do not blame ads or the site",
+      "circumstance": "a weekly review, net revenue down, returns from a sale arriving",
+      "progress": {
+        "functional": "split revenue from returns timing",
+        "emotional": "stop false alarms",
+        "social": "explain the dip calmly"
+      },
+      "hire_today": "a bookkeeper or analyst, or nothing",
+      "fire": "the habit of reading net revenue alone",
+      "forces": {
+        "push": "wrong fixes on a dip that is not real",
+        "pull": "gross and return-adjusted revenue with return timing",
+        "habit": "net revenue is the number",
+        "anxiety": "what if I explain away a real drop as returns"
+      },
+      "little_hire": "weekly",
+      "watch": {
+        "metric": "returns booked this week from orders in earlier weeks, weekly",
+        "unit": "currency",
+        "source": "Shopify orders and returns"
+      },
+      "drives": {
+        "metric": "revenue after returns, monthly",
+        "unit": "currency"
+      },
+      "business": "revenue",
+      "now_after": "Example. Now: a dip blamed on ads. After: shown as sale returns, no change made.",
+      "score": {
+        "money": 3,
+        "struggle": 3,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 4
+      },
+      "not_for": "a store with very low returns"
+    },
+    {
+      "rank": 23,
+      "job": "When a new cookie banner goes live and tracked sales fall 30 percent, tell me if it is blocking tracking or breaking the law, so I fix it without guessing",
+      "circumstance": "the banner went live, tracked sales dropped, a lawyer mentioned consent rules",
+      "progress": {
+        "functional": "know if tags fire correctly with and without consent",
+        "emotional": "stop fearing both data loss and fines",
+        "social": "tell the developer and lawyer the same facts"
+      },
+      "hire_today": "a developer or lawyer, or nothing",
+      "fire": "the default banner setup",
+      "forces": {
+        "push": "data loss and legal risk at once",
+        "pull": "a consent check with tracked share before and after",
+        "habit": "the banner app handles it",
+        "anxiety": "what if the fix is illegal"
+      },
+      "little_hire": "after any consent change",
+      "watch": {
+        "metric": "tracked purchases divided by store orders before and after consent change",
+        "unit": "percent",
+        "source": "GA4, Meta and Shopify"
+      },
+      "drives": {
+        "metric": "tracking gap days",
+        "unit": "days"
+      },
+      "business": "risk",
+      "now_after": "Example. Now: 30 percent fewer tracked sales. After: 10 percent after fix, tags wait for consent.",
+      "score": {
+        "money": 3,
+        "struggle": 3,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 3
+      },
+      "not_for": "a US-only store without a consent banner"
+    },
+    {
+      "rank": 24,
+      "job": "When a big launch week looks great, show me sales after returns and cancels too, so I judge it on money we keep",
+      "circumstance": "a launch recap, gross sales high",
+      "progress": {
+        "functional": "see gross and kept sales",
+        "emotional": "stop celebrating early",
+        "social": "report honestly"
+      },
+      "hire_today": "the revenue report, or nothing",
+      "fire": "the gross-only recap",
+      "forces": {
+        "push": "launches judged on sales that come back",
+        "pull": "gross and return-adjusted sales side by side",
+        "habit": "gross is exciting",
+        "anxiety": "what if the smaller number deflates the team"
+      },
+      "little_hire": "after every launch",
+      "watch": {
+        "metric": "launch revenue after returns and cancels, 30 days after launch",
+        "unit": "currency",
+        "source": "Shopify orders and returns"
+      },
+      "drives": {
+        "metric": "revenue after returns",
+        "unit": "currency"
+      },
+      "business": "revenue",
+      "now_after": "Example. Now: launch week reported at $80,000. After: $62,000 after returns and cancels, and the next launch is planned on that.",
+      "score": {
+        "money": 3,
+        "struggle": 3,
+        "satisfaction": 3,
+        "speed": 2,
+        "ease": 4
+      },
+      "not_for": "a store with very low returns"
+    },
+    {
+      "rank": 25,
+      "job": "When I cut Meta and Amazon sales also fall, show me how much ads drive sales outside the store, so good ads are not cut for the wrong reason",
+      "circumstance": "a Meta cut, store sales flat, Amazon sales down",
+      "progress": {
+        "functional": "see ad effect on marketplace and retail sales",
+        "emotional": "stop the fear of hidden losses",
+        "social": "explain the halo to a partner"
+      },
+      "hire_today": "nothing, because nobody links the two",
+      "fire": "the store-only view",
+      "forces": {
+        "push": "good ads get cut",
+        "pull": "ad spend next to Amazon sales over time",
+        "habit": "ads are judged on store sales",
+        "anxiety": "what if the link is noise"
+      },
+      "little_hire": "monthly",
+      "watch": {
+        "metric": "Amazon and retail sales against Meta spend, weekly",
+        "unit": "currency",
+        "source": "Meta spend, Amazon reports"
+      },
+      "drives": {
+        "metric": "total revenue across channels",
+        "unit": "currency"
+      },
+      "business": "revenue",
+      "now_after": "Example. Now: Meta cut 30 percent, Amazon down 12 percent. After: halo seen, spend restored.",
+      "score": {
+        "money": 4,
+        "struggle": 3,
+        "satisfaction": 2,
+        "speed": 2,
+        "ease": 2
+      },
+      "not_for": "a store with no marketplace or retail sales"
+    },
+    {
+      "rank": 26,
+      "job": "When email and creator sales show up as direct, fix the links, so each channel gets fair credit and I do not cut the ones that work",
+      "circumstance": "a channel report shows email tiny, direct huge",
+      "progress": {
+        "functional": "tag every link the same way",
+        "emotional": "stop underrating email and creators",
+        "social": "brief the team on one link rule"
+      },
+      "hire_today": "a marketing lead or agency, or nothing",
+      "fire": "the untagged link",
+      "forces": {
+        "push": "good channels look small",
+        "pull": "a link check with the fixes",
+        "habit": "links are made in a rush",
+        "anxiety": "what if fixing old links breaks live campaigns"
+      },
+      "little_hire": "monthly",
+      "watch": {
+        "metric": "share of campaign links with correct tracking tags, monthly",
+        "unit": "percent",
+        "source": "link audit and GA4"
+      },
+      "drives": {
+        "metric": "share of orders with a known source",
+        "unit": "percent"
+      },
+      "business": "revenue",
+      "now_after": "Example. Now: 40 percent of email and creator links carry no tracking tags. After: 5 percent, and email's credited revenue doubles.",
+      "score": {
+        "money": 3,
+        "struggle": 3,
+        "satisfaction": 2,
+        "speed": 3,
+        "ease": 4
+      },
+      "not_for": "a store with no email or creator traffic"
+    },
+    {
+      "rank": 27,
+      "job": "When an investor asks for our cost per new customer and repeat rate, give me numbers I can defend with a source and meaning, so I do not have to walk them back",
+      "circumstance": "an investor meeting next week, numbers from 3 tools",
+      "progress": {
+        "functional": "produce numbers with source and definition",
+        "emotional": "stop the fear of being caught out",
+        "social": "look sharp to investors"
+      },
+      "hire_today": "an analyst or a weekend of spreadsheets",
+      "fire": "the weekend sprint",
+      "forces": {
+        "push": "a wrong number costs trust",
+        "pull": "a short, sourced number set",
+        "habit": "numbers are pulled when asked",
+        "anxiety": "what if they compare to benchmarks"
+      },
+      "little_hire": "before investor or board meetings",
+      "watch": {
+        "metric": "headline numbers with a written source and meaning, per pack",
+        "unit": "count",
+        "source": "brand brain number list"
+      },
+      "drives": {
+        "metric": "investor follow-up questions on data",
+        "unit": "count"
+      },
+      "business": "risk",
+      "now_after": "Example. Now: 2 numbers corrected by email after the last investor meeting. After: 0, each number carries its source and meaning.",
+      "score": {
+        "money": 3,
+        "struggle": 3,
+        "satisfaction": 3,
+        "speed": 1,
+        "ease": 3
+      },
+      "not_for": "a store not raising money"
+    },
+    {
+      "rank": 28,
+      "job": "When a creator's discount code shows up on orders that came from paid ads, tell me who really drove the sale, so I pay creators and affiliates fairly",
+      "circumstance": "commission payout week, code sales look high",
+      "progress": {
+        "functional": "know which code orders came from the creator",
+        "emotional": "stop overpaying",
+        "social": "keep creator relationships fair"
+      },
+      "hire_today": "an affiliate manager, or nothing",
+      "fire": "the code-equals-credit rule",
+      "forces": {
+        "push": "overpaid commissions",
+        "pull": "code orders split by source",
+        "habit": "codes are the proof",
+        "anxiety": "what if creators feel cheated"
+      },
+      "little_hire": "each payout",
+      "watch": {
+        "metric": "share of code orders with a paid ad click first, per payout",
+        "unit": "percent",
+        "source": "Shopify orders and ad click data"
+      },
+      "drives": {
+        "metric": "affiliate cost per real sale",
+        "unit": "currency"
+      },
+      "business": "gross profit",
+      "now_after": "Example. Now: 30 percent of code orders came from ads. After: commission rules changed, $2,000 a month saved.",
+      "score": {
+        "money": 3,
+        "struggle": 3,
+        "satisfaction": 2,
+        "speed": 3,
+        "ease": 3
+      },
+      "not_for": "a store with no creators or affiliates"
+    },
+    {
+      "rank": 29,
+      "job": "When Amazon and TikTok Shop orders sit outside the store numbers, fold them in with their own source, so total sales and ad return count every channel",
+      "circumstance": "a monthly review, store numbers only",
+      "progress": {
+        "functional": "count every channel's sales once",
+        "emotional": "stop underrating the business",
+        "social": "report the whole business"
+      },
+      "hire_today": "a bookkeeper's month-end, or nothing",
+      "fire": "the store-only report",
+      "forces": {
+        "push": "ad return and totals are wrong",
+        "pull": "all channels in one total",
+        "habit": "the store is the main number",
+        "anxiety": "what if they are double counted"
+      },
+      "little_hire": "monthly",
+      "watch": {
+        "metric": "share of revenue from channels outside the store, monthly",
+        "unit": "percent",
+        "source": "marketplace reports and Shopify"
+      },
+      "drives": {
+        "metric": "total revenue",
+        "unit": "currency"
+      },
+      "business": "revenue",
+      "now_after": "Example. Now: 30 percent of sales, from Amazon and TikTok Shop, are missing from the weekly report. After: every channel counted once, with its own source.",
+      "score": {
+        "money": 3,
+        "struggle": 3,
+        "satisfaction": 2,
+        "speed": 2,
+        "ease": 3
+      },
+      "not_for": "a store that sells only on its own site"
+    },
+    {
+      "rank": 30,
+      "job": "When Meta counts a $60 order as $78 because tax and shipping are included, send the value that matters, so ad platforms chase buyers who make money",
+      "circumstance": "an ad review, platform revenue higher than store net sales",
+      "progress": {
+        "functional": "send the right value with each sale",
+        "emotional": "none",
+        "social": "brief the developer"
+      },
+      "hire_today": "a developer or agency, or nothing",
+      "fire": "the default value setup",
+      "forces": {
+        "push": "platforms optimise for the wrong buyers",
+        "pull": "the right value on every event",
+        "habit": "defaults are fine",
+        "anxiety": "what if results look worse"
+      },
+      "little_hire": "after setup and quarterly",
+      "watch": {
+        "metric": "platform purchase value divided by store net sales, monthly",
+        "unit": "ratio",
+        "source": "Meta and Shopify"
+      },
+      "drives": {
+        "metric": "return on ad spend on net sales",
+        "unit": "ratio"
+      },
+      "business": "gross profit",
+      "now_after": "Example. Now: purchase values sent to Meta run 30 percent above net sales. After: net sales sent, Meta revenue within 3 percent of the store.",
+      "score": {
+        "money": 3,
+        "struggle": 2,
+        "satisfaction": 2,
+        "speed": 3,
+        "ease": 4
+      },
+      "not_for": "a store with no paid ads"
+    },
+    {
+      "rank": 31,
+      "job": "When we add a new app or connector that reports sales, check it against store orders for a week before we trust it, so a new tool does not bring new wrong numbers",
+      "circumstance": "a new analytics app installed, it shows different numbers",
+      "progress": {
+        "functional": "test the new source against store orders",
+        "emotional": "stop new confusion",
+        "social": "none"
+      },
+      "hire_today": "nothing, because a new tool is trusted the day it is installed",
+      "fire": "the install-and-trust habit",
+      "forces": {
+        "push": "new tools add new wrong numbers",
+        "pull": "a 7 day check before trust",
+        "habit": "tools are trusted on install",
+        "anxiety": "what if the week of checking delays a decision"
+      },
+      "little_hire": "each new data source",
+      "watch": {
+        "metric": "new source orders divided by store orders, first 7 days",
+        "unit": "percent",
+        "source": "the new tool and Shopify"
+      },
+      "drives": {
+        "metric": "data sources passing the daily check",
+        "unit": "count"
+      },
+      "business": "risk",
+      "now_after": "Example. Now: a new app trusted on day 1 was 15 percent off store orders for a month. After: every new source checked for 7 days first.",
+      "score": {
+        "money": 2,
+        "struggle": 3,
+        "satisfaction": 2,
+        "speed": 2,
+        "ease": 4
+      },
+      "not_for": "a store that does not add data tools"
+    },
+    {
+      "rank": 32,
+      "job": "When the warehouse and agency visit the site all day, keep them and test orders out of the numbers, so conversion rate is real",
+      "circumstance": "a conversion drop after a new agency started",
+      "progress": {
+        "functional": "remove internal visits and test orders from every report",
+        "emotional": "none",
+        "social": "none"
+      },
+      "hire_today": "nothing, because nobody knew filters were needed",
+      "fire": "the unfiltered report",
+      "forces": {
+        "push": "staff visits and test orders make conversion look worse and sales look bigger",
+        "pull": "internal traffic and test orders filtered out",
+        "habit": "filters were never set up",
+        "anxiety": "what if the filter hides real customers on a shared network"
+      },
+      "little_hire": "monthly",
+      "watch": {
+        "metric": "share of sessions and orders from internal or test sources, monthly",
+        "unit": "percent",
+        "source": "GA4 and Shopify"
+      },
+      "drives": {
+        "metric": "conversion rate",
+        "unit": "percent"
+      },
+      "business": "risk",
+      "now_after": "Example. Now: 6 percent of sessions come from staff, the warehouse and the agency, plus 40 test orders a month. After: all filtered out of reports.",
+      "score": {
+        "money": 2,
+        "struggle": 2,
+        "satisfaction": 2,
+        "speed": 4,
+        "ease": 5
+      },
+      "not_for": "a store with a tiny team"
+    },
+    {
+      "rank": 33,
+      "job": "When I plan next year's budget across 6 channels including podcasts and TV, estimate what each adds from weekly spend and sales, so the split is not a guess",
+      "circumstance": "annual planning, some channels have no clicks",
+      "progress": {
+        "functional": "estimate each channel's effect from weekly spend and sales",
+        "emotional": "stop guessing the split",
+        "social": "defend the plan"
+      },
+      "hire_today": "a measurement vendor or analyst",
+      "fire": "last year's split",
+      "forces": {
+        "push": "big money split on guesses",
+        "pull": "a model-based split with error bars",
+        "habit": "last year worked",
+        "anxiety": "what if the model is wrong"
+      },
+      "little_hire": "yearly and quarterly",
+      "watch": {
+        "metric": "model-estimated sales per channel per dollar, quarterly",
+        "unit": "ratio",
+        "source": "weekly spend and store sales"
+      },
+      "drives": {
+        "metric": "total store sales per ad dollar",
+        "unit": "ratio"
+      },
+      "business": "gross profit",
+      "now_after": "Example. Now: split by habit. After: 15 percent moved to the channel the model favours, tested.",
+      "score": {
+        "money": 4,
+        "struggle": 2,
+        "satisfaction": 2,
+        "speed": 1,
+        "ease": 1
+      },
+      "not_for": "a store with fewer than 3 channels or under 2 years of weekly data"
+    },
+    {
+      "rank": 34,
+      "job": "When Meta's day ends at a different hour than Shopify's, line up the days, so daily return is not off by half a day of sales",
+      "circumstance": "a daily report, returns jump around, time zones differ",
+      "progress": {
+        "functional": "line up time zones and currencies",
+        "emotional": "none",
+        "social": "none"
+      },
+      "hire_today": "nothing, because nobody knows the tools count days differently",
+      "fire": "the mismatched report",
+      "forces": {
+        "push": "daily numbers swing for no reason",
+        "pull": "matched days across tools",
+        "habit": "nobody has noticed",
+        "anxiety": "what if changing a time zone breaks past reports"
+      },
+      "little_hire": "after setup",
+      "watch": {
+        "metric": "hours of time zone gap between tools, checked monthly",
+        "unit": "hours",
+        "source": "platform and store settings"
+      },
+      "drives": {
+        "metric": "daily return on ad spend variance",
+        "unit": "percent"
+      },
+      "business": "risk",
+      "now_after": "Example. Now: Meta days end 3 hours after Shopify days, so daily return swings 25 percent. After: days lined up, swings under 5 percent.",
+      "score": {
+        "money": 2,
+        "struggle": 2,
+        "satisfaction": 2,
+        "speed": 3,
+        "ease": 5
+      },
+      "not_for": "a store where every tool uses the same time zone"
+    },
+    {
+      "rank": 35,
+      "job": "When a customer says they found us on ChatGPT, tell me how many visits and sales come from AI assistants, so I know if it deserves work",
+      "circumstance": "a customer comment, no report shows AI traffic",
+      "progress": {
+        "functional": "count AI assistant visits and sales",
+        "emotional": "none",
+        "social": "none"
+      },
+      "hire_today": "nothing, because it hides in referral",
+      "fire": "the lumped referral bucket",
+      "forces": {
+        "push": "a growing source stays invisible",
+        "pull": "AI visits as their own source",
+        "habit": "not a channel yet",
+        "anxiety": "what if the count is tiny"
+      },
+      "little_hire": "monthly",
+      "watch": {
+        "metric": "sessions and orders from AI assistants, monthly",
+        "unit": "count",
+        "source": "GA4 referral data"
+      },
+      "drives": {
+        "metric": "revenue from AI assistant visits",
+        "unit": "currency"
+      },
+      "business": "revenue",
+      "now_after": "Example. Now: AI assistant visits are hidden in referral. After: seen as 1.5 percent of sales, growing 20 percent a month.",
+      "score": {
+        "money": 2,
+        "struggle": 2,
+        "satisfaction": 2,
+        "speed": 2,
+        "ease": 4
+      },
+      "not_for": "a store with no interest in AI search yet"
+    }
+  ]
+}
