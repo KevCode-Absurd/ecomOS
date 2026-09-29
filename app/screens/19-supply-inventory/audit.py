@@ -269,7 +269,7 @@ def _scale(rd):
     start = rd.ends_on - timedelta(days=WINDOW - 1)
     paid = ', '.join(f"'{s}'" for s in PAID)
     n = rd.sql(f"SELECT COUNT(*) AS n FROM orders WHERE status IN ({paid}) "
-               f"AND substr(created_at, 1, 10) BETWEEN '{_d(start)}' AND '{_d(rd.ends_on)}'")[0]['n']
+               f"AND created_at >= '{_d(start)}' AND created_at < '{_d(rd.ends_on + timedelta(days=1))}'")[0]['n']
     if aov.get('unavailable') or not n:
         return None
     return round(aov['inputs']['orders'] / n, 4)
@@ -309,7 +309,7 @@ def _supply(rd):
     s56 = E - timedelta(days=SIGMA_DAYS - 1)
     daily = rd.sql(f"SELECT l.sku, substr(o.created_at, 1, 10) AS day, SUM(l.qty) AS units, "
                    f"SUM(l.line_total - l.line_discount) AS net FROM order_lines l JOIN orders o ON o.id = l.order_id "
-                   f"WHERE o.status IN ({paid}) AND substr(o.created_at, 1, 10) BETWEEN '{_d(s56)}' AND '{_d(E)}' "
+                   f"WHERE o.status IN ({paid}) AND o.created_at >= '{_d(s56)}' AND o.created_at < '{_d(E + timedelta(days=1))}' "
                    f"GROUP BY l.sku, day")
     pos = rd.sql("SELECT po_id, sku, qty, ordered_on, eta, status FROM inbound_pos")
     products = {r['sku']: r for r in rd.sql("SELECT sku, title, category, price FROM products")}

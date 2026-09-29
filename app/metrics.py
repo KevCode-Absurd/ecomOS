@@ -208,6 +208,19 @@ def money(x):
     return round(x, 2)
 
 
+def day_span(col, win):
+    """A window filter on an ISO date or timestamp column that leaves the column bare, so SQLite uses its
+    index instead of scanning every row. Wrapping the column in substr() scans the whole table."""
+    after = (win.end + timedelta(days=1)).isoformat()
+    return f"({col} >= '{win.s}' AND {col} < '{after}')"
+
+
+def on_or_before(col, day):
+    """col falls on the day `day` (YYYY-MM-DD) or earlier, index-friendly."""
+    after = (date.fromisoformat(str(day)[:10]) + timedelta(days=1)).isoformat()
+    return f"{col} < '{after}'"
+
+
 _PREP = {}
 
 
@@ -501,11 +514,11 @@ def sql_rows(ctx, query, tables):
 def sql_paid_orders(ctx, win):
     """Paid orders placed in the window, counted in data.sqlite so rates hold at any data scale."""
     paid = ', '.join(f"'{s}'" for s in PAID_STATES)
-    span = sql_rows(ctx, 'SELECT MIN(substr(created_at, 1, 10)) AS first, MAX(substr(created_at, 1, 10)) AS last FROM orders',
+    span = sql_rows(ctx, 'SELECT substr(MIN(created_at), 1, 10) AS first, substr(MAX(created_at), 1, 10) AS last FROM orders',
                     ('orders',))
     cover(win, span[0]['first'], span[0]['last'], 'orders')
     return sql_rows(ctx, f"SELECT COUNT(*) AS n FROM orders WHERE status IN ({paid}) "
-                         f"AND substr(created_at, 1, 10) BETWEEN '{win.s}' AND '{win.e}'", ('orders',))[0]['n']
+                         f"AND {day_span('created_at', win)}", ('orders',))[0]['n']
 
 
 @metric('return_rate')
@@ -541,12 +554,12 @@ def m_returns_by_reason(ctx, name, kw):
         sql = ctx.data._sql
         paid = ', '.join(f"'{s}'" for s in PAID_STATES)
         try:
-            span = sql('SELECT MIN(substr(created_at, 1, 10)) AS first, MAX(substr(created_at, 1, 10)) AS last FROM orders')
+            span = sql('SELECT substr(MIN(created_at), 1, 10) AS first, substr(MAX(created_at), 1, 10) AS last FROM orders')
             cover(ctx.win, span[0]['first'], span[0]['last'], 'orders')
             n = sql(f"SELECT COUNT(*) AS n FROM orders WHERE status IN ({paid}) "
-                    f"AND substr(created_at, 1, 10) BETWEEN '{ctx.win.s}' AND '{ctx.win.e}'")[0]['n']
+                    f"AND {day_span('created_at', ctx.win)}")[0]['n']
             rows = sql("SELECT reason, COUNT(*) AS returns, SUM(COALESCE(amount, 0)) AS amount FROM reversed_orders "
-                       f"WHERE type = 'return' AND substr(opened_at, 1, 10) BETWEEN '{ctx.win.s}' AND '{ctx.win.e}' "
+                       f"WHERE type = 'return' AND {day_span('opened_at', ctx.win)} "
                        "GROUP BY reason")
         except KeyError:
             raise Unavailable('the reversed_orders table is not connected', fix=CONNECTOR['reversed_orders'])
@@ -577,7 +590,7 @@ def m_chargeback_rate(ctx, name, kw):
     if brand_sql(ctx):
         n = sql_paid_orders(ctx, ctx.win)
         rows = sql_rows(ctx, "SELECT reason, COUNT(*) AS n, SUM(COALESCE(amount, 0)) AS amount FROM reversed_orders "
-                             f"WHERE type = 'chargeback' AND substr(opened_at, 1, 10) BETWEEN '{ctx.win.s}' AND '{ctx.win.e}' "
+                             f"WHERE type = 'chargeback' AND {day_span('opened_at', ctx.win)} "
                              "GROUP BY reason", ('orders', 'reversed_orders'))
         by_reason = {r['reason']: r['n'] for r in rows}
         count, amount = sum(by_reason.values()), sum(r['amount'] or 0 for r in rows)
@@ -600,7 +613,7 @@ def m_dispute_win_rate(ctx, name, kw):
     if brand_sql(ctx):
         sql_paid_orders(ctx, ctx.win)  # the window must sit inside the order history
         rows = sql_rows(ctx, "SELECT outcome, COUNT(*) AS n FROM reversed_orders WHERE type = 'chargeback' AND "
-                             f"(outcome IN ('open', 'needs_response') OR substr(closed_at, 1, 10) BETWEEN '{ctx.win.s}' AND '{ctx.win.e}') "
+                             f"(outcome IN ('open', 'needs_response') OR {day_span('closed_at', ctx.win)}) "
                              "GROUP BY outcome", ('orders', 'reversed_orders'))
         by = {r['outcome']: r['n'] for r in rows}
         won, closed = by.get('won', 0), by.get('won', 0) + by.get('lost', 0)
@@ -625,7 +638,7 @@ def m_return_to_sender(ctx, name, kw):
             # No carrier feed: the Shopify return a carrier sends back (reason carrier_returned) stands in.
             n = sql_paid_orders(ctx, ctx.win)
             back = sql_rows(ctx, "SELECT COUNT(DISTINCT order_id) AS n FROM reversed_orders WHERE reason = 'carrier_returned' "
-                                 f"AND substr(opened_at, 1, 10) BETWEEN '{ctx.win.s}' AND '{ctx.win.e}'",
+                                 f"AND {day_span('opened_at', ctx.win)}",
                             ('orders', 'reversed_orders'))[0]['n']
             return ctx.ok(ratio(back, n, 'paid orders'), 'ratio', {'numerator': back, 'denominator': n},
                           basis='carrier returns opened in the window over paid orders placed in the window; '
@@ -676,7 +689,7 @@ def m_payment_mix(ctx, name, kw):
         paid = ', '.join(f"'{s}'" for s in PAID_STATES)
         counts = {r['m']: r['n'] for r in sql_rows(
             ctx, f"SELECT COALESCE(payment_method, 'unknown') AS m, COUNT(*) AS n FROM orders WHERE status IN ({paid}) "
-                 f"AND substr(created_at, 1, 10) BETWEEN '{ctx.win.s}' AND '{ctx.win.e}' GROUP BY m", ('orders',))}
+                 f"AND {day_span('created_at', ctx.win)} GROUP BY m", ('orders',))}
     else:
         counts = {}
         for _, _, _, r in paid_in_window(ctx, ctx.win):
@@ -706,9 +719,9 @@ def m_reversed_by_month(ctx, name, kw):
         sql_paid_orders(ctx, ctx.win)
         orders_m = {r['m']: r['n'] for r in sql_rows(
             ctx, f"SELECT substr(created_at, 1, 7) AS m, COUNT(*) AS n FROM orders WHERE status IN ({paid}) "
-                 f"AND substr(created_at, 1, 10) BETWEEN '{ctx.win.s}' AND '{ctx.win.e}' GROUP BY m", ('orders',))}
+                 f"AND {day_span('created_at', ctx.win)} GROUP BY m", ('orders',))}
         rev = sql_rows(ctx, "SELECT substr(opened_at, 1, 7) AS m, type, reason = 'carrier_returned' AS carrier, COUNT(*) AS n "
-                            f"FROM reversed_orders WHERE substr(opened_at, 1, 10) BETWEEN '{ctx.win.s}' AND '{ctx.win.e}' "
+                            f"FROM reversed_orders WHERE {day_span('opened_at', ctx.win)} "
                             "GROUP BY m, type, carrier", ('orders', 'reversed_orders'))
     else:
         orders_m = {}
@@ -754,7 +767,7 @@ def m_open_disputes(ctx, name, kw):
     if brand_sql(ctx):
         rows = sql_rows(ctx, f"SELECT type, substr(opened_at, 1, 10) <= '{cut}' AS aged, COUNT(*) AS n, "
                              "SUM(COALESCE(amount, 0)) AS amount FROM reversed_orders WHERE type IN ('chargeback', 'inquiry') "
-                             f"AND outcome IN ('open', 'needs_response') AND substr(opened_at, 1, 10) <= '{ctx.win.e}' "
+                             f"AND outcome IN ('open', 'needs_response') AND {on_or_before('opened_at', ctx.win.e)} "
                              "GROUP BY type, aged", ('reversed_orders',))
     else:
         agg = {}
@@ -812,13 +825,13 @@ def _order_value_sql(ctx, win, step):
         raise Unavailable('the orders table is unreadable', fix=CONNECTOR['orders'])
     paid = ', '.join(f"'{s}'" for s in PAID_STATES)
     try:
-        span = sql('SELECT MIN(substr(created_at, 1, 10)) AS first, MAX(substr(created_at, 1, 10)) AS last FROM orders')
+        span = sql('SELECT substr(MIN(created_at), 1, 10) AS first, substr(MAX(created_at), 1, 10) AS last FROM orders')
         cover(win, span[0]['first'], span[0]['last'], 'orders')
         rows = sql(
             f'SELECT CAST((subtotal - COALESCE(discount, 0)) / {step} AS INTEGER) AS bin, COUNT(*) AS orders, '
             f'SUM(subtotal - COALESCE(discount, 0)) AS value, SUM(CASE WHEN shipping > 0 THEN 1 ELSE 0 END) AS paid_shipping, '
             f'SUM(COALESCE(shipping, 0)) AS shipping FROM orders WHERE status IN ({paid}) '
-            f"AND substr(created_at, 1, 10) BETWEEN '{win.s}' AND '{win.e}' GROUP BY bin ORDER BY bin")
+            f"AND {day_span('created_at', win)} GROUP BY bin ORDER BY bin")
     except KeyError:
         raise Unavailable('the orders table is not connected', fix=CONNECTOR['orders'])
     if 'orders' not in ctx.used:

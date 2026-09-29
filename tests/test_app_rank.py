@@ -3,8 +3,10 @@ screen's rank route must keep, determinism, the master list split into top, conn
 server's fallback rank route. Runs on the repo's Bombas brain and aggregates; writes nothing."""
 import importlib.util
 import json
+import os
 import sys
 import tempfile
+import time
 import unittest
 from pathlib import Path
 
@@ -162,6 +164,58 @@ class Master(unittest.TestCase):
             kept = rank.apply_decisions([dict(first)], today=dt.date(2026, 10, 20), path=p)
             self.assertEqual(len(kept), 1)
             self.assertEqual(kept[0]['decision']['choice'], 'not_now')
+
+
+class Cache(unittest.TestCase):
+    """One page load must not re-run 28 audits: rank results are cached per screen, brand and window while the brain,
+    the brand data and the screen folder are unchanged, and callers always get their own copy."""
+
+    def test_second_call_is_a_fast_equal_copy(self):
+        rank.clear_cache()
+        a = rank.rank('05-brand-brain', 'bombas', WINDOW)
+        t = time.time()
+        b = rank.rank('05-brand-brain', 'bombas', WINDOW)
+        self.assertLess(time.time() - t, 0.5)
+        self.assertEqual(json.dumps(a, sort_keys=True), json.dumps(b, sort_keys=True))
+        if b['actions']:
+            b['actions'][0]['title'] = 'changed by the caller'
+            self.assertNotEqual(rank.rank('05-brand-brain', 'bombas', WINDOW)['actions'][0]['title'], 'changed by the caller')
+
+    def test_master_is_served_from_the_screen_cache(self):
+        rank.clear_cache()
+        rank.master('bombas', WINDOW, decisions_path=Path('/nonexistent.json'))
+        t = time.time()
+        m = rank.master('bombas', WINDOW, decisions_path=Path('/nonexistent.json'))
+        self.assertLess(time.time() - t, 1.0)
+        self.assertEqual(m['counts']['screens'], len(rank.screen_slugs()))
+
+    def test_loader_reloads_only_when_the_file_changes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            p = Path(tmp) / 'audit.py'
+            p.write_text('X = 1\n')
+            m1 = rank._load('rank_cache_probe', p)
+            self.assertIs(rank._load('rank_cache_probe', p), m1)
+            p.write_text('X = 2\n')
+            os.utime(p, (time.time() + 5, time.time() + 5))
+            m2 = rank._load('rank_cache_probe', p)
+            self.assertEqual(m2.X, 2)
+            self.assertIsNot(m2, m1)
+
+    def test_cache_drops_when_the_screen_folder_changes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            slug = '99-probe'
+            (root / slug).mkdir()
+            (root / slug / 'audit.py').write_text('def run(brand, window):\n    return []\n')
+            rank.clear_cache()
+            self.assertEqual(rank.rank(slug, 'bombas', WINDOW, root)['actions'], [])
+            (root / slug / 'audit.py').write_text(
+                "def run(brand, window):\n    return [dict(id='99-probe.R1.x', screen='99-probe', rule_id='R1', severity='low', "
+                "entity={'type': 'x', 'id': '1', 'label': 'x'}, evidence=[], sentence='A probe finding.', "
+                "capability={'id': 'X', 'autonomy': 'human_assist'}, money_at_stake=None, confidence=0.5, brain_refs=[], "
+                "first_seen='2026-09-27', last_seen='2026-09-27', status='open', unavailable=None)]\n")
+            os.utime(root / slug / 'audit.py', (time.time() + 5, time.time() + 5))
+            self.assertEqual(len(rank.rank(slug, 'bombas', WINDOW, root)['actions']), 1)
 
 
 if __name__ == '__main__':

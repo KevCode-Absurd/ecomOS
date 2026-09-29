@@ -14,11 +14,14 @@ No model call. Same tables, brain version and window give the same output.
 """
 from __future__ import annotations
 
+import copy
 import datetime as dt
 import importlib.util
 import json
+import os
 import re
 import sys
+import time
 from pathlib import Path
 
 APP = Path(__file__).resolve().parent
@@ -83,12 +86,58 @@ def catalogue() -> dict:
     return _catalogue
 
 
+_MODULES: dict[str, tuple[float, object]] = {}
+_RANKS: dict[tuple, tuple[tuple, float, dict]] = {}
+CACHE_SECONDS = 300
+
+
 def _load(name: str, path: Path):
+    """Load a screen module once per file version. An edited audit.py or api.py reloads on the next call;
+    an unchanged one is reused, so the master list does not re-import 28 screens on every page load."""
+    path = Path(path)
+    mtime = path.stat().st_mtime
+    hit = _MODULES.get(name)
+    if hit and hit[0] == mtime and sys.modules.get(name) is hit[1]:
+        return hit[1]
     spec = importlib.util.spec_from_file_location(name, path)
     mod = importlib.util.module_from_spec(spec)
     sys.modules[name] = mod
     spec.loader.exec_module(mod)
+    _MODULES[name] = (mtime, mod)
     return mod
+
+
+def _folder_version(folder: Path) -> float:
+    """Newest file mtime under a folder, skipping caches. Screen and brand data folders are small."""
+    newest = 0.0
+    for dirpath, dirnames, filenames in os.walk(folder):
+        dirnames[:] = [d for d in dirnames if d not in ("__pycache__", "node_modules", ".git")]
+        for f in filenames:
+            try:
+                newest = max(newest, os.stat(os.path.join(dirpath, f)).st_mtime)
+            except OSError:
+                continue
+    return newest
+
+
+def brain_version(brand: str) -> str | None:
+    try:
+        if str(APP / "brain") not in sys.path:
+            sys.path.insert(0, str(APP / "brain"))
+        from store import Brain  # noqa: WPS433
+        return Brain(brand).version()
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def data_version(brand: str) -> float | None:
+    """Newest mtime in the brand's data folder: tables.json, aggregates, data.sqlite. None when there is none."""
+    folder = APP / "data" / "brands" / brand
+    return _folder_version(folder) if folder.is_dir() else None
+
+
+def clear_cache() -> None:
+    _RANKS.clear()
 
 
 def screen_slugs(root: Path = SCREENS) -> list[str]:
@@ -343,12 +392,10 @@ def load_findings(slug: str, brand: str, window: dict, root: Path = SCREENS) -> 
 
 def rule_names(slug: str, root: Path = SCREENS) -> dict:
     """rule_id to the rule's name from the screen's audit RULES list, for default titles."""
-    mod = sys.modules.get(f"rank_audit_{slug.replace('-', '_')}")
-    if mod is None:
-        try:
-            mod = _load(f"rank_audit_{slug.replace('-', '_')}", root / slug / "audit.py")
-        except Exception:  # noqa: BLE001
-            return {}
+    try:
+        mod = _load(f"rank_audit_{slug.replace('-', '_')}", root / slug / "audit.py")
+    except Exception:  # noqa: BLE001
+        return {}
     out = {}
     for r in getattr(mod, "RULES", []) or []:
         if isinstance(r, dict) and r.get("rule_id") and r.get("name"):
@@ -362,7 +409,7 @@ def screen_override(slug: str, root: Path = SCREENS):
         if not p.is_file():
             continue
         try:
-            mod = sys.modules.get(f"rank_over_{slug.replace('-', '_')}_{fname[:-3]}") or _load(f"rank_over_{slug.replace('-', '_')}_{fname[:-3]}", p)
+            mod = _load(f"rank_over_{slug.replace('-', '_')}_{fname[:-3]}", p)
         except Exception:  # noqa: BLE001
             continue
         if callable(getattr(mod, "rank", None)):
@@ -370,8 +417,23 @@ def screen_override(slug: str, root: Path = SCREENS):
     return None
 
 
-def rank(slug: str, brand: str = "bombas", window: dict | None = None, root: Path = SCREENS, use_override: bool = True) -> dict:
+def rank(slug: str, brand: str = "bombas", window: dict | None = None, root: Path = SCREENS, use_override: bool = True,
+         version: str | None = None) -> dict:
+    """One screen's ranked actions. The result is cached for CACHE_SECONDS per (screen, brand, window) and dropped
+    early when the brain version, the brand's data files or the screen folder change. Callers get a copy."""
     window = window or default_window()
+    version = version if version is not None else brain_version(brand)
+    key = (slug, brand, json.dumps(window, sort_keys=True), str(root), use_override)
+    stamp = (version, data_version(brand), _folder_version(root / slug))
+    hit = _RANKS.get(key)
+    if hit and hit[0] == stamp and time.time() - hit[1] < CACHE_SECONDS:
+        return copy.deepcopy(hit[2])
+    out = _rank(slug, brand, window, root, use_override, version)
+    _RANKS[key] = (stamp, time.time(), copy.deepcopy(out))
+    return out
+
+
+def _rank(slug: str, brand: str, window: dict, root: Path, use_override: bool, version: str | None) -> dict:
     nr = net_revenue_28d(brand, window)
     actions = None
     source = "default"
@@ -396,12 +458,6 @@ def rank(slug: str, brand: str = "bombas", window: dict | None = None, root: Pat
         if not validate_action(a):
             good.append(a)
     good.sort(key=sort_key)
-    try:
-        sys.path.insert(0, str(APP / "brain"))
-        from store import Brain  # noqa: WPS433
-        version = Brain(brand).version()
-    except Exception:  # noqa: BLE001
-        version = None
     return {"screen": slug, "brand": brand, "window": window, "computed_at": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
             "brain_version": version, "simulated": True, "source": source, "net_revenue_28d": nr, "actions": good}
 
@@ -444,9 +500,10 @@ def master(brand: str = "bombas", window: dict | None = None, root: Path = SCREE
     window = window or default_window()
     by_id: dict[str, dict] = {}
     screens = []
+    version = brain_version(brand)
     for slug in screen_slugs(root):
         try:
-            r = rank(slug, brand, window, root)
+            r = rank(slug, brand, window, root, version=version)
         except Exception as exc:  # noqa: BLE001
             screens.append({"screen": slug, "actions": 0, "error": type(exc).__name__})
             continue

@@ -403,5 +403,21 @@ class BombasFinanceInputsTest(unittest.TestCase):
         self.assertTrue(any('overlap' in p for p in self.finance.validate(rows)))
 
 
+class SqlWindowFilters(unittest.TestCase):
+    """Window filters in SQL keep the column bare so SQLite can use the created_at, opened_at and date indexes.
+    On the full-scale database a substr() filter scans 8.8 million orders per query."""
+
+    def test_day_span_and_on_or_before(self):
+        win = metrics.Window(metrics.date(2026, 8, 31), metrics.date(2026, 9, 27))
+        self.assertEqual(metrics.day_span('created_at', win), "(created_at >= '2026-08-31' AND created_at < '2026-09-28')")
+        self.assertEqual(metrics.on_or_before('opened_at', '2026-09-27'), "opened_at < '2026-09-28'")
+        self.assertEqual(metrics.on_or_before('opened_at', '2026-12-31'), "opened_at < '2027-01-01'")
+
+    def test_no_query_wraps_a_filtered_column(self):
+        src = (ROOT / 'app' / 'metrics.py').read_text(encoding='utf-8')
+        self.assertNotRegex(src, r"substr\([\w.]+, 1, 10\) BETWEEN")
+        self.assertNotRegex(src, r"(MIN|MAX)\(substr\(")
+
+
 if __name__ == '__main__':
     unittest.main()
