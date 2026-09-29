@@ -1156,6 +1156,7 @@
   }
   function sendButton(p) {
     // hand-off rows carry no brand yet (contract ask), so only the default brand sends; another brand copies instead
+    if (!p.rows.length) return el('span', { class: 'small muted', text: 'Nothing ready for ' + p.to + ' yet.' });
     if (BRAND) return el('span', { class: 'small muted', text: 'Sending waits on a brand field in the hand-offs table. Copy the pack instead.' });
     const b = el('button', { class: 'btn soft sm', type: 'button', text: 'Send ' + p.rows.length + ' to ' + p.to });
     b.addEventListener('click', async () => {

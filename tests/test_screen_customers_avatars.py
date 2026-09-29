@@ -2426,6 +2426,14 @@ class EmptyBrand(unittest.TestCase):
             self.assertEqual(rank_engine.validate_action(a), [], a['id'])
         top = sorted(acts, key=rank_engine.sort_key)[0]
         self.assertEqual(top['title'], 'Find the first avatars: 5 quotes each from 2 sources')
+        # 12.9: rounds 11 and 12 on an empty brand
+        h = self.q(['handoff'])
+        self.assertFalse([r for p in h['packs'] for r in p['rows'] if r['title'] == 'Messaging hierarchy'])
+        d = self.q(['overview'])
+        self.assertFalse(d['drift']['available'])
+        self.assertFalse(d['shopper']['available'])
+        self.assertEqual(d['lookalikes']['ours']['items'][0]['status'], 'on file')
+        self.assertIn('domains', d['lookalikes']['ours']['missing'])
 
 
 class ChartsDecide(unittest.TestCase):

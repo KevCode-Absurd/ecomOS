@@ -204,7 +204,7 @@ Lead's review: rounds 1 to 4 passed. Focus: returns and tickets by avatar, depth
 | 12.6 | Pretests into the experiment registry: a pretest the buyers' line wins becomes a proposed live test (their line against ours on click-through, 14 days, the avatar as an audience tag, source type pretest). A pretest without votes proposes nothing: the 5-buyer check comes first. Bombas: none yet; tested on a temp fixture | done |
 | 12.7 | `HANDOFF.md` brought up to round 12: 35 rules, the two fixture paths read when present, what came back from the teams, results read-back, scan one and the watch on what is ours, and the asks for a `shopper_runs` table and handle and trademark records | done |
 | 12.8 | The monthly report carries the round 12 reads: a failed shopper step under risks to the brand, the missing marks and handles under what we do not know, and the "no run on file" line only while no run is on file. The audit table already lists every finding, CUST-R35 included | done |
-| 12.9 | A brand with nothing, re-walked with rounds 11 and 12 | todo |
+| 12.9 | A brand with nothing, re-walked with rounds 11 and 12: drift and the shopper run read unavailable with reasons, what is ours lists the name on file and the rest missing, the report says so. Fixed: the copy pack no longer sends a messaging hierarchy that does not exist, and an empty pack says "Nothing ready for creative yet" instead of offering to send 0 | done |
 | 12.10 | Round 12 close, `round12.png` | todo |
 
 ### Round 11 founder note (28 Sep 2026)

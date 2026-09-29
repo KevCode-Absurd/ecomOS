@@ -2046,7 +2046,8 @@ def handoff(d: dict) -> list[dict]:
                  r["brief"]) for r in d["words"]["rows"]]
     if d["copy_gap"].get("action"):
         copy.append(item(d["copy_gap"]["action"]["title"], "copy", d["copy_gap"]["action"]["draft"], d["copy_gap"]["action"]))
-    copy.append(item("Messaging hierarchy", "brain_record", d["hierarchy"]["record"]["text"]))
+    if (d.get("hierarchy") or {}).get("available") and (d["hierarchy"].get("record") or {}).get("text"):
+        copy.append(item("Messaging hierarchy", "brain_record", d["hierarchy"]["record"]["text"]))
     pages = [item(r["action"]["title"], r["action"]["kind"], r["action"]["draft"], r["action"]) for r in d["misreads"].get("rows", []) if r["action"]["kind"] == "page_section"]
     pages += [item(r["action"]["title"], "page_section", r["action"]["draft"], r["action"]) for r in lad if r["verdict"] == "not_landing" and r["action"]]
     pages += [item(m["title"], "page_section", m["draft"], m) for m in d["timing"]["moves"]]
