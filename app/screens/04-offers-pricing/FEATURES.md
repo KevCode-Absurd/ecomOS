@@ -244,9 +244,11 @@ Known gaps from round 0:
 | # | Feature | Status |
 |---|---|---|
 | 11.1 | Decisions per brand (lead's decisions brand field, 28 Sep): this screen's finding ids are the same for every brand, so a "Not now" on Bombas used to snooze the sample brand's move too. The screen now reads only its brand's trail (an unbranded row is the sample brand's, per the server), and after the kit logs a decision the page adds a branded copy as the latest row; the kit's unbranded row followed within 2 minutes by its branded twin belongs to that brand. Checked in the browser with the decisions API stubbed | done |
+| 11.2 | Hand-offs per brand: the hand-offs table has no brand field and this screen's finding ids are the same for every brand, so each hand-off's why now starts "Brand: bombas." (useful to the receiving team too), the read-back keeps only this brand's rows, and the send-once check compares the brand as well. Checked in the browser with a stubbed table holding a Bombas and a sample row | done |
 
 ## Contract asks
 
+- Hand-offs: a `brand` field on each row (events.md), filterable on GET. Local fallback: 04 writes "Brand: <brand>." first in the why and reads back on it.
 - UI kit: `decisionRow` (and the plan board and action card that use it) posts `brand` when the screen passes one, so no screen needs a branded twin row. Local fallback: 04 posts the twin through /api/decisions and attributes the kit's row to it.
 - Data layer speed: `server.Data` coerces every CSV cell with a regex (`_coerce`), about 1.3 of 3 seconds on the sample brand's first load. A per-column type map from `tables.json` would parse once. Local fallback: none needed; later loads are cached.
 - A shared `findings` table the server writes after each audit run (audit.md section 4, first_seen, last_seen, resolved_on). Local fallback: 04 keeps `outbox/findings.<brand>.json` (git-ignored) and reads its own history only.

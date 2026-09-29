@@ -172,7 +172,8 @@
   /** Read back this screen's hand-offs by status (events.md): who has each brief and where it stands. */
   async function handOffs() {
     let rows = [];
-    try { rows = ((await UI.api('/api/handoffs?from_screen=' + SLUG)).handoffs || []).filter((h) => (h.finding_id || '').indexOf(SLUG) === 0); } catch (e) { return; }
+    const mine = 'Brand: ' + brand + '. ';   // hand-offs carry no brand field yet; this page writes it first in the why
+    try { rows = ((await UI.api('/api/handoffs?from_screen=' + SLUG)).handoffs || []).filter((h) => (h.finding_id || '').indexOf(SLUG) === 0 && (h.why || '').indexOf(mine) === 0); } catch (e) { return; }
     const ids = new Set(ACTIONS.map((a) => a.id).concat((PLANNED || []).map((p) => p.id)));
     rows = rows.filter((h) => ids.has(h.finding_id));
     if (!rows.length) return;
@@ -187,7 +188,8 @@
   async function handOff(row) {
     try {
       const seen = await UI.api('/api/handoffs?from_screen=' + SLUG + '&to=' + encodeURIComponent(row.to));
-      const prev = (seen.handoffs || []).find((h) => h.finding_id === row.finding_id && h.title === row.title && h.status !== 'dropped');
+      const prev = (seen.handoffs || []).find((h) => h.finding_id === row.finding_id && h.title === row.title && h.status !== 'dropped'
+        && (h.why || '').split('. ')[0] === (row.why || '').split('. ')[0]);
       if (prev) return 'Already handed to ' + row.to + ' as ' + prev.id + '.';
       const r = await UI.api('/api/handoffs', { method: 'POST', body: row });
       return 'Handed to ' + row.to + ' as ' + r.handoff.id + '.';

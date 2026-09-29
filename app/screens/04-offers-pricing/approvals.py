@@ -188,7 +188,7 @@ def file_text(pf):
     return f'File {pf["name"]} ({pf.get("note", "")}):\n' + '\n'.join(rows)
 
 
-def handoff_row(action):
+def handoff_row(action, brand=None):
     """The hand-off row for an approved move, in the events.md shape; the page posts it to /api/handoffs once."""
     art = action.get('artefact') or {}
     to = HANDOFF_TO.get(art.get('kind'))
@@ -198,7 +198,9 @@ def handoff_row(action):
     ft = file_text(action.get('price_file'))
     if ft:   # the build file travels with the brief, as CSV text
         draft = (draft + '\n\n' + ft)[:20000]
-    return {'from_screen': SCREEN, 'to': to, 'kind': art['kind'], 'title': action['title'], 'why': action.get('why'),
+    # the hand-offs table has no brand field (contract ask); the brand leads the why, and the page reads back on it
+    why = f'Brand: {brand or "sample"}. ' + (action.get('why') or '')
+    return {'from_screen': SCREEN, 'to': to, 'kind': art['kind'], 'title': action['title'], 'why': why[:600],
             'draft': draft or None, 'win_rule': action.get('win_rule'), 'stop_rule': action.get('stop_rule'),
             'check_on': action.get('check_on'), 'capability': (action.get('capability') or {}).get('id'),
             'owner': action.get('owner'), 'finding_id': action['id'], 'status': 'decided'}

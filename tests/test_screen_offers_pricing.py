@@ -2294,6 +2294,7 @@ class HandoffTest(unittest.TestCase):
             out = api.approve('bombas', {'id': a['id'], 'mode': 'founder'}, brain_root=tmp, outbox=tmp / 'out', today=date(2026, 9, 28))
             row = out['handoff']
             self.assertEqual((row['to'], row['status'], row['finding_id']), ('25-experiments', 'decided', a['id']))
+            self.assertTrue(row['why'].startswith('Brand: bombas. '))     # round 11: the brand leads the why
             checked = server.Handoffs.validate(row)
             self.assertTrue(checked['id'].startswith('HO-'))
             prop = api.approve('bombas', {'id': a['id'], 'mode': 'proposed'}, brain_root=tmp, outbox=tmp / 'out', today=date(2026, 9, 28))
@@ -2317,6 +2318,7 @@ class HandoffReadTest(unittest.TestCase):
         js = (SCREEN / 'screen.js').read_text(encoding='utf-8')
         self.assertIn("'/api/handoffs?from_screen=' + SLUG", js)
         self.assertIn("indexOf(SLUG) === 0", js)          # never another screen's rows
+        self.assertIn("(h.why || '').indexOf(mine) === 0", js)   # never another brand's rows
         self.assertIn("'Handed over'", js)
 
 

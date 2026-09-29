@@ -568,7 +568,7 @@ def approve(brand, body, brain_root=None, outbox=None, today=None):
         kw['outbox'] = outbox
     out = approvals.save(brand, act, mode, sf, **kw)
     if mode == 'founder' and not out.get('errors'):
-        out['handoff'] = approvals.handoff_row(act)   # events.md: posted once to /api/handoffs by the page
+        out['handoff'] = approvals.handoff_row(act, brand)   # events.md: posted once to /api/handoffs by the page
     return out
 
 
