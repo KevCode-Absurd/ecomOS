@@ -3535,3 +3535,37 @@ def _apply_results(out: dict, results: dict | None, as_of: str) -> dict:
                    + (" The run is over 90 days old." if lr and not out["fresh"] else "")
                    + f" {sum(1 for p in out['pretests'] if p.get('result'))} of {len(out['pretests'])} pretests have votes.")
     return out
+
+
+# ---------------------------------------------------------------- scan one of our own assets (12.3)
+
+def asset_baseline(records: list[tuple], own_hosts: set, ad_voice_x: dict) -> dict:
+    """What the brain captured of our own site, ads and email, with dates: scan one of the quarterly series.
+    `records` is (section, record) pairs. Site: distinct pages on our own hosts and the statements read from them.
+    Ads: the Ad Library read of our own page. Email: never captured until a sends export or connector exists."""
+    from urllib.parse import urlparse
+    pages, site_dates, statements = set(), set(), 0
+    ad_dates = set()
+    for sec, r in records:
+        src = r.get("source") if isinstance(r.get("source"), dict) else {}
+        ref = str(src.get("ref") or "")
+        day = str(src.get("captured_at") or "")[:10] or None
+        host = urlparse(ref).netloc
+        if host and any(h == host or host.endswith("." + h) for h in own_hosts):
+            pages.add(ref.split("?")[0].split("#")[0])
+            statements += 1
+            if day:
+                site_dates.add(day)
+        v = r.get("value") if isinstance(r.get("value"), dict) else {}
+        if sec == "learnings" and src.get("type") == "ad_library" and v.get("role") == "self" and day:
+            ad_dates.add(day)
+    site = {"pages": len(pages), "statements": statements, "first": min(site_dates) if site_dates else None,
+            "last": max(site_dates) if site_dates else None} if pages else None
+    ads = {"ads": ad_voice_x.get("total_ads"), "date": max(ad_dates)} if ad_dates else None
+    parts = []
+    parts.append(f"site: {site['pages']} pages, {site['statements']} statements, {site['last']}" if site else "site: none")
+    parts.append(f"ads: {ads['ads']} live ads, {ads['date']}" if ads and ads.get("ads") is not None else "ads: none")
+    parts.append("email: none")
+    return {"site": site, "ads": ads, "email": None, "scans": 1 if (site or ads) else 0,
+            "line": ("Scan one on file: " + "; ".join(parts) + ". The next scan compares against it.") if (site or ads)
+                    else "No scan of our own assets on file yet."}

@@ -642,7 +642,7 @@
       rows: x.rows.map((r) => Object.assign({}, r, { theme_t: pretty(r.theme) + ' ' + r.side + 's', then_t: pct(r.then), now_t: pct(r.now), n_t: r.mentions_then + ' then, ' + r.mentions_now + ' now',
         actions: r.action ? [{ label: 'Answer it', onClick: () => briefPanel(r.action) }] : [keep('Nothing to do', 'This theme did not move the wrong way, by the rule above.')] })),
       verdict: { at: 1, kind: (r) => V[r.verdict][0], text: (r) => V[r.verdict][1] }, actions: { label: 'Do' }, sort: false, maxRows: 12,
-    }), el('p', { class: 'small muted' }, 'Our own site, ads and email: unavailable. ' + pretty(x.own_reason).replace(/^./, (c) => c.toUpperCase()) + '. ',
+    }), el('p', { class: 'small muted' }, 'Our own site, ads and email: ' + (x.baseline ? x.baseline.line : 'no scan on file.') + ' Drift needs a second dated scan. ',
       el('button', { class: 'btn soft xs', type: 'button', text: 'Plan the quarterly scan', onclick: () => briefPanel(x.scan) })));
   }
 

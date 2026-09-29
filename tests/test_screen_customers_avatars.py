@@ -2850,3 +2850,24 @@ class ShopperResults(TempBrain):
             fs = {f['rule_id']: f for f in api.audit.run('bombas', RANK_WINDOW, api.BRAIN_ROOT)}
             self.assertIn('days ago', fs['CUST-R34']['sentence'])
         self.with_fixture({'runs': [{'date': '2026-03-01', 'checkpoints': [{'step': 'Home', 'result': 'pass'}]}]}, check)
+
+
+class AssetBaseline(TempBrain):
+    """Feature 12.3: what the brain captured of our own site, ads and email, with dates, as scan one."""
+
+    def test_scan_one(self):
+        b = api.handle(Req(['overview']))['drift']['baseline']
+        self.assertEqual(b['scans'], 1)
+        self.assertGreater(b['site']['pages'], 5)
+        self.assertTrue(b['site']['last'])
+        self.assertEqual(b['ads']['ads'], api.handle(Req(['overview']))['ad_voice']['total_ads'])
+        self.assertIsNone(b['email'])
+        self.assertIn('email: none', b['line'])
+
+    def test_pure(self):
+        recs = [('policies', {'source': {'ref': 'https://shop.example.com/pages/returns', 'captured_at': '2026-09-01T00:00:00Z'}}),
+                ('claims', {'source': {'ref': 'https://other.com/x', 'captured_at': '2026-09-01'}})]
+        b = api.builds.asset_baseline(recs, {'example.com'}, {})
+        self.assertEqual(b['site']['pages'], 1)
+        self.assertIsNone(b['ads'])
+        self.assertEqual(api.builds.asset_baseline([], set(), {})['scans'], 0)
