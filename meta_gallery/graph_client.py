@@ -159,11 +159,12 @@ def creative_record(c):
 
 
 def by_ids(g, ids, fields):
-    out = {}
-    ids = list(ids)
-    for i in range(0, len(ids), 50):
-        out.update(g.get('', ids=','.join(ids[i:i + 50]), fields=fields))
-    return out
+    """Details for many objects. The ?ids= form is gone from Graph API v26, so 1 GET per id (5 at a time)."""
+    from concurrent.futures import ThreadPoolExecutor
+    ids = [i for i in dict.fromkeys(ids) if i]
+    with ThreadPoolExecutor(max_workers=5) as pool:
+        got = list(pool.map(lambda i: g.get(str(i), fields=fields), ids))
+    return {i: r for i, r in zip(ids, got)}
 
 
 def capture(days=365):

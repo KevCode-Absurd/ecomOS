@@ -53,7 +53,10 @@ class FakeGraph:
         self.calls.append(p)
         if path.endswith('/insights'):
             return {'data': [{'spend': '123456.78'}]}
-        ids = p.get('ids', '')
+        assert 'ids' not in p, 'the ids= form is deprecated in Graph API v26'
+        return self._lookup(path).get(path, {})
+
+    def _lookup(self, ids):
         if '555555' in ids:
             return {'555555': {'id': '555555', 'name': 'Brand new ad', 'effective_status': 'ACTIVE', 'status': 'ACTIVE', 'campaign_id': '900',
                                'adset_id': '801', 'creative': {'id': 'cnew'}, 'campaign': {'name': 'Evergreen'}, 'adset': {'name': 'New set'}}}
