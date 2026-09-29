@@ -813,7 +813,18 @@
     const c = ch.counts;
     mount('#changes-tools', UI.orientation([{ label: 'this week', value: c.week, unit: 'n' }, { label: 'site changes', value: c.by_kind.site || 0, unit: 'n', tone: c.by_kind.site ? 'bad' : null }, { label: 'your edits', value: (c.by_kind.founder_edit || 0) + (c.by_kind.answer || 0) + (c.by_kind.approve || 0), unit: 'n' }, { label: 'all time', value: c.total, unit: 'n' }, { label: 'versions', value: ch.versions.length, unit: 'n', title: 'version steps logged' }]));
     const items = ch.week.length ? ch.week : ch.changes.slice(0, 20);
-    mount('#changes', ch.changes.length ? UI.timeline(items.map((x) => ({ when: x.date, who: x.source, tone: KIND_TONE[x.kind] || null, title: x.label, text: x.what + (x.before != null && x.after != null ? ' (before: ' + x.before + ')' : '') })))
+    const status = el('span', { class: 'micro muted' });
+    const list = el('div', { class: 'timeline' });
+    for (const x of items) {
+      const u = x.undo || {};
+      let tail = null;
+      if (x.undone) tail = el('span', { class: 'chip', text: 'undone ' + fmt.date(x.undone) });
+      else if (u.can) { const b = el('button', { class: 'btn xs soft', type: 'button', text: 'Undo', title: u.reason || '' }); b.addEventListener('click', async () => { if (!confirm('Undo this change? ' + u.reason + '. Nothing is deleted; the undo is logged.')) return; b.disabled = true; try { const r = await api(BASE + 'changes/undo', { method: 'POST', body: { change: x.id } }); status.textContent = r.next; loadChanges(); loadProfile(); loadPlan(); } catch (e) { b.disabled = false; status.textContent = 'Could not undo: ' + e.message; } }); tail = b; }
+      else if (u.reason) tail = el('span', { class: 'micro faint', text: 'no undo: ' + u.reason, title: u.reason });
+      list.append(el('div', { class: 'tl' }, el('span', { class: 'dot', style: KIND_TONE[x.kind] ? { background: 'var(--' + KIND_TONE[x.kind] + ')', boxShadow: '0 0 0 3px var(--' + KIND_TONE[x.kind] + '-soft)' } : null }),
+        el('div', null, el('div', { class: 'when', text: (x.date ? fmt.date(x.date) : '') + (x.source ? ', ' + x.source : '') }), el('div', { class: 'row small' }, el('span', null, el('b', { text: x.label || '' }), ' ' + x.what + (x.before != null && x.after != null ? ' (before: ' + x.before + ')' : '')), tail))));
+    }
+    mount('#changes', ch.changes.length ? el('div', { class: 'stack' }, el('div', { class: 'row' }, el('span', { class: 'micro faint', text: (ch.undoable || 0) + ' of these can be undone in a click; each undo is logged and can be undone in turn.' }), status), list)
       : el('p', { class: 'muted', text: 'No change logged yet. Every edit, answer, approval, file and site snapshot lands here.' }),
       !ch.week.length && ch.changes.length ? el('div', { class: 'micro faint', text: 'Nothing in the last ' + ch.days + ' days; showing the latest 20.' }) : null);
   }

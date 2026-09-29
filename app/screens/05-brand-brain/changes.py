@@ -18,11 +18,11 @@ import re
 
 TRACE_SECTIONS = {"offers", "policies", "products", "voice", "claims", "identity", "positioning", "learnings", "diagnosis", "calendar", "operations", "channels", "content", "story_bank"}
 KIND_PLURAL = {"record": "records", "ads": "ad records", "rung": "ladder rungs", "question": "questions", "snippet": "snippets"}
-KINDS = ["founder_edit", "answer", "approve", "forbid", "document", "proposed", "accepted", "ignored", "conflict", "site", "snapshot", "contract", "permission", "page_id", "snippet", "example", "proof", "retired", "router", "peak", "restore", "logo", "decision", "brand", "visibility", "rule", "asset", "consent", "lock", "remember", "audience", "reason", "owner", "confirm", "correction", "restore", "number", "override", "settled", "source_review"]
+KINDS = ["founder_edit", "answer", "approve", "forbid", "document", "proposed", "accepted", "ignored", "conflict", "site", "snapshot", "contract", "permission", "page_id", "snippet", "example", "proof", "retired", "router", "peak", "restore", "logo", "decision", "brand", "visibility", "rule", "asset", "consent", "lock", "remember", "audience", "reason", "owner", "confirm", "correction", "restore", "number", "override", "settled", "source_review", "undo"]
 KIND_LABEL = {"founder_edit": "you edited", "answer": "you answered", "approve": "you approved", "forbid": "you forbade", "document": "file in",
               "proposed": "records proposed", "accepted": "proposal accepted", "ignored": "proposal ignored", "conflict": "conflict settled",
               "site": "site changed", "snapshot": "site snapshot", "contract": "contract on file", "permission": "permission set", "page_id": "page id added",
-              "snippet": "snippet locked", "example": "voice example"}
+              "snippet": "snippet locked", "example": "voice example", "undo": "you undid", "override": "saved over a contradiction", "settled": "contradiction settled", "source_review": "source reviewed"}
 
 
 def _short(v) -> str | None:
@@ -84,7 +84,7 @@ def recent(brain, days: int = 7) -> dict:
     for r in brain.records("changes"):
         v = r.get("value") if isinstance(r.get("value"), dict) else {}
         rows.append({"id": r["id"], "date": None if r["date"] == "undated" else r["date"], "kind": v.get("kind") or r.get("field"), "label": KIND_LABEL.get(v.get("kind") or r.get("field"), r.get("field")),
-                     "section": v.get("section"), "record": v.get("record"), "what": v.get("what") or r.get("text"), "before": v.get("before"), "after": v.get("after"), "source": v.get("source"), "age_days": r["age_days"]})
+                     "section": v.get("section"), "record": v.get("record"), "what": v.get("what") or r.get("text"), "before": v.get("before"), "after": v.get("after"), "source": v.get("source"), "age_days": r["age_days"], "undone": v.get("undone")})
     rows.sort(key=lambda x: ((x["date"] or ""), x["id"]), reverse=True)
     week = [x for x in rows if x["age_days"] is not None and x["age_days"] <= days]
     by_kind = {}

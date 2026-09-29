@@ -136,6 +136,8 @@ question, and accept or ignore on a proposed record. Nothing external.
   POST permissions/<section>    {roles: {role: full | read | none}}: a founder record team.permission_<section>
   GET  export                   the whole brain as one portable JSON (records, manifest, router, conflicts)
   GET  changes                  the changes log (every write through this screen and every site change), newest
+  GET  changes/undo             ?change=<change id>: what undoing that line would do, or why it cannot be undone
+  POST changes/undo             {change}: put the brain back the way it was before that line; logged, never deletes
                                 first, with counts for the week and the version steps
   GET  dependents?record=<id>   what depends on one fact: records, ladder rungs, questions, snippets, ads
   GET  assumptions              the register: the numbers the simulation runs on, status, unit, as of, rooms
@@ -268,6 +270,9 @@ _nmspec.loader.exec_module(numbers)
 _ctspec = importlib.util.spec_from_file_location("brand_brain_contradict", HERE / "contradict.py")
 contradict = importlib.util.module_from_spec(_ctspec)
 _ctspec.loader.exec_module(contradict)
+_unspec = importlib.util.spec_from_file_location("brand_brain_undo", HERE / "undo.py")
+undo = importlib.util.module_from_spec(_unspec)
+_unspec.loader.exec_module(undo)
 _rsspec = importlib.util.spec_from_file_location("brand_brain_restore", HERE / "restore.py")
 restore = importlib.util.module_from_spec(_rsspec)
 _rsspec.loader.exec_module(restore)
@@ -1141,6 +1146,8 @@ def approve(brain: Brain, rid: str, body: dict):
     if rec is None:
         return 404, {"error": "no such record", "id": rid}
     was = {"type": (rec.get("source") or {}).get("type"), "ref": (rec.get("source") or {}).get("ref"), "tier": rec.get("tier")}
+    if (rec.get("source") or {}).get("derived_from"):
+        was["derived_from"] = list(rec["source"]["derived_from"])  # an undo needs it: agent and inferred sources must list their records
     hist = list(rec.get("history") or []) + [{"value": rec.get("value"), "changed_at": brain.today.isoformat(),
                                              "source_ref": was["ref"] or "", "tier": was["tier"], "reason": f"founder {choice}"}]
     new = dict(rec, tier="approved" if choice == "approve" else "forbidden", confidence=1.0, status="active", history=hist,
@@ -1914,8 +1921,27 @@ def handle(req):
         return assumption_set(brain, parts[1], req.body)
     if req.method == "GET" and parts == ["changes"]:
         ch = changes.recent(brain)
-        ch.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())
+        shown = ch["week"] if ch["week"] else ch["changes"][:20]
+        for x in shown[:60]:
+            pl = undo.plan(brain, x, changes)
+            x["undo"] = {"can": pl["can"], "how": pl["how"], "reason": pl["reason"]}
+        ch.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version(), undoable=sum(1 for x in shown[:60] if x.get("undo", {}).get("can")))
         return ch
+    if req.method == "GET" and parts == ["changes", "undo"]:
+        cid = str(req.arg("change") or "")
+        row = next((x for x in changes.recent(brain, days=100000)["changes"] if x["id"] == cid), None)
+        if row is None:
+            return 404, {"error": "no such change", "change": cid}
+        return dict(undo.plan(brain, row, changes), row=row)
+    if req.method == "POST" and parts == ["changes", "undo"]:
+        cid = str((req.body or {}).get("change") or "")
+        row = next((x for x in changes.recent(brain, days=100000)["changes"] if x["id"] == cid), None)
+        if row is None:
+            return 404, {"error": "no such change", "change": cid}
+        res = undo.apply(brain, row, changes, history, founder_put)
+        if isinstance(res, tuple):
+            return res
+        return 201, dict(res, version=brain.version())
     if req.method == "GET" and parts == ["dependents"]:
         rid = req.arg("record", "") or ""
         if not re.fullmatch(r"[a-z0-9_-]+\.[a-z_]+\.[A-Za-z0-9_.-]{1,120}", rid):

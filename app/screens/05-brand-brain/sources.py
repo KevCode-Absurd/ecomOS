@@ -130,6 +130,8 @@ def approve_source(brain, ref: str, sections: list[str] | None, note: str) -> di
         hist = list(r.get("history") or []) + [{"value": r.get("value"), "changed_at": today, "source_ref": (r.get("source") or {}).get("ref") or "",
                                                "tier": r.get("tier"), "reason": "founder approve after source review"}]
         was = {"type": (r.get("source") or {}).get("type"), "ref": (r.get("source") or {}).get("ref"), "tier": r.get("tier")}
+        if (r.get("source") or {}).get("derived_from"):
+            was["derived_from"] = list(r["source"]["derived_from"])
         n = dict(r, tier="approved", confidence=1.0, status="active", history=hist,
                  source={"type": "founder", "ref": f"05-brand-brain source review of {_key(ref)}", "captured_at": today, "was": was})
         n.pop("expires_at", None)

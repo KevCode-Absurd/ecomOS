@@ -2932,6 +2932,54 @@ class Round8QuizAndSchedule(TempBrain):
         self.assertEqual(api.handle(Req(['schedule'], 'POST', body={'weekday': 'x'}))[0], 400)
 
 
+class Round8Undo(TempBrain):
+    """Round 8 feature 10: undo from the changes list."""
+
+    def _change(self, kind):
+        return next(x for x in api.handle(Req(['changes']))['changes'] if x['kind'] == kind and not x.get('undone'))
+
+    def test_value_change_restores_and_marks(self):
+        api.handle(Req(['profile', 'offers', 'free_shipping_threshold_usd'], 'POST', body={'text': '80', 'force': True}))
+        ch = api.handle(Req(['changes']))
+        row = next(x for x in ch['changes'] if x['kind'] == 'founder_edit')
+        self.assertEqual((row['undo']['can'], row['undo']['how']), (True, 'restore'))
+        self.assertGreaterEqual(ch['undoable'], 1)
+        pl = api.handle(Req(['changes', 'undo'], query={'change': [row['id']]}))
+        self.assertEqual((pl['can'], pl['how'], pl['record']), (True, 'restore', 'bombas.offers.free_shipping_threshold_usd'))
+        status, r = api.handle(Req(['changes', 'undo'], 'POST', body={'change': row['id']}))
+        self.assertEqual((status, r['how'], r['after']), (201, 'restore', 75))
+        rec = next(x for x in self.section('offers') if x['id'] == 'bombas.offers.free_shipping_threshold_usd')
+        self.assertEqual(rec['value'], 75)
+        ch = api.handle(Req(['changes']))
+        again = next(x for x in ch['changes'] if x['id'] == row['id'])
+        self.assertEqual((again['undone'], again['undo']['can']), ('2026-09-28', False))
+        self.assertTrue(any(x['kind'] == 'undo' for x in ch['changes']))
+        self.assertEqual(api.handle(Req(['changes', 'undo'], 'POST', body={'change': row['id']}))[0], 400)
+        self.assertEqual(api.handle(Req(['changes', 'undo'], 'POST', body={'change': 'bombas.changes.nope'}))[0], 404)
+
+    def test_approve_created_and_batch_lines(self):
+        api.handle(Req(['approve', 'bombas.positioning.frame'], 'POST', body={'choice': 'approve'}))
+        row = self._change('approve')
+        self.assertEqual(row['undo']['how'], 'tier')
+        status, r = api.handle(Req(['changes', 'undo'], 'POST', body={'change': row['id']}))
+        self.assertEqual((status, r['how'], r['after']), (201, 'tier', r['after']))
+        rec = next(x for x in self.section('positioning') if x['id'] == 'bombas.positioning.frame')
+        self.assertNotEqual(rec['tier'], 'approved')
+        self.assertNotEqual(rec['source']['type'], 'founder')
+        api.handle(Req(['profile', 'offers', 'brand_new_field'], 'POST', body={'text': 'a new fact with no number'}))
+        row = self._change('founder_edit')
+        self.assertEqual((row['record'], row['undo']['how']), ('bombas.offers.brand_new_field', 'retire'))
+        status, r = api.handle(Req(['changes', 'undo'], 'POST', body={'change': row['id']}))
+        self.assertEqual((status, r['how']), (201, 'retire'))
+        self.assertEqual([x['status'] for x in self.section('offers') if x['id'] == 'bombas.offers.brand_new_field'], ['retired'])
+        sr = api.handle(Req(['sources']))
+        g = next(g for g in sr['sources'] if g['type'] == 'site' and g['approvable'] >= 2)
+        api.handle(Req(['sources', 'approve'], 'POST', body={'ref': g['ref']}))
+        batch = next(x for x in api.handle(Req(['changes']))['changes'] if x['kind'] == 'approve' and 'after review' in x['what'])
+        self.assertFalse(batch['undo']['can'])
+        self.assertIn('each from its history', batch['undo']['reason'])
+
+
 class Round8SourceApprove(TempBrain):
     """Round 8 feature 8: approve a whole source after a review."""
 
@@ -3056,7 +3104,7 @@ class Round8SourcesTrustHistory(TempBrain):
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
-    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'], ['onepage'], ['brainmd', 'notes'], ['alerts'], ['glossary'], ['expiring'], ['feedback'], ['numbers'], ['proofs'], ['trust'], ['round'], ['brandbook'], ['quiz'], ['schedule'], ['sources'], ['records', 'csv'], ['trust', 'history'], ['contradict'],
+    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'], ['onepage'], ['brainmd', 'notes'], ['alerts'], ['glossary'], ['expiring'], ['feedback'], ['numbers'], ['proofs'], ['trust'], ['round'], ['brandbook'], ['quiz'], ['schedule'], ['sources'], ['records', 'csv'], ['trust', 'history'], ['contradict'], ['changes'],
               ['decisions'], ['flows'], ['claims'], ['site', 'diff'], ['parity'], ['contracts'], ['legal'], ['voice'], ['battlecards'], ['permissions'],
               ['export'], ['assumptions'], ['facts'], ['summaries'], ['changes'], ['learn'], ['report'], ['digest'], ['review'], ['bottlenecks'], ['audit']]
 
