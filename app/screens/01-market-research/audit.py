@@ -222,6 +222,9 @@ Rules
   PROD-R62  Post-launch read below the floor: a launched candidate whose read metric (units or net sales from the monthly SKU
             table, whole months from the launch month) sits below the floor written before the test, at or after the read
             date; the continue-or-kill call is due (bank idea PRD-125). Money: the net sales read. Capability PROD-C11
+  PROD-R63  Tie with no founder pick: 2 or more open shortlisted candidates within 3 scorecard points of each other with no
+            founder pick and reason written on any of them (bank idea PRD-108: founder excitement decides only a tie between
+            equally validated concepts, and says so). Money: null. Capability PROD-C11
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -357,6 +360,7 @@ RULES = [
     {'rule_id': 'PROD-R60', 'name': 'First run decided on a chosen channel whose supplier is not verified reachable on the platform named', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C13', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R61', 'name': 'Launched candidate with no SKU mapped for the post-launch read', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C11', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R62', 'name': 'Launched candidate whose read metric is below its floor at or after the read date', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline', 'products_monthly'], 'capability': 'PROD-C11', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R63', 'name': 'Two or more shortlisted candidates within 3 scorecard points with no founder pick written', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline', 'finance_inputs'], 'capability': 'PROD-C11', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -419,7 +423,8 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R59': {'id': 'PROD-C01', 'autonomy': 'agent_does'},
               'PROD-R60': {'id': 'PROD-C13', 'autonomy': 'agent_does'},
               'PROD-R61': {'id': 'PROD-C11', 'autonomy': 'agent_does'},
-              'PROD-R62': {'id': 'PROD-C11', 'autonomy': 'founder_gate'}}
+              'PROD-R62': {'id': 'PROD-C11', 'autonomy': 'founder_gate'},
+              'PROD-R63': {'id': 'PROD-C11', 'autonomy': 'founder_gate'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -1021,6 +1026,7 @@ def _run_audit(brand, ends_on, data):
     out += quick_screen_findings(brand, ends_on)
     out += supplier_findings(brand, ends_on)
     out += launch_read_findings(brand, data, br, rd, ends_on)
+    out += tie_findings(brand, data, br, rd, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -5356,6 +5362,47 @@ def launch_read_findings(brand, data, br, rd, ends_on):
             f['entity'] = {'type': 'sku', 'id': cid, 'label': r['name'], 'candidate': True, 'stage': r['stage'], 'sku': r['sku'], 'metric': pl['metric'], 'value': r['metric_value'], 'floor': pl['floor'], 'read_on': pl['read_on'], 'owner': pl['owner'], 'sell_through': r['sell_through'], 'margin_pct_real': r['margin_pct_real']}
             f['id'] = f'{SCREEN}.PROD-R62.{cid}'
             out.append(f)
+    return out
+
+
+# ---------------------------------------------------------------- a tie on the scorecard: the founder picks, and says why
+
+TIE_POINTS = 3   # shortlisted candidates within this many scorecard points are a tie the founder breaks (bank idea PRD-108)
+
+
+def ties(sc_rows, cands):
+    """Groups of open shortlisted candidates within TIE_POINTS of the group's top score, with the founder pick on file."""
+    picks = {c.get('candidate_id'): str(c.get('founder_pick_reason') or '').strip() or None for c in cands}
+    rows = sorted([r for r in sc_rows if r.get('stage') == 'shortlisted' and not r.get('closed')], key=lambda r: -(r.get('total') or 0))
+    groups, used = [], set()
+    for i, top in enumerate(rows):
+        if top['candidate_id'] in used:
+            continue
+        group = [r for r in rows[i:] if r['candidate_id'] not in used and (top.get('total') or 0) - (r.get('total') or 0) <= TIE_POINTS]
+        if len(group) >= 2:
+            for r in group:
+                used.add(r['candidate_id'])
+            picked = [r for r in group if picks.get(r['candidate_id'])]
+            groups.append({'candidates': [{'candidate_id': r['candidate_id'], 'name': r['name'], 'total': r.get('total'), 'pick_reason': picks.get(r['candidate_id'])} for r in group],
+                           'spread': round((top.get('total') or 0) - (group[-1].get('total') or 0), 1), 'picked': picked[0]['name'] if picked else None, 'top_id': top['candidate_id'], 'finding_id': f'{SCREEN}.PROD-R63.{top["candidate_id"]}'})
+    return {'groups': groups, 'points': TIE_POINTS, 'rule': f'shortlisted candidates within {TIE_POINTS} scorecard points are a tie; the numbers cannot break it, so the founder picks one and writes why on the candidate, after the checks ran, never before (bank idea PRD-108)'}
+
+
+def tie_findings(brand, data, br, rd, ends_on):
+    """PROD-R63: a tie on the shortlist with no founder pick written."""
+    out = []
+    sc = scorecard(brand, data, br, rd, ends_on)
+    for g in ties(sc['rows'], pipeline(brand))['groups']:
+        if g['picked']:
+            continue
+        cid = g['top_id']
+        names = ', '.join(f'{c["name"]} ({c["total"]})' for c in g['candidates'])
+        ev = [_ev('scorecard_spread_points', g['spread'], 'score', ends_on.isoformat(), 'shortlist now', TIE_POINTS, 'threshold', source='fixtures.pipeline', simulated=False, freshness_days=0, candidates=[c['candidate_id'] for c in g['candidates']])]
+        sentence = f'{len(g["candidates"])} shortlisted candidates sit within {g["spread"]:g} points on the scorecard ({names}); the numbers cannot pick, so the founder picks one and writes why.'
+        f = _finding('PROD-R63', cid, ends_on, 'medium', ev, sentence, None, 0.9, [], money_reason='a tie has no order count')
+        f['entity'] = {'type': 'sku', 'id': cid, 'label': g['candidates'][0]['name'], 'candidate': True, 'stage': 'shortlisted', 'tied_with': [c['name'] for c in g['candidates'][1:]], 'spread': g['spread'], 'candidates': g['candidates']}
+        f['id'] = f'{SCREEN}.PROD-R63.{cid}'
+        out.append(f)
     return out
 
 

@@ -1105,6 +1105,18 @@ def recipe(f):
             'size': {'text': f'{ent.get("variants")} variants planned', 'usd': None}, 'stop_rule': 'no MOQ per variant before the core product sells', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 1,
             'win_rule': 'one variant in the first run, the rest queued behind a sell-through read',
         }
+    if rid == 'PROD-R63':
+        ent = f.get('entity') or {}
+        return {
+            'title': f'Break the tie on the shortlist: pick between {ent.get("label")} and {", ".join(ent.get("tied_with") or [])} and write why',
+            'owner': 'person',
+            'artefact': {'kind': 'brain_record', 'label': f'the founder pick on the shortlist tie ({(ent.get("spread") or 0):g} points apart): which candidate goes first and the reason (the one the founder would sell hardest, the one closest to the brand), written on the candidate (bank idea PRD-108)'},
+            'steps': [{'n': 1, 'who': 'agent', 'text': 'Show the tied candidates side by side: scores per criterion, the angle, the cash timing, the first run.'},
+                      {'n': 2, 'who': 'person', 'text': 'Pick one and write the reason on it; the other keeps its place and its review date.'},
+                      {'n': 3, 'who': 'agent', 'text': 'Move the pick to the top of the shortlist memo; the reason travels onto the proposed test.'}],
+            'size': {'text': f'{len(ent.get("candidates") or [])} candidates within {(ent.get("spread") or 0):g} points', 'usd': None}, 'stop_rule': 'no excitement before the checks: a pick is written only after the scorecard ran', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 0.5,
+            'win_rule': 'one tied candidate carries a founder pick reason',
+        }
     if rid == 'PROD-R61':
         ent = f.get('entity') or {}
         return {
@@ -1437,7 +1449,7 @@ def merge_strength(actions):
 
 
 LANE_RULES = ('PROD-R06', 'PROD-R19', 'PROD-R20', 'PROD-R33', 'PROD-R26', 'PROD-R29')
-CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28', 'PROD-R37', 'PROD-R38', 'PROD-R39', 'PROD-R40', 'PROD-R45', 'PROD-R46', 'PROD-R47', 'PROD-R48', 'PROD-R49', 'PROD-R50', 'PROD-R51', 'PROD-R52', 'PROD-R53', 'PROD-R54', 'PROD-R55', 'PROD-R56', 'PROD-R57', 'PROD-R58', 'PROD-R59', 'PROD-R60', 'PROD-R61', 'PROD-R62')
+CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28', 'PROD-R37', 'PROD-R38', 'PROD-R39', 'PROD-R40', 'PROD-R45', 'PROD-R46', 'PROD-R47', 'PROD-R48', 'PROD-R49', 'PROD-R50', 'PROD-R51', 'PROD-R52', 'PROD-R53', 'PROD-R54', 'PROD-R55', 'PROD-R56', 'PROD-R57', 'PROD-R58', 'PROD-R59', 'PROD-R60', 'PROD-R61', 'PROD-R62', 'PROD-R63')
 
 
 def merge_candidates(actions):
@@ -1790,7 +1802,7 @@ def candidate_update(brand, cid, body, today):
             return 400, {'error': 'lane must be one of ' + ', '.join(lane_keys) if lane_keys else 'this brand has no lanes on file'}
         row['lane'] = lane
         changes.append(f'lane {lane or "cleared"}')
-    for k in ('angle_text', 'angle_source', 'cash_plan', 'source_finding', 'offer_structure', 'price_band_check', 'cash_test_plan'):
+    for k in ('angle_text', 'angle_source', 'cash_plan', 'source_finding', 'offer_structure', 'price_band_check', 'cash_test_plan', 'founder_pick_reason'):
         if body.get(k) is not None:
             row[k] = str(body[k]).strip()[:300] or None
             changes.append(k.replace('_', ' ') + ' set')
@@ -2034,6 +2046,7 @@ def gates_block(brand, data, br, rd, ends_on, findings):
 
 def scorecard_block(brand, data, br, rd, ends_on, findings):
     sc = audit.scorecard(brand, data, br, rd, ends_on)
+    sc['ties'] = audit.ties(sc['rows'], audit.pipeline(brand or 'sample'))
     by_entity = {f['entity']['id']: f['id'] for f in findings if f['rule_id'] == 'PROD-R25'}
     for r in sc['rows']:
         r['finding_id'] = by_entity.get(r['candidate_id'])
