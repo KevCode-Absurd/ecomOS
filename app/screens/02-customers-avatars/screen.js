@@ -394,12 +394,12 @@
 
   // ---------- desk: lookalike pages ----------
   function renderLookalikes(x) {
-    const ours = x.ours ? [el('h4', { text: 'What is ours, on file' }),
+    const ours = x.ours ? [el('div', { class: 'ours-block' }, el('h4', { text: 'What is ours, on file' }),
       UI.verdictTable({ columns: [{ key: 'what', label: 'What' }, { key: 'value_t', label: 'On file' }],
         rows: x.ours.items.map((i) => Object.assign({}, i, { value_t: i.value || 'not in the brain',
           actions: i.status === 'missing' ? [{ label: 'Add it', onClick: () => briefPanel(x.ours.watch) }] : [keep('On file', 'This is in the brain and the monthly watch checks it.')] })),
         verdict: { at: 1, kind: (r) => r.status === 'missing' ? 'watch' : 'keep', text: (r) => r.status === 'missing' ? 'Missing' : 'On file' }, actions: { label: 'Do' }, sort: false }),
-      el('button', { class: 'btn soft sm', type: 'button', text: 'Plan the monthly watch', onclick: () => briefPanel(x.ours.watch) })] : [];
+      el('button', { class: 'btn soft sm', type: 'button', text: 'Plan the monthly watch', onclick: () => briefPanel(x.ours.watch) }))] : [];
     if (!x.rows.length) { mount('#look', el('p', { class: 'muted small', text: x.line }), ...ours); return; }
     mount('#look', ...ours, ...x.rows.map((r) => UI.actionCard({ id: r.action.id, title: r.action.title, severity: 'high', owner: 'person',
       why: r.ads_seen + ' ads from page ' + r.page_id + ', first seen ' + r.created + ', linking to ' + r.links_to + '. ' + (r.note || ''),

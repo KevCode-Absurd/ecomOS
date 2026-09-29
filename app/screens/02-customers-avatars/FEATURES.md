@@ -205,7 +205,16 @@ Lead's review: rounds 1 to 4 passed. Focus: returns and tickets by avatar, depth
 | 12.7 | `HANDOFF.md` brought up to round 12: 35 rules, the two fixture paths read when present, what came back from the teams, results read-back, scan one and the watch on what is ours, and the asks for a `shopper_runs` table and handle and trademark records | done |
 | 12.8 | The monthly report carries the round 12 reads: a failed shopper step under risks to the brand, the missing marks and handles under what we do not know, and the "no run on file" line only while no run is on file. The audit table already lists every finding, CUST-R35 included | done |
 | 12.9 | A brand with nothing, re-walked with rounds 11 and 12: drift and the shopper run read unavailable with reasons, what is ours lists the name on file and the rest missing, the report says so. Fixed: the copy pack no longer sends a messaging hierarchy that does not exist, and an empty pack says "Nothing ready for creative yet" instead of offering to send 0 | done |
-| 12.10 | Round 12 close, `round12.png` | todo |
+| 12.10 | Round 12 close: 35 rules; what came back from the teams, results read back, scan one of our assets, the watch on what is ours. Fixed on the way: "What is ours" was split across the lookalike block's two-column grid; it is now one full-width block. Full screen suite: only the known site speed failures. Screenshot `round12.png` (what is ours and the lookalike report) | done |
+
+### Round 12 founder note (29 Sep 2026)
+
+1. You can now see what each team did with the briefs we sent, straight from their decisions.
+2. When a mystery shopper run is logged, each failed step becomes a fix to approve, and a pretest the buyers win becomes a line to lead with and a live test.
+3. The brain's capture of our site and ads, 26 pages and 23 ads on 28 Sep, is now scan one. The next quarterly scan shows what drifted.
+4. What is ours is listed: name, domains and our ad page are on file; social handles and trademarks are not in the brain yet.
+5. A monthly watch is drafted for our name, domains and handles, next to the one lookalike page already found.
+6. Next, round 13: results as the shopper, survey and order tables land, and the handles and marks once they are in the brain.
 
 ### Round 11 founder note (28 Sep 2026)
 
@@ -470,3 +479,4 @@ The job to be done for each avatar is brand data: it lives in `app/brain/<brand>
 | 9 | 9.1 to 9.10, first screen, writing rules everywhere, decisions per avatar, survey answers back, faster overview, depth rules 4, 6 and 13 as tests, phone width | 28 Sep 2026 | done; screenshot `round9.png` |
 | 10 | 10.1 to 10.10, no thresholds in page code, a brand with nothing, anti-patterns and depth sections under test, tunable thresholds, connect strip, charts that decide, loose ends, hand-off | 28 Sep 2026 | done; screenshot `round10.png` |
 | 11 | 11.1 to 11.10, hand-offs on the shared table, inbox, decisions by brand, every block acts, buyer drift, shopper run and pretests, 2 rules, report | 28 Sep 2026 | done; screenshot `round11.png` |
+| 12 | 12.1 to 12.10, answers from the teams, shopper and pretest results, scan one, what is ours, depth pass, pretests to tests, report, empty brand | 29 Sep 2026 | done; screenshot `round12.png` |
