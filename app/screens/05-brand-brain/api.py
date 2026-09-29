@@ -19,6 +19,8 @@ question, and accept or ignore on a proposed record. Nothing external.
   GET  sources                  where every fact came from: one row per source reference with sections, tiers, dates
   GET  sources/approve          ?ref=&sections=: the records one source would approve, with the tier each has now
   POST sources/approve          {ref, sections, note}: approve every record from a source after reading it; logged once, review record on team
+  GET  sources/retire           ?ref=&sections=: the records a retire of that source would touch
+  POST sources/retire           {ref, sections, reason}: retire every active record from a source, with the why on file; one line per record on the changes list
   GET  records/csv              every active record as CSV (?retired=1 includes retired)
   GET  trust                    section trust, explained: strong, fresh, reviewed, owned, weighted, with the formula
   GET  proofs                   proof requests for claims below approved, ranked by the doubts they answer, drafted
@@ -2239,6 +2241,36 @@ def handle(req):
         rerrs = founder_put(brain, plan["review"], "source_review", plan["review"]["text"][:160])
         return 201, {"ok": True, "ref": sources_mod._key(ref), "approved": written, "errors": errors, "counts": dict(plan["counts"], written=len(written)), "review": None if rerrs else plan["review"]["id"], "version": brain.version(),
                      "next": f"{len(written)} record{'s' if len(written) != 1 else ''} now approved. Every package and brain file reads them as approved from now."}
+    if req.method == "GET" and parts == ["sources", "retire"]:
+        ref = (req.arg("ref") or "").strip()
+        if not ref:
+            return 400, {"error": "ref is the source reference to retire"}
+        secs = [x for x in (req.arg("sections") or "").split(",") if x]
+        plan = sources_mod.retire_source(brain, ref, secs or None, "")
+        return {"ref": ref, "counts": plan["counts"], "records": [{"id": r["id"], "section": r["section"], "tier": r.get("tier", "unverified"), "text": str(r.get("text") or r.get("value"))[:140]} for r in plan["records"]][:200],
+                "capability": {"id": "BRN-C07", "autonomy": "founder_gate"},
+                "warning": (f"{plan['counts']['approved']} of these are approved records; they go too" if plan["counts"]["approved"] else None),
+                "note": "A dead page, a wrong scrape or an actor you no longer trust: every active record it filled goes to retired in one step. Nothing is deleted; each record stays in its file and comes back from the changes list."}
+    if req.method == "POST" and parts == ["sources", "retire"]:
+        body = req.body or {}
+        ref = str(body.get("ref") or "").strip()
+        reason = str(body.get("reason") or "").strip()
+        if not ref:
+            return 400, {"error": "ref is the source reference to retire"}
+        if len(reason) < 4:
+            return 400, {"error": "say why in a few words; the reason goes on file with the records"}
+        secs = [str(x) for x in (body.get("sections") or []) if x] or None
+        plan = sources_mod.retire_source(brain, ref, secs, reason)
+        if not plan["records"]:
+            return 400, {"error": "nothing to retire from that source: every record is already retired", "ref": ref}
+        before_v = brain.version()
+        done = [r["id"] for r in plan["records"] if brain.retire(r["id"])]
+        for rid in done:
+            changes.log(brain, "retired", rid.split(".")[1], rid, f"retired with its source {sources_mod._key(ref)}: {reason[:120]}")
+        changes.version_step(brain, before_v, f"source retire {sources_mod._key(ref)}")
+        nerrs = founder_put(brain, plan["note"], "source_retire", plan["note"]["text"][:160])
+        return 201, {"ok": True, "ref": sources_mod._key(ref), "retired": done, "counts": dict(plan["counts"], retired=len(done)), "note": None if nerrs else plan["note"]["id"], "version": brain.version(),
+                     "next": f"{len(done)} record{'s' if len(done) != 1 else ''} retired. No package or brain file reads them from now; each has an undo on the changes list."}
     if req.method == "GET" and parts == ["sources"]:
         sr = sources_mod.register(brain)
         sr.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "BRN-C02", "autonomy": "agent_does"})

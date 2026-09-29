@@ -411,8 +411,14 @@
       pl.counts.records ? el('p', { class: 'small', text: 'To approve: ' + Object.entries(pl.counts.by_tier).map(([t, n]) => n + ' ' + pretty(t)).join(', ') + ' across ' + Object.entries(pl.counts.by_section).map(([t, n]) => pretty(t) + ' ' + n).join(', ') + '.' }) : el('p', { class: 'small muted', text: 'Nothing to approve: every record from this source is approved, forbidden or retired.' }),
       pl.records.length ? UI.table({ columns: [{ key: 'id', label: 'Record' }, { key: 'tier_before', label: 'Tier now', format: pretty }, { key: 'text', label: 'Says' }], rows: pl.records.slice(0, 60), sort: false }) : null,
       el('div', { class: 'row' }, note, go, status), el('p', { class: 'micro faint', text: pl.note }));
+    // 9.1: retire the whole source with a reason on file
+    const why = el('input', { class: 'text sm', placeholder: 'why: dead page, wrong scrape, actor no longer trusted', style: { flex: '1 1 260px' } });
+    const kill = el('button', { class: 'btn sm danger', type: 'button', text: 'Retire all ' + src.active + ' (dead source)', disabled: !src.active });
+    const rst = el('span', { class: 'micro muted' });
+    body.append(el('div', { class: 'row' }, why, kill, rst));
     const panel = UI.panel({ title: src.ref.replace(/^https?:\/\//, '').slice(0, 80), body });
     go.addEventListener('click', async () => { if (!confirm('Approve ' + pl.counts.records + ' records from this source? Each keeps its source and old tier in history.')) return; go.disabled = true; try { const r = await api(BASE + 'sources/approve', { method: 'POST', body: { ref: src.ref, note: note.value.trim() } }); status.textContent = r.next; loadSources(); loadProfile(); loadChanges(); loadTrust(); setTimeout(() => panel.close(), 1200); } catch (e) { go.disabled = false; status.textContent = 'Could not approve: ' + e.message; } });
+    kill.addEventListener('click', async () => { if (why.value.trim().length < 4) { rst.textContent = 'Say why first.'; return; } let w = null; try { w = await api(BASE + 'sources/retire?ref=' + encodeURIComponent(src.ref)); } catch (e) { rst.textContent = 'Could not plan: ' + e.message; return; } if (!confirm('Retire ' + w.counts.records + ' records from this source?' + (w.warning ? ' ' + w.warning + '.' : '') + ' Nothing is deleted; each comes back from the changes list.')) return; kill.disabled = true; try { const r = await api(BASE + 'sources/retire', { method: 'POST', body: { ref: src.ref, reason: why.value.trim() } }); rst.textContent = r.next; loadSources(); loadProfile(); loadChanges(); loadTrust(); setTimeout(() => panel.close(), 1500); } catch (e) { kill.disabled = false; rst.textContent = 'Could not retire: ' + e.message; } });
   }
   async function loadTrust() {
     let t;

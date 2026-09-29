@@ -203,6 +203,25 @@ Sources: round 6's candidates (the alert digest, notes on audience profiles, res
 | 7.9 | Restore from an export (`restore.py`, `POST export/restore`): after a dropped export's diff, name the sections and plan the restore (re-added, changed, retired per section), then apply: the export's records are written back through the store with the export named as their source, the current values go into history, records the export does not hold are retired; changes and freshness are never restored; one logged change per section | done | Undo a bad week in one section without losing the record of what happened since |
 | 7.10 | Change a number safely (`numbers.py`, `GET numbers`, `POST numbers/change`, `POST numbers/done`): change a scalar fact (a threshold, a price, a window, a code) in one place as a founder edit with the old value kept in history; the dependents trace (records, ladder rungs, snippets, facts, the ads that carry the code) becomes a plans record with a done flag per place; rule BRN-R37 keeps it on the master list (medium while an ad or a snippet is left) until every dependent is marked done and the plan retires itself | done | Change the free shipping threshold once and never leave an old $75 in a snippet, a fact or an ad |
 
+Contract ask (29 Sep 2026): `app/brain/<brand>/review/trust.history.jsonl` is runtime state a running server writes (one trust point a day, feature 8.5), like `reads.log.jsonl`; please git-ignore it. Until then the tests delete it from their copy and the manager does not commit it.
+
+## Round 9 (manager, 29 Sep 2026): 10 features, one commit each
+
+Picked from the round 8 note, the room spec and what the register, the changes list and the quiz made possible. Every feature ends in a build or an action on the plan with an owner. Rules BRN-R39 onward.
+
+| # | Feature | Status | Why the founder cares |
+|---|---|---|---|
+| 9.1 | Retire a whole source (`GET sources/retire`, `POST sources/retire`): a dead page, a wrong scrape or an actor you no longer trust; every active record it filled goes to retired in one step with a reason, one changes line, one version step and a `team.source_retire_NNN` record; nothing is deleted and each record comes back from the changes list | done | Pull a bad source out of every package in one move, with the why on file |
+| 9.2 | Undo a section back to a time | todo | |
+| 9.3 | A hand-off pack for a named person | todo | |
+| 9.4 | Questions agents asked that the brain could not answer | todo | |
+| 9.5 | Near-duplicate records | todo | |
+| 9.6 | Answer open questions from a pasted document | todo | |
+| 9.7 | Product line fact sheets | todo | |
+| 9.8 | Shelf life per section, set by the founder | todo | |
+| 9.9 | The round-over-round report | todo | |
+| 9.10 | Strong records without evidence | todo | |
+
 ## Round 8 (manager, 28 Sep 2026): 10 features, one commit each
 
 Sources: round 7's candidates (the brand book, the round schedule, the new-hire questions), the room jobs still thin (provenance, undo, bulk approval), and what the other managers' screens will need from the brain (a contradiction check before a write, a CSV of the records).

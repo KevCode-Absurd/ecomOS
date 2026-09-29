@@ -47,7 +47,7 @@ class TempBrain(unittest.TestCase):
     def setUp(self):
         self.tmp = Path(tempfile.mkdtemp())
         shutil.copytree(BRAIN / 'bombas', self.tmp / 'bombas')
-        for log in ('reads.log.jsonl', 'review/agent-reads.jsonl'):  # session logs a running server writes; never test state
+        for log in ('reads.log.jsonl', 'review/agent-reads.jsonl', 'review/trust.history.jsonl'):  # session logs a running server writes; never test state
             (self.tmp / 'bombas' / log).unlink(missing_ok=True)
         api.BRAIN_ROOT = self.tmp
 
@@ -2930,6 +2930,31 @@ class Round8QuizAndSchedule(TempBrain):
         self.assertEqual(api.handle(Req(['schedule']))['next'], '2026-10-01')
         self.assertEqual(api.handle(Req(['schedule'], 'POST', body={'weekday': 9}))[0], 400)
         self.assertEqual(api.handle(Req(['schedule'], 'POST', body={'weekday': 'x'}))[0], 400)
+
+
+class Round9SourceRetire(TempBrain):
+    """Round 9 feature 1: retire a whole source with the reason on file."""
+
+    def test_plan_retire_and_undo_one_back(self):
+        sr = api.handle(Req(['sources']))
+        g = next(g for g in sr['sources'] if g['type'] == 'site' and g['active'] >= 3)
+        pl = api.handle(Req(['sources', 'retire'], query={'ref': [g['ref']]}))
+        self.assertEqual(pl['counts']['records'], g['active'])
+        self.assertEqual(api.handle(Req(['sources', 'retire'], 'POST', body={'ref': g['ref'], 'reason': 'no'}))[0], 400)
+        status, r = api.handle(Req(['sources', 'retire'], 'POST', body={'ref': g['ref'], 'reason': 'The page moved and the old copy is wrong.'}))
+        self.assertEqual((status, len(r['retired']), r['note']), (201, g['active'], 'bombas.team.source_retire_001'))
+        g2 = next(x for x in api.handle(Req(['sources']))['sources'] if x['ref'] == g['ref'])
+        self.assertEqual((g2['active'], g2['retired'], g2['flag']), (0, g['records'], 'mostly retired'))
+        note = next(x for x in self.section('team') if x['field'] == 'source_retire_001')
+        self.assertIn('old copy is wrong', note['value']['reason'])
+        ch = api.handle(Req(['changes']))
+        lines = [x for x in ch['changes'] if x['kind'] == 'retired' and 'with its source' in x['what']]
+        self.assertEqual(len(lines), g['active'])
+        self.assertEqual(lines[0]['undo']['how'], 'unretire')
+        status, u = api.handle(Req(['changes', 'undo'], 'POST', body={'change': lines[0]['id']}))
+        self.assertEqual((status, u['how']), (201, 'unretire'))
+        self.assertEqual(next(x for x in api.handle(Req(['sources']))['sources'] if x['ref'] == g['ref'])['active'], 1)
+        self.assertEqual(api.handle(Req(['sources', 'retire'], 'POST', body={'ref': 'nothing-here', 'reason': 'gone for good'}))[0], 400)
 
 
 class Round8Undo(TempBrain):

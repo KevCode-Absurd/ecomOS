@@ -151,3 +151,33 @@ def _count(items) -> dict:
     for x in items:
         out[x] = out.get(x, 0) + 1
     return dict(sorted(out.items(), key=lambda kv: -kv[1]))
+
+
+# ---------------------------------------------------------------- retire a whole source (9.1)
+
+def retirable(brain, ref: str, sections: list[str] | None = None) -> list[dict]:
+    """Active or stale records from one source reference, any tier, that a retire would take out of every package."""
+    key = _key(ref)
+    out = []
+    for r in _raw_all(brain):
+        src = origin(r.get("source") or {})
+        if _key(src.get("ref") or "") != key or r.get("status", "active") in ("retired", "proposed"):
+            continue
+        if r.get("section") == "changes" or (sections and r.get("section") not in sections):
+            continue
+        out.append(r)
+    return out
+
+
+def retire_source(brain, ref: str, sections: list[str] | None, reason: str) -> dict:
+    """The records a retire would touch and the team record that says why. Nothing is written here."""
+    recs = retirable(brain, ref, sections)
+    today = brain.today.isoformat()
+    n_prev = sum(1 for r in brain.records("team", include_retired=True) if (r.get("field") or "").startswith("source_retire_"))
+    note = {"id": f"{brain.brand}.team.source_retire_{n_prev + 1:03d}", "brand": brain.brand, "section": "team", "field": f"source_retire_{n_prev + 1:03d}",
+            "value": {"ref": _key(ref), "on": today, "records": [r["id"] for r in recs], "sections": sorted({r["section"] for r in recs}), "reason": (reason or "")[:300],
+                      "tiers_before": _count(r.get("tier", "unverified") for r in recs)},
+            "text": f"{_key(ref)} retired on {today}: {len(recs)} record{'s' if len(recs) != 1 else ''} taken out of every package. {reason.strip()[:200]}",
+            "tier": "approved", "confidence": 1.0, "visibility": "private",
+            "source": {"type": "founder", "ref": "05-brand-brain source retire", "captured_at": today}}
+    return {"records": recs, "note": note, "counts": {"records": len(recs), "by_tier": _count(r.get("tier", "unverified") for r in recs), "by_section": _count(r["section"] for r in recs), "approved": sum(1 for r in recs if r.get("tier") == "approved")}}
