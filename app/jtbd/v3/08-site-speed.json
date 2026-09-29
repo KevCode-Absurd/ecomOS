@@ -1,0 +1,1145 @@
+{
+  "screen": "08-site-speed",
+  "title": "Site and speed",
+  "top_jobs": [
+    {
+      "id": "T1",
+      "job": "When a shopper taps our ad on a phone on a slow connection and waits, help me get the product, price and buy button on screen in under 2.5 seconds on the pages that sell, so I stop paying for clicks that leave before they see what they came for",
+      "metric": "share of mobile visits with the main image and price painted in under 2.5 seconds (field LCP p75) on the top 10 paid landing pages, 28 days",
+      "from_v2": [
+        1,
+        4,
+        6,
+        11,
+        12,
+        14,
+        20,
+        24,
+        26,
+        30
+      ]
+    },
+    {
+      "id": "T2",
+      "job": "When apps, scripts and old code pile up on the pages, help me cut what earns nothing and put a dollar figure on what stays, so I pay for speed only where it makes money",
+      "metric": "script weight and main thread blocking time on product pages, and what slowness costs per month in our own dollars",
+      "from_v2": [
+        10,
+        13,
+        22,
+        29,
+        32
+      ]
+    },
+    {
+      "id": "T3",
+      "job": "When anyone ships a speed fix or a site change, help me test it on a copy of the theme, check tracking and the buying flow, and merge only if it wins, so I never lose sales to a speed fix",
+      "metric": "speed changes with a measured before and after and no break after publish, share",
+      "from_v2": [
+        3,
+        5,
+        7,
+        8,
+        15,
+        16,
+        18
+      ]
+    },
+    {
+      "id": "T4",
+      "job": "When I pay a developer or an agency for speed, help me brief only the fixes that change what shoppers see on the pages that sell, so I pay for results, not scores",
+      "metric": "dollars spent on speed per second saved on money pages, field data",
+      "from_v2": [
+        9,
+        17,
+        19,
+        21,
+        23,
+        27,
+        28
+      ]
+    }
+  ],
+  "jobs": [
+    {
+      "id": "08-01",
+      "top": "T1",
+      "job": "Measure real mobile load for home, 2 collections, the top 5 product pages, the top ad landing pages, cart and checkout, from field data and a mid-range phone on 4G, and save a dated baseline with filmstrips",
+      "trigger": "once at onboarding, then the 1st of each month",
+      "enablers": [
+        "speed-lab"
+      ],
+      "inputs": [
+        {
+          "need": "field data per page: main image paint (LCP), tap response (INP), layout shift (CLS), 28 days",
+          "from": "PageSpeed Insights and Chrome field data API",
+          "status": "setup"
+        },
+        {
+          "need": "pages ranked by paid and organic sessions",
+          "from": "GA4",
+          "status": "connected"
+        },
+        {
+          "need": "top ad landing URLs",
+          "from": "Meta Ads",
+          "status": "connected"
+        },
+        {
+          "need": "a lab tool with a mid-range Android profile on 4G",
+          "from": "WebPageTest or PageSpeed lab",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "Pick the pages by sessions and by ad spend, not by what is easy",
+        "Pull 28 day field data for each, on mobile",
+        "Run 3 lab runs per page on a mid-range phone profile and keep the middle one",
+        "Save the filmstrip: what the shopper sees at 1, 2, 3 and 5 seconds",
+        "Write the baseline table with the date and the element that paints last"
+      ],
+      "output": "a dated baseline table per page with field and lab numbers and a filmstrip each",
+      "next": "feeds 08-08 (revenue model), 08-17 (rank fixes) and every before and after in 08-14",
+      "watch": {
+        "metric": "pages with a dated baseline, share of pages that get paid traffic",
+        "window": "1 day",
+        "source": "speed-lab"
+      },
+      "drives": "decisions on speed made from our numbers",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 5,
+        "ease": 5
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "08-02",
+      "top": "T1",
+      "job": "Open the top 5 ad landing pages inside the Instagram and Facebook in-app browser on a mid-range phone, film the load, and compare it with Chrome and Safari",
+      "trigger": "once, then after each theme change",
+      "enablers": [
+        "speed-lab"
+      ],
+      "inputs": [
+        {
+          "need": "top 5 ads by spend with their URLs",
+          "from": "Meta Ads",
+          "status": "connected"
+        },
+        {
+          "need": "share of sessions from in-app browsers",
+          "from": "GA4",
+          "status": "connected"
+        },
+        {
+          "need": "a mid-range Android and an iPhone",
+          "from": "team",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "Send each ad preview to both phones and tap through inside the app",
+        "Screen record the load and note seconds to image, price and buy button",
+        "Repeat in Chrome and Safari for the same page",
+        "List what loads slower in the app: fonts, video, pop-ups, scripts that block",
+        "Hand the top gap to 08-03 as the first fix"
+      ],
+      "output": "a side by side of in-app vs browser load for 5 pages, with the worst gap named",
+      "next": "feeds 08-03 and 08-17",
+      "watch": {
+        "metric": "seconds to price on screen in the Instagram in-app browser",
+        "window": "7 days",
+        "source": "screen recordings"
+      },
+      "drives": "conversion rate from Meta clicks",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 5
+      },
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "08-03",
+      "top": "T1",
+      "job": "Make the product image, price and buy button the first things to paint on mobile product pages: preload the main image at phone size, stop lazy loading it, and show text while fonts load",
+      "trigger": "once per template, then on each theme change",
+      "enablers": [
+        "speed-lab",
+        "theme-twin"
+      ],
+      "inputs": [
+        {
+          "need": "the element that paints last per product template",
+          "from": "speed-lab",
+          "status": "enabler"
+        },
+        {
+          "need": "theme code and a theme copy",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "speed fix steps",
+          "from": "idea bank ideas/v1 08-SPD",
+          "status": "have"
+        }
+      ],
+      "steps": [
+        "Find the main image on the product template and preload it at phone width",
+        "Remove lazy loading from the first image only",
+        "Set fonts to show fallback text at once",
+        "Test on the theme copy: same 3 lab runs, same phone profile",
+        "Merge if the image and price paint sooner and nothing else broke"
+      ],
+      "output": "a product template that paints image and price first, with the before and after",
+      "next": "result logged in 08-14",
+      "watch": {
+        "metric": "field LCP p75 on product pages, mobile",
+        "window": "28 days",
+        "source": "Chrome field data"
+      },
+      "drives": "conversion rate from paid mobile sessions",
+      "business": "revenue",
+      "score": {
+        "money": 5,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "08-04",
+      "top": "T1",
+      "job": "Stop the page jumping: reserve space for review stars, banners, the sticky cart and app blocks, and measure layout shift before and after",
+      "trigger": "once per template",
+      "enablers": [
+        "speed-lab",
+        "theme-twin"
+      ],
+      "inputs": [
+        {
+          "need": "layout shift per page and the element that moves",
+          "from": "speed-lab",
+          "status": "enabler"
+        },
+        {
+          "need": "theme code and a theme copy",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "recordings with misclicks near moving blocks",
+          "from": "Microsoft Clarity",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "List the blocks that load late and push content down",
+        "Set a fixed height for each on the theme copy",
+        "Run the same tests on both themes",
+        "Watch 10 recordings for misclicks after the change",
+        "Merge if layout shift drops under 0.1 and nothing broke"
+      ],
+      "output": "templates with no visible jump, and layout shift under 0.1 on product pages",
+      "next": "logged in 08-14",
+      "watch": {
+        "metric": "field CLS p75 on product pages, mobile",
+        "window": "28 days",
+        "source": "Chrome field data"
+      },
+      "drives": "add to cart rate",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "08-05",
+      "top": "T1",
+      "job": "Resize and compress every product and banner image over 300 KB, and set a rule that blocks new uploads over that size without making the product look worse",
+      "trigger": "once as a sweep, then on every upload",
+      "enablers": [
+        "speed-lab"
+      ],
+      "inputs": [
+        {
+          "need": "every image with its file size and where it shows",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "photo rules and approved product shots",
+          "from": "content and brand kit shelf",
+          "status": "brain"
+        },
+        {
+          "need": "an image compression app or CDN setting",
+          "from": "image app",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "List images over 300 KB by page views",
+        "Resize to the largest size shown and compress, keeping the original",
+        "Compare 5 products side by side on a phone with the founder",
+        "Turn on compression for new uploads, including banners and blog images",
+        "Check the list monthly for new heavy images"
+      ],
+      "output": "a catalog with no image over 300 KB on money pages, and a rule for new uploads",
+      "next": "logged in 08-14",
+      "watch": {
+        "metric": "total image weight on the top 10 pages",
+        "window": "7 days",
+        "source": "speed-lab"
+      },
+      "drives": "field LCP on product and collection pages",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 5
+      },
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "08-06",
+      "top": "T1",
+      "job": "Make add to cart, the size picker and the cart drawer answer a tap in under 200 milliseconds on a mid-range phone, by finding the scripts that block the tap",
+      "trigger": "once, then after any app that touches the product form or cart",
+      "enablers": [
+        "speed-lab",
+        "theme-twin"
+      ],
+      "inputs": [
+        {
+          "need": "field tap response (INP) per page",
+          "from": "PageSpeed Insights and Chrome field data API",
+          "status": "setup"
+        },
+        {
+          "need": "a performance trace of tapping size and add to cart",
+          "from": "Chrome DevTools on a phone profile",
+          "status": "setup"
+        },
+        {
+          "need": "apps that hook into the product form or cart",
+          "from": "store platform",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Record a trace of picking a size and tapping add to cart",
+        "List the scripts that run on the tap and how long each takes",
+        "Delay or remove the ones that are not needed for the tap, on a theme copy",
+        "Retest the tap and walk the buying flow",
+        "Merge if the tap answers in under 200 milliseconds and cart still works"
+      ],
+      "output": "a product form and cart that respond at once, with the scripts that blocked them named",
+      "next": "logged in 08-14",
+      "watch": {
+        "metric": "field INP p75 on product pages, mobile",
+        "window": "28 days",
+        "source": "Chrome field data"
+      },
+      "drives": "add to cart rate, mobile",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "08-07",
+      "top": "T2",
+      "job": "List every script that loads on product pages, the app or tag it belongs to, its size and blocking time, and whether that app is still installed and used",
+      "trigger": "once, then each quarter",
+      "enablers": [
+        "app-audit",
+        "speed-lab"
+      ],
+      "inputs": [
+        {
+          "need": "scripts per page with size and blocking time",
+          "from": "speed-lab",
+          "status": "enabler"
+        },
+        {
+          "need": "installed apps and billing history",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "theme code with app snippets",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "which apps the team uses",
+          "from": "founder or ops lead",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "Record every script request on the product page",
+        "Match each to an app, a tag or the theme",
+        "Mark scripts from apps no longer installed as leftovers",
+        "Rank by blocking time",
+        "Hand leftovers to 08-09 and unused apps to 06-10"
+      ],
+      "output": "a script table: owner, size, blocking time, still used or leftover",
+      "next": "feeds 08-09, 08-10 and 06-10",
+      "watch": {
+        "metric": "third party script weight on product pages",
+        "window": "7 days",
+        "source": "speed-lab"
+      },
+      "drives": "field LCP and INP on product pages",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "08-08",
+      "top": "T2",
+      "job": "Build our own speed revenue model: conversion rate by load time from our sessions, then what 1 second faster on money pages is worth per month in dollars",
+      "trigger": "once, then each quarter",
+      "enablers": [
+        "speed-lab",
+        "app-audit"
+      ],
+      "inputs": [
+        {
+          "need": "sessions with a load time event and orders",
+          "from": "GA4 with a load time event",
+          "status": "setup"
+        },
+        {
+          "need": "sessions per page type, paid and organic",
+          "from": "GA4",
+          "status": "connected"
+        },
+        {
+          "need": "average order value and margin",
+          "from": "store platform and finance shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Add a load time event to GA4 if missing and wait 14 days",
+        "Bucket sessions by load time and compute conversion per bucket, in code",
+        "Fit the drop in conversion per extra second",
+        "Multiply by sessions per page type and gross profit per order",
+        "Write the dollar figure per second per page type, with the range"
+      ],
+      "output": "a table: dollars per month per second saved, by page type, from our own data",
+      "next": "feeds 08-17 (rank fixes), 06-12 (dollars per app) and 08-11 (cost of a new app)",
+      "watch": {
+        "metric": "model built with 14 days of our own data",
+        "window": "14 days",
+        "source": "GA4"
+      },
+      "drives": "speed budget spent where it pays",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "08-09",
+      "top": "T2",
+      "job": "Remove leftover code from uninstalled apps and last season's banners, countdowns and gift apps on a theme copy, and log the seconds and dollars saved",
+      "trigger": "after each app removal, and after every peak season",
+      "enablers": [
+        "app-audit",
+        "theme-twin"
+      ],
+      "inputs": [
+        {
+          "need": "leftover scripts and snippets",
+          "from": "app-audit",
+          "status": "enabler"
+        },
+        {
+          "need": "seasonal apps and banners still live",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "dollars per second by page type",
+          "from": "speed-lab",
+          "status": "enabler"
+        }
+      ],
+      "steps": [
+        "List leftovers and seasonal extras still loading",
+        "Remove them on a theme copy",
+        "Run the same speed tests on both themes and walk the buying flow",
+        "Publish if it passes",
+        "Log seconds saved and dollars per month from the model"
+      ],
+      "output": "a lighter theme and a line in the log: 'removed 4 dead apps, 0.6 seconds, about $1,900 a month'",
+      "next": "logged in 08-14",
+      "watch": {
+        "metric": "mobile load time on product pages",
+        "window": "7 days lab, 28 days field",
+        "source": "speed-lab"
+      },
+      "drives": "conversion rate on product pages",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "08-10",
+      "top": "T2",
+      "job": "Delay chat, pop-up, reviews carousel and non-purchase tags until the shopper scrolls or taps, and keep any that sell after a with and without test",
+      "trigger": "once, then when a widget is added",
+      "enablers": [
+        "app-audit",
+        "theme-twin",
+        "speed-lab"
+      ],
+      "inputs": [
+        {
+          "need": "widgets and tags on product pages",
+          "from": "app-audit",
+          "status": "enabler"
+        },
+        {
+          "need": "orders or leads each widget brings",
+          "from": "store platform and app dashboards",
+          "status": "connected"
+        },
+        {
+          "need": "theme copy",
+          "from": "store platform",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "List widgets that load before the product: chat, pop-up, reviews carousel, tags",
+        "Set each to load on first scroll or tap on the theme copy",
+        "For widgets that claim sales, like reviews, run a with and without test",
+        "Keep the widget if its sales beat the speed cost from the model",
+        "Merge and log"
+      ],
+      "output": "a product page where the product loads first, and a keep or cut call on each widget with its numbers",
+      "next": "logged in 08-14",
+      "watch": {
+        "metric": "main thread blocking time on product pages",
+        "window": "7 days",
+        "source": "speed-lab"
+      },
+      "drives": "field LCP and INP on product pages",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "08-11",
+      "top": "T2",
+      "job": "Before any new app, page-builder page or autoplay video goes live, test its speed cost on a theme copy and show the founder the dollars at stake",
+      "trigger": "before each new app, page-builder page or hero video",
+      "enablers": [
+        "speed-lab",
+        "app-audit",
+        "theme-twin"
+      ],
+      "inputs": [
+        {
+          "need": "the app, page or video to add",
+          "from": "the requester",
+          "status": "founder"
+        },
+        {
+          "need": "theme copy",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "dollars per second by page type",
+          "from": "speed-lab",
+          "status": "enabler"
+        }
+      ],
+      "steps": [
+        "Add it to a theme copy only",
+        "Run the same tests on both themes",
+        "Convert the added seconds to dollars per month",
+        "Show the founder: what it adds, what it costs, a lighter option",
+        "Log the go or no-go decision"
+      ],
+      "output": "a go or no-go with the speed cost in dollars, before anything reaches the live theme",
+      "next": "go decisions feed 08-15 (budget check)",
+      "watch": {
+        "metric": "new apps or pages added without a speed test, count",
+        "window": "90 days",
+        "source": "store platform activity log"
+      },
+      "drives": "mobile load time on money pages",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "08-12",
+      "top": "T3",
+      "job": "Duplicate the live theme, apply one speed change to the copy, run the same speed tests on both themes 3 times, walk the buying flow on the copy, and merge only if the copy wins on both",
+      "trigger": "for every speed change",
+      "enablers": [
+        "theme-twin",
+        "speed-lab"
+      ],
+      "inputs": [
+        {
+          "need": "theme access and the duplicate theme feature",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "the same page list and lab settings as the baseline",
+          "from": "speed-lab",
+          "status": "enabler"
+        },
+        {
+          "need": "a buying flow checklist: product, size, add to cart, cart, discount, checkout",
+          "from": "idea bank ideas/v1 05-SET",
+          "status": "have"
+        }
+      ],
+      "steps": [
+        "Duplicate the live theme and name it with the date and change",
+        "Make one change on the copy",
+        "Run 3 lab runs on each theme for each page, same phone and network",
+        "Walk the buying flow on the copy on 2 phones",
+        "Merge only if the copy is faster and the flow passes; keep the old theme for 14 days"
+      ],
+      "output": "a merged change with a side by side table, or a rejected change with the reason",
+      "next": "feeds 08-13 (tracking check) and 08-14 (log)",
+      "watch": {
+        "metric": "speed changes that broke cart, reviews or size picker after publish, count",
+        "window": "90 days",
+        "source": "change-log"
+      },
+      "drives": "days lost to a speed fix gone wrong",
+      "business": "risk",
+      "score": {
+        "money": 4,
+        "satisfaction": 5,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "08-13",
+      "top": "T3",
+      "job": "After every speed change, check the Meta pixel, Conversions API and GA4 still record add to cart and purchase, with a test order and 3 days of counts against store orders",
+      "trigger": "after every speed or script change",
+      "enablers": [
+        "event-check"
+      ],
+      "inputs": [
+        {
+          "need": "purchases and add to carts by day",
+          "from": "Meta Ads (Events Manager) and GA4",
+          "status": "connected"
+        },
+        {
+          "need": "orders by day",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "the change and its date",
+          "from": "store platform activity log",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Place a test order on the live theme right after the merge",
+        "Check the test order shows in Meta and GA4 within 1 hour",
+        "For 3 days, compare Meta and GA4 purchases with store orders",
+        "Flag a gap over 10 percent and roll back the script change if it caused it",
+        "Log the date tracking was confirmed"
+      ],
+      "output": "a pass or fail on tracking for each change, with a date",
+      "next": "failures go to 22-measurement and back to 08-12 for rollback",
+      "watch": {
+        "metric": "GA4 and Meta purchases as a share of store orders",
+        "window": "3 days",
+        "source": "event-check"
+      },
+      "drives": "cost per purchase that Meta optimises on",
+      "business": "risk",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 5,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "08-14",
+      "top": "T3",
+      "job": "Log every speed change with a same-day lab before and after and a 28 day field read, mark it kept, reverted or no effect, and promote what worked to the speed standard (T0)",
+      "trigger": "at each merge, then 28 days later",
+      "enablers": [
+        "speed-lab",
+        "win-loss-ledger"
+      ],
+      "inputs": [
+        {
+          "need": "baseline and after runs",
+          "from": "speed-lab",
+          "status": "enabler"
+        },
+        {
+          "need": "field data 28 days after",
+          "from": "PageSpeed Insights and Chrome field data API",
+          "status": "setup"
+        },
+        {
+          "need": "conversion by page type before and after",
+          "from": "GA4",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Write the change, the page type and the lab before and after on merge day",
+        "At 28 days, pull field data and conversion for the page type",
+        "Mark kept, reverted or no effect",
+        "Promote a kept fix to the speed standard every new page must meet",
+        "Write a fail note for fixes that moved the score but not real shoppers"
+      ],
+      "output": "a speed log with before, after and a verdict per change, and a speed standard list",
+      "next": "feeds 08-15 (budget) and 08-19 (judge agency claims)",
+      "watch": {
+        "metric": "fixes with a field read at 28 days, share",
+        "window": "28 days",
+        "source": "speed-lab"
+      },
+      "drives": "dollars spent on fixes that did nothing",
+      "business": "gross profit",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 2,
+        "ease": 5
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "08-15",
+      "top": "T3",
+      "job": "Set a speed budget per page type (image weight, script weight, main image paint time) and check every theme or app change against it the same day",
+      "trigger": "once to set, then on every logged change",
+      "enablers": [
+        "speed-lab",
+        "win-loss-ledger"
+      ],
+      "inputs": [
+        {
+          "need": "baseline per page type",
+          "from": "speed-lab",
+          "status": "enabler"
+        },
+        {
+          "need": "store changes with date and owner",
+          "from": "store platform activity log",
+          "status": "connected"
+        },
+        {
+          "need": "the speed standard list",
+          "from": "audits shelf (speed audit)",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Set the budget per page type from the baseline and the standard",
+        "On each change, run the lab test on the affected page types",
+        "Flag any change that breaks the budget, with the owner",
+        "Owner fixes or rolls back within 2 days",
+        "Report budget breaks monthly"
+      ],
+      "output": "a budget per page type and a same-day flag on any change that breaks it",
+      "next": "feeds 06-07 and 08-12",
+      "watch": {
+        "metric": "changes that broke the speed budget, count",
+        "window": "30 days",
+        "source": "speed-lab"
+      },
+      "drives": "field LCP on money pages",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "08-16",
+      "top": "T3",
+      "job": "Two weeks before a peak or big drop, load test the top pages at 10 times normal traffic, turn off nonessential apps for the day, and have the host plan and rollback ready",
+      "trigger": "2 weeks before each peak or drop",
+      "enablers": [
+        "speed-lab",
+        "theme-twin"
+      ],
+      "inputs": [
+        {
+          "need": "peak dates",
+          "from": "calendar shelf",
+          "status": "brain"
+        },
+        {
+          "need": "normal and last peak's sessions per hour",
+          "from": "GA4",
+          "status": "connected"
+        },
+        {
+          "need": "a load test tool",
+          "from": "a load test service",
+          "status": "buy"
+        },
+        {
+          "need": "host or platform plan limits",
+          "from": "store platform",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Take last peak's busiest hour and multiply by 3 to 10 for the target",
+        "Load test the home, top product and cart pages on a theme copy",
+        "List apps to switch off for the day and switch them off on the copy",
+        "Confirm the plan limits and who to call at the host",
+        "Publish the peak theme 2 days before and keep the normal one ready"
+      ],
+      "output": "a peak theme tested at target traffic, and a named rollback",
+      "next": "links to 06-19 (readiness list)",
+      "watch": {
+        "metric": "server response time and mobile load in the peak hour",
+        "window": "peak days",
+        "source": "speed-lab"
+      },
+      "drives": "peak revenue against plan",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 5,
+        "speed": 3,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "08-17",
+      "top": "T4",
+      "job": "Rank speed fixes by money: sessions on the page type times seconds the fix saves times dollars per second, and hand the top 3 to the developer",
+      "trigger": "on the 1st of each month",
+      "enablers": [
+        "speed-lab",
+        "app-audit"
+      ],
+      "inputs": [
+        {
+          "need": "candidate fixes with estimated seconds saved",
+          "from": "speed-lab",
+          "status": "enabler"
+        },
+        {
+          "need": "dollars per second by page type",
+          "from": "speed-lab",
+          "status": "enabler"
+        },
+        {
+          "need": "developer hours available",
+          "from": "founder",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "List fixes from the baseline, the script table and the idea bank",
+        "Estimate seconds saved per fix on its page type",
+        "Compute dollars per month per fix, in code",
+        "Divide by developer hours to get dollars per hour of work",
+        "Pick the top 3 that fit the hours"
+      ],
+      "output": "a ranked fix list with dollars per month and per hour of work",
+      "next": "feeds 08-18 (developer briefs)",
+      "watch": {
+        "metric": "dollars saved per developer hour, estimated",
+        "window": "per month",
+        "source": "speed-lab"
+      },
+      "drives": "field LCP on the pages that sell",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "08-18",
+      "top": "T4",
+      "job": "Write each developer brief with the page, the change, the target number on a mid-range phone, the test that proves it, the tracking check and the way back",
+      "trigger": "for each fix in the top 3",
+      "enablers": [
+        "speed-lab",
+        "theme-twin"
+      ],
+      "inputs": [
+        {
+          "need": "the fix and its page type",
+          "from": "speed-lab",
+          "status": "enabler"
+        },
+        {
+          "need": "baseline numbers and filmstrip",
+          "from": "speed-lab",
+          "status": "enabler"
+        },
+        {
+          "need": "who the developer is and their rate",
+          "from": "trust and access shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Name the page, the element and the change in plain words",
+        "Set the target: for example, main image painted by 2.5 seconds on a Moto G profile",
+        "Say the test: 3 lab runs on both themes, then 28 days of field data",
+        "Say the checks: buying flow and tracking (08-13)",
+        "Say the way back: the theme copy stays for 14 days"
+      ],
+      "output": "a 1 page brief per fix that pays for a result, not for hours",
+      "next": "done fixes go to 08-12 and 08-14",
+      "watch": {
+        "metric": "briefed fixes that hit their target, share",
+        "window": "28 days",
+        "source": "speed-lab"
+      },
+      "drives": "dollars spent per second saved",
+      "business": "gross profit",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 5
+      },
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "08-19",
+      "top": "T4",
+      "job": "Review an agency speed quote line by line and mark each fix as changes what shoppers see, score only, or skip, using our field data and page types",
+      "trigger": "when a speed quote arrives",
+      "enablers": [
+        "speed-lab"
+      ],
+      "inputs": [
+        {
+          "need": "the agency quote with each fix and price",
+          "from": "founder",
+          "status": "founder"
+        },
+        {
+          "need": "field and lab data per page type",
+          "from": "speed-lab",
+          "status": "enabler"
+        },
+        {
+          "need": "pages that already pass",
+          "from": "speed-lab",
+          "status": "enabler"
+        }
+      ],
+      "steps": [
+        "List each quoted fix with its price",
+        "Check which page type it touches and whether that page already passes in field data",
+        "Mark changes what shoppers see, score only, or skip",
+        "Price the kept fixes against dollars per second",
+        "Send the agency the trimmed scope with the target numbers"
+      ],
+      "output": "a trimmed quote with each line marked and the dollars saved",
+      "next": "kept fixes go to 08-18",
+      "watch": {
+        "metric": "quoted dollars cut from fixes that would not move field data",
+        "window": "per quote",
+        "source": "founder"
+      },
+      "drives": "dollars spent per second saved",
+      "business": "gross profit",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "08-20",
+      "top": "T4",
+      "job": "Decide whether to keep patching the old theme or move to a lighter one: count patch hours in the last year, load our top product on the lighter theme's demo, and compare",
+      "trigger": "once a year, or when patch hours pass 40 in a year",
+      "enablers": [
+        "speed-lab",
+        "theme-twin"
+      ],
+      "inputs": [
+        {
+          "need": "speed work and developer hours over 12 months",
+          "from": "founder",
+          "status": "founder"
+        },
+        {
+          "need": "baseline per page type",
+          "from": "speed-lab",
+          "status": "enabler"
+        },
+        {
+          "need": "a candidate theme to try on a copy",
+          "from": "store platform theme store",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Total patch hours and cost for speed in the last 12 months",
+        "Install the lighter theme as an unpublished copy with our top product and 1 collection",
+        "Run the same tests on both",
+        "List what the move would cost: build hours, apps to rewire, risk",
+        "Write keep or move with the numbers for the founder"
+      ],
+      "output": "a keep or move call with patch cost, speed gap and move cost side by side",
+      "next": "a move goes to 06-08 and 08-12 for a staged switch",
+      "watch": {
+        "metric": "mobile load on the top product page, current vs lighter theme",
+        "window": "7 days",
+        "source": "speed-lab"
+      },
+      "drives": "speed spend per year",
+      "business": "gross profit",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 2,
+        "ease": 3
+      },
+      "ready": 4,
+      "effort": "days"
+    }
+  ],
+  "new_enablers": [
+    {
+      "id": "speed-lab",
+      "name": "Speed lab",
+      "what": "Measures speed the way a shopper feels it: field data (Chrome user data, 28 days) per page type plus 3 lab runs on a mid-range phone on 4G, a filmstrip of what shows when, the Instagram and Facebook in-app browser, and a dated log of every change with its before and after. Holds the speed budget per page type.",
+      "inputs": [
+        "PageSpeed Insights and Chrome field data API (free)",
+        "a lab tool with a mid-range phone profile",
+        "page list with paid and organic sessions",
+        "the store change log"
+      ],
+      "powers": [
+        "an honest baseline in a day",
+        "before and after proof for every fix",
+        "a speed budget each change is checked against",
+        "the fix list ranked by money"
+      ],
+      "screens": [
+        "08-site-speed",
+        "06-store-health",
+        "07-landing-pages-cro",
+        "00-today"
+      ],
+      "note": null
+    },
+    {
+      "id": "event-check",
+      "name": "Tracking event check",
+      "what": "After any speed or theme change, places a test order and compares add to cart and purchase counts in the Meta pixel, the Conversions API and GA4 with store orders for 3 days. Flags a gap over 10 percent the day it starts.",
+      "inputs": [
+        "store orders",
+        "Meta Events Manager counts",
+        "GA4 events",
+        "the change log"
+      ],
+      "powers": [
+        "ads keep learning from true purchases after a speed fix",
+        "a date for when tracking broke"
+      ],
+      "screens": [
+        "08-site-speed",
+        "06-store-health",
+        "22-measurement",
+        "11-paid-social"
+      ],
+      "note": null
+    }
+  ]
+}

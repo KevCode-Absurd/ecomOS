@@ -1,0 +1,1195 @@
+{
+  "screen": "14-email-messaging",
+  "title": "Email and messaging",
+  "top_jobs": [
+    {
+      "id": "T1",
+      "job": "When I paid to win a first-time buyer and most never order again, help me reach them at the moment they usually reorder, with the right use, fit and reorder messages, so I make the ad cost pay back",
+      "metric": "second order rate within 90 days of the first order",
+      "from_v2": [
+        1,
+        17,
+        20,
+        22,
+        26,
+        29
+      ]
+    },
+    {
+      "id": "T2",
+      "job": "When the email platform says email made a big share of revenue, help me see what each flow and send really made from store orders, fix the flows that give margin away and keep only proven wins, so I pay for real results",
+      "metric": "email revenue from store orders within 1 day of a click, and repeat orders gained against a holdout",
+      "from_v2": [
+        2,
+        4,
+        7,
+        11,
+        13,
+        33
+      ]
+    },
+    {
+      "id": "T3",
+      "job": "When new sign-ups come in every day, help me turn them into first buyers within 72 hours with messages that fit what they already know and answer what stops them, so I do not waste the sign-up I paid for",
+      "metric": "sign-up to first order rate within 7 days",
+      "from_v2": [
+        6,
+        8,
+        19,
+        25,
+        31,
+        35
+      ]
+    },
+    {
+      "id": "T4",
+      "job": "When my top customers bring most of the profit, help me make them feel noticed with a personal letter and quiet early access, so I keep them buying and talking about us",
+      "metric": "12 month repeat rate and gross profit of the top 2 percent of customers against a held-back group",
+      "from_v2": [
+        27
+      ]
+    },
+    {
+      "id": "T5",
+      "job": "When a send could land in spam, break a law, promise something false or go unanswered, help me check before it goes and catch it after, so I keep the inbox and the customer's trust",
+      "metric": "spam complaint rate and inbox placement on the main sending domain",
+      "from_v2": [
+        3,
+        5,
+        12,
+        16,
+        18,
+        23,
+        34
+      ]
+    }
+  ],
+  "jobs": [
+    {
+      "id": "14-01",
+      "top": "T1",
+      "job": "Work out the median days between first and second order per first product, and set each post-purchase and win-back flow to fire on that day, not the default 90",
+      "trigger": "once, then each quarter",
+      "enablers": [
+        "buy-cycle",
+        "flow-map"
+      ],
+      "inputs": [
+        {
+          "need": "orders with customer, product and date, 24 months",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "current flow timing and filters",
+          "from": "email platform",
+          "status": "setup"
+        },
+        {
+          "need": "how long each product lasts in use, where it wears out or runs out",
+          "from": "founder",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "Compute median and 75th percentile days to second order per first product, in code",
+        "Group products with a similar clock",
+        "Set the cross-sell email a few days before the median and the win-back after the 75th percentile",
+        "Hold out 10 percent of new buyers for 60 days",
+        "Read second order rate against the holdout"
+      ],
+      "output": "a timing table per product group and flows set to it, with a holdout running",
+      "next": "feeds 14-02 (replenishment) and 14-06 (holdout read)",
+      "watch": {
+        "metric": "second order rate within 90 days",
+        "window": "90 days",
+        "source": "store orders"
+      },
+      "drives": "repeat revenue",
+      "business": "revenue",
+      "score": {
+        "money": 5,
+        "satisfaction": 3,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "14-02",
+      "top": "T1",
+      "job": "Build a replenishment reminder per consumable or wear-out product, timed to when it runs out or wears out, with a one tap reorder link to the same size and colour",
+      "trigger": "once per product, fired on each buyer's clock",
+      "enablers": [
+        "buy-cycle",
+        "flow-map"
+      ],
+      "inputs": [
+        {
+          "need": "reorder gaps per product",
+          "from": "buy-cycle",
+          "status": "enabler"
+        },
+        {
+          "need": "variant, size and colour per past order",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "offer rules for repeat buyers",
+          "from": "offers shelf",
+          "status": "brain"
+        },
+        {
+          "need": "email and SMS platform",
+          "from": "email platform",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "Pick products bought 2 or more times by at least 10 percent of buyers",
+        "Set the reminder a week before the median reorder day",
+        "Build a reorder link that fills the cart with the same variant",
+        "Write 2 messages: a plain reminder, then a nudge with a reason to buy now that the offer rules allow",
+        "Read reorders from the flow against a 10 percent holdout"
+      ],
+      "output": "live reminders per product with a one tap reorder, and a holdout read",
+      "next": "feeds 14-06",
+      "watch": {
+        "metric": "reorder rate per product from the reminder",
+        "window": "60 days",
+        "source": "store orders"
+      },
+      "drives": "repeat revenue",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "14-03",
+      "top": "T1",
+      "job": "Split the post-purchase flow for first-time buyers: thank you on day 0, a use or fit email before the parcel lands, a review ask 5 days after delivery, and a cross-sell on the reorder clock",
+      "trigger": "once, then each quarter",
+      "enablers": [
+        "flow-map",
+        "buy-cycle"
+      ],
+      "inputs": [
+        {
+          "need": "fulfilment and delivery events",
+          "from": "store platform and shipping app",
+          "status": "setup"
+        },
+        {
+          "need": "top return reasons and use mistakes",
+          "from": "returns app and helpdesk",
+          "status": "setup"
+        },
+        {
+          "need": "review request timing in the reviews app",
+          "from": "reviews app",
+          "status": "connected"
+        },
+        {
+          "need": "voice rules for email",
+          "from": "voice shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Map today's post-purchase messages and remove any that clash with the reviews app",
+        "Write the use or fit email from the top 3 return and ticket causes",
+        "Move the review ask to 5 days after delivery, not after dispatch",
+        "Add the cross-sell on the buy-cycle day",
+        "Read returns for fit, review rate and second orders over 60 days"
+      ],
+      "output": "a first-time buyer flow with 4 timed messages and a 60 day read",
+      "next": "review counts feed 07-14 (proof for new products); fit causes come from 06-15",
+      "watch": {
+        "metric": "returns for fit or wrong use, share of first orders",
+        "window": "60 days",
+        "source": "store refunds and returns app"
+      },
+      "drives": "second order rate and review count",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 5,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "14-04",
+      "top": "T1",
+      "job": "When a return is logged, send a save note that offers the right size or an exchange first, then store credit, and track who buys again within 60 days",
+      "trigger": "on every return",
+      "enablers": [
+        "flow-map"
+      ],
+      "inputs": [
+        {
+          "need": "return events with reason and item",
+          "from": "returns app",
+          "status": "setup"
+        },
+        {
+          "need": "fit notes and size chart",
+          "from": "products shelf",
+          "status": "brain"
+        },
+        {
+          "need": "exchange and credit rules",
+          "from": "offers shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Trigger on the return with the reason",
+        "For fit, suggest the right size using the fit notes",
+        "For other reasons, offer an exchange, then store credit",
+        "Send a plain note from a named person, not a promo",
+        "Read the share who buy again in 60 days against returners before the flow"
+      ],
+      "output": "a return save flow with one note per reason",
+      "next": "none",
+      "watch": {
+        "metric": "returners who buy again within 60 days, share",
+        "window": "60 days",
+        "source": "store orders"
+      },
+      "drives": "revenue kept from returns",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "14-05",
+      "top": "T2",
+      "job": "Rebuild email and text revenue from store orders placed within 1 day of a click, per flow and per campaign, and put it next to the platform's own number",
+      "trigger": "monthly, and before an agency renewal",
+      "enablers": [
+        "flow-map"
+      ],
+      "inputs": [
+        {
+          "need": "clicks, opens and sends per message",
+          "from": "email platform",
+          "status": "setup"
+        },
+        {
+          "need": "orders with UTM source and time",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "sessions and purchases by source",
+          "from": "GA4",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Tag every link with flow or campaign in the UTM",
+        "Match orders to a click within 1 day, in code",
+        "Sum per flow and campaign, and set it next to the platform's 5 day open-based number",
+        "Split new and repeat buyers",
+        "Write the gap in 1 line for the founder"
+      ],
+      "output": "a flow and campaign table with our number next to the platform's, split by new and repeat buyers",
+      "next": "feeds 14-06 and the agency review in 26-reports",
+      "watch": {
+        "metric": "email revenue from store orders, share of total",
+        "window": "30 days",
+        "source": "store orders"
+      },
+      "drives": "what we pay for email tools and agency against what it earns",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 5,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "14-06",
+      "top": "T2",
+      "job": "Hold out 10 percent of new buyers from the post-purchase and win-back flows and 10 percent of text subscribers from texts for 60 days, and read the gap in repeat orders and profit",
+      "trigger": "once, read at 60 days, then yearly",
+      "enablers": [
+        "flow-map",
+        "win-loss-ledger"
+      ],
+      "inputs": [
+        {
+          "need": "flow entry filters",
+          "from": "email platform",
+          "status": "setup"
+        },
+        {
+          "need": "text subscribers and costs",
+          "from": "SMS platform",
+          "status": "setup"
+        },
+        {
+          "need": "repeat orders and margin",
+          "from": "store platform plus unit costs from the finance shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Add a random 10 percent holdout tag to each key flow's entry",
+        "Do the same for texts",
+        "Wait 60 days without changing the flows",
+        "Compare repeat orders and gross profit per person, in code",
+        "Keep, cut or change each flow and text program on the gap, and log it"
+      ],
+      "output": "a lift read per key flow and for texts, with a keep or cut call",
+      "next": "feeds 14-08 (standards) and 21-finance-cash (text bill)",
+      "watch": {
+        "metric": "repeat orders per 100 people, flow vs holdout",
+        "window": "60 days",
+        "source": "store orders"
+      },
+      "drives": "repeat revenue and profit",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "weeks"
+    },
+    {
+      "id": "14-07",
+      "top": "T2",
+      "job": "Reorder the cart and checkout flows: a plain reminder first, answers to the top checkout doubts second, and a discount only in the last message and only for first-time buyers",
+      "trigger": "once, then each quarter",
+      "enablers": [
+        "flow-map",
+        "question-matrix"
+      ],
+      "inputs": [
+        {
+          "need": "cart and checkout flow messages and results",
+          "from": "email platform",
+          "status": "setup"
+        },
+        {
+          "need": "top checkout doubts from tickets and polls",
+          "from": "question-matrix",
+          "status": "enabler"
+        },
+        {
+          "need": "discount rules and margin floor",
+          "from": "offers and finance shelves",
+          "status": "brain"
+        },
+        {
+          "need": "repeat vs first-time buyer flag",
+          "from": "store platform",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Split into added to cart and checkout started flows",
+        "Message 1: the cart, the product image, no discount",
+        "Message 2: answer the top 2 doubts (shipping cost, returns, fit)",
+        "Message 3: a discount only for first-time buyers, within the discount rules",
+        "Read recovered orders and profit per recipient against the old flow"
+      ],
+      "output": "a 3 step cart and checkout flow that gives a discount only when needed",
+      "next": "feeds 14-08",
+      "watch": {
+        "metric": "profit per recipient in cart and checkout flows",
+        "window": "30 days",
+        "source": "store orders"
+      },
+      "drives": "discount cost as a share of revenue",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "14-08",
+      "top": "T2",
+      "job": "Judge every email and text test on orders and profit per recipient, promote the winner to the flow standard (T0) that new flows copy, and write a fail note for losers with a date to recheck",
+      "trigger": "after each test, and on each recheck date",
+      "enablers": [
+        "win-loss-ledger",
+        "flow-map"
+      ],
+      "inputs": [
+        {
+          "need": "test arms with sends, clicks and orders",
+          "from": "email platform and store orders",
+          "status": "setup"
+        },
+        {
+          "need": "unit costs for profit per recipient",
+          "from": "finance shelf",
+          "status": "brain"
+        },
+        {
+          "need": "the email standard list",
+          "from": "history shelf (experiment registry)",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Set the main number before the test: profit per recipient, not opens or clicks",
+        "Run to the planned sample, not to a date",
+        "For a win, write the standard with the number, like 'plain text founder note ends every flow, +11 percent orders'",
+        "For a loss, write the fail note and 'do not rerun unless'",
+        "Recheck each standard after 6 months"
+      ],
+      "output": "an email standard list with proof and recheck dates, and a fail list",
+      "next": "feeds 05-09 (brand standards) and every new flow build",
+      "watch": {
+        "metric": "tests judged on orders or profit, share",
+        "window": "90 days",
+        "source": "win-loss-ledger"
+      },
+      "drives": "revenue per recipient across flows",
+      "business": "gross profit",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "14-09",
+      "top": "T3",
+      "job": "Split the welcome flow by what the sign-up already knows: cold sign-ups from a quiz or content get a problem and story series, warm ones who viewed a product get that product, proof and the offer inside 72 hours",
+      "trigger": "once, then each quarter",
+      "enablers": [
+        "awareness-map",
+        "flow-map"
+      ],
+      "inputs": [
+        {
+          "need": "sign-up source and pages viewed before sign-up",
+          "from": "email platform with onsite tracking",
+          "status": "setup"
+        },
+        {
+          "need": "awareness level of each sign-up source and landing page",
+          "from": "awareness-map",
+          "status": "enabler"
+        },
+        {
+          "need": "founder story, angles and proof",
+          "from": "messaging shelf",
+          "status": "brain"
+        },
+        {
+          "need": "welcome offer rules",
+          "from": "offers shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Tag each sign-up source by awareness level",
+        "Branch the welcome flow: cold path and warm path",
+        "Cold path: problem, why old fixes fail, how ours works, proof, then the offer on day 3",
+        "Warm path: the product they viewed, reviews, the offer in the first email, a reminder at 48 hours",
+        "Read first orders in 7 days per path against the old single flow"
+      ],
+      "output": "a 2 path welcome flow tied to awareness level, with a 7 day order read per path",
+      "next": "feeds 14-11 (source ranking)",
+      "watch": {
+        "metric": "sign-up to first order rate within 7 days, per path",
+        "window": "30 days",
+        "source": "store orders"
+      },
+      "drives": "new customers from email sign-ups",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "14-10",
+      "top": "T3",
+      "job": "Put the answers to the top 5 pre-sale questions from the coverage matrix into the welcome and browse emails, one question per email, in the customer's own words",
+      "trigger": "once, then when the matrix changes",
+      "enablers": [
+        "question-matrix",
+        "flow-map"
+      ],
+      "inputs": [
+        {
+          "need": "top pre-sale questions with counts",
+          "from": "question-matrix",
+          "status": "enabler"
+        },
+        {
+          "need": "customer phrases",
+          "from": "customers shelf (language bank)",
+          "status": "brain"
+        },
+        {
+          "need": "true policies: delivery, returns, fit",
+          "from": "operations and offers shelves",
+          "status": "brain"
+        },
+        {
+          "need": "welcome and browse flow messages",
+          "from": "email platform",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "Take the top 5 questions by ticket count",
+        "Write a short answer email for each, headline in the customer's words",
+        "Place them in the welcome and browse flows where the doubt shows up",
+        "Check each against the claims and policies",
+        "Read click to order rate per email and pre-sale tickets from subscribers"
+      ],
+      "output": "5 answer emails live in the welcome and browse flows",
+      "next": "feeds 14-08 if tested",
+      "watch": {
+        "metric": "pre-sale tickets from subscribers per 1,000 sign-ups",
+        "window": "30 days",
+        "source": "helpdesk"
+      },
+      "drives": "sign-up to first order rate",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "14-11",
+      "top": "T3",
+      "job": "Rank sign-up sources (pop-up, quiz, footer, checkout, ad lead forms) by first orders within 30 days and cost per buyer, and tune the pop-up's timing and offer on that",
+      "trigger": "monthly",
+      "enablers": [
+        "flow-map"
+      ],
+      "inputs": [
+        {
+          "need": "sign-ups by source and form",
+          "from": "email platform",
+          "status": "setup"
+        },
+        {
+          "need": "first orders by customer",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "lead ad spend",
+          "from": "Meta Ads",
+          "status": "connected"
+        },
+        {
+          "need": "site conversion with and without the pop-up",
+          "from": "GA4",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Count sign-ups and first orders in 30 days per source, in code",
+        "Add cost where a source has spend, like lead ads",
+        "Check site conversion for sessions that saw the pop-up vs not",
+        "Move pop-up timing to 8 seconds or exit, never on load, and test the offer",
+        "Grow the sources with the lowest cost per buyer"
+      ],
+      "output": "a source table with first orders and cost per buyer, and a tuned pop-up",
+      "next": "feeds 14-09",
+      "watch": {
+        "metric": "first orders within 30 days per 100 sign-ups, by source",
+        "window": "30 days",
+        "source": "store orders"
+      },
+      "drives": "new customers from sign-ups",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "14-12",
+      "top": "T3",
+      "job": "When a sold-out product comes back, alert everyone on its waitlist within an hour, only once stock is really live, in order of sign-up",
+      "trigger": "on each restock",
+      "enablers": [
+        "flow-map",
+        "send-guard"
+      ],
+      "inputs": [
+        {
+          "need": "waitlist sign-ups per product and variant",
+          "from": "email platform or back in stock app",
+          "status": "setup"
+        },
+        {
+          "need": "live stock per variant",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "restock dates",
+          "from": "calendar shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Trigger on stock going above 0 for the variant, not on a planned date",
+        "Check stock covers at least 20 percent of the waitlist, or send in batches",
+        "Send email and text to the waitlist within 1 hour",
+        "Send a second note after 24 hours only if stock remains",
+        "Read orders per 100 on the waitlist"
+      ],
+      "output": "a restock alert that fires on real stock, with orders per 100 waiting",
+      "next": "none",
+      "watch": {
+        "metric": "orders per 100 waitlist sign-ups within 48 hours",
+        "window": "48 hours",
+        "source": "store orders"
+      },
+      "drives": "revenue from restocks",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 5,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "14-13",
+      "top": "T4",
+      "job": "Rank customers by 12 month gross profit and recency, pick the top 2 percent, and have the founder sign a short personal letter to each, mailed in a plain envelope with no discount code",
+      "trigger": "twice a year, and after each peak",
+      "enablers": [
+        "vip-list"
+      ],
+      "inputs": [
+        {
+          "need": "orders and customers, 24 months",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "unit costs for gross profit",
+          "from": "finance shelf",
+          "status": "brain"
+        },
+        {
+          "need": "open complaints or refunds to skip",
+          "from": "helpdesk",
+          "status": "connected"
+        },
+        {
+          "need": "the founder's letter and signature",
+          "from": "founder",
+          "status": "founder"
+        },
+        {
+          "need": "a print and mail service for letters",
+          "from": "a letter mailing service",
+          "status": "buy"
+        }
+      ],
+      "steps": [
+        "Rank customers by gross profit and last order date, in code",
+        "Take the top 2 percent and drop anyone with an open complaint",
+        "Hold back 20 percent of them at random for the read in 14-15",
+        "Founder writes a 5 line letter: thanks, one true detail about what they bought, a way to reach them",
+        "Mail it and tag each customer with the date",
+        "Say nothing about it in public channels"
+      ],
+      "output": "letters mailed to the top 2 percent, each customer tagged, and a held-back group",
+      "next": "feeds 14-14 (early access list) and 14-15 (read)",
+      "watch": {
+        "metric": "repeat orders from letter recipients vs held back",
+        "window": "90 days",
+        "source": "store orders"
+      },
+      "drives": "12 month repeat rate of top customers",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 5,
+        "speed": 2,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "14-14",
+      "top": "T4",
+      "job": "Give the top customers quiet early access to new products and restocks 48 hours before the list, by private link, and keep them out of discount blasts",
+      "trigger": "before each launch and restock",
+      "enablers": [
+        "vip-list",
+        "flow-map"
+      ],
+      "inputs": [
+        {
+          "need": "the VIP segment",
+          "from": "vip-list",
+          "status": "enabler"
+        },
+        {
+          "need": "launch and restock dates",
+          "from": "calendar shelf",
+          "status": "brain"
+        },
+        {
+          "need": "a hidden product link or password page",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "email and text platform",
+          "from": "email platform",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "Build the private link or hidden collection 3 days before launch",
+        "Send a plain note from the founder 48 hours early, no mention of 'VIP' or a tier",
+        "Remove the VIP segment from discount campaigns and cap them at 2 sends a week",
+        "Give a named reply-to person, not the no-reply address",
+        "Read early orders and sell-through from the group"
+      ],
+      "output": "a quiet early access send per launch, and a VIP segment kept out of discount blasts",
+      "next": "feeds 14-15",
+      "watch": {
+        "metric": "orders from VIPs in the 48 hour window",
+        "window": "per launch",
+        "source": "store orders"
+      },
+      "drives": "launch sell-through and repeat rate of top customers",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 5,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "14-15",
+      "top": "T4",
+      "job": "Read the top customer program against the held-back group at 90 and 180 days, on repeat orders, gross profit and referrals, and keep it only if it pays",
+      "trigger": "at 90 and 180 days after each letter round",
+      "enablers": [
+        "vip-list",
+        "win-loss-ledger"
+      ],
+      "inputs": [
+        {
+          "need": "recipients and held-back group",
+          "from": "vip-list",
+          "status": "enabler"
+        },
+        {
+          "need": "orders and referral codes",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "cost of letters, gifts and time",
+          "from": "founder",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "Compare repeat orders and gross profit per person, recipients vs held back",
+        "Count referrals and reviews from each group",
+        "Subtract the cost per person",
+        "Write keep, change or stop with the numbers",
+        "Log it in the ledger with a recheck date"
+      ],
+      "output": "a 1 page read of the program with a keep, change or stop call",
+      "next": "feeds 14-08 standards and 15-customers-cx",
+      "watch": {
+        "metric": "gross profit per top customer, recipients vs held back",
+        "window": "180 days",
+        "source": "store orders"
+      },
+      "drives": "profit from top customers",
+      "business": "gross profit",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 1,
+        "ease": 5
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "14-16",
+      "top": "T5",
+      "job": "Route every reply to a marketing email or text into the helpdesk, answer within 1 business day, and track time to first reply and follow-ups owed",
+      "trigger": "always on, reviewed weekly",
+      "enablers": [
+        "ticket-clock"
+      ],
+      "inputs": [
+        {
+          "need": "reply-to address and SMS inbox",
+          "from": "email platform and SMS platform",
+          "status": "setup"
+        },
+        {
+          "need": "helpdesk queues and tags",
+          "from": "helpdesk",
+          "status": "connected"
+        },
+        {
+          "need": "support tone and macros",
+          "from": "operations shelf (support)",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Set the reply-to to a real inbox that feeds the helpdesk",
+        "Tag replies by flow or campaign",
+        "Set a 1 business day first reply target",
+        "Report weekly: replies, time to first reply, follow-ups owed, orders from repliers",
+        "Turn repeated reply questions into email copy fixes"
+      ],
+      "output": "every reply answered inside 1 business day, with a weekly report",
+      "next": "repeated questions feed 07-11 (coverage matrix)",
+      "watch": {
+        "metric": "time to first reply on marketing email replies",
+        "window": "7 days",
+        "source": "helpdesk"
+      },
+      "drives": "customer satisfaction and orders from repliers",
+      "business": "customer satisfaction",
+      "score": {
+        "money": 2,
+        "satisfaction": 5,
+        "speed": 4,
+        "ease": 5
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "14-17",
+      "top": "T5",
+      "job": "Check SPF, DKIM and DMARC on the sending domain, spam rate in Google Postmaster and bounce rate per send each week, and run the repair steps when spam passes 0.3 percent",
+      "trigger": "every Monday, and on any open rate drop across all sends",
+      "enablers": [
+        "send-guard"
+      ],
+      "inputs": [
+        {
+          "need": "DNS records for the sending domain",
+          "from": "domain registrar or DNS host",
+          "status": "setup"
+        },
+        {
+          "need": "spam rate and domain reputation",
+          "from": "Google Postmaster Tools",
+          "status": "setup"
+        },
+        {
+          "need": "bounces, complaints and clicks per send",
+          "from": "email platform",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "Check SPF, DKIM and DMARC pass, and fix any that fail",
+        "Read spam rate and reputation in Postmaster",
+        "If spam passes 0.3 percent, send only to people who clicked or bought in 90 days",
+        "Widen the audience again step by step as spam falls under 0.1 percent",
+        "Log each step and the date"
+      ],
+      "output": "a weekly domain health line and a repair log when needed",
+      "next": "feeds 14-19 and 14-20",
+      "watch": {
+        "metric": "spam complaint rate, Gmail",
+        "window": "7 days",
+        "source": "Google Postmaster Tools"
+      },
+      "drives": "inbox placement and email revenue",
+      "business": "risk",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "14-18",
+      "top": "T5",
+      "job": "Before every send, check consent, text quiet hours for the buyer's state or country, and that every stock, deadline and offer line is true against the store and the brand record",
+      "trigger": "before every campaign and every new flow",
+      "enablers": [
+        "send-guard",
+        "brain-graph"
+      ],
+      "inputs": [
+        {
+          "need": "the send: segment, time, copy",
+          "from": "email platform and SMS platform",
+          "status": "setup"
+        },
+        {
+          "need": "live stock and live discounts",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "claims, offers and per-market rules",
+          "from": "claims, offers and market shelves",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Check every contact in the segment has consent for that channel",
+        "Check text send time against quiet hours in each recipient's time zone",
+        "Check 'last chance', 'almost gone' and deadline lines against real stock and end dates",
+        "Check claims against the claims shelf",
+        "Block or fix, and log the result"
+      ],
+      "output": "a pass or block per send with the line to fix",
+      "next": "blocked claims go to 05-12",
+      "watch": {
+        "metric": "sends blocked before going out, and complaints after, count",
+        "window": "30 days",
+        "source": "send-guard log"
+      },
+      "drives": "legal and trust incidents",
+      "business": "risk",
+      "score": {
+        "money": 3,
+        "satisfaction": 5,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "14-19",
+      "top": "T5",
+      "job": "Cap each person at 1 email and 1 text a day across flows and campaigns, and list who got 3 or more messages in a day last week",
+      "trigger": "once to set, then weekly",
+      "enablers": [
+        "send-guard",
+        "flow-map"
+      ],
+      "inputs": [
+        {
+          "need": "sends per person per day",
+          "from": "email platform and SMS platform",
+          "status": "setup"
+        },
+        {
+          "need": "unsubscribes by day",
+          "from": "email platform",
+          "status": "setup"
+        },
+        {
+          "need": "flow priority order",
+          "from": "email shelf (flow map)",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Count messages per person per day for last week, in code",
+        "List people who got 3 or more and which flows overlapped",
+        "Set flow priority so a cart email pauses the browse email",
+        "Turn on the platform's frequency cap for campaigns",
+        "Read unsubscribes per 1,000 sends before and after"
+      ],
+      "output": "a frequency cap, a flow priority order and a weekly overlap list",
+      "next": "none",
+      "watch": {
+        "metric": "unsubscribes per 1,000 sends",
+        "window": "14 days",
+        "source": "email platform"
+      },
+      "drives": "list size and email revenue",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 5
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "14-20",
+      "top": "T5",
+      "job": "Stop mailing contacts with no click, site visit or order in 180 days after a 2 email goodbye, and watch the platform bill and spam rate fall",
+      "trigger": "monthly",
+      "enablers": [
+        "send-guard"
+      ],
+      "inputs": [
+        {
+          "need": "contacts with last click, visit and order dates",
+          "from": "email platform and store platform",
+          "status": "setup"
+        },
+        {
+          "need": "platform price tiers",
+          "from": "email platform billing",
+          "status": "setup"
+        },
+        {
+          "need": "opens are not trusted alone because of mail privacy features",
+          "from": "trust and access shelf (numbers not to trust)",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Build the segment: no click, no visit and no order in 180 days",
+        "Send 2 plain goodbye emails 5 days apart with a one-click stay button",
+        "Suppress everyone who did not click",
+        "Record the list size, bill tier and spam rate before and after",
+        "Re-run monthly"
+      ],
+      "output": "a smaller, active list and a lower platform bill",
+      "next": "feeds 14-17 (spam rate)",
+      "watch": {
+        "metric": "contacts billed and spam rate",
+        "window": "30 days",
+        "source": "email platform"
+      },
+      "drives": "platform cost and inbox placement",
+      "business": "gross profit",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 5
+      },
+      "ready": 3,
+      "effort": "hours"
+    }
+  ],
+  "new_enablers": [
+    {
+      "id": "buy-cycle",
+      "name": "Buy cycle clock",
+      "what": "Works out from orders the median and slow-end days between first and second order, per first product and per consumable, and sets the day each post-purchase, replenishment and win-back message should fire.",
+      "inputs": [
+        "orders with customer and product, 24 months",
+        "product use life from the founder, where known"
+      ],
+      "powers": [
+        "reorder reminders on the brand's own clock, not 90 days",
+        "win-back timed per product",
+        "a read on which first products bring repeat buyers"
+      ],
+      "screens": [
+        "14-email-messaging",
+        "15-customers-cx",
+        "02-customers-avatars",
+        "19-supply-inventory"
+      ],
+      "note": null
+    },
+    {
+      "id": "flow-map",
+      "name": "Flow map with store revenue",
+      "what": "Every flow and message with trigger, timing, filters, copy and design, and results rebuilt from store orders placed within 1 day of a click, with a holdout per key flow. Shows the platform's own number next to ours.",
+      "inputs": [
+        "email and SMS platform events and flow settings",
+        "store orders with UTM tags",
+        "a holdout group per key flow"
+      ],
+      "powers": [
+        "what each flow really makes",
+        "flows that duplicate or clash",
+        "which sign-up sources turn into buyers"
+      ],
+      "screens": [
+        "14-email-messaging",
+        "22-measurement",
+        "26-reports"
+      ],
+      "note": null
+    },
+    {
+      "id": "send-guard",
+      "name": "Send guard",
+      "what": "Checks the sending domain (SPF, DKIM, DMARC), spam rate, bounces and list health weekly, and checks each send before it goes: consent, text quiet hours per state and country, frequency caps, and whether stock, deadline and offer lines are true.",
+      "inputs": [
+        "email and SMS platform",
+        "Google Postmaster Tools and Microsoft SNDS",
+        "DNS records",
+        "store stock and live offers",
+        "consent records"
+      ],
+      "powers": [
+        "mail that lands in the inbox",
+        "no text at 9 pm or to someone who never opted in",
+        "no false 'last chance' or 'almost gone'"
+      ],
+      "screens": [
+        "14-email-messaging",
+        "06-store-health",
+        "24-security"
+      ],
+      "note": null
+    }
+  ]
+}

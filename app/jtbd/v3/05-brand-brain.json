@@ -1,0 +1,1209 @@
+{
+  "screen": "05-brand-brain",
+  "title": "Brand brain",
+  "top_jobs": [
+    {
+      "id": "T1",
+      "job": "When I bring a brand onto ecomOS, help me turn its site, ads, reviews, tickets and my own answers into one record filed on the right shelves and linked like a graph, so I can trust every agent, freelancer and screen to start from the same checked facts",
+      "metric": "record sections signed by the founder in the last 90 days, share",
+      "from_v2": [
+        2,
+        9,
+        10,
+        19,
+        25
+      ]
+    },
+    {
+      "id": "T2",
+      "job": "When I hand a brief to an agent, a freelancer or an agency, help me give them the facts, voice, customer words and proven standards I would give, so I stop rewriting drafts that should have been right the first time",
+      "metric": "drafts sent back for a brand reason, share of all reviewed drafts, 30 days",
+      "from_v2": [
+        1,
+        13,
+        21,
+        28,
+        29
+      ]
+    },
+    {
+      "id": "T3",
+      "job": "When a draft or a live ad carries a claim, help me see whether we can prove it and have permission to use it, so I do not get ads rejected, a refund wave or a legal letter",
+      "metric": "claims in live ads, emails and pages with proof on file, share",
+      "from_v2": [
+        3,
+        11,
+        14,
+        24,
+        30,
+        33,
+        34
+      ]
+    },
+    {
+      "id": "T4",
+      "job": "When the site, a product, an offer or a policy changes, help me find every ad, email and page still saying the old thing the same day, so I never have shoppers see a promise we stopped keeping",
+      "metric": "facts that differ between the record and the live site, count, daily",
+      "from_v2": [
+        5,
+        12,
+        15,
+        16,
+        17,
+        18,
+        23
+      ]
+    },
+    {
+      "id": "T5",
+      "job": "When the team keeps asking 'can we say this' or 'what did we decide', help me let them find the answer and the reason without me, so I get my day back and decisions stick",
+      "metric": "brand questions answered from the record without the founder, share, 30 days",
+      "from_v2": [
+        4,
+        6,
+        7,
+        31
+      ]
+    }
+  ],
+  "jobs": [
+    {
+      "id": "05-01",
+      "top": "T1",
+      "job": "Crawl the store, pull 12 months of ads, reviews and tickets, and file every fact onto the 22 brain shelves with a source, a date and a tier",
+      "trigger": "once at onboarding, then weekly for the site and daily for ads and reviews",
+      "enablers": [
+        "brain-graph"
+      ],
+      "inputs": [
+        {
+          "need": "every page, product, price and policy on the live site",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "12 months of ads with copy, media and spend",
+          "from": "Meta Ads",
+          "status": "connected"
+        },
+        {
+          "need": "all reviews with rating, text and product",
+          "from": "reviews app",
+          "status": "connected"
+        },
+        {
+          "need": "12 months of tickets with tags",
+          "from": "helpdesk",
+          "status": "connected"
+        },
+        {
+          "need": "the 22 shelves and what goes on each",
+          "from": "app/brain/BRAIN-CONTENTS.md",
+          "status": "have"
+        }
+      ],
+      "steps": [
+        "Crawl every page and product and save the text, a screenshot and the date",
+        "Pull ads, reviews and tickets into one pile with their source ids",
+        "Split each item into single facts (a price, a claim, a doubt, an angle) and file each on its shelf",
+        "Tag every fact with source, date and tier: site, data, public, inferred",
+        "List facts where two sources disagree, like a price on the site and a different one in a live ad",
+        "List empty shelves and the interview question that fills each"
+      ],
+      "output": "22 shelves with an index each, plus a list of conflicts and a list of empty shelves",
+      "next": "feeds 05-02 (links), 05-03 (interview skips what is already known) and 05-04 (sign-off)",
+      "watch": {
+        "metric": "shelves with at least 1 sourced fact, share of 22",
+        "window": "first 7 days",
+        "source": "brain index"
+      },
+      "drives": "drafts sent back for a brand reason",
+      "business": "gross profit",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 5,
+      "effort": "days"
+    },
+    {
+      "id": "05-02",
+      "top": "T1",
+      "job": "Link the record like a graph: each product to its claims, each claim to its proof, each proof to the avatars, ads, pages and emails that use it",
+      "trigger": "once after the first ingest, then on every new product, claim or ad",
+      "enablers": [
+        "brain-graph",
+        "creative-tags"
+      ],
+      "inputs": [
+        {
+          "need": "filed facts on the products, claims, customers and messaging shelves",
+          "from": "brain-graph",
+          "status": "enabler"
+        },
+        {
+          "need": "live and past ads with angle and avatar tags",
+          "from": "creative-tags",
+          "status": "enabler"
+        },
+        {
+          "need": "landing pages and email flows with their text",
+          "from": "site shelf and email platform",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "Name the nodes: products, claims, proofs, avatars, angles, ads, pages, emails",
+        "Draw the links from text matches, like the claim 'no slip heel' on the product page and in 14 ads",
+        "Spot check 20 links by hand and fix the matching rule where it is wrong",
+        "List orphans: claims with no proof, products with no ad, avatars no ad speaks to",
+        "Show one product as a map so the founder can see it in a minute"
+      ],
+      "output": "a linked record with an orphan list: claims without proof, products without ads, avatars without ads",
+      "next": "feeds 05-11 (claims register) and the 09-creative briefs for products no ad speaks to",
+      "watch": {
+        "metric": "claims with a proof link, share",
+        "window": "14 days",
+        "source": "brain graph"
+      },
+      "drives": "claims in live work with proof on file",
+      "business": "risk",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "05-03",
+      "top": "T1",
+      "job": "Run the 45 minute founder interview and file each answer on its shelf, with the question number as its source",
+      "trigger": "once in week 1, after the first ingest",
+      "enablers": [
+        "brain-graph"
+      ],
+      "inputs": [
+        {
+          "need": "the interview script with 25 core questions",
+          "from": "app/brain/FOUNDER-INTERVIEW.md",
+          "status": "have"
+        },
+        {
+          "need": "45 minutes of the founder and 30 minutes for the written follow-ups",
+          "from": "founder",
+          "status": "founder"
+        },
+        {
+          "need": "shelves already filled from connected sources, so we skip what we know",
+          "from": "brain-graph",
+          "status": "enabler"
+        }
+      ],
+      "steps": [
+        "Mark which questions the ingest already answered and drop them from the call",
+        "Record the call and write the transcript within 24 hours",
+        "File each answer on its shelf with tier founder and the question number",
+        "Turn every 'I would have to check' into an open question with an owner and a date",
+        "Send the founder a 1 page readback and fix what they correct"
+      ],
+      "output": "founder records on the goals, finance, claims, voice, history and calendar shelves, plus an open question list",
+      "next": "feeds 05-04 (sign-off) and 05-11 (forbidden claims from question 17)",
+      "watch": {
+        "metric": "open questions answered within 14 days, share",
+        "window": "14 days",
+        "source": "brain open question list"
+      },
+      "drives": "record sections signed by the founder",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 5,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "05-04",
+      "top": "T1",
+      "job": "Walk the founder through the drafted record shelf by shelf and get each section marked checked, fixed or not true, with a name and a date",
+      "trigger": "once in week 1, then a 20 minute re-sign each quarter",
+      "enablers": [
+        "brain-graph",
+        "review-log"
+      ],
+      "inputs": [
+        {
+          "need": "the drafted core page and shelf indexes",
+          "from": "brain-graph",
+          "status": "enabler"
+        },
+        {
+          "need": "60 minutes of the founder",
+          "from": "founder",
+          "status": "founder"
+        },
+        {
+          "need": "interview answers filed on shelves",
+          "from": "founder records",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Order the sections by how many jobs read them: products, claims, offers, voice first",
+        "Show each fact with its source so the founder judges the fact, not the wording",
+        "Founder marks each section checked, fixed or not true",
+        "Write fixes back and turn each gap into an open question",
+        "Sign the core page with the date and lock it so agents read only the signed version"
+      ],
+      "output": "a signed core page with 18 or more of 22 sections signed and each open item named",
+      "next": "every brief pack in 05-07 loads only the signed version",
+      "watch": {
+        "metric": "record sections signed by the founder, share",
+        "window": "7 days",
+        "source": "brain sign-off log"
+      },
+      "drives": "drafts sent back for a brand reason",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 5,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "05-05",
+      "top": "T1",
+      "job": "Split every fact that changes by country into its own field per market: currency, price, tax line, shipping promise, return window, payment methods and peak dates",
+      "trigger": "once at onboarding, then when a new country is switched on",
+      "enablers": [
+        "brain-graph"
+      ],
+      "inputs": [
+        {
+          "need": "revenue and orders by shipping country",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "prices, shipping and return pages per market",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "where the founder wants to grow and refuses to sell, and what changes by market",
+          "from": "founder interview questions 8 and R3",
+          "status": "founder"
+        },
+        {
+          "need": "peaks and dead zones per market",
+          "from": "calendar shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "List the countries that bring any revenue and their share, computed from orders",
+        "For each, fill currency, price, tax line, shipping days, return window and payment methods from the site",
+        "Add the peaks per market from the calendar shelf",
+        "Leave a field empty and marked unavailable where the site does not say, never guess",
+        "Founder checks the 2 biggest markets line by line"
+      ],
+      "output": "a market table: one row per country, with each field sourced or marked unavailable",
+      "next": "feeds 06-20 (test orders per new market) and 14-email send rules per country",
+      "watch": {
+        "metric": "per-market fields filled and sourced, share",
+        "window": "7 days",
+        "source": "brain market shelf"
+      },
+      "drives": "orders from non-home markets that fail or get a wrong promise",
+      "business": "risk",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "05-06",
+      "top": "T1",
+      "job": "Score every live ad, landing page and email flow against the signed record and sort them into keep, fix and retire before any new work starts",
+      "trigger": "once after sign-off, then each quarter",
+      "enablers": [
+        "brain-graph",
+        "claims-register",
+        "congruence-check"
+      ],
+      "inputs": [
+        {
+          "need": "the signed record",
+          "from": "brain-graph",
+          "status": "enabler"
+        },
+        {
+          "need": "live ads with spend and results",
+          "from": "Meta Ads",
+          "status": "connected"
+        },
+        {
+          "need": "live landing pages and their ad traffic",
+          "from": "store platform and GA4",
+          "status": "connected"
+        },
+        {
+          "need": "live email flows with copy",
+          "from": "email platform",
+          "status": "setup"
+        },
+        {
+          "need": "claims in three tiers",
+          "from": "claims-register",
+          "status": "enabler"
+        }
+      ],
+      "steps": [
+        "List every live ad, page and flow with its spend or sends in the last 30 days",
+        "Check each against the record: wrong price, banned claim, old offer, off voice, wrong product fact",
+        "Mark keep, fix (with the exact line to change) or retire",
+        "Sort fixes by spend so the work that reaches most shoppers is fixed first",
+        "Founder approves the retire list before anything is paused"
+      ],
+      "output": "a keep, fix and retire list across ads, pages and flows, sorted by spend, with the line to change",
+      "next": "feeds 07-07 (fix pages for top ads), 14-flow fixes and the 09-creative brief queue",
+      "watch": {
+        "metric": "live assets breaking a signed fact, count",
+        "window": "14 days",
+        "source": "brain check against Meta, site and email platform"
+      },
+      "drives": "drafts sent back for a brand reason, and ads rejected for claims",
+      "business": "risk",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "05-07",
+      "top": "T2",
+      "job": "Build one brief pack per job type (ad, email, landing page, creator) that loads the core page plus only the shelves that job needs, under 3,000 words",
+      "trigger": "once after sign-off, then when a shelf changes",
+      "enablers": [
+        "brain-graph"
+      ],
+      "inputs": [
+        {
+          "need": "the signed core page",
+          "from": "core shelf",
+          "status": "brain"
+        },
+        {
+          "need": "which shelves each output needs",
+          "from": "app/brain/BRAIN-CONTENTS.md output table",
+          "status": "have"
+        },
+        {
+          "need": "3 real briefs the founder sent in the last month",
+          "from": "founder",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "List the 4 job types the brand briefs most",
+        "Map each to its shelves, like ad copy to messaging, customers, claims, voice, ads, offers, products",
+        "Cut each pack to the items a writer needs, with a pointer to the rest",
+        "Re-run the 3 real briefs through the packs and compare with what shipped",
+        "Founder rates the 3 drafts and the pack is fixed where they miss"
+      ],
+      "output": "4 brief packs, each under 3,000 words, tested on 3 real briefs",
+      "next": "every brief in 09-creative, 10-copy, 07-landing-pages-cro and 14-email-messaging starts from these",
+      "watch": {
+        "metric": "drafts approved on the first pass, share",
+        "window": "30 days",
+        "source": "review-log"
+      },
+      "drives": "founder hours spent rewriting drafts per week",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 5,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "05-08",
+      "top": "T2",
+      "job": "Collect 20 liked and 20 disliked pieces from the founder with one line on why each, and turn them into voice rules per channel with a do and a do not example",
+      "trigger": "once in the first 2 weeks, then each time the founder rates 10 new drafts",
+      "enablers": [
+        "review-log"
+      ],
+      "inputs": [
+        {
+          "need": "up to 20 pieces the founder would ship as is and 20 they rejected, with why",
+          "from": "founder written follow-up W2",
+          "status": "founder"
+        },
+        {
+          "need": "past ads with copy",
+          "from": "Meta Ads",
+          "status": "connected"
+        },
+        {
+          "need": "past emails and flow copy",
+          "from": "email platform",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "Ask for the 40 pieces across ads, emails, pages and support replies",
+        "Group the why lines into patterns: sentence length, humour, how we name the product, words we never use",
+        "Write 8 to 12 rules, each with 1 liked and 1 disliked example",
+        "Split rules that change by channel: ads, email, support, marketplace",
+        "Run 3 new drafts through the rules and have the founder mark which rule they broke"
+      ],
+      "output": "a voice shelf: 3 words, 8 to 12 rules, 40 rated examples and a banned words list",
+      "next": "loaded by every brief pack in 05-07; ratings keep feeding 05-18",
+      "watch": {
+        "metric": "drafts sent back for off voice, share",
+        "window": "30 days",
+        "source": "review-log"
+      },
+      "drives": "drafts approved on the first pass",
+      "business": "gross profit",
+      "score": {
+        "money": 3,
+        "satisfaction": 5,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "05-09",
+      "top": "T2",
+      "job": "Promote every test winner to the brand standard (T0) that new briefs start from, write a fail note for every loser, and set a date to recheck each one",
+      "trigger": "after every test read, and on each recheck date",
+      "enablers": [
+        "win-loss-ledger",
+        "brain-graph"
+      ],
+      "inputs": [
+        {
+          "need": "test results with setup and dates",
+          "from": "experiment list (history shelf)",
+          "status": "brain"
+        },
+        {
+          "need": "ad, page and email results",
+          "from": "Meta Ads, GA4 and store orders",
+          "status": "connected"
+        },
+        {
+          "need": "a recheck rule per standard, like 90 days or after a new product",
+          "from": "win-loss-ledger",
+          "status": "enabler"
+        }
+      ],
+      "steps": [
+        "Pull every test closed since the last run with its result",
+        "For a win, write the standard in one line with the proof, like 'show the saving in dollars on packs, +9% profit per visitor, May'",
+        "For a loss, write the fail note with why and 'do not rerun unless'",
+        "Add standards to the brief packs and fail notes to the idea filter",
+        "On each recheck date, test the standard again or mark it expired"
+      ],
+      "output": "a T0 list of standards with proof and recheck dates, and a fail list new ideas are checked against",
+      "next": "feeds 05-07 brief packs, 07-19 page standards and 14-08 email standards",
+      "watch": {
+        "metric": "new briefs that repeat a logged fail, count",
+        "window": "30 days",
+        "source": "review-log"
+      },
+      "drives": "share of tests that win",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "05-10",
+      "top": "T2",
+      "job": "Mine reviews, tickets and survey answers for why customers hire the product and the words they use, and file the top 10 moments and 50 phrases on the customers shelf",
+      "trigger": "once at onboarding, then monthly",
+      "enablers": [
+        "customer-jobs",
+        "review-miner"
+      ],
+      "inputs": [
+        {
+          "need": "all reviews with text",
+          "from": "reviews app",
+          "status": "connected"
+        },
+        {
+          "need": "12 months of tickets",
+          "from": "helpdesk",
+          "status": "connected"
+        },
+        {
+          "need": "a post-purchase question: what was going on when you decided to buy",
+          "from": "post-purchase survey",
+          "status": "setup"
+        },
+        {
+          "need": "the founder's version of the best customer and top doubts",
+          "from": "founder interview questions 12 to 15",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "Pull every review and ticket and tag each with the moment, the doubt and the result wanted",
+        "Count each moment and doubt, computed in code",
+        "Lift 50 exact phrases for the product, the problem and the result, with source",
+        "Mark our own words customers never use",
+        "Founder checks the top 10 moments against what they hear on calls"
+      ],
+      "output": "a language bank of 50 sourced phrases and a ranked list of 10 buying moments with counts",
+      "next": "feeds 07-12 (answers in the customer's words), 14-10 (welcome emails) and the 10-copy briefs",
+      "watch": {
+        "metric": "drafts using a sourced customer phrase in the headline, share",
+        "window": "30 days",
+        "source": "brief review log"
+      },
+      "drives": "click through rate on new ads and pages",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "05-11",
+      "top": "T3",
+      "job": "List every claim on the site, in live ads and in email flows, and sort each into approved with proof, allowed only as worded, or banned",
+      "trigger": "once at onboarding, then weekly on new ads and pages",
+      "enablers": [
+        "claims-register"
+      ],
+      "inputs": [
+        {
+          "need": "site text for every page and product",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "live ad copy and on-image text",
+          "from": "Meta Ads",
+          "status": "connected"
+        },
+        {
+          "need": "email flow copy",
+          "from": "email platform",
+          "status": "setup"
+        },
+        {
+          "need": "proof file: tests, certificates, awards, patents",
+          "from": "founder written follow-up W3",
+          "status": "founder"
+        },
+        {
+          "need": "what must never be said",
+          "from": "founder interview question 17",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "Pull every sentence that promises a result, a number, a material, a test or a comparison",
+        "Merge repeats so each claim appears once with every place it lives",
+        "Match each claim to a proof file; unmatched ones go to the founder",
+        "Founder marks each unmatched claim approved with proof, allowed as worded, or banned",
+        "Publish the register and flag live assets that carry a banned or unproven claim"
+      ],
+      "output": "a claims register in 3 tiers with proof links and every live place each claim is used",
+      "next": "feeds 05-12 (pre-launch scan) and 05-13 (rejection sweep)",
+      "watch": {
+        "metric": "claims in live work with proof on file, share",
+        "window": "30 days",
+        "source": "claims-register"
+      },
+      "drives": "ads rejected or limited for a claim",
+      "business": "risk",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "05-12",
+      "top": "T3",
+      "job": "Scan every new ad, email and page draft for claims before launch and block any claim that is not in the register",
+      "trigger": "before every launch and every new ad batch",
+      "enablers": [
+        "claims-register"
+      ],
+      "inputs": [
+        {
+          "need": "the draft copy and on-image text",
+          "from": "the brief or the ad account draft",
+          "status": "connected"
+        },
+        {
+          "need": "the claims register",
+          "from": "claims-register",
+          "status": "enabler"
+        },
+        {
+          "need": "who approves new claims",
+          "from": "decisions and goals shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pull every claim from the draft, including text inside images and video captions",
+        "Match each to the register: approved, allowed as worded, banned, or new",
+        "Rewrite 'allowed as worded' claims back to the site wording",
+        "Send new claims to the approver with the proof asked for",
+        "Log pass or block with the draft id and date"
+      ],
+      "output": "a pass or block sheet per draft, with the exact line to change",
+      "next": "blocked claims feed 05-11 as new claims; passes go to launch in 11-paid-social",
+      "watch": {
+        "metric": "drafts blocked for a claim before launch, count, and ads rejected after launch, count",
+        "window": "30 days",
+        "source": "claims-register and Meta ad review status"
+      },
+      "drives": "account warnings from Meta for claims",
+      "business": "risk",
+      "score": {
+        "money": 4,
+        "satisfaction": 5,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "05-13",
+      "top": "T3",
+      "job": "When Meta rejects an ad for a claim, find every other ad, email and page with the same claim and reword or pull them the same day",
+      "trigger": "the day an ad is rejected or limited",
+      "enablers": [
+        "claims-register",
+        "brain-graph"
+      ],
+      "inputs": [
+        {
+          "need": "rejected ads with the reason",
+          "from": "Meta Ads",
+          "status": "connected"
+        },
+        {
+          "need": "the claims register with where each claim lives",
+          "from": "claims-register",
+          "status": "enabler"
+        },
+        {
+          "need": "live email flows and pages",
+          "from": "email platform and store platform",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "Read the rejection reason and pick out the claim that caused it",
+        "Search the register and the graph for every live place with the same or a close claim",
+        "Write a safe rewording that the site and proof support",
+        "Hand a fix list to each owner: ads, email, pages",
+        "Move the claim to 'allowed as worded' or 'banned' with the date and reason"
+      ],
+      "output": "a same-day fix list across every channel, and the claim moved to its new tier",
+      "next": "feeds 05-11 register and 05-19 decision log",
+      "watch": {
+        "metric": "live assets with the rejected claim, count",
+        "window": "48 hours",
+        "source": "claims-register"
+      },
+      "drives": "ads rejected or limited for a claim",
+      "business": "risk",
+      "score": {
+        "money": 4,
+        "satisfaction": 5,
+        "speed": 5,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "05-14",
+      "top": "T3",
+      "job": "Check every review, press quote, UGC clip and creator line used in marketing for its source and permission, and mark each usable, needs permission or pull",
+      "trigger": "once at onboarding, then before any new proof goes into an ad or page",
+      "enablers": [
+        "claims-register",
+        "creator-roster"
+      ],
+      "inputs": [
+        {
+          "need": "reviews with reviewer, date and product",
+          "from": "reviews app",
+          "status": "connected"
+        },
+        {
+          "need": "who gave permission for which photos, videos and quotes",
+          "from": "founder written follow-up W4",
+          "status": "founder"
+        },
+        {
+          "need": "creators paid, their content and usage terms",
+          "from": "creators shelf",
+          "status": "brain"
+        },
+        {
+          "need": "press mentions with links",
+          "from": "public search",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "List every review, quote, photo and clip in live ads, pages and emails",
+        "Match each to its source and to a permission record",
+        "Mark usable, needs permission (with who to ask), or pull",
+        "Check creator usage windows and flag any past their end date",
+        "Send permission requests and pull the rest"
+      ],
+      "output": "a proof and rights list with each item marked usable, needs permission or pull",
+      "next": "feeds 05-11 register and the 09-creative UGC library",
+      "watch": {
+        "metric": "proof items in live work with permission on file, share",
+        "window": "30 days",
+        "source": "claims-register"
+      },
+      "drives": "claims and proof challenges from platforms, creators or shoppers",
+      "business": "risk",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "05-15",
+      "top": "T4",
+      "job": "Check the live site every morning against the record for price, offers, shipping, returns and guarantee, and list each difference with the date it changed",
+      "trigger": "every morning, and after any site edit",
+      "enablers": [
+        "fact-watch"
+      ],
+      "inputs": [
+        {
+          "need": "daily crawl of product, cart, shipping, returns and FAQ pages",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "the signed record",
+          "from": "core shelf",
+          "status": "brain"
+        },
+        {
+          "need": "store change log with who changed what",
+          "from": "store platform activity log",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Crawl the pages that carry promises",
+        "Compare each promise with the record",
+        "Name each difference with the page, the old and new value, and when it changed",
+        "Ask the founder: is the site right or the record right",
+        "Update whichever is wrong and date it"
+      ],
+      "output": "a morning list of differences, each with old value, new value, page and date",
+      "next": "every confirmed change feeds 05-16 (sweep live work)",
+      "watch": {
+        "metric": "facts that differ between the record and the live site, count",
+        "window": "daily",
+        "source": "fact-watch"
+      },
+      "drives": "tickets about a price or policy that did not match, per 100 orders",
+      "business": "customer satisfaction",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 5,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "05-16",
+      "top": "T4",
+      "job": "When an offer ends or a policy changes, find every live ad, email flow and page still saying the old thing, and hand each owner a fix list",
+      "trigger": "the day an offer ends or a policy changes",
+      "enablers": [
+        "fact-watch",
+        "brain-graph"
+      ],
+      "inputs": [
+        {
+          "need": "the change: old and new wording, and the date",
+          "from": "fact-watch",
+          "status": "enabler"
+        },
+        {
+          "need": "live ads with copy",
+          "from": "Meta Ads and Google Ads",
+          "status": "connected"
+        },
+        {
+          "need": "live email flows and scheduled campaigns",
+          "from": "email platform",
+          "status": "setup"
+        },
+        {
+          "need": "live landing pages",
+          "from": "store platform",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Search every live asset for the old wording and close variants, like '60 day returns' and '60 days to return'",
+        "List matches by channel with spend or sends in the last 7 days",
+        "Write the new line for each so owners do not guess",
+        "Send fix lists to the ad, email and page owners",
+        "Re-scan in 48 hours and list what is still live"
+      ],
+      "output": "a fix list per owner, and a re-scan showing 0 old promises live",
+      "next": "feeds 11-paid-social and 14-email-messaging work queues",
+      "watch": {
+        "metric": "live assets carrying an ended offer or old policy, count",
+        "window": "48 hours",
+        "source": "fact-watch"
+      },
+      "drives": "tickets from shoppers who arrived for a deal that is gone",
+      "business": "customer satisfaction",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 5,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "05-17",
+      "top": "T4",
+      "job": "Before a product launches or changes fabric, formula or supplier, add its facts, claims and proof to the record, and mark every old claim that no longer holds",
+      "trigger": "2 weeks before each launch or product change",
+      "enablers": [
+        "brain-graph",
+        "claims-register"
+      ],
+      "inputs": [
+        {
+          "need": "product specs, materials, sizes, care and price",
+          "from": "founder or product lead",
+          "status": "founder"
+        },
+        {
+          "need": "test results and certificates for the new product",
+          "from": "founder proof file",
+          "status": "founder"
+        },
+        {
+          "need": "launch dates",
+          "from": "calendar shelf",
+          "status": "brain"
+        },
+        {
+          "need": "claims linked to the old version",
+          "from": "brain-graph",
+          "status": "enabler"
+        }
+      ],
+      "steps": [
+        "Collect the spec sheet and proof for the new or changed product",
+        "Write its product facts and allowed claims into the record",
+        "Find every claim linked to the old version and mark it retired or still true",
+        "List live ads, pages and emails with retired claims",
+        "Founder signs the product entry before any launch brief goes out"
+      ],
+      "output": "a signed product entry and a retired claims list, ready before launch briefs",
+      "next": "feeds 05-07 brief packs for the launch and 14 launch sends",
+      "watch": {
+        "metric": "launch assets with a claim not in the record, count",
+        "window": "launch week",
+        "source": "claims-register"
+      },
+      "drives": "returns and tickets for 'not as described'",
+      "business": "risk",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "05-18",
+      "top": "T5",
+      "job": "Log every draft review with its reason, and when the same reason repeats 3 times in 30 days, write it as a rule with the draft that caused it",
+      "trigger": "every review session",
+      "enablers": [
+        "review-log"
+      ],
+      "inputs": [
+        {
+          "need": "each reviewed draft with approve or reject and a reason",
+          "from": "founder and reviewers",
+          "status": "founder"
+        },
+        {
+          "need": "a review form with fixed reasons: wrong fact, off voice, banned claim, already decided, other",
+          "from": "Google Sheet or form",
+          "status": "setup"
+        },
+        {
+          "need": "the voice and claims shelves",
+          "from": "voice and claims shelves",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Log each review with the draft, the writer or agent, and the reason",
+        "Count reasons per 30 days in code",
+        "When a reason hits 3, draft a rule with the 3 drafts as examples",
+        "Founder approves or softens the rule so one bad day does not become law",
+        "Add the rule to the brief packs and track if the reason drops"
+      ],
+      "output": "a rule book that grows from real rejections, each rule with its examples",
+      "next": "rules load into 05-07 brief packs",
+      "watch": {
+        "metric": "the same rejection reason repeated within 30 days, count",
+        "window": "30 days",
+        "source": "review-log"
+      },
+      "drives": "drafts approved on the first pass",
+      "business": "gross profit",
+      "score": {
+        "money": 3,
+        "satisfaction": 5,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "05-19",
+      "top": "T5",
+      "job": "Log every founder decision with the date, the reason and who made it, and match each new proposal against the log before it reaches the founder",
+      "trigger": "every founder call and every new proposal",
+      "enablers": [
+        "review-log"
+      ],
+      "inputs": [
+        {
+          "need": "decisions from calls, email and chat",
+          "from": "founder",
+          "status": "founder"
+        },
+        {
+          "need": "red lines and what is off the table",
+          "from": "decisions and goals shelf",
+          "status": "brain"
+        },
+        {
+          "need": "past tests and fails",
+          "from": "win-loss-ledger",
+          "status": "enabler"
+        }
+      ],
+      "steps": [
+        "Write each decision in one line with date, why and who",
+        "Tag it with the topic: offer, channel, claim, creative, spend",
+        "Before a proposal goes to the founder, search the log and fail list for the same idea",
+        "If found, attach the old decision and ask what changed",
+        "Founder confirms or reopens it, and the log keeps both"
+      ],
+      "output": "a decisions log and a 'seen before' note on every repeat proposal",
+      "next": "feeds 05-20 lookups and the 25-experiments idea filter",
+      "watch": {
+        "metric": "proposals that repeat an idea already turned down, count",
+        "window": "30 days",
+        "source": "review-log"
+      },
+      "drives": "founder hours in meetings on settled topics",
+      "business": "gross profit",
+      "score": {
+        "money": 2,
+        "satisfaction": 5,
+        "speed": 3,
+        "ease": 5
+      },
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "05-20",
+      "top": "T5",
+      "job": "Answer the team's 'can we say this' and 'what did we decide' questions from the record with the source and sign date, and log the ones it could not answer",
+      "trigger": "daily",
+      "enablers": [
+        "brain-graph",
+        "review-log"
+      ],
+      "inputs": [
+        {
+          "need": "the signed record",
+          "from": "core shelf",
+          "status": "brain"
+        },
+        {
+          "need": "the claims register and decisions log",
+          "from": "claims-register",
+          "status": "enabler"
+        },
+        {
+          "need": "questions from the team chat or a form",
+          "from": "team chat or Google Form",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "Take each question from the team in one place",
+        "Answer from the record with the fact, its source and the date it was signed",
+        "If the record has no answer, say so and send it to the founder",
+        "Add the founder's answer to the record so it is asked once",
+        "Report weekly: questions answered without the founder, share"
+      ],
+      "output": "a lookup that answers with a source, and a weekly count of questions it could not answer",
+      "next": "unanswered questions feed 05-03 open questions",
+      "watch": {
+        "metric": "brand questions answered from the record without the founder, share",
+        "window": "30 days",
+        "source": "question log"
+      },
+      "drives": "founder hours spent on brand questions per week",
+      "business": "gross profit",
+      "score": {
+        "money": 2,
+        "satisfaction": 5,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "days"
+    }
+  ],
+  "new_enablers": [
+    {
+      "id": "claims-register",
+      "name": "Claims register",
+      "what": "Every claim the brand makes, in three tiers: approved with proof, allowed only as worded, banned. Each claim links to its proof file, its permission, and every ad, email and page that uses it. Scans new drafts and live work for claims and flags any with no match.",
+      "inputs": [
+        "site crawl",
+        "live ads and email flows",
+        "the founder's proof file",
+        "the forbidden list from the founder interview",
+        "rights records for reviews, UGC and press"
+      ],
+      "powers": [
+        "a pass or block on every draft before launch",
+        "one sweep when a platform rejects a claim",
+        "proof in an hour when a platform, retailer or lawyer asks"
+      ],
+      "screens": [
+        "05-brand-brain",
+        "09-creative",
+        "10-copy",
+        "07-landing-pages-cro",
+        "14-email-messaging",
+        "18-answer-engines"
+      ],
+      "note": null
+    },
+    {
+      "id": "fact-watch",
+      "name": "Site fact watch",
+      "what": "Crawls the live site every morning and compares price, offers, shipping, returns, guarantee and product specs with the signed record. Names each difference, then finds every live ad, email and page that still carries the old version.",
+      "inputs": [
+        "daily site crawl",
+        "the signed record",
+        "live ads, email flows and landing pages with their text"
+      ],
+      "powers": [
+        "same-day notice when a promise changes",
+        "a fix list per owner",
+        "no ended offer still running in an ad or flow"
+      ],
+      "screens": [
+        "05-brand-brain",
+        "06-store-health",
+        "14-email-messaging",
+        "11-paid-social"
+      ],
+      "note": null
+    },
+    {
+      "id": "review-log",
+      "name": "Review and decision log",
+      "what": "Logs every draft the founder reviews with approve or reject and the reason, and every founder decision with the date, why and who. A reason that repeats becomes a written rule with the draft that caused it. New proposals are matched against past decisions.",
+      "inputs": [
+        "draft reviews with reasons",
+        "founder decisions",
+        "a simple form or sheet the founder and team fill"
+      ],
+      "powers": [
+        "rules that end repeated notes",
+        "a stop on ideas already turned down",
+        "first-pass approval rate by writer and agent"
+      ],
+      "screens": [
+        "05-brand-brain",
+        "23-team-ops",
+        "25-experiments"
+      ],
+      "note": null
+    }
+  ]
+}

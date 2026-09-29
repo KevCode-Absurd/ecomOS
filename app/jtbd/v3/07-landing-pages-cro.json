@@ -1,0 +1,1194 @@
+{
+ "screen": "07-landing-pages-cro",
+ "title": "Landing pages and CRO",
+ "top_jobs": [
+  {
+   "id": "T1",
+   "job": "When I am paying for clicks that do not buy, help me see from scroll depth, recordings, polls and GA4 the one block where shoppers stop and what it costs, so I fix that first instead of redesigning everything",
+   "metric": "conversion rate from paid sessions on the top 10 landing pages, mobile, 30 days",
+   "from_v2": [
+    1,
+    4,
+    11,
+    15,
+    20
+   ]
+  },
+  {
+   "id": "T2",
+   "job": "When a shopper taps an ad and lands on a page that says something else, help me make the page keep the ad's promise, starting with the ads that spend most, so I stop paying for clicks that leave feeling tricked",
+   "metric": "ad to page match score on the top 20 ads by spend, and bounce rate from paid clicks",
+   "from_v2": [
+    2,
+    17,
+    19,
+    28
+   ]
+  },
+  {
+   "id": "T3",
+   "job": "When the same questions and doubts stop shoppers, help me answer each one on the page, next to the choice it blocks, in the customer's own words, so I get fewer tickets and more buyers",
+   "metric": "pre-sale tickets per 1,000 sessions, and product page conversion rate",
+   "from_v2": [
+    5,
+    8,
+    14,
+    16,
+    24,
+    27
+   ]
+  },
+  {
+   "id": "T4",
+   "job": "When a test is proposed or called a winner, help me rank ideas by money and evidence, read results on profit per visitor, and promote only real wins to the page standard, so I stop rolling out wins that fade or lose money",
+   "metric": "shipped page changes with a measured profit per visitor gain, share",
+   "from_v2": [
+    6,
+    7,
+    18,
+    21,
+    22,
+    25,
+    31
+   ]
+  }
+ ],
+ "jobs": [
+  {
+   "id": "07-01",
+   "top": "T1",
+   "job": "Install Clarity on every money page, tag sessions by ad campaign and device, and show how far down each of the top 10 paid landing pages shoppers scroll, block by block",
+   "trigger": "once, then read every Monday",
+   "enablers": [
+    "behaviour-map"
+   ],
+   "inputs": [
+    {
+     "need": "Clarity (free) installed through the theme with consent",
+     "from": "Microsoft Clarity",
+     "status": "setup"
+    },
+    {
+     "need": "top 10 landing pages by paid sessions",
+     "from": "GA4",
+     "status": "connected"
+    },
+    {
+     "need": "campaign and ad names per URL",
+     "from": "Meta Ads",
+     "status": "connected"
+    },
+    {
+     "need": "page blocks in order: hero, price, proof, reviews, FAQ, footer",
+     "from": "site shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "Install Clarity and pass campaign and device as custom tags",
+    "Wait for 7 days or 1,000 sessions per page, whichever is later",
+    "For each page, compute the share of mobile shoppers who reach each block",
+    "Mark where the buy button, the reviews and the guarantee sit on that curve",
+    "Write 1 line per page, like '64 percent never reach the reviews; the guarantee sits below them'"
+   ],
+   "output": "a scroll table per page and device: share reaching each block, with the 1 line finding",
+   "next": "feeds 07-02 (fix the stop block) and 07-03 (recordings to watch)",
+   "watch": {
+    "metric": "share of mobile paid sessions reaching the first proof block",
+    "window": "7 days",
+    "source": "Clarity"
+   },
+   "drives": "product page conversion rate, mobile",
+   "business": "revenue",
+   "score": {
+    "money": 4,
+    "satisfaction": 3,
+    "speed": 4,
+    "ease": 5
+   },
+   "ready": 4,
+   "effort": "hours"
+  },
+  {
+   "id": "07-02",
+   "top": "T1",
+   "job": "Find the one block on each money page where most mobile shoppers stop, move the proof, price or buy button above it on a page copy, and test it",
+   "trigger": "every 2 weeks, one page at a time",
+   "enablers": [
+    "behaviour-map",
+    "theme-twin",
+    "test-reader"
+   ],
+   "inputs": [
+    {
+     "need": "scroll table per page",
+     "from": "behaviour-map",
+     "status": "enabler"
+    },
+    {
+     "need": "20 recordings of shoppers who stopped at that block",
+     "from": "Microsoft Clarity",
+     "status": "setup"
+    },
+    {
+     "need": "theme copy to build on",
+     "from": "store platform",
+     "status": "connected"
+    },
+    {
+     "need": "sessions and orders per page",
+     "from": "GA4 and store orders",
+     "status": "connected"
+    }
+   ],
+   "steps": [
+    "Pick the page with the most paid sessions lost at one block",
+    "Watch 20 recordings at that block and write what shoppers do there",
+    "Draft the move: which block goes up, which goes down",
+    "Build it on a theme copy and walk the buying flow on a phone",
+    "Launch as a test with a set run time"
+   ],
+   "output": "one fixed page per 2 weeks, each with the evidence and a running test",
+   "next": "results go to 07-19 (standard or fail note)",
+   "watch": {
+    "metric": "add to cart rate on the changed page, mobile",
+    "window": "14 days",
+    "source": "GA4"
+   },
+   "drives": "product page conversion rate",
+   "business": "revenue",
+   "score": {
+    "money": 5,
+    "satisfaction": 3,
+    "speed": 4,
+    "ease": 3
+   },
+   "ready": 4,
+   "effort": "days"
+  },
+  {
+   "id": "07-03",
+   "top": "T1",
+   "job": "Watch 30 recordings of paid mobile shoppers who left the product page, tag each with a reason (rage click, dead click, size doubt, price shock, slow load, popup in the way) and count them",
+   "trigger": "every 2 weeks",
+   "enablers": [
+    "behaviour-map"
+   ],
+   "inputs": [
+    {
+     "need": "recordings filtered to paid, mobile, left without add to cart",
+     "from": "Microsoft Clarity",
+     "status": "setup"
+    },
+    {
+     "need": "a fixed reason list with 1 example each",
+     "from": "behaviour-map",
+     "status": "enabler"
+    },
+    {
+     "need": "popup, chat and cookie bar settings",
+     "from": "store platform",
+     "status": "connected"
+    }
+   ],
+   "steps": [
+    "Filter recordings to paid mobile sessions that left the product page",
+    "Watch 30 and tag each with 1 main reason",
+    "Count reasons, and stop early if the same 2 reasons repeat",
+    "Screenshot 3 clear examples per top reason",
+    "Hand the top reason to its owner: page, speed, popup or offer"
+   ],
+   "output": "a ranked reason list with counts and screenshots, in place of evenings spent watching",
+   "next": "popup findings go to 07-02; slow load goes to 08-17; doubts go to 07-11",
+   "watch": {
+    "metric": "the top reason's share of tagged exits",
+    "window": "14 days",
+    "source": "Clarity recording tags"
+   },
+   "drives": "product page conversion rate, mobile",
+   "business": "revenue",
+   "score": {
+    "money": 4,
+    "satisfaction": 4,
+    "speed": 3,
+    "ease": 4
+   },
+   "ready": 4,
+   "effort": "hours"
+  },
+  {
+   "id": "07-04",
+   "top": "T1",
+   "job": "When conversion drops more than 20 percent in a day, check in order: tracking, traffic mix, device and browser, then the page, before anyone touches the design",
+   "trigger": "when conversion drops 20 percent day over day",
+   "enablers": [
+    "behaviour-map"
+   ],
+   "inputs": [
+    {
+     "need": "purchases in GA4 and orders in the store, by day",
+     "from": "GA4 and store platform",
+     "status": "connected"
+    },
+    {
+     "need": "sessions by source and campaign",
+     "from": "GA4",
+     "status": "connected"
+    },
+    {
+     "need": "ad spend and clicks by campaign",
+     "from": "Meta Ads",
+     "status": "connected"
+    },
+    {
+     "need": "yesterday's store changes",
+     "from": "store platform activity log",
+     "status": "connected"
+    }
+   ],
+   "steps": [
+    "Compare GA4 purchases with store orders; if only GA4 fell, it is tracking",
+    "Compare traffic share by source; a new cold campaign lowers the average",
+    "Split conversion by device and browser; one broken browser shows here",
+    "Only then check the page and the change log",
+    "Write the cause in 1 line with the numbers"
+   ],
+   "output": "a 1 line cause with the numbers behind it, sent the same day",
+   "next": "tracking causes go to 22-measurement; page causes go to 06-07",
+   "watch": {
+    "metric": "hours from the drop to a named cause",
+    "window": "per incident",
+    "source": "GA4 and store orders"
+   },
+   "drives": "days lost to fixing the wrong thing",
+   "business": "revenue",
+   "score": {
+    "money": 4,
+    "satisfaction": 5,
+    "speed": 5,
+    "ease": 5
+   },
+   "ready": 5,
+   "effort": "hours"
+  },
+  {
+   "id": "07-05",
+   "top": "T1",
+   "job": "Ask one question on the product page ('What stopped you today?') and one after purchase ('What nearly stopped you?'), and code 200 answers into themes",
+   "trigger": "always on, read monthly",
+   "enablers": [
+    "behaviour-map",
+    "question-matrix"
+   ],
+   "inputs": [
+    {
+     "need": "an on-page poll tool",
+     "from": "Clarity or a free poll app",
+     "status": "setup"
+    },
+    {
+     "need": "a post-purchase survey",
+     "from": "post-purchase survey app",
+     "status": "setup"
+    },
+    {
+     "need": "theme list from the objection ladder",
+     "from": "customers shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "Set the page poll to show after 30 seconds or on exit, on mobile product pages only",
+    "Add the post-purchase question with an open text box",
+    "Collect 200 answers",
+    "Code each answer to a theme and count them in code",
+    "Put the top 5 themes next to the ticket themes from 07-11"
+   ],
+   "output": "a ranked list of stopping reasons in shoppers' words, from both sides of the purchase",
+   "next": "feeds 07-11 (coverage matrix) and 07-16 (idea scoring evidence)",
+   "watch": {
+    "metric": "answers collected",
+    "window": "30 days",
+    "source": "poll and survey tools"
+   },
+   "drives": "product page conversion rate",
+   "business": "revenue",
+   "score": {
+    "money": 3,
+    "satisfaction": 4,
+    "speed": 2,
+    "ease": 4
+   },
+   "ready": 3,
+   "effort": "hours"
+  },
+  {
+   "id": "07-06",
+   "top": "T2",
+   "job": "Rank ads by 30 day spend, pair each with its landing page, and score the match 1 to 5 on promise, offer, price, visual and awareness level",
+   "trigger": "every Monday after the ad pull",
+   "enablers": [
+    "congruence-check",
+    "awareness-map",
+    "creative-tags"
+   ],
+   "inputs": [
+    {
+     "need": "ads with destination URL, spend, clicks and purchases",
+     "from": "Meta Ads and Google Ads",
+     "status": "connected"
+    },
+    {
+     "need": "landing page text and a mobile screenshot of the first screen",
+     "from": "store platform",
+     "status": "connected"
+    },
+    {
+     "need": "hook, offer and awareness tags per ad",
+     "from": "creative-tags",
+     "status": "enabler"
+    },
+    {
+     "need": "a scoring rubric with 2 examples per score",
+     "from": "congruence-check",
+     "status": "enabler"
+    }
+   ],
+   "steps": [
+    "Pull the top 20 ads by spend with their landing URLs",
+    "Screenshot the first mobile screen of each page",
+    "Score promise, offer, price, visual and awareness match from 1 to 5 each",
+    "Spot check 5 scores by hand and fix the rubric where it is wrong",
+    "Sort by spend times the gap, so a big-spend ad with a weak page comes first"
+   ],
+   "output": "a table: ad, spend, page, 5 match scores, and the line that breaks the promise",
+   "next": "feeds 07-07 (fix pages for the top ads)",
+   "watch": {
+    "metric": "ad to page match score, spend weighted, top 20 ads",
+    "window": "weekly",
+    "source": "congruence-check"
+   },
+   "drives": "bounce rate and conversion rate from paid clicks",
+   "business": "revenue",
+   "score": {
+    "money": 4,
+    "satisfaction": 3,
+    "speed": 4,
+    "ease": 4
+   },
+   "ready": 3,
+   "effort": "days"
+  },
+  {
+   "id": "07-07",
+   "top": "T2",
+   "job": "Fix the landing page for the top 5 ads by spend first: put the ad's hook in the headline, keep the offer and price the same, reuse the ad's first frame, and ship each on a page copy",
+   "trigger": "every 2 weeks, top 5 ads by spend",
+   "enablers": [
+    "congruence-check",
+    "theme-twin",
+    "page-library"
+   ],
+   "inputs": [
+    {
+     "need": "ranked mismatch table",
+     "from": "congruence-check",
+     "status": "enabler"
+    },
+    {
+     "need": "the ad's hook, offer, first frame and media",
+     "from": "Meta Ads",
+     "status": "connected"
+    },
+    {
+     "need": "allowed claims and offer rules",
+     "from": "claims and offers shelves",
+     "status": "brain"
+    },
+    {
+     "need": "page templates and blocks",
+     "from": "page-library",
+     "status": "enabler"
+    }
+   ],
+   "steps": [
+    "Take the top 5 ads with the lowest match score",
+    "Write the page headline from the ad's hook, word for word where it fits",
+    "Match offer, price and guarantee exactly from ad to page to cart",
+    "Use the ad's first frame or product shot as the hero image",
+    "Build on a page copy, point that ad to it, and read for 14 days against the old page",
+    "Write what the best ad and page pairs share as a rule for new pages"
+   ],
+   "output": "5 fixed pages, each tied to its ad, with a 14 day read, and a rule on what the best pairs share",
+   "next": "wins go to 07-19 (page standard); the rule feeds 09-creative briefs",
+   "watch": {
+    "metric": "conversion rate from the ad's clicks",
+    "window": "14 days",
+    "source": "GA4 and Meta Ads"
+   },
+   "drives": "cost per purchase on the top 5 ads",
+   "business": "revenue",
+   "score": {
+    "money": 5,
+    "satisfaction": 4,
+    "speed": 4,
+    "ease": 3
+   },
+   "ready": 3,
+   "effort": "days"
+  },
+  {
+   "id": "07-08",
+   "top": "T2",
+   "job": "When a new ad angle starts winning, build a page within 5 days that continues its story from the library blocks, and send only that angle's ads to it",
+   "trigger": "when a new angle beats the account average on cost per purchase for 7 days",
+   "enablers": [
+    "page-library",
+    "congruence-check"
+   ],
+   "inputs": [
+    {
+     "need": "the winning angle, its ads and its tags",
+     "from": "creative-tags",
+     "status": "enabler"
+    },
+    {
+     "need": "page blocks the store can build",
+     "from": "page-library",
+     "status": "enabler"
+    },
+    {
+     "need": "proof and claims for that angle",
+     "from": "messaging and claims shelves",
+     "status": "brain"
+    },
+    {
+     "need": "a page builder or theme access",
+     "from": "store platform",
+     "status": "connected"
+    }
+   ],
+   "steps": [
+    "Write a 1 page brief: angle, avatar, awareness level, offer, the doubts to answer",
+    "Assemble the page from library blocks in the order the brief sets",
+    "Walk it on a phone and check every claim against the claims shelf",
+    "Point only that angle's ads to it",
+    "Read cost per purchase for 14 days against the old page"
+   ],
+   "output": "a live angle page in 5 days, with its ads pointed to it and a 14 day read",
+   "next": "feeds 07-10 (page library entry) and 11-paid-social scaling",
+   "watch": {
+    "metric": "cost per purchase on the angle's ads",
+    "window": "14 days",
+    "source": "Meta Ads and store orders"
+   },
+   "drives": "new customers from the winning angle",
+   "business": "revenue",
+   "score": {
+    "money": 4,
+    "satisfaction": 3,
+    "speed": 3,
+    "ease": 3
+   },
+   "ready": 3,
+   "effort": "days"
+  },
+  {
+   "id": "07-09",
+   "top": "T2",
+   "job": "Send ad clicks to a page that fits their awareness: unaware and problem aware clicks to a story or advertorial page, product aware and most aware clicks to the product page with the offer up top",
+   "trigger": "once to set up, then when a new top of funnel ad launches",
+   "enablers": [
+    "awareness-map",
+    "congruence-check",
+    "page-library"
+   ],
+   "inputs": [
+    {
+     "need": "awareness level tag per ad",
+     "from": "awareness-map",
+     "status": "enabler"
+    },
+    {
+     "need": "landing URL per ad",
+     "from": "Meta Ads",
+     "status": "connected"
+    },
+    {
+     "need": "a story or advertorial page template",
+     "from": "page-library",
+     "status": "enabler"
+    },
+    {
+     "need": "founder story, maker's choices and proof",
+     "from": "messaging shelf (story bank)",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "List ads by awareness level and where each lands today",
+    "Flag unaware and problem aware ads landing on a bare product page",
+    "Build one story page for the top cold angle: problem, why old fixes fail, how ours works, proof, offer",
+    "Point the cold ads to it and keep warm ads on the product page",
+    "Read new customer cost for each group over 28 days"
+   ],
+   "output": "a routing table by awareness level and one live story page for cold traffic",
+   "next": "feeds 11-paid-social top of funnel budget and 09-creative briefs",
+   "watch": {
+    "metric": "cost per new customer from unaware and problem aware ads",
+    "window": "28 days",
+    "source": "Meta Ads and store orders"
+   },
+   "drives": "new customers per week",
+   "business": "revenue",
+   "score": {
+    "money": 4,
+    "satisfaction": 3,
+    "speed": 3,
+    "ease": 3
+   },
+   "ready": 3,
+   "effort": "days"
+  },
+  {
+   "id": "07-10",
+   "top": "T2",
+   "job": "List every landing page that got paid clicks in the last 90 days with its ads, sessions, conversion and stock status, and mark each keep, fix or retire",
+   "trigger": "once, then monthly",
+   "enablers": [
+    "page-library"
+   ],
+   "inputs": [
+    {
+     "need": "landing pages by paid sessions, 90 days",
+     "from": "GA4",
+     "status": "connected"
+    },
+    {
+     "need": "ads and their destination URLs",
+     "from": "Meta Ads and Google Ads",
+     "status": "connected"
+    },
+    {
+     "need": "stock per product on each page",
+     "from": "store platform",
+     "status": "connected"
+    },
+    {
+     "need": "orders with product cost",
+     "from": "store platform plus founder unit costs",
+     "status": "founder"
+    }
+   ],
+   "steps": [
+    "Pull every landing page with paid sessions",
+    "Join each to its ads, conversion and profit per visitor, computed in code",
+    "Flag pages with sold-out products or 404s still getting clicks",
+    "Mark keep, fix or retire and pick where each retired page's ads should go",
+    "Redirect retired pages and update the ads"
+   ],
+   "output": "a page library with keep, fix or retire on each page and no paid click to a dead page",
+   "next": "feeds 07-06 (pairs to score) and 11-paid-social URL fixes",
+   "watch": {
+    "metric": "paid clicks landing on sold-out or retired pages, count",
+    "window": "7 days",
+    "source": "GA4 and Meta Ads"
+   },
+   "drives": "wasted ad spend",
+   "business": "revenue",
+   "score": {
+    "money": 3,
+    "satisfaction": 3,
+    "speed": 4,
+    "ease": 4
+   },
+   "ready": 4,
+   "effort": "hours"
+  },
+  {
+   "id": "07-11",
+   "top": "T3",
+   "job": "Pull every pre-sale question from tickets, chat, reviews, site search and Amazon questions, map each to the page block that should answer it, and rank the blank cells by how often it is asked",
+   "trigger": "once, then monthly",
+   "enablers": [
+    "question-matrix"
+   ],
+   "inputs": [
+    {
+     "need": "pre-sale tickets and chats, 12 months",
+     "from": "helpdesk",
+     "status": "connected"
+    },
+    {
+     "need": "reviews with text",
+     "from": "reviews app",
+     "status": "connected"
+    },
+    {
+     "need": "site search terms",
+     "from": "GA4 or store search",
+     "status": "connected"
+    },
+    {
+     "need": "Amazon customer questions, if they sell there",
+     "from": "Amazon Seller Central",
+     "status": "setup"
+    },
+    {
+     "need": "text of product pages, FAQ and policy pages",
+     "from": "store platform",
+     "status": "connected"
+    }
+   ],
+   "steps": [
+    "Pull every question and group near-duplicates into one",
+    "Count how often each is asked, by product",
+    "Check each page and FAQ for an answer and mark answered, weak or blank",
+    "Rank blanks by count times the traffic of the page that should answer",
+    "Spot check 20 matches by hand"
+   ],
+   "output": "a coverage matrix: questions by page, with blanks ranked by how much they cost",
+   "next": "feeds 07-12 (write the answers), 14-10 (answers in emails) and 17-seo article briefs",
+   "watch": {
+    "metric": "top 20 questions answered on the page they belong to, share",
+    "window": "30 days",
+    "source": "question-matrix"
+   },
+   "drives": "pre-sale tickets per 1,000 sessions",
+   "business": "revenue",
+   "score": {
+    "money": 4,
+    "satisfaction": 4,
+    "speed": 3,
+    "ease": 4
+   },
+   "ready": 4,
+   "effort": "days"
+  },
+  {
+   "id": "07-12",
+   "top": "T3",
+   "job": "Write answers for the top 10 blank cells in the customer's own words and put each next to the choice it blocks: fit under the size picker, delivery date under the price, returns next to the buy button",
+   "trigger": "monthly, after the matrix refresh",
+   "enablers": [
+    "question-matrix",
+    "review-miner"
+   ],
+   "inputs": [
+    {
+     "need": "ranked blank cells",
+     "from": "question-matrix",
+     "status": "enabler"
+    },
+    {
+     "need": "customer phrases for each doubt",
+     "from": "customers shelf (language bank)",
+     "status": "brain"
+    },
+    {
+     "need": "true delivery days and return policy",
+     "from": "operations and offers shelves",
+     "status": "brain"
+    },
+    {
+     "need": "theme copy",
+     "from": "store platform",
+     "status": "connected"
+    }
+   ],
+   "steps": [
+    "Take the top 10 blanks",
+    "Write each answer in 1 or 2 short lines, using a customer phrase where one fits",
+    "Place each next to the choice it blocks, not in a FAQ at the bottom",
+    "Check each answer against policies and claims",
+    "Ship on a theme copy and read tickets and add to cart for 28 days"
+   ],
+   "output": "10 answer blocks live beside the choices they unblock",
+   "next": "feeds 07-19 (standard if it wins)",
+   "watch": {
+    "metric": "pre-sale tickets on those questions, count",
+    "window": "28 days",
+    "source": "helpdesk"
+   },
+   "drives": "product page conversion rate",
+   "business": "revenue",
+   "score": {
+    "money": 4,
+    "satisfaction": 5,
+    "speed": 3,
+    "ease": 4
+   },
+   "ready": 4,
+   "effort": "days"
+  },
+  {
+   "id": "07-13",
+   "top": "T3",
+   "job": "Add a fit helper on size-dependent products built from return reasons and reviews that mention fit, and show 'runs small' or 'runs large' notes where reviews say so",
+   "trigger": "once per sized product, then quarterly",
+   "enablers": [
+    "question-matrix",
+    "review-miner"
+   ],
+   "inputs": [
+    {
+     "need": "return reasons by product and size",
+     "from": "returns app",
+     "status": "setup"
+    },
+    {
+     "need": "reviews that mention fit or size",
+     "from": "reviews app",
+     "status": "connected"
+    },
+    {
+     "need": "size chart and measurements",
+     "from": "products shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "Count returns for fit by product and size",
+    "Pull review lines about fit and group them: runs small, true, runs large",
+    "Write a 2 question fit helper (usual size, fit preference) from the chart",
+    "Show the fit note under the size picker",
+    "Read fit returns and conversion for 60 days"
+   ],
+   "output": "a fit helper and fit notes on each sized product",
+   "next": "feeds 14-03 (fit email before delivery)",
+   "watch": {
+    "metric": "returns for fit, share of orders",
+    "window": "60 days",
+    "source": "returns app and store orders"
+   },
+   "drives": "gross profit per order",
+   "business": "gross profit",
+   "score": {
+    "money": 4,
+    "satisfaction": 5,
+    "speed": 2,
+    "ease": 3
+   },
+   "ready": 3,
+   "effort": "days"
+  },
+  {
+   "id": "07-14",
+   "top": "T3",
+   "job": "Give a new product page enough honest proof before reviews arrive: the maker's reason for each choice, a real test result, reviews of the sibling product labeled as such, and the guarantee",
+   "trigger": "2 weeks before each launch",
+   "enablers": [
+    "brain-graph",
+    "question-matrix"
+   ],
+   "inputs": [
+    {
+     "need": "product facts, test results and proof",
+     "from": "products and claims shelves",
+     "status": "brain"
+    },
+    {
+     "need": "reviews of the closest existing product",
+     "from": "reviews app",
+     "status": "connected"
+    },
+    {
+     "need": "questions shoppers asked about the sibling product",
+     "from": "question-matrix",
+     "status": "enabler"
+    }
+   ],
+   "steps": [
+    "List what a first buyer doubts, from the sibling product's questions",
+    "Write one proof line per doubt from the products and claims shelves",
+    "Add sibling reviews with a clear label, never as reviews of the new product",
+    "Put the guarantee next to the buy button",
+    "Ask the first 50 buyers for a review 5 days after delivery"
+   ],
+   "output": "a launch page with proof per doubt and a review ask set up",
+   "next": "feeds 14 launch sends",
+   "watch": {
+    "metric": "conversion rate on the new product page, first 30 days",
+    "window": "30 days",
+    "source": "GA4"
+   },
+   "drives": "launch revenue",
+   "business": "revenue",
+   "score": {
+    "money": 3,
+    "satisfaction": 4,
+    "speed": 3,
+    "ease": 4
+   },
+   "ready": 4,
+   "effort": "hours"
+  },
+  {
+   "id": "07-15",
+   "top": "T3",
+   "job": "Turn the 'which one should I get' tickets into a 3 question chooser on the collection page that ends on one product",
+   "trigger": "once, then when the range changes",
+   "enablers": [
+    "question-matrix"
+   ],
+   "inputs": [
+    {
+     "need": "'which one' tickets and chats with the answer support gave",
+     "from": "helpdesk",
+     "status": "connected"
+    },
+    {
+     "need": "products with what each is for and who it is for",
+     "from": "products shelf",
+     "status": "brain"
+    },
+    {
+     "need": "a quiz or chooser block",
+     "from": "store platform or a quiz app",
+     "status": "setup"
+    }
+   ],
+   "steps": [
+    "Read 50 'which one' tickets and list the questions support asks back",
+    "Keep the 3 questions that split the range best",
+    "Map each answer path to one product with a 1 line reason",
+    "Build the chooser on the collection page and log every path",
+    "Read chooser completion and orders from chooser users against others"
+   ],
+   "output": "a live chooser with every path ending on one product and a reason",
+   "next": "path data feeds 02-customers-avatars",
+   "watch": {
+    "metric": "'which one' tickets per 1,000 sessions",
+    "window": "30 days",
+    "source": "helpdesk"
+   },
+   "drives": "collection page to product view rate",
+   "business": "revenue",
+   "score": {
+    "money": 3,
+    "satisfaction": 4,
+    "speed": 3,
+    "ease": 3
+   },
+   "ready": 4,
+   "effort": "days"
+  },
+  {
+   "id": "07-16",
+   "top": "T4",
+   "job": "Score every test idea on one sheet (money at stake on that page, evidence from recordings, polls and tickets, ease, and whether traffic can power it) and run the top one",
+   "trigger": "every 2 weeks",
+   "enablers": [
+    "test-reader",
+    "behaviour-map"
+   ],
+   "inputs": [
+    {
+     "need": "test ideas with steps",
+     "from": "idea bank ideas/v1 07-LPG and 09-CRO",
+     "status": "have"
+    },
+    {
+     "need": "sessions, orders and profit per visitor per page",
+     "from": "GA4 and store orders",
+     "status": "connected"
+    },
+    {
+     "need": "evidence from scroll, recordings and polls",
+     "from": "behaviour-map",
+     "status": "enabler"
+    },
+    {
+     "need": "past wins and fails",
+     "from": "win-loss-ledger",
+     "status": "enabler"
+    }
+   ],
+   "steps": [
+    "List ideas from the team, the idea bank and the evidence",
+    "Drop ideas already logged as a fail",
+    "Score money at stake, evidence, ease and traffic, the same way for everyone",
+    "Check the page has the traffic for a test in 4 weeks or less; if not, send it to 07-18",
+    "Run the top idea and park the rest in rank order"
+   ],
+   "output": "a ranked test list with scores and the reason for each, and one test running",
+   "next": "feeds 07-17 (set up and read the test)",
+   "watch": {
+    "metric": "share of tests that win",
+    "window": "90 days",
+    "source": "win-loss-ledger"
+   },
+   "drives": "profit per visitor",
+   "business": "gross profit",
+   "score": {
+    "money": 4,
+    "satisfaction": 4,
+    "speed": 2,
+    "ease": 4
+   },
+   "ready": 4,
+   "effort": "hours"
+  },
+  {
+   "id": "07-17",
+   "top": "T4",
+   "job": "Before a test starts, set the sample size, the run time in whole weeks and profit per visitor as the main number; after it ends, read it with a daily plot so a 5 day spike is not called a win",
+   "trigger": "at the start and end of every test",
+   "enablers": [
+    "test-reader"
+   ],
+   "inputs": [
+    {
+     "need": "sessions and orders on the tested page",
+     "from": "GA4 and store orders",
+     "status": "connected"
+    },
+    {
+     "need": "product cost per order",
+     "from": "finance shelf (unit economics)",
+     "status": "brain"
+    },
+    {
+     "need": "a test tool or a theme split",
+     "from": "an A/B test app",
+     "status": "buy"
+    },
+    {
+     "need": "promo and holiday dates",
+     "from": "calendar shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "Compute the sample size and weeks needed from weekly traffic, in code",
+    "Check the calendar for sales or holidays inside the window",
+    "Run whole weeks only, and do not peek to stop early",
+    "Read profit per visitor, then conversion and order value, with a daily plot",
+    "Call win, loss or no difference, with the numbers"
+   ],
+   "output": "a test plan before and a 1 page read after, on profit per visitor",
+   "next": "feeds 07-19 (standard or fail note)",
+   "watch": {
+    "metric": "tests stopped before their planned end, count",
+    "window": "90 days",
+    "source": "test-reader"
+   },
+   "drives": "profit per visitor",
+   "business": "gross profit",
+   "score": {
+    "money": 4,
+    "satisfaction": 4,
+    "speed": 2,
+    "ease": 3
+   },
+   "ready": 3,
+   "effort": "hours"
+  },
+  {
+   "id": "07-18",
+   "top": "T4",
+   "job": "When traffic is too low to test, ship the change and read an honest before and after: same weekdays, same traffic mix, 4 weeks each side, with the caveat printed",
+   "trigger": "for each shipped change on a page with too little traffic to test",
+   "enablers": [
+    "test-reader"
+   ],
+   "inputs": [
+    {
+     "need": "sessions, orders and traffic mix by day",
+     "from": "GA4 and store orders",
+     "status": "connected"
+    },
+    {
+     "need": "the change and its date",
+     "from": "store platform activity log",
+     "status": "connected"
+    },
+    {
+     "need": "ad spend by campaign",
+     "from": "Meta Ads",
+     "status": "connected"
+    }
+   ],
+   "steps": [
+    "Record the ship date and what changed",
+    "Wait 4 weeks",
+    "Compare the same weekdays before and after, split by paid and organic",
+    "Flag anything else that moved: a new campaign, a sale, a stock-out",
+    "Write the read with a plain caveat: 'likely helped, not proven'"
+   ],
+   "output": "a before and after read with the caveat, filed with the change",
+   "next": "feeds 07-19 as a soft result",
+   "watch": {
+    "metric": "conversion rate on the changed page, same weekdays",
+    "window": "4 weeks each side",
+    "source": "GA4"
+   },
+   "drives": "profit per visitor",
+   "business": "gross profit",
+   "score": {
+    "money": 3,
+    "satisfaction": 4,
+    "speed": 2,
+    "ease": 5
+   },
+   "ready": 5,
+   "effort": "hours"
+  },
+  {
+   "id": "07-19",
+   "top": "T4",
+   "job": "Promote every page test winner to the page standard (T0) that new pages start from, write a fail note for every loser, and recheck each standard after 90 days and whether its buyers came back",
+   "trigger": "after every test read, and on each recheck date",
+   "enablers": [
+    "win-loss-ledger",
+    "test-reader"
+   ],
+   "inputs": [
+    {
+     "need": "test reads",
+     "from": "test-reader",
+     "status": "enabler"
+    },
+    {
+     "need": "repeat orders of buyers from each version, 60 to 90 days",
+     "from": "store platform",
+     "status": "connected"
+    },
+    {
+     "need": "the page standard list",
+     "from": "history shelf (experiment registry)",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "For a win, write the standard in 1 line with the number and date",
+    "For a loss, write the fail note with why and 'do not rerun unless'",
+    "At 60 days, check whether buyers from the winning version reordered as often",
+    "Add standards to the page brief and the library blocks",
+    "On each recheck date, retest or mark the standard expired"
+   ],
+   "output": "a page standard list with proof and recheck dates, and a fail list",
+   "next": "feeds 07-16 (drop repeat fails), 07-08 (new pages start from T0) and 05-09",
+   "watch": {
+    "metric": "new pages built from the current standard, share",
+    "window": "90 days",
+    "source": "page-library"
+   },
+   "drives": "profit per visitor on new pages",
+   "business": "gross profit",
+   "score": {
+    "money": 4,
+    "satisfaction": 4,
+    "speed": 2,
+    "ease": 4
+   },
+   "ready": 4,
+   "effort": "hours"
+  },
+  {
+   "id": "07-20",
+   "top": "T4",
+   "job": "Rewrite the pack picker so the bigger pack shows its saving in dollars and per unit, preselect the pack most buyers should take, and test it against today's picker",
+   "trigger": "once per product with packs, then when prices change",
+   "enablers": [
+    "test-reader"
+   ],
+   "inputs": [
+    {
+     "need": "orders by pack size and product",
+     "from": "store platform",
+     "status": "connected"
+    },
+    {
+     "need": "margin per pack",
+     "from": "finance shelf (unit economics)",
+     "status": "brain"
+    },
+    {
+     "need": "pack and discount rules",
+     "from": "offers shelf",
+     "status": "brain"
+    },
+    {
+     "need": "theme copy",
+     "from": "store platform",
+     "status": "connected"
+    }
+   ],
+   "steps": [
+    "Compute the share of orders per pack and the margin of each, in code",
+    "Write the saving in dollars and per unit for each pack",
+    "Preselect the pack with the best margin that buyers also pick often",
+    "Test against today's picker for whole weeks",
+    "Read profit per visitor and units per order"
+   ],
+   "output": "a new pack picker in test, with the saving in dollars on every pack",
+   "next": "feeds 07-19 and 04-offers-pricing",
+   "watch": {
+    "metric": "units per order",
+    "window": "28 days",
+    "source": "store orders"
+   },
+   "drives": "gross profit per order",
+   "business": "gross profit",
+   "score": {
+    "money": 5,
+    "satisfaction": 3,
+    "speed": 4,
+    "ease": 4
+   },
+   "ready": 4,
+   "effort": "days"
+  }
+ ],
+ "new_enablers": [
+  {
+   "id": "page-library",
+   "name": "Landing page library",
+   "what": "Every landing page and product page we send paid traffic to, with its goal, audience, awareness level, offer, template, the ads that point to it, sessions, conversion and profit per visitor, and live or retired status. Holds the page blocks the store can build, so a new page is assembled from known parts.",
+   "inputs": [
+    "store pages and templates",
+    "ads with destination URLs and spend",
+    "GA4 sessions and conversions by landing page",
+    "orders with product cost"
+   ],
+   "powers": [
+    "which pages to keep, fix or retire",
+    "a new page for a winning angle in days",
+    "no paid click sent to a sold-out or weak page"
+   ],
+   "screens": [
+    "07-landing-pages-cro",
+    "11-paid-social",
+    "12-google-ads",
+    "09-creative"
+   ],
+   "note": null
+  },
+  {
+   "id": "test-reader",
+   "name": "Test planner and reader",
+   "what": "Scores test ideas on money at stake, evidence and traffic, sets sample size and run time in whole weeks before a test starts, and reads results on profit per visitor with a daily plot for novelty. For low traffic, gives an honest before and after read with the caveat printed.",
+   "inputs": [
+    "sessions and orders per page",
+    "orders with product cost",
+    "a test tool or a theme split",
+    "the marketing calendar"
+   ],
+   "powers": [
+    "tests the traffic can power",
+    "no win called after 5 days",
+    "wins judged on profit, not conversion alone"
+   ],
+   "screens": [
+    "04-offers-pricing",
+    "07-landing-pages-cro",
+    "11-paid-social",
+    "14-email-messaging",
+    "25-experiments",
+    "26-reports"
+   ],
+   "note": null
+  }
+ ]
+}

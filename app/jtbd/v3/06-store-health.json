@@ -1,0 +1,1166 @@
+{
+  "screen": "06-store-health",
+  "title": "Store health",
+  "top_jobs": [
+    {
+      "id": "T1",
+      "job": "When the store or checkout stops taking orders at night, on a weekend or on one payment method, help me know within minutes and where it broke, so I stop paying for ads that send shoppers who cannot buy",
+      "metric": "minutes from checkout breaking to someone being told, per incident",
+      "from_v2": [
+        1,
+        2,
+        4,
+        20,
+        26
+      ]
+    },
+    {
+      "id": "T2",
+      "job": "When a developer, an agency or I change the theme, add an app or edit a setting, help me make the change on a copy, walk the buying flow and check the numbers the next morning, so I never lose a week of sales to one change",
+      "metric": "days a break stays live before it is found, per incident",
+      "from_v2": [
+        3,
+        30,
+        31
+      ]
+    },
+    {
+      "id": "T3",
+      "job": "When app bills stack up and old app code stays in the theme after the app is gone, help me see which apps earn nothing and what they cost in fees and lost sales, so I cut both",
+      "metric": "monthly app bill, and seconds of load time added by apps on product pages",
+      "from_v2": [
+        25
+      ]
+    },
+    {
+      "id": "T4",
+      "job": "When paid orders stall, stock is wrong or money leaks out after the sale, help me find them before the customer writes in, so I never forget a paid order or lose margin I cannot see",
+      "metric": "paid orders not shipped past the promised ship date, count, daily",
+      "from_v2": [
+        5,
+        9,
+        21,
+        23,
+        24,
+        27,
+        29
+      ]
+    },
+    {
+      "id": "T5",
+      "job": "When a sale, a launch, a new country or a peak day is coming, help me prove the store is ready with real orders and timed checks, so I do not watch it fail on the best day",
+      "metric": "minutes from scheduled promo start to confirmed live, per promo",
+      "from_v2": [
+        6,
+        8,
+        10,
+        18
+      ]
+    }
+  ],
+  "jobs": [
+    {
+      "id": "06-01",
+      "top": "T1",
+      "job": "Run a scripted test shopper through product, cart, discount and checkout every 15 minutes, and alert a named person when a step fails twice in a row",
+      "trigger": "every 15 minutes, always on",
+      "enablers": [
+        "checkout-probe"
+      ],
+      "inputs": [
+        {
+          "need": "store product, cart and checkout pages",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "a hidden test product and a test discount code that zeroes the price",
+          "from": "store admin",
+          "status": "setup"
+        },
+        {
+          "need": "a browser check tool that clicks through checkout from 2 regions",
+          "from": "a checkout monitor service",
+          "status": "buy"
+        },
+        {
+          "need": "who gets the alert at night and on weekends",
+          "from": "decisions and goals shelf (approval rules)",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Write the path: open product, pick a size, add to cart, apply the test code, reach payment",
+        "Run it every 15 minutes from 2 regions on a phone-sized screen",
+        "Alert by text when a step fails twice in a row, naming the step and a screenshot",
+        "Check the alert against orders per hour so one bad run does not wake anyone",
+        "Review false alarms monthly and tune the rule"
+      ],
+      "output": "a live check with an alert that names the broken step, and a monthly false alarm count",
+      "next": "incidents feed 06-07 (was it a change) and 06-02 (revenue lost)",
+      "watch": {
+        "metric": "minutes from checkout breaking to someone being told",
+        "window": "per incident",
+        "source": "checkout-probe log"
+      },
+      "drives": "revenue lost to downtime, 30 days",
+      "business": "revenue",
+      "score": {
+        "money": 5,
+        "satisfaction": 5,
+        "speed": 5,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "06-02",
+      "top": "T1",
+      "job": "Compare orders per hour with the same hour over the last 4 weeks and flag any trading hour with none where 3 or more are normal, with an estimate of sales lost",
+      "trigger": "every hour",
+      "enablers": [
+        "checkout-probe"
+      ],
+      "inputs": [
+        {
+          "need": "orders with timestamps, 8 weeks",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "ad spend by hour",
+          "from": "Meta Ads",
+          "status": "connected"
+        },
+        {
+          "need": "average order value, 30 days",
+          "from": "store platform",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Compute the normal orders for each hour of each weekday from the last 4 weeks",
+        "Flag an hour with 0 orders where the normal is 3 or more, while ads are spending",
+        "Estimate lost sales in code: normal orders minus actual, times average order value",
+        "Send the alert with ad spend running in the same hour",
+        "Log each incident with cause once found"
+      ],
+      "output": "an hourly zero-order alert and a monthly total of sales lost to gaps",
+      "next": "feeds 06-01 tuning and the 00-today morning line",
+      "watch": {
+        "metric": "hours with no orders in normal trading hours",
+        "window": "30 days",
+        "source": "store orders"
+      },
+      "drives": "revenue lost to downtime",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 5,
+        "ease": 5
+      },
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "06-03",
+      "top": "T1",
+      "job": "Check checkout completion by payment method each week (card, Apple Pay, Google Pay, PayPal, Shop Pay, pay later) and place one real order on any method that falls 10 points behind cards",
+      "trigger": "every Monday, and after any checkout or payment app change",
+      "enablers": [
+        "checkout-probe"
+      ],
+      "inputs": [
+        {
+          "need": "checkouts and orders by payment gateway, 7 days",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "a real card and wallet to place and refund test orders",
+          "from": "founder or ops lead",
+          "status": "founder"
+        },
+        {
+          "need": "recent checkout and app changes",
+          "from": "change-log",
+          "status": "enabler"
+        }
+      ],
+      "steps": [
+        "Compute completion rate per method from checkouts started and orders, in code",
+        "Flag any method 10 points or more behind cards",
+        "Place a real order on that method on an iPhone and an Android, then refund it",
+        "Match the fall with the change log to name the likely cause",
+        "Fix or hide the broken method and recheck in 7 days"
+      ],
+      "output": "a weekly table of completion by payment method, with any broken method fixed or hidden",
+      "next": "feeds 06-07 when a change caused it",
+      "watch": {
+        "metric": "checkout completion rate by payment method",
+        "window": "7 days",
+        "source": "store checkouts by gateway"
+      },
+      "drives": "checkout to order rate",
+      "business": "revenue",
+      "score": {
+        "money": 5,
+        "satisfaction": 4,
+        "speed": 5,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "06-04",
+      "top": "T1",
+      "job": "Send a test order through every order, shipping and refund email each week, and a test message through the contact form and chat, and flag any that did not arrive",
+      "trigger": "every Monday, and after any email, helpdesk or domain change",
+      "enablers": [
+        "checkout-probe"
+      ],
+      "inputs": [
+        {
+          "need": "order, shipping and refund notification settings",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "contact form and chat routing",
+          "from": "helpdesk",
+          "status": "connected"
+        },
+        {
+          "need": "a test inbox on Gmail, Outlook and Yahoo",
+          "from": "Google Sheet plus free inboxes",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "Place a test order, mark it shipped, then refund it",
+        "Check each email arrived in the inbox, not spam, with working links and the right logo",
+        "Send a message through the contact form and chat and check it lands in the helpdesk",
+        "Flag any missing or broken message with the step",
+        "Fix and retest the same day"
+      ],
+      "output": "a weekly pass or fail sheet for 6 emails and 2 contact paths",
+      "next": "failures feed 14-17 (sender domain health)",
+      "watch": {
+        "metric": "'where is my order' tickets per 100 orders",
+        "window": "14 days",
+        "source": "helpdesk"
+      },
+      "drives": "support tickets per 100 orders",
+      "business": "customer satisfaction",
+      "score": {
+        "money": 3,
+        "satisfaction": 5,
+        "speed": 4,
+        "ease": 5
+      },
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "06-05",
+      "top": "T1",
+      "job": "Check checkout settings against a short list (guest checkout on, 7 fields or fewer, express wallets first, address autocomplete on, shipping cost shown in the cart) and change the ones that fail",
+      "trigger": "once, then each quarter and after a platform checkout update",
+      "enablers": [
+        "change-log"
+      ],
+      "inputs": [
+        {
+          "need": "checkout settings and field list",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "checkout step drop-off on mobile",
+          "from": "GA4",
+          "status": "connected"
+        },
+        {
+          "need": "checkout ideas with steps",
+          "from": "idea bank ideas/v1 05-SET and 09-CRO",
+          "status": "have"
+        }
+      ],
+      "steps": [
+        "Screenshot each checkout step on a phone",
+        "Tick each item on the list and note what fails",
+        "Pull mobile drop-off per step to see where shoppers quit",
+        "Change one setting at a time and log it in the change log",
+        "Read checkout to order rate 14 days before and after each change"
+      ],
+      "output": "a checkout with guest on, fewer fields and wallets first, and a before and after read for each change",
+      "next": "feeds 07-17 test reads when traffic allows a real test",
+      "watch": {
+        "metric": "checkout to order rate, mobile",
+        "window": "30 days",
+        "source": "store checkouts and orders"
+      },
+      "drives": "orders",
+      "business": "revenue",
+      "score": {
+        "money": 5,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 5
+      },
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "06-06",
+      "top": "T2",
+      "job": "Log every theme edit, app install or removal, setting, price and discount change with who, when and what, from the store's activity feed and a form for outside developers",
+      "trigger": "on every change, always on",
+      "enablers": [
+        "change-log"
+      ],
+      "inputs": [
+        {
+          "need": "store activity feed, app install and uninstall events, theme publish events",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "a 3 field change form for agencies and developers",
+          "from": "Google Form",
+          "status": "setup"
+        },
+        {
+          "need": "who works on the store",
+          "from": "trust and access shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pull the activity feed and app events into one dated list",
+        "Send outside developers the form: what changed, which pages, how to undo it",
+        "Match each change to a person",
+        "Mark changes that touch product pages, cart or checkout as high risk",
+        "Post a daily digest to the founder"
+      ],
+      "output": "one dated change list with owner, pages touched, risk and the way back",
+      "next": "feeds 06-07 (morning after check) and 08-15 (speed budget check)",
+      "watch": {
+        "metric": "changes logged with an owner and a way back, share",
+        "window": "30 days",
+        "source": "change-log"
+      },
+      "drives": "days a break stays live before it is found",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 5
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "06-07",
+      "top": "T2",
+      "job": "The morning after any change, compare add to cart, checkout start, discount use and orders with the 14 day average for that weekday, and name the change if a step fell",
+      "trigger": "every morning after a logged change",
+      "enablers": [
+        "change-log"
+      ],
+      "inputs": [
+        {
+          "need": "the change list",
+          "from": "change-log",
+          "status": "enabler"
+        },
+        {
+          "need": "add to cart and checkout start by page and device",
+          "from": "GA4",
+          "status": "connected"
+        },
+        {
+          "need": "orders and discount code use",
+          "from": "store platform",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Take yesterday's changes from the log",
+        "Compute each step rate against the same weekday average over 14 days, in code",
+        "Flag any step down 15 percent or more on the pages the change touched",
+        "Name the change and the person, with the rollback steps",
+        "Founder or developer rolls back or fixes the same day"
+      ],
+      "output": "a morning note: 'add to cart on product pages fell 22 percent after the upsell app went in, roll back?'",
+      "next": "feeds 06-09 (rollback) and settles blame between ads and site in 11-paid-social",
+      "watch": {
+        "metric": "add to cart rate and checkout start rate, day after change vs 14 day average",
+        "window": "1 day",
+        "source": "GA4 and store orders"
+      },
+      "drives": "days a break stays live",
+      "business": "revenue",
+      "score": {
+        "money": 5,
+        "satisfaction": 4,
+        "speed": 5,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "06-08",
+      "top": "T2",
+      "job": "Duplicate the live theme before every app install or theme edit, make the change on the copy, walk the full buying flow on a phone, and publish only when it passes",
+      "trigger": "before every theme edit or app install",
+      "enablers": [
+        "theme-twin",
+        "change-log"
+      ],
+      "inputs": [
+        {
+          "need": "theme access and the duplicate theme feature",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "a 12 step flow checklist: product, size, add to cart, cart drawer, discount, shipping, checkout, pay, emails",
+          "from": "idea bank ideas/v1 05-SET",
+          "status": "have"
+        },
+        {
+          "need": "an iPhone and a mid-range Android",
+          "from": "team",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "Duplicate the live theme and name it with the date and change",
+        "Make the change on the copy only",
+        "Walk the 12 step flow on the copy on both phones, and run the same speed test on both themes",
+        "Fix anything the copy broke, then publish it",
+        "Keep the old theme for 14 days as the way back"
+      ],
+      "output": "a change that went live only after passing the flow and speed check, with the old theme kept for rollback",
+      "next": "speed results feed 08-12; publishes feed 06-06 change log",
+      "watch": {
+        "metric": "changes that broke cart, discount or checkout after publish, count",
+        "window": "30 days",
+        "source": "change-log"
+      },
+      "drives": "days a break stays live",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 5,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "06-09",
+      "top": "T2",
+      "job": "Keep a nightly backup of the theme, products, collections and settings, and practise a rollback to yesterday once a quarter",
+      "trigger": "nightly, and a quarterly drill",
+      "enablers": [
+        "theme-twin",
+        "change-log"
+      ],
+      "inputs": [
+        {
+          "need": "theme, product, collection and settings data",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "a backup app that restores products and themes",
+          "from": "a store backup app",
+          "status": "buy"
+        },
+        {
+          "need": "who may run a restore",
+          "from": "decisions and goals shelf (approval rules)",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Install the backup app and check it covers products, images, metafields, theme and pages",
+        "Confirm the nightly backup ran each morning",
+        "Once a quarter, restore one product and one theme file on a copy and time it",
+        "Write the 5 step restore guide and store it with the change log"
+      ],
+      "output": "nightly backups, a tested restore time in minutes, and a written guide",
+      "next": "used by 06-07 when a change must be undone",
+      "watch": {
+        "metric": "minutes to restore after a bad import or wipe",
+        "window": "per incident",
+        "source": "backup app log"
+      },
+      "drives": "days lost to a bad import or click",
+      "business": "risk",
+      "score": {
+        "money": 3,
+        "satisfaction": 5,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "06-10",
+      "top": "T3",
+      "job": "List every installed app with its monthly bill, when it was last used, which pages load its script, and the orders it touched in 90 days, and mark keep, replace or remove",
+      "trigger": "once at onboarding, then each quarter",
+      "enablers": [
+        "app-audit"
+      ],
+      "inputs": [
+        {
+          "need": "installed apps and app charges",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "scripts and app embeds per page",
+          "from": "store platform theme code",
+          "status": "connected"
+        },
+        {
+          "need": "orders or revenue each app reports (upsells, reviews, bundles)",
+          "from": "store platform and app dashboards",
+          "status": "connected"
+        },
+        {
+          "need": "which apps the team still uses",
+          "from": "founder or ops lead",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "Pull the app list with monthly charges",
+        "Map each app to the pages its script loads on",
+        "Pull what each app touched in 90 days: orders, reviews shown, emails sent",
+        "Ask the team which apps they open each week",
+        "Mark keep, replace with a native feature, or remove, and total the monthly saving"
+      ],
+      "output": "an app table: bill, pages, what it touched, and a keep, replace or remove call with the monthly saving",
+      "next": "feeds 06-11 (clean leftover code) and 08-07 (script list)",
+      "watch": {
+        "metric": "monthly app bill",
+        "window": "30 days",
+        "source": "store app charges"
+      },
+      "drives": "operating cost per month and product page speed",
+      "business": "gross profit",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 5
+      },
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "06-11",
+      "top": "T3",
+      "job": "Search the theme for code left by apps that were removed, delete it on a theme copy, walk the buying flow, and measure the speed and sales before and after",
+      "trigger": "after each app removal, and once as a sweep at onboarding",
+      "enablers": [
+        "app-audit",
+        "theme-twin"
+      ],
+      "inputs": [
+        {
+          "need": "apps removed in the last 2 years, from billing history",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "theme code",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "page speed on mobile before and after",
+          "from": "PageSpeed Insights API",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "List every app ever billed but no longer installed",
+        "Search the theme for their names, script domains and snippet files",
+        "Delete the leftovers on a theme copy",
+        "Walk the buying flow on the copy and run the same speed test on both themes",
+        "Publish if it passes and log seconds saved"
+      ],
+      "output": "a clean theme with leftover app code removed, and seconds saved per page type",
+      "next": "feeds 06-12 (dollars per app) and 08-09",
+      "watch": {
+        "metric": "mobile load time on product pages",
+        "window": "7 days lab, 28 days field",
+        "source": "PageSpeed Insights and Chrome field data"
+      },
+      "drives": "conversion rate on product pages",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "06-12",
+      "top": "T3",
+      "job": "Put a dollar figure on each app: its bill plus the sales lost to the load time it adds, using our own conversion rate by page load time",
+      "trigger": "each quarter, and before any new app is approved",
+      "enablers": [
+        "app-audit"
+      ],
+      "inputs": [
+        {
+          "need": "sessions with page load time and orders",
+          "from": "GA4 with a load time event",
+          "status": "setup"
+        },
+        {
+          "need": "load time with and without each app on a theme copy",
+          "from": "theme-twin",
+          "status": "enabler"
+        },
+        {
+          "need": "app bills",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "average order value and sessions per page",
+          "from": "store platform and GA4",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Bucket sessions by load time and compute conversion per bucket, in code",
+        "Measure each app's added seconds with a with and without test on a theme copy",
+        "Estimate lost sales per month: sessions times the conversion drop for those seconds times average order value",
+        "Add the monthly bill",
+        "Rank apps by total cost and show it next to the sales each app claims"
+      ],
+      "output": "a ranked table: app, bill, seconds added, estimated sales lost per month, and sales it claims",
+      "next": "feeds 08-08 speed revenue model and the 21-finance-cash app line",
+      "watch": {
+        "metric": "monthly cost of apps, bill plus estimated lost sales",
+        "window": "quarterly",
+        "source": "app-audit"
+      },
+      "drives": "apps kept only where they earn more than they cost",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "06-13",
+      "top": "T4",
+      "job": "List every paid order past its promised ship date each morning, with the reason: payment pending, fraud hold, address problem, failed warehouse sync or out of stock",
+      "trigger": "every morning",
+      "enablers": [
+        "order-watch"
+      ],
+      "inputs": [
+        {
+          "need": "orders with payment, fulfilment status and tags",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "promised ship days per product and market",
+          "from": "operations shelf",
+          "status": "brain"
+        },
+        {
+          "need": "warehouse shipment confirmations",
+          "from": "warehouse or 3PL feed",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "Pull paid orders not fulfilled",
+        "Compare each with its promised ship date",
+        "Tag the reason from status, tags and the warehouse feed",
+        "Hide known preorders so the list stays real",
+        "Send the list to ops with the oldest first, and to support for a heads-up email"
+      ],
+      "output": "a morning list of late paid orders with reason and age",
+      "next": "feeds 15-customers-cx heads-up emails to delayed buyers",
+      "watch": {
+        "metric": "paid orders not shipped past the promised ship date, count",
+        "window": "daily",
+        "source": "store orders and fulfilments"
+      },
+      "drives": "on time ship rate",
+      "business": "customer satisfaction",
+      "score": {
+        "money": 4,
+        "satisfaction": 5,
+        "speed": 5,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "06-14",
+      "top": "T4",
+      "job": "Compare store stock with warehouse stock per SKU every day and stop selling any SKU where the store shows more than the warehouse holds",
+      "trigger": "daily",
+      "enablers": [
+        "order-watch"
+      ],
+      "inputs": [
+        {
+          "need": "inventory per SKU",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "stock on hand per SKU",
+          "from": "warehouse or 3PL feed",
+          "status": "setup"
+        },
+        {
+          "need": "SKUs allowed to sell on backorder",
+          "from": "operations shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pull both stock counts per SKU",
+        "Flag SKUs where the store count is higher than the warehouse count",
+        "Skip SKUs allowed on backorder",
+        "Set the store count to the warehouse count or pause the SKU, with ops approval",
+        "Count orders cancelled for no stock each month"
+      ],
+      "output": "a daily stock gap list and a monthly count of orders cancelled for no stock",
+      "next": "feeds 19-supply-inventory reorder alerts",
+      "watch": {
+        "metric": "orders cancelled for no stock, count",
+        "window": "30 days",
+        "source": "store orders"
+      },
+      "drives": "review rating and refunds",
+      "business": "customer satisfaction",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 5,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "06-15",
+      "top": "T4",
+      "job": "Put the three legs of reversed orders side by side each month (returns, return to origin where cash on delivery exists, chargebacks) with cost per leg and the top 3 causes each",
+      "trigger": "on the 1st of each month",
+      "enablers": [
+        "order-watch",
+        "margin-view"
+      ],
+      "inputs": [
+        {
+          "need": "refunds and returns with reasons",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "chargebacks and disputes",
+          "from": "store platform payments",
+          "status": "connected"
+        },
+        {
+          "need": "return reasons from the returns app",
+          "from": "returns app",
+          "status": "setup"
+        },
+        {
+          "need": "what a return or failed delivery really costs",
+          "from": "founder interview question 7",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "Count each leg and its value, computed in code; return to origin reads unavailable for US stores",
+        "Cost each leg: shipping both ways, restocking, write-offs, fees",
+        "List the top 3 causes per leg",
+        "Name the leg that cost most this month",
+        "Hand the top cause to its owner: product, CX, fraud or delivery"
+      ],
+      "output": "a one page table: 3 legs, count, value, cost, top causes, owner",
+      "next": "fit causes feed 07-13 (fit finder) and 14-03 (fit email before delivery)",
+      "watch": {
+        "metric": "cost of reversed orders, share of revenue",
+        "window": "30 days",
+        "source": "store refunds and disputes"
+      },
+      "drives": "gross profit per order",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "06-16",
+      "top": "T4",
+      "job": "Hold orders that look like card testing or fraud before they ship, and answer the chargebacks we can win with proof of delivery within the deadline",
+      "trigger": "daily for holds, and within 5 days of each chargeback",
+      "enablers": [
+        "order-watch"
+      ],
+      "inputs": [
+        {
+          "need": "orders with fraud risk flags, IP, address and payment attempts",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "chargebacks with reason and deadline",
+          "from": "store platform payments",
+          "status": "connected"
+        },
+        {
+          "need": "tracking and proof of delivery",
+          "from": "shipping app or carrier",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "Flag bursts of small orders, many declines on one session, and billing and shipping far apart",
+        "Hold flagged orders and have ops approve or cancel within 24 hours",
+        "For each chargeback, pull tracking, delivery proof and the customer's messages",
+        "Answer the winnable ones before the deadline and log win or loss",
+        "Count chargebacks from confusion, like an unclear billing name, and fix the cause"
+      ],
+      "output": "a daily hold list and a chargeback file per case, with a win rate per month",
+      "next": "confusion causes feed 15-customers-cx",
+      "watch": {
+        "metric": "chargeback rate, share of orders",
+        "window": "30 days",
+        "source": "store platform payments"
+      },
+      "drives": "payouts held and fees paid",
+      "business": "risk",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "06-17",
+      "top": "T4",
+      "job": "Find products live without a cost, weight or SKU, and the shipping zones and weights where what the shopper pays is below the label cost",
+      "trigger": "weekly, and after any catalog import",
+      "enablers": [
+        "order-watch",
+        "margin-view"
+      ],
+      "inputs": [
+        {
+          "need": "products with cost, weight and SKU fields",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "shipping charged per order",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "label cost per shipment",
+          "from": "shipping app",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "List live products missing cost, weight or SKU",
+        "Send the list to the catalog owner to fill",
+        "Match shipping charged with label cost per order",
+        "Group the loss by zone and weight band, computed in code",
+        "Propose a rate change or a free shipping threshold for the worst 3 bands"
+      ],
+      "output": "a list of products to fix and a table of zones and weights that lose money on shipping",
+      "next": "feeds 04-offers-pricing (free shipping threshold) and 21-finance-cash",
+      "watch": {
+        "metric": "shipping loss per order",
+        "window": "30 days",
+        "source": "store orders and shipping app"
+      },
+      "drives": "gross profit per order and trusted margin reports",
+      "business": "gross profit",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "06-18",
+      "top": "T5",
+      "job": "Check at the minute a sale starts and ends that prices, codes, banners and scheduled emails changed as planned, and message the founder 'live' or what is not",
+      "trigger": "at each scheduled promo start and end",
+      "enablers": [
+        "checkout-probe"
+      ],
+      "inputs": [
+        {
+          "need": "scheduled discounts and price changes",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "the promo plan: products, prices, codes, banner text, start and end",
+          "from": "offers shelf",
+          "status": "brain"
+        },
+        {
+          "need": "scheduled campaign sends",
+          "from": "email platform",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "Read the plan and list every thing that should change",
+        "At start plus 5 minutes, open each product, apply each code and read each banner",
+        "Check the scheduled email went and links land on the sale",
+        "Message the founder 'live' or name what is not",
+        "Repeat at the end and confirm the sale is gone everywhere"
+      ],
+      "output": "a live or not-live message at start and end, with each item ticked",
+      "next": "failures feed 06-06 (log the cause) and 05-16 (sweep ended offers)",
+      "watch": {
+        "metric": "minutes from scheduled promo start to confirmed live",
+        "window": "per promo",
+        "source": "checkout-probe"
+      },
+      "drives": "promo day revenue against plan",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 5,
+        "speed": 5,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "06-19",
+      "top": "T5",
+      "job": "Two weeks before Black Friday or a drop, run a readiness list: freeze theme changes, test every discount stack, check the plan and app limits for 10 times traffic, confirm stock and carrier cutoffs, name who is on call",
+      "trigger": "2 weeks before each peak or drop",
+      "enablers": [
+        "checkout-probe",
+        "theme-twin",
+        "change-log"
+      ],
+      "inputs": [
+        {
+          "need": "peak dates and what went wrong last year",
+          "from": "calendar shelf",
+          "status": "brain"
+        },
+        {
+          "need": "discount codes and automatic discounts",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "stock per SKU and carrier cutoff dates",
+          "from": "store platform and shipping app",
+          "status": "setup"
+        },
+        {
+          "need": "team on call",
+          "from": "founder",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "Freeze theme and app changes from 7 days out, logged in the change log",
+        "Test every discount combination shoppers could stack",
+        "Check host and app limits for 10 times normal orders per hour",
+        "Confirm stock cover for the top 20 SKUs and the last ship date",
+        "Name who is on call each hour of the peak and share the rollback steps"
+      ],
+      "output": "a signed readiness list with each item passed or fixed, and an on-call rota",
+      "next": "feeds 08-16 (peak speed test) and 14 peak send plan",
+      "watch": {
+        "metric": "checkout errors and zero-order hours during the peak",
+        "window": "peak days",
+        "source": "checkout-probe and store orders"
+      },
+      "drives": "peak revenue against plan",
+      "business": "revenue",
+      "score": {
+        "money": 5,
+        "satisfaction": 5,
+        "speed": 3,
+        "ease": 3
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "06-20",
+      "top": "T5",
+      "job": "Before a launch, relaunch or new country, place real orders end to end per market (price, tax, shipping, payment, emails, refund) and fix every step that fails",
+      "trigger": "before each launch or new market",
+      "enablers": [
+        "checkout-probe"
+      ],
+      "inputs": [
+        {
+          "need": "market settings per country",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "per-market facts: currency, tax line, shipping promise, payment methods",
+          "from": "market shelf",
+          "status": "brain"
+        },
+        {
+          "need": "a real card and a local address per market",
+          "from": "founder or ops lead",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "List each market and the payment methods shown there",
+        "Place a real order per market and per main payment method",
+        "Check price, tax, shipping cost, delivery promise and emails against the market shelf",
+        "Refund each order and check the refund email",
+        "Fix failures and rerun until all pass"
+      ],
+      "output": "a pass sheet per market and payment method, signed before ads go live",
+      "next": "none",
+      "watch": {
+        "metric": "failed or abandoned first orders in the new market",
+        "window": "first 14 days",
+        "source": "store checkouts"
+      },
+      "drives": "revenue from the new market",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 5,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    }
+  ],
+  "new_enablers": [
+    {
+      "id": "checkout-probe",
+      "name": "Checkout probe",
+      "what": "A scripted shopper that runs the buying path (product, cart, discount, checkout, payment) on a schedule, plus an orders-per-hour watch against the normal level for that hour, plus a check that order, shipping and refund emails and the contact form arrive. Alerts a named person when a step fails twice.",
+      "inputs": [
+        "store platform orders and checkouts",
+        "a test product and a test discount code",
+        "a browser check tool",
+        "an alert channel and an on-call name"
+      ],
+      "powers": [
+        "minutes-not-hours alerts on broken checkout",
+        "completion by payment method",
+        "promo start and end checks",
+        "launch and new market test orders"
+      ],
+      "screens": [
+        "06-store-health",
+        "08-site-speed",
+        "07-landing-pages-cro",
+        "00-today"
+      ],
+      "note": null
+    },
+    {
+      "id": "change-log",
+      "name": "Store change log",
+      "what": "Records every theme edit, app install or removal, setting, price and discount change with who, when and what, from the store's activity feed plus a short form for agencies and developers. The morning after each change it compares add to cart, checkout start, discount use and orders with the 14 day average and names the change if a step fell.",
+      "inputs": [
+        "store platform activity and app install events",
+        "a change form for outside developers",
+        "GA4 funnel and store orders"
+      ],
+      "powers": [
+        "the break found the next morning, not after a week",
+        "facts to settle 'is it the ads or the site'",
+        "a rollback point for every change"
+      ],
+      "screens": [
+        "06-store-health",
+        "08-site-speed",
+        "07-landing-pages-cro",
+        "22-measurement"
+      ],
+      "note": null
+    },
+    {
+      "id": "order-watch",
+      "name": "Order and money leak watch",
+      "what": "Lists paid orders past their ship date with the reason, stock gaps between store and warehouse, products missing cost, weight or SKU, shipping charged below label cost, fraud patterns, and the three legs of reversed orders (returns, return to origin, chargebacks) with cost per leg.",
+      "inputs": [
+        "store orders, fulfilments, refunds and disputes",
+        "warehouse or 3PL stock and shipment feed",
+        "label costs from the shipping app",
+        "cost per return from the founder"
+      ],
+      "powers": [
+        "no forgotten paid order",
+        "no overselling",
+        "which reversed-order leg costs most",
+        "shipping zones that lose money"
+      ],
+      "screens": [
+        "06-store-health",
+        "19-supply-inventory",
+        "21-finance-cash",
+        "15-customers-cx"
+      ],
+      "note": null
+    }
+  ]
+}

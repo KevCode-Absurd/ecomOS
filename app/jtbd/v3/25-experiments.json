@@ -1,1151 +1,1128 @@
 {
-  "screen": "25-experiments",
-  "title": "Experiments and memory",
-  "top_jobs": [
+ "screen": "25-experiments",
+ "title": "Experiments and memory",
+ "top_jobs": [
+  {
+   "id": "T1",
+   "job": "When a test passes its end date or wins, help me make the call on the rule we set and get the winner live for every shopper, so I stop paying for the losing version and bank the win",
+   "metric": "days from each test's planned read date to a recorded result, and share of winners live on 100 percent of traffic within 14 days",
+   "from_v2": [
+    1,
+    2,
+    3,
+    9,
+    16,
+    29,
+    34
+   ]
+  },
+  {
+   "id": "T2",
+   "job": "When someone proposes an idea or a new marketer starts, help me see what this store already tried, what won, what failed and why, so we never pay for the same answer twice",
+   "metric": "tests launched that repeat a past idea with no new reason written, per quarter",
+   "from_v2": [
+    4,
+    13,
+    21,
+    25,
+    28,
+    31,
+    32,
+    35
+   ]
+  },
+  {
+   "id": "T3",
+   "job": "When a test is about to go live, help me write the win rule, the orders it needs and the read date, and check the setup, so the result cannot be spun or spoiled",
+   "metric": "share of tests launched with metric, read date, stop rule and scale rule on file",
+   "from_v2": [
+    6,
+    20,
+    24,
+    26,
+    27,
+    30,
+    33
+   ]
+  },
+  {
+   "id": "T4",
+   "job": "When the queue has 20 ideas and room for 2, help me pick the ones aimed at the biggest profit leak and judge every result on profit per visitor, so our few test slots go where the money is",
+   "metric": "share of tests launched from the top 5 of the ranked list, per quarter",
+   "from_v2": [
+    7,
+    8,
+    10,
+    12,
+    15,
+    17,
+    23
+   ]
+  }
+ ],
+ "jobs": [
+  {
+   "id": "25-01",
+   "top": "T1",
+   "job": "Every Monday, list tests past their read date with no result, read each against its written rule, and record win, loss, flat or unreadable with the number",
+   "trigger": "every Monday",
+   "enablers": [
+    "test-reader",
+    "win-loss-ledger"
+   ],
+   "inputs": [
     {
-      "id": "T1",
-      "job": "When a test passes its end date or wins, help me make the call on the rule we set and get the winner live for every shopper, so I stop paying for the losing version and bank the win",
-      "metric": "days from each test's planned read date to a recorded result, and share of winners live on 100 percent of traffic within 14 days",
-      "from_v2": [
-        1,
-        2,
-        3,
-        9,
-        16,
-        29,
-        34
-      ]
+     "need": "running tests with read date and rule",
+     "from": "test-card",
+     "status": "enabler"
     },
     {
-      "id": "T2",
-      "job": "When someone proposes an idea or a new marketer starts, help me see what this store already tried, what won, what failed and why, so we never pay for the same answer twice",
-      "metric": "tests launched that repeat a past idea with no new reason written, per quarter",
-      "from_v2": [
-        4,
-        13,
-        21,
-        25,
-        28,
-        31,
-        32,
-        35
-      ]
+     "need": "orders, revenue and sessions per version",
+     "from": "store platform and GA4",
+     "status": "connected"
     },
     {
-      "id": "T3",
-      "job": "When a test is about to go live, help me write the win rule, the orders it needs and the read date, and check the setup, so the result cannot be spun or spoiled",
-      "metric": "share of tests launched with metric, read date, stop rule and scale rule on file",
-      "from_v2": [
-        6,
-        20,
-        24,
-        26,
-        27,
-        30,
-        33
-      ]
+     "need": "ad test results per version",
+     "from": "Meta Ads",
+     "status": "connected"
     },
     {
-      "id": "T4",
-      "job": "When the queue has 20 ideas and room for 2, help me pick the ones aimed at the biggest profit leak and judge every result on profit per visitor, so our few test slots go where the money is",
-      "metric": "share of tests launched from the top 5 of the ranked list, per quarter",
-      "from_v2": [
-        7,
-        8,
-        10,
-        12,
-        15,
-        17,
-        23
-      ]
+     "need": "product cost, shipping and discounts",
+     "from": "finance shelf",
+     "status": "brain"
     }
-  ],
-  "jobs": [
+   ],
+   "steps": [
+    "List every test whose read date has passed and has no result",
+    "Pull each version's visitors, orders, gross profit and guardrail metric",
+    "Compare with the rule written before launch",
+    "Mark win, loss, flat or unreadable, naming the missing field if unreadable",
+    "Founder confirms each call in the Monday meeting",
+    "Stop the losing version the same day"
+   ],
+   "output": "a Monday read list: each test with the call, the number and the rule it was judged on",
+   "next": "feeds 25-02 (promote wins), 25-03 (fail notes) and 26-05 (tests in the weekly pack)",
+   "watch": {
+    "metric": "days from each test's planned read date to a recorded result",
+    "window": "trailing 90 days",
+    "source": "test registry"
+   },
+   "drives": "money spent on losing versions",
+   "business": "gross profit",
+   "score": {
+    "money": 4,
+    "satisfaction": 4,
+    "speed": 4,
+    "ease": 4
+   },
+   "ready": 4,
+   "effort": "hours"
+  },
+  {
+   "id": "25-02",
+   "top": "T1",
+   "job": "Promote each win to the T0 standard: write the rule it proves (for example 'first frame shows the product in use'), the proof, where it applies, and a recheck date 90 days out",
+   "trigger": "the day a test is called a win",
+   "enablers": [
+    "win-loss-ledger",
+    "principle-matcher"
+   ],
+   "inputs": [
     {
-      "id": "25-01",
-      "top": "T1",
-      "job": "Every Monday, list tests past their read date with no result, read each against its written rule, and record win, loss, flat or unreadable with the number",
-      "trigger": "every Monday",
-      "enablers": [
-        "test-reader",
-        "win-loss-ledger"
-      ],
-      "inputs": [
-        {
-          "need": "running tests with read date and rule",
-          "from": "test-card",
-          "status": "enabler"
-        },
-        {
-          "need": "orders, revenue and sessions per version",
-          "from": "store platform and GA4",
-          "status": "connected"
-        },
-        {
-          "need": "ad test results per version",
-          "from": "Meta Ads",
-          "status": "connected"
-        },
-        {
-          "need": "product cost, shipping and discounts",
-          "from": "finance shelf",
-          "status": "brain"
-        }
-      ],
-      "steps": [
-        "List every test whose read date has passed and has no result",
-        "Pull each version's visitors, orders, gross profit and guardrail metric",
-        "Compare with the rule written before launch",
-        "Mark win, loss, flat or unreadable, naming the missing field if unreadable",
-        "Founder confirms each call in the Monday meeting",
-        "Stop the losing version the same day"
-      ],
-      "output": "a Monday read list: each test with the call, the number and the rule it was judged on",
-      "next": "feeds 25-02 (promote wins), 25-03 (fail notes) and 26-05 (tests in the weekly pack)",
-      "watch": {
-        "metric": "days from each test's planned read date to a recorded result",
-        "window": "trailing 90 days",
-        "source": "test registry"
-      },
-      "drives": "money spent on losing versions",
-      "business": "gross profit",
-      "score": {
-        "money": 4,
-        "satisfaction": 4,
-        "speed": 4,
-        "ease": 4
-      },
-      "ready": 4,
-      "effort": "hours"
+     "need": "the called win with numbers",
+     "from": "test-reader",
+     "status": "enabler"
     },
     {
-      "id": "25-02",
-      "top": "T1",
-      "job": "Promote each win to the T0 standard: write the rule it proves (for example 'first frame shows the product in use'), the proof, where it applies, and a recheck date 90 days out",
-      "trigger": "the day a test is called a win",
-      "enablers": [
-        "win-loss-ledger",
-        "principle-matcher"
-      ],
-      "inputs": [
-        {
-          "need": "the called win with numbers",
-          "from": "test-reader",
-          "status": "enabler"
-        },
-        {
-          "need": "the ad or page tags that changed",
-          "from": "creative-tags",
-          "status": "enabler"
-        },
-        {
-          "need": "current T0 standards",
-          "from": "history shelf",
-          "status": "brain"
-        }
-      ],
-      "steps": [
-        "Name the one change that won in plain words",
-        "Write it as a standard all new work starts from, with the proof and the scope (product, channel, awareness level)",
-        "Match it to the principle it followed from the idea bank",
-        "Set the recheck date and the number that would retire it",
-        "Send the new standard to the brief builders on creative, copy and landing pages"
-      ],
-      "output": "a T0 standard: rule, proof, scope, principle and recheck date",
-      "next": "feeds 09 (creative briefs), 10 (copy) and 07 (landing pages); rechecked in 25-11",
-      "watch": {
-        "metric": "share of wins turned into a written standard within 7 days",
-        "window": "monthly",
-        "source": "win and loss ledger"
-      },
-      "drives": "win rate of new work built on standards",
-      "business": "gross profit",
-      "score": {
-        "money": 4,
-        "satisfaction": 4,
-        "speed": 3,
-        "ease": 4
-      },
-      "ready": 4,
-      "effort": "hours"
+     "need": "the ad or page tags that changed",
+     "from": "creative-tags",
+     "status": "enabler"
     },
     {
-      "id": "25-03",
-      "top": "T1",
-      "job": "For each loss, write a fail note: what we tried, the number, the likely why, what it rules out, and the date or condition to retest",
-      "trigger": "the day a test is called a loss or flat",
-      "enablers": [
-        "win-loss-ledger",
-        "creative-postmortem"
-      ],
-      "inputs": [
-        {
-          "need": "the called loss with numbers",
-          "from": "test-reader",
-          "status": "enabler"
-        },
-        {
-          "need": "who saw it and where people dropped, for ad losses",
-          "from": "creative-postmortem",
-          "status": "enabler"
-        },
-        {
-          "need": "the test card with the hypothesis",
-          "from": "test-card",
-          "status": "enabler"
-        }
-      ],
-      "steps": [
-        "State the idea and the result in 2 lines",
-        "Name the likely why from the drop-off data, not a guess",
-        "Write what it rules out and what it does not",
-        "Set a retest date or condition, like a new season or a new price",
-        "Tag it so any similar proposal shows this note"
-      ],
-      "output": "a fail note with the why, what it rules out and a retest date",
-      "next": "feeds 25-09 (proposal check) and 25-11 (recheck)",
-      "watch": {
-        "metric": "closed tests with a written lesson",
-        "window": "monthly",
-        "source": "win and loss ledger"
-      },
-      "drives": "repeat tests of failed ideas",
-      "business": "gross profit",
-      "score": {
-        "money": 3,
-        "satisfaction": 3,
-        "speed": 3,
-        "ease": 5
-      },
-      "ready": 4,
-      "effort": "hours"
-    },
-    {
-      "id": "25-04",
-      "top": "T1",
-      "job": "14 days after each call, check the winner is live on 100 percent of traffic, the loser is off, and the win holds on phones as well as desktop",
-      "trigger": "14 days after every called win",
-      "enablers": [
-        "test-reader",
-        "win-loss-ledger"
-      ],
-      "inputs": [
-        {
-          "need": "live page, theme and ad versions",
-          "from": "store platform and Meta Ads",
-          "status": "connected"
-        },
-        {
-          "need": "results by device",
-          "from": "GA4",
-          "status": "connected"
-        },
-        {
-          "need": "the call and the winning version",
-          "from": "win-loss-ledger",
-          "status": "enabler"
-        }
-      ],
-      "steps": [
-        "Check the live page or ad matches the winning version",
-        "Check the test tool is off and the loser is gone",
-        "Split the result by phone and desktop",
-        "If phones lost, open a follow-up test for phones only",
-        "Mark the win shipped with a date"
-      ],
-      "output": "a shipped check per win: live, loser off, phone and desktop result",
-      "next": "feeds 26-20 (what each change moved at month close)",
-      "watch": {
-        "metric": "share of called winners live on 100 percent of traffic within 14 days",
-        "window": "monthly",
-        "source": "test registry"
-      },
-      "drives": "gross profit banked from wins",
-      "business": "gross profit",
-      "score": {
-        "money": 4,
-        "satisfaction": 3,
-        "speed": 4,
-        "ease": 5
-      },
-      "ready": 5,
-      "effort": "hours"
-    },
-    {
-      "id": "25-05",
-      "top": "T1",
-      "job": "Audit every win above 20 percent before rollout: split within 1 point of plan, purchases counted in both versions, no sale in the window, and no bot spike",
-      "trigger": "before rolling out any win above 20 percent",
-      "enablers": [
-        "test-reader",
-        "test-card"
-      ],
-      "inputs": [
-        {
-          "need": "visitors and orders per version",
-          "from": "GA4 and store platform",
-          "status": "connected"
-        },
-        {
-          "need": "sale and holiday dates",
-          "from": "calendar shelf",
-          "status": "brain"
-        },
-        {
-          "need": "sessions by source, country and hour, to spot bot spikes",
-          "from": "GA4",
-          "status": "connected"
-        }
-      ],
-      "steps": [
-        "Check the split ratio against plan",
-        "Check orders per version in GA4 match store orders",
-        "Check the window for sales, launches, emails and bot spikes",
-        "Mark the win clean or suspect",
-        "Rerun suspect wins for 2 more weeks"
-      ],
-      "output": "a clean or suspect mark on every big win, with the reason",
-      "next": "feeds 25-04 (rollout)",
-      "watch": {
-        "metric": "share of wins above 20 percent checked before rollout",
-        "window": "quarterly",
-        "source": "test registry"
-      },
-      "drives": "plans built on real wins",
-      "business": "gross profit",
-      "score": {
-        "money": 3,
-        "satisfaction": 4,
-        "speed": 3,
-        "ease": 4
-      },
-      "ready": 4,
-      "effort": "hours"
-    },
-    {
-      "id": "25-06",
-      "top": "T1",
-      "job": "Read every Meta ad test with the same rules as a site test: spend per version set before launch, cost per new customer as the metric, and a 7 day read",
-      "trigger": "at launch and at the read date of every ad test",
-      "enablers": [
-        "test-reader",
-        "creative-archive",
-        "test-card"
-      ],
-      "inputs": [
-        {
-          "need": "ad results per version: spend, purchases, new customers, age, gender, placement",
-          "from": "Meta Ads",
-          "status": "connected"
-        },
-        {
-          "need": "new versus returning buyers from the store",
-          "from": "store platform orders",
-          "status": "connected"
-        },
-        {
-          "need": "the ad test card",
-          "from": "test-card",
-          "status": "enabler"
-        }
-      ],
-      "steps": [
-        "Write the card before launch: versions, spend each, metric, read date",
-        "At the read, pull spend and results per version",
-        "Judge on cost per new customer, not clicks or platform ROAS alone",
-        "Check the top segment per version from the age, gender and placement split",
-        "Record the call in the ledger"
-      ],
-      "output": "an ad test read with the call, the segment where it won, and the ledger entry",
-      "next": "feeds 25-02 (promote win) and 09 (creative variants)",
-      "watch": {
-        "metric": "share of ad tests read against a rule set before launch",
-        "window": "monthly",
-        "source": "test registry"
-      },
-      "drives": "cost per new customer",
-      "business": "gross profit",
-      "score": {
-        "money": 4,
-        "satisfaction": 3,
-        "speed": 4,
-        "ease": 4
-      },
-      "ready": 4,
-      "effort": "hours"
-    },
-    {
-      "id": "25-07",
-      "top": "T2",
-      "job": "Load every past test from sheets, Slack and agency decks into one registry with hypothesis, dates, versions, result and lesson, marking missing fields as unknown",
-      "trigger": "once at onboarding, then every closed test adds a row",
-      "enablers": [
-        "win-loss-ledger",
-        "decision-log"
-      ],
-      "inputs": [
-        {
-          "need": "past test notes, sheets and agency decks",
-          "from": "founder and agency files",
-          "status": "founder"
-        },
-        {
-          "need": "ad history with results",
-          "from": "creative-archive",
-          "status": "enabler"
-        },
-        {
-          "need": "experiment registry shelf",
-          "from": "history shelf",
-          "status": "brain"
-        }
-      ],
-      "steps": [
-        "Collect every past test file and deck",
-        "Write one row per test: idea, dates, versions, metric, result, lesson",
-        "Mark unknown fields as unknown, never guessed",
-        "Tag each by area, page, awareness level and idea type",
-        "Founder reads the 10 biggest rows and fixes what is wrong",
-        "Write a 1 page 'what we know' per area for any new marketer"
-      ],
-      "output": "a registry of past tests and a 1 page 'what we know' per area",
-      "next": "feeds 25-09 (proposal check) and 25-10 (principle check)",
-      "watch": {
-        "metric": "areas with a decision history updated in the last 90 days",
-        "window": "quarterly",
-        "source": "test registry"
-      },
-      "drives": "repeat tests avoided",
-      "business": "gross profit",
-      "score": {
-        "money": 3,
-        "satisfaction": 4,
-        "speed": 2,
-        "ease": 3
-      },
-      "ready": 3,
-      "effort": "days"
-    },
-    {
-      "id": "25-08",
-      "top": "T2",
-      "job": "Turn each creative postmortem into a registry entry: the ad, spend, who saw it, where people dropped, the cause and the fix, tagged so the next brief sees it",
-      "trigger": "every time an ad is killed after $200 or more spend",
-      "enablers": [
-        "creative-postmortem",
-        "creative-tags",
-        "win-loss-ledger"
-      ],
-      "inputs": [
-        {
-          "need": "ad spend, reach, age, gender, placement, hook and hold rates",
-          "from": "Meta Ads",
-          "status": "connected"
-        },
-        {
-          "need": "landing page conversion for the ad's traffic",
-          "from": "GA4",
-          "status": "connected"
-        },
-        {
-          "need": "the ad's tags",
-          "from": "creative-tags",
-          "status": "enabler"
-        }
-      ],
-      "steps": [
-        "Pull the ad's numbers and the segments that saw it",
-        "Find the step where people dropped: thumb stop, hold, click, page or cart",
-        "Write the likely cause and the fix",
-        "Relaunch with the fix, or kill it with a note",
-        "File it in the ledger with tags so any brief with the same tags shows it"
-      ],
-      "output": "a postmortem entry per killed ad, with the fix or a kill note, tagged",
-      "next": "feeds 09 (next creative brief) and 25-09 (proposal check)",
-      "watch": {
-        "metric": "killed ads with a postmortem on file",
-        "window": "monthly",
-        "source": "win and loss ledger"
-      },
-      "drives": "spend on repeats of failed creative",
-      "business": "gross profit",
-      "score": {
-        "money": 3,
-        "satisfaction": 3,
-        "speed": 3,
-        "ease": 4
-      },
-      "ready": 4,
-      "effort": "hours"
-    },
-    {
-      "id": "25-09",
-      "top": "T2",
-      "job": "Check every new test proposal against the registry and the idea bank by tags, and show the 3 closest past tests with results before it goes on the queue",
-      "trigger": "whenever anyone proposes a test",
-      "enablers": [
-        "win-loss-ledger",
-        "principle-matcher"
-      ],
-      "inputs": [
-        {
-          "need": "the proposal with tags",
-          "from": "test-card",
-          "status": "enabler"
-        },
-        {
-          "need": "past tests and fail notes",
-          "from": "win-loss-ledger",
-          "status": "enabler"
-        },
-        {
-          "need": "idea bank ideas/v1",
-          "from": "idea bank",
-          "status": "have"
-        }
-      ],
-      "steps": [
-        "Tag the proposal: area, page, lever, awareness level",
-        "Find the 3 closest past tests and the closest idea bank entries",
-        "Show results and fail notes next to the proposal",
-        "Ask for a new reason if it repeats a past loss",
-        "Queue, change or drop it"
-      ],
-      "output": "a proposal card with 3 past tests and a go, change or drop call",
-      "next": "feeds 25-18 (queue ranking)",
-      "watch": {
-        "metric": "tests launched that repeat a past idea with no new reason written",
-        "window": "quarterly",
-        "source": "test registry"
-      },
-      "drives": "test money spent on known answers",
-      "business": "gross profit",
-      "score": {
-        "money": 3,
-        "satisfaction": 3,
-        "speed": 3,
-        "ease": 4
-      },
-      "ready": 4,
-      "effort": "hours"
-    },
-    {
-      "id": "25-10",
-      "top": "T2",
-      "job": "Test the principle behind each ad winner on a second product or format, and mark it 'holds for this brand' or 'does not' after 2 reads",
-      "trigger": "after each win promoted to T0",
-      "enablers": [
-        "principle-matcher",
-        "win-loss-ledger",
-        "format-translator"
-      ],
-      "inputs": [
-        {
-          "need": "the winning ad's principle",
-          "from": "principle-matcher",
-          "status": "enabler"
-        },
-        {
-          "need": "knowledge cards and idea bank",
-          "from": "knowledge cards and ideas/v1",
-          "status": "have"
-        },
-        {
-          "need": "a second product or format to try it on",
-          "from": "products shelf",
-          "status": "brain"
-        }
-      ],
-      "steps": [
-        "Name the principle the winner followed",
-        "Build 1 new ad on a second product or format that keeps the principle",
-        "Run it as an ad test with the same read rules",
-        "Mark the principle holds or does not after 2 reads",
-        "Update the brand's principle list"
-      ],
-      "output": "a list of principles marked proven, not proven or failed for this brand",
-      "next": "feeds 09 (creative) and 10 (copy)",
-      "watch": {
-        "metric": "principles with 2 reads on file",
-        "window": "quarterly",
-        "source": "win and loss ledger"
-      },
-      "drives": "win rate of new concepts",
-      "business": "gross profit",
-      "score": {
-        "money": 4,
-        "satisfaction": 3,
-        "speed": 2,
-        "ease": 3
-      },
-      "ready": 4,
-      "effort": "weeks"
-    },
-    {
-      "id": "25-11",
-      "top": "T2",
-      "job": "Each month, pull T0 standards past their recheck date, check them against the last 90 days of numbers, and keep, retire or retest each",
-      "trigger": "the first Monday of each month, and each quarter for shipped winners",
-      "enablers": [
-        "win-loss-ledger"
-      ],
-      "inputs": [
-        {
-          "need": "standards with recheck date and retire rule",
-          "from": "win-loss-ledger",
-          "status": "enabler"
-        },
-        {
-          "need": "the metric each standard moved, last 90 days",
-          "from": "store platform, GA4 and Meta Ads",
-          "status": "connected"
-        }
-      ],
-      "steps": [
-        "List standards past their recheck date",
-        "Pull the metric each one moved, last 90 days against the proof",
-        "Keep, retire or retest each",
-        "Set the next recheck date",
-        "Tell the screens that use a retired standard"
-      ],
-      "output": "a monthly recheck list: kept, retired, retest, with dates",
-      "next": "feeds 26-20 (month close)",
-      "watch": {
-        "metric": "shipped winners still live and still ahead at 90 days",
-        "window": "quarterly",
-        "source": "win and loss ledger"
-      },
-      "drives": "standards that still earn",
-      "business": "gross profit",
-      "score": {
-        "money": 3,
-        "satisfaction": 3,
-        "speed": 3,
-        "ease": 4
-      },
-      "ready": 4,
-      "effort": "hours"
-    },
-    {
-      "id": "25-12",
-      "top": "T2",
-      "job": "Run the same 20 minute look-back after each launch, replatform, big sale or crisis, with 5 fixed questions, and file the answers",
-      "trigger": "within 7 days after each launch, big sale, replatform or crisis",
-      "enablers": [
-        "decision-log",
-        "work-board"
-      ],
-      "inputs": [
-        {
-          "need": "the plan and what happened",
-          "from": "work-board",
-          "status": "enabler"
-        },
-        {
-          "need": "sales, profit and tickets for the window",
-          "from": "store platform and helpdesk",
-          "status": "connected"
-        },
-        {
-          "need": "people who worked on it",
-          "from": "team list",
-          "status": "founder"
-        }
-      ],
-      "steps": [
-        "Ask: what did we plan, what happened, what went well, what went wrong, what we do next time",
-        "Pull the numbers for the window",
-        "Write 3 changes for next time",
-        "Add the changes to the checklist for the next launch",
-        "File the look-back"
-      ],
-      "output": "a look-back note with 3 changes added to the next launch checklist",
-      "next": "feeds 23-04 (next launch plan)",
-      "watch": {
-        "metric": "big projects closed with a look-back on file",
-        "window": "yearly",
-        "source": "decision log"
-      },
-      "drives": "fewer repeat mistakes at launch",
-      "business": "risk",
-      "score": {
-        "money": 2,
-        "satisfaction": 4,
-        "speed": 2,
-        "ease": 5
-      },
-      "ready": 5,
-      "effort": "hours"
-    },
-    {
-      "id": "25-13",
-      "top": "T2",
-      "job": "Bring parked ideas back when their reason runs out, like stock landing or the busy season ending, with the original note and the numbers since",
-      "trigger": "weekly check of return dates and conditions",
-      "enablers": [
-        "decision-log",
-        "win-loss-ledger"
-      ],
-      "inputs": [
-        {
-          "need": "parked ideas with a return date or condition",
-          "from": "decision-log",
-          "status": "enabler"
-        },
-        {
-          "need": "stock arrivals and season dates",
-          "from": "calendar shelf",
-          "status": "brain"
-        }
-      ],
-      "steps": [
-        "List parked ideas whose date passed or condition is met",
-        "Attach the original note and what changed",
-        "Founder decides: queue, park again with a new date, or drop"
-      ],
-      "output": "a list of returning ideas with a new call each",
-      "next": "feeds 25-18 (queue ranking)",
-      "watch": {
-        "metric": "parked ideas past their return date with no new decision",
-        "window": "monthly",
-        "source": "decision log"
-      },
-      "drives": "good ideas used",
-      "business": "gross profit",
-      "score": {
-        "money": 2,
-        "satisfaction": 3,
-        "speed": 2,
-        "ease": 5
-      },
-      "ready": 4,
-      "effort": "hours"
-    },
-    {
-      "id": "25-14",
-      "top": "T3",
-      "job": "Write a test card before launch: hypothesis, primary metric (gross profit per visitor), guardrail, orders needed per version, read date, stop rule and scale rule, signed by the founder",
-      "trigger": "before every test",
-      "enablers": [
-        "test-card"
-      ],
-      "inputs": [
-        {
-          "need": "the idea and the page, ad or email",
-          "from": "test-card",
-          "status": "enabler"
-        },
-        {
-          "need": "traffic and conversion on the page",
-          "from": "GA4",
-          "status": "connected"
-        },
-        {
-          "need": "approval rules",
-          "from": "decisions and goals shelf",
-          "status": "brain"
-        }
-      ],
-      "steps": [
-        "Write the hypothesis: if we change X, Y moves because Z",
-        "Pick gross profit per visitor as the main metric, and a guardrail like return rate",
-        "Compute orders needed and the read date",
-        "Write the stop rule and the scale rule",
-        "Founder signs; no sign, no launch"
-      ],
-      "output": "a signed test card on file for every test",
-      "next": "feeds 25-01 (Monday read)",
-      "watch": {
-        "metric": "share of tests launched with metric, read date, stop rule and scale rule on file",
-        "window": "quarterly",
-        "source": "test registry"
-      },
-      "drives": "test reads nobody can spin",
-      "business": "gross profit",
-      "score": {
-        "money": 3,
-        "satisfaction": 3,
-        "speed": 3,
-        "ease": 5
-      },
-      "ready": 5,
-      "effort": "hours"
-    },
-    {
-      "id": "25-15",
-      "top": "T3",
-      "job": "Compute the orders and days each test needs from the page's traffic and conversion rate, and turn down any test that cannot finish in 6 weeks, offering a bolder change instead",
-      "trigger": "before every test, and when planning the month",
-      "enablers": [
-        "test-card"
-      ],
-      "inputs": [
-        {
-          "need": "weekly visitors and orders on the page",
-          "from": "GA4",
-          "status": "connected"
-        },
-        {
-          "need": "the smallest lift worth finding",
-          "from": "founder",
-          "status": "founder"
-        }
-      ],
-      "steps": [
-        "Pull weekly visitors and conversion rate for the page",
-        "Compute orders per version for the smallest lift worth finding",
-        "Turn it into days",
-        "If over 6 weeks, suggest a bolder change or a bigger page",
-        "Set how many tests the store can carry this month"
-      ],
-      "output": "a sample size and days per test, and the month's test capacity",
-      "next": "feeds 25-14 (test card) and 25-18 (queue)",
-      "watch": {
-        "metric": "share of tests that reached their planned orders by the read date",
-        "window": "quarterly",
-        "source": "test registry"
-      },
-      "drives": "tests that end in a clear call",
-      "business": "gross profit",
-      "score": {
-        "money": 3,
-        "satisfaction": 3,
-        "speed": 3,
-        "ease": 5
-      },
-      "ready": 5,
-      "effort": "hours"
-    },
-    {
-      "id": "25-16",
-      "top": "T3",
-      "job": "Before launch, check no other test shares the page area, audience or dates, and no sale, holiday or launch falls in the window, then check purchases count in both versions on day 1",
-      "trigger": "before every launch and on day 1",
-      "enablers": [
-        "test-card",
-        "test-reader"
-      ],
-      "inputs": [
-        {
-          "need": "running tests with pages, audiences and dates",
-          "from": "test-card",
-          "status": "enabler"
-        },
-        {
-          "need": "sale, holiday and launch dates",
-          "from": "calendar shelf",
-          "status": "brain"
-        },
-        {
-          "need": "day 1 orders per version",
-          "from": "GA4 and store platform",
-          "status": "connected"
-        }
-      ],
-      "steps": [
-        "List running tests that share the page area or audience",
-        "Check the calendar for sales and launches in the window",
-        "Move the date or mark the read",
-        "On day 1, check orders show in both versions and the split is within 1 point",
-        "Pause and fix if either fails"
-      ],
-      "output": "a launch check passed or failed, with the clash or setup fault named",
-      "next": "feeds 25-01 (Monday read)",
-      "watch": {
-        "metric": "share of tests that passed a launch check",
-        "window": "quarterly",
-        "source": "test registry"
-      },
-      "drives": "test windows lost to broken setups",
-      "business": "risk",
-      "score": {
-        "money": 3,
-        "satisfaction": 3,
-        "speed": 4,
-        "ease": 4
-      },
-      "ready": 4,
-      "effort": "hours"
-    },
-    {
-      "id": "25-17",
-      "top": "T3",
-      "job": "Duplicate the live theme, make the speed or checkout flow change on the copy, walk the checkout on 3 phones, test both, and merge only after the read",
-      "trigger": "for every theme, speed or checkout change",
-      "enablers": [
-        "theme-twin",
-        "test-card"
-      ],
-      "inputs": [
-        {
-          "need": "the live theme and a copy",
-          "from": "store platform",
-          "status": "connected"
-        },
-        {
-          "need": "page speed per template",
-          "from": "site speed data",
-          "status": "connected"
-        },
-        {
-          "need": "3 phones for a checkout walk",
-          "from": "team",
-          "status": "founder"
-        }
-      ],
-      "steps": [
-        "Duplicate the live theme",
-        "Make the change on the copy only",
-        "Test speed on both, and walk checkout on 3 phones",
-        "Split traffic or run a timed switch, with a test card",
-        "Merge the copy only if it wins; log the result either way"
-      ],
-      "output": "a tested theme copy merged or dropped, with the speed and conversion numbers",
-      "next": "feeds 08 (site speed) and 25-02 (promote win)",
-      "watch": {
-        "metric": "conversion rate and revenue per visitor, copy against live",
-        "window": "test window",
-        "source": "GA4"
-      },
-      "drives": "site changes that do not break checkout",
-      "business": "revenue",
-      "score": {
-        "money": 4,
-        "satisfaction": 4,
-        "speed": 3,
-        "ease": 3
-      },
-      "ready": 4,
-      "effort": "days"
-    },
-    {
-      "id": "25-18",
-      "top": "T4",
-      "job": "Rank the test queue each month by money at stake (visitors on the page, times the gap to a benchmark, times margin) and pick the top 2, sending clear defects straight to a fix",
-      "trigger": "the first Monday of each month",
-      "enablers": [
-        "test-card",
-        "win-loss-ledger"
-      ],
-      "inputs": [
-        {
-          "need": "the proposal queue with past-test checks",
-          "from": "test-card",
-          "status": "enabler"
-        },
-        {
-          "need": "visitors and conversion per page",
-          "from": "GA4",
-          "status": "connected"
-        },
-        {
-          "need": "gross margin per product",
-          "from": "finance shelf",
-          "status": "brain"
-        },
-        {
-          "need": "idea bank ideas/v1 filtered by the brand's bottleneck",
-          "from": "idea bank",
-          "status": "have"
-        }
-      ],
-      "steps": [
-        "Score each proposal by money at stake",
-        "Move clear defects like a broken button to a fix card, no test",
-        "Take the top 2 that fit the month's capacity",
-        "Founder approves",
-        "Park the rest with a return date"
-      ],
-      "output": "a ranked queue with 2 picks, a defect fix list, and parked ideas",
-      "next": "feeds 25-14 (test card)",
-      "watch": {
-        "metric": "share of tests launched from the top 5 of the ranked list",
-        "window": "quarterly",
-        "source": "test registry"
-      },
-      "drives": "gross profit per visitor",
-      "business": "gross profit",
-      "score": {
-        "money": 4,
-        "satisfaction": 3,
-        "speed": 3,
-        "ease": 4
-      },
-      "ready": 4,
-      "effort": "hours"
-    },
-    {
-      "id": "25-19",
-      "top": "T4",
-      "job": "Keep a 5 percent held-back group away from popups, win-back discounts and new apps, and compare orders and gross profit per person over 30 and 90 days",
-      "trigger": "set up once, read monthly and before any app renewal",
-      "enablers": [
-        "test-reader"
-      ],
-      "inputs": [
-        {
-          "need": "customers and visitors with a held-back flag",
-          "from": "store platform and email tool",
-          "status": "setup"
-        },
-        {
-          "need": "orders and gross profit per person",
-          "from": "store platform orders",
-          "status": "connected"
-        },
-        {
-          "need": "app and discount costs",
-          "from": "finance shelf",
-          "status": "brain"
-        }
-      ],
-      "steps": [
-        "Pick 5 percent of visitors and subscribers at random and flag them",
-        "Exclude them from popups, discounts and the new app",
-        "Compare orders and gross profit per person after 30 and 90 days",
-        "Keep, cut or change each tactic on the number",
-        "Show the whole program's gain against the held-back group"
-      ],
-      "output": "a held-back read per tactic, and the program's gain in dollars",
-      "next": "feeds 21 (finance, app renewals) and 26-20 (month close)",
-      "watch": {
-        "metric": "orders and gross profit per person, shown the offer against held back",
-        "window": "30 day",
-        "source": "store platform orders"
-      },
-      "drives": "discounts paid to people who would buy anyway",
-      "business": "gross profit",
-      "score": {
-        "money": 4,
-        "satisfaction": 3,
-        "speed": 2,
-        "ease": 3
-      },
-      "ready": 3,
-      "effort": "days"
-    },
-    {
-      "id": "25-20",
-      "top": "T4",
-      "job": "30 days after each win, compare returns, refunds and tickets from each version's buyers, and demote the win if gross profit per visitor flipped",
-      "trigger": "30 days after every called win",
-      "enablers": [
-        "test-reader",
-        "win-loss-ledger",
-        "ticket-clock"
-      ],
-      "inputs": [
-        {
-          "need": "orders per version with returns and refunds",
-          "from": "store platform",
-          "status": "connected"
-        },
-        {
-          "need": "tickets per version's buyers",
-          "from": "helpdesk",
-          "status": "connected"
-        },
-        {
-          "need": "product cost and discounts",
-          "from": "finance shelf",
-          "status": "brain"
-        }
-      ],
-      "steps": [
-        "Pull each version's buyers",
-        "Count returns, refunds and tickets per 100 orders",
-        "Recompute gross profit per visitor after returns",
-        "Keep the win or demote it with a fail note"
-      ],
-      "output": "a 30 day check per win: kept or demoted, with the numbers",
-      "next": "feeds 25-03 (fail note) and 25-11 (recheck)",
-      "watch": {
-        "metric": "return rate and refund rate of each version's buyers",
-        "window": "30 days after the read",
-        "source": "store platform"
-      },
-      "drives": "wins that stay wins after returns",
-      "business": "gross profit",
-      "score": {
-        "money": 3,
-        "satisfaction": 3,
-        "speed": 2,
-        "ease": 4
-      },
-      "ready": 5,
-      "effort": "hours"
+     "need": "current T0 standards",
+     "from": "history shelf",
+     "status": "brain"
     }
-  ],
-  "new_enablers": [
+   ],
+   "steps": [
+    "Name the one change that won in plain words",
+    "Write it as a standard all new work starts from, with the proof and the scope (product, channel, awareness level)",
+    "Match it to the principle it followed from the idea bank",
+    "Set the recheck date and the number that would retire it",
+    "Send the new standard to the brief builders on creative, copy and landing pages"
+   ],
+   "output": "a T0 standard: rule, proof, scope, principle and recheck date",
+   "next": "feeds 09 (creative briefs), 10 (copy) and 07 (landing pages); rechecked in 25-11",
+   "watch": {
+    "metric": "share of wins turned into a written standard within 7 days",
+    "window": "monthly",
+    "source": "win and loss ledger"
+   },
+   "drives": "win rate of new work built on standards",
+   "business": "gross profit",
+   "score": {
+    "money": 4,
+    "satisfaction": 4,
+    "speed": 3,
+    "ease": 4
+   },
+   "ready": 4,
+   "effort": "hours"
+  },
+  {
+   "id": "25-03",
+   "top": "T1",
+   "job": "For each loss, write a fail note: what we tried, the number, the likely why, what it rules out, and the date or condition to retest",
+   "trigger": "the day a test is called a loss or flat",
+   "enablers": [
+    "win-loss-ledger",
+    "creative-postmortem"
+   ],
+   "inputs": [
     {
-      "id": "test-card",
-      "name": "Test card and queue",
-      "what": "A card written before every test: hypothesis, main metric, guardrail, orders needed, read date, stop and scale rules, founder sign-off. Holds the ranked queue, the sample size math and a check for clashes with other tests and the calendar.",
-      "inputs": [
-        "page traffic and conversion",
-        "calendar",
-        "running tests",
-        "idea bank",
-        "approval rules"
-      ],
-      "powers": [
-        "tests nobody can spin",
-        "tests that can finish",
-        "no clashing tests",
-        "queue ranked by money"
-      ],
-      "screens": [
-        "25-experiments",
-        "07-landing-pages-cro",
-        "09-creative",
-        "14-email-messaging"
-      ],
-      "note": null
+     "need": "the called loss with numbers",
+     "from": "test-reader",
+     "status": "enabler"
     },
     {
-      "id": "test-reader",
-      "name": "Test reader",
-      "what": "Reads each version at the read date against its card: gross profit per visitor, guardrails, split check, phone and desktop, and a 30 day returns check. Reads held-back groups for popups, discounts and apps.",
-      "inputs": [
-        "orders per version",
-        "GA4",
-        "ad results",
-        "returns and refunds",
-        "held-back flags"
-      ],
-      "powers": [
-        "clear calls on time",
-        "wins checked for faults",
-        "profit, not conversion, decides"
-      ],
-      "screens": [
-        "25-experiments",
-        "26-reports",
-        "11-paid-social"
-      ],
-      "note": null
+     "need": "who saw it and where people dropped, for ad losses",
+     "from": "creative-postmortem",
+     "status": "enabler"
     },
     {
-      "id": "decision-log",
-      "name": "Decision log",
-      "what": "Every decision with date, owner, why, the number it should move and a review date. Holds parked ideas with a return condition and project look-backs.",
-      "inputs": [
-        "meeting notes",
-        "approval rules",
-        "work board"
-      ],
-      "powers": [
-        "no reopened old debates",
-        "parked ideas come back",
-        "look-backs after every big project"
-      ],
-      "screens": [
-        "25-experiments",
-        "23-team-ops",
-        "26-reports",
-        "05-brand-brain"
-      ],
-      "note": null
+     "need": "the test card with the hypothesis",
+     "from": "test-card",
+     "status": "enabler"
     }
-  ]
+   ],
+   "steps": [
+    "State the idea and the result in 2 lines",
+    "Name the likely why from the drop-off data, not a guess",
+    "Write what it rules out and what it does not",
+    "Set a retest date or condition, like a new season or a new price",
+    "Tag it so any similar proposal shows this note"
+   ],
+   "output": "a fail note with the why, what it rules out and a retest date",
+   "next": "feeds 25-09 (proposal check) and 25-11 (recheck)",
+   "watch": {
+    "metric": "closed tests with a written lesson",
+    "window": "monthly",
+    "source": "win and loss ledger"
+   },
+   "drives": "repeat tests of failed ideas",
+   "business": "gross profit",
+   "score": {
+    "money": 3,
+    "satisfaction": 3,
+    "speed": 3,
+    "ease": 5
+   },
+   "ready": 4,
+   "effort": "hours"
+  },
+  {
+   "id": "25-04",
+   "top": "T1",
+   "job": "14 days after each call, check the winner is live on 100 percent of traffic, the loser is off, and the win holds on phones as well as desktop",
+   "trigger": "14 days after every called win",
+   "enablers": [
+    "test-reader",
+    "win-loss-ledger"
+   ],
+   "inputs": [
+    {
+     "need": "live page, theme and ad versions",
+     "from": "store platform and Meta Ads",
+     "status": "connected"
+    },
+    {
+     "need": "results by device",
+     "from": "GA4",
+     "status": "connected"
+    },
+    {
+     "need": "the call and the winning version",
+     "from": "win-loss-ledger",
+     "status": "enabler"
+    }
+   ],
+   "steps": [
+    "Check the live page or ad matches the winning version",
+    "Check the test tool is off and the loser is gone",
+    "Split the result by phone and desktop",
+    "If phones lost, open a follow-up test for phones only",
+    "Mark the win shipped with a date"
+   ],
+   "output": "a shipped check per win: live, loser off, phone and desktop result",
+   "next": "feeds 26-20 (what each change moved at month close)",
+   "watch": {
+    "metric": "share of called winners live on 100 percent of traffic within 14 days",
+    "window": "monthly",
+    "source": "test registry"
+   },
+   "drives": "gross profit banked from wins",
+   "business": "gross profit",
+   "score": {
+    "money": 4,
+    "satisfaction": 3,
+    "speed": 4,
+    "ease": 5
+   },
+   "ready": 5,
+   "effort": "hours"
+  },
+  {
+   "id": "25-05",
+   "top": "T1",
+   "job": "Audit every win above 20 percent before rollout: split within 1 point of plan, purchases counted in both versions, no sale in the window, and no bot spike",
+   "trigger": "before rolling out any win above 20 percent",
+   "enablers": [
+    "test-reader",
+    "test-card"
+   ],
+   "inputs": [
+    {
+     "need": "visitors and orders per version",
+     "from": "GA4 and store platform",
+     "status": "connected"
+    },
+    {
+     "need": "sale and holiday dates",
+     "from": "calendar shelf",
+     "status": "brain"
+    },
+    {
+     "need": "sessions by source, country and hour, to spot bot spikes",
+     "from": "GA4",
+     "status": "connected"
+    }
+   ],
+   "steps": [
+    "Check the split ratio against plan",
+    "Check orders per version in GA4 match store orders",
+    "Check the window for sales, launches, emails and bot spikes",
+    "Mark the win clean or suspect",
+    "Rerun suspect wins for 2 more weeks"
+   ],
+   "output": "a clean or suspect mark on every big win, with the reason",
+   "next": "feeds 25-04 (rollout)",
+   "watch": {
+    "metric": "share of wins above 20 percent checked before rollout",
+    "window": "quarterly",
+    "source": "test registry"
+   },
+   "drives": "plans built on real wins",
+   "business": "gross profit",
+   "score": {
+    "money": 3,
+    "satisfaction": 4,
+    "speed": 3,
+    "ease": 4
+   },
+   "ready": 4,
+   "effort": "hours"
+  },
+  {
+   "id": "25-06",
+   "top": "T1",
+   "job": "Read every Meta ad test with the same rules as a site test: spend per version set before launch, cost per new customer as the metric, and a 7 day read",
+   "trigger": "at launch and at the read date of every ad test",
+   "enablers": [
+    "test-reader",
+    "creative-archive",
+    "test-card"
+   ],
+   "inputs": [
+    {
+     "need": "ad results per version: spend, purchases, new customers, age, gender, placement",
+     "from": "Meta Ads",
+     "status": "connected"
+    },
+    {
+     "need": "new versus returning buyers from the store",
+     "from": "store platform orders",
+     "status": "connected"
+    },
+    {
+     "need": "the ad test card",
+     "from": "test-card",
+     "status": "enabler"
+    }
+   ],
+   "steps": [
+    "Write the card before launch: versions, spend each, metric, read date",
+    "At the read, pull spend and results per version",
+    "Judge on cost per new customer, not clicks or platform ROAS alone",
+    "Check the top segment per version from the age, gender and placement split",
+    "Record the call in the ledger"
+   ],
+   "output": "an ad test read with the call, the segment where it won, and the ledger entry",
+   "next": "feeds 25-02 (promote win) and 09 (creative variants)",
+   "watch": {
+    "metric": "share of ad tests read against a rule set before launch",
+    "window": "monthly",
+    "source": "test registry"
+   },
+   "drives": "cost per new customer",
+   "business": "gross profit",
+   "score": {
+    "money": 4,
+    "satisfaction": 3,
+    "speed": 4,
+    "ease": 4
+   },
+   "ready": 4,
+   "effort": "hours"
+  },
+  {
+   "id": "25-07",
+   "top": "T2",
+   "job": "Load every past test from sheets, Slack and agency decks into one registry with hypothesis, dates, versions, result and lesson, marking missing fields as unknown",
+   "trigger": "once at onboarding, then every closed test adds a row",
+   "enablers": [
+    "win-loss-ledger",
+    "decision-log"
+   ],
+   "inputs": [
+    {
+     "need": "past test notes, sheets and agency decks",
+     "from": "founder and agency files",
+     "status": "founder"
+    },
+    {
+     "need": "ad history with results",
+     "from": "creative-archive",
+     "status": "enabler"
+    },
+    {
+     "need": "experiment registry shelf",
+     "from": "history shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "Collect every past test file and deck",
+    "Write one row per test: idea, dates, versions, metric, result, lesson",
+    "Mark unknown fields as unknown, never guessed",
+    "Tag each by area, page, awareness level and idea type",
+    "Founder reads the 10 biggest rows and fixes what is wrong",
+    "Write a 1 page 'what we know' per area for any new marketer"
+   ],
+   "output": "a registry of past tests and a 1 page 'what we know' per area",
+   "next": "feeds 25-09 (proposal check) and 25-10 (principle check)",
+   "watch": {
+    "metric": "areas with a decision history updated in the last 90 days",
+    "window": "quarterly",
+    "source": "test registry"
+   },
+   "drives": "repeat tests avoided",
+   "business": "gross profit",
+   "score": {
+    "money": 3,
+    "satisfaction": 4,
+    "speed": 2,
+    "ease": 3
+   },
+   "ready": 3,
+   "effort": "days"
+  },
+  {
+   "id": "25-08",
+   "top": "T2",
+   "job": "Turn each creative postmortem into a registry entry: the ad, spend, who saw it, where people dropped, the cause and the fix, tagged so the next brief sees it",
+   "trigger": "every time an ad is killed after $200 or more spend",
+   "enablers": [
+    "creative-postmortem",
+    "creative-tags",
+    "win-loss-ledger"
+   ],
+   "inputs": [
+    {
+     "need": "ad spend, reach, age, gender, placement, hook and hold rates",
+     "from": "Meta Ads",
+     "status": "connected"
+    },
+    {
+     "need": "landing page conversion for the ad's traffic",
+     "from": "GA4",
+     "status": "connected"
+    },
+    {
+     "need": "the ad's tags",
+     "from": "creative-tags",
+     "status": "enabler"
+    }
+   ],
+   "steps": [
+    "Pull the ad's numbers and the segments that saw it",
+    "Find the step where people dropped: thumb stop, hold, click, page or cart",
+    "Write the likely cause and the fix",
+    "Relaunch with the fix, or kill it with a note",
+    "File it in the ledger with tags so any brief with the same tags shows it"
+   ],
+   "output": "a postmortem entry per killed ad, with the fix or a kill note, tagged",
+   "next": "feeds 09 (next creative brief) and 25-09 (proposal check)",
+   "watch": {
+    "metric": "killed ads with a postmortem on file",
+    "window": "monthly",
+    "source": "win and loss ledger"
+   },
+   "drives": "spend on repeats of failed creative",
+   "business": "gross profit",
+   "score": {
+    "money": 3,
+    "satisfaction": 3,
+    "speed": 3,
+    "ease": 4
+   },
+   "ready": 4,
+   "effort": "hours"
+  },
+  {
+   "id": "25-09",
+   "top": "T2",
+   "job": "Check every new test proposal against the registry and the idea bank by tags, and show the 3 closest past tests with results before it goes on the queue",
+   "trigger": "whenever anyone proposes a test",
+   "enablers": [
+    "win-loss-ledger",
+    "principle-matcher"
+   ],
+   "inputs": [
+    {
+     "need": "the proposal with tags",
+     "from": "test-card",
+     "status": "enabler"
+    },
+    {
+     "need": "past tests and fail notes",
+     "from": "win-loss-ledger",
+     "status": "enabler"
+    },
+    {
+     "need": "idea bank ideas/v1",
+     "from": "idea bank",
+     "status": "have"
+    }
+   ],
+   "steps": [
+    "Tag the proposal: area, page, lever, awareness level",
+    "Find the 3 closest past tests and the closest idea bank entries",
+    "Show results and fail notes next to the proposal",
+    "Ask for a new reason if it repeats a past loss",
+    "Queue, change or drop it"
+   ],
+   "output": "a proposal card with 3 past tests and a go, change or drop call",
+   "next": "feeds 25-18 (queue ranking)",
+   "watch": {
+    "metric": "tests launched that repeat a past idea with no new reason written",
+    "window": "quarterly",
+    "source": "test registry"
+   },
+   "drives": "test money spent on known answers",
+   "business": "gross profit",
+   "score": {
+    "money": 3,
+    "satisfaction": 3,
+    "speed": 3,
+    "ease": 4
+   },
+   "ready": 4,
+   "effort": "hours"
+  },
+  {
+   "id": "25-10",
+   "top": "T2",
+   "job": "Test the principle behind each ad winner on a second product or format, and mark it 'holds for this brand' or 'does not' after 2 reads",
+   "trigger": "after each win promoted to T0",
+   "enablers": [
+    "principle-matcher",
+    "win-loss-ledger",
+    "format-translator"
+   ],
+   "inputs": [
+    {
+     "need": "the winning ad's principle",
+     "from": "principle-matcher",
+     "status": "enabler"
+    },
+    {
+     "need": "knowledge cards and idea bank",
+     "from": "knowledge cards and ideas/v1",
+     "status": "have"
+    },
+    {
+     "need": "a second product or format to try it on",
+     "from": "products shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "Name the principle the winner followed",
+    "Build 1 new ad on a second product or format that keeps the principle",
+    "Run it as an ad test with the same read rules",
+    "Mark the principle holds or does not after 2 reads",
+    "Update the brand's principle list"
+   ],
+   "output": "a list of principles marked proven, not proven or failed for this brand",
+   "next": "feeds 09 (creative) and 10 (copy)",
+   "watch": {
+    "metric": "principles with 2 reads on file",
+    "window": "quarterly",
+    "source": "win and loss ledger"
+   },
+   "drives": "win rate of new concepts",
+   "business": "gross profit",
+   "score": {
+    "money": 4,
+    "satisfaction": 3,
+    "speed": 2,
+    "ease": 3
+   },
+   "ready": 4,
+   "effort": "weeks"
+  },
+  {
+   "id": "25-11",
+   "top": "T2",
+   "job": "Each month, pull T0 standards past their recheck date, check them against the last 90 days of numbers, and keep, retire or retest each",
+   "trigger": "the first Monday of each month, and each quarter for shipped winners",
+   "enablers": [
+    "win-loss-ledger"
+   ],
+   "inputs": [
+    {
+     "need": "standards with recheck date and retire rule",
+     "from": "win-loss-ledger",
+     "status": "enabler"
+    },
+    {
+     "need": "the metric each standard moved, last 90 days",
+     "from": "store platform, GA4 and Meta Ads",
+     "status": "connected"
+    }
+   ],
+   "steps": [
+    "List standards past their recheck date",
+    "Pull the metric each one moved, last 90 days against the proof",
+    "Keep, retire or retest each",
+    "Set the next recheck date",
+    "Tell the screens that use a retired standard"
+   ],
+   "output": "a monthly recheck list: kept, retired, retest, with dates",
+   "next": "feeds 26-20 (month close)",
+   "watch": {
+    "metric": "shipped winners still live and still ahead at 90 days",
+    "window": "quarterly",
+    "source": "win and loss ledger"
+   },
+   "drives": "standards that still earn",
+   "business": "gross profit",
+   "score": {
+    "money": 3,
+    "satisfaction": 3,
+    "speed": 3,
+    "ease": 4
+   },
+   "ready": 4,
+   "effort": "hours"
+  },
+  {
+   "id": "25-12",
+   "top": "T2",
+   "job": "Run the same 20 minute look-back after each launch, replatform, big sale or crisis, with 5 fixed questions, and file the answers",
+   "trigger": "within 7 days after each launch, big sale, replatform or crisis",
+   "enablers": [
+    "decision-log",
+    "work-board"
+   ],
+   "inputs": [
+    {
+     "need": "the plan and what happened",
+     "from": "work-board",
+     "status": "enabler"
+    },
+    {
+     "need": "sales, profit and tickets for the window",
+     "from": "store platform and helpdesk",
+     "status": "connected"
+    },
+    {
+     "need": "people who worked on it",
+     "from": "team list",
+     "status": "founder"
+    }
+   ],
+   "steps": [
+    "Ask: what did we plan, what happened, what went well, what went wrong, what we do next time",
+    "Pull the numbers for the window",
+    "Write 3 changes for next time",
+    "Add the changes to the checklist for the next launch",
+    "File the look-back"
+   ],
+   "output": "a look-back note with 3 changes added to the next launch checklist",
+   "next": "feeds 23-04 (next launch plan)",
+   "watch": {
+    "metric": "big projects closed with a look-back on file",
+    "window": "yearly",
+    "source": "decision log"
+   },
+   "drives": "fewer repeat mistakes at launch",
+   "business": "risk",
+   "score": {
+    "money": 2,
+    "satisfaction": 4,
+    "speed": 2,
+    "ease": 5
+   },
+   "ready": 5,
+   "effort": "hours"
+  },
+  {
+   "id": "25-13",
+   "top": "T2",
+   "job": "Bring parked ideas back when their reason runs out, like stock landing or the busy season ending, with the original note and the numbers since",
+   "trigger": "weekly check of return dates and conditions",
+   "enablers": [
+    "decision-log",
+    "win-loss-ledger"
+   ],
+   "inputs": [
+    {
+     "need": "parked ideas with a return date or condition",
+     "from": "decision-log",
+     "status": "enabler"
+    },
+    {
+     "need": "stock arrivals and season dates",
+     "from": "calendar shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "List parked ideas whose date passed or condition is met",
+    "Attach the original note and what changed",
+    "Founder decides: queue, park again with a new date, or drop"
+   ],
+   "output": "a list of returning ideas with a new call each",
+   "next": "feeds 25-18 (queue ranking)",
+   "watch": {
+    "metric": "parked ideas past their return date with no new decision",
+    "window": "monthly",
+    "source": "decision log"
+   },
+   "drives": "good ideas used",
+   "business": "gross profit",
+   "score": {
+    "money": 2,
+    "satisfaction": 3,
+    "speed": 2,
+    "ease": 5
+   },
+   "ready": 4,
+   "effort": "hours"
+  },
+  {
+   "id": "25-14",
+   "top": "T3",
+   "job": "Write a test card before launch: hypothesis, primary metric (gross profit per visitor), guardrail, orders needed per version, read date, stop rule and scale rule, signed by the founder",
+   "trigger": "before every test",
+   "enablers": [
+    "test-card"
+   ],
+   "inputs": [
+    {
+     "need": "the idea and the page, ad or email",
+     "from": "test-card",
+     "status": "enabler"
+    },
+    {
+     "need": "traffic and conversion on the page",
+     "from": "GA4",
+     "status": "connected"
+    },
+    {
+     "need": "approval rules",
+     "from": "decisions and goals shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "Write the hypothesis: if we change X, Y moves because Z",
+    "Pick gross profit per visitor as the main metric, and a guardrail like return rate",
+    "Compute orders needed and the read date",
+    "Write the stop rule and the scale rule",
+    "Founder signs; no sign, no launch"
+   ],
+   "output": "a signed test card on file for every test",
+   "next": "feeds 25-01 (Monday read)",
+   "watch": {
+    "metric": "share of tests launched with metric, read date, stop rule and scale rule on file",
+    "window": "quarterly",
+    "source": "test registry"
+   },
+   "drives": "test reads nobody can spin",
+   "business": "gross profit",
+   "score": {
+    "money": 3,
+    "satisfaction": 3,
+    "speed": 3,
+    "ease": 5
+   },
+   "ready": 5,
+   "effort": "hours"
+  },
+  {
+   "id": "25-15",
+   "top": "T3",
+   "job": "Compute the orders and days each test needs from the page's traffic and conversion rate, and turn down any test that cannot finish in 6 weeks, offering a bolder change instead",
+   "trigger": "before every test, and when planning the month",
+   "enablers": [
+    "test-card"
+   ],
+   "inputs": [
+    {
+     "need": "weekly visitors and orders on the page",
+     "from": "GA4",
+     "status": "connected"
+    },
+    {
+     "need": "the smallest lift worth finding",
+     "from": "founder",
+     "status": "founder"
+    }
+   ],
+   "steps": [
+    "Pull weekly visitors and conversion rate for the page",
+    "Compute orders per version for the smallest lift worth finding",
+    "Turn it into days",
+    "If over 6 weeks, suggest a bolder change or a bigger page",
+    "Set how many tests the store can carry this month"
+   ],
+   "output": "a sample size and days per test, and the month's test capacity",
+   "next": "feeds 25-14 (test card) and 25-18 (queue)",
+   "watch": {
+    "metric": "share of tests that reached their planned orders by the read date",
+    "window": "quarterly",
+    "source": "test registry"
+   },
+   "drives": "tests that end in a clear call",
+   "business": "gross profit",
+   "score": {
+    "money": 3,
+    "satisfaction": 3,
+    "speed": 3,
+    "ease": 5
+   },
+   "ready": 5,
+   "effort": "hours"
+  },
+  {
+   "id": "25-16",
+   "top": "T3",
+   "job": "Before launch, check no other test shares the page area, audience or dates, and no sale, holiday or launch falls in the window, then check purchases count in both versions on day 1",
+   "trigger": "before every launch and on day 1",
+   "enablers": [
+    "test-card",
+    "test-reader"
+   ],
+   "inputs": [
+    {
+     "need": "running tests with pages, audiences and dates",
+     "from": "test-card",
+     "status": "enabler"
+    },
+    {
+     "need": "sale, holiday and launch dates",
+     "from": "calendar shelf",
+     "status": "brain"
+    },
+    {
+     "need": "day 1 orders per version",
+     "from": "GA4 and store platform",
+     "status": "connected"
+    }
+   ],
+   "steps": [
+    "List running tests that share the page area or audience",
+    "Check the calendar for sales and launches in the window",
+    "Move the date or mark the read",
+    "On day 1, check orders show in both versions and the split is within 1 point",
+    "Pause and fix if either fails"
+   ],
+   "output": "a launch check passed or failed, with the clash or setup fault named",
+   "next": "feeds 25-01 (Monday read)",
+   "watch": {
+    "metric": "share of tests that passed a launch check",
+    "window": "quarterly",
+    "source": "test registry"
+   },
+   "drives": "test windows lost to broken setups",
+   "business": "risk",
+   "score": {
+    "money": 3,
+    "satisfaction": 3,
+    "speed": 4,
+    "ease": 4
+   },
+   "ready": 4,
+   "effort": "hours"
+  },
+  {
+   "id": "25-17",
+   "top": "T3",
+   "job": "Duplicate the live theme, make the speed or checkout flow change on the copy, walk the checkout on 3 phones, test both, and merge only after the read",
+   "trigger": "for every theme, speed or checkout change",
+   "enablers": [
+    "theme-twin",
+    "test-card"
+   ],
+   "inputs": [
+    {
+     "need": "the live theme and a copy",
+     "from": "store platform",
+     "status": "connected"
+    },
+    {
+     "need": "page speed per template",
+     "from": "site speed data",
+     "status": "connected"
+    },
+    {
+     "need": "3 phones for a checkout walk",
+     "from": "team",
+     "status": "founder"
+    }
+   ],
+   "steps": [
+    "Duplicate the live theme",
+    "Make the change on the copy only",
+    "Test speed on both, and walk checkout on 3 phones",
+    "Split traffic or run a timed switch, with a test card",
+    "Merge the copy only if it wins; log the result either way"
+   ],
+   "output": "a tested theme copy merged or dropped, with the speed and conversion numbers",
+   "next": "feeds 08 (site speed) and 25-02 (promote win)",
+   "watch": {
+    "metric": "conversion rate and revenue per visitor, copy against live",
+    "window": "test window",
+    "source": "GA4"
+   },
+   "drives": "site changes that do not break checkout",
+   "business": "revenue",
+   "score": {
+    "money": 4,
+    "satisfaction": 4,
+    "speed": 3,
+    "ease": 3
+   },
+   "ready": 4,
+   "effort": "days"
+  },
+  {
+   "id": "25-18",
+   "top": "T4",
+   "job": "Rank the test queue each month by money at stake (visitors on the page, times the gap to a benchmark, times margin) and pick the top 2, sending clear defects straight to a fix",
+   "trigger": "the first Monday of each month",
+   "enablers": [
+    "test-card",
+    "win-loss-ledger"
+   ],
+   "inputs": [
+    {
+     "need": "the proposal queue with past-test checks",
+     "from": "test-card",
+     "status": "enabler"
+    },
+    {
+     "need": "visitors and conversion per page",
+     "from": "GA4",
+     "status": "connected"
+    },
+    {
+     "need": "gross margin per product",
+     "from": "finance shelf",
+     "status": "brain"
+    },
+    {
+     "need": "idea bank ideas/v1 filtered by the brand's bottleneck",
+     "from": "idea bank",
+     "status": "have"
+    }
+   ],
+   "steps": [
+    "Score each proposal by money at stake",
+    "Move clear defects like a broken button to a fix card, no test",
+    "Take the top 2 that fit the month's capacity",
+    "Founder approves",
+    "Park the rest with a return date"
+   ],
+   "output": "a ranked queue with 2 picks, a defect fix list, and parked ideas",
+   "next": "feeds 25-14 (test card)",
+   "watch": {
+    "metric": "share of tests launched from the top 5 of the ranked list",
+    "window": "quarterly",
+    "source": "test registry"
+   },
+   "drives": "gross profit per visitor",
+   "business": "gross profit",
+   "score": {
+    "money": 4,
+    "satisfaction": 3,
+    "speed": 3,
+    "ease": 4
+   },
+   "ready": 4,
+   "effort": "hours"
+  },
+  {
+   "id": "25-19",
+   "top": "T4",
+   "job": "Keep a 5 percent held-back group away from popups, win-back discounts and new apps, and compare orders and gross profit per person over 30 and 90 days",
+   "trigger": "set up once, read monthly and before any app renewal",
+   "enablers": [
+    "test-reader"
+   ],
+   "inputs": [
+    {
+     "need": "customers and visitors with a held-back flag",
+     "from": "store platform and email tool",
+     "status": "setup"
+    },
+    {
+     "need": "orders and gross profit per person",
+     "from": "store platform orders",
+     "status": "connected"
+    },
+    {
+     "need": "app and discount costs",
+     "from": "finance shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "Pick 5 percent of visitors and subscribers at random and flag them",
+    "Exclude them from popups, discounts and the new app",
+    "Compare orders and gross profit per person after 30 and 90 days",
+    "Keep, cut or change each tactic on the number",
+    "Show the whole program's gain against the held-back group"
+   ],
+   "output": "a held-back read per tactic, and the program's gain in dollars",
+   "next": "feeds 21 (finance, app renewals) and 26-20 (month close)",
+   "watch": {
+    "metric": "orders and gross profit per person, shown the offer against held back",
+    "window": "30 day",
+    "source": "store platform orders"
+   },
+   "drives": "discounts paid to people who would buy anyway",
+   "business": "gross profit",
+   "score": {
+    "money": 4,
+    "satisfaction": 3,
+    "speed": 2,
+    "ease": 3
+   },
+   "ready": 3,
+   "effort": "days"
+  },
+  {
+   "id": "25-20",
+   "top": "T4",
+   "job": "30 days after each win, compare returns, refunds and tickets from each version's buyers, and demote the win if gross profit per visitor flipped",
+   "trigger": "30 days after every called win",
+   "enablers": [
+    "test-reader",
+    "win-loss-ledger",
+    "ticket-clock"
+   ],
+   "inputs": [
+    {
+     "need": "orders per version with returns and refunds",
+     "from": "store platform",
+     "status": "connected"
+    },
+    {
+     "need": "tickets per version's buyers",
+     "from": "helpdesk",
+     "status": "connected"
+    },
+    {
+     "need": "product cost and discounts",
+     "from": "finance shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "Pull each version's buyers",
+    "Count returns, refunds and tickets per 100 orders",
+    "Recompute gross profit per visitor after returns",
+    "Keep the win or demote it with a fail note"
+   ],
+   "output": "a 30 day check per win: kept or demoted, with the numbers",
+   "next": "feeds 25-03 (fail note) and 25-11 (recheck)",
+   "watch": {
+    "metric": "return rate and refund rate of each version's buyers",
+    "window": "30 days after the read",
+    "source": "store platform"
+   },
+   "drives": "wins that stay wins after returns",
+   "business": "gross profit",
+   "score": {
+    "money": 3,
+    "satisfaction": 3,
+    "speed": 2,
+    "ease": 4
+   },
+   "ready": 5,
+   "effort": "hours"
+  }
+ ],
+ "new_enablers": [
+  {
+   "id": "test-card",
+   "name": "Test card and queue",
+   "what": "A card written before every test: hypothesis, main metric, guardrail, orders needed, read date, stop and scale rules, founder sign-off. Holds the ranked queue, the sample size math and a check for clashes with other tests and the calendar.",
+   "inputs": [
+    "page traffic and conversion",
+    "calendar",
+    "running tests",
+    "idea bank",
+    "approval rules"
+   ],
+   "powers": [
+    "tests nobody can spin",
+    "tests that can finish",
+    "no clashing tests",
+    "queue ranked by money"
+   ],
+   "screens": [
+    "25-experiments",
+    "07-landing-pages-cro",
+    "09-creative",
+    "14-email-messaging"
+   ],
+   "note": null
+  },
+  {
+   "id": "decision-log",
+   "name": "Decision log",
+   "what": "Every decision with date, owner, why, the number it should move and a review date. Holds parked ideas with a return condition and project look-backs.",
+   "inputs": [
+    "meeting notes",
+    "approval rules",
+    "work board"
+   ],
+   "powers": [
+    "no reopened old debates",
+    "parked ideas come back",
+    "look-backs after every big project"
+   ],
+   "screens": [
+    "25-experiments",
+    "23-team-ops",
+    "26-reports",
+    "05-brand-brain"
+   ],
+   "note": null
+  }
+ ]
 }
