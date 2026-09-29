@@ -2460,5 +2460,18 @@ class BrandDecisionTest(unittest.TestCase):
         self.assertIn('brand: brand }', js)
 
 
+class NoBrainSaveTest(unittest.TestCase):
+    """Round 11 feature 3: a brand with no brain folder shows why it cannot save a plan, not buttons that fail."""
+
+    def test_flag(self):
+        sys.path.insert(0, str(ROOT / 'app'))
+        import server
+        req = Req(['overview'], brand='sample')
+        req.data = server.Data()
+        self.assertFalse(api.handle(req)['has_brain'])
+        self.assertTrue(api.handle(Req(['overview']))['has_brain'])
+        self.assertIn('if (!HAS_BRAIN)', (SCREEN / 'screen.js').read_text(encoding='utf-8'))
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -525,7 +525,7 @@ def overview(data, brand):
             'stack': offer_stack(rd), 'threshold': th, 'bfcm': bfcm(rd), **desk,
             'creep': creep_rule(months), 'chart': chart(months), 'findings': ranked['findings'], 'rules': audit.RULES,
             'settings': page_settings(), 'blind_spots': blind_spots(ranked, rd), 'week': week(ranked, rd), 'resolved': hist['resolved'],
-            'changes': {'new': hist['new'], 'prior_run': hist['prior_run']}}
+            'changes': {'new': hist['new'], 'prior_run': hist['prior_run']}, 'has_brain': bool(brand)}
 
 
 def rank(brand='bombas', window=None):

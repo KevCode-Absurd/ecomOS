@@ -245,6 +245,7 @@ Known gaps from round 0:
 |---|---|---|
 | 11.1 | Decisions per brand (lead's decisions brand field, 28 Sep): this screen's finding ids are the same for every brand, so a "Not now" on Bombas used to snooze the sample brand's move too. The screen now reads only its brand's trail (an unbranded row is the sample brand's, per the server), and after the kit logs a decision the page adds a branded copy as the latest row; the kit's unbranded row followed within 2 minutes by its branded twin belongs to that brand. Checked in the browser with the decisions API stubbed | done |
 | 11.2 | Hand-offs per brand: the hand-offs table has no brand field and this screen's finding ids are the same for every brand, so each hand-off's why now starts "Brand: bombas." (useful to the receiving team too), the read-back keeps only this brand's rows, and the send-once check compares the brand as well. Checked in the browser with a stubbed table holding a Bombas and a sample row | done |
+| 11.3 | No broken buttons on a brand without a brain: the sample brand has no brain folder, so "Propose as a plan" and "I approve" used to fail with an error. The overview now says whether the brand has a brain, and without one each action card shows one line in their place: the move cannot be saved as a plan here; copy the brief instead | done |
 
 ## Contract asks
 

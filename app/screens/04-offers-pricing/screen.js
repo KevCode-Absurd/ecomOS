@@ -12,6 +12,7 @@
   const pct = (v, d) => v == null ? NA : (v * 100).toFixed(d == null ? 1 : d) + ' percent';
   let ACTIONS = [];
   let PLANNED = [];
+  let HAS_BRAIN = true;   // the server says whether this brand has a brain folder to save plans into
   let SET = {};
   let d_market = null;   // thresholds and windows from the server (api.page_settings); none is written here
 
@@ -198,6 +199,8 @@
 
   /** Save a move to the brand brain as a plan record: proposed (review queue) or approved by the founder. */
   function saveRow(a) {
+    if (!HAS_BRAIN) return el('div', { class: 'row save-row' }, el('span', { class: 'kicker', text: 'Brand brain' }),
+      el('span', { class: 'micro faint', text: 'This brand has no brain folder, so a move cannot be saved as a plan here. Copy the brief instead.' }));
     const status = el('span', { class: 'micro muted' });
     const go = (mode) => async () => {
       status.textContent = 'Saving.';
@@ -866,6 +869,7 @@
     });
     ACTIONS = d.plan || [];
     PLANNED = d.planned || [];
+    HAS_BRAIN = d.has_brain !== false;
     SET = d.settings || {};
     d_market = (d.brand || {}).market || null;
     badge(d.brand || {});
