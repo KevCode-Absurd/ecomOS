@@ -35,7 +35,7 @@ Fields:
 - `why`: 1 to 2 sentences. What breaks if this is not done.
 - `watch`: the first metric that moves when the job is done. Must be observable in a connected store: Shopify or equivalent, GA4, Meta, Google Ads, Klaviyo, Gorgias, Search Console, marketplace seller tools, PageSpeed, or the brand brain. Say the window.
 - `drives`: the metric one level up that `watch` moves.
-- `business`: the top of the chain. One of: revenue, gross profit, contribution margin, cash, customer satisfaction, risk. Prefer gross profit when honest.
+- `business`: the top of the chain. One of: revenue, gross profit, contribution margin, cash, customer satisfaction, risk. Revenue and gross profit both count as the top; gross profit ties back to revenue, so either is fine (Kevin, 29 Sep).
 - `now_after`: one line. What the screen shows today, what it shows after the owner acts. Use a plausible example number so the reader sees it move. Mark it as an example if it is invented.
 - `score`: 1 to 5 each. money = gross profit impact if done well. satisfaction = effect on the customer's experience or the founder's peace of mind. speed = how fast the watch metric moves after acting (5 = days, 1 = quarters). ease = how little effort or money it takes to act (5 = an afternoon, 1 = a quarter and a budget).
 - `who_today`: who does this job today without the software: founder, agency, freelancer, in-house role, a tool, nobody.
