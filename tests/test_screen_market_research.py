@@ -2752,6 +2752,54 @@ class LaunchReadTest(unittest.TestCase):
             audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH, api.DECISIONS_PATH = saved
 
 
+class TieTest(unittest.TestCase):
+    def test_founder_pick_breaks_a_tie(self):
+        rows = [{'candidate_id': 'a', 'name': 'A', 'stage': 'shortlisted', 'closed': False, 'total': 71},
+                {'candidate_id': 'b', 'name': 'B', 'stage': 'shortlisted', 'closed': False, 'total': 69},
+                {'candidate_id': 'c', 'name': 'C', 'stage': 'shortlisted', 'closed': False, 'total': 60},
+                {'candidate_id': 'd', 'name': 'D', 'stage': 'gated', 'closed': False, 'total': 70},
+                {'candidate_id': 'e', 'name': 'E', 'stage': 'shortlisted', 'closed': False, 'total': 58}]
+        t = audit.ties(rows, [{'candidate_id': 'a'}, {'candidate_id': 'b'}, {'candidate_id': 'c'}, {'candidate_id': 'e'}])
+        self.assertEqual([[c['candidate_id'] for c in g['candidates']] for g in t['groups']], [['a', 'b'], ['c', 'e']])   # gated D is not on the shortlist
+        self.assertEqual((t['groups'][0]['spread'], t['groups'][0]['picked']), (2, None))
+        t2 = audit.ties(rows, [{'candidate_id': 'a'}, {'candidate_id': 'b', 'founder_pick_reason': 'closest to the brand'}, {'candidate_id': 'c'}, {'candidate_id': 'e'}])
+        self.assertEqual(t2['groups'][0]['picked'], 'B')
+        import tempfile
+        saved = (audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH)
+        tmp = Path(tempfile.mkdtemp())
+        audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH = tmp / 'p.json', tmp / 'pc.json', tmp / 'pt.json'
+        try:
+            base = {'brand': 'bombas', 'category': 'socks', 'stage': 'shortlisted', 'screen_result': {'demand': 'pass', 'competition': 'pass', 'store_fit': 'pass'}, 'angle_text': 'x', 'angle_source': 'review gap', 'compliance': {'labelling': 'pass', 'category_certification': 'pass'}, 'planned_price': 16.0, 'cogs_estimate': 4.0}
+            audit.PIPELINE_PATH.write_text(json.dumps({'rows': [dict(base, candidate_id='a', name='A'), dict(base, candidate_id='b', name='B')]}), encoding='utf-8')
+            data = audit.brand_data('bombas')
+            D = audit.last_full_day(data, 'bombas')
+            br = audit.brain('bombas', today=D)
+            rd = audit.Reader(data, 'bombas', D)
+            found = audit.tie_findings('bombas', data, br, rd, D)
+            self.assertEqual(len(found), 1)                                  # identical inputs score identically: a tie
+            self.assertEqual(found[0]['rule_id'], 'PROD-R63')
+            self.assertIn('within 0 points', found[0]['sentence'])
+            rec = api.recipe(found[0])
+            self.assertEqual(rec['owner'], 'person')
+            self.assertIn('Break the tie', rec['title'])
+            self.assertIn('PROD-R63', api.CANDIDATE_RULES)
+            r = api.candidate_update('bombas', 'b', {'founder_pick_reason': 'the one we would sell hardest', 'who': 'founder'}, D)
+            self.assertIn('founder pick reason set', r['changes'])
+            self.assertEqual(audit.tie_findings('bombas', data, br, rd, D), [])
+        finally:
+            audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH = saved
+
+
+class WeeklyNoteDigestTest(unittest.TestCase):
+    def test_weekly_note_starts_with_the_digest(self):
+        w = api._weekly()
+        note = w.build(None, api)
+        self.assertTrue(note['text'].startswith('DIGEST for sample'))
+        self.assertIn('LOAD BY OWNER', note['text'])
+        self.assertIn('# Research desk', note['text'])
+        self.assertIn('changes', note)
+
+
 class SecondBrandTest(unittest.TestCase):
     """The desk is not Bombas-shaped: the sample brand (Tallgrass Goods, kitchen goods, no brain, no web pass) reads
     nothing of Bombas and every route still answers."""

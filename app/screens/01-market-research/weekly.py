@@ -1,4 +1,4 @@
-"""The weekly research note for a brand: the desk report and the week plan written to one dated markdown file.
+"""The weekly research note for a brand: the digest since the last note, the desk report and the week plan (with the load by owner) written to one dated markdown file.
 
     python3 app/screens/01-market-research/weekly.py --brand bombas
     python3 app/screens/01-market-research/weekly.py --brand sample --print
@@ -30,10 +30,11 @@ def _api():
 def build(brand: str | None, api=None) -> dict:
     api = api or _api()
     data = None if brand else api.sample_data()
+    dg = api.digest(data, brand)
     rp = api.desk_report(data, brand)
     wk = api.week_plan(data, brand)
-    text = rp['text'] + '\n\n---\n\n' + wk['text'] + '\n'
-    return {'brand': brand or 'sample', 'date': rp['ends_on'], 'text': text}
+    text = dg['text'] + '\n\n---\n\n' + rp['text'] + '\n\n---\n\n' + wk['text'] + '\n'
+    return {'brand': brand or 'sample', 'date': rp['ends_on'], 'text': text, 'changes': dg['changes'], 'since': dg['since']}
 
 
 def write(brand: str | None, api=None) -> Path:
