@@ -2637,8 +2637,12 @@ class SendToTeams(unittest.TestCase):
         seed = [{'id': 'HO-seed000001', 'from_screen': '10-copy', 'to': '02-customers-avatars', 'kind': 'research_note', 'status': 'proposed',
                  'title': 'Which avatar reads this headline best?', 'draft': 'DRAFT question', 'time': '2026-09-27T10:00:00Z'},
                 {'id': 'HO-seed000002', 'from_screen': '10-copy', 'to': 'creative', 'kind': 'copy', 'status': 'proposed',
-                 'title': 'Not for us', 'time': '2026-09-27T10:00:00Z'}]
+                 'title': 'Not for us', 'time': '2026-09-27T10:00:00Z'},
+                {'id': 'HO-seed000003', 'from_screen': '02-customers-avatars', 'to': 'creative', 'kind': 'ad_brief', 'status': 'proposed',
+                 'title': 'An older brief we sent', 'time': '2026-09-20T10:00:00Z'}]
         (tmp / 'handoffs.json').write_text(json.dumps(seed), encoding='utf-8')
+        (tmp / 'decisions.json').write_text(json.dumps([{'screen': '09-creative', 'capability': 'CREA-C06', 'choice': 'agent', 'reason': '',
+                                                          'time': '2026-09-26T10:00:00Z', 'finding_id': 'HO-seed000003'}]), encoding='utf-8')
         with socket.socket() as s_:
             s_.bind(('127.0.0.1', 0))
             port = s_.getsockname()[1]
@@ -2664,11 +2668,12 @@ class SendToTeams(unittest.TestCase):
         self.assertNotIn('fatal', out, out)
         self.assertEqual(out['errs'], [])
         n = int(re.search(r'Send (\d+) to', out['label']).group(1))
-        rows = [x for x in (rows if isinstance(rows, list) else rows.get('rows', [])) if x['from_screen'] == '02-customers-avatars']
+        rows = [x for x in (rows if isinstance(rows, list) else rows.get('rows', [])) if x['from_screen'] == '02-customers-avatars' and x['id'] != 'HO-seed000003']
         self.assertEqual(len(rows), n)
+        self.assertIn('1 answered by the team: 1 agent does it', out['line'])
         self.assertEqual(out['inbox'], ['Which avatar reads this headline best?'])
         self.assertTrue(all(x['from_screen'] == '02-customers-avatars' and x['status'] == 'proposed' for x in rows))
-        self.assertIn(f'{n} on the creative list', out['line'])
+        self.assertIn(f'{n + 1} on the creative list', out['line'])
         self.assertEqual(out['again'], f'Sent 0, {n} already there')
         self.assertFalse((ROOT / 'app' / 'data' / 'handoffs.json').exists() and
                          any(x.get('from_screen') == '02-customers-avatars'

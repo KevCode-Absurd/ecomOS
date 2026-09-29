@@ -1116,8 +1116,17 @@
 
   // ---------- the shared hand-offs table (events.md): send a pack, see what each team already has ----------
   let sent = [];
+  let answers = {};   // hand-off id -> the receiving team's latest decision on it (decisions log, keyed by finding_id)
   async function loadSent() {
     try { const r = await UI.api('/api/handoffs?from_screen=' + SLUG); sent = r.handoffs || []; } catch (e) { sent = null; }
+    answers = {};
+    try {
+      const d = await UI.api('/api/decisions');
+      const ids = new Set((sent || []).map((x) => x.id));
+      for (const x of (d.decisions || [])) {
+        if (x.finding_id && ids.has(x.finding_id) && x.screen !== SLUG && (!answers[x.finding_id] || x.time >= answers[x.finding_id].time)) answers[x.finding_id] = x;
+      }
+    } catch (e) { answers = null; }
     return sent;
   }
   function sentLine(p, rows) {
@@ -1126,7 +1135,14 @@
     if (!mine.length) return 'Nothing sent to ' + p.to + ' yet.';
     const by = {}; for (const r of mine) by[r.status] = (by[r.status] || 0) + 1;
     const last = mine.map((r) => r.time).sort().slice(-1)[0];
-    return mine.length + ' on the ' + p.to + ' list: ' + Object.entries(by).map(([k, n]) => n + ' ' + k).join(', ') + '. Last sent ' + fmt.date(last) + '.';
+    const said = answers === null ? ' Their answers cannot be read right now.' : (() => {
+      const got = mine.map((r) => answers[r.id]).filter(Boolean);
+      if (!got.length) return ' None answered by the team yet.';
+      const c = {}; for (const a of got) c[a.choice] = (c[a.choice] || 0) + 1;
+      const lastA = got.map((a) => a.time).sort().slice(-1)[0];
+      return ' ' + got.length + ' answered by the team: ' + Object.entries(c).map(([k, n]) => n + ' ' + (CHOICE[k] ? CHOICE[k][0].toLowerCase() : k)).join(', ') + ', last on ' + fmt.date(lastA) + '.';
+    })();
+    return mine.length + ' on the ' + p.to + ' list: ' + Object.entries(by).map(([k, n]) => n + ' ' + k).join(', ') + '. Last sent ' + fmt.date(last) + '.' + said;
   }
   function sendButton(p) {
     // hand-off rows carry no brand yet (contract ask), so only the default brand sends; another brand copies instead

@@ -192,6 +192,16 @@ Lead's review: rounds 1 to 4 passed. Focus: returns and tickets by avatar, depth
 | 11.9 | The new blocks at phone width and in the report: both fit at 360 px on the Brand tab (the browser test covers every tab for both brands); the monthly report now names buyers drifting the wrong way under brand risks ("durability complaints went from 5 to 13 percent in 180 days (thin)") and the missing shopper run and pretest under what we do not know | done |
 | 11.10 | Round 11 close: 34 rules, 68 actions; hand-offs on the shared table both ways; every block ends in an action for both brands; the two open room questions now partial. The shopper table's brain-fact column trimmed so it fits the card. Full screen suite: only the known site speed failures. Screenshot `round11.png` (the shopper run sheet and the message pretests) | done |
 
+## Round 12: what came back, results, and the watch on what is ours (from 28 Sep 2026)
+
+| # | Feature | Status |
+|---|---|---|
+| 12.1 | What the teams did with our hand-offs: rows are append-only, so a receiving team's choice lives in the decisions log against the hand-off's id. Each pack's line now says how many sent briefs the team answered and how ("1 answered by the team: 1 agent does it, last on 26 Sep"), or that none is answered yet. Browser-tested with a seeded answer in a temp folder | done |
+| 12.2 | Shopper run and pretest results read back when a table or fixture holds them: pass and fail per checkpoint, the choice per pretest; a fail becomes a move; CUST-R34 resolves once a run is on file | todo |
+| 12.3 | The baseline for our own assets: what the brain captured of our site, ads and email, with dates, as scan one of the quarterly series | todo |
+| 12.4 | Watch what is ours: our name, domain and handles on file in the brain, lookalikes seen, and a drafted monthly watch | todo |
+| 12.5 to 12.10 | Picked after 12.4 | todo |
+
 ### Round 11 founder note (28 Sep 2026)
 
 1. Briefs now reach the other teams for real. "Send" puts each brief on the shared hand-off list once, with its stop rule and check date.
