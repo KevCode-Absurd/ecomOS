@@ -217,6 +217,11 @@ Rules
   PROD-R60  Supplier not verified: a candidate with a first run decided whose chosen sourcing channel names a supplier that is
             not verified reachable on the platform named (bank idea PRD-102: a shortlist can name a supplier that is not
             listed where claimed). Money: null. Capability PROD-C13
+  PROD-R61  Launched with no SKU mapped: a candidate with a launch date and no SKU on it, so the post-launch read cannot run.
+            Money: null. Capability PROD-C11
+  PROD-R62  Post-launch read below the floor: a launched candidate whose read metric (units or net sales from the monthly SKU
+            table, whole months from the launch month) sits below the floor written before the test, at or after the read
+            date; the continue-or-kill call is due (bank idea PRD-125). Money: the net sales read. Capability PROD-C11
   PROD-R03  Hero line with no next SKU: a line with 25 percent or more of its category's net sales in
             the last 3 whole months while the candidate pipeline holds no open next-SKU candidate for
             that category. Money: null (an unlaunched SKU has no baseline). Capability PROD-C06
@@ -350,6 +355,8 @@ RULES = [
     {'rule_id': 'PROD-R58', 'name': 'Candidate at go or with a launch target and no post-launch metric, floor, read date and owner', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C11', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R59', 'name': 'Candidate with hours logged or past screened whose 10-point quick screen is incomplete', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C01', 'owner_screen': SCREEN},
     {'rule_id': 'PROD-R60', 'name': 'First run decided on a chosen channel whose supplier is not verified reachable on the platform named', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C13', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R61', 'name': 'Launched candidate with no SKU mapped for the post-launch read', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline'], 'capability': 'PROD-C11', 'owner_screen': SCREEN},
+    {'rule_id': 'PROD-R62', 'name': 'Launched candidate whose read metric is below its floor at or after the read date', 'entity_type': 'sku', 'inputs': ['fixtures.pipeline', 'products_monthly'], 'capability': 'PROD-C11', 'owner_screen': SCREEN},
 ]
 CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R02': {'id': 'PROD-C06', 'autonomy': 'agent_does'},
@@ -410,7 +417,9 @@ CAPABILITY = {'PROD-R01': {'id': 'PROD-C05', 'autonomy': 'agent_does'},
               'PROD-R57': {'id': 'PROD-C08', 'autonomy': 'agent_does'},
               'PROD-R58': {'id': 'PROD-C11', 'autonomy': 'founder_gate'},
               'PROD-R59': {'id': 'PROD-C01', 'autonomy': 'agent_does'},
-              'PROD-R60': {'id': 'PROD-C13', 'autonomy': 'agent_does'}}
+              'PROD-R60': {'id': 'PROD-C13', 'autonomy': 'agent_does'},
+              'PROD-R61': {'id': 'PROD-C11', 'autonomy': 'agent_does'},
+              'PROD-R62': {'id': 'PROD-C11', 'autonomy': 'founder_gate'}}
 SEVERITY_ORDER = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
 
 # Review records name their line in a short key; the store names it by SKU title.
@@ -1011,6 +1020,7 @@ def _run_audit(brand, ends_on, data):
     out += post_launch_findings(brand, ends_on)
     out += quick_screen_findings(brand, ends_on)
     out += supplier_findings(brand, ends_on)
+    out += launch_read_findings(brand, data, br, rd, ends_on)
     out.sort(key=lambda f: (SEVERITY_ORDER[f['severity']], -((f['money_at_stake'] or {}).get('usd') or 0), f['id']))
     return out
 
@@ -5252,6 +5262,100 @@ def supplier_findings(brand, ends_on):
         f['entity'] = {'type': 'sku', 'id': cid, 'label': r['name'], 'candidate': True, 'stage': r['stage'], 'channel': ch['label'], 'supplier': ch.get('supplier')}
         f['id'] = f'{SCREEN}.PROD-R60.{cid}'
         out.append(f)
+    return out
+
+
+# ---------------------------------------------------------------- the post-launch read itself: the first months against the plan
+
+def launch_read(brand, data, br, rd, ends_on):
+    """Per candidate with a launch date: the SKU mapped, the whole months read from the launch month to the last whole month
+    (the monthly SKU table), units and net sales in them, the average price against the planned price, the sell-through
+    against the first run, the margin at the real cost (the margin gate at the average price), returns when a reversed
+    orders table exists, the read metric against its floor, and the verdict: no_sku, no_data (the SKU is not in the table),
+    no_months (no whole month since launch yet), no_read (no post-launch read written), reading (the read date is ahead),
+    below_floor, on_plan. Nothing is estimated: a missing table reads unavailable."""
+    try:
+        rows_m, basis = mix_rows(data, brand)
+    except (KeyError, ValueError):
+        rows_m, basis = None, None
+    fin_rows = finance_rows(data, brand)
+    fin = metrics().finance.Finance(fin_rows) if fin_rows else None
+    floor = fin.value('target_contribution_margin', ends_on.isoformat()) if fin else None
+    upo = units_per_order(data, brand, rd)
+    try:
+        reversed_rows = _source(data, brand).table('reversed_orders')
+    except (KeyError, ValueError):
+        reversed_rows = None
+    last_month = last_whole_month(ends_on)
+    rows = []
+    for c in pipeline(brand):
+        st = c.get('stage')
+        if st in ('killed', 'kill') or not c.get('launched_on'):
+            continue
+        sku = str(c.get('sku') or '').strip() or None
+        launched = date.fromisoformat(str(c['launched_on'])[:10])
+        first_month = launched.strftime('%Y-%m')
+        pl = post_launch_read_of(c)
+        months = [m for m in sorted({r.get('month') for r in rows_m or [] if r.get('sku') == sku}) if first_month <= m <= last_month] if sku and rows_m is not None else []
+        units = sum(int(r.get('units') or 0) for r in rows_m or [] if r.get('sku') == sku and r.get('month') in months) if months else None
+        net = round(sum(float(r.get('net_sales') or 0) for r in rows_m or [] if r.get('sku') == sku and r.get('month') in months), 2) if months else None
+        avg_price = round(net / units, 2) if units else None
+        fr_units = (c.get('first_run') or {}).get('units')
+        sell_through = round(units / fr_units, 4) if units is not None and fr_units else None
+        gate = margin_gate(dict(c, planned_price=avg_price), fin, br, ends_on.isoformat(), upo, floor) if avg_price else None
+        margin_pct = gate.get('margin_pct') if gate and not gate.get('unavailable') else None
+        returns = None
+        if reversed_rows is not None and sku:
+            rets = [r for r in reversed_rows if r.get('sku') == sku and r.get('type') == 'return' and str(r.get('opened_at') or '')[:10] >= launched.isoformat()]
+            returns = {'n': len(rets), 'rate': round(len(rets) / units, 4) if units else None}
+        metric_value = {'units': units, 'product_net_sales': net, 'contribution_margin': margin_pct, 'return_rate': (returns or {}).get('rate')}.get(pl['metric']) if pl['complete'] else None
+        if sku is None:
+            verdict = 'no_sku'
+        elif rows_m is None or not any(r.get('sku') == sku for r in rows_m):
+            verdict = 'no_data'
+        elif not months:
+            verdict = 'no_months'
+        elif not pl['complete']:
+            verdict = 'no_read'
+        elif ends_on.isoformat() < pl['read_on']:
+            verdict = 'reading'
+        elif metric_value is None:
+            verdict = 'no_data'
+        elif (pl['direction'] == 'up' and metric_value < pl['floor']) or (pl['direction'] == 'down' and metric_value > pl['floor']):
+            verdict = 'below_floor'
+        else:
+            verdict = 'on_plan'
+        rows.append({'candidate_id': c.get('candidate_id'), 'name': c.get('name'), 'stage': st, 'sku': sku, 'launched_on': launched.isoformat(), 'months': months, 'units': units, 'net_sales': net, 'avg_price': avg_price,
+                     'planned_price': c.get('planned_price'), 'first_run_units': fr_units, 'sell_through': sell_through, 'margin_pct_real': margin_pct, 'margin_floor_pct': floor, 'returns': returns,
+                     'returns_available': reversed_rows is not None, 'read': pl, 'metric_value': metric_value, 'basis': basis, 'verdict': verdict, 'finding_id': f'{SCREEN}.PROD-R62.{c.get("candidate_id")}' if verdict == 'below_floor' else f'{SCREEN}.PROD-R61.{c.get("candidate_id")}'})
+    order = {'below_floor': 0, 'no_sku': 1, 'no_read': 2, 'no_data': 3, 'no_months': 4, 'reading': 5, 'on_plan': 6}
+    rows.sort(key=lambda r: (order[r['verdict']], r['name'] or ''))
+    return {'rows': rows, 'table': basis, 'returns_available': reversed_rows is not None,
+            'rule': 'a launched candidate is read from the monthly SKU table in whole months from its launch month: units and net sales against the first run and the planned price, the margin at the real cost, returns where a reversed orders table exists; at the read date the metric written before the test decides continue or kill (bank idea PRD-125); no SKU or no table reads unavailable, never a guess'}
+
+
+def launch_read_findings(brand, data, br, rd, ends_on):
+    """PROD-R61: launched with no SKU mapped. PROD-R62: the read metric is below its floor at or after the read date."""
+    out = []
+    for r in launch_read(brand, data, br, rd, ends_on)['rows']:
+        cid = r['candidate_id']
+        if r['verdict'] == 'no_sku':
+            ev = [_ev('sku_mapped', 0, 'flag', ends_on.isoformat(), 'candidate now', 1, 'threshold', source='fixtures.pipeline', simulated=False, freshness_days=0, launched_on=r['launched_on'])]
+            sentence = f'{r["name"]} launched on {r["launched_on"]} with no SKU on the candidate; the post-launch read has nothing to read.'
+            f = _finding('PROD-R61', cid, ends_on, 'medium', ev, sentence, None, 0.9, [], money_reason='the read cannot price anything until a SKU is mapped')
+            f['entity'] = {'type': 'sku', 'id': cid, 'label': r['name'], 'candidate': True, 'stage': r['stage'], 'launched_on': r['launched_on']}
+            f['id'] = f'{SCREEN}.PROD-R61.{cid}'
+            out.append(f)
+        elif r['verdict'] == 'below_floor':
+            pl = r['read']
+            ev = [_ev(f'post_launch_{pl["metric"]}', r['metric_value'], 'usd' if pl['metric'] == 'product_net_sales' else 'percent' if pl['metric'] in ('contribution_margin', 'return_rate') else 'count', month_end(r['months'][-1]).isoformat(), f'{len(r["months"])} whole month' + ('s' if len(r['months']) != 1 else '') + ' from launch', pl['floor'], 'threshold', source=r['basis'] or 'products_monthly', simulated=True, freshness_days=(ends_on - month_end(r['months'][-1])).days, sku=r['sku'], units=r['units'], net_sales=r['net_sales'], sell_through=r['sell_through'])]
+            sentence = (f'{r["name"]} ({r["sku"]}) reads {r["metric_value"]:g} on {pl["metric"].replace("_", " ")} over {len(r["months"])} whole month{"s" if len(r["months"]) != 1 else ""} since launch, against a floor of {pl["floor"]:g} set before the test; '
+                        f'the read date {pl["read_on"]} has passed, so {pl["owner"]} decides continue, pivot or kill now.')
+            stake = {'usd': round(r['net_sales']), 'formula': 'net_sales_since_launch', 'inputs': {'net_sales': r['net_sales'], 'units': r['units']}, 'window': f'{r["months"][0]} to {r["months"][-1]}'} if r['net_sales'] else None
+            f = _finding('PROD-R62', cid, ends_on, 'high', ev, sentence, stake, 0.8, [], money_reason=None if stake else 'no net sales read yet')
+            f['entity'] = {'type': 'sku', 'id': cid, 'label': r['name'], 'candidate': True, 'stage': r['stage'], 'sku': r['sku'], 'metric': pl['metric'], 'value': r['metric_value'], 'floor': pl['floor'], 'read_on': pl['read_on'], 'owner': pl['owner'], 'sell_through': r['sell_through'], 'margin_pct_real': r['margin_pct_real']}
+            f['id'] = f'{SCREEN}.PROD-R62.{cid}'
+            out.append(f)
     return out
 
 

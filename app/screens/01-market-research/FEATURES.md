@@ -294,6 +294,23 @@ Picked from the round 9 note and the idea pass (`scripts/ideas.py --domain 01-PR
 | 10.9 | Second brand pass: every route (13 plus the per-candidate ones) answers on Tallgrass Goods and Bombas, the proposed floors, quick screen, caution and verified reads render on the sample brand, no page errors; the launch plan test now points the decisions log at a temp file so a test run never writes the shared log | done |
 | 10.10 | Recipes for R58 to R60, 143 tests green on both suites, round10.png to round10d.png (Bombas) and round10s.png (Tallgrass Goods), founder note | done |
 
+## Round 11: the read after launch, and the desk's memory of itself (from 28 Sep 2026)
+
+Picked from the round 10 note and the idea pass (PRD-125 the read that decides, PRD-108 founder excitement as a tiebreaker, PRD-030 mine competitor ads for angle words, never the asset). The registry route and the live listing pull stay as they were.
+
+| # | Feature | Status |
+|---|---|---|
+| 11.1 | The post-launch read itself: `sku` on the candidate; `launch_read` reads whole months from the launch month in the monthly SKU table (units, net sales, average price against the planned price, sell-through against the first run, margin at the real cost through the gate, returns where a reversed orders table exists) and judges the metric written before the test against its floor at the read date; rule PROD-R61 launched with no SKU mapped; rule PROD-R62 below the floor at or after the read date (high, the net sales as the stake); a desk block; both merged into the candidate card | done |
+| 11.2 | The founder digest (route `digest`): only what changed since the last weekly note, in one page: findings new, gone, worse or better, stake moves, decisions made, hand-off statuses changed, launch steps marked, candidates moved; the weekly note starts with it | todo |
+| 11.3 | The lane page (route `lanes/<key>`): one page per lane with its cards, the opportunity score and parts, the competitors pushing it and the angle words they use (bank idea PRD-030: words, never the asset), the launches, the kills, the open candidates and the hand-offs; opened from the opportunity row | todo |
+| 11.4 | Founder pick on a tie (bank idea PRD-108): two or more shortlisted candidates within 3 scorecard points; rule PROD-R63 a tie with no founder pick and reason written; the pick and its reason on the candidate | todo |
+| 11.5 | Days per stage from the candidate logs: the median days each stage takes and where candidates stall, as a block, with the slowest stage ending in a time-box or hours action | todo |
+| 11.6 | Hand-off ageing: rule PROD-R64 a hand-off proposed on the shared log for 7 or more days with no status change from the team, with a nudge action for the owner | todo |
+| 11.7 | The expected go date on the launch plan from the median days per stage when no launch target is set, said as an estimate | todo |
+| 11.8 | The digest and the load in the weekly note | todo |
+| 11.9 | Second brand pass; every new block and route on Tallgrass Goods | todo |
+| 11.10 | Recipes, tests, round11.png, founder note | todo |
+
 ## Round 10 note for the founder (28 Sep 2026)
 
 1. The desk now proposes its own floors from the brand's numbers and waits for you. Where a measured number exists (the cheapest and the median unit price in the catalogue, the 28-day average order value) it proposes the price reject line, the caution band and the target band, shows the formula and whether it differs from the value in force, and one click writes the record; floors with no number behind them keep the bank's default and say so. On Bombas only the order-value floor is proposed, since the simulated brand has orders but no catalogue table.

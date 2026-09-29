@@ -1105,6 +1105,30 @@ def recipe(f):
             'size': {'text': f'{ent.get("variants")} variants planned', 'usd': None}, 'stop_rule': 'no MOQ per variant before the core product sells', 'check_on': _check_on(f, 7), 'time_to_ship_hours': 1,
             'win_rule': 'one variant in the first run, the rest queued behind a sell-through read',
         }
+    if rid == 'PROD-R61':
+        ent = f.get('entity') or {}
+        return {
+            'title': f'Map the SKU on {ent.get("label") or "the candidate"} so the post-launch read can run',
+            'owner': 'agent',
+            'artefact': {'kind': 'brain_record', 'label': f'the SKU (as the monthly product table names it) written on {ent.get("label")}; the read then shows units, net sales, the real margin and returns from the launch month'},
+            'steps': [{'n': 1, 'who': 'agent', 'text': 'Find the SKU the store gave the launched product in the monthly product table and propose it.'},
+                      {'n': 2, 'who': 'person', 'text': 'Confirm it on the candidate.'},
+                      {'n': 3, 'who': 'agent', 'text': 'Run the read on the next whole month and compare it with the plan.'}],
+            'size': {'text': f'launched {ent.get("launched_on")}', 'usd': None}, 'stop_rule': 'no continue-or-kill call without a read', 'check_on': _check_on(f, 3), 'time_to_ship_hours': 0.25,
+            'win_rule': 'a SKU on the candidate that the monthly table carries',
+        }
+    if rid == 'PROD-R62':
+        ent = f.get('entity') or {}
+        return {
+            'title': f'Decide on {ent.get("label") or "the candidate"}: {str(ent.get("metric") or "").replace("_", " ")} reads {(ent.get("value") if ent.get("value") is not None else 0):g} against the {(ent.get("floor") or 0):g} floor set before launch',
+            'owner': 'person',
+            'artefact': {'kind': 'report', 'label': f'the post-launch decision on {ent.get("label")}: continue, pivot or kill, with the read (units, net sales, sell-through {ent.get("sell_through") if ent.get("sell_through") is not None else "n/a"}, real margin {ent.get("margin_pct_real") if ent.get("margin_pct_real") is not None else "n/a"} percent), the reason, and the learning written to the brain (bank idea PRD-125)'},
+            'steps': [{'n': 1, 'who': 'agent', 'text': 'Put the read next to the plan: the metric against its floor, the sell-through against the first run, the real margin against the gate.'},
+                      {'n': 2, 'who': 'person', 'text': f'Decide continue, pivot or kill on the planned date ({ent.get("read_on")}), not later; a pivot names what changes (price, offer, channel).'},
+                      {'n': 3, 'who': 'agent', 'text': 'Write the decision and the learning to the brain; a kill goes into kill memory with the read as the reason.'}],
+            'size': {'text': f'{str(ent.get("metric") or "").replace("_", " ")} {(ent.get("value") if ent.get("value") is not None else 0):g} against {(ent.get("floor") or 0):g}', 'usd': (f.get('money_at_stake') or {}).get('usd')}, 'stop_rule': 'no reorder or ad spend on a launch below its floor until the decision is written', 'check_on': _check_on(f, 3), 'time_to_ship_hours': 1,
+            'win_rule': 'a written continue, pivot or kill on the read date with the learning in the brain',
+        }
     if rid == 'PROD-R60':
         ent = f.get('entity') or {}
         return {
@@ -1413,7 +1437,7 @@ def merge_strength(actions):
 
 
 LANE_RULES = ('PROD-R06', 'PROD-R19', 'PROD-R20', 'PROD-R33', 'PROD-R26', 'PROD-R29')
-CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28', 'PROD-R37', 'PROD-R38', 'PROD-R39', 'PROD-R40', 'PROD-R45', 'PROD-R46', 'PROD-R47', 'PROD-R48', 'PROD-R49', 'PROD-R50', 'PROD-R51', 'PROD-R52', 'PROD-R53', 'PROD-R54', 'PROD-R55', 'PROD-R56', 'PROD-R57', 'PROD-R58', 'PROD-R59', 'PROD-R60')
+CANDIDATE_RULES = ('PROD-R14', 'PROD-R15', 'PROD-R16', 'PROD-R18', 'PROD-R21', 'PROD-R23', 'PROD-R24', 'PROD-R25', 'PROD-R27', 'PROD-R28', 'PROD-R37', 'PROD-R38', 'PROD-R39', 'PROD-R40', 'PROD-R45', 'PROD-R46', 'PROD-R47', 'PROD-R48', 'PROD-R49', 'PROD-R50', 'PROD-R51', 'PROD-R52', 'PROD-R53', 'PROD-R54', 'PROD-R55', 'PROD-R56', 'PROD-R57', 'PROD-R58', 'PROD-R59', 'PROD-R60', 'PROD-R61', 'PROD-R62')
 
 
 def merge_candidates(actions):
@@ -1671,7 +1695,7 @@ def overview(data, brand):
                      'gates': gates_block(brand, data, br, rd, ends_on, findings), 'scorecard': scorecard_block(brand, data, br, rd, ends_on, findings),
                      'video': audit.video_signals(br, brand, ends_on), 'tech_packs': tech_pack_block(brand, findings),
                      'hours': dict(audit.hours_table(brand, br), findings={f['entity']['id']: f['id'] for f in findings if f['rule_id'] == 'PROD-R28'}),
-                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on), 'returns': audit.return_rates(data, brand, ends_on), 'questions': audit.open_questions(br, ends_on), 'pulls': audit.pulls(br, brand, ends_on), 'first_runs': audit.first_run_read(brand, ends_on, audit.net_28d(rd)), 'brain_freshness': audit.brain_freshness(br, ends_on), 'assumptions': audit.assumptions(br), 'strength': audit.read_strength(br, brand, data, rd, ends_on), 'line_themes': audit.line_theme_matrix(br), 'samples': audit.sample_read(brand or 'sample', ends_on), 'kills': audit.kill_memory(brand or 'sample', ends_on), 'packaging': audit.packaging_read(brand or 'sample', ends_on), 'readiness': audit.launch_readiness(brand, data, br, rd, ends_on), 'price_bands': audit.price_band_read(brand or 'sample'), 'margin_points': audit.margin_point_read(brand, data, br, rd, ends_on), 'identical_sellers': audit.identical_sellers_read(brand or 'sample', br), 'opportunity': audit.lane_opportunity(br, products(data, brand), ends_on), 'sourcing': audit.sourcing_read(brand or 'sample'), 'floors': dict(audit.floors_read(br), proposals=audit.propose_floors(br, products(data, brand), rd)), 'requotes': audit.requote_read(brand or 'sample'), 'quick_screens': audit.quick_screen_read(brand or 'sample'), 'cost_floors': audit.cost_floor_read(brand, data, br, rd, ends_on), 'audit_memo': audit.memo_stats()},
+                     'trend_checks': audit.trend_checks(br, brand, ends_on), 'surfaces': audit.audience_surfaces(br, ends_on), 'marketplace': audit.marketplace_read(br, products(data, brand)), 'cadence': audit.launch_cadence(br, ends_on), 'returns': audit.return_rates(data, brand, ends_on), 'questions': audit.open_questions(br, ends_on), 'pulls': audit.pulls(br, brand, ends_on), 'first_runs': audit.first_run_read(brand, ends_on, audit.net_28d(rd)), 'brain_freshness': audit.brain_freshness(br, ends_on), 'assumptions': audit.assumptions(br), 'strength': audit.read_strength(br, brand, data, rd, ends_on), 'line_themes': audit.line_theme_matrix(br), 'samples': audit.sample_read(brand or 'sample', ends_on), 'kills': audit.kill_memory(brand or 'sample', ends_on), 'packaging': audit.packaging_read(brand or 'sample', ends_on), 'readiness': audit.launch_readiness(brand, data, br, rd, ends_on), 'price_bands': audit.price_band_read(brand or 'sample'), 'margin_points': audit.margin_point_read(brand, data, br, rd, ends_on), 'identical_sellers': audit.identical_sellers_read(brand or 'sample', br), 'opportunity': audit.lane_opportunity(br, products(data, brand), ends_on), 'sourcing': audit.sourcing_read(brand or 'sample'), 'floors': dict(audit.floors_read(br), proposals=audit.propose_floors(br, products(data, brand), rd)), 'requotes': audit.requote_read(brand or 'sample'), 'quick_screens': audit.quick_screen_read(brand or 'sample'), 'launch_reads': audit.launch_read(brand, data, br, rd, ends_on), 'cost_floors': audit.cost_floor_read(brand, data, br, rd, ends_on), 'audit_memo': audit.memo_stats()},
             'audit': {'findings': findings, 'rules': audit.RULES}}
 
 
@@ -1853,6 +1877,10 @@ def candidate_update(brand, cid, body, today):
                 return 400, {'error': 'post_launch.read_on must be a date like 2026-11-15'}
         row['post_launch'] = {'metric': metric or None, 'direction': direction or None, 'floor': _num(pl.get('floor')), 'read_on': read_on or None, 'owner': str(pl.get('owner') or '').strip()[:60] or None, 'set_on': today.isoformat()}
         changes.append('post-launch read ' + ('set' if audit.post_launch_read_of(row)['complete'] else 'partly set'))
+    if body.get('sku') is not None:
+        sku = str(body['sku']).strip()[:60]
+        row['sku'] = sku or None
+        changes.append(f'sku {sku or "cleared"}')
     if body.get('quote_on') is not None:
         q = str(body['quote_on']).strip()
         try:

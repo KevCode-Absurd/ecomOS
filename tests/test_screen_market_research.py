@@ -2663,6 +2663,63 @@ class LaneOnCandidateTest(unittest.TestCase):
             audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH = saved
 
 
+class LaunchReadTest(unittest.TestCase):
+    def test_launch_read_from_the_monthly_sku_table(self):
+        import tempfile
+        saved = (audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH, api.DECISIONS_PATH)
+        tmp = Path(tempfile.mkdtemp())
+        audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH, api.DECISIONS_PATH = tmp / 'p.json', tmp / 'pc.json', tmp / 'pt.json', tmp / 'd.json'
+        try:
+            data = audit.brand_data('bombas')
+            D = audit.last_full_day(data, 'bombas')
+            br = audit.brain('bombas', today=D)
+            rd = audit.Reader(data, 'bombas', D)
+            rows_m, _ = audit.mix_rows(data, 'bombas')
+            sku = 'BMB-SK-M-ANK-1'
+            last_whole = audit.last_whole_month(D)
+            months = sorted({r['month'] for r in rows_m if r['sku'] == sku and r['month'] <= last_whole})   # whole months only: the current month never counts
+            launch_month = months[-2]                      # launched at the start of the month before the last whole one: 2 whole months to read
+            units_2 = sum(r['units'] for r in rows_m if r['sku'] == sku and r['month'] in months[-2:])
+            net_2 = round(sum(r['net_sales'] for r in rows_m if r['sku'] == sku and r['month'] in months[-2:]), 2)
+            read_on = (D - timedelta(days=1)).isoformat()
+            rows = [{'candidate_id': 'a', 'brand': 'bombas', 'name': 'A', 'stage': 'go', 'launched_on': launch_month + '-01', 'sku': sku, 'first_run': {'units': units_2 * 2}, 'planned_price': 14.0, 'cogs_estimate': 4.0, 'post_launch': {'metric': 'units', 'direction': 'up', 'floor': units_2 + 1, 'read_on': read_on, 'owner': 'Sam'}},
+                    {'candidate_id': 'b', 'brand': 'bombas', 'name': 'B', 'stage': 'go', 'launched_on': launch_month + '-01'},
+                    {'candidate_id': 'c', 'brand': 'bombas', 'name': 'C', 'stage': 'go', 'launched_on': launch_month + '-01', 'sku': 'NOPE-1'},
+                    {'candidate_id': 'd', 'brand': 'bombas', 'name': 'D', 'stage': 'go', 'launched_on': D.isoformat(), 'sku': sku},
+                    {'candidate_id': 'e', 'brand': 'bombas', 'name': 'E', 'stage': 'go', 'launched_on': launch_month + '-01', 'sku': sku, 'post_launch': {'metric': 'units', 'direction': 'up', 'floor': 1, 'read_on': read_on, 'owner': 'Sam'}},
+                    {'candidate_id': 'f', 'brand': 'bombas', 'name': 'F', 'stage': 'go', 'launched_on': launch_month + '-01', 'sku': sku, 'post_launch': {'metric': 'units', 'direction': 'up', 'floor': 1, 'read_on': (D + timedelta(days=10)).isoformat(), 'owner': 'Sam'}},
+                    {'candidate_id': 'g', 'brand': 'bombas', 'name': 'G', 'stage': 'gated'}]
+            audit.PIPELINE_PATH.write_text(json.dumps({'rows': rows}), encoding='utf-8')
+            lr = audit.launch_read('bombas', data, br, rd, D)
+            by = {r['candidate_id']: r for r in lr['rows']}
+            self.assertNotIn('g', by)
+            self.assertEqual({k: v['verdict'] for k, v in by.items()}, {'a': 'below_floor', 'b': 'no_sku', 'c': 'no_data', 'd': 'no_months', 'e': 'on_plan', 'f': 'reading'})
+            self.assertEqual((by['a']['months'], by['a']['units'], by['a']['net_sales']), (months[-2:], units_2, net_2))
+            self.assertEqual(by['a']['sell_through'], 0.5)
+            self.assertEqual(by['a']['avg_price'], round(net_2 / units_2, 2))
+            self.assertIsNotNone(by['a']['margin_pct_real'])           # the gate at the average price on the quoted cost
+            self.assertFalse(lr['returns_available'])                    # Bombas has no reversed orders table: unavailable, never 0
+            self.assertIsNone(by['a']['returns'])
+            found = audit.launch_read_findings('bombas', data, br, rd, D)
+            self.assertEqual(sorted((f['rule_id'], f['id'].split('.')[-1]) for f in found), [('PROD-R61', 'b'), ('PROD-R62', 'a')])
+            fa = next(f for f in found if f['rule_id'] == 'PROD-R62')
+            self.assertEqual((fa['severity'], fa['money_at_stake']['usd']), ('high', round(net_2)))
+            self.assertTrue(fa['evidence'][0]['simulated'])
+            self.assertIn('Sam decides continue, pivot or kill now', fa['sentence'])
+            for f in found:
+                self.assertIsNotNone(api.recipe(f))
+            self.assertEqual(api.recipe(fa)['owner'], 'person')
+            self.assertIn('PROD-R62', api.CANDIDATE_RULES)
+            r = api.candidate_update('bombas', 'b', {'sku': sku, 'who': 'person'}, D)
+            self.assertEqual(r['changes'], ['sku ' + sku])
+            self.assertNotIn('b', [f['id'].split('.')[-1] for f in audit.launch_read_findings('bombas', data, br, rd, D) if f['rule_id'] == 'PROD-R61'])
+            # the sample brand has no monthly product table: everything reads unavailable
+            sd = api.sample_data()
+            self.assertEqual(audit.launch_read('sample', sd, None, audit.Reader(sd, None, audit.last_full_day(sd, None)), audit.last_full_day(sd, None))['rows'], [])
+        finally:
+            audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH, api.DECISIONS_PATH = saved
+
+
 class SecondBrandTest(unittest.TestCase):
     """The desk is not Bombas-shaped: the sample brand (Tallgrass Goods, kitchen goods, no brain, no web pass) reads
     nothing of Bombas and every route still answers."""

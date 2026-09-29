@@ -996,6 +996,28 @@
         open.length && actionFor(open[0].finding_id) ? { label: 'Open the first', onClick: () => openAction(actionFor(open[0].finding_id)) } : null));
   }
 
+  function launchReadBlock(lr) {
+    const rows = (lr && lr.rows) || [];
+    if (!rows.length) return UI.emptyState({ screen: SLUG, title: 'Nothing launched yet', text: 'Once a candidate carries a launch date (Launched on, in the launch plan), its first months are read here.', missing: [lr && lr.table ? 'pipeline' : 'products_monthly'] });
+    const vt = { below_floor: 'Below the floor', no_sku: 'No SKU mapped', no_read: 'No read written', no_data: 'SKU not in the table', no_months: 'No whole month yet', reading: 'Reading', on_plan: 'On plan' };
+    const setSku = (r) => { const v = prompt('SKU for ' + r.name + ' as the monthly product table names it', r.sku || ''); if (v == null) return; candidatePost('candidates/' + r.candidate_id, { sku: v.trim(), who: 'person' }); };
+    const vrows = rows.map((r) => { const a = actionFor(r.finding_id); return Object.assign({}, r, {
+      skuText: r.sku || 'none', monthsText: r.months.length ? r.months[0] + (r.months.length > 1 ? ' to ' + r.months[r.months.length - 1] : '') : 'none yet',
+      unitsText: r.units == null ? NA : fmt.int(r.units) + (r.sell_through != null ? ' (' + Math.round(r.sell_through * 100) + ' percent of the first run)' : ''), salesText: r.net_sales == null ? NA : fmt.money(r.net_sales),
+      priceText: r.avg_price == null ? NA : fmt.money(r.avg_price) + (r.planned_price ? ' vs ' + fmt.money(r.planned_price) + ' planned' : ''), marginText: r.margin_pct_real == null ? NA : r.margin_pct_real + ' percent' + (r.margin_floor_pct != null ? ' vs ' + r.margin_floor_pct + ' floor' : ''),
+      retText: !r.returns_available ? 'unavailable (no reversed orders table)' : r.returns && r.returns.rate != null ? Math.round(r.returns.rate * 100) + ' percent (' + r.returns.n + ')' : NA,
+      readText: r.read && r.read.complete ? r.read.metric + ' ' + r.read.direction + ' ' + r.read.floor + ' by ' + fmt.date(r.read.read_on) + (r.metric_value != null ? ', reads ' + r.metric_value : '') : 'not written',
+      actions: [a ? { label: r.verdict === 'below_floor' ? 'Decide now' : 'Map the SKU', onClick: () => openAction(a) } : null, { label: 'SKU', cls: 'quiet', onClick: () => setSku(r) }].filter(Boolean) }); });
+    const tbl = UI.verdictTable({
+      columns: [{ key: 'name', label: 'Candidate' }, { key: 'skuText', label: 'SKU' }, { key: 'monthsText', label: 'Months read' }, { key: 'unitsText', label: 'Units' }, { key: 'salesText', label: 'Net sales' }, { key: 'priceText', label: 'Average price' }, { key: 'marginText', label: 'Margin at real cost' }, { key: 'retText', label: 'Returns' }, { key: 'readText', label: 'The read' }],
+      rows: vrows,
+      verdict: { at: 1, kind: (r) => r.verdict === 'below_floor' ? 'fix' : r.verdict === 'on_plan' ? 'keep' : r.verdict === 'reading' || r.verdict === 'no_months' ? 'watch' : 'na', text: (r) => vt[r.verdict], reason: () => lr.rule },
+      actions: { label: 'Do', onClick: () => {} }, sort: false });
+    const open = rows.filter((r) => r.verdict === 'below_floor' || r.verdict === 'no_sku');
+    return el('div', { class: 'stack' }, el('div', { class: 'card scroll' }, tbl), el('p', { class: 'micro faint', text: 'Rule: ' + lr.rule + '. Table: ' + (lr.table || 'not connected') + '. Numbers are simulated until a real store connects.' }),
+      gapLine(open.length ? open.map((r) => r.name + ' (' + vt[r.verdict].toLowerCase() + ')').join(', ') + '.' : 'Every launch is on plan, being read, or waiting for its first whole month.', open.length && actionFor(open[0].finding_id) ? { label: 'Open the first', onClick: () => openAction(actionFor(open[0].finding_id)) } : null));
+  }
+
   function scorecardBlock(sc) {
     const rows = (sc && sc.rows) || [];
     if (!rows.length) return el('p', { class: 'muted', text: 'No candidate to score.' });
@@ -1439,6 +1461,7 @@
     parts.push(section('desk-tech-packs', 'Which candidates have a real, versioned spec ready for sourcing?', 'Tech pack versions per candidate: tolerances, the bill of materials and the packaging cost line. A pack saved from the card becomes the current version and supersedes the last.', techPackBlock(d.tech_packs)));
     parts.push(section('desk-first-run', 'How big is the first run, and does it have to be that big?', 'From gated on, the first production run per candidate: units wanted, the format and its MOQ, the cash it ties up as a share of 28-day net revenue, the lower-MOQ alternative considered (bank idea BRD-249), and whether the packaging is custom before the product has proven itself (bank idea PRD-100).', firstRunsBlock(d.first_runs, d.packaging)));
     parts.push(section('desk-sourcing', 'Where does the first run come from, and against what was that compared?', 'Once a first run is decided: the sourcing channel on file (agent, marketplace direct, domestic, own factory, private label) with landed cost a unit, days to stock and branding options, and at least one alternative compared on the same three numbers before the order goes in (bank idea PRD-099).', sourcingBlock(d.sourcing)));
+    parts.push(section('desk-launch-read', 'How is each launch doing against its plan?', 'Per launched candidate: whole months read from the monthly SKU table since the launch month, units and net sales against the first run and the planned price, the margin at the real cost, returns where the table exists, and the metric written before the test against its floor at the read date (bank idea PRD-125). No SKU or no table reads unavailable.', launchReadBlock(d.launch_reads)));
     parts.push(section('desk-requote', 'Has the volume outgrown the quote?', 'Units ordered in total per candidate against the re-quote steps (500 and 1,000) and the units the quote on file covered. Crossing a step on an old quote means the margin still prices at first-order cost (bank idea PRD-101).', requoteBlock(d.requotes)));
     parts.push(section('desk-samples', 'Has a sample run through our own chain?', 'From shortlisted on, or once a first run is decided: the sample ordered, received and tested through the store\'s own fulfilment before any MOQ order (bank idea PRD-098).', samplesBlock(d.samples)));
     parts.push(section('desk-hours', 'Has any candidate used up its research hours?', 'Hours logged per candidate against the hours allowed through its stage, from the brand\'s budget per stage. Research cannot sprawl past the box.', hoursBlock(d.hours)));
