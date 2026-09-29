@@ -1,0 +1,630 @@
+{
+  "screen": "09-creative",
+  "title": "Creative",
+  "top_jobs": [
+    {
+      "id": "T1",
+      "job": "When Monday numbers land, help me see which ads are winning and losing and why, broken into hook, message, proof and offer, so I stop feeding ads that look busy and do not sell and the next brief starts from what we learned",
+      "metric": "share of spend on ads at or under target cost per purchase, 7 day",
+      "from_v2": [1, 8, 22, 26]
+    },
+    {
+      "id": "T2",
+      "job": "When the 2 or 3 ads carrying the account start to tire, help me have fresh variants of the proven winners ready to take over, so I do not see costs jump the week they fade",
+      "metric": "share of new ads launched in 28 days that reach target cost per purchase (hit rate)",
+      "from_v2": [2, 4, 6, 11, 20, 32]
+    },
+    {
+      "id": "T3",
+      "job": "When cost per new customer climbs and most new ads speak to people who already know us, help me aim more of them at shoppers who have never heard of us, using what rivals and buyers teach us, so I grow with new buyers",
+      "metric": "share of spend on unaware and problem aware ads, 28 day",
+      "from_v2": [12, 15, 29, 35]
+    },
+    {
+      "id": "T4",
+      "job": "When we can make 50 new ads a week with AI and editors, help me make the ones that deserve test budget and know what each cost to make, so I do not pay for ads that never pay back",
+      "metric": "production cost per winning ad, 90 day",
+      "from_v2": [5, 10, 17, 18, 21, 24, 25, 30]
+    },
+    {
+      "id": "T5",
+      "job": "When I decide which creators to brief again, help me see who drives purchases, not just views, and keep their rights in order, so I put the creator budget into people whose videos sell",
+      "metric": "cost per purchase on creator and partnership ads vs brand handle ads, 28 day",
+      "from_v2": [16, 31, 34]
+    }
+  ],
+  "jobs": [
+    {
+      "id": "09-01",
+      "top": "T1",
+      "job": "Load every ad we ran in the last 12 months into one archive with the video or image, copy, dates, spend, purchases and placement, so any past ad can be found in 10 seconds",
+      "trigger": "once at onboarding, then a daily pull",
+      "enablers": ["creative-archive"],
+      "inputs": [
+        {"need": "12 months of Meta ads at ad level with media, copy, spend, purchases and value", "from": "Meta Ads", "status": "connected"},
+        {"need": "TikTok ad history with media, when the brand runs TikTok", "from": "TikTok Ads", "status": "setup"},
+        {"need": "a naming rule: product, concept, angle, format, date", "from": "ads shelf", "status": "brain"},
+        {"need": "a list of ads the founder remembers as big wins or big losses", "from": "founder interview", "status": "founder"}
+      ],
+      "steps": [
+        "Pull every ad with its media, copy, headline, landing URL, dates, spend, purchases and value",
+        "Keep ad-level rows even when 2 ads share one image; group them under one creative id",
+        "Flag dynamic and mixed creatives so their results are not read as one ad",
+        "Rename in the archive (not in Meta) to the naming rule: product, concept, angle, format, date",
+        "Add filters for product, date, spend band, cost per purchase band and status",
+        "Ask the founder to star the 5 ads they remember and check the archive agrees with the numbers"
+      ],
+      "output": "a searchable archive of every ad with media, copy and results, dynamic ads flagged",
+      "next": "feeds 09-02 (tag every ad) and 09-03 (Monday verdict)",
+      "watch": {"metric": "share of last 12 months of spend covered by archived ads with media", "window": "12 month", "source": "Meta Ads"},
+      "drives": "hit rate of new ads, since briefs start from real past results",
+      "business": "gross profit",
+      "score": {"money": 3, "satisfaction": 5, "speed": 3, "ease": 4},
+      "ready": 5,
+      "effort": "days"
+    },
+    {
+      "id": "09-02",
+      "top": "T1",
+      "job": "Tag every ad in the archive by hook type, angle, pain point, avatar, awareness level, format, length, first frame, proof, offer, CTA and talent, and check 20 tags by hand each week",
+      "trigger": "once at onboarding, then each new ad within a day of launch",
+      "enablers": ["creative-tags", "creative-archive"],
+      "inputs": [
+        {"need": "the archive with media and copy", "from": "creative-archive", "status": "enabler"},
+        {"need": "tag list with a plain definition and 3 examples per tag", "from": "creative-tags", "status": "enabler"},
+        {"need": "avatars and pain points", "from": "customers shelf", "status": "brain"},
+        {"need": "angles library", "from": "messaging shelf", "status": "brain"},
+        {"need": "a person for 20 minutes a week to check tags", "from": "founder or creative lead", "status": "founder"}
+      ],
+      "steps": [
+        "Write the tag list: 13 parts, each with a plain definition and 3 examples from this brand's own ads",
+        "Tag the top 100 ads by spend first, then the rest",
+        "Read the first 3 seconds of each video and the headline of each static for hook and first frame tags",
+        "Pull 20 tags at random each week; the checker marks right or wrong",
+        "Fix the definition of any tag wrong 3 times or more and re-tag ads with that tag",
+        "Show a coverage table: how many ads and how much spend per tag value"
+      ],
+      "output": "every ad tagged on 13 parts, with a weekly accuracy score and a coverage table",
+      "next": "feeds 09-04 (why winners won), 09-08 (variants) and 09-11 (awareness heat map)",
+      "watch": {"metric": "tag accuracy on the weekly check of 20", "window": "weekly", "source": "creative-tags"},
+      "drives": "share of spend on ads at or under target cost per purchase",
+      "business": "gross profit",
+      "score": {"money": 3, "satisfaction": 4, "speed": 2, "ease": 3},
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "09-03",
+      "top": "T1",
+      "job": "Mark every live ad scale, watch or cut each Monday, name the part that made it win or lose (hook rate, hold rate, click rate or page), and move ads under 3 times target spend to 'not read yet'",
+      "trigger": "every Monday after the ad pull, and any day spend jumps 20 percent",
+      "enablers": ["creative-archive", "creative-tags"],
+      "inputs": [
+        {"need": "last 7 and 28 days of ad-level spend, impressions, 3 second views, thruplays, clicks, purchases, value", "from": "Meta Ads", "status": "connected"},
+        {"need": "target cost per purchase per product", "from": "finance shelf", "status": "brain"},
+        {"need": "store orders by landing page and UTM", "from": "Shopify", "status": "connected"},
+        {"need": "tags per ad", "from": "creative-tags", "status": "enabler"}
+      ],
+      "steps": [
+        "Compute per ad in code: hook rate (3 second views / impressions), hold rate (thruplays / 3 second views), click rate, page conversion, cost per purchase",
+        "Put every ad under 3 times target spend in 'not read yet', not in cut",
+        "Mark scale if cost per purchase is under target for 7 days, cut if over 1.5 times target after 3 times target spend, else watch",
+        "For each cut, name the weakest link against the account median: hook, hold, click or page",
+        "If click rate is fine and page conversion is under half the site rate, send it to 09-05 as a page problem, not a creative one",
+        "Hand the list to the media buyer with dollars at stake per ad"
+      ],
+      "output": "a Monday table: every live ad with scale, watch, cut or not read yet, the weak link and the dollars at stake",
+      "next": "feeds 11-01 (ad set cut, hold, scale) and 09-05 (postmortem of cuts)",
+      "watch": {"metric": "share of spend on ads at or under target cost per purchase", "window": "7 day", "source": "Meta Ads"},
+      "drives": "blended cost per new customer, 28 day",
+      "business": "gross profit",
+      "score": {"money": 5, "satisfaction": 5, "speed": 5, "ease": 4},
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "09-04",
+      "top": "T1",
+      "job": "Write why each of the top 5 winners of the last 90 days worked: match its tags to the idea bank, the knowledge cards and library ads with the same tags, name the principle, and write a test that repeats it",
+      "trigger": "on the 1st of each month, and when a new ad passes 5 times target spend under target",
+      "enablers": ["principle-matcher", "creative-tags"],
+      "inputs": [
+        {"need": "top 5 ads by spend that held target for 14 days", "from": "creative-archive", "status": "enabler"},
+        {"need": "tags per ad", "from": "creative-tags", "status": "enabler"},
+        {"need": "idea bank filtered to paid social creative and ad copy", "from": "ideas/v1", "status": "have"},
+        {"need": "knowledge cards on hooks, angles and formats", "from": "data/library-v3", "status": "have"},
+        {"need": "winner board and loser board", "from": "ads shelf", "status": "brain"}
+      ],
+      "steps": [
+        "Pick the 5 ads with the most spend that held target cost per purchase for 14 days",
+        "Find ideas and cards whose tags match each winner's hook, angle, awareness level and format",
+        "Find our own losers with the same tags; if the tag also loses, it is not the reason",
+        "Write the principle in one sentence, e.g. 'names the pain in the buyer's words in the first 2 seconds'",
+        "Write one test that repeats the principle on a new angle, with a pass line",
+        "Flag any claim in the winner we cannot prove, before it is copied into new ads"
+      ],
+      "output": "5 winner cards: the principle, the proof it is the reason, the repeat test and any claim flag",
+      "next": "feeds 09-08 (near and far variants), 09-10 (other formats) and 10-05 (copy batch)",
+      "watch": {"metric": "hit rate of ads briefed from a winner card vs ads briefed without one", "window": "28 day", "source": "Meta Ads"},
+      "drives": "cost per new customer",
+      "business": "gross profit",
+      "score": {"money": 4, "satisfaction": 4, "speed": 3, "ease": 3},
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "09-05",
+      "top": "T1",
+      "job": "Run a postmortem on every ad that spent over 3 times target without hitting it: who saw it by age, gender and placement, where people dropped, the likely cause, and a fix and relaunch plan or a kill note",
+      "trigger": "every Monday, for each ad marked cut in 09-03",
+      "enablers": ["creative-postmortem", "segment-map"],
+      "inputs": [
+        {"need": "ad-level breakdowns by age, gender, placement and region with spend and purchases", "from": "Meta Ads", "status": "connected"},
+        {"need": "landing page sessions, add to cart and orders by ad UTM", "from": "GA4", "status": "connected"},
+        {"need": "scroll depth on the landing page", "from": "Clarity", "status": "setup"},
+        {"need": "tags and the winner cards", "from": "principle-matcher", "status": "enabler"}
+      ],
+      "steps": [
+        "Lay out the drop chain: impressions, 3 second views, thruplays, clicks, page views, add to cart, purchases",
+        "Find the step where this ad falls furthest below the account median",
+        "Split spend and purchases by age, gender and placement; mark cells that sold near target",
+        "If the page is the break, compare the ad's promise with the page headline and send it to 10-11",
+        "Write the cause in one line and pick one fix: new first frame, new hook, new page, or narrow to the good cell",
+        "Write a relaunch plan with a spend cap, or a kill note with the tag that failed"
+      ],
+      "output": "a one page postmortem per cut ad with the drop chain, the segment table, the cause and a relaunch or kill note",
+      "next": "feeds 09-06 (fail note) and 11-04 (relaunch in the good segment)",
+      "watch": {"metric": "share of relaunched ads that reach target cost per purchase", "window": "14 day", "source": "Meta Ads"},
+      "drives": "hit rate of ads and wasted spend per month",
+      "business": "gross profit",
+      "score": {"money": 4, "satisfaction": 4, "speed": 4, "ease": 3},
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "09-06",
+      "top": "T1",
+      "job": "Promote each creative test winner to the T0 standard that every new brief starts from, write a fail note for each loser, and set a date to recheck each standard",
+      "trigger": "when a creative test is read, and the 1st of each month for rechecks",
+      "enablers": ["win-loss-ledger", "principle-matcher"],
+      "inputs": [
+        {"need": "test results with the winner definition written before launch", "from": "history shelf", "status": "brain"},
+        {"need": "winner cards and postmortems", "from": "creative-postmortem", "status": "enabler"},
+        {"need": "who approves a new standard", "from": "decisions and goals shelf", "status": "brain"}
+      ],
+      "steps": [
+        "For each test, compare the result with the winner definition written before launch",
+        "Win: write the rule in one line (e.g. 'open on the problem, not the product') and add it to the T0 list",
+        "Loss: write a fail note with what was tried, the spend, the tag and the likely reason",
+        "Inconclusive (under 3 times target spend): mark as not tested, never as failed",
+        "Set a recheck date 90 days out for each standard; on that date run 1 ad that breaks the rule",
+        "Founder signs new standards before they reach the brief template"
+      ],
+      "output": "a T0 list of creative rules with proof and recheck dates, and a fail list nobody repeats",
+      "next": "feeds every new brief in 09-08, 09-12 and 09-15",
+      "watch": {"metric": "share of new briefs that cite a T0 rule", "window": "28 day", "source": "win-loss-ledger"},
+      "drives": "hit rate of new ads",
+      "business": "gross profit",
+      "score": {"money": 3, "satisfaction": 5, "speed": 2, "ease": 4},
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "09-07",
+      "top": "T2",
+      "job": "Check each ad with over 20 percent of spend every Monday for wear: frequency, hook rate and cost per purchase over 14 days, and label it worn out, starved of budget, or out of new people",
+      "trigger": "every Monday, and any day the top ad's cost per purchase rises 15 percent",
+      "enablers": ["fatigue-watch", "creative-archive"],
+      "inputs": [
+        {"need": "daily ad-level frequency, reach, impressions, 3 second views, spend and purchases for 28 days", "from": "Meta Ads", "status": "connected"},
+        {"need": "share of reach that is new vs seen before, per ad set", "from": "Meta Ads", "status": "connected"},
+        {"need": "target cost per purchase", "from": "finance shelf", "status": "brain"}
+      ],
+      "steps": [
+        "List ads with over 20 percent of account spend in the last 7 days",
+        "For each, plot hook rate, click rate, frequency and cost per purchase by day for 14 days",
+        "Worn out: hook rate down 25 percent from its first 7 days while frequency rises",
+        "Starved: hook and click rate steady but spend cut by the platform or a budget change",
+        "Out of new people: reach flat, frequency over 3 on cold ad sets, cost rising for every ad in the set",
+        "Send worn out ads to 09-09 for new openings; send out of new people to 11-10"
+      ],
+      "output": "a weekly wear list: each big ad labelled worn out, starved or out of new people, with the chart behind it",
+      "next": "feeds 09-09 (fresh openings) and 11-10 (funnel stage split)",
+      "watch": {"metric": "days between a wear flag and a replacement ad going live", "window": "per flag", "source": "fatigue-watch"},
+      "drives": "cost per purchase on the top 3 ads",
+      "business": "gross profit",
+      "score": {"money": 4, "satisfaction": 4, "speed": 4, "ease": 4},
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "09-08",
+      "top": "T2",
+      "job": "Make 5 variants of each of last month's top 3 winners, 3 near (new hook, new first frame, new length) and 2 far (new angle, new avatar or new format), all keeping the winning principle, and launch each set as one test",
+      "trigger": "on the 1st of each month, and when 09-07 flags a winner",
+      "enablers": ["variant-stack", "principle-matcher"],
+      "inputs": [
+        {"need": "top 3 winners with tags and winner cards", "from": "principle-matcher", "status": "enabler"},
+        {"need": "voice rules and allowed claims", "from": "voice and claims shelves", "status": "brain"},
+        {"need": "real product photos and clips with rights", "from": "content and brand kit shelf", "status": "brain"},
+        {"need": "an editor or designer, in house or freelance", "from": "team", "status": "founder"}
+      ],
+      "steps": [
+        "Write the principle each winner followed at the top of its variant sheet",
+        "Near 1 to 3: keep the body; change only the hook line, the first frame, or cut to a new length",
+        "Far 1 and 2: keep the principle; change the angle, the avatar or the format (static to video, UGC to founder)",
+        "Label each variant near or far and name the one thing it changes",
+        "Check each against claims and use the real product photo, not a redrawn one",
+        "Launch the 5 as one ad set beside the winner, never inside it, with the read spend set to 3 times target"
+      ],
+      "output": "15 variants a month, each labelled near or far with the one change, launched as 3 tests",
+      "next": "feeds 11-15 (test launch) and 09-06 (win or fail note)",
+      "watch": {"metric": "hit rate of near vs far variants", "window": "28 day", "source": "Meta Ads"},
+      "drives": "cost per new customer",
+      "business": "gross profit",
+      "score": {"money": 5, "satisfaction": 4, "speed": 4, "ease": 3},
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "09-09",
+      "top": "T2",
+      "job": "Put 5 new openings on the body of a worn out winner within a week, each changing one lever (angle, offer, avatar or format) across all 3 hook layers: sound, on-screen text and the first picture",
+      "trigger": "when 09-07 labels a winner worn out",
+      "enablers": ["variant-stack", "script-builder"],
+      "inputs": [
+        {"need": "the worn out ad and its drop chain", "from": "fatigue-watch", "status": "enabler"},
+        {"need": "hook types that won and lost for this brand", "from": "ads shelf", "status": "brain"},
+        {"need": "hook ideas from the idea bank", "from": "ideas/v1", "status": "have"},
+        {"need": "raw footage or new clips for the first 3 seconds", "from": "content and brand kit shelf", "status": "brain"}
+      ],
+      "steps": [
+        "Cut the old hook off and keep the body from the first second the product appears",
+        "Write 10 hooks: 3 new angles, 2 new avatars, 2 new offers, 3 new formats (text on screen, talking head, product demo)",
+        "Pick 5 that do not sell in the first line and do not name the product",
+        "Build each hook in 3 layers: what is heard, what is read, what is seen",
+        "Use new footage in the first frame; a recoloured old frame is not a new hook",
+        "Launch the 5 in a new ad set beside the old ad and read at 3 times target spend"
+      ],
+      "output": "5 new openings on a proven body, live within 7 days of the wear flag",
+      "next": "feeds 09-06 (promote the best opening) and 11-15 (test read)",
+      "watch": {"metric": "hook rate of new openings vs the worn out ad's first 7 days", "window": "7 day", "source": "Meta Ads"},
+      "drives": "cost per purchase on the refreshed concept",
+      "business": "gross profit",
+      "score": {"money": 5, "satisfaction": 4, "speed": 5, "ease": 4},
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "09-10",
+      "top": "T2",
+      "job": "Turn each winning principle into 4 other formats (static, carousel, UGC video and a native article ad), and send the matching block to the landing page and the email team",
+      "trigger": "when 09-04 writes a winner card",
+      "enablers": ["format-translator", "principle-matcher"],
+      "inputs": [
+        {"need": "the winner card with its principle", "from": "principle-matcher", "status": "enabler"},
+        {"need": "format specs per placement: sizes, safe zones, text limits", "from": "format-translator", "status": "enabler"},
+        {"need": "formats already live and their share of spend", "from": "creative-tags", "status": "enabler"},
+        {"need": "brand kit and product photos", "from": "content and brand kit shelf", "status": "brain"}
+      ],
+      "steps": [
+        "List formats the account already runs and their share of spend; pick the 4 with the least",
+        "Rewrite the principle for each format: one frame for a static, 5 cards for a carousel, a 30 second script for UGC, 600 words for a native article",
+        "Keep the same promise, proof and awareness level in all 4",
+        "Send the page block version to 07-landing-pages-cro and the email version to 14-email-messaging",
+        "Launch the 4 formats in one ad set and compare cost per purchase by format"
+      ],
+      "output": "4 new format versions of one proven idea, plus a page block and an email block",
+      "next": "feeds 11-15 (launch) and 10-14 (carry the line everywhere)",
+      "watch": {"metric": "share of spend on the account's top format", "window": "28 day", "source": "Meta Ads"},
+      "drives": "cost per new customer and risk of one ad carrying the account",
+      "business": "revenue",
+      "score": {"money": 4, "satisfaction": 3, "speed": 3, "ease": 3},
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "09-11",
+      "top": "T3",
+      "job": "Tag every live ad and 3 rivals' active ads by awareness level, and show spend share per level for us next to each rival",
+      "trigger": "once at onboarding, then every Monday after the ad pull",
+      "enablers": ["awareness-map", "competitor-feed"],
+      "inputs": [
+        {"need": "last 90 days of our ads with media, copy, spend and purchases", "from": "Meta Ads", "status": "connected"},
+        {"need": "3 to 5 competitor page ids", "from": "competitors shelf", "status": "brain"},
+        {"need": "rivals' active ads with start dates", "from": "Meta Ad Library", "status": "connected"},
+        {"need": "awareness rubric with 5 examples per level", "from": "awareness-map", "status": "enabler"}
+      ],
+      "steps": [
+        "Pull our ads and 3 rivals' active ads",
+        "Tag each ad with one awareness level (unaware, problem aware, solution aware, product aware, most aware) and one funnel stage, using the rubric",
+        "Spot check 20 tags by hand and fix the rubric where it is wrong",
+        "Weight our levels by spend; weight rivals' by days live, since their spend is not public",
+        "Compute cost per new customer by level for our ads, from store new customer orders",
+        "Write the 1 line gap: the level where we spend least and rivals run most"
+      ],
+      "output": "a heat map: 5 awareness levels by 4 brands, share in each cell, cost per new customer by level, and the gap line",
+      "next": "feeds 09-12 (brief top of funnel ads) and 11-11 (prospecting budget split)",
+      "watch": {"metric": "share of spend on unaware and problem aware ads", "window": "28 day", "source": "Meta Ads"},
+      "drives": "new customers per week, and cost per new customer",
+      "business": "revenue",
+      "score": {"money": 4, "satisfaction": 3, "speed": 3, "ease": 4},
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "09-12",
+      "top": "T3",
+      "job": "Brief 4 top of funnel ads for the thinnest awareness level: pull 10 references at that level from the swipe file, keep 3 principles, and write a one page brief for each ad",
+      "trigger": "every other Monday, after 09-11",
+      "enablers": ["awareness-map", "swipe-file", "script-builder"],
+      "inputs": [
+        {"need": "the gap line from the heat map", "from": "awareness-map", "status": "enabler"},
+        {"need": "swipe file filtered by awareness level", "from": "inspiration shelf", "status": "brain"},
+        {"need": "pain points and the words buyers use for the problem", "from": "customers shelf", "status": "brain"},
+        {"need": "T0 creative rules", "from": "win-loss-ledger", "status": "enabler"}
+      ],
+      "steps": [
+        "Load the brain core page, the claims shelf and the voice shelf before any brief",
+        "Filter the swipe file to the gap level and pick 10 ads; note why each stops the scroll",
+        "Reduce the 10 to 3 principles in one line each; never copy text, logos, products or faces",
+        "Write 4 briefs: avatar, the problem in their words, the hook, the story, the proof, the page it lands on",
+        "For unaware and problem aware ads, point the ad to an article or quiz page, not the product page",
+        "Judge these ads on cost per new customer over 7 day click, not last click return"
+      ],
+      "output": "4 one page briefs for top of funnel ads, each tied to a principle and a landing page",
+      "next": "feeds 09-15 (AI video stack) and 11-11 (budget for top of funnel)",
+      "watch": {"metric": "new customer share of purchases from these ads", "window": "28 day", "source": "Shopify"},
+      "drives": "new customers per week",
+      "business": "revenue",
+      "score": {"money": 4, "satisfaction": 3, "speed": 3, "ease": 4},
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "09-13",
+      "top": "T3",
+      "job": "Pull rivals' ads and organic posts every Monday, keep those live 30 days or more as signals, write the base principle of each in one line, and turn the best 3 into our own script, static and video",
+      "trigger": "every Monday",
+      "enablers": ["competitor-feed", "swipe-file", "script-builder"],
+      "inputs": [
+        {"need": "competitor page ids and social handles", "from": "competitors shelf", "status": "brain"},
+        {"need": "rivals' ads with start dates", "from": "Meta Ad Library", "status": "connected"},
+        {"need": "rivals' top organic posts by views, saved by hand or a cheap tool", "from": "Instagram and TikTok", "status": "setup"},
+        {"need": "our claims and voice", "from": "claims and voice shelves", "status": "brain"}
+      ],
+      "steps": [
+        "Pull each rival's active ads and last 30 organic posts; sort ads by days live, posts by views",
+        "Save the top 10 to the swipe file with a note: what it does and which tag or gap it fills",
+        "Write the base principle behind each, e.g. 'shows the old way failing before the product appears'",
+        "Pick 3 principles that fit a gap in 09-11 and that we have not tested",
+        "Write our own script, one static and one video brief per principle, in our voice with our proof",
+        "Check nothing copies their words, logo, product or faces"
+      ],
+      "output": "a weekly note of 10 rival signals with principles, and 3 of our own scripts built from them",
+      "next": "feeds 09-15 (AI video stack) and 09-16 (static test first)",
+      "watch": {"metric": "hit rate of ads built from rival principles", "window": "28 day", "source": "Meta Ads"},
+      "drives": "new customers per week",
+      "business": "revenue",
+      "score": {"money": 3, "satisfaction": 4, "speed": 3, "ease": 4},
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "09-14",
+      "top": "T3",
+      "job": "Find the 10 moments when buyers hire our product from reviews, tickets and a post-purchase question, and write 2 hooks per moment in their own words",
+      "trigger": "once a quarter, and when the team runs out of ideas",
+      "enablers": ["customer-jobs", "review-miner"],
+      "inputs": [
+        {"need": "all reviews with text and rating", "from": "reviews app", "status": "connected"},
+        {"need": "last 6 months of tickets and chats", "from": "helpdesk", "status": "connected"},
+        {"need": "a post-purchase question: what was going on when you decided to buy", "from": "post-purchase survey", "status": "setup"},
+        {"need": "5 customer calls of 20 minutes", "from": "founder or CX lead", "status": "founder"}
+      ],
+      "steps": [
+        "Pull every sentence that names a moment: a trip, a new job, a gift, a problem that got worse",
+        "Group them into 10 moments and count how many buyers name each",
+        "For each moment note what they used before and what nearly stopped them",
+        "Write 2 hooks per moment using their exact words, not ours",
+        "Mark moments no live ad speaks to and send the top 3 to the brief in 09-12"
+      ],
+      "output": "a moments table: 10 moments with counts, the old way, the doubt, and 20 hooks",
+      "next": "feeds 09-12 (briefs), 10-17 (moment copy) and 02-customers-avatars",
+      "watch": {"metric": "hook rate of moment hooks vs account median", "window": "7 day", "source": "Meta Ads"},
+      "drives": "new customers per week",
+      "business": "revenue",
+      "score": {"money": 3, "satisfaction": 4, "speed": 3, "ease": 4},
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "09-15",
+      "top": "T4",
+      "job": "Make one AI video stack a week: write the script from a winning principle and the awareness gap, write 3 variations of the hook and angle, cut each to 15, 30 and 30 to 45 seconds, render, and pick one cut per stack to launch",
+      "trigger": "every Tuesday, after the Monday read",
+      "enablers": ["video-stack", "script-builder", "brain-graph"],
+      "inputs": [
+        {"need": "access to a video tool such as Higgsfield", "from": "video tool subscription", "status": "buy"},
+        {"need": "the winning principle and the awareness gap", "from": "principle-matcher", "status": "enabler"},
+        {"need": "real product photos and clips", "from": "content and brand kit shelf", "status": "brain"},
+        {"need": "allowed claims and voice rules", "from": "claims and voice shelves", "status": "brain"},
+        {"need": "past winning scripts", "from": "ads shelf", "status": "brain"}
+      ],
+      "steps": [
+        "Write the script: hook, problem, product in use, proof, CTA, with shot notes",
+        "Write 3 variations that change the hook and the angle, not just words",
+        "Cut each variation to 15, 30 and 30 to 45 seconds, so 9 cuts",
+        "Render with the video tool; use the real product clip wherever the product is on screen",
+        "Check every cut: product looks like what arrives, no invented claim, captions readable at phone size",
+        "Pick one cut per variation by the strongest first 3 seconds, and launch the 3 as one test"
+      ],
+      "output": "a grid of 9 cuts from 1 script, 3 picked and launched as one test",
+      "next": "feeds 11-15 (launch and read the stack) and 09-06 (which length wins for this brand)",
+      "watch": {"metric": "cost per test and hook rate of AI cuts vs filmed ads", "window": "7 day", "source": "Meta Ads"},
+      "drives": "ads launched per week and hit rate",
+      "business": "gross profit",
+      "score": {"money": 4, "satisfaction": 4, "speed": 4, "ease": 3},
+      "ready": 2,
+      "effort": "days"
+    },
+    {
+      "id": "09-16",
+      "top": "T4",
+      "job": "Test each new angle as 3 cheap statics before booking a video shoot, then write the shoot list only for angles that beat the account's median hook and click rate",
+      "trigger": "before any shoot or video job over $1,000 is booked",
+      "enablers": ["format-translator", "creative-tags"],
+      "inputs": [
+        {"need": "the new angles with a one line brief each", "from": "messaging shelf", "status": "brain"},
+        {"need": "product photos and brand kit", "from": "content and brand kit shelf", "status": "brain"},
+        {"need": "account median click rate and cost per purchase for statics", "from": "Meta Ads", "status": "connected"},
+        {"need": "shoot budget and date", "from": "founder", "status": "founder"}
+      ],
+      "steps": [
+        "Make 3 statics per angle: a headline on a product photo, a problem picture, a review quote",
+        "Launch each angle as its own ad set with the same budget for 5 days",
+        "Keep angles whose click rate and cost per purchase beat the static median",
+        "Write the shoot list for kept angles only: 5 openings, product in use, proof shots, each at 9:16",
+        "Drop or rework angles that lost, and log them in 09-06"
+      ],
+      "output": "angles proven on statics and a shot list that covers only those angles",
+      "next": "feeds the shoot, then 09-08 (variants from the footage)",
+      "watch": {"metric": "share of shoot budget spent on angles that passed a static test", "window": "90 day", "source": "production-ledger"},
+      "drives": "production cost per winning ad",
+      "business": "gross profit",
+      "score": {"money": 3, "satisfaction": 4, "speed": 4, "ease": 4},
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "09-17",
+      "top": "T4",
+      "job": "Log what each finished ad cost to make and whether it paid back, by source (agency, creator, AI, in house), and show hit rate and cost per winning ad for each source every month",
+      "trigger": "when a creative invoice arrives, and the 1st of each month",
+      "enablers": ["production-ledger", "creative-archive"],
+      "inputs": [
+        {"need": "creative invoices and retainer fees by month", "from": "a Google Sheet kept by the founder", "status": "setup"},
+        {"need": "which source made each ad", "from": "ads shelf naming rule", "status": "brain"},
+        {"need": "spend, purchases and gross profit per ad", "from": "margin-view", "status": "enabler"}
+      ],
+      "steps": [
+        "Tag each ad in the archive with its source and its cost to make",
+        "Split retainers across the ads delivered that month",
+        "Per source compute in code: ads made, ads that reached target, hit rate, cost per winning ad, gross profit after ad spend",
+        "Size next month's ad count: spend divided by spend per winner, divided by hit rate",
+        "Write one line per source: keep, cut or change the brief"
+      ],
+      "output": "a monthly source table: cost per ad, hit rate, cost per winning ad, verdict per source, and next month's ad count",
+      "next": "feeds the agency review on 11-09 and 23-team-ops",
+      "watch": {"metric": "cost per winning ad by source", "window": "90 day", "source": "production-ledger"},
+      "drives": "creative spend per dollar of gross profit",
+      "business": "gross profit",
+      "score": {"money": 3, "satisfaction": 5, "speed": 2, "ease": 4},
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "09-18",
+      "top": "T5",
+      "job": "Rank every creator we paid by purchases per 1,000 views and cost per purchase on their ads, and mark each rebrief, renew or cut",
+      "trigger": "on the 1st of each month, and before any creator renewal",
+      "enablers": ["creator-roster", "creative-archive"],
+      "inputs": [
+        {"need": "creator list with fees, deliverables and handles", "from": "creators shelf", "status": "brain"},
+        {"need": "ad-level results for ads using each creator's content, including partnership ads", "from": "Meta Ads", "status": "connected"},
+        {"need": "discount code and link sales per creator", "from": "Shopify", "status": "connected"}
+      ],
+      "steps": [
+        "Map each ad and code to the creator whose content it uses",
+        "Compute in code per creator: views, purchases per 1,000 views, cost per purchase, fee per purchase",
+        "Split results by partnership ad (their handle) vs brand handle ad for the same video",
+        "Mark rebrief when views are high and purchases low, renew when both are strong, cut when both are weak",
+        "Write the one line reason for each verdict"
+      ],
+      "output": "a creator table ranked by purchases, not views, with a verdict and reason per creator",
+      "next": "feeds 09-19 (brief the next round) and 11-16 (partnership ads)",
+      "watch": {"metric": "cost per purchase on creator content", "window": "28 day", "source": "Meta Ads"},
+      "drives": "creator spend per new customer",
+      "business": "gross profit",
+      "score": {"money": 3, "satisfaction": 4, "speed": 3, "ease": 4},
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "09-19",
+      "top": "T5",
+      "job": "Brief the next 5 creators with a concept, not just 'make UGC': the principle, the hook options, the claims they may and may not say, the rights terms, and a partnership ad request",
+      "trigger": "each creator round, after 09-18",
+      "enablers": ["creator-roster", "script-builder", "claim-guard"],
+      "inputs": [
+        {"need": "creator candidates with niche, audience and past results", "from": "creators shelf", "status": "brain"},
+        {"need": "winning principles and T0 rules", "from": "principle-matcher", "status": "enabler"},
+        {"need": "allowed and forbidden claims", "from": "claims shelf", "status": "brain"},
+        {"need": "rights terms: usage length, paid use, partnership ad access", "from": "founder", "status": "founder"},
+        {"need": "creator fees", "from": "creators", "status": "buy"}
+      ],
+      "steps": [
+        "Pick 5 creators: 3 renewals from 09-18 and 2 new ones whose audience matches the best segment",
+        "Write one concept per creator: the principle, the moment, 3 hook options, what to show",
+        "Add a claims box: 5 lines they may say, 5 they must not",
+        "Set rights in writing: 90 day paid use, partnership ad access, the end date",
+        "Ask each for raw footage too, so new hooks can be cut later"
+      ],
+      "output": "5 signed creator briefs with concept, claims box, rights and partnership access",
+      "next": "feeds 11-16 (run partnership ads) and 09-20 (rights dates)",
+      "watch": {"metric": "share of creator videos that reach target cost per purchase", "window": "28 day", "source": "Meta Ads"},
+      "drives": "hit rate of creator content",
+      "business": "gross profit",
+      "score": {"money": 3, "satisfaction": 4, "speed": 2, "ease": 3},
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "09-20",
+      "top": "T5",
+      "job": "List every live ad that uses a creator's face, a customer's content or licensed music with its rights end date, and pause or replace it 14 days before the date",
+      "trigger": "every Monday",
+      "enablers": ["creator-roster", "creative-archive"],
+      "inputs": [
+        {"need": "rights terms and end dates per creator and per music track", "from": "creators shelf", "status": "brain"},
+        {"need": "live ads with media", "from": "Meta Ads", "status": "connected"},
+        {"need": "UGC library with permission status", "from": "creators shelf", "status": "brain"}
+      ],
+      "steps": [
+        "Match each live ad's media to a creator, a customer post or a music track",
+        "Flag ads with no rights record at all as a risk now",
+        "List ads whose rights end in 14 days, with their spend",
+        "For each: renew the rights, cut a version without that face or track, or plan the pause",
+        "Hand pauses to the media buyer; the agent does not pause ads"
+      ],
+      "output": "a rights calendar of live ads with end dates, and a plan for each ad within 14 days of its end",
+      "next": "feeds 11-14 (launch preflight rights check)",
+      "watch": {"metric": "live ads past their rights end date", "window": "weekly", "source": "creator-roster"},
+      "drives": "ads taken down or claimed",
+      "business": "risk",
+      "score": {"money": 2, "satisfaction": 5, "speed": 4, "ease": 4},
+      "ready": 3,
+      "effort": "hours"
+    }
+  ],
+  "new_enablers": [
+    {
+      "id": "fatigue-watch",
+      "name": "Ad wear watch",
+      "what": "Tracks each big ad's hook rate, click rate, frequency, new reach and cost per purchase day by day, and labels it worn out, starved of budget, or out of new people, so a winner is not killed or overfed by mistake.",
+      "inputs": ["daily ad-level Meta and TikTok data", "reach and frequency per ad set", "target cost per purchase"],
+      "powers": ["when to make new openings", "when the audience, not the ad, is tired", "warning before the top ad fades"],
+      "screens": ["09-creative", "11-paid-social"],
+      "note": null
+    },
+    {
+      "id": "production-ledger",
+      "name": "Creative cost ledger",
+      "what": "Links each ad to what it cost to make and who made it (agency, creator, AI, in house), then shows hit rate, cost per winning ad and gross profit per source, and sizes next month's ad count from spend and hit rate.",
+      "inputs": ["creative invoices and retainers", "source per ad", "results per ad", "margin view"],
+      "powers": ["is the agency retainer worth it", "which source to buy more from", "how many ads next month needs"],
+      "screens": ["09-creative", "23-team-ops", "21-finance-cash"],
+      "note": null
+    }
+  ]
+}

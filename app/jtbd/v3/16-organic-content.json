@@ -1,0 +1,1158 @@
+{
+ "screen": "16-organic-content",
+ "title": "Organic and content",
+ "top_jobs": [
+  {
+   "id": "T1",
+   "job": "When a post gets 400,000 views and the store sees no bump, help me see which posts, products and awareness levels actually sold to strangers, so I make content for buyers, not views",
+   "metric": "orders and new customers from organic posts per month",
+   "from_v2": [
+    1,
+    4,
+    10,
+    21,
+    25,
+    30
+   ]
+  },
+  {
+   "id": "T2",
+   "job": "When it is Monday and the team has nothing ready to post, help me pick ideas from what worked for us, what works for rivals and what customers keep asking, so I stop starting from zero every week",
+   "metric": "posts shipped per week from the plan, and share that name a product",
+   "from_v2": [
+    5,
+    8,
+    9,
+    16,
+    22,
+    27,
+    31,
+    32
+   ]
+  },
+  {
+   "id": "T3",
+   "job": "When a post takes off and the comments fill with 'where can I buy this', help me answer fast with a working link and stock ready, and put money behind the posts that sell, so I catch buyers before the moment passes",
+   "metric": "orders within 72 hours of a spike post",
+   "from_v2": [
+    2,
+    3,
+    6,
+    11,
+    12,
+    20
+   ]
+  },
+  {
+   "id": "T4",
+   "job": "When we send free product to 40 creators and only a handful post, help me pick the right people, brief them well and reuse customer proof with rights, so I get content that sells without paying for bots",
+   "metric": "posts delivered and orders per product sent",
+   "from_v2": [
+    15,
+    19,
+    23,
+    24,
+    29
+   ]
+  }
+ ],
+ "jobs": [
+  {
+   "id": "16-01",
+   "top": "T1",
+   "job": "Tag every post of the last 90 days by product, pillar, format, hook and awareness level, and join each to link clicks, orders and new customers",
+   "trigger": "once at onboarding, then every Monday",
+   "enablers": [
+    "post-ledger",
+    "creative-tags"
+   ],
+   "inputs": [
+    {
+     "need": "posts with views, reach, saves and link clicks",
+     "from": "Instagram and Facebook insights via Meta Business",
+     "status": "setup"
+    },
+    {
+     "need": "TikTok and YouTube post stats",
+     "from": "TikTok and YouTube",
+     "status": "setup"
+    },
+    {
+     "need": "orders with UTM, link in bio and codes",
+     "from": "Shopify",
+     "status": "connected"
+    },
+    {
+     "need": "tag list with definitions",
+     "from": "creative-tags",
+     "status": "enabler"
+    }
+   ],
+   "steps": [
+    "Pull 90 days of posts from each platform",
+    "Tag each post with product, pillar, format, hook type and awareness level",
+    "A person checks 20 tags and fixes the tag rules",
+    "Join each post to clicks, orders and new customers in the 72 hours after it",
+    "Rank posts by new customers, not views"
+   ],
+   "output": "a post table ranked by orders and new customers, with tags on every row",
+   "next": "feeds 16-02, 16-04 and 16-08",
+   "watch": {
+    "metric": "orders tied to organic posts",
+    "window": "28 day",
+    "source": "Shopify"
+   },
+   "drives": "new customers from organic",
+   "business": "revenue",
+   "score": {
+    "money": 4,
+    "satisfaction": 3,
+    "speed": 3,
+    "ease": 3
+   },
+   "ready": 3,
+   "effort": "days"
+  },
+  {
+   "id": "16-02",
+   "top": "T1",
+   "job": "Split each post's views into followers and strangers, and list the 10 posts that reached strangers who then bought",
+   "trigger": "monthly",
+   "enablers": [
+    "post-ledger"
+   ],
+   "inputs": [
+    {
+     "need": "views from followers vs non-followers per post",
+     "from": "Instagram and Facebook insights via Meta Business",
+     "status": "setup"
+    },
+    {
+     "need": "TikTok For You page share per video",
+     "from": "TikTok",
+     "status": "setup"
+    },
+    {
+     "need": "post to order join",
+     "from": "post-ledger",
+     "status": "enabler"
+    }
+   ],
+   "steps": [
+    "Pull follower and non-follower views per post",
+    "Rank posts by stranger views and by new customers",
+    "List the 10 posts that did both",
+    "Write what the 10 share: hook, product, format, length",
+    "Plan 4 posts next month that repeat the shared parts"
+   ],
+   "output": "a top 10 list of posts that reached and sold to strangers, with what they share",
+   "next": "feeds 16-08 (turn into a series) and 16-16 (boost as ads)",
+   "watch": {
+    "metric": "share of views from non-followers",
+    "window": "28 day",
+    "source": "Instagram insights"
+   },
+   "drives": "new customers from organic",
+   "business": "revenue",
+   "score": {
+    "money": 4,
+    "satisfaction": 3,
+    "speed": 3,
+    "ease": 4
+   },
+   "ready": 3,
+   "effort": "hours"
+  },
+  {
+   "id": "16-03",
+   "top": "T1",
+   "job": "Find the one platform where our buyers come from, using 90 days of sessions, orders and new customers per platform plus a 'where did you hear about us' question",
+   "trigger": "once, then each quarter",
+   "enablers": [
+    "post-ledger"
+   ],
+   "inputs": [
+    {
+     "need": "sessions and orders by social source",
+     "from": "GA4",
+     "status": "connected"
+    },
+    {
+     "need": "post-purchase survey with a 'where did you hear' question",
+     "from": "post-purchase survey app",
+     "status": "setup"
+    },
+    {
+     "need": "hours spent per platform per week",
+     "from": "team",
+     "status": "founder"
+    }
+   ],
+   "steps": [
+    "Add the survey question if it is not live and wait 2 weeks for answers",
+    "Sum sessions, orders and new customers per platform for 90 days",
+    "Add survey answers per platform next to the tracked numbers",
+    "Divide by the team's hours on each platform",
+    "Pick 1 platform to lead, and set the others to repost only"
+   ],
+   "output": "a platform table with orders per hour spent, and a 1 platform decision",
+   "next": "feeds 16-05 (scorecard)",
+   "watch": {
+    "metric": "orders per team hour on the lead platform",
+    "window": "90 day",
+    "source": "GA4"
+   },
+   "drives": "team hours on the channel that sells",
+   "business": "gross profit",
+   "score": {
+    "money": 3,
+    "satisfaction": 4,
+    "speed": 2,
+    "ease": 4
+   },
+   "ready": 4,
+   "effort": "days"
+  },
+  {
+   "id": "16-04",
+   "top": "T1",
+   "job": "Map our organic posts and 3 rivals' posts by awareness level and fill the level where we are thin with 4 posts next month",
+   "trigger": "monthly",
+   "enablers": [
+    "awareness-map",
+    "competitor-feed",
+    "post-ledger"
+   ],
+   "inputs": [
+    {
+     "need": "our posts with awareness tags",
+     "from": "post-ledger",
+     "status": "enabler"
+    },
+    {
+     "need": "3 rivals' organic posts, last 60 days",
+     "from": "competitor-feed",
+     "status": "enabler"
+    },
+    {
+     "need": "rival handles",
+     "from": "competitors shelf",
+     "status": "brain"
+    },
+    {
+     "need": "awareness rubric with 5 examples per level",
+     "from": "awareness-map",
+     "status": "enabler"
+    }
+   ],
+   "steps": [
+    "Tag rivals' posts by awareness level with the same rubric",
+    "Show the share of posts and views per level for us and each rival",
+    "Name the thin level, most often unaware or problem aware",
+    "Filter the swipe file by that level and pick 4 ideas",
+    "Brief 4 posts for next month"
+   ],
+   "output": "a heat map of 5 levels by 4 brands, plus 4 briefs for the thin level",
+   "next": "feeds 16-06 (idea pipeline) and 09-creative",
+   "watch": {
+    "metric": "share of posts at unaware and problem aware",
+    "window": "28 day",
+    "source": "post-ledger"
+   },
+   "drives": "new people who meet the brand",
+   "business": "revenue",
+   "score": {
+    "money": 3,
+    "satisfaction": 3,
+    "speed": 2,
+    "ease": 3
+   },
+   "ready": 3,
+   "effort": "days"
+  },
+  {
+   "id": "16-05",
+   "top": "T1",
+   "job": "Set a monthly scorecard for the social manager or agency on posts shipped, stranger reach, link clicks, orders and new customers",
+   "trigger": "once, then on the 1st of each month",
+   "enablers": [
+    "post-ledger"
+   ],
+   "inputs": [
+    {
+     "need": "post results",
+     "from": "post-ledger",
+     "status": "enabler"
+    },
+    {
+     "need": "monthly fee",
+     "from": "finance shelf",
+     "status": "brain"
+    },
+    {
+     "need": "targets agreed with the manager",
+     "from": "decisions and goals shelf",
+     "status": "founder"
+    }
+   ],
+   "steps": [
+    "Pick 5 numbers and a target for each with the manager",
+    "Fill the card from the ledger on the 1st",
+    "Add cost per order from organic: fee divided by tracked orders",
+    "Write one line on what to change next month",
+    "Founder reads it in 2 minutes and signs keep, change or cut"
+   ],
+   "output": "a one page scorecard with 5 numbers, the fee per order and a keep or cut note",
+   "next": "feeds 26-reports",
+   "watch": {
+    "metric": "orders per month from organic",
+    "window": "30 day",
+    "source": "Shopify"
+   },
+   "drives": "judge the team on money, not likes",
+   "business": "gross profit",
+   "score": {
+    "money": 3,
+    "satisfaction": 5,
+    "speed": 2,
+    "ease": 4
+   },
+   "ready": 3,
+   "effort": "hours"
+  },
+  {
+   "id": "16-06",
+   "top": "T2",
+   "job": "Save 20 ideas a week into the swipe file from Muse and from rivals' organic posts, each tagged with the principle behind it, the awareness level and one of our products",
+   "trigger": "every week",
+   "enablers": [
+    "swipe-file",
+    "competitor-feed"
+   ],
+   "inputs": [
+    {
+     "need": "Muse, for Meta content ideas",
+     "from": "Muse",
+     "status": "setup"
+    },
+    {
+     "need": "rival handles on Instagram and TikTok",
+     "from": "competitors shelf",
+     "status": "brain"
+    },
+    {
+     "need": "content pillars",
+     "from": "content and brand kit shelf",
+     "status": "brain"
+    },
+    {
+     "need": "tag list for principle and awareness level",
+     "from": "creative-tags",
+     "status": "enabler"
+    }
+   ],
+   "steps": [
+    "Pull 10 ideas from Muse for our category and 10 top posts from rivals this week",
+    "Write one line on why each worked: the principle, not the content",
+    "Tag each with awareness level, format and one of our products",
+    "Drop any idea that needs a claim we cannot prove",
+    "Pick 5 for next week's plan"
+   ],
+   "output": "20 tagged ideas a week in the swipe file, 5 picked for the plan",
+   "next": "feeds 16-07 (rival breakdown) and 16-10 (shoot plan)",
+   "watch": {
+    "metric": "posts shipped from swipe file ideas",
+    "window": "28 day",
+    "source": "post-ledger"
+   },
+   "drives": "posts shipped each week",
+   "business": "revenue",
+   "score": {
+    "money": 3,
+    "satisfaction": 4,
+    "speed": 3,
+    "ease": 4
+   },
+   "ready": 3,
+   "effort": "hours"
+  },
+  {
+   "id": "16-07",
+   "top": "T2",
+   "job": "Break a rival's breakout post into its parts (hook, format, pacing, angle) and write our own version in our words",
+   "trigger": "when a rival post gets 5 times their usual views",
+   "enablers": [
+    "competitor-feed",
+    "principle-matcher",
+    "script-builder"
+   ],
+   "inputs": [
+    {
+     "need": "rival posts with views vs their average",
+     "from": "competitor-feed",
+     "status": "enabler"
+    },
+    {
+     "need": "our voice rules",
+     "from": "voice shelf",
+     "status": "brain"
+    },
+    {
+     "need": "allowed claims",
+     "from": "claims shelf",
+     "status": "brain"
+    },
+    {
+     "need": "organic ideas in the idea bank",
+     "from": "ideas/v1/13-ORG-organic-and-content.json",
+     "status": "have"
+    }
+   ],
+   "steps": [
+    "Flag the post and save it to the swipe file",
+    "Write its parts: first line, first frame, length, pacing, angle",
+    "State the principle in one sentence",
+    "Write 2 scripts that use the principle with our product and our words, never their text or faces",
+    "Post one within 7 days and compare to our median"
+   ],
+   "output": "a principle note and 2 scripts, 1 posted within a week",
+   "next": "feeds 16-08 (series) and 09-creative",
+   "watch": {
+    "metric": "views and link clicks vs our median",
+    "window": "7 day",
+    "source": "post-ledger"
+   },
+   "drives": "reach to new buyers",
+   "business": "revenue",
+   "score": {
+    "money": 3,
+    "satisfaction": 3,
+    "speed": 4,
+    "ease": 4
+   },
+   "ready": 3,
+   "effort": "hours"
+  },
+  {
+   "id": "16-08",
+   "top": "T2",
+   "job": "Turn the post that beat the rest into a series: name the format, write 6 more scripts with the same structure, and film them in one batch",
+   "trigger": "when a post does 3 times our median on orders or stranger views",
+   "enablers": [
+    "principle-matcher",
+    "script-builder"
+   ],
+   "inputs": [
+    {
+     "need": "the winning post and its tags",
+     "from": "post-ledger",
+     "status": "enabler"
+    },
+    {
+     "need": "products that fit the format",
+     "from": "products shelf",
+     "status": "brain"
+    },
+    {
+     "need": "voice rules",
+     "from": "voice shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "Name the format in 5 words and write its structure",
+    "Write 6 scripts with the same structure on 6 products or questions",
+    "Film all 6 in one session",
+    "Post 2 a week for 3 weeks",
+    "Read orders and stranger views per episode and keep or stop the series"
+   ],
+   "output": "a named series with 6 filmed episodes and a keep or stop read",
+   "next": "feeds 16-16 (boost as ads)",
+   "watch": {
+    "metric": "median views and orders per episode",
+    "window": "21 day",
+    "source": "post-ledger"
+   },
+   "drives": "a recipe the team can repeat",
+   "business": "revenue",
+   "score": {
+    "money": 3,
+    "satisfaction": 4,
+    "speed": 3,
+    "ease": 3
+   },
+   "ready": 3,
+   "effort": "days"
+  },
+  {
+   "id": "16-09",
+   "top": "T2",
+   "job": "Take the 10 most asked questions with no post (size, care, shipping, which one) from the question coverage matrix and answer each in a short video or carousel",
+   "trigger": "monthly",
+   "enablers": [
+    "question-matrix",
+    "format-translator"
+   ],
+   "inputs": [
+    {
+     "need": "tickets and chat questions",
+     "from": "helpdesk",
+     "status": "connected"
+    },
+    {
+     "need": "repeated comment and DM questions",
+     "from": "Instagram and Facebook insights via Meta Business",
+     "status": "setup"
+    },
+    {
+     "need": "review questions and doubts",
+     "from": "reviews app",
+     "status": "connected"
+    },
+    {
+     "need": "where each question is answered today",
+     "from": "question-matrix",
+     "status": "enabler"
+    },
+    {
+     "need": "true answers",
+     "from": "products shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "Pull the matrix and sort by how often each question is asked",
+    "Pick 10 questions with no post answer",
+    "Write each answer in under 30 seconds of talk or 5 slides",
+    "A person checks each answer against the product facts",
+    "Post over 3 weeks, pin the best to the profile and mark the matrix cell filled"
+   ],
+   "output": "10 answer posts live and 10 matrix cells filled",
+   "next": "feeds 15-customers-cx (fewer tickets) and 18-08 (answer blocks)",
+   "watch": {
+    "metric": "tickets on the 10 questions",
+    "window": "30 day",
+    "source": "helpdesk"
+   },
+   "drives": "doubt removed before the buy",
+   "business": "revenue",
+   "score": {
+    "money": 3,
+    "satisfaction": 4,
+    "speed": 3,
+    "ease": 4
+   },
+   "ready": 3,
+   "effort": "days"
+  },
+  {
+   "id": "16-10",
+   "top": "T2",
+   "job": "Plan one shoot day to leave with 2 weeks of posts: a shot list of 14 posts across 3 pillars in one location",
+   "trigger": "once a month",
+   "enablers": [
+    "script-builder",
+    "swipe-file"
+   ],
+   "inputs": [
+    {
+     "need": "picked ideas from the swipe file",
+     "from": "swipe-file",
+     "status": "enabler"
+    },
+    {
+     "need": "products to feature and stock",
+     "from": "products shelf",
+     "status": "brain"
+    },
+    {
+     "need": "shoot budget",
+     "from": "finance shelf",
+     "status": "brain"
+    },
+    {
+     "need": "who is on camera",
+     "from": "voice shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "Pick 14 ideas across 3 pillars and at least 2 awareness levels",
+    "Write a 1 line script and 1 line shot note for each",
+    "Order the shots by setup so the day has few changes",
+    "Film 2 takes of each opening line",
+    "Log the files in the asset library with rights"
+   ],
+   "output": "14 filmed posts from one day, logged with rights",
+   "next": "feeds 16-11 (buffer)",
+   "watch": {
+    "metric": "posts shipped per shoot day",
+    "window": "per shoot",
+    "source": "post-ledger"
+   },
+   "drives": "cost per post",
+   "business": "gross profit",
+   "score": {
+    "money": 2,
+    "satisfaction": 4,
+    "speed": 3,
+    "ease": 3
+   },
+   "ready": 3,
+   "effort": "days"
+  },
+  {
+   "id": "16-11",
+   "top": "T2",
+   "job": "Build a 2 week buffer of ready posts before any launch or peak so posting never stops",
+   "trigger": "3 weeks before each launch or peak on the calendar",
+   "enablers": [
+    "script-builder",
+    "work-board"
+   ],
+   "inputs": [
+    {
+     "need": "peaks and launches",
+     "from": "calendar shelf",
+     "status": "brain"
+    },
+    {
+     "need": "stock for featured products",
+     "from": "Shopify",
+     "status": "connected"
+    },
+    {
+     "need": "posts already filmed",
+     "from": "content and brand kit shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "List the posting days from now to 2 weeks after the event",
+    "Check which slots have a filmed post and which need a script",
+    "Check stock for every product in a slot",
+    "Film or edit the gaps and schedule all posts",
+    "Keep 4 evergreen posts in reserve"
+   ],
+   "output": "a scheduled calendar with 2 weeks covered and 4 spares",
+   "next": "feeds 16-14 (spike alarm)",
+   "watch": {
+    "metric": "days without a post",
+    "window": "30 day",
+    "source": "post-ledger"
+   },
+   "drives": "reach kept through busy weeks",
+   "business": "revenue",
+   "score": {
+    "money": 2,
+    "satisfaction": 5,
+    "speed": 3,
+    "ease": 4
+   },
+   "ready": 5,
+   "effort": "hours"
+  },
+  {
+   "id": "16-12",
+   "top": "T2",
+   "job": "Test 3 formats that work without the founder on camera (team member, customer, hands-only product demo) for 3 weeks",
+   "trigger": "once, when the founder is the only face that sells",
+   "enablers": [
+    "post-ledger",
+    "creator-roster"
+   ],
+   "inputs": [
+    {
+     "need": "founder on camera: yes, no and how much time",
+     "from": "voice shelf",
+     "status": "brain"
+    },
+    {
+     "need": "team members or customers willing to appear",
+     "from": "team and customers",
+     "status": "founder"
+    },
+    {
+     "need": "baseline founder post results",
+     "from": "post-ledger",
+     "status": "enabler"
+    }
+   ],
+   "steps": [
+    "Pick 3 formats that do not need the founder",
+    "Make 3 posts per format",
+    "Post them over 3 weeks on the lead platform",
+    "Compare stranger views and orders with founder posts",
+    "Keep any format within 70 percent of the founder baseline"
+   ],
+   "output": "a format test with 1 or 2 formats kept to run without the founder",
+   "next": "feeds 16-18 (creator seeding)",
+   "watch": {
+    "metric": "orders per post, non-founder vs founder",
+    "window": "21 day",
+    "source": "post-ledger"
+   },
+   "drives": "content that does not depend on one person",
+   "business": "risk",
+   "score": {
+    "money": 2,
+    "satisfaction": 5,
+    "speed": 2,
+    "ease": 3
+   },
+   "ready": 3,
+   "effort": "weeks"
+  },
+  {
+   "id": "16-13",
+   "top": "T2",
+   "job": "Turn the 3 best Meta ads and 2 best SEO articles into native posts, and the 3 best posts into ad drafts",
+   "trigger": "monthly",
+   "enablers": [
+    "format-translator",
+    "signal-bridge"
+   ],
+   "inputs": [
+    {
+     "need": "Meta winners of the month",
+     "from": "Meta Ads",
+     "status": "connected"
+    },
+    {
+     "need": "articles with the most organic orders",
+     "from": "Search Console",
+     "status": "connected"
+    },
+    {
+     "need": "top posts by orders",
+     "from": "post-ledger",
+     "status": "enabler"
+    },
+    {
+     "need": "format specs per platform",
+     "from": "content and brand kit shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "Pick 3 ads, 2 articles and 3 posts by orders",
+    "Rewrite each ad as a post that does not look like an ad",
+    "Cut each article into a 5 slide carousel or a 30 second answer",
+    "Hand the 3 posts to the ad team as ad drafts",
+    "Track results in both places for 3 weeks"
+   ],
+   "output": "5 native posts and 3 ad drafts, each linked to its source",
+   "next": "feeds 11-paid-social and 17-seo",
+   "watch": {
+    "metric": "orders from reworked posts vs our median",
+    "window": "21 day",
+    "source": "post-ledger"
+   },
+   "drives": "more output from ideas already proven",
+   "business": "revenue",
+   "score": {
+    "money": 3,
+    "satisfaction": 3,
+    "speed": 3,
+    "ease": 4
+   },
+   "ready": 3,
+   "effort": "hours"
+  },
+  {
+   "id": "16-14",
+   "top": "T3",
+   "job": "Set a spike alarm: when a post passes 3 times its usual views, check stock and the link and pin a working link in the comments within 1 hour",
+   "trigger": "every hour while a post is live under 72 hours",
+   "enablers": [
+    "post-ledger"
+   ],
+   "inputs": [
+    {
+     "need": "views per post by hour",
+     "from": "Instagram and Facebook insights via Meta Business",
+     "status": "setup"
+    },
+    {
+     "need": "stock for the product shown",
+     "from": "Shopify",
+     "status": "connected"
+    },
+    {
+     "need": "a person on call",
+     "from": "team",
+     "status": "founder"
+    }
+   ],
+   "steps": [
+    "Compare views per hour with the account's median",
+    "At 3 times median, alert the person on call",
+    "Check the product is in stock and the link works on a phone",
+    "Pin a comment with the link and update the bio link",
+    "If stock is short, add a waitlist and tell the team"
+   ],
+   "output": "an alert, a pinned working link and a stock check within 1 hour",
+   "next": "feeds 16-15 (comment replies) and 16-16 (boost)",
+   "watch": {
+    "metric": "orders within 72 hours of a spike post",
+    "window": "72 hour",
+    "source": "Shopify"
+   },
+   "drives": "buyers caught while the post is hot",
+   "business": "revenue",
+   "score": {
+    "money": 4,
+    "satisfaction": 4,
+    "speed": 5,
+    "ease": 4
+   },
+   "ready": 4,
+   "effort": "days"
+  },
+  {
+   "id": "16-15",
+   "top": "T3",
+   "job": "Sort comments and DMs into buyer questions, complaints, praise and spam, and reply to buyers within 2 hours with a link and an answer from the matrix",
+   "trigger": "twice a day, and hourly on a spike",
+   "enablers": [
+    "question-matrix",
+    "post-ledger"
+   ],
+   "inputs": [
+    {
+     "need": "comments and DMs",
+     "from": "Instagram and Facebook insights via Meta Business",
+     "status": "setup"
+    },
+    {
+     "need": "tested answers per question",
+     "from": "question-matrix",
+     "status": "enabler"
+    },
+    {
+     "need": "reply tone and escalation rules",
+     "from": "operations shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "Pull new comments and DMs",
+    "Sort each into buyer question, complaint, praise or spam",
+    "Reply to buyer questions first with the answer and a link",
+    "Move complaints to support within 1 hour and reply in public that we are on it",
+    "Add any new question to the matrix"
+   ],
+   "output": "a sorted inbox with buyer replies sent and new questions logged",
+   "next": "feeds 16-09 (answer posts) and 15-customers-cx",
+   "watch": {
+    "metric": "median reply time to buyer questions",
+    "window": "7 day",
+    "source": "Instagram inbox"
+   },
+   "drives": "sales not lost in public",
+   "business": "customer satisfaction",
+   "score": {
+    "money": 3,
+    "satisfaction": 5,
+    "speed": 4,
+    "ease": 4
+   },
+   "ready": 3,
+   "effort": "hours"
+  },
+  {
+   "id": "16-16",
+   "top": "T3",
+   "job": "Boost the organic posts that sold to strangers as ads, head to head against our best studio ad",
+   "trigger": "every 2 weeks",
+   "enablers": [
+    "post-ledger",
+    "creative-archive"
+   ],
+   "inputs": [
+    {
+     "need": "posts ranked by stranger reach and orders",
+     "from": "post-ledger",
+     "status": "enabler"
+    },
+    {
+     "need": "our best studio ad",
+     "from": "Meta Ads",
+     "status": "connected"
+    },
+    {
+     "need": "rights for any creator or customer in the post",
+     "from": "creators shelf",
+     "status": "brain"
+    },
+    {
+     "need": "test budget cap",
+     "from": "finance shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "Pick 3 posts with the most stranger orders",
+    "Check rights for everyone in them",
+    "Run them as ads from the brand handle next to the best studio ad, same budget",
+    "Read at 14 days on cost per new customer",
+    "Move winners into the main ad set and log the result"
+   ],
+   "output": "a live test of 3 boosted posts vs studio, with a winner at day 14",
+   "next": "feeds 11-paid-social",
+   "watch": {
+    "metric": "cost per new customer, boosted posts vs studio ad",
+    "window": "14 day",
+    "source": "Meta Ads"
+   },
+   "drives": "cheaper tested ads",
+   "business": "revenue",
+   "score": {
+    "money": 4,
+    "satisfaction": 3,
+    "speed": 4,
+    "ease": 4
+   },
+   "ready": 3,
+   "effort": "hours"
+  },
+  {
+   "id": "16-17",
+   "top": "T3",
+   "job": "Turn social reach into emails and phone numbers: add a list offer to the bio link and 1 post a week that asks for sign-ups",
+   "trigger": "once, then weekly",
+   "enablers": [
+    "post-ledger"
+   ],
+   "inputs": [
+    {
+     "need": "email and SMS sign-up form with source tracking",
+     "from": "email platform",
+     "status": "setup"
+    },
+    {
+     "need": "the list offer allowed",
+     "from": "offers shelf",
+     "status": "brain"
+    },
+    {
+     "need": "bio link tool",
+     "from": "link in bio page",
+     "status": "setup"
+    }
+   ],
+   "steps": [
+    "Add a sign-up offer at the top of the bio link",
+    "Tag sign-ups by social source",
+    "Post 1 sign-up post a week: early access, a guide or a drop alert",
+    "Count sign-ups per post and per platform",
+    "Keep the post type that brings the most sign-ups"
+   ],
+   "output": "a live bio sign-up, a weekly sign-up post and a count by source",
+   "next": "feeds 14-email-messaging (welcome flow)",
+   "watch": {
+    "metric": "new email and SMS sign-ups from social",
+    "window": "28 day",
+    "source": "email platform"
+   },
+   "drives": "buyers we can reach again for free",
+   "business": "revenue",
+   "score": {
+    "money": 3,
+    "satisfaction": 3,
+    "speed": 3,
+    "ease": 5
+   },
+   "ready": 4,
+   "effort": "hours"
+  },
+  {
+   "id": "16-18",
+   "top": "T4",
+   "job": "Seed 40 creators with a tracked plan: pick by audience fit, send with a short brief and a unique code, and score who posted and sold 30 days later",
+   "trigger": "each quarter",
+   "enablers": [
+    "creator-roster"
+   ],
+   "inputs": [
+    {
+     "need": "creator candidates with audience checks",
+     "from": "creators shelf",
+     "status": "brain"
+    },
+    {
+     "need": "fake follower and audience check",
+     "from": "an audit tool or a manual look",
+     "status": "buy"
+    },
+    {
+     "need": "unique codes and links",
+     "from": "Shopify",
+     "status": "connected"
+    },
+    {
+     "need": "product units and shipping budget",
+     "from": "finance shelf",
+     "status": "brain"
+    },
+    {
+     "need": "one-page brief",
+     "from": "script-builder",
+     "status": "enabler"
+    }
+   ],
+   "steps": [
+    "Pick 40 creators by fit, real engagement and audience country",
+    "Send product with a 1 page brief and a unique code",
+    "Log each send on the roster",
+    "At 30 days, score each: posted or not, views, code orders, content we can reuse",
+    "Send the next box only to those who posted and sold"
+   ],
+   "output": "a seeding roster with 40 rows scored at 30 days",
+   "next": "feeds 13-10 (roster) and 13-07 (partnership ads)",
+   "watch": {
+    "metric": "share of seeded creators who posted",
+    "window": "30 day",
+    "source": "creators shelf"
+   },
+   "drives": "orders per product sent",
+   "business": "revenue",
+   "score": {
+    "money": 3,
+    "satisfaction": 3,
+    "speed": 2,
+    "ease": 3
+   },
+   "ready": 1,
+   "effort": "weeks"
+  },
+  {
+   "id": "16-19",
+   "top": "T4",
+   "job": "Turn the 10 best reviews and customer photos of the month into posts, with written permission",
+   "trigger": "monthly",
+   "enablers": [
+    "review-miner",
+    "creator-roster"
+   ],
+   "inputs": [
+    {
+     "need": "reviews with photos and ratings",
+     "from": "reviews app",
+     "status": "connected"
+    },
+    {
+     "need": "top praised themes",
+     "from": "review-miner",
+     "status": "enabler"
+    },
+    {
+     "need": "permission request template",
+     "from": "creators shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "Pull 5 star reviews with photos from the month",
+    "Pick 10 that match a top praised theme",
+    "Ask each customer for permission and log the answer",
+    "Make a post or carousel from each approved one",
+    "Tag the post in the ledger as customer proof"
+   ],
+   "output": "10 proof posts with permission logged",
+   "next": "feeds 16-16 (boost) and 09-creative",
+   "watch": {
+    "metric": "link clicks on proof posts vs our median",
+    "window": "28 day",
+    "source": "post-ledger"
+   },
+   "drives": "trust before the buy",
+   "business": "revenue",
+   "score": {
+    "money": 2,
+    "satisfaction": 4,
+    "speed": 3,
+    "ease": 5
+   },
+   "ready": 3,
+   "effort": "hours"
+  },
+  {
+   "id": "16-20",
+   "top": "T4",
+   "job": "Check every health, comparison or 'best' claim and every paid post label before it goes out",
+   "trigger": "before each post",
+   "enablers": [
+    "brain-graph",
+    "creator-roster"
+   ],
+   "inputs": [
+    {
+     "need": "allowed and forbidden claims with proof",
+     "from": "claims shelf",
+     "status": "brain"
+    },
+    {
+     "need": "FTC paid partner label rule",
+     "from": "claims shelf",
+     "status": "brain"
+    },
+    {
+     "need": "the draft post",
+     "from": "team",
+     "status": "founder"
+    }
+   ],
+   "steps": [
+    "Read the draft for any health, comparison or 'best' claim",
+    "Find the proof for each claim in the brain, or cut it",
+    "Check paid or gifted posts carry a clear label",
+    "Mark the post checked with the date",
+    "Log any cut claim so the team learns"
+   ],
+   "output": "a checked post and a log of claims cut",
+   "next": "none",
+   "watch": {
+    "metric": "posts with an unbacked claim",
+    "window": "30 day",
+    "source": "post-ledger"
+   },
+   "drives": "no strike, FTC letter or refund wave",
+   "business": "risk",
+   "score": {
+    "money": 2,
+    "satisfaction": 5,
+    "speed": 4,
+    "ease": 4
+   },
+   "ready": 4,
+   "effort": "hours"
+  }
+ ],
+ "new_enablers": [
+  {
+   "id": "post-ledger",
+   "name": "Organic post ledger",
+   "what": "One row per organic post on Instagram, Facebook, TikTok and YouTube: product, pillar, format, hook and awareness level tags, views from followers vs strangers, saves, link clicks, and orders and new customers tied by UTM, link in bio and code.",
+   "inputs": [
+    "Instagram and Facebook insights via Meta Business",
+    "TikTok and YouTube analytics",
+    "store orders with UTM and codes",
+    "post-purchase survey answers"
+   ],
+   "powers": [
+    "which posts and products sell",
+    "stranger reach per post",
+    "spike alarms",
+    "posts worth boosting as ads",
+    "a scorecard for the social manager"
+   ],
+   "screens": [
+    "16-organic-content",
+    "11-paid-social",
+    "26-reports"
+   ],
+   "note": null
+  }
+ ]
+}

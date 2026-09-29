@@ -1,0 +1,614 @@
+{
+  "screen": "11-paid-social",
+  "title": "Paid social",
+  "top_jobs": [
+    {
+      "id": "T1",
+      "job": "When the weekly numbers land on Monday with spend up and revenue flat, help me know by noon which ad sets and placements to cut, hold or scale and by how much, so I stop the week's budget leaking into losers",
+      "metric": "share of spend in ad sets above target cost per purchase after spending 3 times that target, 7 day click",
+      "from_v2": [1, 7, 8, 13, 35]
+    },
+    {
+      "id": "T2",
+      "job": "When Meta shows a great week but the store orders and the bank do not agree, help me see what the ads really made and set how much a new customer may cost, so I do not scale on a number that is not real",
+      "metric": "gap between Meta-reported purchases and store orders from paid social, and cost per new customer from store data",
+      "from_v2": [2, 4, 17, 25, 29]
+    },
+    {
+      "id": "T3",
+      "job": "When revenue from ads looks strong but new customers are flat, help me move spend toward people who have never bought, at the right awareness level and in the segments that buy, so I grow the customer base instead of paying for repeat orders",
+      "metric": "new customers per week from paid social, and share of spend reaching past buyers",
+      "from_v2": [12, 14, 24]
+    },
+    {
+      "id": "T4",
+      "job": "When new ads, creators or a new product go live next week, help me check every link and rule before spend starts and set each test up to end with a clear yes or no, so I do not waste launch day or pay for tests that end with not sure",
+      "metric": "share of tests read as a clear win or loss, and launch-day errors",
+      "from_v2": [16, 21, 26, 27]
+    },
+    {
+      "id": "T5",
+      "job": "When a best seller has 10 days of stock left, a sale is coming, or slow stock ties up cash, help me move spend to what we can ship and plan the ramp and the stop, so I do not pay for buyers who cannot buy",
+      "metric": "ad spend on products with under 14 days of stock",
+      "from_v2": [6, 10, 19, 23, 28]
+    }
+  ],
+  "jobs": [
+    {
+      "id": "11-01",
+      "top": "T1",
+      "job": "Rank every ad set each Monday by dollars spent above target, and mark each cut, hold or scale with a dollar amount, judging only ad sets that spent at least 3 times target cost per purchase",
+      "trigger": "every Monday by 10am, and any day spend jumps 20 percent",
+      "enablers": ["spend-rules", "margin-view"],
+      "inputs": [
+        {"need": "ad set spend, purchases and value, 7 and 28 days, 7 day click", "from": "Meta Ads", "status": "connected"},
+        {"need": "target cost per purchase per product from margin", "from": "finance shelf", "status": "brain"},
+        {"need": "approval rules: what a buyer may change without the founder", "from": "decisions and goals shelf", "status": "brain"},
+        {"need": "the creative verdicts for the same week", "from": "creative-archive", "status": "enabler"}
+      ],
+      "steps": [
+        "Compute in code per ad set: spend, purchases, cost per purchase, dollars above target",
+        "Put ad sets under 3 times target spend in 'not read yet'",
+        "Cut: over 1.5 times target for 7 days. Scale: under target for 7 days. Hold: the rest",
+        "Write the dollar change for each: cut to zero, hold, or raise by the step in 11-03",
+        "Mark changes that need the founder under the approval rules",
+        "Log every call with the reason so next Monday can check it"
+      ],
+      "output": "a Monday list: every ad set with cut, hold, scale or not read yet, the dollar change and the reason",
+      "next": "feeds 11-03 (scale steps), 11-04 (postmortem of cuts) and 00-today",
+      "watch": {"metric": "share of spend in ad sets above target after 3 times target spend", "window": "7 day", "source": "Meta Ads"},
+      "drives": "blended cost per new customer, 28 day",
+      "business": "gross profit",
+      "score": {"money": 5, "satisfaction": 5, "speed": 5, "ease": 4},
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "11-02",
+      "top": "T1",
+      "job": "Tell the buyer for each new ad after 2 days whether to kill it or wait, by showing how far it is from the read spend and whether its hook and click rate are already below the kill line",
+      "trigger": "daily for ads launched in the last 7 days",
+      "enablers": ["spend-rules"],
+      "inputs": [
+        {"need": "daily ad-level spend, impressions, 3 second views, clicks, purchases", "from": "Meta Ads", "status": "connected"},
+        {"need": "account medians for hook rate and click rate", "from": "creative-archive", "status": "enabler"},
+        {"need": "target cost per purchase", "from": "finance shelf", "status": "brain"}
+      ],
+      "steps": [
+        "Show each new ad's spend as a share of 3 times target",
+        "Kill early only if hook rate is under half the account median after 2,000 impressions",
+        "Otherwise wait, and show the date it will reach read spend at the current pace",
+        "If it will never reach read spend, flag the budget, not the ad"
+      ],
+      "output": "a daily new ad list: kill, wait with a read date, or budget too small",
+      "next": "feeds 11-15 (test reads) and 09-03 (Monday verdict)",
+      "watch": {"metric": "share of killed ads that had reached read spend", "window": "28 day", "source": "Meta Ads"},
+      "drives": "hit rate of new ads",
+      "business": "gross profit",
+      "score": {"money": 4, "satisfaction": 5, "speed": 5, "ease": 5},
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "11-03",
+      "top": "T1",
+      "job": "Raise the budget of each ad set that beat target for 7 days in steps sized to its read window, check cost per purchase after each step, and step back if it breaks",
+      "trigger": "when 11-01 marks an ad set scale",
+      "enablers": ["spend-rules"],
+      "inputs": [
+        {"need": "ad set daily spend and cost per purchase, 14 days", "from": "Meta Ads", "status": "connected"},
+        {"need": "the ceiling on cost per new customer", "from": "margin-view", "status": "enabler"},
+        {"need": "monthly budget cap", "from": "finance shelf", "status": "brain"}
+      ],
+      "steps": [
+        "Set the step so the ad set can spend 3 times target in the next read window",
+        "Raise once, then wait for the read window before the next step",
+        "After each step, compare cost per purchase with the ceiling",
+        "Step back to the last good budget if it goes over the ceiling for 3 days",
+        "Fork new creative into a new ad set; never edit the winning ad set's ads"
+      ],
+      "output": "a scale log per ad set: each step, its date and cost per purchase after it",
+      "next": "feeds 11-09 (monthly review) and 21-finance-cash",
+      "watch": {"metric": "cost per purchase in the 7 days after each budget step", "window": "7 day", "source": "Meta Ads"},
+      "drives": "new customers per week at or under the ceiling",
+      "business": "revenue",
+      "score": {"money": 5, "satisfaction": 4, "speed": 4, "ease": 4},
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "11-04",
+      "top": "T1",
+      "job": "Break every cut ad set's spend down by age, gender, placement and region, find the cells that still bought near target, and relaunch the best creative only in those cells with a capped budget",
+      "trigger": "every Monday, for ad sets marked cut",
+      "enablers": ["creative-postmortem", "segment-map"],
+      "inputs": [
+        {"need": "breakdowns by age, gender, placement and region with spend and purchases", "from": "Meta Ads", "status": "connected"},
+        {"need": "postmortem of the ads in the set", "from": "creative-postmortem", "status": "enabler"},
+        {"need": "target cost per purchase", "from": "finance shelf", "status": "brain"}
+      ],
+      "steps": [
+        "Lay out a grid of spend and cost per purchase by age and gender, then by placement",
+        "Mark cells under target with at least 10 purchases",
+        "Mark cells that took over 20 percent of spend with no purchases",
+        "Relaunch the ad in the good cells with a new first frame if the postmortem says hook",
+        "Cap the relaunch at 3 times target and read it like a new test"
+      ],
+      "output": "a segment grid per cut ad set and a capped relaunch in the cells that bought",
+      "next": "feeds 11-12 (segment ad sets) and 09-06 (fail note)",
+      "watch": {"metric": "cost per purchase of relaunched ad sets", "window": "14 day", "source": "Meta Ads"},
+      "drives": "wasted spend per month",
+      "business": "gross profit",
+      "score": {"money": 4, "satisfaction": 4, "speed": 4, "ease": 4},
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "11-05",
+      "top": "T1",
+      "job": "Read spend and purchases by placement over 28 days, and remove placements that take over 5 percent of spend with cost per purchase above 2 times target",
+      "trigger": "on the 1st of each month",
+      "enablers": ["segment-map", "spend-rules"],
+      "inputs": [
+        {"need": "placement breakdown with spend, purchases and value, 28 days", "from": "Meta Ads", "status": "connected"},
+        {"need": "TikTok placement report, when the brand runs TikTok", "from": "TikTok Ads", "status": "setup"},
+        {"need": "target cost per purchase", "from": "finance shelf", "status": "brain"}
+      ],
+      "steps": [
+        "Compute in code cost per purchase and share of spend per placement",
+        "Flag placements over 5 percent of spend at over 2 times target",
+        "Check the ads there have a format made for that placement before removing it",
+        "Exclude the placement or make a format for it, and log which",
+        "Recheck in 28 days"
+      ],
+      "output": "a placement table with the placements removed or given their own format",
+      "next": "feeds 09-10 (formats for placements that should work)",
+      "watch": {"metric": "share of spend in placements over 2 times target", "window": "28 day", "source": "Meta Ads"},
+      "drives": "blended cost per purchase",
+      "business": "gross profit",
+      "score": {"money": 3, "satisfaction": 3, "speed": 4, "ease": 5},
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "11-06",
+      "top": "T2",
+      "job": "Compare Meta-reported purchases and value with store orders from paid social each week, per campaign, and show the gap and the store-side cost per new customer",
+      "trigger": "every Monday, and before any budget raise over 20 percent",
+      "enablers": ["margin-view", "funnel-mix"],
+      "inputs": [
+        {"need": "Meta purchases and value by campaign, 7 day click and 1 day view split", "from": "Meta Ads", "status": "connected"},
+        {"need": "orders with UTMs, new or returning, and gross profit", "from": "Shopify", "status": "connected"},
+        {"need": "sessions by source and campaign", "from": "GA4", "status": "connected"},
+        {"need": "numbers not to trust and since when", "from": "trust and access shelf", "status": "brain"}
+      ],
+      "steps": [
+        "Match store orders to campaigns by UTM; count new customers apart from repeat buyers",
+        "Put Meta purchases next to store orders per campaign and compute the gap in percent",
+        "Show 1 day view purchases as a separate column, not added in",
+        "Compute store-side cost per new customer and marketing efficiency (store revenue divided by total ad spend)",
+        "If the gap moves over 20 points in a week, flag tracking to 22-measurement"
+      ],
+      "output": "a weekly table per campaign: Meta purchases, store orders, gap, new customers and store-side cost per new customer",
+      "next": "feeds 11-07 (ceiling), 11-09 (agency check) and 22-measurement",
+      "watch": {"metric": "gap between Meta purchases and store orders from paid social", "window": "7 day", "source": "Meta Ads and Shopify"},
+      "drives": "budget decisions made on store numbers",
+      "business": "gross profit",
+      "score": {"money": 5, "satisfaction": 5, "speed": 4, "ease": 4},
+      "ready": 5,
+      "effort": "days"
+    },
+    {
+      "id": "11-07",
+      "top": "T2",
+      "job": "Set the most a new customer may cost for each product line from first order gross profit and 12 month repeat buying, and put it in every scale and cut rule",
+      "trigger": "once at onboarding, then each quarter or after a price change",
+      "enablers": ["margin-view"],
+      "inputs": [
+        {"need": "orders with product, discount, shipping and returns, 12 months", "from": "Shopify", "status": "connected"},
+        {"need": "landed cost per SKU", "from": "finance shelf", "status": "founder"},
+        {"need": "how long the founder can wait to earn back a customer", "from": "founder interview", "status": "founder"}
+      ],
+      "steps": [
+        "Compute gross profit on the first order per product line",
+        "Compute repeat gross profit per customer at 90 days and 12 months by first product",
+        "Set two ceilings: break even on the first order, and break even within the founder's payback window",
+        "Founder picks one per line and signs it",
+        "Write the ceilings into the finance shelf and into 11-01 and 11-03"
+      ],
+      "output": "a signed ceiling for cost per new customer per product line",
+      "next": "feeds 11-01, 11-03 and 21-finance-cash",
+      "watch": {"metric": "share of spend in ad sets above their line's ceiling", "window": "28 day", "source": "Meta Ads"},
+      "drives": "contribution per new customer",
+      "business": "contribution margin",
+      "score": {"money": 5, "satisfaction": 5, "speed": 3, "ease": 4},
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "11-08",
+      "top": "T2",
+      "job": "Split each product's revenue from ads by gross margin and set a return on spend target per product, so low margin products stop getting the same target as high margin ones",
+      "trigger": "once a quarter, and when catalog ads run over 30 percent of spend",
+      "enablers": ["margin-view"],
+      "inputs": [
+        {"need": "product-level ad spend and value, including catalog ads", "from": "Meta Ads", "status": "connected"},
+        {"need": "gross margin per product", "from": "margin-view", "status": "enabler"},
+        {"need": "product sets in the catalog", "from": "Meta Ads", "status": "connected"}
+      ],
+      "steps": [
+        "Compute in code break even return on spend per product: 1 divided by gross margin",
+        "Group products into 3 margin bands",
+        "Build a product set per band and give each its own target",
+        "Show spend share per band before and after"
+      ],
+      "output": "a target per margin band and the catalog split into 3 product sets",
+      "next": "feeds 11-01 (targets per band)",
+      "watch": {"metric": "share of spend on the low margin band", "window": "28 day", "source": "Meta Ads"},
+      "drives": "gross profit from catalog ads",
+      "business": "gross profit",
+      "score": {"money": 4, "satisfaction": 3, "speed": 3, "ease": 4},
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "11-09",
+      "top": "T2",
+      "job": "Check the agency's changes each month against store profit: list every budget, audience and ad change from the account log and what cost per new customer did in the 14 days after",
+      "trigger": "on the 3rd of each month, before the agency call",
+      "enablers": ["win-loss-ledger", "margin-view"],
+      "inputs": [
+        {"need": "account activity log of changes", "from": "Meta Ads", "status": "connected"},
+        {"need": "store-side cost per new customer by week", "from": "funnel-mix", "status": "enabler"},
+        {"need": "the agency's monthly report and fee", "from": "founder", "status": "founder"}
+      ],
+      "steps": [
+        "Pull every change with its date and who made it",
+        "Group into budget, audience, ad and setting changes",
+        "Show store-side cost per new customer 14 days before and after each group",
+        "Compare with what the report claims",
+        "Write 3 questions for the agency call"
+      ],
+      "output": "a monthly change log with before and after store numbers and 3 questions for the agency",
+      "next": "feeds 26-reports and 23-team-ops",
+      "watch": {"metric": "store-side cost per new customer month on month", "window": "28 day", "source": "Shopify and Meta Ads"},
+      "drives": "agency fee per new customer",
+      "business": "gross profit",
+      "score": {"money": 3, "satisfaction": 5, "speed": 2, "ease": 4},
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "11-10",
+      "top": "T3",
+      "job": "Split spend each week into prospecting, retargeting and past buyers, show how much reaches people who already bought, and exclude recent buyers from every cold campaign",
+      "trigger": "every Monday, and when new customers are flat 2 weeks while revenue rises",
+      "enablers": ["funnel-mix"],
+      "inputs": [
+        {"need": "campaigns, ad sets and audiences with spend", "from": "Meta Ads", "status": "connected"},
+        {"need": "new vs returning orders by campaign", "from": "Shopify", "status": "connected"},
+        {"need": "customer list for exclusions, refreshed weekly", "from": "Shopify", "status": "connected"},
+        {"need": "the repurchase cycle per product", "from": "customers shelf", "status": "brain"}
+      ],
+      "steps": [
+        "Label each ad set prospecting, retargeting or past buyers",
+        "Compute spend share and new customer share per label",
+        "Find the share of cold ad set purchases that were returning customers",
+        "Add or refresh the buyer exclusion, sized to the repurchase cycle",
+        "Keep past buyer spend in one campaign so it cannot bleed into cold"
+      ],
+      "output": "a funnel split: spend and new customers per stage, and exclusions in place",
+      "next": "feeds 11-11 (awareness budget) and 14-email-messaging (past buyers)",
+      "watch": {"metric": "share of cold purchases from returning customers", "window": "14 day", "source": "Shopify"},
+      "drives": "new customers per week",
+      "business": "revenue",
+      "score": {"money": 4, "satisfaction": 4, "speed": 4, "ease": 5},
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "11-11",
+      "top": "T3",
+      "job": "Move 15 percent of prospecting spend to unaware and problem aware ads for 4 weeks as a test, reading new customers and store-side cost per new customer against the old split",
+      "trigger": "when the heat map shows under 20 percent of spend on unaware and problem aware ads",
+      "enablers": ["awareness-map", "funnel-mix"],
+      "inputs": [
+        {"need": "the heat map and gap line", "from": "awareness-map", "status": "enabler"},
+        {"need": "at least 4 live top of funnel ads from the 09-12 briefs", "from": "awareness-map", "status": "enabler"},
+        {"need": "new customer orders by week", "from": "Shopify", "status": "connected"},
+        {"need": "founder sign-off on a 4 week test", "from": "founder", "status": "founder"}
+      ],
+      "steps": [
+        "Read spend share and cost per new customer by awareness level from the heat map",
+        "Put the top of funnel ads in their own ad set with 15 percent of prospecting budget",
+        "Point them to pages at the same level, not the checkout",
+        "Read weekly on new customers and store-side cost per new customer, not on last click return",
+        "At 4 weeks, keep, grow or roll back, and log it in the ledger"
+      ],
+      "output": "a 4 week budget test with a keep, grow or roll back call",
+      "next": "feeds 09-06 (T0 rule on awareness mix) and 22-measurement",
+      "watch": {"metric": "share of spend on unaware and problem aware ads", "window": "28 day", "source": "Meta Ads"},
+      "drives": "new customers per week and cost per new customer",
+      "business": "revenue",
+      "score": {"money": 4, "satisfaction": 3, "speed": 3, "ease": 4},
+      "ready": 3,
+      "effort": "weeks"
+    },
+    {
+      "id": "11-12",
+      "top": "T3",
+      "job": "Give the 2 best segments by age, gender and placement their own ads written for them, and list the segments with high reach where no ad speaks to them",
+      "trigger": "every other Monday",
+      "enablers": ["segment-map"],
+      "inputs": [
+        {"need": "breakdowns by age, gender, placement and region, 28 days", "from": "Meta Ads", "status": "connected"},
+        {"need": "copy sets written for each segment cell (10-04)", "from": "segment-map", "status": "enabler"},
+        {"need": "avatars and share of orders per avatar", "from": "customers shelf", "status": "brain"}
+      ],
+      "steps": [
+        "Rank segment cells by cost per new customer, with at least 30 purchases",
+        "Add the tailored copy and creative for the top 2 cells to the live broad ad set, not a narrow one",
+        "List cells with over 10 percent of reach and under half their share of purchases",
+        "Send those cells to 10-copy as the next brief",
+        "Compare cost per purchase in each cell before and after 14 days"
+      ],
+      "output": "tailored ads live for the 2 best cells and a list of cells nobody speaks to",
+      "next": "feeds 10-04 (next segment copy) and 02-customers-avatars",
+      "watch": {"metric": "cost per purchase in the top 2 segment cells", "window": "14 day", "source": "Meta Ads"},
+      "drives": "cost per new customer",
+      "business": "gross profit",
+      "score": {"money": 4, "satisfaction": 3, "speed": 4, "ease": 4},
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "11-13",
+      "top": "T3",
+      "job": "Each month, launch the 10 search-sourced hooks as a Meta test, and send the 3 Meta angles with the lowest cost per new customer to Google Ads and the SEO list",
+      "trigger": "on the 1st of each month, after the bridge sheet is written",
+      "enablers": ["signal-bridge"],
+      "inputs": [
+        {"need": "the monthly bridge sheet", "from": "signal-bridge", "status": "enabler"},
+        {"need": "Meta angles with store-side cost per new customer", "from": "Meta Ads and Shopify", "status": "connected"},
+        {"need": "Google search terms and Amazon review phrases", "from": "Google Ads", "status": "connected"}
+      ],
+      "steps": [
+        "Launch the 10 search-sourced hooks in one ad set on the best performing body",
+        "Read at 3 times target spend and keep the hooks that beat the account median",
+        "Send the 3 best Meta angles to 12-google-ads as headline tests and to 17-seo as article topics",
+        "Log each line's source and result so the bridge learns which source works"
+      ],
+      "output": "one Meta test of search-sourced hooks and 3 angles handed to Google and SEO",
+      "next": "feeds 12-google-ads, 17-seo and 10-03 (next month's bridge)",
+      "watch": {"metric": "hit rate of search-sourced hooks vs other hooks", "window": "28 day", "source": "Meta Ads"},
+      "drives": "cost per new customer across channels",
+      "business": "revenue",
+      "score": {"money": 3, "satisfaction": 3, "speed": 3, "ease": 4},
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "11-14",
+      "top": "T4",
+      "job": "Check every ad in tomorrow's launch before spend starts: the link opens and has UTMs, the pixel fires, the product is in stock, the offer is live, the claims passed and the rights are valid",
+      "trigger": "the day before every launch",
+      "enablers": ["launch-preflight", "claim-guard"],
+      "inputs": [
+        {"need": "ads in draft with URLs and UTMs", "from": "Meta Ads", "status": "connected"},
+        {"need": "stock per product", "from": "Shopify", "status": "connected"},
+        {"need": "pixel and conversion API event health", "from": "Meta Ads", "status": "connected"},
+        {"need": "claim check results and rights end dates", "from": "claim-guard", "status": "enabler"}
+      ],
+      "steps": [
+        "Open each URL on a phone and check it loads the right product or page",
+        "Check UTMs follow the naming rule",
+        "Check the purchase event fired in the last 24 hours with value",
+        "Check each product has over 14 days of stock and each offer is live in the store",
+        "Check claims passed 10-07 and rights run past 30 days",
+        "Return a pass or a list of fixes; nothing launches with a fail"
+      ],
+      "output": "a launch sheet with pass or fix per ad, signed before launch",
+      "next": "feeds 11-15 (test launch)",
+      "watch": {"metric": "ads launched with a broken link, no stock or a failed claim", "window": "per launch", "source": "launch-preflight"},
+      "drives": "launch day spend wasted",
+      "business": "risk",
+      "score": {"money": 3, "satisfaction": 5, "speed": 5, "ease": 4},
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "11-15",
+      "top": "T4",
+      "job": "Launch each creative test, such as the weekly AI video stack, as one ad set per concept with the winner line and read date written first, cap each ad's share, and log the result as a win, a loss or not tested",
+      "trigger": "every launch, and every Tuesday for the AI video stack",
+      "enablers": ["spend-rules", "win-loss-ledger", "video-stack"],
+      "inputs": [
+        {"need": "the 3 picked cuts or variants", "from": "video-stack", "status": "enabler"},
+        {"need": "target cost per purchase and budget", "from": "finance shelf", "status": "brain"},
+        {"need": "the testing campaign", "from": "Meta Ads", "status": "connected"},
+        {"need": "past test results", "from": "history shelf", "status": "brain"}
+      ],
+      "steps": [
+        "Write the winner line before launch, e.g. 'under $32 per purchase at $96 spend'",
+        "Put the concept in its own ad set in the testing campaign, never in scaling",
+        "Set the budget so each ad can reach 3 times target in 7 days",
+        "Read on the read date; under read spend is logged as not tested",
+        "Move winners to the scaling campaign as a new ad set; log losers with a fail note",
+        "Note which cut length won, 15, 30 or 30 to 45 seconds"
+      ],
+      "output": "a launched test with a written winner line, a read date and a logged result",
+      "next": "feeds 09-06 (T0 or fail note) and 11-03 (scale)",
+      "watch": {"metric": "share of tests read as a clear win or loss", "window": "28 day", "source": "win-loss-ledger"},
+      "drives": "hit rate of new ads",
+      "business": "gross profit",
+      "score": {"money": 4, "satisfaction": 4, "speed": 4, "ease": 4},
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "11-16",
+      "top": "T4",
+      "job": "Run the best creator videos as partnership ads through the creator's handle, and compare cost per purchase with the same video run from the brand's handle",
+      "trigger": "when a creator video beats the account median hook rate, and monthly",
+      "enablers": ["creator-roster"],
+      "inputs": [
+        {"need": "partnership ad permission from each creator", "from": "creators", "status": "founder"},
+        {"need": "creator ranking by purchases", "from": "creator-roster", "status": "enabler"},
+        {"need": "the video, run from the brand handle, with results", "from": "Meta Ads", "status": "connected"},
+        {"need": "rights end dates", "from": "creators shelf", "status": "brain"}
+      ],
+      "steps": [
+        "Pick the 3 creator videos with the best purchases per 1,000 views",
+        "Request partnership access on each creator's handle",
+        "Launch each video twice in one ad set: creator handle and brand handle",
+        "Read both at 3 times target spend",
+        "Keep the handle that wins and put it in the creator's record"
+      ],
+      "output": "3 handle tests with a result per creator, logged on the roster",
+      "next": "feeds 09-18 (creator ranking) and 09-19 (next briefs)",
+      "watch": {"metric": "cost per purchase of creator handle vs brand handle", "window": "14 day", "source": "Meta Ads"},
+      "drives": "cost per new customer from creator content",
+      "business": "revenue",
+      "score": {"money": 3, "satisfaction": 3, "speed": 4, "ease": 3},
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "11-17",
+      "top": "T4",
+      "job": "Test the top ad sending to a page that repeats its promise against the same ad sending to the product page, split 50 and 50, for 14 days",
+      "trigger": "when 10-11 scores a top 10 ad 1 or less for match",
+      "enablers": ["congruence-check"],
+      "inputs": [
+        {"need": "the match scores for the top 10 ads", "from": "congruence-check", "status": "enabler"},
+        {"need": "a page built to repeat the ad's promise", "from": "page builder in the store theme", "status": "setup"},
+        {"need": "page conversion by ad", "from": "GA4", "status": "connected"}
+      ],
+      "steps": [
+        "Duplicate the ad with the new URL into the same ad set",
+        "Split budget evenly and cap each ad's share",
+        "Read cost per purchase and page conversion on each URL at 14 days",
+        "Keep the winner; if the matched page wins, add the rule to T0 and brief pages for the next 3 ads"
+      ],
+      "output": "a page test result for the top ad and a rule on which page each ad type should send to",
+      "next": "feeds 07-landing-pages-cro and 09-06",
+      "watch": {"metric": "conversion rate of paid sessions on the tested page", "window": "14 day", "source": "GA4"},
+      "drives": "cost per purchase on the top ad",
+      "business": "revenue",
+      "score": {"money": 4, "satisfaction": 3, "speed": 3, "ease": 3},
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "11-18",
+      "top": "T5",
+      "job": "Each morning, list products with under 14 days of stock and the ad spend behind them, move that spend to products that can ship, and plan the restart for when stock returns",
+      "trigger": "daily",
+      "enablers": ["ad-stock-link"],
+      "inputs": [
+        {"need": "stock per SKU and sales per day, 28 days", "from": "Shopify", "status": "connected"},
+        {"need": "ad spend by product, including catalog ads", "from": "Meta Ads", "status": "connected"},
+        {"need": "incoming stock dates", "from": "operations shelf", "status": "brain"}
+      ],
+      "steps": [
+        "Compute days of stock per SKU in code: units on hand divided by sales per day",
+        "List SKUs under 14 days with the ad spend and ads behind them",
+        "Propose moving the spend to the nearest product with over 45 days of stock",
+        "Pull the SKU from catalog product sets when it is under 5 days",
+        "When stock lands, restart the paused ads in their old ad sets and watch cost for 3 days"
+      ],
+      "output": "a daily stock and spend list with the moves to make and a restart plan",
+      "next": "feeds 10-12 (sold out line sweep) and 19-supply-inventory",
+      "watch": {"metric": "ad spend on SKUs with under 14 days of stock", "window": "7 day", "source": "Meta Ads and Shopify"},
+      "drives": "revenue lost to sellouts",
+      "business": "revenue",
+      "score": {"money": 4, "satisfaction": 4, "speed": 5, "ease": 4},
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "11-19",
+      "top": "T5",
+      "job": "Plan each peak sale 3 weeks out: the budget ramp by day, the ads ready and tested, the stop date, and the cut-back the morning after the sale ends",
+      "trigger": "3 weeks before each peak on the calendar",
+      "enablers": ["spend-rules", "funnel-mix"],
+      "inputs": [
+        {"need": "peak dates and what went wrong last year", "from": "calendar shelf", "status": "brain"},
+        {"need": "last year's daily spend and cost per purchase in the same weeks", "from": "Meta Ads", "status": "connected"},
+        {"need": "the sale offer and its end time", "from": "offers shelf", "status": "brain"},
+        {"need": "stock for the sale products", "from": "Shopify", "status": "connected"}
+      ],
+      "steps": [
+        "Set a daily budget curve: warm up 10 to 14 days before, peak on sale days, stop at the end time",
+        "Test sale ads 2 weeks before so winners are known on day 1",
+        "Grow the retargeting and email lists in the warm up weeks",
+        "Check stock covers the planned orders at the ramp budget",
+        "Schedule the cut-back for the morning after and the sale line sweep"
+      ],
+      "output": "a dated peak plan: budget per day, ads ready, stock check and the stop date",
+      "next": "feeds 10-17 (gift copy), 10-12 (sweep) and 00-today",
+      "watch": {"metric": "cost per purchase in the sale week vs plan", "window": "sale week", "source": "Meta Ads"},
+      "drives": "sale revenue and gross profit",
+      "business": "revenue",
+      "score": {"money": 5, "satisfaction": 4, "speed": 3, "ease": 3},
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "11-20",
+      "top": "T5",
+      "job": "Point a capped share of spend at slow stock with a bundle or clearance ad, and stop when margin per order falls below the floor or stock reaches 60 days of cover",
+      "trigger": "when a SKU has over 180 days of stock",
+      "enablers": ["ad-stock-link", "margin-view"],
+      "inputs": [
+        {"need": "days of stock per SKU", "from": "Shopify", "status": "connected"},
+        {"need": "margin per order and the floor", "from": "finance shelf", "status": "brain"},
+        {"need": "a bundle or clearance offer the founder approves", "from": "offers shelf", "status": "founder"}
+      ],
+      "steps": [
+        "List SKUs with over 180 days of stock and the cash tied in each",
+        "Build a bundle with a best seller, or a clearance offer inside the discount floor",
+        "Run it in its own ad set capped at 10 percent of spend",
+        "Stop at the margin floor or 60 days of cover",
+        "Report cash freed and gross profit per order"
+      ],
+      "output": "a capped slow stock campaign with cash freed and margin per order tracked",
+      "next": "feeds 21-finance-cash and 19-supply-inventory",
+      "watch": {"metric": "units sold of the slow SKUs per week", "window": "7 day", "source": "Shopify"},
+      "drives": "cash tied in stock",
+      "business": "cash",
+      "score": {"money": 3, "satisfaction": 3, "speed": 4, "ease": 4},
+      "ready": 4,
+      "effort": "days"
+    }
+  ],
+  "new_enablers": [
+    {
+      "id": "spend-rules",
+      "name": "Cut, hold and scale rules",
+      "what": "Written rules computed in code for every ad set and ad: the read spend (3 times target) before any call, the kill, hold and scale lines, budget steps sized to the read window, and the approval line for the founder. Logs every call and its outcome.",
+      "inputs": ["ad and ad set results", "target and ceiling cost per new customer", "approval rules from the brain", "budget caps"],
+      "powers": ["Monday cut, hold and scale list", "kill or wait on new ads", "safe budget steps", "tests that end with an answer", "peak ramps with a stop date"],
+      "screens": ["11-paid-social", "12-google-ads", "00-today", "25-experiments"],
+      "note": null
+    },
+    {
+      "id": "launch-preflight",
+      "name": "Launch preflight",
+      "what": "Checks every ad before spend starts: the URL loads on a phone, UTMs follow the naming rule, the purchase event fires with value, the product has stock, the offer is live, claims passed and rights are valid. Returns pass or a fix list.",
+      "inputs": ["draft ads with URLs", "stock per SKU", "pixel and conversion API health", "claim check results", "rights dates"],
+      "powers": ["no launch-day broken links", "no ads for sold out products", "no claim or rights surprises"],
+      "screens": ["11-paid-social", "12-google-ads", "09-creative"],
+      "note": null
+    },
+    {
+      "id": "ad-stock-link",
+      "name": "Ad and stock link",
+      "what": "Joins days of stock per SKU with the ad spend and ads behind each SKU, so spend moves off products about to sell out, restarts when stock lands, and is pointed at slow stock inside a margin floor.",
+      "inputs": ["stock and sales per SKU", "ad spend by product and catalog set", "incoming stock dates", "margin floor"],
+      "powers": ["no ads for products we cannot ship", "fast restart after a sellout", "cash freed from slow stock"],
+      "screens": ["11-paid-social", "12-google-ads", "19-supply-inventory"],
+      "note": null
+    }
+  ]
+}

@@ -1,0 +1,1140 @@
+{
+  "screen": "02-customers-avatars",
+  "title": "Brand and customers",
+  "top_jobs": [
+    {
+      "id": "T1",
+      "job": "When I brief an ad, a page or a product and cannot say who buys from us and why, help me see the real buyers and the job they hire us for, backed by orders, reviews and their own words, so money stops going to a customer we made up",
+      "metric": "share of orders that map to a named avatar with evidence",
+      "from_v2": [
+        1,
+        8,
+        16,
+        17,
+        23,
+        24
+      ]
+    },
+    {
+      "id": "T2",
+      "job": "When plenty of people visit and few buy, or returns climb, help me name the top reasons they hold back or send it back and what changed the mind of those who bought, so the page answers the doubt instead of shouting louder",
+      "metric": "conversion rate on the top 5 product pages, and not as expected return rate",
+      "from_v2": [
+        2,
+        4,
+        9,
+        10
+      ]
+    },
+    {
+      "id": "T3",
+      "job": "When I or the copywriter sit down to write, and when a new wave of reviews lands, help me use the exact words customers use and see what they love and hate as it changes, so the copy sounds like them and a quality slip does not hurt sales first",
+      "metric": "share of live ads and pages that use a language bank phrase, and review rating trend",
+      "from_v2": [
+        6,
+        3,
+        11,
+        30,
+        5
+      ]
+    },
+    {
+      "id": "T4",
+      "job": "When I decide where to spend to win new buyers, help me see which buyer groups by age, gender, placement, first product and channel make the most gross profit over 6 months and which are getting pricier, so budget goes to buyers worth having",
+      "metric": "6 month gross profit per new customer, by buyer group",
+      "from_v2": [
+        7,
+        12,
+        14,
+        20,
+        13
+      ]
+    },
+    {
+      "id": "T5",
+      "job": "When a small group of customers makes a big share of our profit and some of them go quiet, help me know them by name, treat them quietly well and hear why any stop, so they stay and bring others",
+      "metric": "12 month repeat rate of the top 5 percent of customers",
+      "from_v2": [
+        15,
+        18,
+        19
+      ]
+    }
+  ],
+  "jobs": [
+    {
+      "id": "02-01",
+      "top": "T1",
+      "job": "Map why customers hire the product: code 500 reviews, 200 tickets and all survey answers by the moment, the progress wanted, what they used before and what nearly stopped them, and rank the top 5 jobs by share",
+      "trigger": "once at onboarding, then each quarter",
+      "enablers": [
+        "customer-jobs",
+        "review-miner"
+      ],
+      "inputs": [
+        {
+          "need": "reviews with text and product",
+          "from": "reviews app",
+          "status": "connected"
+        },
+        {
+          "need": "support tickets and chats",
+          "from": "helpdesk",
+          "status": "connected"
+        },
+        {
+          "need": "post-purchase survey answers",
+          "from": "post-purchase survey",
+          "status": "setup"
+        },
+        {
+          "need": "coding sheet: moment, progress, old way, doubt",
+          "from": "idea bank ideas/v1 02-AVT",
+          "status": "have"
+        }
+      ],
+      "steps": [
+        "Pull the last 12 months of reviews, tickets and survey answers",
+        "Code each for the 4 parts: moment, progress wanted, old way, what nearly stopped them",
+        "Check 30 codes by hand and fix the coding rules",
+        "Group into jobs and count the share of each",
+        "Write each job as 1 line: when I, I want to, so I can, with 3 quotes"
+      ],
+      "output": "a ranked list of 5 customer jobs, each with share, 3 quotes and the old way",
+      "next": "feeds 02-04 (avatars), 10 copy angles and 09 creative hooks",
+      "watch": {
+        "metric": "share of new ads built on a named customer job",
+        "window": "90 day",
+        "source": "ads shelf"
+      },
+      "drives": "cost per new customer on job-led ads",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 2,
+        "ease": 3
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "02-02",
+      "top": "T1",
+      "job": "Add a 3 question post-purchase survey: where did you first hear of us, what were you using before, what nearly stopped you",
+      "trigger": "once at onboarding, then read weekly",
+      "enablers": [
+        "customer-jobs"
+      ],
+      "inputs": [
+        {
+          "need": "a post-purchase survey app",
+          "from": "Shopify app store, free or cheap tier",
+          "status": "setup"
+        },
+        {
+          "need": "the 3 questions with answer choices",
+          "from": "idea bank ideas/v1 02-AVT",
+          "status": "have"
+        },
+        {
+          "need": "channel list for the first question",
+          "from": "ads shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Install the survey on the thank you page",
+        "Write the 3 questions with 6 choices and an other box",
+        "Check the answer rate after 1 week; aim for 20 percent or more",
+        "Each Monday, count answers by channel and by first product",
+        "Send new old-way and doubt answers to the customer jobs map"
+      ],
+      "output": "a live survey and a weekly count of answers by channel and product",
+      "next": "feeds 02-01 (jobs map), 02-06 (objection ladder) and 22 measurement",
+      "watch": {
+        "metric": "survey answer rate",
+        "window": "7 day",
+        "source": "survey app"
+      },
+      "drives": "better reads on what brings buyers",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 5
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "02-03",
+      "top": "T1",
+      "job": "Book 8 customer calls in 2 weeks, split by first product and repeat vs one time buyers, with a $25 gift card, and add notes to the brain",
+      "trigger": "once at onboarding, then 4 calls a month",
+      "enablers": [
+        "customer-jobs",
+        "brain-graph"
+      ],
+      "inputs": [
+        {
+          "need": "list of recent buyers split by product and repeat",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "gift cards for thanks",
+          "from": "store gift cards, about $200",
+          "status": "buy"
+        },
+        {
+          "need": "a 20 minute call script",
+          "from": "idea bank ideas/v1 02-AVT",
+          "status": "have"
+        },
+        {
+          "need": "someone to run the calls",
+          "from": "founder or team",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "Pick 30 buyers across 4 groups and send a short invite",
+        "Book 8 calls of 20 minutes",
+        "Ask about the moment before buying, the old way and what nearly stopped them",
+        "Write notes the same day with quotes marked verbatim",
+        "File notes on the customers shelf and tag the job and avatar"
+      ],
+      "output": "8 call notes with verbatim quotes, filed and tagged",
+      "next": "feeds 02-01 (jobs map) and 02-04 (avatars)",
+      "watch": {
+        "metric": "calls done per month",
+        "window": "30 day",
+        "source": "customers shelf"
+      },
+      "drives": "founder close to the buyer",
+      "business": "customer satisfaction",
+      "score": {
+        "money": 3,
+        "satisfaction": 5,
+        "speed": 2,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "weeks"
+    },
+    {
+      "id": "02-04",
+      "top": "T1",
+      "job": "Draft up to 4 avatars with evidence: share of orders, first product, trigger to buy, doubts, words and where they spend time, each claim linked to a source, and have the founder sign them before any creative or page is chosen",
+      "trigger": "once after 02-01, then re-signed each quarter",
+      "enablers": [
+        "brain-graph",
+        "customer-jobs"
+      ],
+      "inputs": [
+        {
+          "need": "the customer jobs map",
+          "from": "customer-jobs",
+          "status": "enabler"
+        },
+        {
+          "need": "orders with first product and region",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "age and gender of buyers from ads",
+          "from": "Meta Ads breakdowns",
+          "status": "connected"
+        },
+        {
+          "need": "founder view of who buys",
+          "from": "founder interview",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "Group buyers by job and first product and take the share of orders",
+        "Fill each avatar's 6 fields from the jobs map, quotes and ad breakdowns",
+        "Link each field to its source; mark guesses as guesses",
+        "Show the founder where data and belief disagree",
+        "Founder signs; file on the customers shelf and core page"
+      ],
+      "output": "up to 4 signed avatars, each with share of orders and sourced fields",
+      "next": "feeds every brief on 09 creative, 10 copy and 07 landing pages",
+      "watch": {
+        "metric": "share of briefs that name a signed avatar",
+        "window": "30 day",
+        "source": "work board"
+      },
+      "drives": "fewer ads for a made up buyer",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 5,
+        "speed": 2,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "02-05",
+      "top": "T1",
+      "job": "Split gift orders from self purchases, and write who buys and who uses for the gift season",
+      "trigger": "once a year, 10 weeks before the main gift season",
+      "enablers": [
+        "customer-jobs",
+        "buyer-cohorts"
+      ],
+      "inputs": [
+        {
+          "need": "orders with gift notes, gift wrap or a different ship to name",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "reviews that mention a gift",
+          "from": "reviews app",
+          "status": "connected"
+        },
+        {
+          "need": "gift dates per market",
+          "from": "calendar shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Flag gift orders from notes, wrap and ship to name",
+        "Compute gift share by month and by product",
+        "Read gift reviews for who gave and who got it",
+        "Write 2 lines: the giver's worry and the receiver's delight",
+        "Hand both to creative and email before the season"
+      ],
+      "output": "a gift share table and a giver and user note",
+      "next": "feeds 09 creative and 14 email gift campaigns",
+      "watch": {
+        "metric": "gift season revenue against last year",
+        "window": "gift season",
+        "source": "Shopify"
+      },
+      "drives": "gift season revenue",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "02-06",
+      "top": "T2",
+      "job": "Build the objection ladder: every doubt from reviews, tickets, chats and pre-sale questions, ranked by sales lost, with the answer, the proof and where the answer lives today",
+      "trigger": "once at onboarding, then monthly",
+      "enablers": [
+        "question-matrix",
+        "review-miner"
+      ],
+      "inputs": [
+        {
+          "need": "pre-sale tickets and chats",
+          "from": "helpdesk",
+          "status": "connected"
+        },
+        {
+          "need": "reviews that mention a doubt before buying",
+          "from": "reviews app",
+          "status": "connected"
+        },
+        {
+          "need": "what nearly stopped you answers",
+          "from": "post-purchase survey",
+          "status": "setup"
+        },
+        {
+          "need": "product page and FAQ text",
+          "from": "site shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pull every doubt and group into themes",
+        "Rank themes by count and by the order value of the people who raised them",
+        "Write the best answer and the proof for each",
+        "Mark where it is answered: product page, FAQ, ad, email, or nowhere",
+        "Send the top 3 blanks to the page and copy teams"
+      ],
+      "output": "a ranked ladder of doubts with answer, proof and a coverage mark",
+      "next": "feeds 07 landing pages, 10 copy and 04-13 (offer around the doubt)",
+      "watch": {
+        "metric": "conversion rate on pages where a top doubt was answered",
+        "window": "28 day",
+        "source": "GA4"
+      },
+      "drives": "conversion rate",
+      "business": "revenue",
+      "score": {
+        "money": 5,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 3
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "02-07",
+      "top": "T2",
+      "job": "Code not as expected returns into who the product is wrong for, and write a not for you if line for each product page",
+      "trigger": "monthly",
+      "enablers": [
+        "review-miner"
+      ],
+      "inputs": [
+        {
+          "need": "return reasons with comments",
+          "from": "returns app or helpdesk",
+          "status": "setup"
+        },
+        {
+          "need": "1 and 2 star reviews",
+          "from": "reviews app",
+          "status": "connected"
+        },
+        {
+          "need": "return rate per SKU",
+          "from": "Shopify",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Pull returns and low reviews for the top 10 SKUs",
+        "Code each by the mismatch: size, feel, use, expectation",
+        "Name the buyer each mismatch fits",
+        "Write a not for you if line per product",
+        "Put it on the page and track return rate for 60 days"
+      ],
+      "output": "a mismatch table per SKU and a not for you if line per page",
+      "next": "feeds 07 product pages and 15 CX macros",
+      "watch": {
+        "metric": "not as expected return rate",
+        "window": "60 day",
+        "source": "Shopify and returns app"
+      },
+      "drives": "returns cost",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "02-08",
+      "top": "T2",
+      "job": "Split every too expensive comment into cannot afford vs do not see the value, and pick the fix: proof and value for the second, a smaller pack or pay in parts for the first",
+      "trigger": "quarterly, and when price complaints rise",
+      "enablers": [
+        "review-miner",
+        "customer-jobs"
+      ],
+      "inputs": [
+        {
+          "need": "reviews, chats and survey answers with price words",
+          "from": "reviews app, helpdesk, survey",
+          "status": "connected"
+        },
+        {
+          "need": "pack sizes and price per unit",
+          "from": "products shelf",
+          "status": "brain"
+        },
+        {
+          "need": "rival price bands",
+          "from": "price-bands",
+          "status": "enabler"
+        }
+      ],
+      "steps": [
+        "Pull every mention of price, cost, expensive, worth",
+        "Code each as cannot afford, no value seen, or price vs a named rival",
+        "Count each and check the price band",
+        "Pick the fix per group",
+        "Hand value fixes to copy and pack fixes to offers"
+      ],
+      "output": "a price objection split with counts and 1 fix per group",
+      "next": "feeds 04-11 (bundles and packs) and 10 copy",
+      "watch": {
+        "metric": "price mentions in chats per 100 sessions",
+        "window": "28 day",
+        "source": "helpdesk"
+      },
+      "drives": "conversion without deeper discounts",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "02-09",
+      "top": "T2",
+      "job": "Ask 300 visitors who leave the top product page without buying 1 question, what stopped you today, and add the answers to the objection ladder",
+      "trigger": "once, run for 2 weeks, then each quarter",
+      "enablers": [
+        "question-matrix",
+        "behaviour-map"
+      ],
+      "inputs": [
+        {
+          "need": "an on-page survey tool",
+          "from": "Clarity, Hotjar or similar",
+          "status": "setup"
+        },
+        {
+          "need": "top product pages by traffic",
+          "from": "GA4",
+          "status": "connected"
+        },
+        {
+          "need": "objection ladder",
+          "from": "question-matrix",
+          "status": "enabler"
+        }
+      ],
+      "steps": [
+        "Set an exit question on the top 2 product pages",
+        "Collect answers for 2 weeks",
+        "Code answers into the ladder themes",
+        "Compare what non-buyers say with what buyers said nearly stopped them",
+        "Update the ladder ranks"
+      ],
+      "output": "300 coded exit answers and an updated ladder",
+      "next": "feeds 07 landing pages",
+      "watch": {
+        "metric": "answers collected per week",
+        "window": "14 day",
+        "source": "survey tool"
+      },
+      "drives": "conversion rate",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "02-10",
+      "top": "T3",
+      "job": "Build the language bank: the top 50 phrases customers use for the problem, the product and the result, with counts, and the words we use that they never do",
+      "trigger": "once at onboarding, then monthly",
+      "enablers": [
+        "review-miner",
+        "brain-graph"
+      ],
+      "inputs": [
+        {
+          "need": "reviews, tickets, call notes and survey answers",
+          "from": "customers shelf",
+          "status": "brain"
+        },
+        {
+          "need": "our live ads, pages and emails",
+          "from": "ads, site and email shelves",
+          "status": "brain"
+        },
+        {
+          "need": "phrase rules: verbatim only, forum quotes never as testimonials",
+          "from": "claims shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pull phrases of 2 to 6 words from the customer corpus",
+        "Group by problem, product and result and count each",
+        "Pull our own phrases from ads and pages",
+        "List our words they never use",
+        "Hand the top 20 to copy with 1 source quote each"
+      ],
+      "output": "a language bank of 50 phrases with counts and a list of our words to drop",
+      "next": "feeds 10 copy, 09 creative hooks and 17 SEO",
+      "watch": {
+        "metric": "share of new ads using a bank phrase",
+        "window": "30 day",
+        "source": "ads shelf"
+      },
+      "drives": "click through and conversion on new copy",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 5,
+      "effort": "days"
+    },
+    {
+      "id": "02-11",
+      "top": "T3",
+      "job": "Split every live ad and top page into avatar and pain point, count spend and purchases for each pair, and list the pairs we never speak to",
+      "trigger": "monthly, after the ad pull",
+      "enablers": [
+        "copy-decomposer",
+        "creative-tags"
+      ],
+      "inputs": [
+        {
+          "need": "ad copy with spend and purchases, 90 days",
+          "from": "Meta Ads and Google Ads",
+          "status": "connected"
+        },
+        {
+          "need": "signed avatars and pains",
+          "from": "customers shelf",
+          "status": "brain"
+        },
+        {
+          "need": "landing page text",
+          "from": "site shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Tag each ad and page with 1 avatar and 1 pain",
+        "Check 20 tags by hand and fix the rules",
+        "Sum spend, purchases and cost per purchase per pair",
+        "Mark pairs with good results and low spend, and pairs with no ads",
+        "Brief 3 ads for the best unspoken pair"
+      ],
+      "output": "an avatar by pain grid with spend, results and 3 briefs",
+      "next": "feeds 10 copy briefs and 09 creative",
+      "watch": {
+        "metric": "cost per purchase for ads on new pairs",
+        "window": "28 day",
+        "source": "Meta Ads"
+      },
+      "drives": "cost per new customer",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 3
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "02-12",
+      "top": "T3",
+      "job": "Send a weekly review pulse: themes customers love, hate and wish for, per product, with rating trend and any theme that doubled",
+      "trigger": "every Monday",
+      "enablers": [
+        "review-miner"
+      ],
+      "inputs": [
+        {
+          "need": "new reviews with rating and product",
+          "from": "reviews app",
+          "status": "connected"
+        },
+        {
+          "need": "marketplace reviews",
+          "from": "Amazon Seller Central",
+          "status": "setup"
+        },
+        {
+          "need": "theme list",
+          "from": "customers shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pull last week's reviews",
+        "Tag each with themes and sentiment",
+        "Compare theme counts with the 8 week average",
+        "Flag themes that doubled and ratings down 0.2 or more",
+        "Send quality flags to ops and praise quotes to copy"
+      ],
+      "output": "a weekly pulse: love, hate, wish lists, rating trend and flags",
+      "next": "feeds 19 supply (quality) and 10 copy (proof)",
+      "watch": {
+        "metric": "average rating per top product",
+        "window": "28 day",
+        "source": "reviews app"
+      },
+      "drives": "conversion and repeat rate",
+      "business": "customer satisfaction",
+      "score": {
+        "money": 3,
+        "satisfaction": 5,
+        "speed": 3,
+        "ease": 5
+      },
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "02-13",
+      "top": "T3",
+      "job": "Alert the same day when complaints on 1 topic spike in comments, tickets or reviews, with the count, the first post and a draft reply",
+      "trigger": "every day at noon and 5pm",
+      "enablers": [
+        "review-miner",
+        "question-matrix"
+      ],
+      "inputs": [
+        {
+          "need": "tickets and chats",
+          "from": "helpdesk",
+          "status": "connected"
+        },
+        {
+          "need": "ad comments",
+          "from": "Meta Ads",
+          "status": "connected"
+        },
+        {
+          "need": "new reviews",
+          "from": "reviews app",
+          "status": "connected"
+        },
+        {
+          "need": "reply rules and tone",
+          "from": "voice shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Count mentions per topic in the last 6 hours",
+        "Compare with the same hours over the last 4 weeks",
+        "Flag a topic at 3 times its usual count",
+        "Draft a reply and a fix owner",
+        "Send to the founder and support lead"
+      ],
+      "output": "a same day spike alert with a draft reply",
+      "next": "feeds 15 CX and 00 Today",
+      "watch": {
+        "metric": "hours from spike to first reply",
+        "window": "per event",
+        "source": "helpdesk"
+      },
+      "drives": "trust kept on a bad day",
+      "business": "risk",
+      "score": {
+        "money": 3,
+        "satisfaction": 5,
+        "speed": 5,
+        "ease": 4
+      },
+      "ready": 5,
+      "effort": "days"
+    },
+    {
+      "id": "02-14",
+      "top": "T4",
+      "job": "Build the best segment map: pull 90 days of Meta breakdowns by age, gender, placement and region, compute cost per new customer and purchase value per cell, and name the top 3 and bottom 3 cells",
+      "trigger": "once at onboarding, then every 2 weeks",
+      "enablers": [
+        "segment-map"
+      ],
+      "inputs": [
+        {
+          "need": "breakdowns by age, gender, placement and region with spend and purchases",
+          "from": "Meta Ads",
+          "status": "connected"
+        },
+        {
+          "need": "new vs returning purchases",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "minimum spend per cell to trust",
+          "from": "decisions and goals shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pull breakdowns for 90 days",
+        "Drop cells under the minimum spend",
+        "Compute cost per purchase and value per purchase per cell",
+        "Rank cells and name top 3 and bottom 3",
+        "Write who the top cell is in 1 line for the writer"
+      ],
+      "output": "a segment grid with top and bottom 3 cells and a 1 line brief",
+      "next": "feeds 10 copy and 09 creative (tailor to the top cell) and 11 placements",
+      "watch": {
+        "metric": "cost per purchase in the top cell",
+        "window": "28 day",
+        "source": "Meta Ads"
+      },
+      "drives": "cost per new customer",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 5
+      },
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "02-15",
+      "top": "T4",
+      "job": "Show 6 month gross profit per new customer by first product, channel, first code and region, not just first order value",
+      "trigger": "monthly",
+      "enablers": [
+        "buyer-cohorts",
+        "margin-view"
+      ],
+      "inputs": [
+        {
+          "need": "orders and customers, 24 months",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "margin per order",
+          "from": "margin-view",
+          "status": "enabler"
+        },
+        {
+          "need": "first touch channel per customer",
+          "from": "GA4 and survey",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Group new customers by first order month and by each split",
+        "Sum gross profit per customer at 30, 90 and 180 days",
+        "Rank groups at 180 days",
+        "Mark groups with a small first order but high 180 day profit",
+        "Write the max cost per new customer each group can take"
+      ],
+      "output": "a buyer group table with 180 day gross profit and a max cost per new customer",
+      "next": "feeds 11 paid social budget and 04-09 (loyal vs new offers)",
+      "watch": {
+        "metric": "180 day gross profit per new customer",
+        "window": "180 day",
+        "source": "Shopify"
+      },
+      "drives": "gross profit per customer",
+      "business": "gross profit",
+      "score": {
+        "money": 5,
+        "satisfaction": 3,
+        "speed": 1,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "02-16",
+      "top": "T4",
+      "job": "Track cost per new customer for each segment cell each quarter, and move budget from cells getting pricier to cells still cheap",
+      "trigger": "quarterly, and when cost per new customer rises 2 months running",
+      "enablers": [
+        "segment-map",
+        "buyer-cohorts"
+      ],
+      "inputs": [
+        {
+          "need": "segment grid",
+          "from": "segment-map",
+          "status": "enabler"
+        },
+        {
+          "need": "cost per new customer by month",
+          "from": "Meta Ads and Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "180 day value per group",
+          "from": "buyer-cohorts",
+          "status": "enabler"
+        }
+      ],
+      "steps": [
+        "Compare each cell's cost this quarter with last quarter",
+        "Mark cells up 20 percent or more",
+        "Set each cell's cost against its 180 day value",
+        "Propose a budget shift and the ads that fit the cheaper cells",
+        "Founder approves the shift"
+      ],
+      "output": "a quarterly shift plan by cell with the value case",
+      "next": "feeds 11 paid social",
+      "watch": {
+        "metric": "blended cost per new customer",
+        "window": "28 day",
+        "source": "Meta Ads and Shopify"
+      },
+      "drives": "cost per new customer",
+      "business": "contribution margin",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "02-17",
+      "top": "T4",
+      "job": "Find a buyer group no rival speaks to: list every angle rivals run, map each to an avatar, name the group none serve, and test it with 3 ads",
+      "trigger": "twice a year",
+      "enablers": [
+        "copy-decomposer",
+        "competitor-feed",
+        "customer-jobs"
+      ],
+      "inputs": [
+        {
+          "need": "rival ads with angles",
+          "from": "competitor-feed",
+          "status": "enabler"
+        },
+        {
+          "need": "our avatars and jobs",
+          "from": "customers shelf",
+          "status": "brain"
+        },
+        {
+          "need": "reviews that mention uses and buyers we do not target",
+          "from": "reviews app",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Tag every rival ad with the avatar it speaks to",
+        "Count ads per avatar across all rivals",
+        "Find groups with buyers in our reviews and few or no rival ads",
+        "Brief 3 ads for the best one",
+        "Launch as 1 test and read cost per new customer"
+      ],
+      "output": "an avatar count across rivals, 1 unserved group and a launched test",
+      "next": "feeds 09 creative and 11 paid social",
+      "watch": {
+        "metric": "cost per new customer in the unserved group test",
+        "window": "28 day",
+        "source": "Meta Ads"
+      },
+      "drives": "new buyers at lower cost",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "02-18",
+      "top": "T5",
+      "job": "Rank customers by 12 month gross profit and recency, pick the top 2 percent, and send each a personal letter with quiet early access, telling no one else",
+      "trigger": "once, then each quarter",
+      "enablers": [
+        "vip-list",
+        "buyer-cohorts"
+      ],
+      "inputs": [
+        {
+          "need": "customers with orders, 24 months",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "margin per order",
+          "from": "margin-view",
+          "status": "enabler"
+        },
+        {
+          "need": "letter template and budget",
+          "from": "founder",
+          "status": "founder"
+        },
+        {
+          "need": "what we can offer quietly: early access, a private product",
+          "from": "offers shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Rank customers by 12 month gross profit, then by recency",
+        "Pick the top 2 percent and remove anyone with an open complaint",
+        "Write a short personal letter signed by the founder",
+        "Offer quiet early access to the next launch with a private link",
+        "Log who got what and track their next 90 days"
+      ],
+      "output": "a VIP list, letters sent and a log of what each did next",
+      "next": "feeds 02-19 (VIP early read) and 14 email",
+      "watch": {
+        "metric": "repeat rate of VIPs against a held back group",
+        "window": "90 day",
+        "source": "Shopify"
+      },
+      "drives": "repeat revenue from top customers",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 5,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "02-19",
+      "top": "T5",
+      "job": "Show a new product or message idea to 20 VIPs before any ad spend and collect a yes, maybe or no with 1 reason each",
+      "trigger": "before each launch or big message change",
+      "enablers": [
+        "vip-list",
+        "customer-jobs"
+      ],
+      "inputs": [
+        {
+          "need": "VIP list",
+          "from": "vip-list",
+          "status": "enabler"
+        },
+        {
+          "need": "the idea as 1 image and 3 lines",
+          "from": "creative team",
+          "status": "founder"
+        },
+        {
+          "need": "a reply form",
+          "from": "a Google Form",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "Pick 20 VIPs who fit the idea's avatar",
+        "Send the idea with 1 question and the form",
+        "Collect answers for 5 days",
+        "Count yes, maybe and no and group the reasons",
+        "Write go, change or stop"
+      ],
+      "output": "20 answers with reasons and a go, change or stop call",
+      "next": "feeds 01-14 (kill test) and 09 creative",
+      "watch": {
+        "metric": "share of launches tested on VIPs first",
+        "window": "90 day",
+        "source": "work board"
+      },
+      "drives": "fewer paid lessons",
+      "business": "gross profit",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 5
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "02-20",
+      "top": "T5",
+      "job": "Ask good customers who went quiet why, in their own words: email the top customers overdue by 2 times their usual gap, and code the answers",
+      "trigger": "monthly",
+      "enablers": [
+        "vip-list",
+        "buyer-cohorts"
+      ],
+      "inputs": [
+        {
+          "need": "customers with their usual gap between orders",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "an email tool to send a plain email",
+          "from": "email platform",
+          "status": "setup"
+        },
+        {
+          "need": "coding list of leave reasons",
+          "from": "customers shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "List top 10 percent customers now 2 times past their usual gap",
+        "Send a plain email from the founder with 1 question",
+        "Code replies: product, price, rival, life change, service",
+        "Count reasons and name any rival they moved to",
+        "Send product and service fixes to the owners"
+      ],
+      "output": "a monthly list of leave reasons with counts and named rivals",
+      "next": "feeds 15 CX, 03 competitors and 14 win back flows",
+      "watch": {
+        "metric": "reply rate and win back orders",
+        "window": "60 day",
+        "source": "Shopify and email platform"
+      },
+      "drives": "repeat revenue",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    }
+  ],
+  "new_enablers": [
+    {
+      "id": "buyer-cohorts",
+      "name": "Buyer groups over time",
+      "what": "Groups buyers by first order month, first product, channel, first offer or code, region and avatar, then tracks repeat rate, orders and gross profit at 30, 90 and 180 days for each group.",
+      "inputs": [
+        "orders and customers",
+        "margin per order",
+        "first touch channel",
+        "discount code per order",
+        "avatar tag where known"
+      ],
+      "powers": [
+        "which groups are worth paying more to win",
+        "whether discount buyers come back",
+        "loyal vs new customer offers",
+        "whether a loss making entry product pays back"
+      ],
+      "screens": [
+        "02-customers-avatars",
+        "04-offers-pricing",
+        "14-email-messaging",
+        "21-finance-cash"
+      ],
+      "note": null
+    }
+  ]
+}

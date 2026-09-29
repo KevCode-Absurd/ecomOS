@@ -1,0 +1,1213 @@
+{
+  "screen": "01-market-research",
+  "title": "Products and research",
+  "top_jobs": [
+    {
+      "id": "T1",
+      "job": "When sales dip for a quarter and I cannot tell if it is us or the market, help me see whether our category is growing or shrinking quarter by quarter, and where we grow slower than it line by line, so I know whether to fix us or ride it out",
+      "metric": "our growth minus category growth, per product line, quarter against the same quarter last year",
+      "from_v2": [
+        4,
+        13,
+        18,
+        10,
+        28
+      ]
+    },
+    {
+      "id": "T2",
+      "job": "When a supplier quote, freight rate or tariff moves and margin keeps slipping, help me see which input costs are rising on my top products and who can squeeze my margin, in plain words, so I act before margin shrinks",
+      "metric": "landed cost per unit for the top 10 SKUs against last quarter",
+      "from_v2": [
+        2,
+        3,
+        16,
+        11
+      ]
+    },
+    {
+      "id": "T3",
+      "job": "When sales on our own site flatten, help me see where buyers in my category are moving and which nearby categories they also buy are growing, so we follow the buyer instead of fighting it",
+      "metric": "share of category demand by channel (brand sites, Amazon, TikTok Shop, search, AI answers), quarterly",
+      "from_v2": [
+        17,
+        35,
+        24,
+        33
+      ]
+    },
+    {
+      "id": "T4",
+      "job": "When I am about to put $20k or more into a new product, or an idea excites the team, help me check demand from more than one source and margin after every real cost in an hour, and force a go or no-go, so I do not sink cash into a product that will not sell",
+      "metric": "share of launches that hit their 90 day plan",
+      "from_v2": [
+        1,
+        5,
+        6,
+        14,
+        23,
+        31,
+        9
+      ]
+    },
+    {
+      "id": "T5",
+      "job": "When I am shaping a product or a price, help me see the price bands my category buys in, the price buyers call fair and the complaints no one has fixed, so we build and price for what buyers want",
+      "metric": "share of our revenue from products priced inside the busiest band",
+      "from_v2": [
+        7,
+        8,
+        20,
+        25,
+        26
+      ]
+    }
+  ],
+  "jobs": [
+    {
+      "id": "01-01",
+      "top": "T1",
+      "job": "Pull 12 quarters of search demand for 10 to 20 category terms and chart each quarter against the same quarter last year",
+      "trigger": "once at onboarding, then in the first week of each quarter",
+      "enablers": [
+        "market-pulse"
+      ],
+      "inputs": [
+        {
+          "need": "10 to 20 category terms, not brand names",
+          "from": "market shelf",
+          "status": "brain"
+        },
+        {
+          "need": "monthly search volumes for the terms",
+          "from": "Google Ads Keyword Planner",
+          "status": "connected"
+        },
+        {
+          "need": "5 year interest trend per term",
+          "from": "Google Trends",
+          "status": "setup"
+        },
+        {
+          "need": "longer volume history and more terms",
+          "from": "an SEO data source such as OpenSEO",
+          "status": "buy"
+        }
+      ],
+      "steps": [
+        "List category terms with the founder: what a buyer types before they know us",
+        "Pull monthly volumes and 5 year trend per term",
+        "Sum by quarter and compute change against the same quarter last year",
+        "Mark terms growing 3 quarters in a row and terms falling 3 in a row",
+        "Write 1 line: the category is growing, flat or shrinking, by how much"
+      ],
+      "output": "a quarterly demand chart for the category, with growth against last year and the 1 line call",
+      "next": "feeds 01-02 (our growth vs category) and 01-05 (seasonality)",
+      "watch": {
+        "metric": "category search demand, quarter against last year",
+        "window": "quarterly",
+        "source": "Google Ads Keyword Planner and Trends"
+      },
+      "drives": "the right fix: us or the market",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "01-02",
+      "top": "T1",
+      "job": "Compare our revenue growth with the category's growth each quarter, product line by product line, and name the lines where we lose share inside our own growth",
+      "trigger": "first week of each quarter",
+      "enablers": [
+        "market-pulse"
+      ],
+      "inputs": [
+        {
+          "need": "revenue by product line by quarter, 3 years",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "category demand by quarter",
+          "from": "market-pulse",
+          "status": "enabler"
+        },
+        {
+          "need": "marketplace revenue if we sell there",
+          "from": "Amazon Seller Central",
+          "status": "setup"
+        },
+        {
+          "need": "which category terms map to which line",
+          "from": "products shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Sum our revenue per line per quarter, all channels",
+        "Compute our growth against the same quarter last year",
+        "Match each line to its category terms and take the category growth",
+        "Subtract: our growth minus category growth, per line",
+        "Flag lines with a gap worse than minus 10 points for 2 quarters",
+        "Write 1 line per flagged line: growing but losing share, or shrinking with the market"
+      ],
+      "output": "a table: line, our growth, category growth, gap, 2 quarter flag",
+      "next": "feeds 01-04 (line diagnosis) and 26 reports",
+      "watch": {
+        "metric": "our growth minus category growth per line",
+        "window": "quarterly",
+        "source": "Shopify and market-pulse"
+      },
+      "drives": "share of category demand",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "01-03",
+      "top": "T1",
+      "job": "Split our search clicks into brand name searches and category searches each quarter, to see if the brand grows faster than the category",
+      "trigger": "first week of each quarter",
+      "enablers": [
+        "search-feed",
+        "market-pulse"
+      ],
+      "inputs": [
+        {
+          "need": "queries with clicks and impressions, 16 months",
+          "from": "Search Console",
+          "status": "connected"
+        },
+        {
+          "need": "brand terms and misspellings",
+          "from": "core page",
+          "status": "brain"
+        },
+        {
+          "need": "category demand by quarter",
+          "from": "market-pulse",
+          "status": "enabler"
+        }
+      ],
+      "steps": [
+        "Pull Search Console queries by month",
+        "Tag each query as brand, category or other with a word list",
+        "Sum clicks and impressions per quarter for each group",
+        "Compare brand search growth with category demand growth",
+        "Write the call: brand pulling ahead, keeping pace or falling behind"
+      ],
+      "output": "a quarterly brand vs category search table with the call",
+      "next": "feeds 02 brand health and 12 brand search spend",
+      "watch": {
+        "metric": "brand search clicks against last year",
+        "window": "quarterly",
+        "source": "Search Console"
+      },
+      "drives": "brand demand",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 2,
+        "ease": 5
+      },
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "01-04",
+      "top": "T1",
+      "job": "Before cutting a product line that slid 2 quarters, check whether the market, the product or our ads are to blame",
+      "trigger": "when a line falls 2 quarters in a row",
+      "enablers": [
+        "market-pulse",
+        "review-miner"
+      ],
+      "inputs": [
+        {
+          "need": "line revenue, conversion and repeat rate by quarter",
+          "from": "Shopify and GA4",
+          "status": "connected"
+        },
+        {
+          "need": "category demand for the line",
+          "from": "market-pulse",
+          "status": "enabler"
+        },
+        {
+          "need": "review rating and themes by quarter",
+          "from": "reviews app",
+          "status": "connected"
+        },
+        {
+          "need": "ad spend, reach and cost per purchase for the line",
+          "from": "Meta Ads and Google Ads",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Check category demand for the line: down, flat or up",
+        "Check the product: rating trend, new complaint themes, return rate",
+        "Check our push: spend, reach and cost per purchase against last year",
+        "Name the likely cause with the 2 numbers that show it",
+        "Propose: fix product, fix ads, reprice, or wind down, with cash freed"
+      ],
+      "output": "a 1 page line diagnosis with a cause and a proposal",
+      "next": "feeds 19 supply (stock plan) and 09 creative if ads are to blame",
+      "watch": {
+        "metric": "line revenue against category trend",
+        "window": "quarterly",
+        "source": "Shopify"
+      },
+      "drives": "revenue kept from good products",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 2,
+        "ease": 3
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "01-05",
+      "top": "T1",
+      "job": "Map category demand month by month for each market we sell in, and set the start date for stock, creative and cash before each peak",
+      "trigger": "once a year in January, checked each quarter",
+      "enablers": [
+        "market-pulse"
+      ],
+      "inputs": [
+        {
+          "need": "monthly search volume, 3 to 5 years",
+          "from": "Google Trends and Keyword Planner",
+          "status": "connected"
+        },
+        {
+          "need": "our orders by week, 3 years",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "countries sold in",
+          "from": "core page",
+          "status": "brain"
+        },
+        {
+          "need": "supplier lead times",
+          "from": "operations shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Index demand by month for each market, average of the last 3 years",
+        "Lay our own weekly orders over it",
+        "Mark peaks, dead zones and where we under sold a peak",
+        "Count back lead time from each peak to set stock, creative and cash dates",
+        "Put the dates on the calendar shelf"
+      ],
+      "output": "a 12 month demand map per market with prep dates on the calendar",
+      "next": "feeds 00 Today alerts and 19 purchase orders",
+      "watch": {
+        "metric": "orders in peak weeks against last year",
+        "window": "yearly",
+        "source": "Shopify"
+      },
+      "drives": "revenue in peak months",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 1,
+        "ease": 4
+      },
+      "ready": 5,
+      "effort": "days"
+    },
+    {
+      "id": "01-06",
+      "top": "T2",
+      "job": "Build an input cost tracker for the top 10 SKUs: factory price, freight, duty, packaging and fulfilment per unit, each quarter, and flag any rise over 5 percent",
+      "trigger": "first week of each quarter, and when a quote or freight invoice lands",
+      "enablers": [
+        "market-pulse",
+        "margin-view"
+      ],
+      "inputs": [
+        {
+          "need": "unit cost per SKU",
+          "from": "Shopify cost field",
+          "status": "connected"
+        },
+        {
+          "need": "supplier quotes and invoices",
+          "from": "founder or finance",
+          "status": "founder"
+        },
+        {
+          "need": "freight and 3PL invoices",
+          "from": "a Google Sheet kept by ops",
+          "status": "setup"
+        },
+        {
+          "need": "public freight and raw material indices",
+          "from": "free public indices",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "List the top 10 SKUs by gross profit",
+        "Split landed cost per unit into 5 parts from the latest invoices",
+        "Compare each part with last quarter and last year",
+        "Flag parts up over 5 percent and the gross profit at stake per month",
+        "Check public indices to say if more rises are coming"
+      ],
+      "output": "a landed cost table for the top 10 SKUs with flags and dollars at stake",
+      "next": "feeds 04-15 (raise price, change pack or absorb) and 21 finance",
+      "watch": {
+        "metric": "landed cost per unit, top 10 SKUs",
+        "window": "quarterly",
+        "source": "invoices and Shopify"
+      },
+      "drives": "gross margin per unit",
+      "business": "gross profit",
+      "score": {
+        "money": 5,
+        "satisfaction": 4,
+        "speed": 2,
+        "ease": 3
+      },
+      "ready": 2,
+      "effort": "days"
+    },
+    {
+      "id": "01-07",
+      "top": "T2",
+      "job": "When a tariff or duty change is announced, compute the cost per unit for each product it hits and the 3 options: reprice, reroute or order early",
+      "trigger": "the day a tariff or trade rule is announced",
+      "enablers": [
+        "margin-view",
+        "market-pulse"
+      ],
+      "inputs": [
+        {
+          "need": "country of origin and customs code per SKU",
+          "from": "operations shelf",
+          "status": "brain"
+        },
+        {
+          "need": "current and new duty rates",
+          "from": "public tariff tables",
+          "status": "setup"
+        },
+        {
+          "need": "landed cost per SKU",
+          "from": "market-pulse",
+          "status": "enabler"
+        },
+        {
+          "need": "stock on hand and open orders",
+          "from": "Shopify and operations shelf",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "List SKUs by country of origin and customs code",
+        "Apply the new rate and compute extra cost per unit and per month",
+        "Check stock on hand and open orders: how many units land before the date",
+        "Cost 3 options: raise price, move supplier, place an order early",
+        "Write the pick with the cash it needs"
+      ],
+      "output": "a tariff hit table per SKU and a costed choice of 3 options",
+      "next": "feeds 04-15 (price response) and 19 supply",
+      "watch": {
+        "metric": "gross margin on hit SKUs",
+        "window": "90 day",
+        "source": "Shopify and invoices"
+      },
+      "drives": "gross margin per unit",
+      "business": "gross profit",
+      "score": {
+        "money": 5,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "01-08",
+      "top": "T2",
+      "job": "Write the five forces for our category in plain words: who can squeeze our margin (suppliers, marketplaces and ad platforms, rivals, cheaper substitutes, new sellers), each with evidence and a 1 to 5 pressure score",
+      "trigger": "once at onboarding, then each quarter",
+      "enablers": [
+        "market-pulse",
+        "competitor-feed"
+      ],
+      "inputs": [
+        {
+          "need": "supplier count and terms",
+          "from": "operations shelf",
+          "status": "brain"
+        },
+        {
+          "need": "marketplace fees and ad cost trends",
+          "from": "Amazon and Meta Ads",
+          "status": "connected"
+        },
+        {
+          "need": "rival list and their prices",
+          "from": "competitors shelf",
+          "status": "brain"
+        },
+        {
+          "need": "substitutes buyers use instead",
+          "from": "competitors shelf",
+          "status": "brain"
+        },
+        {
+          "need": "new sellers in the category this quarter",
+          "from": "competitor-feed",
+          "status": "enabler"
+        }
+      ],
+      "steps": [
+        "Write 1 plain line per force: who, how they squeeze us, the evidence",
+        "Score each force 1 to 5 and compare with last quarter",
+        "Name the force that rose the most",
+        "Write 1 push back per force: dual source, raise price, own the channel, own a claim",
+        "Founder checks the scores and signs"
+      ],
+      "output": "a 1 page forces sheet: 5 lines, scores, the rising force and the push back",
+      "next": "feeds 04-15 (pricing) and 03 competitors",
+      "watch": {
+        "metric": "pressure score of the top force",
+        "window": "quarterly",
+        "source": "forces sheet"
+      },
+      "drives": "margin protected",
+      "business": "gross profit",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 1,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "01-09",
+      "top": "T2",
+      "job": "Check whether the cost to reach a buyer is rising for us or for the whole category, by comparing our CPM and cost per click with the category benchmark each month",
+      "trigger": "monthly, and when cost per purchase rises 2 months running",
+      "enablers": [
+        "market-pulse"
+      ],
+      "inputs": [
+        {
+          "need": "our CPM, cost per click and cost per purchase by month",
+          "from": "Meta Ads and Google Ads",
+          "status": "connected"
+        },
+        {
+          "need": "category benchmark for the same months",
+          "from": "Meta industry benchmark and Google auction insights",
+          "status": "connected"
+        },
+        {
+          "need": "our category label for benchmarks",
+          "from": "market shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pull our monthly CPM, cost per click and cost per purchase for 12 months",
+        "Pull the category benchmark for the same months",
+        "Index both to 100 at the start and plot",
+        "If ours rose faster, point to our creative and page; if both rose, it is the category",
+        "Write the 1 line call and the next job"
+      ],
+      "output": "a 12 month chart of our cost against the category's, with the call",
+      "next": "feeds 09 creative (if it is us) or 21 finance (if it is the category)",
+      "watch": {
+        "metric": "our CPM against category CPM",
+        "window": "monthly",
+        "source": "Meta Ads"
+      },
+      "drives": "cost per new customer",
+      "business": "contribution margin",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 5
+      },
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "01-10",
+      "top": "T3",
+      "job": "Track where buyers in the category are moving each quarter: brand sites, Amazon, TikTok Shop, search and AI answers, with a share for each",
+      "trigger": "first week of each quarter",
+      "enablers": [
+        "market-pulse",
+        "search-feed"
+      ],
+      "inputs": [
+        {
+          "need": "Search Console and Google category volume",
+          "from": "Search Console and Keyword Planner",
+          "status": "connected"
+        },
+        {
+          "need": "Amazon category search volume",
+          "from": "Amazon Brand Analytics",
+          "status": "setup"
+        },
+        {
+          "need": "TikTok Shop category sales estimates",
+          "from": "a TikTok Shop data tool",
+          "status": "buy"
+        },
+        {
+          "need": "what AI assistants say for 20 buyer questions",
+          "from": "search-feed",
+          "status": "enabler"
+        },
+        {
+          "need": "our own orders by channel",
+          "from": "Shopify and marketplaces",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Pull category demand for each channel for the last 8 quarters",
+        "Convert each to a share of the total",
+        "Compare with where our own orders come from",
+        "Name the channel gaining the most share and the one we are thin in",
+        "Write 1 move: list there, test ads there, or hold"
+      ],
+      "output": "a channel share table with our mix next to the category's and 1 move",
+      "next": "feeds 20 marketplaces and 18 answer engines",
+      "watch": {
+        "metric": "our share of orders from the fastest growing channel",
+        "window": "quarterly",
+        "source": "Shopify and marketplaces"
+      },
+      "drives": "revenue from where buyers are going",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 1,
+        "ease": 2
+      },
+      "ready": 2,
+      "effort": "weeks"
+    },
+    {
+      "id": "01-11",
+      "top": "T3",
+      "job": "List 5 to 10 allied categories our buyers also buy, check which are growing, and rank the top 3 to grow into",
+      "trigger": "twice a year, before range planning",
+      "enablers": [
+        "market-pulse",
+        "customer-jobs"
+      ],
+      "inputs": [
+        {
+          "need": "what else buyers buy",
+          "from": "post-purchase survey",
+          "status": "setup"
+        },
+        {
+          "need": "frequently bought together in the category",
+          "from": "Amazon listings",
+          "status": "setup"
+        },
+        {
+          "need": "demand trend per allied category",
+          "from": "Google Trends and Keyword Planner",
+          "status": "connected"
+        },
+        {
+          "need": "buyer jobs and moments",
+          "from": "customer-jobs",
+          "status": "enabler"
+        }
+      ],
+      "steps": [
+        "Collect allied categories from the survey, marketplace pairings and reviews",
+        "Pull 8 quarters of demand for each",
+        "Score each: growth, fit with our buyer's job, fit with our supply",
+        "Rank and keep the top 3",
+        "Write 1 test per category: a bundle, a partner or a small run"
+      ],
+      "output": "a ranked list of 3 allied categories with a first test each",
+      "next": "feeds 01-14 (kill test on each) and 04-11 (bundles)",
+      "watch": {
+        "metric": "revenue from allied category tests",
+        "window": "90 day",
+        "source": "Shopify"
+      },
+      "drives": "new revenue lines",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 1,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "weeks"
+    },
+    {
+      "id": "01-12",
+      "top": "T3",
+      "job": "Find uses buyers found for our product that we never planned, count them in reviews and chats, and size each use as its own search market",
+      "trigger": "twice a year",
+      "enablers": [
+        "review-miner",
+        "market-pulse"
+      ],
+      "inputs": [
+        {
+          "need": "all our reviews and chats",
+          "from": "reviews app and helpdesk",
+          "status": "connected"
+        },
+        {
+          "need": "search volume for each use",
+          "from": "Keyword Planner",
+          "status": "connected"
+        },
+        {
+          "need": "current product uses we sell for",
+          "from": "products shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Search reviews and chats for use words: for my, I use it to, works for",
+        "Group uses and count mentions",
+        "Drop uses we already sell for",
+        "Pull search volume for each new use",
+        "Pick 1 use to test with 2 ads and a page block"
+      ],
+      "output": "a list of unplanned uses with mentions and search volume, and 1 test",
+      "next": "feeds 09 creative (new angle) and 02-17 (unserved group)",
+      "watch": {
+        "metric": "sales from the new use angle",
+        "window": "60 day",
+        "source": "Meta Ads and Shopify"
+      },
+      "drives": "new buyers from new uses",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 5,
+      "effort": "days"
+    },
+    {
+      "id": "01-13",
+      "top": "T3",
+      "job": "Catch search terms and needs in the category that grew 3 months in a row, from Google, Search Console, site search and Amazon",
+      "trigger": "first Monday of each month",
+      "enablers": [
+        "search-feed",
+        "signal-bridge"
+      ],
+      "inputs": [
+        {
+          "need": "search terms with spend",
+          "from": "Google Ads",
+          "status": "connected"
+        },
+        {
+          "need": "queries by month",
+          "from": "Search Console",
+          "status": "connected"
+        },
+        {
+          "need": "site search terms",
+          "from": "GA4 or store search",
+          "status": "connected"
+        },
+        {
+          "need": "Amazon search terms report",
+          "from": "Amazon Brand Analytics",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "Pull terms from each source for the last 6 months",
+        "Keep terms up 3 months in a row and over a minimum volume",
+        "Group them by need",
+        "Check if we have a product, page or ad for each need",
+        "Send the top 3 needs to product, SEO and creative"
+      ],
+      "output": "a monthly list of rising needs with our coverage for each",
+      "next": "feeds 17 SEO briefs, 09 creative and 01-14 (kill test)",
+      "watch": {
+        "metric": "clicks on pages built for rising terms",
+        "window": "90 day",
+        "source": "Search Console"
+      },
+      "drives": "early demand captured",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "01-14",
+      "top": "T4",
+      "job": "Run a 1 hour kill test on any new product idea: demand from 2 sources, margin after every cost, room for ad cost, seller count and rules, then call go, no-go or drop",
+      "trigger": "whenever an idea is raised, before any samples",
+      "enablers": [
+        "launch-scorecard",
+        "margin-view"
+      ],
+      "inputs": [
+        {
+          "need": "search volume and trend for the idea",
+          "from": "Keyword Planner and Google Trends",
+          "status": "connected"
+        },
+        {
+          "need": "marketplace sales signals",
+          "from": "Amazon best sellers or a marketplace data tool",
+          "status": "buy"
+        },
+        {
+          "need": "landed cost quote",
+          "from": "supplier",
+          "status": "founder"
+        },
+        {
+          "need": "category cost per purchase",
+          "from": "Meta Ads and benchmark",
+          "status": "connected"
+        },
+        {
+          "need": "idea checks for product research",
+          "from": "idea bank ideas/v1 01-PRD",
+          "status": "have"
+        }
+      ],
+      "steps": [
+        "Check demand in 2 sources: search trend and marketplace sales",
+        "Compute margin: price minus landed cost, fees, shipping, returns",
+        "Compute ad room: margin minus the category's cost per purchase",
+        "Count sellers and check rules and certifications",
+        "Score and call go, no-go or drop; log the date and reason"
+      ],
+      "output": "a 1 page scorecard with a go, no-go or drop call",
+      "next": "feeds 01-16 (product meeting) and 04-17 (launch price)",
+      "watch": {
+        "metric": "ideas decided within 1 week",
+        "window": "90 day",
+        "source": "launch-scorecard log"
+      },
+      "drives": "cash kept from bad launches",
+      "business": "cash",
+      "score": {
+        "money": 5,
+        "satisfaction": 4,
+        "speed": 2,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "01-15",
+      "top": "T4",
+      "job": "When a product in our category goes viral, check if it is 1 clip or real demand: 3 or more videos over 1 million views, a search rise and marketplace rank moving",
+      "trigger": "within 48 hours of the team spotting it",
+      "enablers": [
+        "launch-scorecard",
+        "market-pulse"
+      ],
+      "inputs": [
+        {
+          "need": "the clip and similar videos",
+          "from": "TikTok and Instagram search",
+          "status": "setup"
+        },
+        {
+          "need": "search trend for the product words",
+          "from": "Google Trends",
+          "status": "setup"
+        },
+        {
+          "need": "marketplace rank history",
+          "from": "a marketplace rank tool such as Keepa",
+          "status": "buy"
+        },
+        {
+          "need": "our fit and supply",
+          "from": "products and operations shelves",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Count videos on the product over 1 million views from different creators",
+        "Check search trend for the last 90 days",
+        "Check marketplace rank for the top 3 listings",
+        "Call it noise, a fad or real demand",
+        "If real, run the kill test in 01-14"
+      ],
+      "output": "a 1 line call with the 3 checks behind it",
+      "next": "feeds 01-14 (kill test)",
+      "watch": {
+        "metric": "viral ideas taken to kill test that pass",
+        "window": "90 day",
+        "source": "launch-scorecard log"
+      },
+      "drives": "cash kept from fads",
+      "business": "cash",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "01-16",
+      "top": "T4",
+      "job": "Bring a ranked idea list with a go or no-go note to the monthly product meeting, and force a decision on any idea in research for over 4 weeks",
+      "trigger": "monthly, 2 days before the product meeting",
+      "enablers": [
+        "launch-scorecard",
+        "work-board"
+      ],
+      "inputs": [
+        {
+          "need": "scorecards for all open ideas",
+          "from": "launch-scorecard",
+          "status": "enabler"
+        },
+        {
+          "need": "the board with research cards",
+          "from": "work-board",
+          "status": "enabler"
+        },
+        {
+          "need": "12 month goals and range limits",
+          "from": "decisions and goals shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pull every idea with its score and age",
+        "Rank by score and fit with goals",
+        "Mark ideas over 4 weeks old as decide today",
+        "Write 1 line per idea: go, no-go, drop, and the reason",
+        "Log decisions and close dropped cards"
+      ],
+      "output": "a ranked list of ideas with decisions logged",
+      "next": "feeds 19 supply (samples and orders) and 00 Today board",
+      "watch": {
+        "metric": "ideas older than 4 weeks without a decision",
+        "window": "monthly",
+        "source": "work board"
+      },
+      "drives": "team time on ideas with a chance",
+      "business": "gross profit",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 5
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "01-17",
+      "top": "T4",
+      "job": "Compare each new product's first 90 days with its launch plan: units, price, margin, ad cost and repeat rate, and fix the launch math for next time",
+      "trigger": "90 days after each launch",
+      "enablers": [
+        "launch-scorecard",
+        "margin-view"
+      ],
+      "inputs": [
+        {
+          "need": "launch plan and scorecard",
+          "from": "launch-scorecard",
+          "status": "enabler"
+        },
+        {
+          "need": "units, revenue and returns for 90 days",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "ad spend and purchases for the product",
+          "from": "Meta Ads and Google Ads",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Pull 90 day actuals for the product",
+        "Put actual next to plan for each line of the scorecard",
+        "Name the 2 biggest misses and why",
+        "Change the scorecard rule that caused the miss",
+        "Log the result in the history shelf"
+      ],
+      "output": "a plan vs actual sheet and 1 changed rule",
+      "next": "feeds 25 experiments (win and loss ledger)",
+      "watch": {
+        "metric": "launch plan error on units and margin",
+        "window": "90 day",
+        "source": "Shopify"
+      },
+      "drives": "better launch bets",
+      "business": "gross profit",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 1,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "01-18",
+      "top": "T5",
+      "job": "Track which price bands the category's best sellers sit in each quarter, and whether buyers are trading down or up",
+      "trigger": "first week of each quarter",
+      "enablers": [
+        "price-bands"
+      ],
+      "inputs": [
+        {
+          "need": "top 50 category best sellers with prices",
+          "from": "Amazon best sellers and rival sites",
+          "status": "setup"
+        },
+        {
+          "need": "our prices per unit",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "unit rule for the category, like per pair",
+          "from": "market shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pull prices and pack sizes for the top 50 sellers",
+        "Convert to price per unit and set 4 to 5 bands",
+        "Count best sellers per band and compare with last quarter",
+        "Place each of our products on the band chart",
+        "Write the call: trading down, up or steady, and what it means for our range"
+      ],
+      "output": "a band chart with our products placed and the quarter's call",
+      "next": "feeds 04-17 (launch price) and 03-15 (price index)",
+      "watch": {
+        "metric": "share of our revenue in the busiest band",
+        "window": "quarterly",
+        "source": "Shopify and price-bands"
+      },
+      "drives": "revenue from well priced products",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 1,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "01-19",
+      "top": "T5",
+      "job": "Mine reviews of the top 10 category products for the price buyers call fair or too much and the complaints no seller has fixed",
+      "trigger": "before a new product or a price change, and twice a year",
+      "enablers": [
+        "review-miner",
+        "price-bands"
+      ],
+      "inputs": [
+        {
+          "need": "reviews for the top 10 category products",
+          "from": "Amazon and rival sites",
+          "status": "setup"
+        },
+        {
+          "need": "our own reviews",
+          "from": "reviews app",
+          "status": "connected"
+        },
+        {
+          "need": "price bands",
+          "from": "price-bands",
+          "status": "enabler"
+        }
+      ],
+      "steps": [
+        "Pull up to 500 reviews per product, 1 to 5 stars",
+        "Tag each for price words (worth it, overpriced) and complaint themes",
+        "Count themes and mark ones every seller has",
+        "Pull the price where worth it turns to overpriced",
+        "Write 3 build notes and 1 price note"
+      ],
+      "output": "a review sheet: unfixed complaints ranked, fair price line, 3 build notes",
+      "next": "feeds 04-17 (launch price) and 19 supply (product spec)",
+      "watch": {
+        "metric": "rating of the product built from the notes",
+        "window": "90 day",
+        "source": "reviews app"
+      },
+      "drives": "products buyers rate higher",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 1,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "01-20",
+      "top": "T5",
+      "job": "Pick the next product for the best selling line from what buyers ask for in search, emails and reviews, checked against market demand",
+      "trigger": "twice a year, before range planning",
+      "enablers": [
+        "customer-jobs",
+        "review-miner",
+        "launch-scorecard"
+      ],
+      "inputs": [
+        {
+          "need": "site search terms with no result",
+          "from": "GA4 or store search",
+          "status": "connected"
+        },
+        {
+          "need": "tickets and reviews asking for something we do not sell",
+          "from": "helpdesk and reviews app",
+          "status": "connected"
+        },
+        {
+          "need": "demand for each ask",
+          "from": "Keyword Planner",
+          "status": "connected"
+        },
+        {
+          "need": "supplier options",
+          "from": "operations shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Collect every ask for a product, size, color or pack we do not sell",
+        "Group and count the asks",
+        "Check search demand for the top 5",
+        "Run the top 2 through the kill test",
+        "Write why it differs from what we have and who it is for"
+      ],
+      "output": "a shortlist of 2 next products with asks, demand and a kill test each",
+      "next": "feeds 01-16 (product meeting)",
+      "watch": {
+        "metric": "revenue from the next product in its first 90 days",
+        "window": "90 day",
+        "source": "Shopify"
+      },
+      "drives": "new revenue from the best line",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 1,
+        "ease": 3
+      },
+      "ready": 4,
+      "effort": "days"
+    }
+  ],
+  "new_enablers": [
+    {
+      "id": "price-bands",
+      "name": "Price band map",
+      "what": "Collects prices for the category's top sellers on rival sites and marketplaces, puts them in bands per unit (per pair, per ounce, per pack), counts best sellers in each band and tracks the mix each quarter. Shows where our products sit.",
+      "inputs": [
+        "rival site prices and pack sizes",
+        "marketplace best seller lists with prices",
+        "our prices and pack sizes",
+        "a unit rule per category (per pair, per ounce)"
+      ],
+      "powers": [
+        "where most buyers buy on price",
+        "whether the category trades up or down",
+        "our price index against the rival median",
+        "price gaps no one fills"
+      ],
+      "screens": [
+        "01-market-research",
+        "03-competitors",
+        "04-offers-pricing"
+      ],
+      "note": null
+    },
+    {
+      "id": "launch-scorecard",
+      "name": "Launch scorecard",
+      "what": "A fixed go or no-go test for any product idea: demand from 2 or more sources, margin after landed cost, fees, returns and ad cost, room for ad cost under the category's cost per purchase, number of sellers, rebuy rate, and rules to clear. Every idea gets the same score, a date and a decision.",
+      "inputs": [
+        "search demand and trend",
+        "marketplace sales signals",
+        "landed cost quote",
+        "category cost per purchase",
+        "rules and certifications for the category"
+      ],
+      "powers": [
+        "a go, no-go or drop call in an hour",
+        "a ranked idea list for the product meeting",
+        "launch plan against 90 day actuals"
+      ],
+      "screens": [
+        "01-market-research",
+        "04-offers-pricing",
+        "19-supply-inventory"
+      ],
+      "note": null
+    }
+  ]
+}

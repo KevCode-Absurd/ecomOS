@@ -1,0 +1,1236 @@
+{
+  "screen": "23-team-ops",
+  "title": "Team and ops",
+  "top_jobs": [
+    {
+      "id": "T1",
+      "job": "When I am working 70 hour weeks and still the bottleneck on every decision, help me see which work others can own and who should own it, so I get 10 hours back for the calls only I can make",
+      "metric": "decisions waiting on the founder over 48 hours, weekly",
+      "from_v2": [
+        1,
+        10,
+        20,
+        31
+      ]
+    },
+    {
+      "id": "T2",
+      "job": "When a key person gives notice or I want 2 weeks off, help me see what only one person knows and holds, logins, contacts and steps, so the business does not stop when someone leaves",
+      "metric": "critical logins, contacts and tasks only one person can do, quarterly",
+      "from_v2": [
+        2,
+        4,
+        17,
+        19,
+        26
+      ]
+    },
+    {
+      "id": "T3",
+      "job": "When the warehouse, the factory, the agency or a software vendor does not deliver what we pay for, help me hold them to the contract with dates and numbers, so I get credits and fix the service",
+      "metric": "vendor misses against the contract, and credits claimed, monthly",
+      "from_v2": [
+        3,
+        6,
+        9,
+        11,
+        13,
+        16,
+        21,
+        24,
+        27,
+        30
+      ]
+    },
+    {
+      "id": "T4",
+      "job": "When the team says it is drowning or a peak is coming, help me see the load per person from tickets, tasks and orders, so I shift work or hire on numbers, not feelings",
+      "metric": "workload per person against the written hiring trigger, monthly",
+      "from_v2": [
+        7,
+        12,
+        14,
+        22,
+        35
+      ]
+    },
+    {
+      "id": "T5",
+      "job": "When work sits across people, screens and vendors, help me see every task, owner and date on one board, so nothing is found missing the week before a launch",
+      "metric": "tasks late against plan, weekly",
+      "from_v2": [
+        5,
+        8,
+        15,
+        25
+      ]
+    }
+  ],
+  "jobs": [
+    {
+      "id": "23-01",
+      "top": "T5",
+      "job": "Put every open task from every screen, Slack thread and the founder's notes on one kanban board with 5 columns (to do, doing, waiting on approval, live, measured), each card with 1 owner, a due date and the metric it should move",
+      "trigger": "once at onboarding, then every task any screen or person creates lands on it",
+      "enablers": [
+        "work-board"
+      ],
+      "inputs": [
+        {
+          "need": "tasks proposed by each screen and agent",
+          "from": "work-board",
+          "status": "enabler"
+        },
+        {
+          "need": "team list with roles and weekly hours",
+          "from": "team list",
+          "status": "founder"
+        },
+        {
+          "need": "approval rules: who approves what and spend caps",
+          "from": "decisions and goals shelf",
+          "status": "brain"
+        },
+        {
+          "need": "a board tool if we do not host one yet (Trello, Notion or a Google Sheet)",
+          "from": "Google Sheet",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "Pull open tasks from the founder's inbox, Slack and last 2 meeting notes into one list",
+        "Merge duplicates and drop anything nobody will do in the next 60 days",
+        "Give each card 1 owner, a due date and the metric it should move",
+        "Place each card in one of the 5 columns",
+        "Founder checks the waiting on approval column and clears or rejects each card",
+        "Set a rule: no card moves to live without a metric, and none to measured without a before and after number"
+      ],
+      "output": "a board with every open task, 1 owner and 1 due date each, and a count of cards with no owner (target 0)",
+      "next": "feeds 23-04 (launch plan), 23-05 (load per person) and 26-03 (what shipped and what it did)",
+      "watch": {
+        "metric": "share of open tasks with 1 owner and a due date",
+        "window": "weekly",
+        "source": "work board"
+      },
+      "drives": "tasks late against plan, and decisions waiting on the founder",
+      "business": "gross profit",
+      "score": {
+        "money": 3,
+        "satisfaction": 5,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "23-02",
+      "top": "T1",
+      "job": "List every recurring task the founder did in the last 2 weeks from the calendar, inbox and board, and mark each one keep, hand off or drop, with a named owner and a check for each hand off",
+      "trigger": "once, then every quarter and whenever the founder's week runs over 60 hours",
+      "enablers": [
+        "owner-map",
+        "work-board"
+      ],
+      "inputs": [
+        {
+          "need": "the founder's calendar and sent mail for the last 14 days",
+          "from": "founder calendar and inbox",
+          "status": "founder"
+        },
+        {
+          "need": "team list with skills and spare hours",
+          "from": "team list",
+          "status": "founder"
+        },
+        {
+          "need": "open and done cards per person",
+          "from": "work-board",
+          "status": "enabler"
+        },
+        {
+          "need": "what only the founder may decide",
+          "from": "decisions and goals shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pull every meeting, reply and task from the last 14 days and group repeats into recurring tasks",
+        "Log hours per recurring task and how often it comes back",
+        "Mark each task keep, hand off or drop, using the rule: keep only calls that need the founder's money, taste or name",
+        "Name 1 owner and 1 check (what good looks like) for each hand off",
+        "Founder confirms the list in a 20 minute call",
+        "Move each hand off to the board with a start date and a 2 week review"
+      ],
+      "output": "a hand-off list: recurring tasks, hours a week each, new owner and the check, plus founder hours freed",
+      "next": "feeds 23-03 (approval rules) and 23-14 (written steps for each handed task)",
+      "watch": {
+        "metric": "founder hours a week on tasks with another named owner possible",
+        "window": "weekly",
+        "source": "task and decision log"
+      },
+      "drives": "decisions waiting on the founder over 48 hours",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 5,
+        "speed": 2,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "23-03",
+      "top": "T1",
+      "job": "Log every decision waiting on the founder for more than 48 hours each Monday, and write an approval rule that lets someone else make the 3 most common kinds",
+      "trigger": "every Monday before the team meeting",
+      "enablers": [
+        "work-board",
+        "owner-map"
+      ],
+      "inputs": [
+        {
+          "need": "cards in the waiting on approval column with age in hours",
+          "from": "work-board",
+          "status": "enabler"
+        },
+        {
+          "need": "current approval rules and budget caps",
+          "from": "decisions and goals shelf",
+          "status": "brain"
+        },
+        {
+          "need": "the founder's red lines",
+          "from": "founder interview",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "List every card waiting on the founder and how long it has waited",
+        "Group them by kind: ad spend change, discount, refund over a limit, new vendor, creative sign-off",
+        "Pick the 3 kinds with the most cards",
+        "Draft a rule for each with a cap, for example refunds under $150 the CX lead approves",
+        "Founder signs or edits each rule",
+        "Write the rules to the decisions shelf and route matching cards to the new approver"
+      ],
+      "output": "3 written approval rules and a weekly count of decisions waiting over 48 hours",
+      "next": "feeds 23-10 (Monday meeting) and 26-05 (decisions logged)",
+      "watch": {
+        "metric": "decisions waiting on the founder over 48 hours",
+        "window": "weekly",
+        "source": "work board"
+      },
+      "drives": "founder hours a week and launch dates held",
+      "business": "gross profit",
+      "score": {
+        "money": 3,
+        "satisfaction": 5,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "23-04",
+      "top": "T5",
+      "job": "Build the launch plan 4 weeks out: every task, owner, vendor and date timed back from launch day, with the 5 tasks that block others marked red",
+      "trigger": "4 weeks before every launch, sale or new product drop",
+      "enablers": [
+        "work-board"
+      ],
+      "inputs": [
+        {
+          "need": "launch date, product and offer",
+          "from": "calendar shelf",
+          "status": "brain"
+        },
+        {
+          "need": "stock arrival date and units",
+          "from": "operations shelf",
+          "status": "brain"
+        },
+        {
+          "need": "vendor lead times: photo shoot, creators, agency, warehouse",
+          "from": "operations shelf",
+          "status": "brain"
+        },
+        {
+          "need": "launch checklist from the last launch and what went wrong",
+          "from": "history shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Copy the last launch checklist and add what was missing last time",
+        "Time each task back from launch day using real vendor lead times",
+        "Give each task 1 owner and put it on the board",
+        "Mark the 5 tasks that block others (stock landed, photos, page live, emails built, ads approved)",
+        "Check twice a week: any red task 2 days late goes to the founder",
+        "Log the launch outcome and what slipped for next time"
+      ],
+      "output": "a dated launch plan on the board with owners and 5 red blocker tasks",
+      "next": "feeds 23-10 (Monday meeting) and 25-12 (look-back after the launch)",
+      "watch": {
+        "metric": "launch tasks late against plan",
+        "window": "weekly",
+        "source": "work board"
+      },
+      "drives": "launch on the planned date with stock, page and ads ready",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "23-05",
+      "top": "T4",
+      "job": "Count open tickets, follow-ups owed and time to resolution per support agent, plus open and late board cards per person, every Monday, and flag anyone 50 percent above the team median",
+      "trigger": "every Monday, and daily during a sale",
+      "enablers": [
+        "ticket-clock",
+        "capacity-plan",
+        "work-board"
+      ],
+      "inputs": [
+        {
+          "need": "tickets with agent, first reply, resolved time, reopens and follow-ups owed",
+          "from": "helpdesk",
+          "status": "connected"
+        },
+        {
+          "need": "order value at stake per open ticket",
+          "from": "store platform orders",
+          "status": "connected"
+        },
+        {
+          "need": "open and late cards per person",
+          "from": "work-board",
+          "status": "enabler"
+        },
+        {
+          "need": "each person's weekly hours",
+          "from": "team list",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "Pull last week's tickets per agent: open, resolved, follow-ups owed, median time to resolution, reopens",
+        "Pull open and late board cards per person",
+        "Divide each by the person's hours to get load per hour",
+        "Flag anyone 50 percent above the team median, and any ticket owed a follow-up for over 48 hours",
+        "Lead moves 2 cards or 1 queue off each flagged person",
+        "Log the moves and check the flag clears next Monday"
+      ],
+      "output": "a load table per person with red flags, and a list of follow-ups owed with the order value at stake",
+      "next": "feeds 23-07 (hiring trigger) and 26-04 (service next to money in the weekly pack)",
+      "watch": {
+        "metric": "follow-ups owed over 48 hours, and people above 150 percent of median load",
+        "window": "weekly",
+        "source": "helpdesk and work board"
+      },
+      "drives": "time to resolution and staff who stay",
+      "business": "customer satisfaction",
+      "score": {
+        "money": 3,
+        "satisfaction": 5,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "23-06",
+      "top": "T4",
+      "job": "Forecast tickets and orders for the 5 Black Friday days from last year's peak and this year's plan, and turn them into agent and warehouse hours needed against hours booked",
+      "trigger": "6 weeks before Black Friday and any sale over 2x normal orders",
+      "enablers": [
+        "capacity-plan",
+        "ticket-clock"
+      ],
+      "inputs": [
+        {
+          "need": "last year's orders and tickets per day around the peak",
+          "from": "store platform and helpdesk",
+          "status": "connected"
+        },
+        {
+          "need": "this year's sale plan and expected order lift",
+          "from": "calendar shelf",
+          "status": "brain"
+        },
+        {
+          "need": "tickets an agent closes per hour, and orders packed per warehouse hour",
+          "from": "capacity-plan",
+          "status": "enabler"
+        },
+        {
+          "need": "the 3PL's peak capacity and cut-off times",
+          "from": "operations shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pull daily orders and tickets for last year's peak window",
+        "Scale by this year's plan to get orders and tickets per day",
+        "Divide by closes per agent hour and orders per pack hour",
+        "Set hours needed against hours booked per day and name the gap",
+        "Book temps or overtime, or add macros and a where is my order page to cut tickets",
+        "Check the plan against real volume each peak day"
+      ],
+      "output": "a peak staffing table: 5 days, hours needed, hours booked, the gap, and the fix for each gap",
+      "next": "feeds 24-19 (peak readiness check)",
+      "watch": {
+        "metric": "staff hours planned against staff hours needed for peak days",
+        "window": "peak window",
+        "source": "helpdesk and store platform"
+      },
+      "drives": "first reply time and ship time held on peak days",
+      "business": "customer satisfaction",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 3
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "23-07",
+      "top": "T4",
+      "job": "Write the hiring trigger per team as a number, like tickets per agent per day or orders per ops person per week, and check it each month against the last 8 weeks",
+      "trigger": "once, then monthly, and whenever someone asks to hire",
+      "enablers": [
+        "capacity-plan",
+        "ticket-clock"
+      ],
+      "inputs": [
+        {
+          "need": "tickets per agent per day, 8 weeks",
+          "from": "helpdesk",
+          "status": "connected"
+        },
+        {
+          "need": "orders per week",
+          "from": "store platform orders",
+          "status": "connected"
+        },
+        {
+          "need": "team list with roles and hours",
+          "from": "team list",
+          "status": "founder"
+        },
+        {
+          "need": "the cost of a hire and the cash floor",
+          "from": "finance shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Compute load per person per team for the last 8 weeks",
+        "Founder sets the trigger per team, for example 80 tickets per agent per day for 4 weeks running",
+        "Check the upstream fixes first (23-08) and note what they would cut",
+        "Compare this month's load with the trigger and say hire, wait or fix upstream",
+        "Log the call and the numbers on the decisions shelf"
+      ],
+      "output": "a hiring trigger per team and a monthly hire, wait or fix call with the numbers behind it",
+      "next": "feeds 26-20 (month close)",
+      "watch": {
+        "metric": "workload per person against the written hiring trigger",
+        "window": "monthly",
+        "source": "helpdesk and store platform"
+      },
+      "drives": "hires made on time, and payroll as a share of gross profit",
+      "business": "cash",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "23-08",
+      "top": "T5",
+      "job": "Rank ticket types by count per 100 orders and agent minutes, and give the top 3 an owner outside support with an upstream fix like a size chart, a tracking email or an FAQ line",
+      "trigger": "monthly, and when tickets per 100 orders rise 20 percent",
+      "enablers": [
+        "ticket-clock",
+        "question-matrix",
+        "work-board"
+      ],
+      "inputs": [
+        {
+          "need": "tickets tagged by type with handle time",
+          "from": "helpdesk",
+          "status": "connected"
+        },
+        {
+          "need": "orders per week",
+          "from": "store platform orders",
+          "status": "connected"
+        },
+        {
+          "need": "where each question is answered today",
+          "from": "question-matrix",
+          "status": "enabler"
+        },
+        {
+          "need": "support macros and policies",
+          "from": "operations shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Tag the last 30 days of tickets by type and count per 100 orders",
+        "Multiply by handle time to get agent hours per type",
+        "Pick the top 3 types and name the upstream cause for each",
+        "Give each fix an owner outside support (site, ops, email) and a date on the board",
+        "Check tickets per 100 orders for that type 30 days after the fix"
+      ],
+      "output": "top 3 repeat ticket types with a named fix, owner and date, and the hours each costs a month",
+      "next": "feeds 07 (landing page fixes) and 15 (CX help center)",
+      "watch": {
+        "metric": "tickets per 100 orders for the top 3 types",
+        "window": "30 day",
+        "source": "helpdesk"
+      },
+      "drives": "support cost per order",
+      "business": "contribution margin",
+      "score": {
+        "money": 3,
+        "satisfaction": 5,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "23-09",
+      "top": "T3",
+      "job": "Track each open purchase order through sample, materials, production, quality check and ship against the factory's plan every week, and show what a slip does to launch date and stock",
+      "trigger": "every Monday while a purchase order is open, and when the factory goes quiet for 5 days",
+      "enablers": [
+        "vendor-scorecard",
+        "work-board"
+      ],
+      "inputs": [
+        {
+          "need": "open purchase orders with units, dates and factory",
+          "from": "operations shelf",
+          "status": "brain"
+        },
+        {
+          "need": "factory production steps and promised dates",
+          "from": "supplier emails or purchase order file",
+          "status": "founder"
+        },
+        {
+          "need": "stock on hand and weekly sell rate per product",
+          "from": "store platform inventory and orders",
+          "status": "connected"
+        },
+        {
+          "need": "launch dates tied to the stock",
+          "from": "calendar shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "List each open order with its 5 steps and promised dates",
+        "Ask the factory for a dated update every Monday and log it",
+        "Mark any step late against plan",
+        "Compute the new landing date and weeks of stock left at today's sell rate",
+        "Say what moves: launch date, ad spend on that product, or air freight for part",
+        "Put the call on the board with an owner"
+      ],
+      "output": "a purchase order tracker with late steps in red and the stock-out date each slip causes",
+      "next": "feeds 19 (supply and inventory) and 23-04 (launch plan)",
+      "watch": {
+        "metric": "production steps late against plan, per open order",
+        "window": "weekly",
+        "source": "purchase order file"
+      },
+      "drives": "stock-outs avoided and launch dates held",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "23-10",
+      "top": "T1",
+      "job": "Run the Monday meeting from the board: 6 numbers, the cards waiting on approval, the late cards, and 3 calls to make, ending with an owner and a date for each call",
+      "trigger": "every Monday",
+      "enablers": [
+        "work-board"
+      ],
+      "inputs": [
+        {
+          "need": "6 weekly numbers: sales, gross profit after ads, new customers, cost per new customer, stock days on top sellers, first reply time",
+          "from": "store platform, Meta Ads, Google Ads and helpdesk",
+          "status": "connected"
+        },
+        {
+          "need": "cards waiting and late",
+          "from": "work-board",
+          "status": "enabler"
+        },
+        {
+          "need": "decisions log",
+          "from": "decisions and goals shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Open the 6 numbers and the 3 biggest movers",
+        "Walk only the waiting and late cards, not every card",
+        "Pick 3 calls and decide each in the room",
+        "Give each call 1 owner and a date, and put it on the board",
+        "Log the calls to the decisions shelf",
+        "Count decisions made; if 0, cut the meeting to 30 minutes next week"
+      ],
+      "output": "3 logged decisions per week with owner and date, and a meeting that ends on time",
+      "next": "feeds 26-05 (decisions logged in the weekly pack)",
+      "watch": {
+        "metric": "decisions with an owner and date made in the weekly meeting",
+        "window": "weekly",
+        "source": "decisions log"
+      },
+      "drives": "founder hours in meetings and speed of calls",
+      "business": "gross profit",
+      "score": {
+        "money": 3,
+        "satisfaction": 5,
+        "speed": 4,
+        "ease": 5
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "23-11",
+      "top": "T2",
+      "job": "Map every critical login, supplier contact, file and recurring task to the people who can do it today, and mark every one with only 1 person in red",
+      "trigger": "once at onboarding, then every quarter and when anyone gives notice",
+      "enablers": [
+        "owner-map",
+        "access-vault"
+      ],
+      "inputs": [
+        {
+          "need": "account list with admins",
+          "from": "access-vault",
+          "status": "enabler"
+        },
+        {
+          "need": "supplier, 3PL, agency and bank contacts",
+          "from": "operations shelf",
+          "status": "brain"
+        },
+        {
+          "need": "recurring tasks with current doer",
+          "from": "owner-map",
+          "status": "enabler"
+        },
+        {
+          "need": "who knows what, from each team member in a 10 minute survey",
+          "from": "team survey",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "List critical items: store owner login, Meta Business, payouts, domain, 3PL portal, factory contact, reorder file, payroll file",
+        "For each, ask who can do or reach it today",
+        "Mark items with 1 person red, 2 people amber, 3 or more green",
+        "Name a backup for each red item and a date to train them",
+        "Put each backup training on the board",
+        "Recount red items next quarter"
+      ],
+      "output": "a single-person risk map with each red item's backup and training date",
+      "next": "feeds 23-12 (handover on notice) and 23-13 (cover for a founder break)",
+      "watch": {
+        "metric": "critical logins, contacts and tasks only one person can do",
+        "window": "quarterly",
+        "source": "owner map"
+      },
+      "drives": "days of disruption when a person leaves",
+      "business": "risk",
+      "score": {
+        "money": 3,
+        "satisfaction": 5,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "23-12",
+      "top": "T2",
+      "job": "Run a 10 day handover when someone gives notice: list what they hold, record a 5 minute screen video per core task, move each login to a company account, and name the new owner",
+      "trigger": "the day someone gives notice",
+      "enablers": [
+        "owner-map",
+        "access-vault"
+      ],
+      "inputs": [
+        {
+          "need": "the leaver's tasks, logins and contacts",
+          "from": "owner-map",
+          "status": "enabler"
+        },
+        {
+          "need": "screen recorder (Loom or the built-in one)",
+          "from": "screen recorder",
+          "status": "setup"
+        },
+        {
+          "need": "who takes over each part",
+          "from": "founder",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "Pull everything the person holds from the owner map and the access register",
+        "Book 3 sessions: tasks, contacts, logins",
+        "Record a 5 minute video per core task and file it with the written steps",
+        "Move logins and 2-step devices to company accounts",
+        "Name the new owner for each item and have them do each task once before day 10",
+        "Close the leaver's access on the last day (23-15)"
+      ],
+      "output": "a handover pack: tasks with videos and new owners, logins moved, and contacts introduced",
+      "next": "feeds 23-15 (close access on the last day)",
+      "watch": {
+        "metric": "items handed over and tested by the new owner before the last day",
+        "window": "per departure",
+        "source": "owner map"
+      },
+      "drives": "no stopped work after a departure",
+      "business": "risk",
+      "score": {
+        "money": 3,
+        "satisfaction": 5,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "23-13",
+      "top": "T2",
+      "job": "2 weeks before a founder break, list the founder-only tasks and decisions due in the window, name a cover and a spend cap for each, and write what counts as an emergency",
+      "trigger": "2 weeks before any founder break of 5 days or more",
+      "enablers": [
+        "owner-map",
+        "work-board"
+      ],
+      "inputs": [
+        {
+          "need": "founder's recurring tasks and decisions",
+          "from": "owner-map",
+          "status": "enabler"
+        },
+        {
+          "need": "calendar for the break window: launches, payouts, renewals",
+          "from": "calendar shelf",
+          "status": "brain"
+        },
+        {
+          "need": "approval rules and caps",
+          "from": "decisions and goals shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "List founder tasks and decisions due in the break window",
+        "Name a cover for each and a cap they can spend or approve alone",
+        "Write the emergency rule: account takeover, payout hold, stock-out on a top seller, press problem",
+        "Set alerts so only emergencies reach the founder",
+        "Cover runs 1 day of the founder's tasks before the break as a test"
+      ],
+      "output": "a cover plan: each task, its cover, the cap, and a 4 item emergency list",
+      "next": "feeds 26-02 (away mode: only flags reach the founder)",
+      "watch": {
+        "metric": "founder-only tasks with a named cover",
+        "window": "before each break",
+        "source": "owner map"
+      },
+      "drives": "founder switches off; no stalled decisions in the window",
+      "business": "risk",
+      "score": {
+        "money": 2,
+        "satisfaction": 5,
+        "speed": 3,
+        "ease": 5
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "23-14",
+      "top": "T2",
+      "job": "Write step lists for the 10 core recurring tasks, like reorder, returns, daily ad check, payouts and sale setup, and test each by having someone else do it once from the page",
+      "trigger": "once, then every 6 months, and before each new hire starts",
+      "enablers": [
+        "owner-map"
+      ],
+      "inputs": [
+        {
+          "need": "the 10 core recurring tasks",
+          "from": "owner-map",
+          "status": "enabler"
+        },
+        {
+          "need": "support macros and policies",
+          "from": "operations shelf",
+          "status": "brain"
+        },
+        {
+          "need": "screen videos from the current doer",
+          "from": "screen recorder",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "Pick the 10 tasks that stop the business if skipped for a week",
+        "Current doer writes the steps in under 1 page with screenshots",
+        "Someone else does the task once from the page and marks where they got stuck",
+        "Fix the page and date it",
+        "Set a review date 6 months out",
+        "For a new hire, tick off each task they run alone by week 8"
+      ],
+      "output": "10 tested step lists with a review date, and a week 8 checklist for new hires",
+      "next": "feeds 23-12 (handover) and 23-13 (break cover)",
+      "watch": {
+        "metric": "core roles with written steps reviewed in the last 6 months",
+        "window": "quarterly",
+        "source": "owner map"
+      },
+      "drives": "weeks until a new hire runs their job alone",
+      "business": "gross profit",
+      "score": {
+        "money": 2,
+        "satisfaction": 4,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 5,
+      "effort": "days"
+    },
+    {
+      "id": "23-15",
+      "top": "T2",
+      "job": "When anyone leaves, close or move every account they can reach the same day from the security folder, and log what was closed and when",
+      "trigger": "the last working day of any staff member, freelancer or agency",
+      "enablers": [
+        "access-vault",
+        "owner-map"
+      ],
+      "inputs": [
+        {
+          "need": "register of accounts and who has access",
+          "from": "access-vault",
+          "status": "enabler"
+        },
+        {
+          "need": "admin pages on store, Meta, Google, email tool, helpdesk, bank",
+          "from": "each platform admin",
+          "status": "setup"
+        },
+        {
+          "need": "the leaver's name and end date",
+          "from": "team list",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "Pull every account the person or agency can reach from the register",
+        "Remove or downgrade each one, starting with store owner, Meta Business, payouts and domain",
+        "Rotate any shared keys or app tokens they held",
+        "Log each change with time and who did it",
+        "Recheck 7 days later that nothing was re-added"
+      ],
+      "output": "an offboarding log with every account closed on the day, and 0 open accounts for people who left",
+      "next": "feeds 24-04 (monthly stale access sweep)",
+      "watch": {
+        "metric": "accounts still open for people who left",
+        "window": "monthly",
+        "source": "security folder"
+      },
+      "drives": "no lost data, spend or customers on the way out",
+      "business": "risk",
+      "score": {
+        "money": 3,
+        "satisfaction": 5,
+        "speed": 5,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "23-16",
+      "top": "T3",
+      "job": "Check every order's ship time against the 3PL's contract ship time each week, and daily during a sale, and total the late orders and the credits owed",
+      "trigger": "every Monday, and daily when late-order tickets jump",
+      "enablers": [
+        "vendor-scorecard",
+        "ticket-clock"
+      ],
+      "inputs": [
+        {
+          "need": "orders with paid time and fulfilled time",
+          "from": "store platform orders",
+          "status": "connected"
+        },
+        {
+          "need": "contract ship time, cut-off and credit terms",
+          "from": "3PL contract",
+          "status": "founder"
+        },
+        {
+          "need": "tickets tagged late or where is my order",
+          "from": "helpdesk",
+          "status": "connected"
+        },
+        {
+          "need": "3PL order export if fulfilled times do not sync",
+          "from": "3PL portal export",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "Compute hours from paid to shipped for every order, using the contract's cut-off",
+        "Mark each order on time or late and total per day",
+        "Match late orders to where is my order tickets",
+        "Compute credits owed under the contract",
+        "Send the 3PL the list with order numbers and ask for credit and a fix date",
+        "Log the claim and check it lands on the next invoice"
+      ],
+      "output": "a weekly ship time table, late orders by day, and a credit claim with order numbers",
+      "next": "feeds 23-18 (invoice audit) and 26-04 (service in the weekly pack)",
+      "watch": {
+        "metric": "orders shipped within the contract ship time",
+        "window": "weekly",
+        "source": "store platform orders"
+      },
+      "drives": "late-order tickets and repeat rate of affected buyers",
+      "business": "customer satisfaction",
+      "score": {
+        "money": 3,
+        "satisfaction": 5,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "23-17",
+      "top": "T3",
+      "job": "Tag wrong item and damaged tickets by order, compute the error rate per 1,000 orders each week, and send the 3PL the list with the credits owed",
+      "trigger": "every Monday",
+      "enablers": [
+        "vendor-scorecard",
+        "ticket-clock"
+      ],
+      "inputs": [
+        {
+          "need": "tickets tagged wrong item or damaged, with order number and photo",
+          "from": "helpdesk",
+          "status": "connected"
+        },
+        {
+          "need": "orders shipped per week",
+          "from": "store platform orders",
+          "status": "connected"
+        },
+        {
+          "need": "contract error rate and credit terms",
+          "from": "3PL contract",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "Pull wrong item and damaged tickets and link each to its order",
+        "Compute errors per 1,000 orders per week, split by product",
+        "Compare with the contract's allowed rate",
+        "List reship and refund cost per error",
+        "Send the 3PL the list and ask for credit and a root cause per product"
+      ],
+      "output": "a weekly pick error rate, errors per product and a credit claim",
+      "next": "feeds 23-18 (invoice audit)",
+      "watch": {
+        "metric": "wrong or damaged item orders per 1,000",
+        "window": "weekly",
+        "source": "helpdesk"
+      },
+      "drives": "reship and refund cost, and review rating",
+      "business": "customer satisfaction",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "23-18",
+      "top": "T3",
+      "job": "Check every line of the monthly 3PL invoice against the contract rates and the store's own order and unit counts in code, and list the lines to dispute",
+      "trigger": "when each 3PL invoice arrives",
+      "enablers": [
+        "vendor-scorecard",
+        "margin-view"
+      ],
+      "inputs": [
+        {
+          "need": "the 3PL invoice as CSV or PDF",
+          "from": "3PL invoice",
+          "status": "founder"
+        },
+        {
+          "need": "contract rate card: pick, pack, storage, postage, extras",
+          "from": "3PL contract",
+          "status": "founder"
+        },
+        {
+          "need": "orders, units and shipments for the month",
+          "from": "store platform orders",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Load the invoice lines into a table",
+        "Recompute each line from the rate card and the store's own counts in code",
+        "Mark lines that do not match, with the dollar gap",
+        "Add credits owed from 23-16 and 23-17",
+        "Send the dispute list before the payment date",
+        "Track the fulfilment cost per order by part month over month"
+      ],
+      "output": "an invoice check: matched lines, disputed lines with dollars, and cost per order by part",
+      "next": "feeds 21 (finance and cash) and 23-19 (vendor renewal)",
+      "watch": {
+        "metric": "invoice lines that do not match contract rates or order counts",
+        "window": "monthly",
+        "source": "3PL invoice"
+      },
+      "drives": "fulfilment cost per order",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "23-19",
+      "top": "T3",
+      "job": "Score the agency each month on deliverables due against delivered and late, and on contribution margin from its channel after its fee, and bring the scorecard to every renewal call",
+      "trigger": "monthly, and 30 days before the retainer renews",
+      "enablers": [
+        "vendor-scorecard",
+        "margin-view",
+        "work-board"
+      ],
+      "inputs": [
+        {
+          "need": "the scope: deliverables per month",
+          "from": "agency contract",
+          "status": "founder"
+        },
+        {
+          "need": "agency deliverables with due and delivered dates",
+          "from": "work-board",
+          "status": "enabler"
+        },
+        {
+          "need": "ad spend and store orders from the agency's channel",
+          "from": "Meta Ads, Google Ads and store platform",
+          "status": "connected"
+        },
+        {
+          "need": "product cost, shipping and fees",
+          "from": "finance shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "List deliverables due this month from the scope",
+        "Mark each delivered on time, late or missed from board dates",
+        "Compute contribution margin from the channel after ad spend and the agency fee",
+        "Show 3 months side by side",
+        "Write the call: renew, renegotiate with named fixes, or leave"
+      ],
+      "output": "an agency scorecard: on time share, missed items, and profit after fee for 3 months",
+      "next": "feeds 26-18 (invoice check against delivered work)",
+      "watch": {
+        "metric": "agency deliverables late or missed against the scope",
+        "window": "monthly",
+        "source": "work board"
+      },
+      "drives": "contribution margin from the agency's channel after its fee",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "23-20",
+      "top": "T3",
+      "job": "List every software charge on the card with its monthly cost, owner and last login, and cancel tools unused in 60 days before their renewal date",
+      "trigger": "once, then monthly, and 30 days before any annual renewal",
+      "enablers": [
+        "app-audit",
+        "owner-map"
+      ],
+      "inputs": [
+        {
+          "need": "card and bank statements for 3 months",
+          "from": "finance",
+          "status": "founder"
+        },
+        {
+          "need": "installed store apps with cost",
+          "from": "store platform apps",
+          "status": "connected"
+        },
+        {
+          "need": "last login per tool from each admin page",
+          "from": "each tool's admin",
+          "status": "setup"
+        },
+        {
+          "need": "apps and stack with owner",
+          "from": "operations shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pull every recurring charge from 3 months of statements",
+        "Match each to a tool, an owner and what it does",
+        "Check last login or usage for each",
+        "Mark cancel, keep or downgrade, and list renewal dates in the next 60 days",
+        "Owner confirms, then cancel and log the monthly saving"
+      ],
+      "output": "a software list with cost, owner, last use and renewal date, plus a cancel list and the saving",
+      "next": "feeds 08-site-speed app audit and 21 (finance and cash)",
+      "watch": {
+        "metric": "monthly software cost for tools unused in 60 days",
+        "window": "monthly",
+        "source": "card statements"
+      },
+      "drives": "operating cost as a share of revenue",
+      "business": "gross profit",
+      "score": {
+        "money": 2,
+        "satisfaction": 3,
+        "speed": 5,
+        "ease": 5
+      },
+      "ready": 4,
+      "effort": "hours"
+    }
+  ],
+  "new_enablers": [
+    {
+      "id": "owner-map",
+      "name": "Owner and backup map",
+      "what": "A register of every recurring task, critical login, supplier contact and key file, with its 1 owner, its backup, its written steps and a review date. Marks anything only 1 person can do.",
+      "inputs": [
+        "team list",
+        "recurring task list",
+        "security folder",
+        "supplier and vendor contacts"
+      ],
+      "powers": [
+        "hand work off the founder",
+        "safe handovers when people leave",
+        "cover for breaks",
+        "new hire onboarding"
+      ],
+      "screens": [
+        "23-team-ops",
+        "24-security",
+        "00-today"
+      ],
+      "note": null
+    },
+    {
+      "id": "vendor-scorecard",
+      "name": "Vendor scorecard",
+      "what": "Holds each vendor's contract terms (ship time, error rate, rates, deliverables) and checks them each week or month against the store's own orders, tickets and invoices. Totals misses and credits owed.",
+      "inputs": [
+        "vendor contracts",
+        "orders with fulfilment times",
+        "tickets",
+        "invoices",
+        "purchase orders"
+      ],
+      "powers": [
+        "3PL credits",
+        "invoice disputes",
+        "factory slips caught early",
+        "agency renewals on numbers"
+      ],
+      "screens": [
+        "23-team-ops",
+        "19-supply-inventory",
+        "21-finance-cash"
+      ],
+      "note": null
+    },
+    {
+      "id": "capacity-plan",
+      "name": "Team load and capacity plan",
+      "what": "Joins tickets per agent, orders per ops person, open and late cards per person and hours booked, against a written hiring trigger. Forecasts hours needed for peak days from last year's peak and this year's plan.",
+      "inputs": [
+        "helpdesk tickets",
+        "orders",
+        "work board cards",
+        "team hours",
+        "sale calendar"
+      ],
+      "powers": [
+        "who is overloaded",
+        "peak staffing",
+        "hire on numbers",
+        "upstream fixes before hires"
+      ],
+      "screens": [
+        "23-team-ops",
+        "15-customers-cx",
+        "26-reports"
+      ],
+      "note": null
+    }
+  ]
+}

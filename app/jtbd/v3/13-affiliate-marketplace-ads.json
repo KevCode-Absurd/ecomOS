@@ -1,0 +1,1206 @@
+{
+ "screen": "13-affiliate-marketplace-ads",
+ "title": "Affiliate, marketplace and retail media",
+ "top_jobs": [
+  {
+   "id": "T1",
+   "job": "When the affiliate payout is due Friday, help me see which commissions are for orders that were returned, cancelled, fake or from past buyers, so I pay only for new sales that happened and stayed",
+   "metric": "commission paid on returned, cancelled or returning-buyer orders, per month",
+   "from_v2": [
+    1,
+    3,
+    6,
+    9,
+    16,
+    17,
+    19
+   ]
+  },
+  {
+   "id": "T2",
+   "job": "When a creator's post outsells our studio ads, help me run it as a partnership ad, find more creators like them and pay a fair rate with the rights in writing, so I get proven ads cheaper than a new shoot",
+   "metric": "cost per new customer of partnership ads vs our own brand ads",
+   "from_v2": [
+    20,
+    22,
+    23,
+    27,
+    29
+   ]
+  },
+  {
+   "id": "T3",
+   "job": "When the Amazon agency reports record ad sales but the payout barely moved, help me see what ads cost against profit after Amazon fees and stop the spend that loses money, so I stop growing sales that lose money",
+   "metric": "Amazon ad spend as a share of Amazon profit before ads, per ASIN",
+   "from_v2": [
+    2,
+    4,
+    5,
+    13,
+    14,
+    15,
+    18,
+    21
+   ]
+  },
+  {
+   "id": "T4",
+   "job": "When the month closes and ad spend sits across 6 platforms and new ones pitch for budget, help me see one true total against budget and bills, and test a new channel only with a stop line, so I pay only for what works",
+   "metric": "invoice gaps found and recovered, and spend vs budget across all platforms",
+   "from_v2": [
+    7,
+    11,
+    30,
+    31,
+    32,
+    34,
+    35
+   ]
+  }
+ ],
+ "jobs": [
+  {
+   "id": "13-01",
+   "top": "T1",
+   "job": "Match every commission to its store order before Friday's payout, and hold those for returned, cancelled, test or duplicate orders",
+   "trigger": "every week, 2 days before payout",
+   "enablers": [
+    "partner-ledger"
+   ],
+   "inputs": [
+    {
+     "need": "commission report for the payout period",
+     "from": "affiliate network such as Impact, ShareASale or Refersion",
+     "status": "setup"
+    },
+    {
+     "need": "orders with refunds, cancels and codes",
+     "from": "Shopify",
+     "status": "connected"
+    },
+    {
+     "need": "return window and payout terms",
+     "from": "offers shelf",
+     "status": "brain"
+    },
+    {
+     "need": "order match and hold rules",
+     "from": "partner-ledger",
+     "status": "enabler"
+    }
+   ],
+   "steps": [
+    "Pull the commission report and the matching orders",
+    "Mark each row: kept, returned, cancelled, test or duplicate",
+    "Hold pay on rows still inside the return window",
+    "Reverse commissions on orders refunded after the last payout",
+    "A person reviews any hold over $200 before it is sent"
+   ],
+   "output": "a payout file with held and reversed rows and the dollars saved",
+   "next": "feeds 13-04 (rates by new buyer share) and 21-finance-cash",
+   "watch": {
+    "metric": "commission paid on returned or cancelled orders",
+    "window": "30 day",
+    "source": "affiliate network"
+   },
+   "drives": "commission cost per kept order",
+   "business": "contribution margin",
+   "score": {
+    "money": 3,
+    "satisfaction": 4,
+    "speed": 5,
+    "ease": 4
+   },
+   "ready": 3,
+   "effort": "hours"
+  },
+  {
+   "id": "13-02",
+   "top": "T1",
+   "job": "Check any partner whose orders jump 3 times in a week before paying: order source, click to order time, new vs returning, repeated address or card",
+   "trigger": "when a partner's weekly orders are 3 times their 8 week average",
+   "enablers": [
+    "partner-ledger"
+   ],
+   "inputs": [
+    {
+     "need": "partner clicks and orders by day",
+     "from": "affiliate network",
+     "status": "setup"
+    },
+    {
+     "need": "orders with address, payment and new vs returning",
+     "from": "Shopify",
+     "status": "connected"
+    },
+    {
+     "need": "fraud signs list",
+     "from": "partner-ledger",
+     "status": "enabler"
+    }
+   ],
+   "steps": [
+    "Flag the partner and freeze their pending commission",
+    "Check click to order time: under 10 seconds on many orders points to cookie stuffing",
+    "Check repeated addresses, cards or emails and the share of returning buyers",
+    "Ask the partner where the traffic came from and log the answer",
+    "Release, cut or remove, and write the reason"
+   ],
+   "output": "a checked partner with a release or cut decision and the reason",
+   "next": "feeds 13-05 (who to keep)",
+   "watch": {
+    "metric": "commission paid to flagged partners before checks",
+    "window": "30 day",
+    "source": "affiliate network"
+   },
+   "drives": "commission only on real orders",
+   "business": "risk",
+   "score": {
+    "money": 3,
+    "satisfaction": 4,
+    "speed": 4,
+    "ease": 4
+   },
+   "ready": 3,
+   "effort": "hours"
+  },
+  {
+   "id": "13-03",
+   "top": "T1",
+   "job": "Find creator codes leaked to coupon sites and stop paying commission on buyers who found the code at checkout",
+   "trigger": "weekly scan, and when code orders jump",
+   "enablers": [
+    "partner-ledger"
+   ],
+   "inputs": [
+    {
+     "need": "orders with discount codes",
+     "from": "Shopify",
+     "status": "connected"
+    },
+    {
+     "need": "a scan of top coupon sites for our codes",
+     "from": "a person, 20 minutes, or a code tool",
+     "status": "setup"
+    },
+    {
+     "need": "code owner and terms",
+     "from": "creators shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "List every code used in the last 30 days with orders and new buyer share",
+    "Search our brand on the top 5 coupon sites and note which codes appear",
+    "For leaked codes, retire them and give the creator a new unique code or link",
+    "Set commission on leaked-code orders to zero from the leak date if the terms allow",
+    "Tell the creator in plain words and log it"
+   ],
+   "output": "a list of leaked codes retired and commission saved per month",
+   "next": "feeds 13-04 (rates)",
+   "watch": {
+    "metric": "orders on leaked codes",
+    "window": "30 day",
+    "source": "Shopify"
+   },
+   "drives": "discount and commission leak",
+   "business": "contribution margin",
+   "score": {
+    "money": 3,
+    "satisfaction": 3,
+    "speed": 5,
+    "ease": 5
+   },
+   "ready": 4,
+   "effort": "hours"
+  },
+  {
+   "id": "13-04",
+   "top": "T1",
+   "job": "Set commission rates by who brings new buyers: more for creators and content partners with high new buyer share, less for coupon and loyalty sites",
+   "trigger": "each quarter",
+   "enablers": [
+    "partner-ledger",
+    "margin-view"
+   ],
+   "inputs": [
+    {
+     "need": "90 days of partner orders with new vs returning",
+     "from": "partner-ledger",
+     "status": "enabler"
+    },
+    {
+     "need": "first order profit per product",
+     "from": "finance shelf",
+     "status": "brain"
+    },
+    {
+     "need": "current commission terms",
+     "from": "creators shelf",
+     "status": "brain"
+    },
+    {
+     "need": "rate change sign-off",
+     "from": "decisions and goals shelf",
+     "status": "founder"
+    }
+   ],
+   "steps": [
+    "Compute new buyer share and profit after commission per partner",
+    "Group partners into 3 tiers by new buyer share",
+    "Set a rate per tier that keeps first order profit above the floor",
+    "Founder signs the table",
+    "Send 30 days notice with the new terms and the reason"
+   ],
+   "output": "a 3 tier commission table with the profit check for each tier",
+   "next": "feeds 13-05 (who to keep) and 16-18 (creator seeding)",
+   "watch": {
+    "metric": "share of commission paid on new buyers",
+    "window": "90 day",
+    "source": "affiliate network"
+   },
+   "drives": "new customers per commission dollar",
+   "business": "contribution margin",
+   "score": {
+    "money": 4,
+    "satisfaction": 3,
+    "speed": 2,
+    "ease": 3
+   },
+   "ready": 3,
+   "effort": "days"
+  },
+  {
+   "id": "13-05",
+   "top": "T1",
+   "job": "Catch affiliates bidding on our brand name in Google, stop them and claw back the commission",
+   "trigger": "weekly",
+   "enablers": [
+    "partner-ledger",
+    "funnel-mix"
+   ],
+   "inputs": [
+    {
+     "need": "auction insights on brand terms",
+     "from": "Google Ads",
+     "status": "connected"
+    },
+    {
+     "need": "brand search screenshots on phone and desktop",
+     "from": "a person, 10 minutes",
+     "status": "setup"
+    },
+    {
+     "need": "affiliate terms on brand bidding",
+     "from": "creators shelf",
+     "status": "brain"
+    },
+    {
+     "need": "partner orders from paid search",
+     "from": "affiliate network",
+     "status": "setup"
+    }
+   ],
+   "steps": [
+    "Search our brand name and top product names and screenshot any ad not ours",
+    "Match the display URL or tracking link to a partner",
+    "Send the terms and ask them to stop in 48 hours",
+    "Reverse commission on orders from those clicks if the terms allow",
+    "Recheck the next week and log"
+   ],
+   "output": "a log of brand bidders caught, stopped and commission recovered",
+   "next": "feeds 12-03 (brand search test)",
+   "watch": {
+    "metric": "partner ads on brand terms",
+    "window": "7 day",
+    "source": "Google Ads"
+   },
+   "drives": "brand clicks we stop paying twice for",
+   "business": "gross profit",
+   "score": {
+    "money": 3,
+    "satisfaction": 3,
+    "speed": 4,
+    "ease": 4
+   },
+   "ready": 4,
+   "effort": "hours"
+  },
+  {
+   "id": "13-06",
+   "top": "T2",
+   "job": "Find 30 people already posting about us for free and rank them by fit, engagement and whether they bought more than once",
+   "trigger": "once, then monthly",
+   "enablers": [
+    "creator-roster"
+   ],
+   "inputs": [
+    {
+     "need": "tagged posts and mentions on Instagram",
+     "from": "Instagram via Meta Business",
+     "status": "setup"
+    },
+    {
+     "need": "TikTok mentions",
+     "from": "TikTok",
+     "status": "setup"
+    },
+    {
+     "need": "reviews with photos or video",
+     "from": "reviews app",
+     "status": "connected"
+    },
+    {
+     "need": "customers with 2 or more orders",
+     "from": "Shopify",
+     "status": "connected"
+    },
+    {
+     "need": "creator fit rules: niche, tone, audience",
+     "from": "creators shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "Pull the last 90 days of tags, mentions and photo reviews",
+    "Match names to customers to see who bought and how often",
+    "Score each on fit, engagement rate and repeat buying",
+    "A person watches the top 30 posts and drops any off-brand ones",
+    "Add the top 15 to the roster with the reason"
+   ],
+   "output": "a ranked list of 30 free fans, top 15 on the roster with notes",
+   "next": "feeds 13-07 (partnership ads) and 16-18 (seeding)",
+   "watch": {
+    "metric": "creators on the roster who already buy",
+    "window": "30 day",
+    "source": "creators shelf"
+   },
+   "drives": "cheaper, more believable partner content",
+   "business": "revenue",
+   "score": {
+    "money": 3,
+    "satisfaction": 3,
+    "speed": 3,
+    "ease": 4
+   },
+   "ready": 4,
+   "effort": "hours"
+  },
+  {
+   "id": "13-07",
+   "top": "T2",
+   "job": "Run the 5 best creator posts as partnership ads through the creator's handle, head to head with our best brand ad",
+   "trigger": "monthly",
+   "enablers": [
+    "creator-roster",
+    "creative-archive"
+   ],
+   "inputs": [
+    {
+     "need": "creator posts with written usage rights and partnership ad permission",
+     "from": "the creator",
+     "status": "setup"
+    },
+    {
+     "need": "our best brand ad of the last 30 days",
+     "from": "Meta Ads",
+     "status": "connected"
+    },
+    {
+     "need": "test budget cap",
+     "from": "finance shelf",
+     "status": "brain"
+    },
+    {
+     "need": "allowed claims to check the creator's caption",
+     "from": "claims shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "Pick 5 posts with the best organic hold rate and saves",
+    "Get written rights for 60 or 90 days and the partnership ad permission",
+    "Check each caption against allowed claims and fix what is not true",
+    "Launch in one ad set with our best brand ad as control, same budget each",
+    "Read at 14 days on cost per new customer",
+    "Move winners into the main ad set and log the result on the roster"
+   ],
+   "output": "a live partnership ad test with the winner named at day 14",
+   "next": "feeds 11-paid-social (scale winners) and 13-09 (roster)",
+   "watch": {
+    "metric": "cost per new customer, partnership ads vs brand ad",
+    "window": "14 day",
+    "source": "Meta Ads"
+   },
+   "drives": "new customers at a lower cost",
+   "business": "revenue",
+   "score": {
+    "money": 4,
+    "satisfaction": 3,
+    "speed": 4,
+    "ease": 3
+   },
+   "ready": 4,
+   "effort": "days"
+  },
+  {
+   "id": "13-08",
+   "top": "T2",
+   "job": "Price a creator's quote against what the same reach and clicks would cost in paid ads, and send a fair offer",
+   "trigger": "each time a creator sends a quote",
+   "enablers": [
+    "creator-roster",
+    "margin-view"
+   ],
+   "inputs": [
+    {
+     "need": "the creator's last 10 posts with views, saves and link clicks, from their insights screenshots",
+     "from": "the creator",
+     "status": "setup"
+    },
+    {
+     "need": "audience country, age and fake follower check",
+     "from": "an audit tool or a manual look",
+     "status": "buy"
+    },
+    {
+     "need": "our cost per 1,000 views and cost per new customer for that audience",
+     "from": "Meta Ads",
+     "status": "connected"
+    },
+    {
+     "need": "first order profit",
+     "from": "finance shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "Take the median views of the last 10 posts, not the best one",
+    "Check the audience is in our countries and age band, and not bots",
+    "Price the same views at our paid cost per 1,000",
+    "Add value for usage rights if we will run it as an ad",
+    "Send an offer with a base fee and a bonus per sale on their code"
+   ],
+   "output": "a priced offer for each creator quote, with the math on one line",
+   "next": "feeds 13-09 (roster)",
+   "watch": {
+    "metric": "fee paid per 1,000 real views vs paid media",
+    "window": "per deal",
+    "source": "creators shelf"
+   },
+   "drives": "fair creator fees",
+   "business": "contribution margin",
+   "score": {
+    "money": 3,
+    "satisfaction": 3,
+    "speed": 3,
+    "ease": 3
+   },
+   "ready": 2,
+   "effort": "hours"
+  },
+  {
+   "id": "13-09",
+   "top": "T2",
+   "job": "Write one creator brief per winning principle: the hook, the pain, the proof, the do-not-say list, 3 example openings and cuts at 15, 30 and 45 seconds with raw footage",
+   "trigger": "before each creator round",
+   "enablers": [
+    "principle-matcher",
+    "script-builder",
+    "creator-roster"
+   ],
+   "inputs": [
+    {
+     "need": "winning principles from our ads",
+     "from": "principle-matcher",
+     "status": "enabler"
+    },
+    {
+     "need": "avatars and pain points",
+     "from": "customers shelf",
+     "status": "brain"
+    },
+    {
+     "need": "allowed and forbidden claims",
+     "from": "claims shelf",
+     "status": "brain"
+    },
+    {
+     "need": "briefs that worked and failed before",
+     "from": "creators shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "Pick the 3 principles behind our best ads this quarter",
+    "Write one brief per principle with 3 example opening lines",
+    "Add the do-not-say list and the proof they may show",
+    "Ask for 15, 30 and 45 second cuts plus raw clips we can recut",
+    "Founder reads the brief once before it goes out"
+   ],
+   "output": "3 creator briefs, each tied to a principle that already won",
+   "next": "feeds 13-07 (partnership ads) and 16-18 (seeding)",
+   "watch": {
+    "metric": "share of creator videos usable as ads without a reshoot",
+    "window": "per round",
+    "source": "creators shelf"
+   },
+   "drives": "partner content that sells",
+   "business": "revenue",
+   "score": {
+    "money": 3,
+    "satisfaction": 4,
+    "speed": 3,
+    "ease": 3
+   },
+   "ready": 3,
+   "effort": "hours"
+  },
+  {
+   "id": "13-10",
+   "top": "T2",
+   "job": "Track each creator's posts, code orders, partnership ad results and rights end date on one roster, and renew or cut each month",
+   "trigger": "on the 1st of each month",
+   "enablers": [
+    "creator-roster",
+    "partner-ledger"
+   ],
+   "inputs": [
+    {
+     "need": "partnership ad results by creator",
+     "from": "Meta Ads",
+     "status": "connected"
+    },
+    {
+     "need": "code and link orders per creator",
+     "from": "Shopify",
+     "status": "connected"
+    },
+    {
+     "need": "fees paid and content delivered",
+     "from": "creators shelf",
+     "status": "brain"
+    },
+    {
+     "need": "commission rows per creator",
+     "from": "partner-ledger",
+     "status": "enabler"
+    }
+   ],
+   "steps": [
+    "Update each creator's posts delivered, orders, new buyers and fees",
+    "Compute cost per new customer per creator across organic and ads",
+    "Mark renew, test again or cut",
+    "List rights ending in the next 30 days",
+    "Send renewals and cut notes"
+   ],
+   "output": "a monthly roster with renew, retest or cut on every creator",
+   "next": "feeds 13-11 (rights check) and 21-finance-cash",
+   "watch": {
+    "metric": "cost per new customer per creator",
+    "window": "30 day",
+    "source": "creators shelf"
+   },
+   "drives": "money moves to creators who sell",
+   "business": "revenue",
+   "score": {
+    "money": 3,
+    "satisfaction": 4,
+    "speed": 3,
+    "ease": 3
+   },
+   "ready": 3,
+   "effort": "hours"
+  },
+  {
+   "id": "13-11",
+   "top": "T2",
+   "job": "Check the rights end date on every live creator ad each week and renew or pause 14 days before it runs out",
+   "trigger": "every Monday",
+   "enablers": [
+    "creator-roster"
+   ],
+   "inputs": [
+    {
+     "need": "live ads using creator content",
+     "from": "Meta Ads",
+     "status": "connected"
+    },
+    {
+     "need": "rights terms and end dates",
+     "from": "creators shelf",
+     "status": "brain"
+    },
+    {
+     "need": "a person who owns renewals",
+     "from": "team",
+     "status": "founder"
+    }
+   ],
+   "steps": [
+    "List live ads with creator content",
+    "Match each to its rights end date",
+    "Flag any ending within 14 days",
+    "Renew the winners and pause the rest before the date",
+    "Log each renewal with the new end date"
+   ],
+   "output": "a weekly rights list with renew or pause on each ad",
+   "next": "none",
+   "watch": {
+    "metric": "live creator ads past their rights date",
+    "window": "7 day",
+    "source": "Meta Ads"
+   },
+   "drives": "no takedowns or surprise bills",
+   "business": "risk",
+   "score": {
+    "money": 2,
+    "satisfaction": 5,
+    "speed": 5,
+    "ease": 5
+   },
+   "ready": 4,
+   "effort": "hours"
+  },
+  {
+   "id": "13-12",
+   "top": "T2",
+   "job": "Check every partner post for claims we cannot back and wrong logo use, before it goes live and 48 hours after",
+   "trigger": "each partner post",
+   "enablers": [
+    "creator-roster",
+    "brain-graph"
+   ],
+   "inputs": [
+    {
+     "need": "the draft or live post",
+     "from": "the creator",
+     "status": "setup"
+    },
+    {
+     "need": "allowed and forbidden claims with proof",
+     "from": "claims shelf",
+     "status": "brain"
+    },
+    {
+     "need": "brand kit rules",
+     "from": "content and brand kit shelf",
+     "status": "brain"
+    },
+    {
+     "need": "FTC paid partner label rule",
+     "from": "claims shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "Read the caption and script against allowed claims",
+    "Check the paid partner label is there",
+    "Check the logo and product shots follow the brand kit",
+    "Send exact fixes before posting, or within 48 hours if already live",
+    "Log any repeat problem on the roster"
+   ],
+   "output": "a checked post with fixes sent and logged",
+   "next": "none",
+   "watch": {
+    "metric": "partner posts with an unbacked claim or no label",
+    "window": "30 day",
+    "source": "creators shelf"
+   },
+   "drives": "no platform strike or FTC letter",
+   "business": "risk",
+   "score": {
+    "money": 2,
+    "satisfaction": 5,
+    "speed": 4,
+    "ease": 4
+   },
+   "ready": 4,
+   "effort": "hours"
+  },
+  {
+   "id": "13-13",
+   "top": "T3",
+   "job": "Compute Amazon ad profit per ASIN after fees, product cost and ads, and cut bids where ads lose money",
+   "trigger": "once, then every 2 weeks",
+   "enablers": [
+    "marketplace-plan",
+    "margin-view"
+   ],
+   "inputs": [
+    {
+     "need": "Sponsored Products and Brands spend and sales by ASIN",
+     "from": "Amazon Ads",
+     "status": "setup"
+    },
+    {
+     "need": "Amazon fees per unit and payout",
+     "from": "Seller Central",
+     "status": "setup"
+    },
+    {
+     "need": "landed cost per unit",
+     "from": "finance shelf",
+     "status": "brain"
+    },
+    {
+     "need": "total Amazon sales per ASIN, ad and organic",
+     "from": "Seller Central",
+     "status": "setup"
+    }
+   ],
+   "steps": [
+    "Pull 30 days of ad spend and total sales per ASIN",
+    "Compute profit per unit after fees and cost, then after ads",
+    "Set a break-even ad cost per sale per ASIN",
+    "Cut bids on campaigns over break-even and raise on those well under",
+    "Founder sees the list of ASINs that lose money with ads on"
+   ],
+   "output": "a per-ASIN table: profit before ads, ad cost, profit after ads, and the bid action",
+   "next": "feeds 13-15 (bid ceiling) and 20-marketplaces",
+   "watch": {
+    "metric": "Amazon profit after ads per ASIN",
+    "window": "30 day",
+    "source": "Seller Central"
+   },
+   "drives": "Amazon payout",
+   "business": "contribution margin",
+   "score": {
+    "money": 4,
+    "satisfaction": 3,
+    "speed": 3,
+    "ease": 3
+   },
+   "ready": 4,
+   "effort": "days"
+  },
+  {
+   "id": "13-14",
+   "top": "T3",
+   "job": "Harvest Amazon search terms: move terms that sell from auto campaigns into exact match, and block terms with 15 clicks and no sale",
+   "trigger": "every 2 weeks",
+   "enablers": [
+    "marketplace-plan",
+    "signal-bridge"
+   ],
+   "inputs": [
+    {
+     "need": "search term report, 60 days",
+     "from": "Amazon Ads",
+     "status": "setup"
+    },
+    {
+     "need": "profit per unit per ASIN, for the break-even line",
+     "from": "finance shelf",
+     "status": "brain"
+    },
+    {
+     "need": "products we do not sell",
+     "from": "products shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "Pull search terms with clicks, orders and cost",
+    "Add terms with 2 or more orders under break-even to exact match campaigns",
+    "Add terms with 15 or more clicks and no order as negative exact",
+    "A person checks the negatives do not block a real product use",
+    "Send the top 10 converting terms to the signal bridge for Meta and Google"
+   ],
+   "output": "an updated exact list, a negative list, and 10 terms passed to other channels",
+   "next": "feeds 12-11 (Meta hooks) and 17-10 (article briefs)",
+   "watch": {
+    "metric": "Amazon ad spend on terms with no sale",
+    "window": "30 day",
+    "source": "Amazon Ads"
+   },
+   "drives": "Amazon ad profit",
+   "business": "contribution margin",
+   "score": {
+    "money": 3,
+    "satisfaction": 3,
+    "speed": 4,
+    "ease": 4
+   },
+   "ready": 4,
+   "effort": "hours"
+  },
+  {
+   "id": "13-15",
+   "top": "T3",
+   "job": "Split Amazon ad spend into brand defence and new shoppers, and set a bid ceiling from profit per unit for Prime Day and Q4",
+   "trigger": "monthly, and 3 weeks before Prime Day and Black Friday",
+   "enablers": [
+    "marketplace-plan",
+    "funnel-mix"
+   ],
+   "inputs": [
+    {
+     "need": "search terms and campaigns",
+     "from": "Amazon Ads",
+     "status": "setup"
+    },
+    {
+     "need": "brand and product name list",
+     "from": "products shelf",
+     "status": "brain"
+    },
+    {
+     "need": "profit per unit per ASIN",
+     "from": "finance shelf",
+     "status": "brain"
+    },
+    {
+     "need": "peak dates",
+     "from": "calendar shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "Tag each term brand or non-brand",
+    "Show spend, sales and new-to-brand orders for each side",
+    "Set a bid ceiling per ASIN from profit per unit for peak weeks",
+    "Cap brand defence bids where no rival shows on our name",
+    "Read after the peak: profit per unit, not ad sales"
+   ],
+   "output": "a brand vs new shopper split and a peak bid ceiling per ASIN",
+   "next": "feeds 20-marketplaces peak plan",
+   "watch": {
+    "metric": "new-to-brand orders share",
+    "window": "30 day",
+    "source": "Amazon Ads"
+   },
+   "drives": "new Amazon buyers at a profit",
+   "business": "gross profit",
+   "score": {
+    "money": 4,
+    "satisfaction": 3,
+    "speed": 3,
+    "ease": 3
+   },
+   "ready": 4,
+   "effort": "hours"
+  },
+  {
+   "id": "13-16",
+   "top": "T3",
+   "job": "Pause ads on hero ASINs when FBA stock falls under 3 weeks or when another seller holds the buy box",
+   "trigger": "daily",
+   "enablers": [
+    "marketplace-plan"
+   ],
+   "inputs": [
+    {
+     "need": "FBA stock and 14 day sales rate",
+     "from": "Seller Central",
+     "status": "setup"
+    },
+    {
+     "need": "buy box owner per ASIN",
+     "from": "Seller Central",
+     "status": "setup"
+    },
+    {
+     "need": "inbound shipments and dates",
+     "from": "operations shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "Compute weeks of FBA stock per hero ASIN",
+    "Lower bids at 3 weeks and pause at 10 days, unless an inbound lands first",
+    "Pause ads on any ASIN where we lost the buy box",
+    "Resume when stock or the buy box is back",
+    "Log each pause with dollars not spent"
+   ],
+   "output": "a daily pause and resume list with the reason for each",
+   "next": "feeds 19-supply-inventory",
+   "watch": {
+    "metric": "ad spend on ASINs with no buy box or low stock",
+    "window": "7 day",
+    "source": "Amazon Ads"
+   },
+   "drives": "rank kept through stock gaps",
+   "business": "cash",
+   "score": {
+    "money": 3,
+    "satisfaction": 4,
+    "speed": 5,
+    "ease": 4
+   },
+   "ready": 4,
+   "effort": "hours"
+  },
+  {
+   "id": "13-17",
+   "top": "T3",
+   "job": "Feed Amazon reviews, questions and search terms into Meta hooks and site copy, and send Meta's winning angles into Amazon images and A+ content",
+   "trigger": "monthly",
+   "enablers": [
+    "signal-bridge",
+    "review-miner"
+   ],
+   "inputs": [
+    {
+     "need": "our Amazon reviews and questions",
+     "from": "Seller Central",
+     "status": "setup"
+    },
+    {
+     "need": "rival Amazon reviews for 3 top listings",
+     "from": "review export tool",
+     "status": "buy"
+    },
+    {
+     "need": "Meta winners with angle tags",
+     "from": "creative-tags",
+     "status": "enabler"
+    },
+    {
+     "need": "allowed claims",
+     "from": "claims shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "Group our reviews and questions by love, hate, wish and doubt",
+    "Do the same for 3 rivals and list where they fail",
+    "Write 10 Meta hooks from the top themes in buyers' words",
+    "Rework the first 3 listing images and A+ blocks around the 2 best Meta angles",
+    "Track Meta hook results and Amazon conversion rate for 4 weeks"
+   ],
+   "output": "a theme sheet, 10 hooks for Meta and a new image and A+ set for the hero listing",
+   "next": "feeds 11-paid-social (hooks) and 20-marketplaces (listing)",
+   "watch": {
+    "metric": "Amazon unit session percentage on the hero listing",
+    "window": "28 day",
+    "source": "Seller Central"
+   },
+   "drives": "sales on Amazon and Meta from the same words",
+   "business": "revenue",
+   "score": {
+    "money": 4,
+    "satisfaction": 3,
+    "speed": 3,
+    "ease": 3
+   },
+   "ready": 1,
+   "effort": "days"
+  },
+  {
+   "id": "13-18",
+   "top": "T4",
+   "job": "Match each month's ad invoices from Meta, Google, TikTok and Amazon to reported spend and budget before they are paid, and chase every credit owed",
+   "trigger": "on the 3rd of each month",
+   "enablers": [
+    "spend-ledger"
+   ],
+   "inputs": [
+    {
+     "need": "spend by day per ad account",
+     "from": "Meta Ads, Google Ads, TikTok Ads, Amazon Ads",
+     "status": "connected"
+    },
+    {
+     "need": "invoices and card statements",
+     "from": "finance inbox or accounting tool",
+     "status": "founder"
+    },
+    {
+     "need": "budget per channel",
+     "from": "finance shelf",
+     "status": "brain"
+    },
+    {
+     "need": "invalid click credits promised",
+     "from": "Google Ads",
+     "status": "connected"
+    }
+   ],
+   "steps": [
+    "Pull spend per platform for the month",
+    "Match each invoice or card charge to spend",
+    "Flag gaps over 2 percent and any spend over budget",
+    "Open a ticket for each gap or missing credit",
+    "Follow each open ticket weekly until paid, and log the dollars back"
+   ],
+   "output": "a monthly spend and invoice table with open disputes and dollars recovered",
+   "next": "feeds 21-finance-cash and 26-reports",
+   "watch": {
+    "metric": "invoice dollars not matched to spend",
+    "window": "monthly",
+    "source": "spend-ledger"
+   },
+   "drives": "one true paid media total",
+   "business": "cash",
+   "score": {
+    "money": 2,
+    "satisfaction": 4,
+    "speed": 4,
+    "ease": 4
+   },
+   "ready": 4,
+   "effort": "hours"
+  },
+  {
+   "id": "13-19",
+   "top": "T4",
+   "job": "Read how much Meta spend lifts Amazon: compare Amazon brand searches and sales in weeks Meta spend rose or fell, then hold out one region to confirm",
+   "trigger": "once, then each quarter",
+   "enablers": [
+    "spend-ledger",
+    "funnel-mix",
+    "marketplace-plan"
+   ],
+   "inputs": [
+    {
+     "need": "Meta spend by week and region",
+     "from": "Meta Ads",
+     "status": "connected"
+    },
+    {
+     "need": "Amazon brand search volume and sales by week",
+     "from": "Amazon Brand Analytics",
+     "status": "setup"
+    },
+    {
+     "need": "site orders by week",
+     "from": "Shopify",
+     "status": "connected"
+    },
+    {
+     "need": "founder sign-off on a 4 week region holdout",
+     "from": "decisions and goals shelf",
+     "status": "founder"
+    }
+   ],
+   "steps": [
+    "Line up 26 weeks of Meta spend with Amazon brand searches and sales",
+    "Mark weeks where Meta spend moved more than 30 percent",
+    "Compare Amazon sales in those weeks with the weeks around them",
+    "If the link looks real, run a 4 week region holdout on Meta",
+    "Write the share of Amazon sales Meta seems to drive, with its range"
+   ],
+   "output": "a halo read with a range, and a keep or cut note for Meta budget",
+   "next": "feeds 11-paid-social and 22-measurement",
+   "watch": {
+    "metric": "Amazon brand search volume in holdout vs control regions",
+    "window": "28 day",
+    "source": "Amazon Brand Analytics"
+   },
+   "drives": "total sales across site and Amazon",
+   "business": "revenue",
+   "score": {
+    "money": 4,
+    "satisfaction": 3,
+    "speed": 2,
+    "ease": 2
+   },
+   "ready": 4,
+   "effort": "weeks"
+  },
+  {
+   "id": "13-20",
+   "top": "T4",
+   "job": "Say yes or no to a new ad channel pitch (Walmart, Target, programmatic, Instacart) by checking 4 gates, and set a test budget with a stop line",
+   "trigger": "each time a new channel pitches",
+   "enablers": [
+    "spend-ledger",
+    "margin-view"
+   ],
+   "inputs": [
+    {
+     "need": "current retargeting reach and frequency on Meta and Google",
+     "from": "Meta Ads, Google Ads",
+     "status": "connected"
+    },
+    {
+     "need": "profit per unit on the channel after its fees",
+     "from": "finance shelf",
+     "status": "brain"
+    },
+    {
+     "need": "the offer and credits in writing",
+     "from": "the channel rep",
+     "status": "founder"
+    },
+    {
+     "need": "budget cap for tests",
+     "from": "finance shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "Check the 4 gates: core ads profitable, retargeting not full, margin covers fees, stock covers demand",
+    "If a gate fails, write a no with the reason",
+    "If all pass, set a 6 week test budget, a stop line and the store number that judges it",
+    "Founder signs",
+    "Read at 6 weeks against the stop line"
+   ],
+   "output": "a yes or no memo, and for a yes a 6 week test plan with a stop line",
+   "next": "feeds 20-marketplaces",
+   "watch": {
+    "metric": "store sales per dollar on the new channel",
+    "window": "6 week",
+    "source": "spend-ledger"
+   },
+   "drives": "no money on channels that cannot pay back",
+   "business": "risk",
+   "score": {
+    "money": 3,
+    "satisfaction": 4,
+    "speed": 3,
+    "ease": 4
+   },
+   "ready": 4,
+   "effort": "hours"
+  }
+ ],
+ "new_enablers": [
+  {
+   "id": "partner-ledger",
+   "name": "Partner commission ledger",
+   "what": "One row per affiliate or creator commission, joined to the store order: new or returning buyer, returned or cancelled, coupon code source, time from click to order, and fraud signs such as the same address or card. Holds payout until each row is clean.",
+   "inputs": [
+    "affiliate network or creator platform commission report",
+    "store orders with codes, refunds and new vs returning",
+    "coupon site scans for our codes"
+   ],
+   "powers": [
+    "pay only for kept, real, new sales",
+    "commission rates by new buyer share",
+    "claw back on refunds after payout",
+    "code leaks and brand-term bidding caught"
+   ],
+   "screens": [
+    "13-affiliate-marketplace-ads",
+    "16-organic-content",
+    "21-finance-cash"
+   ],
+   "note": null
+  },
+  {
+   "id": "spend-ledger",
+   "name": "Paid media spend ledger",
+   "what": "One table of spend per platform per day from every ad account, next to the invoice, the budget and the store's view of sales. Flags invoice gaps, invalid click credits owed and platforms over budget.",
+   "inputs": [
+    "ad account spend reports",
+    "invoices and card statements",
+    "budget per channel",
+    "store sales by channel"
+   ],
+   "powers": [
+    "one paid media total against budget",
+    "billing errors caught before payment",
+    "credits chased to payment",
+    "a fair test budget for a new channel"
+   ],
+   "screens": [
+    "13-affiliate-marketplace-ads",
+    "21-finance-cash",
+    "26-reports"
+   ],
+   "note": null
+  }
+ ]
+}

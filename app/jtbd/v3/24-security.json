@@ -1,0 +1,1183 @@
+{
+  "screen": "24-security",
+  "title": "Security",
+  "top_jobs": [
+    {
+      "id": "T1",
+      "job": "When I hear another founder lost their ad account and store to one phishing link, help me see which of our logins could be taken the same way and fix them this week, so we do not lose the store, the ads or a payout",
+      "metric": "admin logins across store, ads, email, bank and domain with 2-step login on, weekly",
+      "from_v2": [
+        1,
+        2,
+        4,
+        7,
+        10,
+        17,
+        19,
+        23,
+        28,
+        31
+      ]
+    },
+    {
+      "id": "T2",
+      "job": "When chargebacks jump or fake orders slip through, help me see the cause, the cost and the rule to change, so the processor does not hold payouts and good buyers still get through",
+      "metric": "disputes as a share of orders, trailing 30 days, against the processor's warning line",
+      "from_v2": [
+        3,
+        6,
+        9,
+        14,
+        25,
+        27,
+        34
+      ]
+    },
+    {
+      "id": "T3",
+      "job": "When traffic and add to carts jump but orders do not, help me see how much is bots, fake clicks and fake sign-ups, so I do not scale spend or keep a page because of fake visitors",
+      "metric": "share of sessions and add to carts scored as bots, weekly",
+      "from_v2": [
+        8,
+        11,
+        21,
+        24,
+        29,
+        35
+      ]
+    },
+    {
+      "id": "T4",
+      "job": "When a data wipe, a hack or a peak week is coming, help me have backups, a tested plan and a short checklist, so we recover in hours, not weeks",
+      "metric": "hours to restore a sample of products in the last test restore",
+      "from_v2": [
+        5,
+        15,
+        17,
+        18,
+        33
+      ]
+    },
+    {
+      "id": "T5",
+      "job": "When someone uses our name to cheat customers or a new script could read their cards, help me find it and shut it, so customers trust our store and our emails",
+      "metric": "lookalike domains and fake ads using our brand found and taken down, weekly",
+      "from_v2": [
+        12,
+        16,
+        20,
+        22,
+        26
+      ]
+    }
+  ],
+  "jobs": [
+    {
+      "id": "24-01",
+      "top": "T1",
+      "job": "Build the security folder: list every account (store, Meta Business, Google Ads, email tool, helpdesk, bank, payment processor, domain), its owner, its admins, 2-step status and recovery email and phone, with no passwords stored",
+      "trigger": "once at onboarding, then every quarter and whenever an account is added",
+      "enablers": [
+        "access-vault"
+      ],
+      "inputs": [
+        {
+          "need": "list of every business account",
+          "from": "founder interview",
+          "status": "founder"
+        },
+        {
+          "need": "admin and user lists from each platform's settings page",
+          "from": "each platform admin",
+          "status": "setup"
+        },
+        {
+          "need": "roles and who sees what",
+          "from": "trust and access shelf",
+          "status": "brain"
+        },
+        {
+          "need": "team list",
+          "from": "team list",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "List every account the business depends on, starting with the 8 that can stop sales",
+        "Export the admin and user list from each settings page",
+        "Record owner, admins, 2-step on or off, recovery email and phone, and whether it sits in a company account",
+        "Mark red: no 2-step, recovery on a personal email, or only 1 admin",
+        "Founder checks the list and names the owner for each red line",
+        "Put each red line on the board with a date this week"
+      ],
+      "output": "a security folder: 1 row per account with owner, admins, 2-step and recovery, and a red list with owners",
+      "next": "feeds 24-02 (2-step sweep), 24-04 (stale access) and 23-15 (offboarding)",
+      "watch": {
+        "metric": "critical accounts with 2-step on, 2 admins and a company recovery email",
+        "window": "weekly",
+        "source": "security folder"
+      },
+      "drives": "no lost store, ad account or payout",
+      "business": "risk",
+      "score": {
+        "money": 4,
+        "satisfaction": 5,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "24-02",
+      "top": "T1",
+      "job": "Turn on 2-step login with an app or a key for every admin on the 8 critical accounts, and replace every shared admin login with a named login at the lowest role each person needs",
+      "trigger": "this week, then for every new admin on the day they are added",
+      "enablers": [
+        "access-vault"
+      ],
+      "inputs": [
+        {
+          "need": "red list from the security folder",
+          "from": "access-vault",
+          "status": "enabler"
+        },
+        {
+          "need": "an authenticator app on each admin's phone, or 2 hardware keys for the founder",
+          "from": "authenticator app or keys",
+          "status": "setup"
+        },
+        {
+          "need": "who needs which role",
+          "from": "trust and access shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Start with store owner, Meta Business, domain, bank and payouts",
+        "Turn on 2-step with an app or key; drop SMS codes where the platform allows",
+        "Create a named login for each person who shared one, at the lowest role",
+        "Retire the shared login and store backup codes offline",
+        "Recount: 2-step share and shared logins left"
+      ],
+      "output": "every critical admin on 2-step, 0 shared logins, and backup codes stored offline",
+      "next": "feeds 24-05 (Meta takeover plan)",
+      "watch": {
+        "metric": "admin logins with 2-step on, and shared logins left",
+        "window": "weekly",
+        "source": "security folder"
+      },
+      "drives": "account takeovers",
+      "business": "risk",
+      "score": {
+        "money": 4,
+        "satisfaction": 5,
+        "speed": 5,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "24-03",
+      "top": "T1",
+      "job": "Pull every staff member, agency, partner and app with access to store, Meta, Google, email and bank, and remove any unused in 60 days or tied to someone who left",
+      "trigger": "monthly, and the day any agency or partner relationship ends",
+      "enablers": [
+        "access-vault",
+        "app-audit"
+      ],
+      "inputs": [
+        {
+          "need": "users and partner access per platform with last login",
+          "from": "each platform admin",
+          "status": "setup"
+        },
+        {
+          "need": "installed apps with data scopes",
+          "from": "store platform apps",
+          "status": "connected"
+        },
+        {
+          "need": "people and agencies who left",
+          "from": "team list",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "Export users, partner businesses and apps with their last login or last use",
+        "Mark anyone unused in 60 days or no longer working with us",
+        "Remove or downgrade each, starting with Meta partner access and store staff",
+        "Remove apps with customer or order data that nobody uses, and rotate their keys",
+        "Log each removal in the security folder"
+      ],
+      "output": "a monthly stale access list and a removal log",
+      "next": "feeds 24-01 (security folder refresh)",
+      "watch": {
+        "metric": "accounts and partner access unused in 60 days",
+        "window": "monthly",
+        "source": "security folder"
+      },
+      "drives": "outside people able to spend our money or see our customers",
+      "business": "risk",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "24-04",
+      "top": "T1",
+      "job": "Write and test the Meta takeover plan: 2 backup admins, where the business verification lives, how to pause all spend in 5 minutes, and the Meta support path",
+      "trigger": "once, then every 6 months",
+      "enablers": [
+        "incident-kit",
+        "access-vault"
+      ],
+      "inputs": [
+        {
+          "need": "Meta Business admins and ad accounts",
+          "from": "Meta Ads",
+          "status": "connected"
+        },
+        {
+          "need": "business verification documents",
+          "from": "founder",
+          "status": "founder"
+        },
+        {
+          "need": "backup admins' names",
+          "from": "team list",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "Confirm 2 trusted people are admins with 2-step on",
+        "File the verification documents and the support steps in the security folder",
+        "Write the 5 minute pause: who does it and from which login",
+        "Run a dry drill with a stopwatch; the Meta connection stays read only, a named person clicks",
+        "Fix any step that took too long"
+      ],
+      "output": "a 1 page Meta takeover plan tested once, with a time to pause",
+      "next": "feeds 24-18 (incident plan)",
+      "watch": {
+        "metric": "minutes to pause all spend in the last drill",
+        "window": "6 monthly",
+        "source": "security folder"
+      },
+      "drives": "ad dollars lost in a takeover",
+      "business": "risk",
+      "score": {
+        "money": 4,
+        "satisfaction": 5,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "24-05",
+      "top": "T1",
+      "job": "Every morning compare live Meta ads, admins and daily spend against yesterday and the work board, and alert on any ad, spend jump or admin not made by a known person",
+      "trigger": "daily at 7 am",
+      "enablers": [
+        "access-vault",
+        "work-board"
+      ],
+      "inputs": [
+        {
+          "need": "live ads, ad sets, spend and account users",
+          "from": "Meta Ads",
+          "status": "connected"
+        },
+        {
+          "need": "ad changes the team planned",
+          "from": "work-board",
+          "status": "enabler"
+        },
+        {
+          "need": "store staff and settings changes, payout bank changes",
+          "from": "store platform",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Pull yesterday's live ads, spend and admins",
+        "Diff against the day before",
+        "Match each new ad or admin to a board card or a named person",
+        "Alert the owner on any unmatched ad, admin, or spend 2x the 7 day average",
+        "Owner confirms or starts the takeover plan within 1 hour"
+      ],
+      "output": "a daily change check with unmatched items flagged, and hours to confirm each",
+      "next": "feeds 24-04 (Meta takeover plan)",
+      "watch": {
+        "metric": "unapproved ad spend and unknown admins on ad accounts",
+        "window": "daily",
+        "source": "Meta Ads"
+      },
+      "drives": "dollars spent on ads we did not make",
+      "business": "risk",
+      "score": {
+        "money": 4,
+        "satisfaction": 5,
+        "speed": 5,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "24-06",
+      "top": "T1",
+      "job": "Show the team 4 real fake Meta policy emails, send 1 practice phishing email a quarter, and count who reports it instead of clicking",
+      "trigger": "quarterly, and when a new person joins",
+      "enablers": [
+        "incident-kit",
+        "access-vault"
+      ],
+      "inputs": [
+        {
+          "need": "real examples of fake Meta and Shopify emails",
+          "from": "knowledge cards and team inboxes",
+          "status": "have"
+        },
+        {
+          "need": "a free practice phishing tool or a hand-made test email",
+          "from": "practice tool",
+          "status": "setup"
+        },
+        {
+          "need": "team list with emails",
+          "from": "team list",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "Collect 4 fake emails the team got and mark the tells",
+        "Hold a 15 minute session: how to check a link, where to report",
+        "Send 1 practice email per quarter",
+        "Count reports and clicks per person",
+        "Rerun the session for anyone who clicked"
+      ],
+      "output": "a quarterly phishing score: reported, clicked, ignored",
+      "next": "none",
+      "watch": {
+        "metric": "staff who report a practice phishing email instead of clicking",
+        "window": "quarterly",
+        "source": "practice tool"
+      },
+      "drives": "account takeovers from one click",
+      "business": "risk",
+      "score": {
+        "money": 2,
+        "satisfaction": 4,
+        "speed": 2,
+        "ease": 5
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "24-07",
+      "top": "T2",
+      "job": "Compute disputes as a share of orders over the last 30 days each day, against the processor's warning line, split by reason, product and first-time buyer, with the month's cost in fees and lost goods",
+      "trigger": "daily, and the day a processor warning email lands",
+      "enablers": [
+        "fraud-watch",
+        "margin-view"
+      ],
+      "inputs": [
+        {
+          "need": "disputes with reason code, amount and outcome",
+          "from": "store platform payments",
+          "status": "connected"
+        },
+        {
+          "need": "orders per day with customer and product",
+          "from": "store platform orders",
+          "status": "connected"
+        },
+        {
+          "need": "processor warning line (often 0.75 to 1 percent)",
+          "from": "processor terms",
+          "status": "founder"
+        },
+        {
+          "need": "product cost and dispute fees",
+          "from": "finance shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pull disputes and orders for the last 30 days",
+        "Compute the rate against the warning line and chart it daily",
+        "Split by reason code, product, first-time buyer and ship country",
+        "Name the top cause and the rule that would stop it",
+        "Total the month's cost: refunded value, goods, dispute fees"
+      ],
+      "output": "a dispute rate chart with the warning line, the top cause, and the monthly cost",
+      "next": "feeds 24-08 (answer disputes) and 24-09 (hold risky orders)",
+      "watch": {
+        "metric": "disputes as a share of orders, trailing 30 days",
+        "window": "daily",
+        "source": "store platform payments"
+      },
+      "drives": "payouts held and fraud losses",
+      "business": "risk",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "24-08",
+      "top": "T2",
+      "job": "Answer every not-received and not-as-described dispute within 3 days with tracking, the delivery scan, photos and the policy page, from a template per reason code, and track the win rate",
+      "trigger": "within 3 days of each dispute opening",
+      "enablers": [
+        "fraud-watch"
+      ],
+      "inputs": [
+        {
+          "need": "open disputes with reason code and deadline",
+          "from": "store platform payments",
+          "status": "connected"
+        },
+        {
+          "need": "tracking and delivery scans",
+          "from": "store platform fulfilments",
+          "status": "connected"
+        },
+        {
+          "need": "tickets from the same customer",
+          "from": "helpdesk",
+          "status": "connected"
+        },
+        {
+          "need": "return and shipping policy text",
+          "from": "operations shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "List open disputes by deadline",
+        "Pull tracking, delivery scan, customer tickets and the policy for each",
+        "Fill the template for the reason code",
+        "A person checks the proof and submits",
+        "Log the outcome and the win rate per reason"
+      ],
+      "output": "every dispute answered in time with proof, and a win rate per reason code",
+      "next": "feeds 24-07 (dispute rate)",
+      "watch": {
+        "metric": "disputes answered in time and won",
+        "window": "monthly",
+        "source": "store platform payments"
+      },
+      "drives": "money recovered from disputes",
+      "business": "gross profit",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "24-09",
+      "top": "T2",
+      "job": "Hold orders over $300 from new customers with a freight forwarder address, a billing and shipping mismatch or 3 cards tried, review each before it ships, and each month check how many held orders were good buyers",
+      "trigger": "on every order, reviewed within 4 working hours; rule check monthly",
+      "enablers": [
+        "fraud-watch"
+      ],
+      "inputs": [
+        {
+          "need": "orders with risk score, address, billing, cards tried",
+          "from": "store platform orders",
+          "status": "connected"
+        },
+        {
+          "need": "known freight forwarder addresses",
+          "from": "fraud-watch",
+          "status": "enabler"
+        },
+        {
+          "need": "later disputes and repeat orders of held buyers",
+          "from": "store platform",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Set the hold rule and route held orders to one reviewer",
+        "Reviewer checks email age, phone, social presence and past orders, then ships or cancels",
+        "Log the call per order",
+        "Monthly, count held orders later confirmed good (paid, no dispute, bought again) and confirmed fraud",
+        "Loosen the rule that blocked the most good orders, or tighten the one fraud passed"
+      ],
+      "output": "a daily hold queue, and a monthly table of good orders blocked against fraud stopped",
+      "next": "feeds 24-07 (dispute rate)",
+      "watch": {
+        "metric": "orders held for risk and the share later confirmed as fraud",
+        "window": "weekly",
+        "source": "store platform orders"
+      },
+      "drives": "fraud losses and good sales turned away",
+      "business": "gross profit",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "24-10",
+      "top": "T2",
+      "job": "Check every discount code's use against its expected use each week, find codes posted on coupon sites, and cap or expire the leaked ones the same day",
+      "trigger": "every Monday, and when one code passes 2x its expected use",
+      "enablers": [
+        "fraud-watch",
+        "margin-view"
+      ],
+      "inputs": [
+        {
+          "need": "orders by discount code",
+          "from": "store platform orders",
+          "status": "connected"
+        },
+        {
+          "need": "expected use per code: partner, creator, email, customer service",
+          "from": "offers shelf",
+          "status": "brain"
+        },
+        {
+          "need": "a check of the 5 big coupon sites for our brand",
+          "from": "coupon site check",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "Count orders per code this week against its expected use",
+        "Search coupon sites for our brand and list posted codes",
+        "Compute margin lost on each leaked code",
+        "Cap per customer, expire, or replace with single-use codes",
+        "Tell the partner whose code leaked"
+      ],
+      "output": "a leaked code list with margin lost and the action taken",
+      "next": "feeds 04 (offers and pricing)",
+      "watch": {
+        "metric": "orders on partner codes above expected use",
+        "window": "weekly",
+        "source": "store platform orders"
+      },
+      "drives": "discount cost per order",
+      "business": "gross profit",
+      "score": {
+        "money": 3,
+        "satisfaction": 2,
+        "speed": 5,
+        "ease": 5
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "24-11",
+      "top": "T2",
+      "job": "List the top 1 percent of customers by returns and not-received claims cost, and set rules for them only, like signature on delivery or no free returns",
+      "trigger": "monthly",
+      "enablers": [
+        "fraud-watch",
+        "margin-view"
+      ],
+      "inputs": [
+        {
+          "need": "orders, returns, refunds and claims per customer",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "tickets claiming not received",
+          "from": "helpdesk",
+          "status": "connected"
+        },
+        {
+          "need": "return cost per order",
+          "from": "finance shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Rank customers by return and claim cost over 12 months",
+        "Take the top 1 percent and check each by hand for honest bad luck",
+        "Tag the rest and set the rule for tagged customers only",
+        "Track their claim cost the next 3 months"
+      ],
+      "output": "a tagged list with the cost each customer drove and the rule applied",
+      "next": "feeds 15 (customers and CX)",
+      "watch": {
+        "metric": "return and not-received claim cost from the top 1 percent of customers",
+        "window": "monthly",
+        "source": "store platform"
+      },
+      "drives": "return and claim cost",
+      "business": "gross profit",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "24-12",
+      "top": "T3",
+      "job": "Score last week's sessions and add to carts for bots (known crawlers, data center traffic, zero scroll, 1 second visits, add to cart with no page view) and show real conversion rate after removing them",
+      "trigger": "every Monday, and whenever sessions jump 30 percent with flat orders",
+      "enablers": [
+        "bot-filter",
+        "behaviour-map"
+      ],
+      "inputs": [
+        {
+          "need": "sessions, add to carts and orders by source, country and device",
+          "from": "GA4",
+          "status": "connected"
+        },
+        {
+          "need": "scroll and session length per visit",
+          "from": "Clarity",
+          "status": "setup"
+        },
+        {
+          "need": "firewall or hosting logs with bot scores",
+          "from": "Cloudflare or host logs",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "Pull sessions and add to carts by source, country, device and hour",
+        "Score each segment on the bot signs",
+        "A person checks the top 3 flagged segments in recordings",
+        "Show conversion rate and cost per session with and without bot segments",
+        "Mark any campaign or page whose win was mostly bots"
+      ],
+      "output": "a weekly bot share per source and page, and clean conversion rates",
+      "next": "feeds 25-05 (test audit) and 22 (measurement)",
+      "watch": {
+        "metric": "share of sessions and add to carts scored as bots",
+        "window": "weekly",
+        "source": "GA4"
+      },
+      "drives": "budget and page calls made on real visitors",
+      "business": "risk",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "24-13",
+      "top": "T3",
+      "job": "Watch small or failed payments per hour against normal, and when a card testing burst hits, turn on a checkout challenge, cancel the test orders and refund before fees stack up",
+      "trigger": "hourly, with an alert at 5x the normal rate",
+      "enablers": [
+        "bot-filter",
+        "fraud-watch"
+      ],
+      "inputs": [
+        {
+          "need": "payment attempts and failures per hour",
+          "from": "store platform payments",
+          "status": "connected"
+        },
+        {
+          "need": "orders under $5 and new accounts per hour",
+          "from": "store platform orders",
+          "status": "connected"
+        },
+        {
+          "need": "a checkout challenge or bot protection setting",
+          "from": "store platform or Cloudflare",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "Set the normal rate of failed payments per hour from the last 30 days",
+        "Alert when the rate passes 5x",
+        "Turn on the challenge and block the source",
+        "Cancel test orders and log fees",
+        "Turn the challenge off 24 hours after the rate is normal"
+      ],
+      "output": "an hourly alert, a 1 page response, and the cost of each attack",
+      "next": "feeds 24-07 (dispute rate)",
+      "watch": {
+        "metric": "small or failed payment attempts per hour against normal",
+        "window": "hourly",
+        "source": "store platform payments"
+      },
+      "drives": "fees and processor alarms",
+      "business": "risk",
+      "score": {
+        "money": 2,
+        "satisfaction": 3,
+        "speed": 5,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "24-14",
+      "top": "T3",
+      "job": "Find paid clicks and email sign-ups with no engagement from flagged sources, remove the fake sign-ups from the list, block the source, and ask the ad platform for credits",
+      "trigger": "every Monday",
+      "enablers": [
+        "bot-filter"
+      ],
+      "inputs": [
+        {
+          "need": "clicks and sessions by placement and region",
+          "from": "Google Ads and GA4",
+          "status": "connected"
+        },
+        {
+          "need": "sign-ups by source, time and domain",
+          "from": "email tool",
+          "status": "setup"
+        },
+        {
+          "need": "placement and click reports",
+          "from": "Meta Ads",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Pull clicks with sessions under 2 seconds by placement and region",
+        "Pull sign-ups in bursts from disposable domains or one source",
+        "Remove fake sign-ups and add a form challenge",
+        "Exclude bad placements and file for credits",
+        "Track the share each week"
+      ],
+      "output": "a list of fake clicks and sign-ups removed, exclusions added and credits claimed",
+      "next": "feeds 12 (Google Ads) and 14 (email)",
+      "watch": {
+        "metric": "share of paid clicks and sign-ups flagged as fake",
+        "window": "weekly",
+        "source": "Google Ads, GA4 and email tool"
+      },
+      "drives": "ad waste and email reach",
+      "business": "gross profit",
+      "score": {
+        "money": 3,
+        "satisfaction": 2,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "24-15",
+      "top": "T4",
+      "job": "Back up products, theme, pages, customers and orders every day, and each quarter restore 20 products to a copy store and time it",
+      "trigger": "daily backups; restore drill quarterly and 3 weeks before a launch",
+      "enablers": [
+        "incident-kit"
+      ],
+      "inputs": [
+        {
+          "need": "a backup app for the store",
+          "from": "backup app",
+          "status": "setup"
+        },
+        {
+          "need": "a copy or development store",
+          "from": "store platform",
+          "status": "setup"
+        },
+        {
+          "need": "the list of what must come back first",
+          "from": "operations shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Install the backup app and check the first full backup",
+        "Pick 20 products, 2 pages and the theme to restore",
+        "Restore to the copy store and time it",
+        "Write the steps and file them in the security folder",
+        "Fix anything that did not come back"
+      ],
+      "output": "daily backups and a timed restore drill with written steps",
+      "next": "feeds 24-16 (incident plan)",
+      "watch": {
+        "metric": "hours to restore a sample of products in the last test restore",
+        "window": "quarterly",
+        "source": "backup app"
+      },
+      "drives": "hours of lost selling after a wipe",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 5,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "24-16",
+      "top": "T4",
+      "job": "Write the 1 page incident plan (first 5 steps, who to call, how to pause ads and payouts, what to tell customers) and run a 30 minute drill with the peak checklist 3 weeks before Black Friday",
+      "trigger": "once, then every 6 months and 3 weeks before each peak",
+      "enablers": [
+        "incident-kit",
+        "access-vault"
+      ],
+      "inputs": [
+        {
+          "need": "security folder with owners and recovery paths",
+          "from": "access-vault",
+          "status": "enabler"
+        },
+        {
+          "need": "support contacts for store, processor, Meta, domain",
+          "from": "founder",
+          "status": "founder"
+        },
+        {
+          "need": "peak dates",
+          "from": "calendar shelf",
+          "status": "brain"
+        },
+        {
+          "need": "the last restore drill result",
+          "from": "incident-kit",
+          "status": "enabler"
+        }
+      ],
+      "steps": [
+        "Write the first 5 steps for takeover, data wipe, leak and site down",
+        "List who to call with numbers and support links",
+        "Add the peak checklist: 2-step, backups tested, fraud rules, traffic limits, stale access removed",
+        "Run a 30 minute drill with the team on one case",
+        "Log gaps and fix them before the peak"
+      ],
+      "output": "a 1 page incident plan, a passed peak checklist, and a drill date",
+      "next": "feeds 23-13 (break cover emergency list)",
+      "watch": {
+        "metric": "days since the incident plan was last tested, and peak checks passed",
+        "window": "before each peak",
+        "source": "security folder"
+      },
+      "drives": "revenue lost in the best week of the year",
+      "business": "risk",
+      "score": {
+        "money": 3,
+        "satisfaction": 5,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "24-17",
+      "top": "T4",
+      "job": "Check each week that no browser or search engine marks the site unsafe, that the certificate is valid, and that the domain is locked and on auto-renew in a company account",
+      "trigger": "weekly, and the day a renewal email looks odd",
+      "enablers": [
+        "incident-kit",
+        "access-vault"
+      ],
+      "inputs": [
+        {
+          "need": "Search Console security issues",
+          "from": "Search Console",
+          "status": "connected"
+        },
+        {
+          "need": "domain registrar lock, auto-renew and owner",
+          "from": "domain registrar",
+          "status": "setup"
+        },
+        {
+          "need": "certificate expiry date",
+          "from": "site check",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "Read the Search Console security report and a Safe Browsing check",
+        "Check the certificate end date",
+        "Check the domain is locked, on auto-renew, paid by a company card and held in a company account",
+        "Alert and fix any fail the same day"
+      ],
+      "output": "a weekly pass or fail on 4 checks with an owner for any fail",
+      "next": "none",
+      "watch": {
+        "metric": "days flagged as unsafe, and domains locked and on auto-renew",
+        "window": "weekly",
+        "source": "Search Console and registrar"
+      },
+      "drives": "days the store is dark or flagged",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 5
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "24-18",
+      "top": "T5",
+      "job": "Search each week for lookalike domains and fake ads using our brand name, logo or products, and file takedowns with the registrar and Meta",
+      "trigger": "weekly, and the day a customer asks about an order we never took",
+      "enablers": [
+        "competitor-feed",
+        "incident-kit"
+      ],
+      "inputs": [
+        {
+          "need": "our brand name and product names",
+          "from": "products shelf",
+          "status": "brain"
+        },
+        {
+          "need": "ads using our name in the public Ad Library",
+          "from": "Meta Ad Library",
+          "status": "connected"
+        },
+        {
+          "need": "new domains similar to ours",
+          "from": "lookalike domain check",
+          "status": "setup"
+        },
+        {
+          "need": "tickets about orders we cannot find",
+          "from": "helpdesk",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Search the Ad Library and new domains for our name and close spellings",
+        "Match against tickets about unknown orders",
+        "A person confirms each fake with screenshots",
+        "File takedowns and log the date",
+        "Warn customers with a short note on the site if the fake is spreading"
+      ],
+      "output": "a weekly impersonation list with takedowns filed and outcomes",
+      "next": "feeds 27-15 (spike watch)",
+      "watch": {
+        "metric": "lookalike domains and fake ads using our brand found and taken down",
+        "window": "weekly",
+        "source": "Meta Ad Library and domain check"
+      },
+      "drives": "customers cheated in our name",
+      "business": "customer satisfaction",
+      "score": {
+        "money": 2,
+        "satisfaction": 5,
+        "speed": 3,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "24-19",
+      "top": "T5",
+      "job": "Set email authentication on our sending domain to the strict setting in 3 steps over 6 weeks, so nobody can send fake order emails in our name",
+      "trigger": "once, then checked monthly",
+      "enablers": [
+        "access-vault"
+      ],
+      "inputs": [
+        {
+          "need": "DNS access for the sending domain",
+          "from": "domain registrar",
+          "status": "setup"
+        },
+        {
+          "need": "every tool that sends mail as us (email tool, helpdesk, store)",
+          "from": "operations shelf",
+          "status": "brain"
+        },
+        {
+          "need": "a free report reader for the domain",
+          "from": "report reader",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "List every tool that sends as our domain and add each to the records",
+        "Set the policy to monitor and read reports for 2 weeks",
+        "Move to quarantine for 2 weeks, then to reject",
+        "Check real emails still land in inboxes at each step"
+      ],
+      "output": "sending domain at the strict setting with every real sender passing",
+      "next": "feeds 14 (email deliverability)",
+      "watch": {
+        "metric": "sending domains with email authentication at the strict setting",
+        "window": "monthly",
+        "source": "report reader"
+      },
+      "drives": "fake emails reaching customers, and inbox placement",
+      "business": "customer satisfaction",
+      "score": {
+        "money": 2,
+        "satisfaction": 4,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "24-20",
+      "top": "T5",
+      "job": "List every script on checkout and payment pages, check each against the approved list after any new app install, and remove any that can read card fields",
+      "trigger": "monthly, and on the day any app is added",
+      "enablers": [
+        "app-audit",
+        "incident-kit"
+      ],
+      "inputs": [
+        {
+          "need": "scripts loaded on cart, checkout and thank you pages",
+          "from": "site scan",
+          "status": "setup"
+        },
+        {
+          "need": "installed apps and their permissions",
+          "from": "store platform apps",
+          "status": "connected"
+        },
+        {
+          "need": "approved script list",
+          "from": "trust and access shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Scan cart and checkout pages and list every script and where it loads from",
+        "Match each to an approved app",
+        "Flag unknown scripts and any with access to card fields",
+        "Remove or ask the vendor, and log the change"
+      ],
+      "output": "an approved script list and a monthly diff with any unknown script removed",
+      "next": "feeds 08 (site speed app audit)",
+      "watch": {
+        "metric": "scripts on checkout and payment pages not on the approved list",
+        "window": "monthly",
+        "source": "site scan"
+      },
+      "drives": "card data stolen through our store",
+      "business": "risk",
+      "score": {
+        "money": 2,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "hours"
+    }
+  ],
+  "new_enablers": [
+    {
+      "id": "fraud-watch",
+      "name": "Fraud and dispute watch",
+      "what": "Tracks disputes against the processor's warning line, risky orders to hold, discount codes used beyond plan, card testing bursts and customers with high claim costs. Keeps templates for each dispute reason and the monthly cost of fraud.",
+      "inputs": [
+        "payments and disputes",
+        "orders with risk data",
+        "discount code use",
+        "tickets",
+        "processor terms"
+      ],
+      "powers": [
+        "payouts not held",
+        "disputes won",
+        "good buyers not blocked",
+        "leaked codes shut fast"
+      ],
+      "screens": [
+        "24-security",
+        "21-finance-cash",
+        "15-customers-cx"
+      ],
+      "note": null
+    },
+    {
+      "id": "bot-filter",
+      "name": "Bot and fake traffic filter",
+      "what": "Scores sessions, add to carts, clicks and sign-ups for bot signs by source, page and hour, and shows conversion and cost with the fake part removed.",
+      "inputs": [
+        "GA4",
+        "Clarity",
+        "firewall or host logs",
+        "ad click reports",
+        "email sign-ups"
+      ],
+      "powers": [
+        "real conversion rates",
+        "ad credits for fake clicks",
+        "clean email list",
+        "test reads not spoiled by bots"
+      ],
+      "screens": [
+        "24-security",
+        "22-measurement",
+        "25-experiments",
+        "07-landing-pages-cro"
+      ],
+      "note": null
+    },
+    {
+      "id": "incident-kit",
+      "name": "Backup and incident kit",
+      "what": "Daily backups with timed restore drills, a 1 page incident plan with the first 5 steps and who to call, the Meta takeover plan, and the peak readiness checklist.",
+      "inputs": [
+        "backup app",
+        "security folder",
+        "support contacts",
+        "peak calendar"
+      ],
+      "powers": [
+        "recovery in hours",
+        "calm first hour of an incident",
+        "peak weeks without outages"
+      ],
+      "screens": [
+        "24-security",
+        "23-team-ops"
+      ],
+      "note": null
+    }
+  ]
+}

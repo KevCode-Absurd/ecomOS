@@ -1,0 +1,1230 @@
+{
+  "screen": "00-today",
+  "title": "Today",
+  "top_jobs": [
+    {
+      "id": "T1",
+      "job": "When I sit down in the morning with 20 minutes before the team starts asking me things, help me see the one place the business is losing the most money right now, in dollars, and the fixes ranked by what each is worth, so I spend today on that and not on whatever is loudest",
+      "metric": "dollars at stake at the weakest step from visit to repeat order, 7 day, against its own 4 week median",
+      "from_v2": [
+        1,
+        6,
+        20,
+        15
+      ]
+    },
+    {
+      "id": "T2",
+      "job": "When yesterday's orders are in and bills are coming, help me see whether yesterday made money after every cost and whether cash covers the next 4 weeks, so I know if I can keep spending today",
+      "metric": "yesterday's contribution after product cost, shipping, fees, returns and ads, and weeks of cash cover",
+      "from_v2": [
+        2,
+        3,
+        24,
+        25,
+        29
+      ]
+    },
+    {
+      "id": "T3",
+      "job": "When something breaks during the day, like checkout failing, a campaign spending double, a best seller running out or a pixel going quiet, help me know within the hour and whether we caused it, so I stop the loss before tomorrow's report",
+      "metric": "minutes from a break to the founder seeing it, and dollars lost per break",
+      "from_v2": [
+        4,
+        8,
+        9,
+        13,
+        22
+      ]
+    },
+    {
+      "id": "T4",
+      "job": "When people are waiting on me across Slack, email, WhatsApp and the agency's threads, help me see every decision and task in one board, decide each in a minute, and hand it off with the numbers, so no one is blocked by me",
+      "metric": "decisions waiting on the founder longer than 2 days",
+      "from_v2": [
+        5,
+        12,
+        27,
+        34
+      ]
+    },
+    {
+      "id": "T5",
+      "job": "When revenue is up and the agency says the account is doing well, help me see whether new customers are growing or we are rebuying the same people, so I do not mistake a loyal base for growth",
+      "metric": "new customer revenue share and cost per new customer, 28 day",
+      "from_v2": [
+        23,
+        11,
+        14
+      ]
+    }
+  ],
+  "jobs": [
+    {
+      "id": "00-01",
+      "top": "T1",
+      "job": "Rank the top 5 money leaks each morning, from ad view to repeat order, with dollars at stake against each step's own 4 week median",
+      "trigger": "every weekday at 7am, after the overnight data pull",
+      "enablers": [
+        "leak-ranker",
+        "margin-view"
+      ],
+      "inputs": [
+        {
+          "need": "orders, customers and refunds by day",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "sessions, add to cart and checkout by day and device",
+          "from": "GA4",
+          "status": "connected"
+        },
+        {
+          "need": "spend, clicks and purchases by day",
+          "from": "Meta Ads and Google Ads",
+          "status": "connected"
+        },
+        {
+          "need": "margin per order",
+          "from": "margin-view",
+          "status": "enabler"
+        }
+      ],
+      "steps": [
+        "Pull yesterday and the last 28 days for each step of the chain",
+        "Compute each step's rate for the last 7 days and its 4 week median",
+        "Turn each drop into dollars: lost step rate x traffic x average margin per order",
+        "Drop leaks under $200 a week and leaks caused by known events",
+        "Rank the rest by dollars and write 1 plain line each: step, drop, dollars, start date"
+      ],
+      "output": "a ranked list of 5 leaks, each with step, dollars a week, start date and 1 line",
+      "next": "feeds 00-02 (rank fixes) and 00-14 (Monday top 3)",
+      "watch": {
+        "metric": "dollars at stake at the weakest step",
+        "window": "7 day",
+        "source": "Shopify, GA4 and ad platforms"
+      },
+      "drives": "gross profit recovered per week",
+      "business": "gross profit",
+      "score": {
+        "money": 5,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 3
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "00-02",
+      "top": "T1",
+      "job": "Attach 1 to 3 ranked fixes to each leak with a dollar value, and let the founder approve, send to a person or park each one in a click",
+      "trigger": "each morning after 00-01",
+      "enablers": [
+        "leak-ranker",
+        "work-board"
+      ],
+      "inputs": [
+        {
+          "need": "the ranked leak list",
+          "from": "leak-ranker",
+          "status": "enabler"
+        },
+        {
+          "need": "fix ideas filtered by bottleneck",
+          "from": "idea bank ideas/v1",
+          "status": "have"
+        },
+        {
+          "need": "approval rules and budget caps",
+          "from": "decisions and goals shelf",
+          "status": "brain"
+        },
+        {
+          "need": "team and agency list with roles",
+          "from": "operations shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "For each leak, filter the idea bank by its bottleneck and store type",
+        "Score each idea in code with the brand's numbers: dollars at stake x likely share recovered",
+        "Keep the top 3 per leak and write what it takes: hours, cost, who",
+        "Show the 3-button row: let the agent do it, send to a person, not now",
+        "Log each decision with date and reason to the decisions log"
+      ],
+      "output": "a ranked fix list with dollar values and a logged decision on each",
+      "next": "approved fixes become cards in 00-13 (work board)",
+      "watch": {
+        "metric": "fixes decided within 1 day of being shown",
+        "window": "7 day",
+        "source": "decisions log"
+      },
+      "drives": "gross profit recovered per week",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 5,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "00-03",
+      "top": "T1",
+      "job": "Run the day one sequence for a new brand: build the brain core page first, then show 3 things the founder did not know in dollars, then pick the creatives and pages to audit first",
+      "trigger": "once, on onboarding day",
+      "enablers": [
+        "brain-graph",
+        "leak-ranker"
+      ],
+      "inputs": [
+        {
+          "need": "store, ads, GA4, Search Console, helpdesk and reviews accounts",
+          "from": "day one kit",
+          "status": "connected"
+        },
+        {
+          "need": "founder interview answers",
+          "from": "founder interview",
+          "status": "founder"
+        },
+        {
+          "need": "site crawl and product catalogue",
+          "from": "products and site shelves",
+          "status": "brain"
+        },
+        {
+          "need": "top 10 ads by spend in the last 90 days",
+          "from": "Meta Ads",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Connect the day one kit and check each account returns data",
+        "Fill the core page from the crawl, the data and the interview; founder signs it",
+        "Run the leak ranker on 12 months and pick the 3 biggest surprises in dollars",
+        "List the top 10 ads and top 5 landing pages by spend and pick 3 of each to audit first",
+        "Write the first week plan on 1 page and put each item on the board"
+      ],
+      "output": "a signed core page, 3 findings with dollars, and a first week audit list of 3 ads and 3 pages",
+      "next": "feeds 00-13 (work board) and the creative and page audits on 09 and 07",
+      "watch": {
+        "metric": "founder signs the core page and approves the first week plan",
+        "window": "7 day",
+        "source": "decisions log"
+      },
+      "drives": "time to first useful decision",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 5,
+        "speed": 4,
+        "ease": 3
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "00-04",
+      "top": "T1",
+      "job": "Flag any key number that has slipped 2 weeks running, even by a little, with the dollars it will cost over a quarter if it keeps sliding",
+      "trigger": "every Monday",
+      "enablers": [
+        "number-watch",
+        "leak-ranker"
+      ],
+      "inputs": [
+        {
+          "need": "weekly conversion, order value, repeat rate, refund rate, cost per new customer",
+          "from": "Shopify and ad platforms",
+          "status": "connected"
+        },
+        {
+          "need": "margin per order",
+          "from": "margin-view",
+          "status": "enabler"
+        },
+        {
+          "need": "slide rule: 2 weeks worse, change over 3 percent",
+          "from": "decisions and goals shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Compute each key number weekly for the last 12 weeks",
+        "Mark numbers worse than the prior week 2 weeks in a row",
+        "Project the quarter cost if the slide holds, in dollars",
+        "Check the slide is not a data gap or a season, against last year's same weeks",
+        "Write 1 line per slide and add it to the leak list"
+      ],
+      "output": "a short slide list: number, weeks sliding, quarter cost in dollars",
+      "next": "feeds 00-01 (leak list) and 00-14 (Monday top 3)",
+      "watch": {
+        "metric": "slides caught at 2 weeks, not after the month",
+        "window": "12 week",
+        "source": "Shopify and ad platforms"
+      },
+      "drives": "gross profit protected per quarter",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "00-05",
+      "top": "T2",
+      "job": "Post yesterday's contribution by 9am: revenue minus product cost, shipping, payment fees, discounts, returns and ad spend, with a keep, hold or cut call on spend",
+      "trigger": "every morning at 9am",
+      "enablers": [
+        "margin-view"
+      ],
+      "inputs": [
+        {
+          "need": "yesterday's orders, discounts and refunds",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "product cost per SKU",
+          "from": "finance shelf",
+          "status": "brain"
+        },
+        {
+          "need": "shipping cost per order and payment fees",
+          "from": "Shopify and carrier invoices",
+          "status": "setup"
+        },
+        {
+          "need": "ad spend by platform",
+          "from": "Meta Ads and Google Ads",
+          "status": "connected"
+        },
+        {
+          "need": "floor: lowest contribution per order",
+          "from": "finance shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pull yesterday's orders and ad spend",
+        "Take off product cost, shipping, fees, discounts and a return reserve per product",
+        "Compare contribution per order with the floor and with the 28 day average",
+        "Mark any cost line that is estimated and not actual",
+        "Write the call: keep spend, hold, or cut, with the 1 number behind it"
+      ],
+      "output": "a 1 line daily profit card: contribution in dollars, per order, against floor, and the spend call",
+      "next": "feeds 00-08 (month pace) and 00-07 (cash cover)",
+      "watch": {
+        "metric": "daily contribution after ads",
+        "window": "1 day",
+        "source": "Shopify, ad platforms"
+      },
+      "drives": "contribution margin per month",
+      "business": "contribution margin",
+      "score": {
+        "money": 5,
+        "satisfaction": 5,
+        "speed": 5,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "00-06",
+      "top": "T2",
+      "job": "Show what last week's orders are really worth after returns, cancellations and card disputes, split by channel and first vs repeat order",
+      "trigger": "every Monday, and after any sale week",
+      "enablers": [
+        "margin-view"
+      ],
+      "inputs": [
+        {
+          "need": "orders, cancellations and refunds",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "card disputes and chargebacks",
+          "from": "Shopify Payments or Stripe",
+          "status": "connected"
+        },
+        {
+          "need": "return reasons",
+          "from": "helpdesk and returns app",
+          "status": "setup"
+        },
+        {
+          "need": "order channel and first or repeat flag",
+          "from": "Shopify",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Pull orders from 5 to 8 weeks ago so most returns have landed",
+        "Take off refunds, cancellations and disputes for each order",
+        "Split net value by channel and by first vs repeat order",
+        "Flag any channel whose net value is 15 percent or more under its gross",
+        "Carry the net rate forward as a return reserve for recent weeks"
+      ],
+      "output": "a table of gross vs net order value by channel, plus the return reserve per channel",
+      "next": "feeds 00-05 (daily profit uses the reserve) and 11 paid social budget calls",
+      "watch": {
+        "metric": "net to gross order value by channel",
+        "window": "28 day",
+        "source": "Shopify"
+      },
+      "drives": "real revenue per channel",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "00-07",
+      "top": "T2",
+      "job": "Show weeks of cash cover for the next 13 weeks, with the first tight week and the spend or stock move that fixes it",
+      "trigger": "every Monday, and the day a supplier bill or payout hold lands",
+      "enablers": [
+        "cash-runway"
+      ],
+      "inputs": [
+        {
+          "need": "bank balance",
+          "from": "founder or bank export",
+          "status": "founder"
+        },
+        {
+          "need": "payout schedule",
+          "from": "Shopify and marketplaces",
+          "status": "connected"
+        },
+        {
+          "need": "bills, payroll and supplier payment dates",
+          "from": "finance shelf or a Google Sheet",
+          "status": "setup"
+        },
+        {
+          "need": "open purchase orders",
+          "from": "operations shelf",
+          "status": "brain"
+        },
+        {
+          "need": "cash floor",
+          "from": "founder interview",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "Load balance, payouts due and bills due, week by week",
+        "Add planned ad spend and stock payments",
+        "Find the first week under the floor",
+        "Test 3 moves: cut ad spend 20 percent, delay a purchase order, ask for supplier terms",
+        "Write the 1 line answer: covered for N weeks, tight in week X, best move"
+      ],
+      "output": "a 13 week cash line with the first tight week and the best move",
+      "next": "feeds 21 finance screen and 19 purchase order timing",
+      "watch": {
+        "metric": "weeks of cash cover",
+        "window": "13 week",
+        "source": "bank and Shopify payouts"
+      },
+      "drives": "cash on hand",
+      "business": "cash",
+      "score": {
+        "money": 4,
+        "satisfaction": 5,
+        "speed": 3,
+        "ease": 3
+      },
+      "ready": 2,
+      "effort": "days"
+    },
+    {
+      "id": "00-08",
+      "top": "T2",
+      "job": "Show month to date pace against the revenue and gross profit goal on the 10th, 15th and 20th, with the 2 moves that close the gap",
+      "trigger": "on the 10th, 15th and 20th of each month",
+      "enablers": [
+        "margin-view",
+        "leak-ranker"
+      ],
+      "inputs": [
+        {
+          "need": "month to date orders and gross profit",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "monthly revenue and gross profit goals",
+          "from": "decisions and goals shelf",
+          "status": "brain"
+        },
+        {
+          "need": "same month last year by day",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "planned sends and launches for the rest of the month",
+          "from": "calendar shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Project month end from month to date plus last year's shape for the remaining days",
+        "Compute the gap to goal in revenue and gross profit",
+        "List moves that fit the rest of the month: an email send, a budget shift, a bundle",
+        "Size each move from past results and keep the top 2",
+        "Put the 2 moves on the board with an owner"
+      ],
+      "output": "a pace card: projected month end, gap, and 2 moves with owners",
+      "next": "feeds 00-13 (work board)",
+      "watch": {
+        "metric": "projected month end against goal",
+        "window": "month to date",
+        "source": "Shopify"
+      },
+      "drives": "monthly revenue and gross profit",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "00-09",
+      "top": "T3",
+      "job": "Ping the founder within the hour when checkout breaks, the site goes down or a campaign spends at double pace, with the dollars lost so far",
+      "trigger": "every hour, all day",
+      "enablers": [
+        "number-watch"
+      ],
+      "inputs": [
+        {
+          "need": "orders per hour",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "spend per hour by campaign",
+          "from": "Meta Ads and Google Ads",
+          "status": "connected"
+        },
+        {
+          "need": "uptime and checkout test",
+          "from": "an uptime checker such as a free monitor",
+          "status": "setup"
+        },
+        {
+          "need": "who to ping and on which channel",
+          "from": "trust and access shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Compare orders this hour with the same hour on the last 4 same weekdays",
+        "Check spend pace per campaign against its daily budget",
+        "Run a test add to cart and checkout load every 30 minutes",
+        "When 2 signals agree, send 1 message with what broke, since when and dollars lost",
+        "Log the break, the fix time and the cost"
+      ],
+      "output": "an alert within the hour, and a break log with cost per break",
+      "next": "feeds 06 store health and 00-12 (cause check)",
+      "watch": {
+        "metric": "minutes from break to founder alert",
+        "window": "per event",
+        "source": "number-watch log"
+      },
+      "drives": "dollars lost per break",
+      "business": "risk",
+      "score": {
+        "money": 4,
+        "satisfaction": 5,
+        "speed": 5,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "00-10",
+      "top": "T3",
+      "job": "Mark each morning which numbers cannot be trusted today, such as pixel purchases far from store orders or a missing feed, and say why",
+      "trigger": "every morning before the Today view loads",
+      "enablers": [
+        "number-watch"
+      ],
+      "inputs": [
+        {
+          "need": "pixel and GA4 purchases by day",
+          "from": "Meta Ads and GA4",
+          "status": "connected"
+        },
+        {
+          "need": "store orders by day",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "last refresh time per account",
+          "from": "trust and access shelf",
+          "status": "brain"
+        },
+        {
+          "need": "known tracking gaps and their start dates",
+          "from": "audits shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Compare platform purchases with store orders for yesterday",
+        "Flag a gap over 20 percent against its usual level",
+        "Check each account refreshed in the last 24 hours",
+        "Grey out every tile that uses a flagged number and say why",
+        "Add the flag to the numbers-not-to-trust list with a start date"
+      ],
+      "output": "a trust strip: numbers to trust today, numbers not to trust, and why",
+      "next": "feeds 22 measurement and every tile on Today",
+      "watch": {
+        "metric": "days with an untrusted number shown as trusted",
+        "window": "28 day",
+        "source": "number-watch log"
+      },
+      "drives": "decisions made on good numbers",
+      "business": "risk",
+      "score": {
+        "money": 3,
+        "satisfaction": 5,
+        "speed": 5,
+        "ease": 4
+      },
+      "ready": 5,
+      "effort": "days"
+    },
+    {
+      "id": "00-11",
+      "top": "T3",
+      "job": "Warn when a best seller has fewer days of stock than the reorder lead time, and list the ads still sending buyers to it",
+      "trigger": "every morning",
+      "enablers": [
+        "number-watch"
+      ],
+      "inputs": [
+        {
+          "need": "stock on hand per SKU",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "sales rate per SKU, last 14 days",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "reorder lead time per SKU",
+          "from": "operations shelf",
+          "status": "brain"
+        },
+        {
+          "need": "ads with landing URLs and product sets",
+          "from": "Meta Ads and Google Ads",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Compute days of cover per SKU from stock and 14 day sales rate",
+        "Flag SKUs where cover is under lead time plus 7 days",
+        "List live ads and product sets that point to each flagged SKU, with daily spend",
+        "Suggest: reorder now, move spend to an in stock item, or cap spend",
+        "Send the reorder note to the person who buys stock"
+      ],
+      "output": "a stock risk list: SKU, days of cover, lead time, ads pointing to it, daily spend",
+      "next": "feeds 19 supply and 11 paid social budget moves",
+      "watch": {
+        "metric": "ad spend on SKUs with under 14 days of cover",
+        "window": "7 day",
+        "source": "Shopify and ad platforms"
+      },
+      "drives": "revenue kept by not selling out",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "00-12",
+      "top": "T3",
+      "job": "When a number jumps or drops, check outside causes first, such as a holiday, a platform outage, a rival sale or the weather, and say us or outside",
+      "trigger": "whenever number-watch fires, or the founder asks why",
+      "enablers": [
+        "number-watch",
+        "competitor-feed"
+      ],
+      "inputs": [
+        {
+          "need": "the number that moved and when",
+          "from": "number-watch",
+          "status": "enabler"
+        },
+        {
+          "need": "holiday and sale calendar",
+          "from": "calendar shelf",
+          "status": "brain"
+        },
+        {
+          "need": "platform status pages and policy news",
+          "from": "public status pages",
+          "status": "setup"
+        },
+        {
+          "need": "rival sales and new ads this week",
+          "from": "competitor-feed",
+          "status": "enabler"
+        },
+        {
+          "need": "our own changes: launches, price, budget, site edits",
+          "from": "decisions log",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "List our own changes in the 3 days before the move",
+        "List outside events in the same window",
+        "Check if the move shows on all channels or one",
+        "Write the likely cause as us, outside or unclear, with the evidence",
+        "Say what to do: act, wait 3 days, or ignore"
+      ],
+      "output": "a cause note: us, outside or unclear, with evidence and a next step",
+      "next": "feeds 00-01 (drops leaks with outside causes) and 26 reports",
+      "watch": {
+        "metric": "moves with a named cause within 1 day",
+        "window": "28 day",
+        "source": "number-watch log"
+      },
+      "drives": "fewer wrong calls on luck",
+      "business": "risk",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "00-13",
+      "top": "T4",
+      "job": "Set up the kanban board: pull every open task and decision from Slack, email, WhatsApp and agency threads into to do, doing, waiting on approval, live and measured",
+      "trigger": "once at onboarding, then new cards daily",
+      "enablers": [
+        "work-board",
+        "leak-ranker"
+      ],
+      "inputs": [
+        {
+          "need": "open tasks and asks from Slack and email",
+          "from": "Slack and email export or forward",
+          "status": "setup"
+        },
+        {
+          "need": "team and agency list with roles",
+          "from": "operations shelf",
+          "status": "brain"
+        },
+        {
+          "need": "approval rules",
+          "from": "decisions and goals shelf",
+          "status": "brain"
+        },
+        {
+          "need": "approved fixes from the morning leak list",
+          "from": "leak-ranker",
+          "status": "enabler"
+        }
+      ],
+      "steps": [
+        "Forward or import last 30 days of open asks and list each as a card",
+        "Give each card an owner, a due date and the number it should move",
+        "Put cards in 5 columns: to do, doing, waiting on approval, live, measured",
+        "Sort the approval column by age and dollars at stake",
+        "Close duplicates and dead asks with the founder in 1 sitting"
+      ],
+      "output": "a live board with every open card, owner, due date and target number",
+      "next": "feeds 00-14 (Monday top 3) and 23 team ops",
+      "watch": {
+        "metric": "cards waiting on approval over 2 days",
+        "window": "7 day",
+        "source": "work board"
+      },
+      "drives": "work shipped per week",
+      "business": "customer satisfaction",
+      "score": {
+        "money": 3,
+        "satisfaction": 5,
+        "speed": 3,
+        "ease": 3
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "00-14",
+      "top": "T4",
+      "job": "Pick the 3 things that matter most this week every Monday from the leak list and the board, each with 1 owner and the number it should move",
+      "trigger": "every Monday at 9am",
+      "enablers": [
+        "work-board",
+        "leak-ranker"
+      ],
+      "inputs": [
+        {
+          "need": "ranked leaks and fixes",
+          "from": "leak-ranker",
+          "status": "enabler"
+        },
+        {
+          "need": "the board",
+          "from": "work-board",
+          "status": "enabler"
+        },
+        {
+          "need": "weekly goals",
+          "from": "decisions and goals shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Take the top 5 leaks and the oldest 5 cards waiting",
+        "Pick 3 by dollars at stake and by who is free",
+        "Write each as: action, owner, due date, number to move",
+        "Post to the team channel and pin to the top of the board",
+        "On Friday mark each done, slipped or dropped"
+      ],
+      "output": "a Monday note with 3 priorities, owners and target numbers",
+      "next": "feeds 26 reports (weekly note)",
+      "watch": {
+        "metric": "share of Monday priorities done by Friday",
+        "window": "7 day",
+        "source": "work board"
+      },
+      "drives": "team focus on the top leak",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 5,
+        "speed": 3,
+        "ease": 5
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "00-15",
+      "top": "T4",
+      "job": "Send each handed-off card to the team or agency with the numbers, the reason, the result expected and the date to check it",
+      "trigger": "each time a card moves to a person",
+      "enablers": [
+        "work-board"
+      ],
+      "inputs": [
+        {
+          "need": "the card and its leak or job",
+          "from": "work-board",
+          "status": "enabler"
+        },
+        {
+          "need": "the numbers behind it",
+          "from": "Shopify and ad platforms",
+          "status": "connected"
+        },
+        {
+          "need": "who owns what",
+          "from": "operations shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pull the 3 numbers that show the problem, with dates",
+        "Write why it matters in dollars",
+        "Write the result expected and the check date",
+        "Send to the owner in their channel and log it on the card",
+        "On the check date, show result against expected"
+      ],
+      "output": "a hand-off note per card and a check on the due date",
+      "next": "feeds 25 experiments when the card is a test",
+      "watch": {
+        "metric": "hand-offs sent back with questions",
+        "window": "28 day",
+        "source": "work board"
+      },
+      "drives": "fewer wrong fixes",
+      "business": "customer satisfaction",
+      "score": {
+        "money": 3,
+        "satisfaction": 5,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "00-16",
+      "top": "T4",
+      "job": "Send the founder 1 phone message each morning with every pending approval, so each can be answered yes, no or later in 1 reply",
+      "trigger": "every weekday at 8am, and when a card waits over 24 hours",
+      "enablers": [
+        "work-board"
+      ],
+      "inputs": [
+        {
+          "need": "cards waiting on approval",
+          "from": "work-board",
+          "status": "enabler"
+        },
+        {
+          "need": "founder's phone channel",
+          "from": "trust and access shelf",
+          "status": "brain"
+        },
+        {
+          "need": "approval rules",
+          "from": "decisions and goals shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pick cards waiting on the founder, oldest and costliest first",
+        "Write each in 1 line with the dollar value and the default",
+        "Send as a numbered list",
+        "Read the reply and move each card",
+        "Log the decision with date and reason"
+      ],
+      "output": "a morning approval message and the decisions logged",
+      "next": "feeds 00-13 (board moves)",
+      "watch": {
+        "metric": "median hours a card waits on the founder",
+        "window": "7 day",
+        "source": "work board"
+      },
+      "drives": "work not blocked by the founder",
+      "business": "customer satisfaction",
+      "score": {
+        "money": 3,
+        "satisfaction": 5,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "00-17",
+      "top": "T5",
+      "job": "Show the funnel mix every week: new vs returning revenue, prospecting vs retargeting spend on Meta, generic vs brand search on Google, with a flag when rebuying old customers passes 40 percent of spend",
+      "trigger": "every Monday",
+      "enablers": [
+        "funnel-mix"
+      ],
+      "inputs": [
+        {
+          "need": "campaigns and audiences with spend and purchases",
+          "from": "Meta Ads",
+          "status": "connected"
+        },
+        {
+          "need": "campaigns and search terms with spend",
+          "from": "Google Ads",
+          "status": "connected"
+        },
+        {
+          "need": "new vs returning orders and revenue",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "campaign naming rules for prospecting and retargeting",
+          "from": "ads shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Tag each campaign and ad set as prospecting, retargeting or existing customers",
+        "Split Google spend into brand and generic search",
+        "Compute share of spend per stage and new customer revenue share",
+        "Compare with the last 12 weeks and flag the trend",
+        "Write the 1 line call: add top of funnel spend, hold, or cut retargeting"
+      ],
+      "output": "a weekly mix tile: spend by stage, new customer share, trend and the call",
+      "next": "feeds 11 prospecting budget split and 12 brand search spend",
+      "watch": {
+        "metric": "share of spend on prospecting and generic search",
+        "window": "28 day",
+        "source": "Meta Ads and Google Ads"
+      },
+      "drives": "new customers per week and cost per new customer",
+      "business": "revenue",
+      "score": {
+        "money": 5,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "00-18",
+      "top": "T5",
+      "job": "Show share of ad spend by awareness level on Today, and when unaware plus problem aware ads fall under 20 percent, send a card to creative with the gap",
+      "trigger": "every Monday after the ad pull",
+      "enablers": [
+        "awareness-map",
+        "funnel-mix"
+      ],
+      "inputs": [
+        {
+          "need": "last 90 days of our ads with spend and purchases",
+          "from": "Meta Ads",
+          "status": "connected"
+        },
+        {
+          "need": "awareness rubric with 5 examples per level",
+          "from": "awareness-map",
+          "status": "enabler"
+        },
+        {
+          "need": "awareness tags on each ad",
+          "from": "awareness-map",
+          "status": "enabler"
+        }
+      ],
+      "steps": [
+        "Read spend share per awareness level from the heat map",
+        "Compare with the last 4 weeks and the floor set by the founder",
+        "If top of funnel share is under the floor, write the gap in dollars of spend",
+        "Send a card to creative asking for 4 top of funnel ads",
+        "Track new customer cost for the new ads against the old mix"
+      ],
+      "output": "a Today tile with spend by awareness level and a card to creative when the gap opens",
+      "next": "feeds 09 creative briefs for top of funnel ads",
+      "watch": {
+        "metric": "share of spend on unaware and problem aware ads",
+        "window": "28 day",
+        "source": "Meta Ads"
+      },
+      "drives": "new customers per week",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "00-19",
+      "top": "T5",
+      "job": "Check the agency's claim each month by comparing platform reported revenue with new customer revenue in the store for the same weeks",
+      "trigger": "monthly, and before each agency review call",
+      "enablers": [
+        "funnel-mix",
+        "margin-view"
+      ],
+      "inputs": [
+        {
+          "need": "platform reported purchases and value",
+          "from": "Meta Ads and Google Ads",
+          "status": "connected"
+        },
+        {
+          "need": "new customer orders and revenue by day",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "agency fee and scope",
+          "from": "operations shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pull platform revenue and store new customer revenue for the month",
+        "Compute cost per new customer from store data, not platform data",
+        "Compare with the prior 3 months",
+        "Write 3 lines: what the platform says, what the store says, the gap",
+        "Send the lines to the agency before the call"
+      ],
+      "output": "a 1 page agency check with 3 lines and the numbers under them",
+      "next": "feeds 26 reports and the agency review",
+      "watch": {
+        "metric": "cost per new customer from store data",
+        "window": "28 day",
+        "source": "Shopify and ad platforms"
+      },
+      "drives": "money paid for real new customers",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 2,
+        "ease": 5
+      },
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "00-20",
+      "top": "T2",
+      "job": "Send a 1 screen read the evening of a big day, such as a launch, a sale day or a big email, against plan, with tomorrow's move",
+      "trigger": "at 9pm on any day in the calendar marked big",
+      "enablers": [
+        "margin-view",
+        "number-watch"
+      ],
+      "inputs": [
+        {
+          "need": "the plan for the day: orders, revenue, spend",
+          "from": "calendar shelf",
+          "status": "brain"
+        },
+        {
+          "need": "orders and revenue by hour",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "ad spend by hour",
+          "from": "Meta Ads and Google Ads",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Pull the day's orders, revenue, spend and top products by hour",
+        "Compare with plan and with the last similar day",
+        "Name what beat plan and what missed",
+        "Write tomorrow's move: extend, add budget, change offer or stop",
+        "Send to the founder and the owner"
+      ],
+      "output": "an evening card: day against plan and tomorrow's move",
+      "next": "feeds 04-04 (sale review) and 26 reports",
+      "watch": {
+        "metric": "revenue against plan on big days",
+        "window": "1 day",
+        "source": "Shopify"
+      },
+      "drives": "revenue from big days",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 5,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    }
+  ],
+  "new_enablers": [
+    {
+      "id": "leak-ranker",
+      "name": "Money leak ranker",
+      "what": "Walks the chain from ad view to visit, add to cart, checkout, order, delivery and repeat order. For each step it compares the last 7 days with its own 4 week median and turns the drop into dollars at stake. Ranks the leaks and the fixes by dollars.",
+      "inputs": [
+        "store orders and customers",
+        "GA4 funnel by day and device",
+        "ad spend and clicks by day",
+        "margin per order",
+        "a fix list per step from the idea bank"
+      ],
+      "powers": [
+        "the one leak to work on today",
+        "a ranked fix list with dollar values",
+        "the 3 things a new user did not know on day one"
+      ],
+      "screens": [
+        "00-today",
+        "06-store-health",
+        "07-landing-pages-cro",
+        "26-reports"
+      ],
+      "note": null
+    },
+    {
+      "id": "number-watch",
+      "name": "Number watch",
+      "what": "Watches the numbers that break during a day (orders per hour, checkout errors, spend pace, site up, pixel purchases against store orders, stock cover) and the ones that slide over weeks. Pings within the hour on a break, after 2 weeks on a slide, and marks numbers that cannot be trusted today.",
+      "inputs": [
+        "store orders by hour",
+        "ad spend by hour",
+        "uptime check",
+        "pixel and GA4 purchases",
+        "stock on hand and sales rate",
+        "an outside events calendar"
+      ],
+      "powers": [
+        "alerts within the hour",
+        "slow slide flags",
+        "a list of numbers not to trust today and why",
+        "a cause note: us or outside"
+      ],
+      "screens": [
+        "00-today",
+        "06-store-health",
+        "22-measurement",
+        "11-paid-social"
+      ],
+      "note": null
+    },
+    {
+      "id": "cash-runway",
+      "name": "Cash runway",
+      "what": "Adds the bank balance to payouts due, then takes off bills, supplier payments, payroll and planned ad spend week by week for 13 weeks. Names the first week cash falls under the floor.",
+      "inputs": [
+        "bank balance",
+        "payout schedule from the store and marketplaces",
+        "bills and supplier terms",
+        "planned ad spend",
+        "cash floor from the founder"
+      ],
+      "powers": [
+        "weeks of cash cover",
+        "the first tight week and what moves it",
+        "how much ad spend cash allows"
+      ],
+      "screens": [
+        "00-today",
+        "21-finance-cash",
+        "19-supply-inventory"
+      ],
+      "note": null
+    }
+  ]
+}

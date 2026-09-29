@@ -1,0 +1,1158 @@
+{
+  "screen": "03-competitors",
+  "title": "Competitors and market",
+  "top_jobs": [
+    {
+      "id": "T1",
+      "job": "When I catch myself scrolling rival sites and Instagram at night, help me see only the rival moves that touch our sales this week, like a sale, a launch, a new policy or a stock out, so I can act on those and stop watching the rest",
+      "metric": "rival moves flagged per week with our sales touched in dollars",
+      "from_v2": [
+        4,
+        1,
+        8,
+        14,
+        18
+      ]
+    },
+    {
+      "id": "T2",
+      "job": "When our creative team runs dry, help me see how rivals spread their ads across awareness levels and which angles they keep paying for, turned into principles we can test in our own words, so we reach new buyers without copying anyone",
+      "metric": "tests launched from rival principles each month and their hit rate",
+      "from_v2": [
+        15,
+        31,
+        13,
+        30
+      ]
+    },
+    {
+      "id": "T3",
+      "job": "When shoppers compare us with a named rival and some leave for them, help me learn from rival reviews and lost buyers what they fail at and what they win on, so we pitch against their weakness with proof",
+      "metric": "conversion rate of chats and pages where a rival is named",
+      "from_v2": [
+        9,
+        11,
+        7,
+        17
+      ]
+    },
+    {
+      "id": "T4",
+      "job": "When I set prices or plan a sale, help me see where our price and discounts sit against rivals per unit and when they run their big sales, so we are not priced out, not training buyers to wait and not drowned out",
+      "metric": "our price per unit against the rival median, per product",
+      "from_v2": [
+        3,
+        2,
+        5,
+        25,
+        16
+      ]
+    },
+    {
+      "id": "T5",
+      "job": "When I set next quarter's budget, help me see how loud we are next to rivals in ads, brand search and Amazon, and who is growing faster, so I know if we are being outshouted or paying a toll on our own name",
+      "metric": "our share of active ads and of brand search impressions",
+      "from_v2": [
+        27,
+        6,
+        23,
+        34,
+        12
+      ]
+    }
+  ],
+  "jobs": [
+    {
+      "id": "03-01",
+      "top": "T1",
+      "job": "Set up the rival list: 5 to 8 rivals with Meta page ids, social handles, site URLs and Amazon listings, plus 2 substitutes buyers use instead, and have the founder confirm it",
+      "trigger": "once at onboarding, reviewed each quarter",
+      "enablers": [
+        "competitor-feed",
+        "rival-site-watch"
+      ],
+      "inputs": [
+        {
+          "need": "rivals the founder names",
+          "from": "founder interview",
+          "status": "founder"
+        },
+        {
+          "need": "brands running ads on our category terms",
+          "from": "Meta Ad Library search",
+          "status": "connected"
+        },
+        {
+          "need": "brands bidding on our brand name",
+          "from": "Google Ads auction insights",
+          "status": "connected"
+        },
+        {
+          "need": "rivals named in reviews and chats",
+          "from": "reviews app and helpdesk",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "List rivals from the founder, the Ad Library, auction insights and reviews",
+        "Find page ids, handles, site URLs and Amazon listings for each",
+        "Add 2 substitutes: what buyers do instead",
+        "Founder confirms 5 to 8 rivals and ranks the top 3",
+        "File on the competitors shelf and start the weekly pulls"
+      ],
+      "output": "a confirmed rival list with ids, handles, URLs and a top 3",
+      "next": "feeds every job on this screen and 09 creative",
+      "watch": {
+        "metric": "rivals with a working weekly pull",
+        "window": "7 day",
+        "source": "competitors shelf"
+      },
+      "drives": "a clean base for every rival read",
+      "business": "risk",
+      "score": {
+        "money": 2,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 5
+      },
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "03-02",
+      "top": "T1",
+      "job": "Send a Monday rival digest with only the moves that touch our products making over 10 percent of sales: price, offer, shipping, returns, new products",
+      "trigger": "every Monday",
+      "enablers": [
+        "rival-site-watch",
+        "competitor-feed"
+      ],
+      "inputs": [
+        {
+          "need": "rival site and listing diffs",
+          "from": "rival-site-watch",
+          "status": "enabler"
+        },
+        {
+          "need": "rival new ads this week",
+          "from": "Meta Ad Library",
+          "status": "connected"
+        },
+        {
+          "need": "our sales by product",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "which rival products match ours",
+          "from": "competitors shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pull last week's diffs and new ads",
+        "Match each move to our products",
+        "Drop moves on products under 10 percent of our sales",
+        "Rank the rest by our sales touched in dollars",
+        "Write 1 line each with a respond, watch or ignore call"
+      ],
+      "output": "a Monday digest of 3 to 7 moves with dollars touched and a call each",
+      "next": "feeds 04-20 (answer a rival sale) and 00 Today",
+      "watch": {
+        "metric": "hours from a rival move to our call",
+        "window": "7 day",
+        "source": "digest log"
+      },
+      "drives": "founder peace of mind and fewer missed moves",
+      "business": "customer satisfaction",
+      "score": {
+        "money": 3,
+        "satisfaction": 5,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "03-03",
+      "top": "T1",
+      "job": "Alert the same day a rival starts a sale, with the share of our sales it touches and 3 choices: match, hold or answer with value",
+      "trigger": "daily check at 10am",
+      "enablers": [
+        "rival-site-watch",
+        "competitor-feed"
+      ],
+      "inputs": [
+        {
+          "need": "rival site banners and prices",
+          "from": "rival-site-watch",
+          "status": "enabler"
+        },
+        {
+          "need": "new sale ads from rivals",
+          "from": "Meta Ad Library",
+          "status": "connected"
+        },
+        {
+          "need": "our sales by product, 28 days",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "discount rules",
+          "from": "offers shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Spot a new sale banner, price cut or sale ad",
+        "Match to our products and compute our sales touched",
+        "Cost match, hold and answer with value using margin per order",
+        "Send the 3 choices to the founder",
+        "Log the call and read our sales for 7 days after"
+      ],
+      "output": "a same day alert with 3 costed choices and a logged call",
+      "next": "feeds 04-20 (answer without matching)",
+      "watch": {
+        "metric": "our sales on touched products during rival sales",
+        "window": "7 day",
+        "source": "Shopify"
+      },
+      "drives": "revenue kept during rival sales",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 5,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "03-04",
+      "top": "T1",
+      "job": "Flag when a rival is weak, out of stock on a best seller, pulling ads or in bad press, and propose a push to win their buyers that week",
+      "trigger": "weekly, and on a stock out or a drop in rival ads",
+      "enablers": [
+        "rival-site-watch",
+        "competitor-feed"
+      ],
+      "inputs": [
+        {
+          "need": "rival stock state",
+          "from": "rival-site-watch",
+          "status": "enabler"
+        },
+        {
+          "need": "rival active ad count by week",
+          "from": "Meta Ad Library",
+          "status": "connected"
+        },
+        {
+          "need": "news and review spikes about rivals",
+          "from": "public news and reviews",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "Check rival stock on their top 10 products",
+        "Check rival active ads against their 8 week average",
+        "Check news and rival review spikes",
+        "If weak, propose a push: budget up, a comparison ad, a search campaign on their name",
+        "Founder approves and the push runs for 2 weeks"
+      ],
+      "output": "a weak rival flag with a 2 week push plan",
+      "next": "feeds 11 paid social and 12 Google ads",
+      "watch": {
+        "metric": "new customers during the push",
+        "window": "14 day",
+        "source": "Shopify"
+      },
+      "drives": "new customers won from rivals",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "03-05",
+      "top": "T2",
+      "job": "Tag every rival ad and every one of our ads by awareness level (unaware, problem aware, solution aware, product aware, most aware), weight rival ads by run length and variant count, and show our share next to 3 rivals",
+      "trigger": "once at onboarding, then every Monday after the ad pull",
+      "enablers": [
+        "awareness-map",
+        "competitor-feed"
+      ],
+      "inputs": [
+        {
+          "need": "last 90 days of our ads with spend and purchases",
+          "from": "Meta Ads",
+          "status": "connected"
+        },
+        {
+          "need": "active and past ads of 3 to 5 rivals",
+          "from": "Meta Ad Library by page id",
+          "status": "connected"
+        },
+        {
+          "need": "rival page ids",
+          "from": "competitors shelf",
+          "status": "brain"
+        },
+        {
+          "need": "awareness rubric with 5 examples per level",
+          "from": "awareness-map",
+          "status": "enabler"
+        }
+      ],
+      "steps": [
+        "Pull our ads and rivals' ads",
+        "Tag each with 1 awareness level and 1 funnel stage using the rubric",
+        "Check 20 tags by hand and fix the rubric",
+        "Weight ours by spend; weight rivals by days live times variant count, since their spend is hidden",
+        "Lay the 5 levels by 4 brands as a heat map",
+        "Write the gap: the level where we are thin and rivals are thick"
+      ],
+      "output": "a heat map of 5 awareness levels by 4 brands, with the gap line",
+      "next": "feeds 03-06 (fill the gap) and 09 creative briefs",
+      "watch": {
+        "metric": "our share of spend on unaware and problem aware ads",
+        "window": "28 day",
+        "source": "Meta Ads"
+      },
+      "drives": "new customers per week",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "03-06",
+      "top": "T2",
+      "job": "For the awareness level where rivals push and we are thin, pull 10 examples from rivals and the swipe file, and write 3 briefs for our own ads at that level",
+      "trigger": "after each heat map update that shows a gap",
+      "enablers": [
+        "awareness-map",
+        "swipe-file",
+        "principle-matcher"
+      ],
+      "inputs": [
+        {
+          "need": "the heat map gap",
+          "from": "awareness-map",
+          "status": "enabler"
+        },
+        {
+          "need": "saved ads tagged by level",
+          "from": "swipe-file",
+          "status": "enabler"
+        },
+        {
+          "need": "signed avatars and pains",
+          "from": "customers shelf",
+          "status": "brain"
+        },
+        {
+          "need": "allowed claims",
+          "from": "claims shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Filter rival ads and the swipe file by the thin level",
+        "Pick 10 that ran 30 days or more",
+        "Write the principle each follows in 1 line",
+        "Write 3 briefs in our voice for our avatar, never copying text, logos, products or faces",
+        "Send to creative as 1 test"
+      ],
+      "output": "3 briefs at the thin awareness level with the principles behind them",
+      "next": "feeds 09 creative and 11 paid social test",
+      "watch": {
+        "metric": "cost per new customer for ads at the new level",
+        "window": "28 day",
+        "source": "Meta Ads"
+      },
+      "drives": "new customers per week",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "03-07",
+      "top": "T2",
+      "job": "Turn rival ads and posts that ran 30 days or more into principles: what they do, why it likely works, and the test to run in our own words",
+      "trigger": "every 2 weeks",
+      "enablers": [
+        "competitor-feed",
+        "principle-matcher",
+        "creative-tags"
+      ],
+      "inputs": [
+        {
+          "need": "rival ads with days live",
+          "from": "Meta Ad Library",
+          "status": "connected"
+        },
+        {
+          "need": "rival organic posts with views",
+          "from": "Instagram and TikTok public profiles",
+          "status": "setup"
+        },
+        {
+          "need": "idea bank and knowledge cards to check principles against",
+          "from": "ideas/v1 and data/library-v3",
+          "status": "have"
+        },
+        {
+          "need": "tag list",
+          "from": "creative-tags",
+          "status": "enabler"
+        }
+      ],
+      "steps": [
+        "Pull rival ads live 30 days or more and posts with 3 times the account's median views",
+        "Tag hook, angle, format, proof and awareness level",
+        "Match each to a principle in the idea bank or cards",
+        "Write 1 line why it likely works and 1 test for us",
+        "Mark each as a signal, not a proven winner",
+        "File in the swipe file with the note"
+      ],
+      "output": "a list of principles, each with the rival examples, a why line and a test",
+      "next": "feeds 09 creative (scripts and briefs) and 10 copy",
+      "watch": {
+        "metric": "hit rate of tests built from rival principles",
+        "window": "60 day",
+        "source": "win and loss ledger"
+      },
+      "drives": "creative hit rate",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "03-08",
+      "top": "T2",
+      "job": "Pull each rival's top organic posts from the last 90 days on TikTok and Instagram, tag hook and format, and name the formats that get 3 times their usual views",
+      "trigger": "monthly",
+      "enablers": [
+        "competitor-feed",
+        "creative-tags"
+      ],
+      "inputs": [
+        {
+          "need": "rival handles",
+          "from": "competitors shelf",
+          "status": "brain"
+        },
+        {
+          "need": "public posts with views and dates",
+          "from": "Instagram and TikTok public profiles",
+          "status": "setup"
+        },
+        {
+          "need": "a social data tool for view history",
+          "from": "a social listening tool",
+          "status": "buy"
+        }
+      ],
+      "steps": [
+        "Pull 90 days of posts per rival",
+        "Compute each rival's median views",
+        "Keep posts at 3 times the median",
+        "Tag hook, format, length and first frame",
+        "List formats that win for 2 or more rivals"
+      ],
+      "output": "a table of breakout formats across rivals with examples",
+      "next": "feeds 16 organic content and 09 creative",
+      "watch": {
+        "metric": "views per post on our tests of the format",
+        "window": "30 day",
+        "source": "Instagram and TikTok"
+      },
+      "drives": "organic reach",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 3
+      },
+      "ready": 2,
+      "effort": "days"
+    },
+    {
+      "id": "03-09",
+      "top": "T2",
+      "job": "Map the main claim and look each rival owns, and find a claim buyers care about that no rival makes",
+      "trigger": "twice a year, and before a big brief",
+      "enablers": [
+        "competitor-feed",
+        "review-miner"
+      ],
+      "inputs": [
+        {
+          "need": "rival ads, home pages and product pages",
+          "from": "Meta Ad Library and rival sites",
+          "status": "connected"
+        },
+        {
+          "need": "what buyers praise in the category",
+          "from": "review-miner",
+          "status": "enabler"
+        },
+        {
+          "need": "our allowed claims with proof",
+          "from": "claims shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Write each rival's main claim and visual style in 1 line",
+        "List claims buyers praise in reviews",
+        "Mark claims no rival owns",
+        "Keep the ones we can prove",
+        "Brief the team on what to avoid and what to own"
+      ],
+      "output": "a claim map with 1 open claim we can prove and a do not look like list",
+      "next": "feeds 10 copy and 05 brand brain positioning",
+      "watch": {
+        "metric": "click through on ads using the open claim",
+        "window": "28 day",
+        "source": "Meta Ads"
+      },
+      "drives": "a claim we can own",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "03-10",
+      "top": "T2",
+      "job": "Find which creators carry each rival and whether it is paid, from partnership ad labels and tagged posts",
+      "trigger": "quarterly",
+      "enablers": [
+        "competitor-feed",
+        "creator-roster"
+      ],
+      "inputs": [
+        {
+          "need": "rival partnership ads",
+          "from": "Meta Ad Library",
+          "status": "connected"
+        },
+        {
+          "need": "posts tagging rivals",
+          "from": "Instagram and TikTok",
+          "status": "setup"
+        },
+        {
+          "need": "our creator list",
+          "from": "creators shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pull rival partnership ads and the creators named",
+        "Pull posts tagging rivals and note paid labels",
+        "Count creators per rival and how long each runs",
+        "Mark creators who fit our avatar and do not work with a rival now",
+        "Add them to our candidate list"
+      ],
+      "output": "a creator map per rival and a candidate list for us",
+      "next": "feeds 09 creative and 27 wild bets",
+      "watch": {
+        "metric": "creators contacted from the list",
+        "window": "90 day",
+        "source": "creators shelf"
+      },
+      "drives": "reach through creators",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "03-11",
+      "top": "T3",
+      "job": "Mine 1 to 3 star reviews of each rival's top 3 products on Amazon and their site, count the complaint themes, and pick 3 we beat with proof",
+      "trigger": "once at onboarding, then each quarter",
+      "enablers": [
+        "review-miner"
+      ],
+      "inputs": [
+        {
+          "need": "rival reviews",
+          "from": "Amazon and rival sites",
+          "status": "setup"
+        },
+        {
+          "need": "our reviews on the same themes",
+          "from": "reviews app",
+          "status": "connected"
+        },
+        {
+          "need": "our proof files",
+          "from": "claims shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pull up to 300 low reviews per rival product",
+        "Tag themes and count them",
+        "Check our reviews on the same themes",
+        "Pick 3 themes where we clearly win and can prove it",
+        "Write 3 ad angles and 3 page lines, naming no rival"
+      ],
+      "output": "a rival complaint table and 3 angles we win on with proof",
+      "next": "feeds 10 copy, 09 creative and 07 product pages",
+      "watch": {
+        "metric": "cost per purchase on the new angles",
+        "window": "28 day",
+        "source": "Meta Ads"
+      },
+      "drives": "buyers won on rival weakness",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "03-12",
+      "top": "T3",
+      "job": "Mine 4 and 5 star reviews of rivals for what buyers love that we never say, and check if we can say it truthfully",
+      "trigger": "each quarter",
+      "enablers": [
+        "review-miner",
+        "signal-bridge"
+      ],
+      "inputs": [
+        {
+          "need": "rival reviews",
+          "from": "Amazon and rival sites",
+          "status": "setup"
+        },
+        {
+          "need": "our language bank",
+          "from": "customers shelf",
+          "status": "brain"
+        },
+        {
+          "need": "allowed claims",
+          "from": "claims shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pull top reviews for rival products",
+        "Tag praise themes and the words used",
+        "Mark themes our pages and ads never mention",
+        "Check if our product does the same and we have proof",
+        "Hand true ones to copy with the buyer words"
+      ],
+      "output": "a list of praised benefits we under say, with proof checked",
+      "next": "feeds 10 copy and 07 landing pages",
+      "watch": {
+        "metric": "conversion on pages that add the benefit",
+        "window": "28 day",
+        "source": "GA4"
+      },
+      "drives": "conversion rate",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "03-13",
+      "top": "T3",
+      "job": "Write a battlecard per rival for support and pages: the true, checked difference, the proof link and the line to use when a shopper asks how are you different",
+      "trigger": "once, then when a rival changes product, price or policy",
+      "enablers": [
+        "review-miner",
+        "rival-site-watch"
+      ],
+      "inputs": [
+        {
+          "need": "rival products, prices and policies",
+          "from": "rival-site-watch",
+          "status": "enabler"
+        },
+        {
+          "need": "rival complaint themes",
+          "from": "review-miner",
+          "status": "enabler"
+        },
+        {
+          "need": "chats where a rival was named",
+          "from": "helpdesk",
+          "status": "connected"
+        },
+        {
+          "need": "allowed claims",
+          "from": "claims shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pull chats that name each rival and the questions asked",
+        "Write 3 true differences per rival with proof",
+        "Write the reply in our voice",
+        "Founder checks each line for truth",
+        "Load into support macros and FAQ"
+      ],
+      "output": "a battlecard per rival loaded into support",
+      "next": "feeds 15 CX macros and 07 comparison blocks",
+      "watch": {
+        "metric": "order rate from chats that name a rival",
+        "window": "28 day",
+        "source": "helpdesk and Shopify"
+      },
+      "drives": "chats won",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "03-14",
+      "top": "T3",
+      "job": "Ask cart abandoners and exit visitors which brand they chose instead and why, and count wins and losses per rival",
+      "trigger": "run for 4 weeks, then each quarter",
+      "enablers": [
+        "customer-jobs",
+        "question-matrix"
+      ],
+      "inputs": [
+        {
+          "need": "an exit question on product and cart pages",
+          "from": "Clarity or Hotjar survey",
+          "status": "setup"
+        },
+        {
+          "need": "an abandoned cart email with 1 question",
+          "from": "email platform",
+          "status": "setup"
+        },
+        {
+          "need": "rival list",
+          "from": "competitors shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Add the question: did you buy something else instead, which and why",
+        "Collect answers for 4 weeks",
+        "Count rivals named and code the reasons",
+        "Name the top reason we lose to each rival",
+        "Send the top fix to the owner"
+      ],
+      "output": "a win and loss count per rival with the top reason",
+      "next": "feeds 04 offers, 07 pages and 03-13 (battlecards)",
+      "watch": {
+        "metric": "answers collected",
+        "window": "28 day",
+        "source": "survey tool"
+      },
+      "drives": "fewer buyers lost to rivals",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "weeks"
+    },
+    {
+      "id": "03-15",
+      "top": "T4",
+      "job": "Show our price per unit against the rival median for each product, pack size matched, and flag any product over 15 percent above or below",
+      "trigger": "every Monday",
+      "enablers": [
+        "price-bands",
+        "rival-site-watch"
+      ],
+      "inputs": [
+        {
+          "need": "our prices and pack sizes",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "rival prices and pack sizes",
+          "from": "rival-site-watch",
+          "status": "enabler"
+        },
+        {
+          "need": "the unit rule, like per pair",
+          "from": "market shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Match each of our products to 3 to 5 rival products",
+        "Convert all to price per unit",
+        "Compute our index against the rival median",
+        "Flag products over 15 percent off",
+        "Check the flag against our proof and rating before any price move"
+      ],
+      "output": "a price index table per product with flags",
+      "next": "feeds 04-15 (price moves) and 04-16 (price test)",
+      "watch": {
+        "metric": "price index against rival median",
+        "window": "weekly",
+        "source": "rival-site-watch"
+      },
+      "drives": "gross profit per order",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "03-16",
+      "top": "T4",
+      "job": "Compare our discount depth and how often we discount with each rival over 12 months, and say if we discount more while claiming to be premium",
+      "trigger": "quarterly",
+      "enablers": [
+        "rival-site-watch",
+        "competitor-feed"
+      ],
+      "inputs": [
+        {
+          "need": "our discount history",
+          "from": "offers shelf and Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "rival sale ads with start dates",
+          "from": "Meta Ad Library",
+          "status": "connected"
+        },
+        {
+          "need": "rival site sale banners over 12 months",
+          "from": "rival-site-watch",
+          "status": "enabler"
+        },
+        {
+          "need": "our price position",
+          "from": "core page",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Count our sale days and average discount for 12 months",
+        "Do the same for each rival from ads with sale words and site banners",
+        "Lay them side by side",
+        "Write the call: more, less or in line",
+        "Propose a cap if we discount more"
+      ],
+      "output": "a 12 month discount table vs rivals and a cap proposal",
+      "next": "feeds 04-02 (discount rules)",
+      "watch": {
+        "metric": "share of revenue on a discount",
+        "window": "90 day",
+        "source": "Shopify"
+      },
+      "drives": "gross margin",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "03-17",
+      "top": "T4",
+      "job": "Build a rival sale calendar from 12 months of ad start dates and site banners, and mark the weeks to avoid or to answer",
+      "trigger": "once a year, updated monthly",
+      "enablers": [
+        "competitor-feed",
+        "rival-site-watch"
+      ],
+      "inputs": [
+        {
+          "need": "rival ad start dates with sale words",
+          "from": "Meta Ad Library",
+          "status": "connected"
+        },
+        {
+          "need": "rival site sale history",
+          "from": "rival-site-watch",
+          "status": "enabler"
+        },
+        {
+          "need": "our calendar",
+          "from": "calendar shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pull 12 months of rival ads and find sale windows",
+        "Add site banner dates where we have them",
+        "Plot all rivals on 1 calendar",
+        "Mark weeks where 2 or more rivals run sales",
+        "Plan our own dates around them and put them on the calendar"
+      ],
+      "output": "a rival sale calendar with our planned dates",
+      "next": "feeds 04-19 (big sale plan) and 14 email calendar",
+      "watch": {
+        "metric": "our revenue in weeks with rival sales",
+        "window": "quarterly",
+        "source": "Shopify"
+      },
+      "drives": "sale revenue",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "03-18",
+      "top": "T5",
+      "job": "Count active and new ads per rival each week against ours, and track public growth signals: ad count, follower growth, review count growth",
+      "trigger": "every Monday",
+      "enablers": [
+        "competitor-feed",
+        "funnel-mix"
+      ],
+      "inputs": [
+        {
+          "need": "active ads per rival",
+          "from": "Meta Ad Library",
+          "status": "connected"
+        },
+        {
+          "need": "our active ads",
+          "from": "Meta Ads",
+          "status": "connected"
+        },
+        {
+          "need": "follower counts over time",
+          "from": "Instagram and TikTok public profiles",
+          "status": "setup"
+        },
+        {
+          "need": "review counts over time",
+          "from": "rival sites and Amazon",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "Count active and new ads per brand",
+        "Compute our share of all active ads",
+        "Pull follower and review count growth for 90 days",
+        "Rank rivals by growth",
+        "Write the call: outshouted, even, or louder"
+      ],
+      "output": "a weekly share of voice table and a growth rank of rivals",
+      "next": "feeds 11 paid social budget and 26 reports",
+      "watch": {
+        "metric": "our share of active ads",
+        "window": "28 day",
+        "source": "Meta Ad Library"
+      },
+      "drives": "reach against rivals",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "03-19",
+      "top": "T5",
+      "job": "Find which rivals bid on our brand name and what share of brand searches they take, and decide how much to spend to defend it",
+      "trigger": "monthly",
+      "enablers": [
+        "funnel-mix"
+      ],
+      "inputs": [
+        {
+          "need": "auction insights on brand campaigns",
+          "from": "Google Ads",
+          "status": "connected"
+        },
+        {
+          "need": "brand search clicks",
+          "from": "Search Console",
+          "status": "connected"
+        },
+        {
+          "need": "brand campaign spend and orders",
+          "from": "Google Ads and Shopify",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Pull auction insights for brand terms",
+        "List rivals and their impression share",
+        "Compare brand clicks from ads with organic brand clicks",
+        "Estimate orders lost if we stop bidding",
+        "Set the defend spend and send it to Google ads"
+      ],
+      "output": "a brand toll table with the defend spend call",
+      "next": "feeds 12 Google ads brand campaigns",
+      "watch": {
+        "metric": "rival impression share on our brand terms",
+        "window": "28 day",
+        "source": "Google Ads"
+      },
+      "drives": "cost of brand search",
+      "business": "contribution margin",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 5
+      },
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "03-20",
+      "top": "T5",
+      "job": "Track our Amazon rank against rivals on 10 core category search terms each month",
+      "trigger": "monthly",
+      "enablers": [
+        "market-pulse",
+        "marketplace-plan"
+      ],
+      "inputs": [
+        {
+          "need": "10 core search terms",
+          "from": "seo shelf",
+          "status": "brain"
+        },
+        {
+          "need": "organic and sponsored rank per term",
+          "from": "a marketplace rank tracker",
+          "status": "buy"
+        },
+        {
+          "need": "our listings",
+          "from": "Amazon Seller Central",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "Pick 10 terms buyers use on Amazon",
+        "Pull our rank and each rival's rank per term",
+        "Compare with last month",
+        "Mark terms where we fell 5 places or more",
+        "Send listing and ad fixes to marketplaces"
+      ],
+      "output": "a rank table by term and brand with fall flags",
+      "next": "feeds 20 marketplaces",
+      "watch": {
+        "metric": "average rank on core terms",
+        "window": "30 day",
+        "source": "rank tracker"
+      },
+      "drives": "marketplace sales",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 2,
+        "speed": 2,
+        "ease": 3
+      },
+      "ready": 1,
+      "effort": "days"
+    }
+  ],
+  "new_enablers": [
+    {
+      "id": "rival-site-watch",
+      "name": "Rival site watch",
+      "what": "Crawls each rival's site and marketplace listings each week: prices, pack sizes, offers, shipping and return terms, guarantees, new products and stock outs. Keeps a dated diff so a change shows the week it happens.",
+      "inputs": [
+        "rival site URLs and product pages",
+        "rival Amazon listings",
+        "a weekly crawl",
+        "our product list to match against"
+      ],
+      "powers": [
+        "same week alerts on rival price, offer and policy changes",
+        "rival discount depth and frequency over a year",
+        "rival stock outs and launches",
+        "fair per unit price comparisons"
+      ],
+      "screens": [
+        "03-competitors",
+        "04-offers-pricing",
+        "01-market-research"
+      ],
+      "note": null
+    }
+  ]
+}

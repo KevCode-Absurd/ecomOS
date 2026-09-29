@@ -1,0 +1,1263 @@
+{
+ "screen": "12-google-ads",
+ "title": "Google Ads",
+ "top_jobs": [
+  {
+   "id": "T1",
+   "job": "When Google reports a 6 times return and I suspect most of it is people typing our name, help me see what searches without our name really return and how many new customers they bring, so I judge Google on the buyers it finds, not the ones who were coming anyway",
+   "metric": "non-brand return on ad spend and new customers from Google non-brand, per month",
+   "from_v2": [
+    1,
+    4,
+    6,
+    16,
+    17,
+    27
+   ]
+  },
+  {
+   "id": "T2",
+   "job": "When the Google bill arrives and I cannot see what I paid for, help me find the searches, products and Performance Max corners that take money and never sell, so I stop paying for traffic that was never going to buy",
+   "metric": "share of Google spend on search terms and products with no sale in 30 days",
+   "from_v2": [
+    3,
+    5,
+    7,
+    15,
+    23,
+    24
+   ]
+  },
+  {
+   "id": "T3",
+   "job": "When almost all Google spend sits on our name and ready-to-buy searches, help me split spend by top, middle and bottom of funnel and move what sells on Meta and in search between the two, so I reach buyers before they know our name",
+   "metric": "share of Google spend on top and middle of funnel searches, and new customers from them",
+   "from_v2": [
+    1,
+    20,
+    26,
+    31,
+    32
+   ]
+  },
+  {
+   "id": "T4",
+   "job": "When best sellers drop out of Shopping for a missing detail or a price mismatch, help me catch it the same day and fix the feed, so I stop losing sales I never see",
+   "metric": "share of top 50 products approved and serving in Shopping",
+   "from_v2": [
+    2,
+    12,
+    13,
+    20,
+    22,
+    35
+   ]
+  },
+  {
+   "id": "T5",
+   "job": "When I run Google myself or check the freelancer, help me look at 5 numbers in 20 minutes each Monday and add money only when the account has earned it, so I keep it safe without becoming an expert",
+   "metric": "weeks the Monday check was done, and budget changes made with a written reason",
+   "from_v2": [
+    8,
+    9,
+    10,
+    14,
+    19,
+    21,
+    25
+   ]
+  }
+ ],
+ "jobs": [
+  {
+   "id": "12-01",
+   "top": "T1",
+   "job": "Split last 90 days of Search, Shopping and Performance Max into brand and non-brand, and show spend, sales, return and new customer share for each",
+   "trigger": "once at onboarding, then on the 1st of each month",
+   "enablers": [
+    "search-term-sorter",
+    "funnel-mix"
+   ],
+   "inputs": [
+    {
+     "need": "search terms and Performance Max search insights, last 90 days",
+     "from": "Google Ads",
+     "status": "connected"
+    },
+    {
+     "need": "brand name, product names and common misspellings",
+     "from": "products shelf",
+     "status": "brain"
+    },
+    {
+     "need": "orders marked new or returning buyer",
+     "from": "Shopify",
+     "status": "connected"
+    },
+    {
+     "need": "brand and non-brand sorting of every term",
+     "from": "search-term-sorter",
+     "status": "enabler"
+    }
+   ],
+   "steps": [
+    "Pull 90 days of search terms per campaign type",
+    "Tag each term brand or non-brand, and list the 20 biggest brand terms found inside non-brand campaigns",
+    "Sum spend, sales, return and new customer share for each side",
+    "Put the dollars of brand spend hiding in cold campaigns on one line",
+    "Founder reads the split and signs the non-brand return floor"
+   ],
+   "output": "a 2 row table (brand, non-brand) by campaign type, with spend, sales, return and new customer share, plus the brand leak in dollars",
+   "next": "feeds 12-04 (cost per new customer ceiling) and 12-18 (Monday check)",
+   "watch": {
+    "metric": "non-brand return on ad spend, brand excluded",
+    "window": "30 day",
+    "source": "Google Ads"
+   },
+   "drives": "new customers from Google non-brand per month",
+   "business": "gross profit",
+   "score": {
+    "money": 5,
+    "satisfaction": 4,
+    "speed": 3,
+    "ease": 4
+   },
+   "ready": 3,
+   "effort": "hours"
+  },
+  {
+   "id": "12-02",
+   "top": "T1",
+   "job": "Match the purchases Google claims each week to store orders, and mark each as new or returning, kept or returned",
+   "trigger": "every Monday",
+   "enablers": [
+    "order-match"
+   ],
+   "inputs": [
+    {
+     "need": "Google Ads conversions by campaign with click ids",
+     "from": "Google Ads",
+     "status": "connected"
+    },
+    {
+     "need": "orders with UTM, click id, new vs returning and refunds",
+     "from": "Shopify",
+     "status": "connected"
+    },
+    {
+     "need": "GA4 purchases by source",
+     "from": "GA4",
+     "status": "connected"
+    },
+    {
+     "need": "matching rules by click id, UTM and date",
+     "from": "order-match",
+     "status": "enabler"
+    }
+   ],
+   "steps": [
+    "Pull last week's Google conversions and store orders",
+    "Match by click id first, then UTM and date",
+    "Count matched, Google only, store only, returned and returning buyer orders per campaign",
+    "Flag any campaign where store-matched sales are 25 percent off Google's count",
+    "Check 10 matches by hand and log any rule that is wrong"
+   ],
+   "output": "a weekly table per campaign: Google says, store sees, new buyers, returned, gap in percent",
+   "next": "feeds 12-03 (brand test), 12-19 (scaling gates) and 22-measurement",
+   "watch": {
+    "metric": "gap between Google purchases and store-matched purchases",
+    "window": "7 day",
+    "source": "Google Ads"
+   },
+   "drives": "trust in Google's return and the right bids",
+   "business": "gross profit",
+   "score": {
+    "money": 4,
+    "satisfaction": 4,
+    "speed": 4,
+    "ease": 3
+   },
+   "ready": 3,
+   "effort": "days"
+  },
+  {
+   "id": "12-03",
+   "top": "T1",
+   "job": "Test whether brand search buys sales we would get anyway: pause brand search in half of matched regions for 4 weeks and compare orders",
+   "trigger": "once, when brand spend is over 20 percent of Google spend and few rivals bid on our name",
+   "enablers": [
+    "funnel-mix",
+    "order-match"
+   ],
+   "inputs": [
+    {
+     "need": "auction insights on brand terms: who bids and how often",
+     "from": "Google Ads",
+     "status": "connected"
+    },
+    {
+     "need": "orders by state or region, last 12 weeks",
+     "from": "Shopify",
+     "status": "connected"
+    },
+    {
+     "need": "organic clicks on brand queries by region",
+     "from": "Search Console",
+     "status": "connected"
+    },
+    {
+     "need": "founder sign-off on a 4 week test",
+     "from": "decisions and goals shelf",
+     "status": "founder"
+    }
+   ],
+   "steps": [
+    "Read auction insights: if a rival shows on our name over 20 percent of the time, stop and defend instead",
+    "Pick 2 groups of regions with matching order trends over 12 weeks",
+    "Pause brand search in one group only",
+    "After 4 weeks, compare total orders and brand organic clicks in both groups",
+    "Write the verdict: keep, cut or bid lower, with dollars saved or lost per month"
+   ],
+   "output": "a 4 week holdout read with orders lost or kept, and a keep or cut decision",
+   "next": "feeds 12-19 (scaling gates) and 13-12 (affiliates on brand terms)",
+   "watch": {
+    "metric": "orders in paused regions vs control regions",
+    "window": "28 day",
+    "source": "Shopify"
+   },
+   "drives": "spend saved on clicks we would get free",
+   "business": "gross profit",
+   "score": {
+    "money": 4,
+    "satisfaction": 3,
+    "speed": 2,
+    "ease": 3
+   },
+   "ready": 4,
+   "effort": "weeks"
+  },
+  {
+   "id": "12-04",
+   "top": "T1",
+   "job": "Set a cost per new customer ceiling for Google non-brand from first order margin, and flag mid-month when it is crossed",
+   "trigger": "once, then checked on the 15th of each month",
+   "enablers": [
+    "margin-view",
+    "order-match"
+   ],
+   "inputs": [
+    {
+     "need": "gross profit per first order by product",
+     "from": "finance shelf",
+     "status": "brain"
+    },
+    {
+     "need": "how much of a first order's profit the founder will spend to win it",
+     "from": "decisions and goals shelf",
+     "status": "founder"
+    },
+    {
+     "need": "non-brand spend and store-matched new customers month to date",
+     "from": "order-match",
+     "status": "enabler"
+    },
+    {
+     "need": "monthly Google budget plan",
+     "from": "finance shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "Compute the ceiling: first order profit times the share the founder will spend",
+    "Each 15th, divide month to date non-brand spend by store-matched new customers",
+    "Project where spend and cost per new customer will land at month end",
+    "If over the ceiling, list the 3 campaigns driving it and the budget change for each",
+    "Founder approves any cut over $500"
+   ],
+   "output": "a ceiling number and a mid-month flag with 3 named budget changes",
+   "next": "feeds 12-18 (Monday check) and 21-finance-cash",
+   "watch": {
+    "metric": "non-brand cost per new customer vs the ceiling",
+    "window": "month to date",
+    "source": "Google Ads"
+   },
+   "drives": "customers bought at a profit",
+   "business": "contribution margin",
+   "score": {
+    "money": 5,
+    "satisfaction": 4,
+    "speed": 3,
+    "ease": 4
+   },
+   "ready": 3,
+   "effort": "hours"
+  },
+  {
+   "id": "12-05",
+   "top": "T2",
+   "job": "Pull every search term with spend and no sale in 90 days, sort by cost, and add the clear misses as negatives with a reason",
+   "trigger": "once, then every 2 weeks",
+   "enablers": [
+    "search-term-sorter"
+   ],
+   "inputs": [
+    {
+     "need": "search terms with cost, clicks and purchases, 90 days",
+     "from": "Google Ads",
+     "status": "connected"
+    },
+    {
+     "need": "current negative keyword lists",
+     "from": "Google Ads",
+     "status": "connected"
+    },
+    {
+     "need": "products we sell and do not sell",
+     "from": "products shelf",
+     "status": "brain"
+    },
+    {
+     "need": "junk and wrong-intent sorting",
+     "from": "search-term-sorter",
+     "status": "enabler"
+    }
+   ],
+   "steps": [
+    "Pull terms with 10 or more clicks and 0 purchases",
+    "Sort by cost and tag each: wrong product, job seeker, free, how to, rival, maybe",
+    "A person checks the top 50 by hand so no term that sells elsewhere is blocked",
+    "Add clear misses as phrase or exact negatives with the reason and date",
+    "Leave the maybes for 30 more days and recheck"
+   ],
+   "output": "a negative list with reasons, and dollars of 90 day waste it would have stopped",
+   "next": "feeds 12-18 (Monday check) and 12-09 (funnel stage split)",
+   "watch": {
+    "metric": "spend on terms with no sale",
+    "window": "30 day",
+    "source": "Google Ads"
+   },
+   "drives": "non-brand return on ad spend",
+   "business": "gross profit",
+   "score": {
+    "money": 4,
+    "satisfaction": 3,
+    "speed": 5,
+    "ease": 5
+   },
+   "ready": 3,
+   "effort": "hours"
+  },
+  {
+   "id": "12-06",
+   "top": "T2",
+   "job": "Map where Performance Max money goes (brand, past buyers, video, display, auto-made assets) and turn off the settings nobody chose",
+   "trigger": "once at onboarding, then each quarter",
+   "enablers": [
+    "funnel-mix",
+    "search-term-sorter"
+   ],
+   "inputs": [
+    {
+     "need": "Performance Max channel report and search insights",
+     "from": "Google Ads",
+     "status": "connected"
+    },
+    {
+     "need": "account settings: search partners, display expansion, auto-apply, location option",
+     "from": "Google Ads",
+     "status": "connected"
+    },
+    {
+     "need": "customer list for new customer goal and exclusions",
+     "from": "Shopify",
+     "status": "connected"
+    },
+    {
+     "need": "Google Ads ideas on default settings and Performance Max",
+     "from": "ideas/v1/12-GAD-google-ads.json",
+     "status": "have"
+    }
+   ],
+   "steps": [
+    "Pull Performance Max spend by channel and the share of search insights that are brand terms",
+    "List every default that leaks: search partners, display expansion, auto-apply, presence or interest, auto-made text and video",
+    "Price each leak in 30 day spend and sales",
+    "Add brand exclusions and the new customer goal where the numbers say so",
+    "Founder approves the change list before anyone clicks"
+   ],
+   "output": "a one page map: Performance Max spend by channel and brand share, plus a priced list of settings to switch",
+   "next": "feeds 12-07 (margin split) and 12-19 (scaling gates)",
+   "watch": {
+    "metric": "share of Performance Max spend on brand terms and past buyers",
+    "window": "30 day",
+    "source": "Google Ads"
+   },
+   "drives": "new customers per dollar in Performance Max",
+   "business": "gross profit",
+   "score": {
+    "money": 4,
+    "satisfaction": 4,
+    "speed": 3,
+    "ease": 4
+   },
+   "ready": 5,
+   "effort": "hours"
+  },
+  {
+   "id": "12-07",
+   "top": "T2",
+   "job": "Label every Shopping product by margin tier and by sell or no-sell, then split campaigns so money moves from 20 no-sale products to the ones that sell",
+   "trigger": "once, then monthly",
+   "enablers": [
+    "margin-view",
+    "feed-doctor"
+   ],
+   "inputs": [
+    {
+     "need": "product-level Shopping and Performance Max report, 30 and 90 days",
+     "from": "Google Ads",
+     "status": "connected"
+    },
+    {
+     "need": "unit cost and margin per SKU",
+     "from": "finance shelf",
+     "status": "brain"
+    },
+    {
+     "need": "stock per SKU",
+     "from": "Shopify",
+     "status": "connected"
+    },
+    {
+     "need": "custom labels written into the feed",
+     "from": "feed-doctor",
+     "status": "enabler"
+    }
+   ],
+   "steps": [
+    "Mark each product high, mid or low margin",
+    "Mark products with 50 or more clicks and no sale in 30 days as no-sale",
+    "Write both labels into the feed as custom labels",
+    "Split into campaigns by label, with a return target per tier from its margin",
+    "Read in 4 weeks: spend share and profit per tier"
+   ],
+   "output": "a labelled feed and a campaign split by margin tier, with no-sale products capped",
+   "next": "feeds 12-08 (stock pull) and 12-18 (Monday check)",
+   "watch": {
+    "metric": "share of Shopping spend on high margin products",
+    "window": "28 day",
+    "source": "Google Ads"
+   },
+   "drives": "gross profit from Shopping",
+   "business": "gross profit",
+   "score": {
+    "money": 4,
+    "satisfaction": 3,
+    "speed": 3,
+    "ease": 3
+   },
+   "ready": 3,
+   "effort": "days"
+  },
+  {
+   "id": "12-08",
+   "top": "T2",
+   "job": "Pull Google spend off any product with under 14 days of stock and put it back the day stock lands",
+   "trigger": "daily after the stock sync",
+   "enablers": [
+    "feed-doctor"
+   ],
+   "inputs": [
+    {
+     "need": "stock and 14 day sales rate per SKU",
+     "from": "Shopify",
+     "status": "connected"
+    },
+    {
+     "need": "restock dates",
+     "from": "operations shelf",
+     "status": "brain"
+    },
+    {
+     "need": "product-level Shopping spend",
+     "from": "Google Ads",
+     "status": "connected"
+    },
+    {
+     "need": "stock custom label kept current",
+     "from": "feed-doctor",
+     "status": "enabler"
+    }
+   ],
+   "steps": [
+    "Compute days of stock per SKU from the 14 day sales rate",
+    "Label products under 14 days as low stock in the feed",
+    "Exclude low stock products from Shopping and Performance Max listing groups",
+    "Remove the label when stock lands and log the dates",
+    "Send a weekly list of spend saved and restocks waiting"
+   ],
+   "output": "a daily low stock label and a weekly note of spend held back",
+   "next": "feeds 19-supply-inventory",
+   "watch": {
+    "metric": "spend on products under 14 days of stock",
+    "window": "7 day",
+    "source": "Google Ads"
+   },
+   "drives": "no ad dollars on products we cannot ship",
+   "business": "cash",
+   "score": {
+    "money": 3,
+    "satisfaction": 4,
+    "speed": 5,
+    "ease": 4
+   },
+   "ready": 3,
+   "effort": "hours"
+  },
+  {
+   "id": "12-09",
+   "top": "T3",
+   "job": "Tag every Google search term by funnel stage (problem, category, comparison, product, brand) and show spend and new customer share per stage next to Meta's split",
+   "trigger": "once at onboarding, then on the 1st of each month",
+   "enablers": [
+    "awareness-map",
+    "funnel-mix",
+    "search-term-sorter"
+   ],
+   "inputs": [
+    {
+     "need": "search terms with spend and purchases, 90 days",
+     "from": "Google Ads",
+     "status": "connected"
+    },
+    {
+     "need": "orders marked new or returning",
+     "from": "Shopify",
+     "status": "connected"
+    },
+    {
+     "need": "Meta spend by awareness level",
+     "from": "awareness-map",
+     "status": "enabler"
+    },
+    {
+     "need": "funnel rubric: 5 example terms per stage",
+     "from": "awareness-map",
+     "status": "enabler"
+    }
+   ],
+   "steps": [
+    "Tag each term: problem words are top, category and 'best' or 'vs' are middle, product and brand are bottom",
+    "A person checks the 50 highest spend tags and fixes the rubric",
+    "Sum spend, sales and new customer share for top, middle and bottom",
+    "Lay Google's split next to Meta's awareness split",
+    "Write the gap line: the stage where we spend least and new customers are cheapest"
+   ],
+   "output": "a funnel table: 3 stages by spend, sales, return and new customer share, beside Meta's, plus the gap line",
+   "next": "feeds 12-10 (top of funnel test), 12-11 (terms into Meta hooks) and 11-paid-social",
+   "watch": {
+    "metric": "share of Google spend on top and middle of funnel terms",
+    "window": "28 day",
+    "source": "Google Ads"
+   },
+   "drives": "new customers from Google per month",
+   "business": "revenue",
+   "score": {
+    "money": 4,
+    "satisfaction": 3,
+    "speed": 3,
+    "ease": 3
+   },
+   "ready": 3,
+   "effort": "days"
+  },
+  {
+   "id": "12-10",
+   "top": "T3",
+   "job": "Run one top of funnel test on YouTube or Demand Gen with the 3 best problem aware videos from Meta, past buyers excluded, read at 4 weeks on brand search lift and new customers",
+   "trigger": "once Search and Shopping pass the scaling gates in 12-19",
+   "enablers": [
+    "funnel-mix",
+    "awareness-map",
+    "creative-archive"
+   ],
+   "inputs": [
+    {
+     "need": "Meta videos tagged unaware or problem aware with hold rate and cost per new customer",
+     "from": "creative-archive",
+     "status": "enabler"
+    },
+    {
+     "need": "brand search impressions baseline, 8 weeks",
+     "from": "Search Console",
+     "status": "connected"
+    },
+    {
+     "need": "budget cap for tests",
+     "from": "finance shelf",
+     "status": "brain"
+    },
+    {
+     "need": "customer list to exclude",
+     "from": "Shopify",
+     "status": "connected"
+    }
+   ],
+   "steps": [
+    "Stop if the gates in 12-19 are not met and write why",
+    "Pick 3 Meta videos tagged unaware or problem aware with the best hold rate",
+    "Recut the first 5 seconds so the product shows by second 3 and the problem is said out loud",
+    "Set a weekly budget of at least 10 times the target cost per new customer, past buyers excluded",
+    "Founder approves the budget and the stop line",
+    "At 4 weeks, read brand search lift and store new customers, not Google's last click"
+   ],
+   "output": "a live top of funnel test with a budget, a stop line and a read date",
+   "next": "feeds 11-paid-social (which videos travel) and 12-19 (next budget step)",
+   "watch": {
+    "metric": "brand search impressions vs the 8 week baseline",
+    "window": "28 day",
+    "source": "Search Console"
+   },
+   "drives": "new customers who did not know us",
+   "business": "revenue",
+   "score": {
+    "money": 4,
+    "satisfaction": 2,
+    "speed": 2,
+    "ease": 2
+   },
+   "ready": 3,
+   "effort": "days"
+  },
+  {
+   "id": "12-11",
+   "top": "T3",
+   "job": "Turn the top 20 non-brand search terms that sell into 20 Meta hooks in the searcher's own words",
+   "trigger": "monthly, before the Meta creative round",
+   "enablers": [
+    "signal-bridge",
+    "search-term-sorter",
+    "copy-decomposer"
+   ],
+   "inputs": [
+    {
+     "need": "non-brand search terms with purchases, 90 days",
+     "from": "Google Ads",
+     "status": "connected"
+    },
+    {
+     "need": "Search Console queries with clicks to product pages",
+     "from": "Search Console",
+     "status": "connected"
+    },
+    {
+     "need": "avatars and pain points",
+     "from": "customers shelf",
+     "status": "brain"
+    },
+    {
+     "need": "allowed claims",
+     "from": "claims shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "Pull the top 20 non-brand terms by purchases and the top 20 queries by clicks",
+    "Group them into pain, use, feature and comparison",
+    "Map each group to one avatar and pain pair",
+    "Write 2 hooks per group in the searcher's words, checked against allowed claims",
+    "Founder strikes any hook that does not sound like us",
+    "Hand the sheet to 11-paid-social as one hook test batch"
+   ],
+   "output": "a hook sheet: 10 groups, 20 hooks, each with its source term and Google conversion rate",
+   "next": "feeds 11-paid-social (hook test) and 17-10 (article briefs)",
+   "watch": {
+    "metric": "thumb stop rate and cost per purchase of search-born hooks vs control",
+    "window": "14 day",
+    "source": "Meta Ads"
+   },
+   "drives": "new customers from Meta",
+   "business": "revenue",
+   "score": {
+    "money": 4,
+    "satisfaction": 3,
+    "speed": 3,
+    "ease": 4
+   },
+   "ready": 5,
+   "effort": "hours"
+  },
+  {
+   "id": "12-12",
+   "top": "T3",
+   "job": "Bring the 5 angles that won on Meta in the last 60 days into Google search ads and Performance Max assets, as a 50/50 test",
+   "trigger": "monthly, after the Meta round is read",
+   "enablers": [
+    "signal-bridge",
+    "creative-tags"
+   ],
+   "inputs": [
+    {
+     "need": "Meta winners with angle and hook tags",
+     "from": "creative-tags",
+     "status": "enabler"
+    },
+    {
+     "need": "responsive search ad asset ratings",
+     "from": "Google Ads",
+     "status": "connected"
+    },
+    {
+     "need": "allowed claims",
+     "from": "claims shelf",
+     "status": "brain"
+    },
+    {
+     "need": "voice rules",
+     "from": "voice shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "List the 5 Meta angles with the lowest cost per new customer",
+    "Write 3 headlines of 30 characters and 2 descriptions per angle",
+    "Replace only assets rated low, keep the best",
+    "Run as a 50/50 ad variation in the top 3 non-brand ad groups",
+    "Read at 4 weeks on click rate and conversion rate"
+   ],
+   "output": "an ad variation test live in 3 ad groups, with the angle each headline came from",
+   "next": "feeds 12-13 (price and offer headlines) and 17-06 (title rewrites)",
+   "watch": {
+    "metric": "click rate and conversion rate of non-brand search ads",
+    "window": "28 day",
+    "source": "Google Ads"
+   },
+   "drives": "non-brand sales",
+   "business": "revenue",
+   "score": {
+    "money": 3,
+    "satisfaction": 2,
+    "speed": 3,
+    "ease": 4
+   },
+   "ready": 3,
+   "effort": "days"
+  },
+  {
+   "id": "12-13",
+   "top": "T3",
+   "job": "Rewrite headlines on the top 10 non-brand ad groups to lead with product, price or offer where rivals show clearer prices, and check the landing page says the same",
+   "trigger": "once, then when auction insights show a new rival",
+   "enablers": [
+    "congruence-check",
+    "competitor-feed"
+   ],
+   "inputs": [
+    {
+     "need": "auction insights and top of page rate for top 10 terms",
+     "from": "Google Ads",
+     "status": "connected"
+    },
+    {
+     "need": "mobile screenshots of the results page for the top 10 terms",
+     "from": "a person, 30 minutes",
+     "status": "setup"
+    },
+    {
+     "need": "live prices, offers and shipping",
+     "from": "offers shelf",
+     "status": "brain"
+    },
+    {
+     "need": "landing page per ad group",
+     "from": "site shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "Screenshot the results page for the top 10 terms on a phone",
+    "Note each rival's price, offer and shipping line",
+    "Write 3 headlines per group with product and price or offer first",
+    "Check each landing page shows the same price and offer above the fold, and fix it if not",
+    "Launch as ad variations and read at 3 weeks"
+   ],
+   "output": "10 ad groups with new headlines and matched landing pages",
+   "next": "feeds 07-landing-pages-cro (congruence fixes)",
+   "watch": {
+    "metric": "click rate on the top 10 non-brand terms",
+    "window": "21 day",
+    "source": "Google Ads"
+   },
+   "drives": "non-brand sales at the same spend",
+   "business": "revenue",
+   "score": {
+    "money": 3,
+    "satisfaction": 3,
+    "speed": 4,
+    "ease": 4
+   },
+   "ready": 4,
+   "effort": "hours"
+  },
+  {
+   "id": "12-14",
+   "top": "T4",
+   "job": "Check the Merchant Center feed every morning for disapprovals, price and stock mismatch and missing details, ranked by each product's sales, and fix best sellers the same day",
+   "trigger": "daily",
+   "enablers": [
+    "feed-doctor"
+   ],
+   "inputs": [
+    {
+     "need": "Merchant Center diagnostics",
+     "from": "Merchant Center via Google Ads",
+     "status": "connected"
+    },
+    {
+     "need": "live prices, sale prices and stock",
+     "from": "Shopify",
+     "status": "connected"
+    },
+    {
+     "need": "sales per product, 30 days",
+     "from": "Shopify",
+     "status": "connected"
+    },
+    {
+     "need": "feed check rules",
+     "from": "feed-doctor",
+     "status": "enabler"
+    }
+   ],
+   "steps": [
+    "Pull disapprovals, warnings and limited items",
+    "Compare feed price, sale price and stock with the live site",
+    "Rank problems by the product's 30 day sales",
+    "Send the top 5 fixes with the exact field to change",
+    "Recheck the next morning and log the time to fix"
+   ],
+   "output": "a morning list of feed problems ranked by sales at stake, with the field to fix",
+   "next": "feeds 12-18 (Monday check) and 18-19 (AI shopping feed)",
+   "watch": {
+    "metric": "share of top 50 products approved and serving",
+    "window": "7 day",
+    "source": "Merchant Center"
+   },
+   "drives": "Shopping sales",
+   "business": "revenue",
+   "score": {
+    "money": 4,
+    "satisfaction": 4,
+    "speed": 5,
+    "ease": 4
+   },
+   "ready": 3,
+   "effort": "days"
+  },
+  {
+   "id": "12-15",
+   "top": "T4",
+   "job": "Rewrite the Shopping titles of 20 products that sell on Meta but get few Shopping views, to lead with the words buyers type",
+   "trigger": "once, then each quarter",
+   "enablers": [
+    "feed-doctor",
+    "signal-bridge"
+   ],
+   "inputs": [
+    {
+     "need": "Shopping impressions and clicks per product",
+     "from": "Google Ads",
+     "status": "connected"
+    },
+    {
+     "need": "search terms per product",
+     "from": "Google Ads",
+     "status": "connected"
+    },
+    {
+     "need": "Search Console queries to product pages",
+     "from": "Search Console",
+     "status": "connected"
+    },
+    {
+     "need": "Meta sales per product",
+     "from": "Meta Ads",
+     "status": "connected"
+    }
+   ],
+   "steps": [
+    "List 20 products with good Meta sales and low Shopping impressions",
+    "For each, pull the terms that already bring clicks and the ones rivals use",
+    "Write the title as type, key feature, size or colour, brand, in under 70 characters for the front",
+    "A person checks each title is true to the product",
+    "Push to the feed as a supplemental file and read impressions at 3 weeks"
+   ],
+   "output": "20 new titles in the feed, each with the terms it now leads with",
+   "next": "feeds 17-13 (rename pages in buyers' words)",
+   "watch": {
+    "metric": "Shopping impressions for the 20 products",
+    "window": "21 day",
+    "source": "Google Ads"
+   },
+   "drives": "Shopping sales",
+   "business": "revenue",
+   "score": {
+    "money": 3,
+    "satisfaction": 2,
+    "speed": 3,
+    "ease": 4
+   },
+   "ready": 5,
+   "effort": "hours"
+  },
+  {
+   "id": "12-16",
+   "top": "T4",
+   "job": "Switch on the free Merchant Center extras we never used: free listings, promotions, shipping and returns, product ratings and store rating",
+   "trigger": "once, then checked each quarter",
+   "enablers": [
+    "feed-doctor"
+   ],
+   "inputs": [
+    {
+     "need": "Merchant Center settings",
+     "from": "Merchant Center via Google Ads",
+     "status": "connected"
+    },
+    {
+     "need": "reviews app product ratings feed",
+     "from": "reviews app",
+     "status": "connected"
+    },
+    {
+     "need": "return window and shipping times",
+     "from": "offers shelf",
+     "status": "brain"
+    },
+    {
+     "need": "live promotions calendar",
+     "from": "calendar shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "List each free extra and whether it is on",
+    "Connect the product ratings feed from the reviews app",
+    "Enter shipping and return policy so badges can show",
+    "Load the next month's promotions",
+    "Recheck in 30 days that stars, badges and promos show"
+   ],
+   "output": "a checklist of extras switched on, with the date each went live",
+   "next": "feeds 17-20 (stars and prices in search)",
+   "watch": {
+    "metric": "free listing clicks",
+    "window": "28 day",
+    "source": "Merchant Center"
+   },
+   "drives": "Shopping click rate at no cost",
+   "business": "revenue",
+   "score": {
+    "money": 2,
+    "satisfaction": 3,
+    "speed": 3,
+    "ease": 5
+   },
+   "ready": 5,
+   "effort": "hours"
+  },
+  {
+   "id": "12-17",
+   "top": "T4",
+   "job": "Check rival Shopping prices on our top 20 products each week and pull back spend where a rival is 20 percent cheaper",
+   "trigger": "every Monday",
+   "enablers": [
+    "feed-doctor",
+    "competitor-feed"
+   ],
+   "inputs": [
+    {
+     "need": "price competitiveness report",
+     "from": "Merchant Center via Google Ads",
+     "status": "connected"
+    },
+    {
+     "need": "rival list",
+     "from": "competitors shelf",
+     "status": "brain"
+    },
+    {
+     "need": "margin per SKU and lowest price allowed",
+     "from": "finance shelf",
+     "status": "brain"
+    },
+    {
+     "need": "click rate and sales per product",
+     "from": "Google Ads",
+     "status": "connected"
+    }
+   ],
+   "steps": [
+    "Pull benchmark prices for the top 20 products",
+    "Flag any product where a rival is 20 percent or more cheaper",
+    "For flagged products, cut the bid or move to the low tier if click rate or sales fell",
+    "Send the list to the founder for a price or offer call where margin allows",
+    "Log each call with the date"
+   ],
+   "output": "a weekly price gap list with the action taken on each product",
+   "next": "feeds 04-offers-pricing",
+   "watch": {
+    "metric": "cost per sale on flagged products",
+    "window": "14 day",
+    "source": "Google Ads"
+   },
+   "drives": "profit on Shopping",
+   "business": "gross profit",
+   "score": {
+    "money": 3,
+    "satisfaction": 3,
+    "speed": 4,
+    "ease": 4
+   },
+   "ready": 5,
+   "effort": "hours"
+  },
+  {
+   "id": "12-18",
+   "top": "T5",
+   "job": "Run a 20 minute Monday check on 5 numbers (non-brand return, new customers, spend vs plan, wasted terms, feed errors) and make one change at most",
+   "trigger": "every Monday",
+   "enablers": [
+    "funnel-mix",
+    "order-match",
+    "feed-doctor"
+   ],
+   "inputs": [
+    {
+     "need": "last week's spend, sales and search terms",
+     "from": "Google Ads",
+     "status": "connected"
+    },
+    {
+     "need": "store-matched new customers",
+     "from": "order-match",
+     "status": "enabler"
+    },
+    {
+     "need": "monthly budget plan",
+     "from": "finance shelf",
+     "status": "brain"
+    },
+    {
+     "need": "feed error count",
+     "from": "feed-doctor",
+     "status": "enabler"
+    }
+   ],
+   "steps": [
+    "Read the 5 numbers with last week and 4 week average side by side",
+    "Mark any number that moved more than 20 percent",
+    "Find the one cause behind the biggest move before touching bids",
+    "Make one change, write why, and set the date to read it",
+    "Log it in the decisions list"
+   ],
+   "output": "a one page Monday card with 5 numbers, the one change and its read date",
+   "next": "feeds 26-reports and 00-today",
+   "watch": {
+    "metric": "weeks the Monday check was done",
+    "window": "4 week",
+    "source": "decisions log"
+   },
+   "drives": "steady non-brand return and fewer panic changes",
+   "business": "risk",
+   "score": {
+    "money": 3,
+    "satisfaction": 5,
+    "speed": 4,
+    "ease": 4
+   },
+   "ready": 3,
+   "effort": "hours"
+  },
+  {
+   "id": "12-19",
+   "top": "T5",
+   "job": "Pass 5 scaling gates before adding $5,000 a month to Google: tracking matches, non-brand over the floor for 8 weeks, feed clean, search impression share lost to budget, stock to cover",
+   "trigger": "before any budget rise over 20 percent",
+   "enablers": [
+    "order-match",
+    "funnel-mix"
+   ],
+   "inputs": [
+    {
+     "need": "store-matched return and new customers, 8 weeks",
+     "from": "order-match",
+     "status": "enabler"
+    },
+    {
+     "need": "impression share lost to budget per campaign",
+     "from": "Google Ads",
+     "status": "connected"
+    },
+    {
+     "need": "stock cover for top products",
+     "from": "Shopify",
+     "status": "connected"
+    },
+    {
+     "need": "floors and caps",
+     "from": "finance shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "Check each of the 5 gates and mark pass or fail with the number",
+    "If any fail, write the fix and stop",
+    "If all pass, add money in steps of 20 percent a week to campaigns losing share to budget",
+    "Read cost per new customer each week and stop at the ceiling from 12-04"
+   ],
+   "output": "a gate sheet with pass or fail and, if passed, a 4 week budget ramp",
+   "next": "feeds 12-10 (top of funnel test)",
+   "watch": {
+    "metric": "non-brand cost per new customer during the ramp",
+    "window": "7 day",
+    "source": "Google Ads"
+   },
+   "drives": "more new customers at a profit",
+   "business": "revenue",
+   "score": {
+    "money": 5,
+    "satisfaction": 4,
+    "speed": 2,
+    "ease": 3
+   },
+   "ready": 3,
+   "effort": "hours"
+  },
+  {
+   "id": "12-20",
+   "top": "T5",
+   "job": "Get Google ready 3 weeks before Black Friday: budget ramp, promotions in the feed, stock cover, and landing pages that match the ads",
+   "trigger": "21 days before each peak on the calendar",
+   "enablers": [
+    "feed-doctor",
+    "congruence-check"
+   ],
+   "inputs": [
+    {
+     "need": "peak dates and offers",
+     "from": "calendar shelf",
+     "status": "brain"
+    },
+    {
+     "need": "offer terms",
+     "from": "offers shelf",
+     "status": "brain"
+    },
+    {
+     "need": "stock for top 30 products",
+     "from": "Shopify",
+     "status": "connected"
+    },
+    {
+     "need": "last year's peak spend and sales by day",
+     "from": "Google Ads",
+     "status": "connected"
+    }
+   ],
+   "steps": [
+    "Set the daily budget ramp from last year's curve and this year's cap",
+    "Load promotions into Merchant Center 10 days ahead for approval",
+    "Check stock cover for the top 30 products and label low ones",
+    "Check each ad's offer matches its landing page",
+    "Founder signs the plan; a person checks it live on day 1"
+   ],
+   "output": "a signed peak plan with budget by day, approved promotions and checked pages",
+   "next": "feeds 14-email-messaging and 11-paid-social peak plans",
+   "watch": {
+    "metric": "Google sales on peak days vs plan",
+    "window": "peak window",
+    "source": "Google Ads"
+   },
+   "drives": "peak revenue",
+   "business": "revenue",
+   "score": {
+    "money": 4,
+    "satisfaction": 4,
+    "speed": 4,
+    "ease": 3
+   },
+   "ready": 5,
+   "effort": "days"
+  }
+ ],
+ "new_enablers": [
+  {
+   "id": "search-term-sorter",
+   "name": "Search term sorter",
+   "what": "Sorts every Google search term from Search, Shopping and Performance Max insights into brand, rival brand, category, problem, comparison and junk. Keeps 90 days of cost, sales and new customers per term, and the negative keyword list with the reason and date for each entry.",
+   "inputs": [
+    "Google Ads search terms and Performance Max search insights",
+    "brand and product name list with misspellings",
+    "rival brand list",
+    "new vs returning buyers from store orders"
+   ],
+   "powers": [
+    "brand vs non-brand split",
+    "terms that cost and never sell",
+    "the funnel stage of each term",
+    "converting terms to reuse in Meta hooks, titles and articles"
+   ],
+   "screens": [
+    "12-google-ads",
+    "17-seo",
+    "11-paid-social"
+   ],
+   "note": null
+  },
+  {
+   "id": "order-match",
+   "name": "Store order match",
+   "what": "Matches the purchases an ad platform claims to real store orders by click id, UTM and date. Marks each as new or returning buyer, kept or returned, and shows the gap between what the platform says and what the store saw.",
+   "inputs": [
+    "store orders with UTM and click ids",
+    "GA4 purchases",
+    "Google Ads conversions",
+    "returns and refunds"
+   ],
+   "powers": [
+    "true new customers per campaign",
+    "return and cost per new customer from the store's view",
+    "conversion tracking gaps"
+   ],
+   "screens": [
+    "12-google-ads",
+    "22-measurement",
+    "11-paid-social"
+   ],
+   "note": null
+  },
+  {
+   "id": "feed-doctor",
+   "name": "Feed doctor",
+   "what": "Checks the Merchant Center feed every day against the live site: price, sale price, stock, shipping, GTIN, titles and images. Lists disapprovals and warnings ranked by the product's sales, and suggests title fixes in the words buyers type.",
+   "inputs": [
+    "Merchant Center diagnostics",
+    "store products, prices and stock",
+    "search terms per product",
+    "price competitiveness report"
+   ],
+   "powers": [
+    "best sellers back in Shopping the same day",
+    "no suspension from price or stock mismatch",
+    "titles that match searches",
+    "custom labels by margin and stock"
+   ],
+   "screens": [
+    "12-google-ads",
+    "17-seo",
+    "18-answer-engines"
+   ],
+   "note": null
+  }
+ ]
+}

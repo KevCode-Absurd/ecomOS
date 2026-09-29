@@ -1,0 +1,612 @@
+{
+  "screen": "10-copy",
+  "title": "Copy",
+  "top_jobs": [
+    {
+      "id": "T1",
+      "job": "When our best ad is getting more expensive and the media buyer needs new words by Friday, help me get copy built from what buyers say, for the buyers who convert best, that wins on cost per purchase and not on clicks, so I launch fresh ads without paying more for each sale",
+      "metric": "cost per purchase by copy set, 7 day click, first 14 days live",
+      "from_v2": [1, 17, 20, 23, 9]
+    },
+    {
+      "id": "T2",
+      "job": "When new ads are due to go live tomorrow and I do not know if a line breaks Meta's rules or promises something we cannot back, help me check every claim, quote and boast first and cut drafts to our voice, so I launch without a rejection and stop rewriting every line myself",
+      "metric": "ads rejected per 100 launched, and share of drafts approved without a rewrite",
+      "from_v2": [2, 6, 8, 13, 21, 32]
+    },
+    {
+      "id": "T3",
+      "job": "When the ad promises one thing and the page it sends to says another, or people visit and do not buy, help me find which live ads no longer match their page and which doubt costs the most sales, so I stop paying for clicks that land on the wrong message",
+      "metric": "conversion rate of paid sessions on the top 10 ads' landing pages",
+      "from_v2": [3, 5, 7, 11, 29]
+    },
+    {
+      "id": "T4",
+      "job": "When retargeting shows the same ad again and new ads only speak to people who already know us, help me write a different argument for each awareness level and each buying moment, so I win back the doubters and reach buyers our normal ads miss",
+      "metric": "cost per new customer by awareness level of the copy",
+      "from_v2": [18, 22, 28]
+    },
+    {
+      "id": "T5",
+      "job": "When a proven ad starts to cost 30 percent more per sale and the buyer wants to cut the price, help me change the headline, the price line or the offer in the right order and give reasons to buy that are not a discount, so I save the ad without giving away margin",
+      "metric": "gross profit per order on ads with refreshed copy",
+      "from_v2": [4, 10, 26, 27]
+    }
+  ],
+  "jobs": [
+    {
+      "id": "10-01",
+      "top": "T1",
+      "job": "Split every ad we ran in 12 months into avatar, pain point, promise, proof and CTA, rank each avatar and pain pair by spend and cost per purchase, and list the pairs no ad speaks to",
+      "trigger": "once at onboarding, then every new ad within a day of launch",
+      "enablers": ["copy-decomposer", "creative-tags"],
+      "inputs": [
+        {"need": "12 months of ad copy, headlines and results at ad level", "from": "Meta Ads", "status": "connected"},
+        {"need": "up to 4 avatars and their pain points", "from": "customers shelf", "status": "brain"},
+        {"need": "landing page text per ad URL", "from": "site shelf", "status": "brain"},
+        {"need": "a person to check 20 splits a week", "from": "founder or copy lead", "status": "founder"}
+      ],
+      "steps": [
+        "Pull primary text, headline, description and URL for every ad with spend",
+        "Tag each ad with one avatar, one pain point, the promise, the proof type and the CTA",
+        "Check 20 at random by hand and fix the avatar and pain definitions that are wrong",
+        "Compute in code per pair: ads, spend, purchases, cost per purchase, share of new customers",
+        "Build a grid of avatars by pains; mark cells with spend, cells that win, and empty cells"
+      ],
+      "output": "an avatar by pain grid with spend, cost per purchase and empty cells marked",
+      "next": "feeds 10-04 (copy per segment) and 10-05 (Friday copy batch)",
+      "watch": {"metric": "share of spend on the 3 cheapest avatar and pain pairs", "window": "28 day", "source": "Meta Ads"},
+      "drives": "cost per new customer",
+      "business": "gross profit",
+      "score": {"money": 4, "satisfaction": 4, "speed": 3, "ease": 4},
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "10-02",
+      "top": "T1",
+      "job": "Mine our reviews and 3 rivals' Amazon and site reviews for what buyers love, hate and wish for, and build a bank of the 20 most used phrases per theme with counts",
+      "trigger": "once at onboarding, then on the 1st of each month",
+      "enablers": ["review-miner"],
+      "inputs": [
+        {"need": "all our reviews with text, rating and product", "from": "reviews app", "status": "connected"},
+        {"need": "rivals' reviews from Amazon and their sites, 3 rivals", "from": "a review export tool or a paid data source", "status": "buy"},
+        {"need": "our Amazon reviews and questions, when we sell there", "from": "Amazon Seller Central", "status": "setup"},
+        {"need": "return reasons", "from": "Shopify", "status": "connected"}
+      ],
+      "steps": [
+        "Pull 5 star and 1 star reviews first, then the rest",
+        "Group sentences into themes: loved, hated, wished for, surprised by, used instead",
+        "Count each theme per brand and keep the exact phrases, with source",
+        "Mark where rivals fail most (1 star themes) and we are praised for the same thing",
+        "Write the top 20 phrases per theme into the language bank; forum quotes are never testimonials"
+      ],
+      "output": "a language bank: themes with counts for us and each rival, and 20 verbatim phrases per theme",
+      "next": "feeds 10-05 (copy batch), 10-16 (retargeting objections) and 03-competitors",
+      "watch": {"metric": "click rate and cost per purchase of ads using bank phrases vs not", "window": "14 day", "source": "Meta Ads"},
+      "drives": "cost per purchase on new copy",
+      "business": "revenue",
+      "score": {"money": 3, "satisfaction": 4, "speed": 3, "ease": 4},
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "10-03",
+      "top": "T1",
+      "job": "Move proven words between channels each month: turn the top 20 Google search terms, Search Console queries and Amazon questions into 10 Meta hooks, and turn the 5 best Meta hooks into Google headlines and article titles",
+      "trigger": "on the 1st of each month",
+      "enablers": ["signal-bridge"],
+      "inputs": [
+        {"need": "Google Ads search terms with purchases, 90 days", "from": "Google Ads", "status": "connected"},
+        {"need": "Search Console queries with clicks and position", "from": "Search Console", "status": "connected"},
+        {"need": "Amazon questions and review phrases", "from": "Amazon Seller Central", "status": "setup"},
+        {"need": "site search terms", "from": "GA4", "status": "connected"},
+        {"need": "Meta hooks with cost per purchase", "from": "copy-decomposer", "status": "enabler"}
+      ],
+      "steps": [
+        "List the 20 search terms with the most purchases and the 20 fastest rising queries",
+        "Add the 10 most asked Amazon questions and site searches",
+        "Rewrite 10 of them as Meta hooks in the searcher's words, e.g. a query 'socks that do not slip' becomes the first line",
+        "Take the 5 Meta hooks with the lowest cost per purchase and write 3 Google headlines each within 30 characters",
+        "Send 3 article titles built from winning hooks and rising queries to 17-seo",
+        "Tag each line with its source so its result is traced back"
+      ],
+      "output": "a monthly bridge sheet: 10 Meta hooks from search, 15 Google headlines from Meta, 3 article titles",
+      "next": "feeds 11-13 (launch the bridge tests), 12-google-ads and 17-seo",
+      "watch": {"metric": "cost per purchase of search-sourced Meta hooks vs account median", "window": "14 day", "source": "Meta Ads"},
+      "drives": "cost per new customer across Meta and Google",
+      "business": "revenue",
+      "score": {"money": 4, "satisfaction": 3, "speed": 3, "ease": 4},
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "10-04",
+      "top": "T1",
+      "job": "Write 3 copy sets for each of the 2 cheapest segments by age, gender and placement, using their pain and their words, so the ad reads as if it were written for them",
+      "trigger": "every other Monday, and before each launch slot",
+      "enablers": ["segment-map", "copy-decomposer"],
+      "inputs": [
+        {"need": "purchases and cost per new customer by age, gender and placement, 28 days", "from": "Meta Ads", "status": "connected"},
+        {"need": "avatar and pain grid", "from": "copy-decomposer", "status": "enabler"},
+        {"need": "language bank", "from": "customers shelf", "status": "brain"},
+        {"need": "placement text limits and safe zones", "from": "format-translator", "status": "enabler"}
+      ],
+      "steps": [
+        "Pick the 2 cells with the lowest cost per new customer and at least 30 purchases, e.g. women 35 to 44 on Reels",
+        "Match each cell to the avatar that most often buys there, from order and survey data",
+        "Write 3 sets per cell: primary text, headline, on-screen line, sized to that placement",
+        "Use the words that cell uses in reviews; drop lines that only fit the other cell",
+        "Hand the sets to the media buyer with the cell each is for"
+      ],
+      "output": "6 copy sets, each labelled with the segment and placement it is written for",
+      "next": "feeds 11-12 (ad sets for the best segment)",
+      "watch": {"metric": "cost per purchase in the target segment vs generic copy", "window": "14 day", "source": "Meta Ads"},
+      "drives": "cost per new customer",
+      "business": "gross profit",
+      "score": {"money": 4, "satisfaction": 3, "speed": 4, "ease": 4},
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "10-05",
+      "top": "T1",
+      "job": "Write the Friday copy batch: 10 headline candidates for each chosen avatar and pain pair, cut to 3 truly different angles, each with a written reason and a pass line",
+      "trigger": "every Wednesday for a Friday launch slot, and when the top ad's cost per purchase rises 15 percent",
+      "enablers": ["copy-decomposer", "principle-matcher"],
+      "inputs": [
+        {"need": "the pair to write for", "from": "copy-decomposer", "status": "enabler"},
+        {"need": "winner cards from creative", "from": "principle-matcher", "status": "enabler"},
+        {"need": "language bank and objection ladder", "from": "customers shelf", "status": "brain"},
+        {"need": "ad copy playbook v1.2 and ad copy ideas", "from": "playbooks/ad-copy-v1.2 and ideas/v1", "status": "have"}
+      ],
+      "steps": [
+        "Write the buying question: what the reader believes now and what they must believe to buy",
+        "Write 10 headlines, each with a true specific: a number, a time, a count or a price",
+        "Cut to 3 that differ in angle, not synonyms; name the angle of each",
+        "Write the primary text for each: first line under 14 words, one idea, one proof",
+        "Write the reason each might win and the cost per purchase that counts as a pass",
+        "Run 10-09 on the 3 before they go to the media buyer"
+      ],
+      "output": "3 copy sets with angle names, reasons and pass lines, ready for Friday",
+      "next": "feeds 10-09 (voice check) then 11-14 (launch preflight)",
+      "watch": {"metric": "cost per purchase by copy set, 7 day click", "window": "14 day", "source": "Meta Ads"},
+      "drives": "blended cost per new customer, 28 day",
+      "business": "gross profit",
+      "score": {"money": 5, "satisfaction": 4, "speed": 4, "ease": 4},
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "10-06",
+      "top": "T1",
+      "job": "Refresh a tiring winner's words without losing its appeal: keep the promise and the proof, and change only the first line, the headline and the form (list, story or question)",
+      "trigger": "when fatigue-watch labels a winner worn out",
+      "enablers": ["variant-stack", "copy-decomposer"],
+      "inputs": [
+        {"need": "the worn out ad and its split into promise, proof and CTA", "from": "copy-decomposer", "status": "enabler"},
+        {"need": "wear label and dates", "from": "fatigue-watch", "status": "enabler"},
+        {"need": "voice rules", "from": "voice shelf", "status": "brain"}
+      ],
+      "steps": [
+        "Write the promise and proof of the winner in one line each; these do not change",
+        "Write 3 new forms: a numbered list, a short customer story with a turn, a question the buyer asks",
+        "Write 3 new first lines and 3 new headlines per form",
+        "Pick 3 full sets and run them through 10-09",
+        "Launch beside the old ad, not in place of it"
+      ],
+      "output": "3 refreshed copy sets on the same promise, ready to launch",
+      "next": "feeds 11-15 (test launch)",
+      "watch": {"metric": "cost per purchase of refreshed sets vs the old ad's last 7 days", "window": "14 day", "source": "Meta Ads"},
+      "drives": "life of a winning message in weeks",
+      "business": "gross profit",
+      "score": {"money": 4, "satisfaction": 3, "speed": 5, "ease": 5},
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "10-07",
+      "top": "T2",
+      "job": "Check every line in tomorrow's ads against the claims shelf and Meta's rules: health and before and after claims, personal attributes, fake scarcity, review quotes and guarantees, and return a pass, fix or block per line",
+      "trigger": "before every launch, the day before",
+      "enablers": ["claim-guard"],
+      "inputs": [
+        {"need": "the ads due tomorrow with all text and on-screen text", "from": "launch sheet or Meta drafts", "status": "connected"},
+        {"need": "allowed claims with proof files, and forbidden claims", "from": "claims shelf", "status": "brain"},
+        {"need": "Meta ad rules for the category, written as checks", "from": "claim-guard", "status": "enabler"},
+        {"need": "review quotes with permission status", "from": "creators shelf", "status": "brain"}
+      ],
+      "steps": [
+        "Split each ad into single lines, including on-screen text and captions",
+        "Match each line to an allowed claim and its proof file; lines with no match go to fix",
+        "Flag rule risks: 'you' plus a body or money problem, before and after, cures, invented scarcity",
+        "Check every quote is real, permitted and not changed in meaning",
+        "Write a passing rewrite for each fix; block lines with no proof",
+        "A person signs the block list before launch"
+      ],
+      "output": "a line by line check with pass, fix (and the rewrite) or block, signed before launch",
+      "next": "feeds 11-14 (launch preflight)",
+      "watch": {"metric": "ads rejected per 100 launched", "window": "28 day", "source": "Meta Ads"},
+      "drives": "days of delivery lost to rejections, and account health",
+      "business": "risk",
+      "score": {"money": 3, "satisfaction": 5, "speed": 5, "ease": 4},
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "10-08",
+      "top": "T2",
+      "job": "Swap every boast in live and draft copy (best, premium, amazing, world class) for a number, a rating or a test result we can back, and list the boasts with no proof to replace",
+      "trigger": "once at onboarding, then on every draft batch",
+      "enablers": ["voice-check", "claim-guard"],
+      "inputs": [
+        {"need": "live ad copy and product page copy", "from": "Meta Ads and site crawl", "status": "connected"},
+        {"need": "proof per product: ratings, review counts, tests, specs", "from": "products shelf", "status": "brain"},
+        {"need": "banned words", "from": "voice shelf", "status": "brain"}
+      ],
+      "steps": [
+        "Scan all lines for a list of 40 boast words and banned words",
+        "For each hit, find a true specific from the products shelf, e.g. '4.8 stars from 12,000 reviews'",
+        "Rewrite the line with the specific; never invent a number",
+        "List boasts with no proof to the founder as proof to find or lines to drop"
+      ],
+      "output": "a swap list of boasts to specifics, and a short list of claims that need proof",
+      "next": "feeds 10-09 (voice check) and the claims shelf",
+      "watch": {"metric": "share of live lines with a specific number or proof", "window": "28 day", "source": "claim-guard"},
+      "drives": "click rate and cost per purchase",
+      "business": "revenue",
+      "score": {"money": 2, "satisfaction": 4, "speed": 4, "ease": 5},
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "10-09",
+      "top": "T2",
+      "job": "Score each batch of freelancer or AI drafts in code for reading level, sentence length, banned words and voice rules, and cut 20 drafts to the 5 worth the founder's time",
+      "trigger": "when a batch of drafts arrives",
+      "enablers": ["voice-check"],
+      "inputs": [
+        {"need": "the drafts", "from": "writer or AI tool", "status": "founder"},
+        {"need": "voice rules, 20 liked and 20 disliked examples", "from": "voice shelf", "status": "brain"},
+        {"need": "readability and banned word checks", "from": "voice-check", "status": "enabler"},
+        {"need": "the founder's past ratings of copy", "from": "history shelf", "status": "brain"}
+      ],
+      "steps": [
+        "Score reading level in code; fail anything above grade 8",
+        "Fail sentences over 20 words, banned words, em dashes and vague words",
+        "Compare each draft with liked and disliked examples and give a voice score",
+        "Rank by score and by how different the angle is from the others",
+        "Send the top 5 with one line on why each passed; log the founder's pick to the ratings"
+      ],
+      "output": "5 drafts that pass voice and reading checks, with scores, from a batch of 20",
+      "next": "feeds 10-07 (claim check) and the voice shelf ratings",
+      "watch": {"metric": "share of drafts the founder approves without a rewrite", "window": "28 day", "source": "history shelf"},
+      "drives": "founder hours spent on copy per week",
+      "business": "customer satisfaction",
+      "score": {"money": 2, "satisfaction": 5, "speed": 5, "ease": 4},
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "10-10",
+      "top": "T2",
+      "job": "Fix a rejected ad within the hour: find the words that triggered it, write 3 rewrites that keep the angle and pass, and log the rule so it is checked next time",
+      "trigger": "when Meta rejects an ad or warns the account",
+      "enablers": ["claim-guard"],
+      "inputs": [
+        {"need": "rejection notice and the rejected ad", "from": "Meta Ads", "status": "connected"},
+        {"need": "past rejections and the rewrites that passed", "from": "claim-guard", "status": "enabler"},
+        {"need": "allowed claims", "from": "claims shelf", "status": "brain"}
+      ],
+      "steps": [
+        "Read the policy named in the notice and mark the lines and images that fit it",
+        "Write 3 rewrites that keep the angle and drop the trigger",
+        "Run them through 10-07",
+        "The media buyer submits one; request review only if the ad was clearly within the rules",
+        "Add the trigger and the passing line to the rejection log"
+      ],
+      "output": "3 passing rewrites and a new line in the rejection log",
+      "next": "feeds 10-07 (the check learns the rule)",
+      "watch": {"metric": "hours from rejection to the ad running again", "window": "per rejection", "source": "Meta Ads"},
+      "drives": "days of delivery lost and account warnings",
+      "business": "risk",
+      "score": {"money": 3, "satisfaction": 5, "speed": 5, "ease": 5},
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "10-11",
+      "top": "T3",
+      "job": "Score the top 10 ads by spend for match with their landing page on promise, offer, picture and awareness level, and rewrite the page headline of the worst 3 to mirror the ad within a day",
+      "trigger": "every Monday, and after any page or offer change",
+      "enablers": ["congruence-check", "creative-tags"],
+      "inputs": [
+        {"need": "top 10 ads with URL, copy and media", "from": "Meta Ads", "status": "connected"},
+        {"need": "landing page text and a screenshot per URL", "from": "site shelf", "status": "brain"},
+        {"need": "paid sessions and conversion by landing page and ad", "from": "GA4", "status": "connected"},
+        {"need": "awareness level per ad", "from": "awareness-map", "status": "enabler"}
+      ],
+      "steps": [
+        "For each ad, write its promise, offer and awareness level in one line each",
+        "Read the top of the landing page as a phone user sees it and write the same 3",
+        "Score 0 to 3: promise matches, offer matches, picture matches the ad",
+        "For the 3 lowest scores, write a new headline and sub line that repeat the ad's promise",
+        "Send the change to 07-landing-pages-cro and compare conversion 14 days before and after"
+      ],
+      "output": "a match score for the top 10 ads and 3 page headline rewrites",
+      "next": "feeds 07-landing-pages-cro and 11-17 (ad-matched page test)",
+      "watch": {"metric": "conversion rate of paid sessions on the 3 fixed pages", "window": "14 day", "source": "GA4"},
+      "drives": "cost per purchase on those ads",
+      "business": "revenue",
+      "score": {"money": 4, "satisfaction": 3, "speed": 4, "ease": 5},
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "10-12",
+      "top": "T3",
+      "job": "When a sale ends or a product sells out, list every live ad, email, page line and listing that still says it, and hand over the fixes before midnight",
+      "trigger": "on each sale end date and each sellout",
+      "enablers": ["claim-guard", "creative-archive"],
+      "inputs": [
+        {"need": "live ads with text", "from": "Meta Ads", "status": "connected"},
+        {"need": "live flows and scheduled campaigns", "from": "email platform", "status": "connected"},
+        {"need": "offer end dates and stock state", "from": "offers shelf and Shopify", "status": "brain"},
+        {"need": "site crawl text", "from": "site shelf", "status": "brain"}
+      ],
+      "steps": [
+        "Take the ended offer or the sold out product name",
+        "Search every live line for the code, the percent, the product name and 'ends'",
+        "List each hit with where it runs and who owns it",
+        "Write the replacement line for each; pausing ads stays with the media buyer",
+        "Recheck the next morning that no hit is still live"
+      ],
+      "output": "a sweep list of stale lines with owners and replacement lines, rechecked next day",
+      "next": "feeds 11-18 (move spend off sold out products)",
+      "watch": {"metric": "live lines still naming an ended offer or sold out product", "window": "24 hours", "source": "claim-guard"},
+      "drives": "tickets about wrong prices and trust",
+      "business": "customer satisfaction",
+      "score": {"money": 2, "satisfaction": 5, "speed": 5, "ease": 4},
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "10-13",
+      "top": "T3",
+      "job": "List every question buyers ask per hero product from tickets, Amazon questions, reviews and site search, mark where each is answered, and write the answer line for the 3 unanswered doubts that cost the most sales",
+      "trigger": "once a month per hero product, and when a product page's add to cart rate drops",
+      "enablers": ["question-matrix", "review-miner"],
+      "inputs": [
+        {"need": "tickets and chats tagged by product, 6 months", "from": "helpdesk", "status": "connected"},
+        {"need": "Amazon questions per product", "from": "Amazon Seller Central", "status": "setup"},
+        {"need": "product page, FAQ and ad text", "from": "site shelf", "status": "brain"},
+        {"need": "scroll depth on the product page", "from": "Clarity", "status": "setup"}
+      ],
+      "steps": [
+        "Pull every question and group into 15 doubts: fit, size, wash, ship time, returns, price, and so on",
+        "Count each doubt and mark if it is answered on the page, in the FAQ, in ads, in email",
+        "Rank blank cells by count times the product's traffic",
+        "Write a short true answer for the top 3, placed where Clarity shows buyers still read",
+        "Add the top doubt's answer as a line in one retargeting ad"
+      ],
+      "output": "a doubt by channel matrix per product and 3 answer lines placed on page and in one ad",
+      "next": "feeds 10-16 (retargeting), 07-landing-pages-cro and 15-customers-cx",
+      "watch": {"metric": "add to cart rate on the product page", "window": "14 day", "source": "GA4"},
+      "drives": "product page conversion and tickets per 100 orders",
+      "business": "revenue",
+      "score": {"money": 4, "satisfaction": 4, "speed": 3, "ease": 4},
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "10-14",
+      "top": "T3",
+      "job": "Carry each winning ad line to the product page, the welcome email and the listing within a week, and log where it now runs",
+      "trigger": "when a copy test is read as a win",
+      "enablers": ["win-loss-ledger", "congruence-check"],
+      "inputs": [
+        {"need": "the winning line and its test result", "from": "win-loss-ledger", "status": "enabler"},
+        {"need": "the page, email and listing where the product is sold", "from": "site and email shelves", "status": "brain"},
+        {"need": "Amazon listing access, when they sell there", "from": "Amazon Seller Central", "status": "setup"}
+      ],
+      "steps": [
+        "Write the line as a page headline, an email subject and first line, and a listing bullet",
+        "Check each fits the place's length limit and awareness level",
+        "Send each to its owner with the test result as the reason",
+        "Log where the line runs in the messaging shelf with the date"
+      ],
+      "output": "one proven line live on page, email and listing, logged in the messaging shelf",
+      "next": "feeds 10-11 (the next match score)",
+      "watch": {"metric": "conversion rate on the product page and welcome email click rate", "window": "14 day", "source": "GA4 and email platform"},
+      "drives": "revenue per visitor",
+      "business": "revenue",
+      "score": {"money": 3, "satisfaction": 3, "speed": 3, "ease": 5},
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "10-15",
+      "top": "T4",
+      "job": "Tag all ad copy by awareness level, and for the thinnest level write 3 copy sets at the right story depth: long native text for unaware, the problem named for problem aware, the method for solution aware",
+      "trigger": "every other Monday, after the awareness heat map updates",
+      "enablers": ["awareness-map", "copy-decomposer"],
+      "inputs": [
+        {"need": "heat map with the gap line", "from": "awareness-map", "status": "enabler"},
+        {"need": "problem words and moments from buyers", "from": "customers shelf", "status": "brain"},
+        {"need": "the story bank", "from": "messaging shelf", "status": "brain"},
+        {"need": "top of funnel copy ideas", "from": "ideas/v1", "status": "have"}
+      ],
+      "steps": [
+        "Read the gap level from the heat map, e.g. problem aware at 6 percent of spend",
+        "Write the buyer's state at that level in one line: what they know and do not know",
+        "Write 3 sets: open on the problem, not the product; name the product only after the reason",
+        "For unaware, write 150 to 300 words of native text that reads like a post, not an ad",
+        "Point each set to a page at the same level, not straight to checkout"
+      ],
+      "output": "3 copy sets at the gap level, each with its matching landing page",
+      "next": "feeds 11-11 (top of funnel budget) and 09-12 (visual briefs)",
+      "watch": {"metric": "new customer share of purchases from these sets", "window": "28 day", "source": "Shopify"},
+      "drives": "new customers per week",
+      "business": "revenue",
+      "score": {"money": 4, "satisfaction": 3, "speed": 3, "ease": 4},
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "10-16",
+      "top": "T4",
+      "job": "Write one retargeting ad per top objection for people who visited in the last 30 days and did not buy, each with a different argument and its proof, never the same ad again",
+      "trigger": "once a month, and when retargeting frequency passes 4",
+      "enablers": ["copy-decomposer", "review-miner"],
+      "inputs": [
+        {"need": "objection ladder ranked by sales lost", "from": "customers shelf", "status": "brain"},
+        {"need": "top unanswered doubts per product", "from": "question-matrix", "status": "enabler"},
+        {"need": "proof per product: reviews, tests, guarantee", "from": "products and claims shelves", "status": "brain"},
+        {"need": "retargeting ad sets and their frequency", "from": "Meta Ads", "status": "connected"}
+      ],
+      "steps": [
+        "Take the top 3 objections, e.g. 'will it fit', 'is it worth the price', 'can I return it'",
+        "Write one ad per objection: name it, answer it, show the proof",
+        "Use a different picture from the cold ad the visitor already saw",
+        "Keep the same argument across the follow-up ads in the sequence",
+        "Read each by cost per purchase on 7 day click, not by view-through"
+      ],
+      "output": "3 retargeting ads, one per objection, with proof",
+      "next": "feeds 11-10 (retargeting slice of the funnel mix)",
+      "watch": {"metric": "cost per purchase in retargeting ad sets", "window": "14 day", "source": "Meta Ads"},
+      "drives": "conversion of site visitors who did not buy",
+      "business": "revenue",
+      "score": {"money": 3, "satisfaction": 3, "speed": 4, "ease": 5},
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "10-17",
+      "top": "T4",
+      "job": "Write copy for each buying moment our ads miss, starting with gift buyers 3 weeks before a gifting date: who it is for, why it is a safe gift, when it arrives, how returns work",
+      "trigger": "quarterly from the moments table, and 3 weeks before each gifting date",
+      "enablers": ["customer-jobs", "copy-decomposer"],
+      "inputs": [
+        {"need": "the moments table with counts", "from": "customer-jobs", "status": "enabler"},
+        {"need": "gifting dates and ship cut-offs", "from": "calendar shelf", "status": "brain"},
+        {"need": "gift options: wrap, notes, gift returns", "from": "offers shelf", "status": "brain"},
+        {"need": "share of orders shipped to a different address", "from": "Shopify", "status": "connected"}
+      ],
+      "steps": [
+        "Pick the moment no live ad speaks to that has the most buyers",
+        "Write who buys, for whom, and the doubt at that moment",
+        "Write 3 sets; for gifts, answer 'will they like it' and 'will it arrive in time' with dates",
+        "Add the order-by date in digits for gifting sets",
+        "Send each set to the media buyer with its start and stop date"
+      ],
+      "output": "3 copy sets per moment, with start and stop dates for seasonal ones",
+      "next": "feeds 11-19 (peak ramp plan)",
+      "watch": {"metric": "orders shipped to a different address than billing", "window": "28 day", "source": "Shopify"},
+      "drives": "revenue in gifting weeks",
+      "business": "revenue",
+      "score": {"money": 3, "satisfaction": 3, "speed": 3, "ease": 4},
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "10-18",
+      "top": "T5",
+      "job": "When a proven ad's cost per purchase rises 30 percent, test in order: a new headline first, then a new price line, then a new offer, one at a time, before anyone cuts the price",
+      "trigger": "when a winner's cost per purchase is up 30 percent for 7 days",
+      "enablers": ["copy-decomposer", "win-loss-ledger"],
+      "inputs": [
+        {"need": "the ad's daily results for 28 days", "from": "Meta Ads", "status": "connected"},
+        {"need": "margin per product and the discount floor", "from": "finance and offers shelves", "status": "brain"},
+        {"need": "wear label", "from": "fatigue-watch", "status": "enabler"}
+      ],
+      "steps": [
+        "Rule out wear first: if hook rate has fallen, send it to 09-09 instead",
+        "Step 1: test 3 new headlines on the same ad for 7 days",
+        "Step 2, only if step 1 fails: restate price as cost per day or per use, or add a bundle saving line",
+        "Step 3, only if step 2 fails: propose an offer inside the discount floor, for founder sign-off",
+        "Log each step's result in the ledger"
+      ],
+      "output": "a 3 step rescue test with a result at each step, and a price cut only as the last resort",
+      "next": "feeds 04-offers-pricing when step 3 is reached",
+      "watch": {"metric": "cost per purchase on the rescued ad", "window": "7 day", "source": "Meta Ads"},
+      "drives": "gross profit per order",
+      "business": "gross profit",
+      "score": {"money": 4, "satisfaction": 4, "speed": 4, "ease": 4},
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "10-19",
+      "top": "T5",
+      "job": "Turn each approved sale or bundle into one offer line (what, how much, until when) and check it against the live code, the price and the end date in the store before it ships",
+      "trigger": "when an offer is approved, 7 days before it starts",
+      "enablers": ["claim-guard"],
+      "inputs": [
+        {"need": "the approved offer with rules", "from": "offers shelf", "status": "brain"},
+        {"need": "discount codes, prices and product eligibility", "from": "Shopify", "status": "connected"},
+        {"need": "the offer calendar", "from": "calendar shelf", "status": "brain"}
+      ],
+      "steps": [
+        "Write the offer as one line with digits: '20 percent off 3 packs, ends Sunday 11:59 pm ET'",
+        "Check the code exists, applies to the right products and ends at the stated time",
+        "Write the ad, email and page versions of the same line",
+        "Put the end date into the sweep list for 10-12"
+      ],
+      "output": "one checked offer line in 3 versions, with the end date scheduled for the sweep",
+      "next": "feeds 10-12 (sweep on end date) and 14-email-messaging",
+      "watch": {"metric": "tickets about a wrong price or code in the sale week", "window": "7 day", "source": "helpdesk"},
+      "drives": "sale revenue and trust",
+      "business": "customer satisfaction",
+      "score": {"money": 3, "satisfaction": 5, "speed": 5, "ease": 5},
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "10-20",
+      "top": "T5",
+      "job": "Write 5 reasons to buy each hero product that are not a discount (proof, fit, method, guarantee, cost per use) and test the best 2 against the current discount ad",
+      "trigger": "once a quarter, and when discount orders pass 50 percent of orders",
+      "enablers": ["review-miner", "copy-decomposer", "margin-view"],
+      "inputs": [
+        {"need": "share of orders with a discount code and margin per order", "from": "margin-view", "status": "enabler"},
+        {"need": "praise themes and phrases", "from": "review-miner", "status": "enabler"},
+        {"need": "product proof and guarantee terms", "from": "products and claims shelves", "status": "brain"}
+      ],
+      "steps": [
+        "Compute in code the share of orders and gross profit that came with a code",
+        "Write 5 reasons from praise themes and proof, e.g. 'lasts 2 years of weekly wear'",
+        "Pick 2 with the most review mentions",
+        "Run each as an ad with no code against the current discount ad, same audience and budget",
+        "Compare gross profit per 1,000 impressions, not just cost per purchase"
+      ],
+      "output": "5 no discount reasons per hero product and a test of the top 2 against the discount ad",
+      "next": "feeds 04-offers-pricing and 14-email-messaging",
+      "watch": {"metric": "share of orders with a discount code", "window": "28 day", "source": "Shopify"},
+      "drives": "gross profit per order",
+      "business": "gross profit",
+      "score": {"money": 4, "satisfaction": 3, "speed": 3, "ease": 4},
+      "ready": 3,
+      "effort": "days"
+    }
+  ],
+  "new_enablers": [
+    {
+      "id": "claim-guard",
+      "name": "Claim and live line check",
+      "what": "Keeps an index of every live line in ads, emails, pages and listings with its claim, proof file, offer and end date. Checks new lines against the claims shelf, platform ad rules and a log of past rejections, and sweeps for stale offers and sold out products.",
+      "inputs": ["claims shelf with proof files", "platform ad rules written as checks", "live ads, emails, pages and listings", "offer end dates and stock", "past rejections and the rewrites that passed"],
+      "powers": ["no launch with an unproven claim", "fast fixes after a rejection", "no stale sale lines after midnight", "creator claim boxes"],
+      "screens": ["10-copy", "09-creative", "11-paid-social", "14-email-messaging", "20-marketplaces"],
+      "note": null
+    },
+    {
+      "id": "voice-check",
+      "name": "Voice and readability check",
+      "what": "Scores any draft in code for reading level, sentence length, banned words, boasts and em dashes, and compares it with the founder's liked and disliked examples. Ranks a batch so the founder reads only the best.",
+      "inputs": ["voice shelf rules", "20 liked and 20 disliked examples", "banned words", "founder ratings of past copy"],
+      "powers": ["fewer rewrites by the founder", "same voice from any writer or AI tool", "fast sign-off of agency copy"],
+      "screens": ["10-copy", "14-email-messaging", "16-organic-content", "07-landing-pages-cro"],
+      "note": null
+    }
+  ]
+}

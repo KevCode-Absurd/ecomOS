@@ -1,0 +1,1174 @@
+{
+  "screen": "26-reports",
+  "title": "Reviews and reports",
+  "top_jobs": [
+    {
+      "id": "T1",
+      "job": "When it is Sunday night and the Monday meeting is at 9, help me see what happened last week, why, and the 3 calls I need to make, so I walk in ready instead of up late in 6 tabs",
+      "metric": "minutes the founder spends preparing the weekly meeting, and decisions logged from it, weekly",
+      "from_v2": [
+        1,
+        5,
+        10,
+        16,
+        19,
+        30,
+        33,
+        34
+      ]
+    },
+    {
+      "id": "T2",
+      "job": "When sales look good or a platform claims big numbers, help me see the profit left after every cost and one agreed number per metric, so I do not celebrate a week that lost money",
+      "metric": "profit after product cost, shipping, discounts, returns and ad spend, weekly",
+      "from_v2": [
+        2,
+        6,
+        8,
+        15,
+        18,
+        22,
+        23,
+        24,
+        25
+      ]
+    },
+    {
+      "id": "T3",
+      "job": "When a client, a partner, an investor or a lender asks how it went, help me send a clear answer with the numbers, the reasons and the plan, so they trust us and stay",
+      "metric": "days from month or quarter end to report sent, and replies asking why",
+      "from_v2": [
+        4,
+        7,
+        9,
+        26,
+        27,
+        28,
+        29,
+        35
+      ]
+    },
+    {
+      "id": "T4",
+      "job": "When I run an agency with 8 brands and 1 hour to spare, help me see which 2 brands need me this week and who on the team is stretched, so I act before a client slips",
+      "metric": "brands with a key number outside its normal range for 2 or more weeks, and days until someone acted",
+      "from_v2": [
+        3,
+        14,
+        21
+      ]
+    },
+    {
+      "id": "T5",
+      "job": "When the month closes, help me see what each change moved, what we paid for and where we stand against plan, so next month's money goes where it earned the most",
+      "metric": "gross profit banked from changes rolled out this month, and sales and profit after ads against plan",
+      "from_v2": [
+        11,
+        12,
+        17,
+        20,
+        31,
+        32
+      ]
+    }
+  ],
+  "jobs": [
+    {
+      "id": "26-01",
+      "top": "T1",
+      "job": "Build the Monday pack each Sunday at 6 pm: 6 numbers with last week, the 4 week average and the normal range, the 3 biggest movers with a named cause, and 3 calls to make",
+      "trigger": "every Sunday at 6 pm",
+      "enablers": [
+        "review-pack",
+        "mover-explainer",
+        "number-book"
+      ],
+      "inputs": [
+        {
+          "need": "sales, orders, new customers, refunds",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "ad spend and results",
+          "from": "Meta Ads and Google Ads",
+          "status": "connected"
+        },
+        {
+          "need": "sessions and conversion",
+          "from": "GA4",
+          "status": "connected"
+        },
+        {
+          "need": "product cost, shipping and fees",
+          "from": "finance shelf",
+          "status": "brain"
+        },
+        {
+          "need": "the 6 numbers the founder cares about",
+          "from": "decisions and goals shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pull last week's data from each connected account",
+        "Compute the 6 numbers in code, marking any missing source as unavailable",
+        "Compare each with its 4 week average and normal range",
+        "Pick the 3 biggest movers and name a cause for each with the evidence",
+        "Write 3 calls with a suggested owner",
+        "Founder reads it in 10 minutes and edits the calls"
+      ],
+      "output": "a 1 page Monday pack: 6 numbers, 3 movers with causes, 3 calls",
+      "next": "feeds 23-10 (Monday meeting) and 26-05 (decisions logged)",
+      "watch": {
+        "metric": "minutes the founder spends preparing the weekly meeting",
+        "window": "weekly",
+        "source": "founder log"
+      },
+      "drives": "decisions made on time",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 5,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "26-02",
+      "top": "T1",
+      "job": "Flag any key number outside its normal range for 2 weeks running, with the start date and the likely cause checked against stock, price, ads, site changes and season, and send only these while the founder is away",
+      "trigger": "daily check, sent in the Monday pack, and as the only alerts while the founder is away",
+      "enablers": [
+        "mover-explainer"
+      ],
+      "inputs": [
+        {
+          "need": "12 months of weekly key numbers",
+          "from": "store platform, GA4, Meta Ads and Google Ads",
+          "status": "connected"
+        },
+        {
+          "need": "stock by product",
+          "from": "store platform inventory",
+          "status": "connected"
+        },
+        {
+          "need": "site changes, price changes and launches with dates",
+          "from": "work board and calendar shelf",
+          "status": "brain"
+        },
+        {
+          "need": "sale and holiday dates",
+          "from": "calendar shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Set a normal range for each key number from the last 12 weeks, season adjusted",
+        "Mark any number outside it for 2 weeks running",
+        "Check the causes in order: stock, price, ad changes, site changes, season, tracking",
+        "Name the most likely cause with the evidence",
+        "Send the flag to the number's owner, or to the founder if it is an emergency"
+      ],
+      "output": "a short list of numbers off for 2 weeks, each with a start date, a cause and an owner",
+      "next": "feeds 26-01 (Monday pack) and 26-15 (brands needing the lead)",
+      "watch": {
+        "metric": "key numbers outside their normal range for 2 or more weeks",
+        "window": "weekly",
+        "source": "store platform and ad accounts"
+      },
+      "drives": "problems caught while small",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 3
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "26-03",
+      "top": "T1",
+      "job": "Add a 'shipped and what it did' section from the work board: cards moved to live and measured last week, each with its metric before and after",
+      "trigger": "every Sunday with the pack",
+      "enablers": [
+        "work-board",
+        "review-pack"
+      ],
+      "inputs": [
+        {
+          "need": "cards moved to live or measured, with owner and metric",
+          "from": "work-board",
+          "status": "enabler"
+        },
+        {
+          "need": "the metric before and after each change",
+          "from": "store platform, GA4 and ad accounts",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Pull cards that moved to live or measured last week",
+        "Pull each card's metric for 14 days before and since",
+        "Mark each as moved, flat or too early",
+        "List late cards with the owner"
+      ],
+      "output": "a shipped list: each change, owner, metric before and after, and late cards",
+      "next": "feeds 26-20 (month close)",
+      "watch": {
+        "metric": "share of shipped cards with a before and after number",
+        "window": "weekly",
+        "source": "work board"
+      },
+      "drives": "work that moves numbers, not just gets done",
+      "business": "gross profit",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "26-04",
+      "top": "T1",
+      "job": "Put service next to money every week: first reply time, time to resolution, follow-ups owed, open backlog and the 30 day review rating, with the order value in open tickets",
+      "trigger": "every Sunday with the pack",
+      "enablers": [
+        "ticket-clock",
+        "review-pack"
+      ],
+      "inputs": [
+        {
+          "need": "tickets with reply, resolution and follow-up times",
+          "from": "helpdesk",
+          "status": "connected"
+        },
+        {
+          "need": "review rating and count",
+          "from": "reviews app",
+          "status": "connected"
+        },
+        {
+          "need": "order value per open ticket",
+          "from": "store platform orders",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Pull the week's ticket times and backlog",
+        "Count follow-ups owed over 48 hours and the order value at stake",
+        "Add the 30 day review rating and the top new complaint",
+        "Flag service slipping while sales hold"
+      ],
+      "output": "a service block in the Monday pack with red flags and dollars at stake",
+      "next": "feeds 23-05 (load per person)",
+      "watch": {
+        "metric": "first reply time in hours and open ticket backlog",
+        "window": "weekly",
+        "source": "helpdesk"
+      },
+      "drives": "review rating and repeat rate",
+      "business": "customer satisfaction",
+      "score": {
+        "money": 3,
+        "satisfaction": 5,
+        "speed": 4,
+        "ease": 5
+      },
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "26-05",
+      "top": "T1",
+      "job": "List tests due, ended and waiting on a call in the pack, decide each in the meeting, then send the team a 5 line note of what moved and what was decided, with owner and date",
+      "trigger": "every Monday",
+      "enablers": [
+        "review-pack",
+        "win-loss-ledger",
+        "work-board"
+      ],
+      "inputs": [
+        {
+          "need": "tests due and ended",
+          "from": "win-loss-ledger",
+          "status": "enabler"
+        },
+        {
+          "need": "calls from the meeting",
+          "from": "decisions and goals shelf",
+          "status": "brain"
+        },
+        {
+          "need": "team list and channel",
+          "from": "team list",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "Add due and ended tests with the read to the pack",
+        "Decide each in the meeting",
+        "Write the 5 line note: 3 numbers that moved, the calls, owners and dates",
+        "Log each call on the decisions shelf and the board",
+        "Count opens of the note"
+      ],
+      "output": "test calls made in the meeting, and a team note with owners and dates",
+      "next": "feeds 25-02 (promote wins) and 23-10 (Monday meeting)",
+      "watch": {
+        "metric": "test reads decided in the weekly meeting",
+        "window": "weekly",
+        "source": "test registry"
+      },
+      "drives": "decisions per week and time to act",
+      "business": "gross profit",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 5
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "26-06",
+      "top": "T2",
+      "job": "Write the weekly profit line: sales minus product cost, shipping, payment fees, discounts, returns and ad spend, with any cost marked unavailable when its source is missing",
+      "trigger": "every Monday, and at month close",
+      "enablers": [
+        "margin-view",
+        "number-book"
+      ],
+      "inputs": [
+        {
+          "need": "orders with discounts, shipping charged and refunds",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "product cost per product",
+          "from": "finance shelf",
+          "status": "brain"
+        },
+        {
+          "need": "shipping and fulfilment cost per order",
+          "from": "3PL invoice or finance shelf",
+          "status": "founder"
+        },
+        {
+          "need": "ad spend",
+          "from": "Meta Ads and Google Ads",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Pull sales and each cost line for the week",
+        "Compute profit after ads in code",
+        "Mark any missing line unavailable, not 0",
+        "Compare with last week and the plan",
+        "Write one line: the week made or lost $X after ads"
+      ],
+      "output": "a weekly profit line with every cost named and gaps marked",
+      "next": "feeds 26-01 (Monday pack) and 21 (finance)",
+      "watch": {
+        "metric": "profit after product cost, shipping, discounts, returns and ad spend",
+        "window": "weekly",
+        "source": "store platform and ad accounts"
+      },
+      "drives": "profit, not sales, steers spend",
+      "business": "contribution margin",
+      "score": {
+        "money": 5,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "26-07",
+      "top": "T2",
+      "job": "Set platform-claimed purchases from Meta, Google and the agency next to store orders by channel for the same window, and show the gap in dollars and percent",
+      "trigger": "every Monday and at month close",
+      "enablers": [
+        "number-book",
+        "funnel-mix"
+      ],
+      "inputs": [
+        {
+          "need": "purchases and value claimed per platform",
+          "from": "Meta Ads and Google Ads",
+          "status": "connected"
+        },
+        {
+          "need": "store orders by source and UTM",
+          "from": "store platform and GA4",
+          "status": "connected"
+        },
+        {
+          "need": "the agency's reported sales",
+          "from": "agency report",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "Pull claimed purchases per platform for the window",
+        "Pull store orders by channel for the same dates",
+        "Show claimed against store orders and the gap",
+        "Mark where the claims add up to more than total store orders",
+        "Use store orders for budget calls"
+      ],
+      "output": "a claimed against real table per channel with the gap",
+      "next": "feeds 26-19 (budget split) and 22 (measurement)",
+      "watch": {
+        "metric": "gap between orders a platform claims and store orders from that channel",
+        "window": "weekly",
+        "source": "store platform and ad accounts"
+      },
+      "drives": "budget moved on real orders",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "26-08",
+      "top": "T2",
+      "job": "Write one agreed source for each report number in the number book (store for sales, GA4 for sessions, ad accounts for spend) and flag any conflict over 5 percent",
+      "trigger": "once at onboarding, then when a source changes",
+      "enablers": [
+        "number-book"
+      ],
+      "inputs": [
+        {
+          "need": "metric definitions",
+          "from": "metric contract",
+          "status": "have"
+        },
+        {
+          "need": "the same number from store, GA4 and ad accounts",
+          "from": "store platform, GA4, Meta Ads",
+          "status": "connected"
+        },
+        {
+          "need": "numbers not to trust and why",
+          "from": "trust and access shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "List the 20 numbers used in reports",
+        "Pick one source and one formula for each",
+        "Compare each across sources for the last 4 weeks",
+        "Flag conflicts over 5 percent with the likely reason",
+        "Founder signs the book"
+      ],
+      "output": "a number book: 20 numbers, 1 source and formula each, and open conflicts",
+      "next": "feeds 26-01, 26-06 and 26-11",
+      "watch": {
+        "metric": "report numbers with a missing or conflicting source",
+        "window": "monthly",
+        "source": "number book"
+      },
+      "drives": "meetings spent on decisions, not data",
+      "business": "gross profit",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 5
+      },
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "26-09",
+      "top": "T2",
+      "job": "Split weekly revenue into new and returning customers, and show sales after returns, refunds and chargebacks next to booked sales",
+      "trigger": "every Monday",
+      "enablers": [
+        "number-book",
+        "margin-view"
+      ],
+      "inputs": [
+        {
+          "need": "orders with customer first order date",
+          "from": "store platform orders",
+          "status": "connected"
+        },
+        {
+          "need": "returns, refunds and chargebacks",
+          "from": "store platform",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Tag each order new or returning",
+        "Sum revenue by group for the week",
+        "Subtract returns, refunds and chargebacks by week of order",
+        "Show booked and kept sales side by side"
+      ],
+      "output": "a weekly table: new, returning, booked and kept sales",
+      "next": "feeds 26-01 (Monday pack) and 11 (paid social prospecting)",
+      "watch": {
+        "metric": "new customer orders and returning customer orders",
+        "window": "weekly",
+        "source": "store platform orders"
+      },
+      "drives": "growth that comes from new buyers",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 5
+      },
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "26-10",
+      "top": "T2",
+      "job": "Rank products by profit after discounts, shipping and returns each month, and flag top sellers with ad spend up and under 21 days of stock",
+      "trigger": "monthly for the rank; weekly for the stock flag",
+      "enablers": [
+        "margin-view"
+      ],
+      "inputs": [
+        {
+          "need": "orders, discounts and returns per product",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "product cost",
+          "from": "finance shelf",
+          "status": "brain"
+        },
+        {
+          "need": "stock and sell rate per product",
+          "from": "store platform inventory",
+          "status": "connected"
+        },
+        {
+          "need": "ad spend per product",
+          "from": "Meta Ads and Google Ads",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Compute profit per product after discounts, shipping and returns",
+        "Rank and compare with the sales rank",
+        "Compute days of stock at the current sell rate",
+        "Flag products with ad spend up and under 21 days of stock",
+        "Send the flags to the ad owner"
+      ],
+      "output": "a product profit rank and a stock against ad spend flag list",
+      "next": "feeds 11 (paid social budget) and 19 (supply)",
+      "watch": {
+        "metric": "days of stock left on the top 10 sellers next to their ad spend",
+        "window": "weekly",
+        "source": "store platform and ad accounts"
+      },
+      "drives": "ads and stock follow profit",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "26-11",
+      "top": "T3",
+      "job": "Draft the monthly client report from the packs: what happened, why, what we changed, what it did, and next month's plan, with unavailable numbers named and never shown as 0",
+      "trigger": "on the 2nd working day of each month",
+      "enablers": [
+        "review-pack",
+        "number-book"
+      ],
+      "inputs": [
+        {
+          "need": "the month's Monday packs",
+          "from": "review-pack",
+          "status": "enabler"
+        },
+        {
+          "need": "shipped changes and results",
+          "from": "work-board",
+          "status": "enabler"
+        },
+        {
+          "need": "the client's goals",
+          "from": "decisions and goals shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pull the month's numbers against last month and last year",
+        "Write what happened and why, in 5 lines",
+        "List changes and what each moved",
+        "Write next month's plan with 3 priorities",
+        "Account lead edits and sends"
+      ],
+      "output": "a 2 page client report sent by the 3rd working day",
+      "next": "feeds 26-15 (portfolio view)",
+      "watch": {
+        "metric": "days from month end to report sent",
+        "window": "monthly",
+        "source": "report log"
+      },
+      "drives": "client retention",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "26-12",
+      "top": "T3",
+      "job": "Add a creative section to the monthly report: spend share by awareness level against last month, the top 3 ads with why they won, and 1 postmortem with the fix",
+      "trigger": "monthly with the client report",
+      "enablers": [
+        "awareness-map",
+        "creative-postmortem",
+        "review-pack"
+      ],
+      "inputs": [
+        {
+          "need": "ads with spend and awareness tags",
+          "from": "awareness-map",
+          "status": "enabler"
+        },
+        {
+          "need": "ad results with age, gender and placement",
+          "from": "Meta Ads",
+          "status": "connected"
+        },
+        {
+          "need": "the month's worst ad with its postmortem",
+          "from": "creative-postmortem",
+          "status": "enabler"
+        }
+      ],
+      "steps": [
+        "Show spend share per awareness level this month and last",
+        "Name the top 3 ads and the principle behind each",
+        "Add 1 postmortem: what failed, where people dropped, the fix",
+        "Say what top of funnel ads come next month"
+      ],
+      "output": "a 1 page creative section: awareness mix, 3 winners, 1 postmortem",
+      "next": "feeds 09 (next month's creative brief)",
+      "watch": {
+        "metric": "share of spend on unaware and problem aware ads",
+        "window": "28 day",
+        "source": "Meta Ads"
+      },
+      "drives": "new customers per week",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "26-13",
+      "top": "T3",
+      "job": "Draft the quarterly investor or lender update from real numbers: sales, gross profit, cash against the bank, what went well, what did not, and the ask",
+      "trigger": "5 working days after quarter end, and on any lender request",
+      "enablers": [
+        "review-pack",
+        "margin-view"
+      ],
+      "inputs": [
+        {
+          "need": "quarter sales and gross profit",
+          "from": "store platform and finance shelf",
+          "status": "connected"
+        },
+        {
+          "need": "cash balance and payouts",
+          "from": "bank and accounting",
+          "status": "setup"
+        },
+        {
+          "need": "goals and the ask",
+          "from": "decisions and goals shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pull the quarter's numbers and tie sales to payouts",
+        "Write 3 wins, 3 misses, and the plan",
+        "Check every number against its source",
+        "Founder edits and sends"
+      ],
+      "output": "an investor or lender update that ties to the bank",
+      "next": "none",
+      "watch": {
+        "metric": "days from quarter end to update sent",
+        "window": "quarterly",
+        "source": "report log"
+      },
+      "drives": "trust of investors and lenders",
+      "business": "cash",
+      "score": {
+        "money": 2,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "26-14",
+      "top": "T3",
+      "job": "Answer 'is it us or the market?' with the brand's sales change next to category search demand change for the same weeks, with sale and holiday dates marked",
+      "trigger": "monthly, and when a client asks",
+      "enablers": [
+        "market-pulse",
+        "mover-explainer"
+      ],
+      "inputs": [
+        {
+          "need": "weekly sales, this year and last",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "category search demand by week",
+          "from": "Search Console and search trend data",
+          "status": "setup"
+        },
+        {
+          "need": "sale and holiday dates both years",
+          "from": "calendar shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pull weekly sales for both years",
+        "Pull category search demand for the same weeks",
+        "Line up sale and holiday dates",
+        "Write one line: we moved X, the category moved Y"
+      ],
+      "output": "a chart of brand against category, with the calendar marked, and one line",
+      "next": "feeds 26-11 (client report)",
+      "watch": {
+        "metric": "brand sales change against category search demand change",
+        "window": "same weeks",
+        "source": "store platform and search data"
+      },
+      "drives": "calm, correct client calls",
+      "business": "revenue",
+      "score": {
+        "money": 2,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "26-15",
+      "top": "T4",
+      "job": "Rank all client brands each Monday by key numbers out of range for 2 weeks and days since someone acted, and pick the 2 that need the lead this week",
+      "trigger": "every Monday",
+      "enablers": [
+        "mover-explainer",
+        "review-pack"
+      ],
+      "inputs": [
+        {
+          "need": "each brand's key numbers",
+          "from": "store platform and ad accounts per brand",
+          "status": "connected"
+        },
+        {
+          "need": "actions logged per brand",
+          "from": "work-board",
+          "status": "enabler"
+        }
+      ],
+      "steps": [
+        "Pull the out of range flags for every brand",
+        "Add days since the last action on each flag",
+        "Score and rank the brands",
+        "Name the 2 that need the lead and why",
+        "Book the time on the board"
+      ],
+      "output": "a ranked brand list with the 2 picks and the reason",
+      "next": "feeds 26-16 (team load)",
+      "watch": {
+        "metric": "brands with a key number off for 2 or more weeks, and days until someone acted",
+        "window": "weekly",
+        "source": "work board"
+      },
+      "drives": "clients kept",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "26-16",
+      "top": "T4",
+      "job": "Show each account manager's booked hours across all brands against their available hours, and move work from anyone booked over 100 percent",
+      "trigger": "every Monday",
+      "enablers": [
+        "work-board",
+        "review-pack"
+      ],
+      "inputs": [
+        {
+          "need": "hours booked per person per brand",
+          "from": "time tracking tool",
+          "status": "setup"
+        },
+        {
+          "need": "available hours per person",
+          "from": "team list",
+          "status": "founder"
+        },
+        {
+          "need": "open cards per person",
+          "from": "work-board",
+          "status": "enabler"
+        }
+      ],
+      "steps": [
+        "Pull booked hours per person for the week",
+        "Compare with available hours",
+        "Flag anyone over 100 percent",
+        "Move 1 brand task or a report to someone under 80 percent"
+      ],
+      "output": "a load table per account manager with moves made",
+      "next": "feeds 26-17 (hours against fee)",
+      "watch": {
+        "metric": "people booked over 100 percent of available hours",
+        "window": "weekly",
+        "source": "time tracking"
+      },
+      "drives": "clients dropped by a stretched manager",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "26-17",
+      "top": "T4",
+      "job": "Show hours spent on each brand next to its monthly fee, and list brands where the fee covers less than the cost of the hours",
+      "trigger": "monthly",
+      "enablers": [
+        "review-pack"
+      ],
+      "inputs": [
+        {
+          "need": "hours per brand",
+          "from": "time tracking tool",
+          "status": "setup"
+        },
+        {
+          "need": "fee per brand",
+          "from": "agency contracts",
+          "status": "founder"
+        },
+        {
+          "need": "cost per hour per role",
+          "from": "agency finance",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "Sum hours per brand",
+        "Cost them at each role's hourly cost",
+        "Compare with the fee",
+        "List brands under water and write fix, reprice or drop"
+      ],
+      "output": "a brand margin table with a call per brand",
+      "next": "none",
+      "watch": {
+        "metric": "hours booked per brand against the fee",
+        "window": "monthly",
+        "source": "time tracking"
+      },
+      "drives": "agency margin",
+      "business": "contribution margin",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "26-18",
+      "top": "T5",
+      "job": "Match each agency and freelancer invoice line to delivered work on the board and to the contract, and list the dollars with no matching delivery",
+      "trigger": "when each invoice arrives",
+      "enablers": [
+        "work-board",
+        "review-pack"
+      ],
+      "inputs": [
+        {
+          "need": "invoice lines",
+          "from": "agency and freelancer invoices",
+          "status": "founder"
+        },
+        {
+          "need": "delivered work with dates",
+          "from": "work-board",
+          "status": "enabler"
+        },
+        {
+          "need": "contracted scope per month",
+          "from": "agency contract",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "Load invoice lines",
+        "Match each to delivered cards",
+        "List unmatched dollars and missed scope",
+        "Send questions before paying"
+      ],
+      "output": "an invoice check with unmatched dollars and a 3 month delivery pattern",
+      "next": "feeds 23-19 (agency scorecard)",
+      "watch": {
+        "metric": "invoice dollars with no matching delivered work",
+        "window": "monthly",
+        "source": "work board"
+      },
+      "drives": "cash paid for work not done",
+      "business": "cash",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "26-19",
+      "top": "T5",
+      "job": "Before next month's budget is set, show where the last dollar earned the most on each channel last month, and propose the split on results",
+      "trigger": "the last week of each month",
+      "enablers": [
+        "funnel-mix",
+        "margin-view",
+        "number-book"
+      ],
+      "inputs": [
+        {
+          "need": "spend and store orders per channel and campaign",
+          "from": "Meta Ads, Google Ads and store platform",
+          "status": "connected"
+        },
+        {
+          "need": "gross margin per product",
+          "from": "finance shelf",
+          "status": "brain"
+        },
+        {
+          "need": "budget caps per channel",
+          "from": "finance shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Compute profit after ads per channel",
+        "Compare the last 20 percent of spend on each channel with its average",
+        "Propose the split within the caps",
+        "Founder approves; log the split"
+      ],
+      "output": "a proposed budget split with the reason per channel",
+      "next": "feeds 11 (paid social) and 12 (Google Ads)",
+      "watch": {
+        "metric": "each channel's share of spend against the agreed split",
+        "window": "monthly",
+        "source": "ad accounts"
+      },
+      "drives": "profit after ads",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "26-20",
+      "top": "T5",
+      "job": "At month close, list every change rolled out (tests, new ads, site changes, offers) and the gross profit each moved, next to sales, spend and profit against plan",
+      "trigger": "on the 2nd working day of each month",
+      "enablers": [
+        "win-loss-ledger",
+        "margin-view",
+        "review-pack"
+      ],
+      "inputs": [
+        {
+          "need": "wins shipped and results",
+          "from": "win-loss-ledger",
+          "status": "enabler"
+        },
+        {
+          "need": "shipped cards with metrics",
+          "from": "work-board",
+          "status": "enabler"
+        },
+        {
+          "need": "the monthly plan",
+          "from": "finance shelf",
+          "status": "brain"
+        },
+        {
+          "need": "sales, spend and costs",
+          "from": "store platform and ad accounts",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "List changes shipped this month",
+        "Pull what each moved and mark proven, likely or unknown",
+        "Show sales, spend and profit after ads against plan",
+        "Name the gap and the 2 moves that close it"
+      ],
+      "output": "a month close page: changes and their money, plan against actual, the gap",
+      "next": "feeds 26-11 (client report) and 26-19 (budget split)",
+      "watch": {
+        "metric": "gross profit banked from changes rolled out this month",
+        "window": "monthly",
+        "source": "win and loss ledger"
+      },
+      "drives": "fees and team time judged on results",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 2,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    }
+  ],
+  "new_enablers": [
+    {
+      "id": "number-book",
+      "name": "Number book",
+      "what": "One agreed source, formula, window and unavailable rule for every number in a report. Flags conflicts between sources and shows platform claims next to store orders.",
+      "inputs": [
+        "metric contract",
+        "store platform",
+        "GA4",
+        "ad accounts",
+        "trust notes"
+      ],
+      "powers": [
+        "one number per metric",
+        "no zeros for missing data",
+        "claims checked against store orders"
+      ],
+      "screens": [
+        "26-reports",
+        "22-measurement",
+        "00-today"
+      ],
+      "note": null
+    },
+    {
+      "id": "mover-explainer",
+      "name": "Mover explainer",
+      "what": "Sets a normal range for each key number, flags any number off for 2 weeks, and checks causes in order: stock, price, ads, site changes, season, tracking. Works across brands for an agency.",
+      "inputs": [
+        "12 months of key numbers",
+        "stock",
+        "change log",
+        "calendar"
+      ],
+      "powers": [
+        "causes named with evidence",
+        "problems caught while small",
+        "which brand needs the lead",
+        "away mode alerts"
+      ],
+      "screens": [
+        "26-reports",
+        "00-today",
+        "22-measurement"
+      ],
+      "note": null
+    },
+    {
+      "id": "review-pack",
+      "name": "Review pack builder",
+      "what": "Builds the Monday pack, the monthly client report, the month close and the investor update from the same numbers, with shipped work, tests due and service next to money.",
+      "inputs": [
+        "number book",
+        "mover explainer",
+        "work board",
+        "win and loss ledger",
+        "ticket clock"
+      ],
+      "powers": [
+        "Monday ready in 10 minutes",
+        "client reports on time",
+        "investor updates that tie to the bank"
+      ],
+      "screens": [
+        "26-reports",
+        "00-today",
+        "23-team-ops"
+      ],
+      "note": null
+    }
+  ]
+}

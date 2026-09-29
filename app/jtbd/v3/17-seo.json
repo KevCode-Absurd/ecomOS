@@ -1,0 +1,1169 @@
+{
+ "screen": "17-seo",
+ "title": "SEO",
+ "top_jobs": [
+  {
+   "id": "T1",
+   "job": "When organic revenue falls 20 percent in a week and no one knows why, help me see within a day which pages and search terms lost it, and what organic really earns from our own orders, so I fix it before a month of sales is gone",
+   "metric": "organic revenue from store orders, week on week",
+   "from_v2": [
+    1,
+    3,
+    9,
+    11,
+    13,
+    19,
+    20
+   ]
+  },
+  {
+   "id": "T2",
+   "job": "When money pages sit at position 8 to 20 or guides lose half their clicks, help me fix the pages Google already trusts before writing new ones, so I get the fastest organic growth for the least work",
+   "metric": "clicks to money pages from Search Console",
+   "from_v2": [
+    4,
+    10,
+    14,
+    15,
+    25,
+    29,
+    35
+   ]
+  },
+  {
+   "id": "T3",
+   "job": "When buyers search for things we sell and we have no page for them, help me write pages and articles from what they type, ask, buy on our ads and say in reviews, so I catch buyers early with pages that sell",
+   "metric": "new pages in the top 10 and orders from them",
+   "from_v2": [
+    16,
+    21,
+    23,
+    26,
+    27,
+    30,
+    33
+   ]
+  },
+  {
+   "id": "T4",
+   "job": "When a developer ships a change, a new app goes in or we move themes, help me catch anything that blocks Google or breaks pages the same day, so I do not lose years of search traffic in a week",
+   "metric": "money pages indexed and serving with price and stars",
+   "from_v2": [
+    2,
+    5,
+    6,
+    17,
+    18,
+    22,
+    24
+   ]
+  }
+ ],
+ "jobs": [
+  {
+   "id": "17-01",
+   "top": "T1",
+   "job": "Connect Search Console and an SEO data source such as OpenSEO through the MCP, and pull queries, pages, positions and clicks every day into one table",
+   "trigger": "once at onboarding, then daily",
+   "enablers": [
+    "search-feed"
+   ],
+   "inputs": [
+    {
+     "need": "Search Console queries and pages, 16 months",
+     "from": "Search Console",
+     "status": "connected"
+    },
+    {
+     "need": "an SEO data source for volumes, rival ranks and links, such as OpenSEO",
+     "from": "OpenSEO or similar",
+     "status": "buy"
+    },
+    {
+     "need": "keyword universe with intent and priority",
+     "from": "seo shelf",
+     "status": "brain"
+    },
+    {
+     "need": "organic landing page sessions and orders",
+     "from": "GA4",
+     "status": "connected"
+    }
+   ],
+   "steps": [
+    "Connect Search Console and the SEO source through the MCP, read only",
+    "Pull 16 months of queries and pages as the baseline",
+    "Tag each query brand or non-brand and by intent",
+    "Join pages to GA4 organic sessions and orders",
+    "Check 10 rows by hand against the Search Console screen"
+   ],
+   "output": "a daily table of query, page, position, clicks, impressions and orders",
+   "next": "feeds every job on this screen and 18-02",
+   "watch": {
+    "metric": "days with a complete pull",
+    "window": "30 day",
+    "source": "search-feed"
+   },
+   "drives": "organic decisions on fresh numbers",
+   "business": "revenue",
+   "score": {
+    "money": 3,
+    "satisfaction": 4,
+    "speed": 3,
+    "ease": 3
+   },
+   "ready": 2,
+   "effort": "days"
+  },
+  {
+   "id": "17-02",
+   "top": "T1",
+   "job": "Tie organic to store orders each month: sessions, orders, revenue and new customers by landing page, non-brand apart from brand",
+   "trigger": "1st of each month",
+   "enablers": [
+    "search-feed"
+   ],
+   "inputs": [
+    {
+     "need": "organic sessions and orders by landing page",
+     "from": "GA4",
+     "status": "connected"
+    },
+    {
+     "need": "orders with UTM and new vs returning",
+     "from": "Shopify",
+     "status": "connected"
+    },
+    {
+     "need": "brand vs non-brand query split",
+     "from": "Search Console",
+     "status": "connected"
+    }
+   ],
+   "steps": [
+    "Pull organic sessions and orders by landing page for the month",
+    "Check GA4 organic orders against Shopify's organic count and note the gap",
+    "Split brand queries from non-brand by landing page",
+    "Rank the 20 pages that earn the most non-brand revenue",
+    "Write the 2 minute summary: grew or not, from which pages, what needs the founder"
+   ],
+   "output": "a 2 minute monthly card with organic revenue, new customers and the top 20 pages",
+   "next": "feeds 17-04 (agency check) and 26-reports",
+   "watch": {
+    "metric": "non-brand organic revenue",
+    "window": "30 day",
+    "source": "Shopify"
+   },
+   "drives": "organic judged on money",
+   "business": "revenue",
+   "score": {
+    "money": 3,
+    "satisfaction": 5,
+    "speed": 2,
+    "ease": 4
+   },
+   "ready": 5,
+   "effort": "hours"
+  },
+  {
+   "id": "17-03",
+   "top": "T1",
+   "job": "Find the cause of a 20 percent organic drop within a day: which pages and terms lost clicks, and whether it was ranking, click rate, demand, tracking or indexing",
+   "trigger": "when organic revenue or clicks drop 20 percent week on week",
+   "enablers": [
+    "search-feed",
+    "crawl-watch"
+   ],
+   "inputs": [
+    {
+     "need": "daily clicks, impressions and positions per page",
+     "from": "search-feed",
+     "status": "enabler"
+    },
+    {
+     "need": "crawl and indexing changes",
+     "from": "crawl-watch",
+     "status": "enabler"
+    },
+    {
+     "need": "deploy and app change log",
+     "from": "audits shelf",
+     "status": "brain"
+    },
+    {
+     "need": "Google update dates",
+     "from": "public notes",
+     "status": "have"
+    }
+   ],
+   "steps": [
+    "Compare the last 7 days with the 7 before per page",
+    "Sort the loss into: lower rank, lower click rate, lower demand, tracking break or pages dropped from the index",
+    "Check the change log and update dates for the same days",
+    "Name the 5 pages with the most revenue lost and the cause for each",
+    "Write the fix and the owner, and recheck in 7 days"
+   ],
+   "output": "a 1 page cause note with 5 pages, the cause of each and the fix",
+   "next": "feeds 17-17 (change checks)",
+   "watch": {
+    "metric": "organic clicks to the 5 pages",
+    "window": "7 day",
+    "source": "Search Console"
+   },
+   "drives": "organic revenue recovered",
+   "business": "revenue",
+   "score": {
+    "money": 4,
+    "satisfaction": 5,
+    "speed": 4,
+    "ease": 3
+   },
+   "ready": 3,
+   "effort": "hours"
+  },
+  {
+   "id": "17-04",
+   "top": "T1",
+   "job": "Check an SEO agency report or a link building pitch against our own clicks, orders and past results before paying",
+   "trigger": "monthly, and each time someone pitches",
+   "enablers": [
+    "search-feed"
+   ],
+   "inputs": [
+    {
+     "need": "the agency report or pitch",
+     "from": "agency",
+     "status": "founder"
+    },
+    {
+     "need": "organic orders by page",
+     "from": "GA4",
+     "status": "connected"
+    },
+    {
+     "need": "rank and click history",
+     "from": "search-feed",
+     "status": "enabler"
+    },
+    {
+     "need": "past SEO work and results",
+     "from": "history shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "List every claim in the report or pitch",
+    "Check each against our own clicks and orders for the pages named",
+    "Mark true, false or cannot tell",
+    "Write 5 questions the founder should ask",
+    "Log the verdict in the agency history"
+   ],
+   "output": "a claim check with true, false or cannot tell on each line, and 5 questions",
+   "next": "feeds 21-finance-cash",
+   "watch": {
+    "metric": "SEO fees per organic order",
+    "window": "90 day",
+    "source": "Shopify"
+   },
+   "drives": "money spent only on work that moves sales",
+   "business": "gross profit",
+   "score": {
+    "money": 3,
+    "satisfaction": 5,
+    "speed": 3,
+    "ease": 4
+   },
+   "ready": 3,
+   "effort": "hours"
+  },
+  {
+   "id": "17-05",
+   "top": "T2",
+   "job": "List money pages at position 8 to 20 with the most impressions and write the fix for each: title, internal links and the content the top 3 have and we lack",
+   "trigger": "monthly",
+   "enablers": [
+    "search-feed"
+   ],
+   "inputs": [
+    {
+     "need": "pages with position and impressions per query",
+     "from": "Search Console",
+     "status": "connected"
+    },
+    {
+     "need": "page revenue",
+     "from": "GA4",
+     "status": "connected"
+    },
+    {
+     "need": "top 3 results for each target term",
+     "from": "OpenSEO or similar",
+     "status": "buy"
+    },
+    {
+     "need": "SEO ideas on near-page-1 pages",
+     "from": "ideas/v1/15-SEO-search.json",
+     "status": "have"
+    }
+   ],
+   "steps": [
+    "Pull pages at position 8 to 20 with over 500 impressions a month",
+    "Rank by impressions times conversion rate",
+    "For the top 10, read the top 3 results and list what they have that we lack",
+    "Write the fix: title, 3 internal links from strong pages, missing blocks",
+    "Ship 5 fixes and read positions at 4 weeks"
+   ],
+   "output": "10 pages with a written fix, 5 shipped, with a read date",
+   "next": "feeds 17-08 (intent check)",
+   "watch": {
+    "metric": "average position of the 10 pages",
+    "window": "28 day",
+    "source": "Search Console"
+   },
+   "drives": "organic clicks to money pages",
+   "business": "revenue",
+   "score": {
+    "money": 4,
+    "satisfaction": 3,
+    "speed": 3,
+    "ease": 4
+   },
+   "ready": 2,
+   "effort": "days"
+  },
+  {
+   "id": "17-06",
+   "top": "T2",
+   "job": "Rewrite titles and meta descriptions of 20 pages with high impressions and low click rate, using the words that win in Google Ads and Meta hooks",
+   "trigger": "each quarter",
+   "enablers": [
+    "search-feed",
+    "signal-bridge"
+   ],
+   "inputs": [
+    {
+     "need": "pages with impressions, clicks and position",
+     "from": "Search Console",
+     "status": "connected"
+    },
+    {
+     "need": "Google Ads headlines and search terms that convert",
+     "from": "Google Ads",
+     "status": "connected"
+    },
+    {
+     "need": "Meta hooks with the best click rate",
+     "from": "Meta Ads",
+     "status": "connected"
+    },
+    {
+     "need": "allowed claims",
+     "from": "claims shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "List 20 pages in the top 10 with click rate below the norm for their position",
+    "Pull the paid headlines and hooks that win for the same topic",
+    "Write a new title and description led by the buyer's term and the winning angle",
+    "A person checks each is true and fits the page",
+    "Ship and read click rate at 4 weeks"
+   ],
+   "output": "20 new titles and descriptions, each linked to the paid ad or hook it borrows from",
+   "next": "feeds 12-12 (the reverse direction)",
+   "watch": {
+    "metric": "click rate of the 20 pages",
+    "window": "28 day",
+    "source": "Search Console"
+   },
+   "drives": "more clicks without a rank change",
+   "business": "revenue",
+   "score": {
+    "money": 3,
+    "satisfaction": 3,
+    "speed": 4,
+    "ease": 5
+   },
+   "ready": 5,
+   "effort": "hours"
+  },
+  {
+   "id": "17-07",
+   "top": "T2",
+   "job": "Refresh the 10 guides that lost half their clicks: new facts, current products, the questions now asked, and a check for AI answers on top",
+   "trigger": "each quarter",
+   "enablers": [
+    "search-feed",
+    "article-brief"
+   ],
+   "inputs": [
+    {
+     "need": "clicks per page, this year vs last",
+     "from": "Search Console",
+     "status": "connected"
+    },
+    {
+     "need": "current products and facts",
+     "from": "products shelf",
+     "status": "brain"
+    },
+    {
+     "need": "questions buyers ask now",
+     "from": "question-matrix",
+     "status": "enabler"
+    },
+    {
+     "need": "results page view per target term",
+     "from": "OpenSEO or similar",
+     "status": "buy"
+    }
+   ],
+   "steps": [
+    "List guides with clicks down 50 percent year on year",
+    "Check each: lost rank, lost to an AI answer, or lost demand",
+    "Skip pages lost to demand; refresh the rest",
+    "Update facts and products, add 3 new questions, add a product block",
+    "Read clicks at 6 weeks"
+   ],
+   "output": "10 refreshed guides with the cause of loss noted on each",
+   "next": "feeds 18-08 (answer blocks)",
+   "watch": {
+    "metric": "clicks to the 10 guides",
+    "window": "6 week",
+    "source": "Search Console"
+   },
+   "drives": "organic traffic won back",
+   "business": "revenue",
+   "score": {
+    "money": 3,
+    "satisfaction": 3,
+    "speed": 3,
+    "ease": 3
+   },
+   "ready": 1,
+   "effort": "days"
+  },
+  {
+   "id": "17-08",
+   "top": "T2",
+   "job": "Check each money page answers what its searchers wanted, compared with the top 3 results, and add the missing blocks such as size chart, comparison and FAQ",
+   "trigger": "each quarter, and when a page ranks but does not sell",
+   "enablers": [
+    "search-feed",
+    "question-matrix"
+   ],
+   "inputs": [
+    {
+     "need": "queries per page with conversion rate",
+     "from": "Search Console",
+     "status": "connected"
+    },
+    {
+     "need": "page behaviour: scroll and exits",
+     "from": "GA4 and Clarity",
+     "status": "setup"
+    },
+    {
+     "need": "unanswered questions per product",
+     "from": "question-matrix",
+     "status": "enabler"
+    },
+    {
+     "need": "page text and blocks",
+     "from": "site shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "List pages with good rank and low conversion",
+    "Read the queries that bring buyers to each",
+    "Compare the page with the top 3 results for the lead query",
+    "Add the missing blocks with true answers",
+    "Read conversion rate at 4 weeks"
+   ],
+   "output": "a list of pages with the blocks added and a read date",
+   "next": "feeds 07-landing-pages-cro",
+   "watch": {
+    "metric": "conversion rate of organic visits to the pages",
+    "window": "28 day",
+    "source": "GA4"
+   },
+   "drives": "orders from search visits",
+   "business": "revenue",
+   "score": {
+    "money": 4,
+    "satisfaction": 3,
+    "speed": 3,
+    "ease": 3
+   },
+   "ready": 3,
+   "effort": "days"
+  },
+  {
+   "id": "17-09",
+   "top": "T2",
+   "job": "List 20 sites that link to 2 rivals and not to us, and pitch the 5 our buyers read with a real reason",
+   "trigger": "each quarter",
+   "enablers": [
+    "search-feed",
+    "competitor-feed"
+   ],
+   "inputs": [
+    {
+     "need": "backlinks of us and 3 rivals",
+     "from": "OpenSEO or similar",
+     "status": "buy"
+    },
+    {
+     "need": "rival list",
+     "from": "competitors shelf",
+     "status": "brain"
+    },
+    {
+     "need": "stories and data we can offer",
+     "from": "messaging shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "Pull sites linking to 2 or more rivals and not us",
+    "Drop spam and paid link farms",
+    "Pick the 5 our buyers read",
+    "Write a pitch per site with a real reason: data, a story, a sample",
+    "Log replies and links won"
+   ],
+   "output": "5 pitches sent and a list of 20 target sites",
+   "next": "feeds 18-10 (lists assistants cite)",
+   "watch": {
+    "metric": "new links from relevant sites",
+    "window": "90 day",
+    "source": "OpenSEO or similar"
+   },
+   "drives": "rank on money terms",
+   "business": "revenue",
+   "score": {
+    "money": 2,
+    "satisfaction": 2,
+    "speed": 1,
+    "ease": 3
+   },
+   "ready": 2,
+   "effort": "weeks"
+  },
+  {
+   "id": "17-10",
+   "top": "T3",
+   "job": "Build 10 article briefs from 4 sources: Search Console gaps, Google Ads terms that sell, Meta's winning angles, and review and ticket questions",
+   "trigger": "monthly",
+   "enablers": [
+    "article-brief",
+    "signal-bridge",
+    "review-miner"
+   ],
+   "inputs": [
+    {
+     "need": "queries with impressions and no good page",
+     "from": "Search Console",
+     "status": "connected"
+    },
+    {
+     "need": "Google Ads search terms with purchases",
+     "from": "Google Ads",
+     "status": "connected"
+    },
+    {
+     "need": "Meta winners with angle tags",
+     "from": "creative-tags",
+     "status": "enabler"
+    },
+    {
+     "need": "review themes and ticket questions",
+     "from": "review-miner",
+     "status": "enabler"
+    },
+    {
+     "need": "allowed claims and proof",
+     "from": "claims shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "Pull queries with 200 or more impressions and no page in the top 20",
+    "Match each to a paid search term that sells and a Meta angle that wins",
+    "Add the review and ticket words buyers use for the same problem",
+    "Write 10 briefs: the question, the angle, the proof, the product link",
+    "Founder picks 4 to write this month"
+   ],
+   "output": "10 briefs, each with its 4 sources named, 4 picked to write",
+   "next": "feeds 17-12 (buyer guides) and 16-13 (posts from articles)",
+   "watch": {
+    "metric": "impressions and orders from the new articles",
+    "window": "90 day",
+    "source": "Search Console"
+   },
+   "drives": "new buyers from search",
+   "business": "revenue",
+   "score": {
+    "money": 4,
+    "satisfaction": 3,
+    "speed": 2,
+    "ease": 3
+   },
+   "ready": 3,
+   "effort": "days"
+  },
+  {
+   "id": "17-11",
+   "top": "T3",
+   "job": "Pick FAQ and article work from the question coverage matrix: the blank cells asked most become answer blocks on product pages or full articles",
+   "trigger": "monthly",
+   "enablers": [
+    "question-matrix",
+    "article-brief"
+   ],
+   "inputs": [
+    {
+     "need": "tickets and chat questions",
+     "from": "helpdesk",
+     "status": "connected"
+    },
+    {
+     "need": "Amazon customer questions",
+     "from": "Seller Central",
+     "status": "setup"
+    },
+    {
+     "need": "site search terms",
+     "from": "GA4",
+     "status": "connected"
+    },
+    {
+     "need": "where each question is answered",
+     "from": "question-matrix",
+     "status": "enabler"
+    }
+   ],
+   "steps": [
+    "Sort blank cells by how often each question is asked",
+    "Short answers go on the product page FAQ; long ones become articles",
+    "Write the top 10 with facts from the products shelf",
+    "Mark each matrix cell filled with the page URL",
+    "Read tickets and conversion on those products at 4 weeks"
+   ],
+   "output": "10 answers live and the matrix updated with URLs",
+   "next": "feeds 18-08 (answers assistants quote) and 15-customers-cx",
+   "watch": {
+    "metric": "tickets on answered questions",
+    "window": "28 day",
+    "source": "helpdesk"
+   },
+   "drives": "fewer doubts, more orders",
+   "business": "revenue",
+   "score": {
+    "money": 3,
+    "satisfaction": 4,
+    "speed": 3,
+    "ease": 4
+   },
+   "ready": 3,
+   "effort": "days"
+  },
+  {
+   "id": "17-12",
+   "top": "T3",
+   "job": "Write 5 'best X for Y' and 'X vs Y' guides that lead to a product, with an honest comparison",
+   "trigger": "each quarter",
+   "enablers": [
+    "article-brief",
+    "review-miner"
+   ],
+   "inputs": [
+    {
+     "need": "comparison and 'best' queries with volume",
+     "from": "OpenSEO or similar",
+     "status": "buy"
+    },
+    {
+     "need": "rival reviews: where they win and fail",
+     "from": "review-miner",
+     "status": "enabler"
+    },
+    {
+     "need": "battlecards",
+     "from": "competitors shelf",
+     "status": "brain"
+    },
+    {
+     "need": "proof per product",
+     "from": "products shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "Pick 5 comparison or 'best' terms with volume and buying intent",
+    "Read the top 3 results for each",
+    "Write each guide with a fair table, who each option is for, and our product where it truly fits",
+    "A person checks every claim about a rival is true and dated",
+    "Link each guide to the product and read orders at 90 days"
+   ],
+   "output": "5 published guides with a checked comparison table",
+   "next": "feeds 18-12 (comparison page for assistants)",
+   "watch": {
+    "metric": "orders from the 5 guides",
+    "window": "90 day",
+    "source": "GA4"
+   },
+   "drives": "buyers caught while still choosing",
+   "business": "revenue",
+   "score": {
+    "money": 3,
+    "satisfaction": 3,
+    "speed": 2,
+    "ease": 3
+   },
+   "ready": 1,
+   "effort": "weeks"
+  },
+  {
+   "id": "17-13",
+   "top": "T3",
+   "job": "Rename product and collection page titles in the words buyers type, keeping our brand name after",
+   "trigger": "once, then when a product launches",
+   "enablers": [
+    "signal-bridge",
+    "search-feed"
+   ],
+   "inputs": [
+    {
+     "need": "queries that reach each product page",
+     "from": "Search Console",
+     "status": "connected"
+    },
+    {
+     "need": "Google Ads and Amazon terms that sell",
+     "from": "Google Ads",
+     "status": "connected"
+    },
+    {
+     "need": "product names in use",
+     "from": "products shelf",
+     "status": "brain"
+    },
+    {
+     "need": "language bank of customer words",
+     "from": "customers shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "List pages whose title uses a name no one searches",
+    "Pull the terms buyers use for that product",
+    "Write title and H1 as the buyer's term, then our name",
+    "Founder approves name changes",
+    "Read impressions at 4 weeks"
+   ],
+   "output": "renamed titles and H1s for product and collection pages",
+   "next": "feeds 12-15 (Shopping titles)",
+   "watch": {
+    "metric": "impressions of renamed pages",
+    "window": "28 day",
+    "source": "Search Console"
+   },
+   "drives": "pages found by the words buyers use",
+   "business": "revenue",
+   "score": {
+    "money": 3,
+    "satisfaction": 3,
+    "speed": 3,
+    "ease": 4
+   },
+   "ready": 5,
+   "effort": "hours"
+  },
+  {
+   "id": "17-14",
+   "top": "T3",
+   "job": "Pull category search demand quarter by quarter for 3 years, compare it with our organic growth, and list the 10 terms rising fastest",
+   "trigger": "once a quarter",
+   "enablers": [
+    "search-feed",
+    "market-pulse"
+   ],
+   "inputs": [
+    {
+     "need": "search volume by month for 50 category terms",
+     "from": "OpenSEO or similar",
+     "status": "buy"
+    },
+    {
+     "need": "Google Trends for the category",
+     "from": "Google Trends",
+     "status": "setup"
+    },
+    {
+     "need": "our organic clicks and orders by quarter",
+     "from": "Search Console",
+     "status": "connected"
+    }
+   ],
+   "steps": [
+    "Pull 3 years of volume for the category terms",
+    "Sum by quarter and compute year on year change",
+    "Put our organic clicks and orders next to it",
+    "Write whether we grew faster or slower than the category",
+    "List the 10 rising terms and whether we have a page for each"
+   ],
+   "output": "a quarter by quarter chart of category vs us, and 10 rising terms",
+   "next": "feeds 17-15 (seasonal pages) and 01-market-research",
+   "watch": {
+    "metric": "our share of category clicks",
+    "window": "quarter",
+    "source": "Search Console"
+   },
+   "drives": "budget set on the real trend",
+   "business": "revenue",
+   "score": {
+    "money": 3,
+    "satisfaction": 3,
+    "speed": 1,
+    "ease": 3
+   },
+   "ready": 2,
+   "effort": "days"
+  },
+  {
+   "id": "17-15",
+   "top": "T3",
+   "job": "Get seasonal pages live and refreshed 8 weeks before each season, with links from the home page",
+   "trigger": "8 weeks before each season on the calendar",
+   "enablers": [
+    "search-feed",
+    "article-brief"
+   ],
+   "inputs": [
+    {
+     "need": "seasonal terms and last year's clicks by week",
+     "from": "Search Console",
+     "status": "connected"
+    },
+    {
+     "need": "season dates and offers",
+     "from": "calendar shelf",
+     "status": "brain"
+    },
+    {
+     "need": "stock for seasonal products",
+     "from": "Shopify",
+     "status": "connected"
+    }
+   ],
+   "steps": [
+    "List last year's seasonal pages and their clicks by week",
+    "Refresh each with this year's products and offers",
+    "Build any missing page for a rising seasonal term",
+    "Link them from the home page and top collections",
+    "Check indexing 2 weeks later"
+   ],
+   "output": "seasonal pages live and indexed 6 weeks before the season",
+   "next": "feeds 12-20 and 14-email-messaging peak plans",
+   "watch": {
+    "metric": "clicks to seasonal pages vs last year",
+    "window": "season",
+    "source": "Search Console"
+   },
+   "drives": "peak revenue from search",
+   "business": "revenue",
+   "score": {
+    "money": 3,
+    "satisfaction": 3,
+    "speed": 2,
+    "ease": 4
+   },
+   "ready": 5,
+   "effort": "days"
+  },
+  {
+   "id": "17-16",
+   "top": "T3",
+   "job": "Send search winners back to paid: articles and queries that bring orders become Google ad groups and Meta hooks",
+   "trigger": "monthly",
+   "enablers": [
+    "signal-bridge"
+   ],
+   "inputs": [
+    {
+     "need": "queries and articles with organic orders",
+     "from": "GA4",
+     "status": "connected"
+    },
+    {
+     "need": "current Google ad groups",
+     "from": "Google Ads",
+     "status": "connected"
+    },
+    {
+     "need": "Meta hook backlog",
+     "from": "ads shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "List the 10 queries and 5 articles with the most organic orders",
+    "Check which have no Google ad group and add them",
+    "Turn each article's lead angle into 2 Meta hooks",
+    "Hand both lists to the paid team",
+    "Read results next month"
+   ],
+   "output": "a list of new ad groups and hooks, each tied to an organic winner",
+   "next": "feeds 12-11 and 11-paid-social",
+   "watch": {
+    "metric": "orders from new ad groups and hooks",
+    "window": "28 day",
+    "source": "Google Ads"
+   },
+   "drives": "paid ads built on proven words",
+   "business": "revenue",
+   "score": {
+    "money": 3,
+    "satisfaction": 2,
+    "speed": 3,
+    "ease": 5
+   },
+   "ready": 5,
+   "effort": "hours"
+  },
+  {
+   "id": "17-17",
+   "top": "T4",
+   "job": "Check every theme change, app install and deploy the same day for noindex, robots blocks, broken canonicals, schema errors and redirects",
+   "trigger": "after every change",
+   "enablers": [
+    "crawl-watch"
+   ],
+   "inputs": [
+    {
+     "need": "the change log",
+     "from": "audits shelf",
+     "status": "brain"
+    },
+    {
+     "need": "a site crawler",
+     "from": "Screaming Frog or similar",
+     "status": "buy"
+    },
+    {
+     "need": "Search Console indexing report",
+     "from": "Search Console",
+     "status": "connected"
+    },
+    {
+     "need": "money page list",
+     "from": "site shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "Crawl the money pages after the change",
+    "Compare with the last good crawl",
+    "Flag any new noindex, blocked page, wrong canonical, schema error or redirect chain",
+    "Send the fix to the person who shipped the change",
+    "Recrawl after the fix"
+   ],
+   "output": "a same-day crawl diff with fixes sent",
+   "next": "feeds 06-store-health",
+   "watch": {
+    "metric": "money pages indexed",
+    "window": "7 day",
+    "source": "Search Console"
+   },
+   "drives": "search traffic kept safe",
+   "business": "risk",
+   "score": {
+    "money": 4,
+    "satisfaction": 5,
+    "speed": 4,
+    "ease": 3
+   },
+   "ready": 2,
+   "effort": "days"
+  },
+  {
+   "id": "17-18",
+   "top": "T4",
+   "job": "Map every ranking URL before a theme or platform move, set 301s, and check each one works the day after launch",
+   "trigger": "4 weeks before a migration",
+   "enablers": [
+    "crawl-watch",
+    "search-feed"
+   ],
+   "inputs": [
+    {
+     "need": "all URLs with clicks in 16 months",
+     "from": "Search Console",
+     "status": "connected"
+    },
+    {
+     "need": "backlinked URLs",
+     "from": "OpenSEO or similar",
+     "status": "buy"
+    },
+    {
+     "need": "new URL structure",
+     "from": "developer",
+     "status": "founder"
+    }
+   ],
+   "steps": [
+    "Export every URL with clicks or links",
+    "Map each to its new URL, one to one",
+    "Load the redirects on staging and crawl them",
+    "Launch, then crawl every old URL the next day",
+    "Watch clicks daily for 4 weeks"
+   ],
+   "output": "a signed URL map and a day-after check with every redirect passing",
+   "next": "none",
+   "watch": {
+    "metric": "organic clicks vs the week before launch",
+    "window": "28 day",
+    "source": "Search Console"
+   },
+   "drives": "years of ranking kept",
+   "business": "risk",
+   "score": {
+    "money": 5,
+    "satisfaction": 5,
+    "speed": 3,
+    "ease": 2
+   },
+   "ready": 2,
+   "effort": "weeks"
+  },
+  {
+   "id": "17-19",
+   "top": "T4",
+   "job": "Keep sold out and discontinued pages earning: waitlist and similar products for gaps, a 301 to the nearest product for discontinued ones",
+   "trigger": "when a ranking product goes out of stock for 14 days or is discontinued",
+   "enablers": [
+    "crawl-watch",
+    "search-feed"
+   ],
+   "inputs": [
+    {
+     "need": "stock and discontinued flags",
+     "from": "Shopify",
+     "status": "connected"
+    },
+    {
+     "need": "clicks per product page",
+     "from": "Search Console",
+     "status": "connected"
+    },
+    {
+     "need": "nearest product per SKU",
+     "from": "products shelf",
+     "status": "brain"
+    }
+   ],
+   "steps": [
+    "List out of stock or discontinued pages with clicks",
+    "For short gaps, add a waitlist and 3 similar products",
+    "For discontinued, 301 to the nearest product",
+    "Never delete a page with clicks",
+    "Check waitlist sign-ups and redirected orders monthly"
+   ],
+   "output": "a list of pages with the action on each",
+   "next": "feeds 19-supply-inventory",
+   "watch": {
+    "metric": "clicks kept on affected pages",
+    "window": "28 day",
+    "source": "Search Console"
+   },
+   "drives": "ranking kept through stock gaps",
+   "business": "revenue",
+   "score": {
+    "money": 3,
+    "satisfaction": 4,
+    "speed": 4,
+    "ease": 5
+   },
+   "ready": 5,
+   "effort": "hours"
+  },
+  {
+   "id": "17-20",
+   "top": "T4",
+   "job": "Keep stars, prices and stock showing in search: check product schema and free listings weekly and fix pages that broke",
+   "trigger": "every Monday",
+   "enablers": [
+    "crawl-watch"
+   ],
+   "inputs": [
+    {
+     "need": "rich result and merchant listing reports",
+     "from": "Search Console",
+     "status": "connected"
+    },
+    {
+     "need": "product schema on each page",
+     "from": "crawl-watch",
+     "status": "enabler"
+    },
+    {
+     "need": "reviews app rating output",
+     "from": "reviews app",
+     "status": "connected"
+    }
+   ],
+   "steps": [
+    "Pull rich result errors and warnings",
+    "Match each to a template or app",
+    "Fix at the template so all pages heal",
+    "Validate 5 pages by hand",
+    "Recheck the next week"
+   ],
+   "output": "a weekly schema check with template fixes",
+   "next": "feeds 12-16 (free extras) and 18-19 (AI shopping feed)",
+   "watch": {
+    "metric": "pages with valid product rich results",
+    "window": "7 day",
+    "source": "Search Console"
+   },
+   "drives": "click rate from search results",
+   "business": "revenue",
+   "score": {
+    "money": 3,
+    "satisfaction": 3,
+    "speed": 4,
+    "ease": 4
+   },
+   "ready": 3,
+   "effort": "hours"
+  }
+ ],
+ "new_enablers": [
+  {
+   "id": "crawl-watch",
+   "name": "Crawl watch",
+   "what": "Crawls the money pages daily and after every theme change, app install or deploy. Checks robots rules, noindex, canonicals, redirects, status codes, product schema (price, stock, stars) and content in the first HTML. Keeps a URL map for migrations.",
+   "inputs": [
+    "a site crawler",
+    "sitemap and page list",
+    "Search Console indexing report",
+    "the deploy and app change log"
+   ],
+   "powers": [
+    "same-day alerts when a change blocks Google",
+    "safe migrations with a 301 map",
+    "stars and prices kept in results",
+    "pages AI bots can read"
+   ],
+   "screens": [
+    "17-seo",
+    "18-answer-engines",
+    "06-store-health",
+    "08-site-speed"
+   ],
+   "note": null
+  }
+ ]
+}
