@@ -34,6 +34,7 @@ from . import ai
 from . import products
 from . import stock
 from . import team
+from . import live_refresh
 from . import settings as settings_mod
 from .snapshot import DATA
 from .view import Engine, ViewError
@@ -421,7 +422,7 @@ def make_handler(gallery):
                     page = (WEB / 'index.html').read_text(encoding='utf-8')
                     doc = ('<!doctype html><html lang="en"><head><meta charset="utf-8">'
                            '<meta name="viewport" content="width=device-width, initial-scale=1"></head><body>'
-                           + page + (team.BADGE if team.enabled() else '') + '</body></html>')
+                           + page + (team.BADGE if team.enabled() else '') + live_refresh.WIDGET + '</body></html>')
                     return self.send_bytes(doc.encode('utf-8'), 'text/html; charset=utf-8')
                 if len(parts) == 1 and parts[0] in WEB_FILES:
                     return self.send_bytes((WEB / parts[0]).read_bytes(), 'text/javascript; charset=utf-8')
@@ -447,6 +448,8 @@ def make_handler(gallery):
                     return self.send_file(path, cache='max-age=3600') if path.is_file() else self.send_json({'error': 'not found'}, 404)
                 if parts == ['breakdowns.json']:
                     return self.send_json(ai.load_breakdowns())
+                if parts == ['api', 'refresh']:
+                    return self.send_json(live_refresh.status())
                 if parts == ['api', 'ai-status']:
                     return self.send_json(ai.status())
                 if len(parts) == 3 and parts[:2] == ['api', 'variants'] and SAFE_ID.match(parts[2]):
@@ -536,7 +539,8 @@ def make_handler(gallery):
                       '/api/catalog-premium': (self.ai_catalog_premium, MAX_AI_BODY),
                       '/api/catalog-approve': (save_approved, MAX_BODY),
                       '/api/product-story': (self.ai_product_story, MAX_AI_BODY),
-                      '/api/stock-check': (lambda body: stock.run(limit=min(int(body.get('limit') or 150), 300)), MAX_BODY)}
+                      '/api/stock-check': (lambda body: stock.run(limit=min(int(body.get('limit') or 150), 300)), MAX_BODY),
+                      '/api/refresh': (lambda body: live_refresh.start(self.user() or 'you'), MAX_BODY)}
             for doc in DOCS:
                 savers['/api/save/' + doc] = ((lambda d: lambda body: save_doc(d, body))(doc), MAX_DOC)
             origin = self.headers.get('Origin')
@@ -740,6 +744,9 @@ def main(argv=None):
     if args.prefetch_images:
         prefetch_images(gallery)
         return
+    used = live_refresh.restore()
+    if used:
+        print('Using newer data from the refresh store:', ', '.join(used))
     host, port = '127.0.0.1', args.port
     if team.enabled():
         problems = team.check_config()

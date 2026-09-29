@@ -13,6 +13,7 @@ if { [ "${RENDER:-}" = "true" ] || [ -n "${PERSIST_DIR:-}" ]; } && [ -d "$P" ] &
     if [ -e "$P/$x" ]; then rm -rf "${D:?}/$x"; ln -s "$P/$x" "$D/$x"; fi
   done
   export TEAM_STATE="${TEAM_STATE:-$P/team}"
+  export REFRESH_STORE="${REFRESH_STORE:-$P/fresh}"
 else
   echo "No persistent disk at $P: made images and usage counts reset on each deploy."
 fi
