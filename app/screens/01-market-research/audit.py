@@ -5365,6 +5365,50 @@ def launch_read_findings(brand, data, br, rd, ends_on):
     return out
 
 
+
+# ---------------------------------------------------------------- days per stage, from the candidate logs
+
+def stage_spans(cand, ends_on):
+    """The days a candidate spent in each stage, from its screen-in date and the stage changes in its log ("screened to
+    researched"): completed spans, and the open span for the stage it is in now (to ends_on)."""
+    since = cand.get('screen_in_date')
+    if not since:
+        return []
+    cur, start = 'screened', date.fromisoformat(str(since)[:10])
+    spans = []
+    for l in sorted(cand.get('log') or [], key=lambda l: str(l.get('on') or '')):
+        what = str(l.get('what') or '').split(';')[0].strip()
+        parts = what.split(' to ')
+        if len(parts) == 2 and parts[0] in STAGES + ['killed'] and (parts[1] in STAGES or parts[1] == 'killed') and l.get('on'):
+            on = date.fromisoformat(str(l['on'])[:10])
+            spans.append({'stage': cur, 'days': max(0, (on - start).days), 'open': False, 'to': parts[1]})
+            cur, start = parts[1], on
+    if cur in STAGES and cur != 'go' and cand.get('stage') not in ('killed', 'kill'):
+        spans.append({'stage': cur, 'days': max(0, (ends_on - start).days), 'open': True, 'to': None})
+    return spans
+
+
+def days_per_stage(brand, ends_on):
+    """Per stage: the median days candidates took to leave it (completed spans), the count, the longest open span and who holds
+    it, the time box for the stage where one exists on the candidates; the slowest stage by median, and the stage holding the
+    longest open wait. Unavailable for a stage nobody has left yet: a median of one is a data point, never a norm."""
+    by = {st: {'stage': st, 'completed': [], 'open': []} for st in STAGES[:-1]}
+    for c in pipeline(brand):
+        for sp in stage_spans(c, ends_on):
+            if sp['stage'] in by:
+                (by[sp['stage']]['open'] if sp['open'] else by[sp['stage']]['completed']).append(dict(sp, name=c.get('name'), candidate_id=c.get('candidate_id')))
+    rows = []
+    for st, v in by.items():
+        done = [x['days'] for x in v['completed']]
+        longest = max(v['open'], key=lambda x: x['days']) if v['open'] else None
+        rows.append({'stage': st, 'n_completed': len(done), 'median_days': statistics.median(done) if done else None, 'n_open': len(v['open']), 'longest_open_days': longest['days'] if longest else None,
+                     'longest_open_name': longest['name'] if longest else None, 'longest_open_id': longest['candidate_id'] if longest else None, 'norm': len(done) >= 2})
+    slowest = max([r for r in rows if r['median_days'] is not None], key=lambda r: r['median_days'], default=None)
+    stalled = max([r for r in rows if r['longest_open_days'] is not None], key=lambda r: r['longest_open_days'], default=None)
+    return {'rows': rows, 'slowest': slowest['stage'] if slowest else None, 'stalled': stalled['stage'] if stalled else None, 'stalled_id': stalled['longest_open_id'] if stalled else None,
+            'rule': 'days per stage come from the screen-in date and the stage changes in each candidate log; a median needs 2 or more candidates to leave the stage before it reads as a norm; the longest open wait names the candidate and its stage'}
+
+
 # ---------------------------------------------------------------- a tie on the scorecard: the founder picks, and says why
 
 TIE_POINTS = 3   # shortlisted candidates within this many scorecard points are a tie the founder breaks (bank idea PRD-108)

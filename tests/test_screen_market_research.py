@@ -1823,6 +1823,32 @@ class PipelineTest(ShapeMixin, unittest.TestCase):
         finally:
             audit.PIPELINE_PATH = self.real2
 
+    def test_days_per_stage_from_the_logs(self):
+        D = date(2026, 9, 27)
+        self.real2 = audit.PIPELINE_PATH
+        try:
+            audit.PIPELINE_PATH = self.tmp
+            self.tmp.write_text(json.dumps({'rows': [
+                {'candidate_id': 'a', 'brand': 'fake', 'name': 'A', 'stage': 'gated', 'screen_in_date': '2026-09-01', 'log': [{'on': '2026-09-01', 'what': 'screened in'}, {'on': '2026-09-05', 'what': 'screened to researched; 1 hours logged'}, {'on': '2026-09-15', 'what': 'researched to gated'}]},
+                {'candidate_id': 'b', 'brand': 'fake', 'name': 'B', 'stage': 'researched', 'screen_in_date': '2026-09-03', 'log': [{'on': '2026-09-11', 'what': 'screened to researched'}]},
+                {'candidate_id': 'c', 'brand': 'fake', 'name': 'C', 'stage': 'killed', 'screen_in_date': '2026-09-10', 'log': [{'on': '2026-09-12', 'what': 'screened to killed; killed: no demand'}]},
+                {'candidate_id': 'd', 'brand': 'fake', 'name': 'D', 'stage': 'screened', 'screen_in_date': '2026-09-20'},
+                {'candidate_id': 'e', 'brand': 'fake', 'name': 'E', 'stage': 'go', 'screen_in_date': '2026-08-01', 'log': [{'on': '2026-08-03', 'what': 'screened to researched'}, {'on': '2026-08-13', 'what': 'researched to gated'}, {'on': '2026-08-20', 'what': 'gated to shortlisted'}, {'on': '2026-09-01', 'what': 'shortlisted to go'}]}]}), encoding='utf-8')
+            spans = audit.stage_spans(next(c for c in audit.pipeline('fake') if c['candidate_id'] == 'a'), D)
+            self.assertEqual([(x['stage'], x['days'], x['open']) for x in spans], [('screened', 4, False), ('researched', 10, False), ('gated', 12, True)])
+            sd = audit.days_per_stage('fake', D)
+            by = {r['stage']: r for r in sd['rows']}
+            self.assertEqual((by['screened']['median_days'], by['screened']['n_completed'], by['screened']['norm']), (3.0, 4, True))   # a, b, c, e left screened: 4, 8, 2, 2 days
+            self.assertEqual((by['researched']['median_days'], by['researched']['n_completed']), (10, 2))
+            self.assertEqual((by['gated']['median_days'], by['gated']['norm']), (7, False))                                            # only e left gated: a data point, not a norm
+            self.assertEqual((by['shortlisted']['median_days'], by['shortlisted']['n_completed']), (12, 1))
+            self.assertEqual((by['screened']['longest_open_name'], by['screened']['longest_open_days']), ('D', 7))
+            self.assertEqual((by['gated']['longest_open_name'], by['gated']['longest_open_days']), ('A', 12))
+            self.assertEqual((sd['slowest'], sd['stalled'], sd['stalled_id']), ('shortlisted', 'researched', 'b'))                   # B has waited 16 days at researched
+            self.assertEqual(audit.days_per_stage('nobody', D)['slowest'], None)
+        finally:
+            audit.PIPELINE_PATH = self.real2
+
     def test_demand_pattern_tags(self):
         even = {'rows': [{'category': 'socks', 'series': [100] * 12}], 'months': [f'2026-{m:02d}' for m in range(1, 13)], 'last': '2026-12'}
         peaked = {'rows': [{'category': 'socks', 'series': [50] * 10 + [300, 400]}], 'months': even['months'], 'last': '2026-12'}

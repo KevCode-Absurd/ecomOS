@@ -1029,6 +1029,21 @@
       gapLine(open.length ? open.map((r) => r.name + ' (' + vt[r.verdict].toLowerCase() + ')').join(', ') + '.' : 'Every launch is on plan, being read, or waiting for its first whole month.', open.length && actionFor(open[0].finding_id) ? { label: 'Open the first', onClick: () => openAction(actionFor(open[0].finding_id)) } : null));
   }
 
+  function stageDaysBlock(sd) {
+    const rows = (sd && sd.rows) || [];
+    if (!rows.length) return el('p', { class: 'muted', text: 'No stages to read.' });
+    const vrows = rows.map((r) => Object.assign({}, r, {
+      medText: r.median_days == null ? 'nobody has left it yet' : r.median_days + ' d' + (r.norm ? '' : ' (1 candidate, not a norm)'), nText: String(r.n_completed), openText: r.longest_open_days == null ? 'none open' : r.longest_open_name + ', ' + r.longest_open_days + ' d',
+      actions: [r.longest_open_id && actionFor(SLUG + '.PROD-R14.' + r.longest_open_id) ? { label: 'Decide the longest wait', onClick: () => openAction(actionFor(SLUG + '.PROD-R14.' + r.longest_open_id)) } : r.longest_open_id ? { label: 'Brief', cls: 'quiet', onClick: () => openBrief(r.longest_open_id) } : { label: 'Nothing open', cls: 'quiet', onClick: () => {} }] }));
+    const tbl = UI.verdictTable({
+      columns: [{ key: 'stage', label: 'Stage' }, { key: 'medText', label: 'Median days to leave' }, { key: 'nText', label: 'Left it' }, { key: 'openText', label: 'Longest open wait' }],
+      rows: vrows,
+      verdict: { at: 1, kind: (r) => r.stage === sd.stalled && r.longest_open_days != null ? 'fix' : r.stage === sd.slowest ? 'watch' : r.median_days == null ? 'na' : 'keep', text: (r) => r.stage === sd.stalled && r.longest_open_days != null ? 'Longest wait' : r.stage === sd.slowest ? 'Slowest' : r.median_days == null ? 'No norm yet' : 'Read', reason: () => sd.rule },
+      actions: { label: 'Do', onClick: () => {} }, sort: false });
+    return el('div', { class: 'stack' }, el('div', { class: 'card scroll' }, tbl), el('p', { class: 'micro faint', text: 'Rule: ' + sd.rule + '.' }),
+      gapLine(sd.stalled ? 'The longest open wait is at ' + sd.stalled + '. Decide it, or shorten the box for that stage.' : sd.slowest ? 'The slowest stage by median is ' + sd.slowest + '; nothing waits past its box now.' : 'No candidate has left a stage yet, so there is no norm to read.', sd.stalled_id && actionFor(SLUG + '.PROD-R14.' + sd.stalled_id) ? { label: 'Decide it', onClick: () => openAction(actionFor(SLUG + '.PROD-R14.' + sd.stalled_id)) } : null));
+  }
+
   function scorecardBlock(sc) {
     const rows = (sc && sc.rows) || [];
     if (!rows.length) return el('p', { class: 'muted', text: 'No candidate to score.' });
@@ -1483,6 +1498,7 @@
     parts.push(section('desk-pattern', 'Is each candidate evergreen, seasonal or a trend, and when does cash move?', 'The demand pattern from our own 12-month series by category and the web pass, with the cash timing it implies and the cash plan attached to each candidate.', patternBlock(d.pattern)));
     parts.push(section('desk-pipeline', 'What is in the next-SKU pipeline, and what is past its time box?', 'Candidates screened in from the gaps above or by hand, their stage, fast checks, time box and hours. Advance, log hours or kill from the card; every write lands in the pipeline log.', pipelineBlock(d.pipeline || { rows: [] }, d.quick_screens)));
     parts.push(section('desk-kills', 'What did we kill, and why?', 'Killed candidates with the reason and the date, on a 90-day hold; an open candidate that reads like one of them gets the kill note before any hours go in.', killsBlock(d.kills)));
+    parts.push(section('desk-stage-days', 'How long does each stage take, and where do candidates stall?', 'The median days candidates took to leave each stage, from the screen-in date and the stage changes in their logs, and the longest open wait now. A median needs 2 or more candidates to read as a norm.', stageDaysBlock(d.stage_days)));
     parts.push(section('desk-pulls', 'How fresh is what this desk reads, and what would a refresh cost?', 'Every pull the desk depends on: its last capture, age against its window, the blocks it feeds and the estimate for a run under the brand\'s caps. A person approves each paid call; nothing runs from here.', pullsBlock(d.pulls)));
     parts.push(section('desk-brain', 'How fresh is the brain this desk reads?', 'The brain sections behind the rules here, each with its records, last update, age against the contract TTL, stale and conflict counts and confidence; a conflict waits on the founder, a stale section waits on a pull or the keeper.', brainFreshnessBlock(d.brain_freshness)));
     parts.push(section('desk-assumptions', 'What do the simulated numbers assume?', 'The calibration assumptions behind the simulated tables: value, status (founder, sourced, derived, modelled), as-of date, sources, and which rules here price with them. Founder-confirmed or not, said plainly.', assumptionsBlock(d.assumptions)));
