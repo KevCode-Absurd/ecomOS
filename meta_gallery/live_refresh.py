@@ -21,6 +21,7 @@ import os
 import re
 import shutil
 import threading
+import time
 import urllib.error
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
@@ -36,8 +37,8 @@ CACHE = DATA / 'cache' / 'gallery.json'
 SALES = DATA / 'sales.json'
 TRAFFIC = DATA / 'traffic.json'
 RAW = DATA / 'raw'
-SECRET_KEYS = ('META_ACCESS_TOKEN', 'METABASE_API_KEY', 'METABASE_PASSWORD')
-ENV_KEYS = ('META_ACCESS_TOKEN', 'META_AD_ACCOUNT_ID', 'METABASE_URL', 'METABASE_API_KEY', 'METABASE_USER', 'METABASE_PASSWORD')
+SECRET_KEYS = ('META_ACCESS_TOKEN', 'METABASE_API_KEY', 'METABASE_PASSWORD', 'METABASE_SESSION')
+ENV_KEYS = ('META_ACCESS_TOKEN', 'META_AD_ACCOUNT_ID', 'METABASE_URL', 'METABASE_API_KEY', 'METABASE_USER', 'METABASE_PASSWORD', 'METABASE_SESSION')
 
 _lock = threading.Lock()
 _state = {'running': False, 'step': '', 'steps': [], 'started_at': None, 'by': None}
@@ -56,7 +57,7 @@ def _env():
 def configured():
     e = _env()
     return {'meta': bool(e.get('META_ACCESS_TOKEN') and e.get('META_AD_ACCOUNT_ID')),
-            'metabase': bool(e.get('METABASE_API_KEY') or (e.get('METABASE_USER') and e.get('METABASE_PASSWORD')))}
+            'metabase': bool(e.get('METABASE_API_KEY') or e.get('METABASE_SESSION') or (e.get('METABASE_USER') and e.get('METABASE_PASSWORD')))}
 
 
 def cooldown_min():
@@ -300,11 +301,24 @@ def _months(since, until):
     return out
 
 
+def _replace(tmp, path):
+    # Windows refuses to replace a file while another program has it open for a moment
+    # (the dashboard reading it, antivirus, a sync tool). Try again, then copy over it.
+    for i in range(10):
+        try:
+            tmp.replace(path)
+            return
+        except PermissionError:
+            time.sleep(0.3 * (i + 1))
+    shutil.copyfile(tmp, path)
+    tmp.unlink(missing_ok=True)
+
+
 def _write(path, obj, compact=False):
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_suffix('.tmp')
     tmp.write_text(json.dumps(obj, ensure_ascii=False, separators=(',', ':') if compact else None), encoding='utf-8')
-    tmp.replace(path)
+    _replace(tmp, path)
 
 
 def meta_refresh(since, until, graph=None):
@@ -348,9 +362,9 @@ def meta_refresh(since, until, graph=None):
 
 class Metabase:
     """Signs in with an API key, or with your Metabase email and password (a session that lasts for this refresh)."""
-    def __init__(self, base, key=None, user=None, password=None):
+    def __init__(self, base, key=None, user=None, password=None, session=None):
         self.base, self.key, self.user, self.password = base.rstrip('/'), key, user, password
-        self.session = None
+        self.session = session or None  # a browser session id also works (Google sign in accounts)
         self._dash = {}
         self._dlock = threading.Lock()
         self._slock = threading.Lock()
@@ -368,7 +382,8 @@ class Metabase:
                     with urllib.request.urlopen(req, timeout=60) as r:
                         self.session = json.loads(r.read().decode('utf-8'))['id']
                 except urllib.error.HTTPError as e:
-                    raise RuntimeError(f'Metabase sign in failed ({e.code}). Check METABASE_USER and METABASE_PASSWORD.') from None
+                    raise RuntimeError(f'Metabase sign in failed ({e.code}). Check METABASE_USER and METABASE_PASSWORD, '
+                                       'or use METABASE_SESSION if you sign in with Google.') from None
                 except Exception as e:
                     raise RuntimeError(scrub(f'Metabase could not be reached: {e}')) from None
         h['X-Metabase-Session'] = self.session
@@ -381,6 +396,8 @@ class Metabase:
             with urllib.request.urlopen(req, timeout=120) as r:
                 return json.loads(r.read().decode('utf-8'))
         except urllib.error.HTTPError as e:
+            if e.code == 401 and not self.key:
+                raise RuntimeError('Metabase said the sign in has ended (401). Update METABASE_SESSION or the password in .env.') from None
             raise RuntimeError(scrub(f'Metabase {e.code}: {e.read().decode("utf-8", "replace")[:300]}')) from None
         except Exception as e:
             raise RuntimeError(scrub(f'Metabase could not be reached: {e}')) from None
@@ -449,7 +466,7 @@ def _summary(m):
 def _metabase():
     e = _env()
     return Metabase(e.get('METABASE_URL') or 'https://analyze.gehnaindia.com', e.get('METABASE_API_KEY'),
-                    e.get('METABASE_USER'), e.get('METABASE_PASSWORD'))
+                    e.get('METABASE_USER'), e.get('METABASE_PASSWORD'), e.get('METABASE_SESSION'))
 
 
 def metabase_pull(mb, since, until):

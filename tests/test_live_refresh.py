@@ -170,6 +170,38 @@ class LiveRefreshTests(unittest.TestCase):
         self.assertEqual(seen[1][1].get('X-metabase-session'), '0f1e2d3c-4b5a-6978-8796-a5b4c3d2e1f0')
         self.assertEqual(len([u for u, _ in seen if u.endswith('/api/session')]), 1)
 
+    def test_replace_falls_back_when_windows_locks_the_file(self):
+        dst = self.t / 'x.json'
+        dst.write_text('old')
+        tmp = self.t / 'x.tmp'
+        tmp.write_text('new')
+        with mock.patch.object(Path, 'replace', side_effect=PermissionError('[WinError 5] Access is denied')), mock.patch.object(lr.time, 'sleep'):
+            lr._replace(tmp, dst)
+        self.assertEqual(dst.read_text(), 'new')
+        self.assertFalse(tmp.exists())
+
+    def test_browser_session_is_used_without_sign_in(self):
+        seen = []
+
+        class R:
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *a):
+                return False
+
+            def read(self):
+                return b'{"dashcards": []}'
+
+        def fake_open(req, timeout=None):
+            seen.append((req.full_url, dict(req.header_items())))
+            return R()
+        mb = lr.Metabase('https://mb.example', session='11111111-2222-3333-4444-555555555555')
+        with mock.patch.object(lr.urllib.request, 'urlopen', fake_open):
+            mb.dash(6)
+        self.assertEqual([u for u, _ in seen], ['https://mb.example/api/dashboard/6'])
+        self.assertEqual(seen[0][1]['X-metabase-session'], '11111111-2222-3333-4444-555555555555')
+
     def test_run_records_errors_without_secrets_and_keeps_going(self):
         with mock.patch.object(lr, '_graph', return_value=FakeGraph(fail=True)), mock.patch.object(lr, '_metabase', return_value=FakeMetabase()):
             res = lr.run('asha', today=dt.date(2026, 4, 3))
