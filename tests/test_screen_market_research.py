@@ -2379,6 +2379,38 @@ class HandoffCreativeTest(unittest.TestCase):
         finally:
             audit.SHARED_HANDOFFS_PATH, audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH, api.DECISIONS_PATH, api.HANDOFFS_DIR, api.HANDOFFS_PATH = saved
 
+    def test_digest_lists_only_what_changed(self):
+        import tempfile
+        saved = (audit.SHARED_HANDOFFS_PATH, audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH, api.DECISIONS_PATH, api.HANDOFFS_DIR, api.HANDOFFS_PATH, api.SEEN_DIR)
+        tmp = Path(tempfile.mkdtemp())
+        audit.SHARED_HANDOFFS_PATH, audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH, api.DECISIONS_PATH, api.HANDOFFS_DIR, api.HANDOFFS_PATH, api.SEEN_DIR = tmp / 'h.json', tmp / 'p.json', tmp / 'pc.json', tmp / 'pt.json', tmp / 'd.json', tmp / 'ho', tmp / 'ch.json', tmp / 'seen'
+        try:
+            data = api.sample_data()
+            D = audit.last_full_day(data, None)
+            old = (D - timedelta(days=20)).isoformat()
+            audit.PIPELINE_PATH.write_text(json.dumps({'rows': [
+                {'candidate_id': 'g1', 'brand': 'sample', 'name': 'G', 'category': 'socks', 'stage': 'go', 'owner': 'Sam', 'screen_in_date': old, 'launch_target': (D + timedelta(days=30)).isoformat(), 'lead_time_days': 5, 'log': [{'on': old, 'who': 'person', 'what': 'screened in'}, {'on': (D - timedelta(days=2)).isoformat(), 'who': 'person', 'what': 'shortlisted to go'}]},
+                {'candidate_id': 'n1', 'brand': 'sample', 'name': 'N', 'category': 'socks', 'stage': 'screened', 'screen_in_date': (D - timedelta(days=1)).isoformat()},
+                {'candidate_id': 'k1', 'brand': 'sample', 'name': 'K', 'category': 'socks', 'stage': 'killed', 'screen_in_date': old, 'killed_on': (D - timedelta(days=3)).isoformat(), 'kill_reason': 'commodity'}]}), encoding='utf-8')
+            since = (D - timedelta(days=7)).isoformat()
+            dg0 = api.digest(data, None, since)
+            self.assertFalse(dg0['findings']['available'])                  # no snapshot yet: said, not invented
+            self.assertEqual(([x['name'] for x in dg0['screened']], [x['what'] for x in dg0['moved']], [x['name'] for x in dg0['killed']]), (['N'], ['shortlisted to go'], ['K']))
+            api.candidate_update('sample', 'g1', {'ordered_on': D.isoformat(), 'who': 'kevin'}, D)
+            api.handle(Req(['candidates', 'g1', 'handoff', 'copy'], brand='sample', method='POST'))
+            dg = api.digest(data, None, since)
+            self.assertEqual((len(dg['launch_steps']), len(dg['handoffs'])), (1, 1))
+            self.assertFalse(dg['quiet'])
+            for head in ('DIGEST for sample', 'FINDINGS: no snapshot yet', 'DECISIONS (0)', 'LAUNCH STEPS MARKED (1)', 'HAND-OFFS ON THE SHARED LOG (1)', 'CANDIDATES: 1 screened in, 1 moved, 1 killed', 'THE TOP 3 NOW'):
+                self.assertIn(head, dg['text'])
+            self.assertNotIn('—', dg['text'])
+            far = (D + timedelta(days=5)).isoformat()
+            dq = api.digest(data, None, far)                                # nothing after a future date: a quiet digest
+            self.assertTrue(dq['quiet'])
+            self.assertEqual(api.handle(Req(['digest'], brand='sample'))['brand'], 'sample')
+        finally:
+            audit.SHARED_HANDOFFS_PATH, audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH, api.DECISIONS_PATH, api.HANDOFFS_DIR, api.HANDOFFS_PATH, api.SEEN_DIR = saved
+
     def test_avatar_handoff_names_the_buyer(self):
         fid = next(f['id'] for f in audit.run('bombas', {'ends_on': '2026-09-27'}) if f['rule_id'] == 'PROD-R11')
         h = api.creative_handoff('bombas', fid)

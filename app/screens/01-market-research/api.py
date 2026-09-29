@@ -2787,6 +2787,62 @@ def changes_since(data, brand):
             'quiet': not (new or gone or worse or better or stake_moves)}
 
 
+
+# ---------------------------------------------------------------- the founder digest: only what changed since the last note
+
+def _weekly():
+    if 'weekly' not in _SAMPLE:
+        spec = importlib.util.spec_from_file_location('ecomos_research_weekly', HERE / 'weekly.py')
+        _SAMPLE['weekly'] = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(_SAMPLE['weekly'])
+    return _SAMPLE['weekly']
+
+
+def digest(data, brand, since=None):
+    """Only what changed since the last weekly note (or a given date): findings new, gone, worse or better and stake moves
+    (from the seen snapshot, when one exists), decisions made on this desk, hand-off rows posted and statuses changed on the
+    shared log, launch steps marked, candidates screened in, moved or killed. One page a founder reads in a minute; every
+    line comes from the desk's own logs."""
+    r = rank(brand or 'sample', None)
+    ends_on = r['window']['ends_on']
+    notes = _weekly().past(brand)
+    if since is None:
+        since = notes[0]['date'] if notes else None
+    since_s = str(since or '')
+    after = lambda t: str(t or '')[:10] > since_s if since_s else True   # noqa: E731
+    ch = changes_since(data, brand)
+    findings = {'available': ch.get('available'), 'taken_on': ch.get('taken_on'), 'new': ch.get('new') or [], 'gone': ch.get('gone') or [], 'worse': ch.get('worse') or [], 'better': ch.get('better') or [], 'stake_moves': ch.get('stake_moves') or []}
+    dd = decisions_on_desk(data, brand, limit=200)
+    decisions = [d for d in dd.get('rows') or [] if after(d.get('time')) and not d.get('launch_step')]
+    launch_steps = [d for d in dd.get('rows') or [] if after(d.get('time')) and d.get('launch_step')]
+    handoffs = [h for h in audit.shared_handoff_rows() if h.get('from_screen') == SCREEN and after(h.get('time'))]
+    moved, screened, killed = [], [], []
+    for c in audit.pipeline(brand or 'sample'):
+        if after(c.get('screen_in_date')):
+            screened.append({'candidate_id': c.get('candidate_id'), 'name': c.get('name'), 'on': c.get('screen_in_date'), 'lane': c.get('lane')})
+        if c.get('stage') in ('killed', 'kill') and after(c.get('killed_on')):
+            killed.append({'candidate_id': c.get('candidate_id'), 'name': c.get('name'), 'on': c.get('killed_on'), 'reason': c.get('kill_reason')})
+        for l in c.get('log') or []:
+            what = str(l.get('what') or '')
+            if after(l.get('on')) and ' to ' in what and any(what.startswith(st) for st in audit.STAGES) and 'killed' not in what:
+                moved.append({'candidate_id': c.get('candidate_id'), 'name': c.get('name'), 'on': l.get('on'), 'what': what.split(';')[0]})
+    top = [a['title'] for a in r['actions'] if a.get('status') != 'unavailable'][:3]
+    n = len(findings['new']) + len(findings['gone']) + len(findings['worse']) + len(findings['better']) + len(findings['stake_moves']) + len(decisions) + len(launch_steps) + len(handoffs) + len(moved) + len(screened) + len(killed)
+    L = [f'DIGEST for {brand or "sample"}, {ends_on}: what changed since ' + (since_s or 'the start (no weekly note yet)'), '']
+    if findings['available']:
+        L += [f'FINDINGS since the snapshot of {findings["taken_on"]}: {len(findings["new"])} new, {len(findings["gone"])} gone, {len(findings["worse"])} worse, {len(findings["better"])} better, {len(findings["stake_moves"])} stake moves']
+        L += [f'- new: {x["sentence"]}' for x in findings['new'][:5]] + [f'- gone: {x["sentence"]}' for x in findings['gone'][:5]] + [f'- worse ({x["from"]} to {x["to"]}): {x["sentence"]}' for x in findings['worse'][:5]] + [f'- better ({x["from"]} to {x["to"]}): {x["sentence"]}' for x in findings['better'][:5]]
+    else:
+        L += ['FINDINGS: no snapshot yet; Mark as seen on the desk takes one, and the next digest lists what moved']
+    L += ['', f'DECISIONS ({len(decisions)})'] + ([f'- {d["on"]}: {d["choice"]} on {d["title"]}' + (f' ({d["reason"]})' if d.get('reason') else '') for d in decisions[:10]] or ['- none'])
+    L += ['', f'LAUNCH STEPS MARKED ({len(launch_steps)})'] + ([f'- {d["on"]}: {d["reason"]}' for d in launch_steps[:10]] or ['- none'])
+    L += ['', f'HAND-OFFS ON THE SHARED LOG ({len(handoffs)})'] + ([f'- {str(h.get("time") or "")[:10]}: {h.get("title")} to {h.get("to")}, {h.get("status")}' for h in handoffs[:10]] or ['- none'])
+    L += ['', f'CANDIDATES: {len(screened)} screened in, {len(moved)} moved, {len(killed)} killed'] + [f'- screened in {x["on"]}: {x["name"]}' + (f' (lane {x["lane"]})' if x.get('lane') else '') for x in screened[:10]] + [f'- {x["on"]}: {x["name"]} {x["what"]}' for x in moved[:10]] + [f'- killed {x["on"]}: {x["name"]}' + (f' ({x["reason"]})' if x.get('reason') else '') for x in killed[:10]]
+    L += ['', 'THE TOP 3 NOW'] + [f'- {t}' for t in top]
+    return {'brand': brand or 'sample', 'ends_on': ends_on, 'since': since_s or None, 'quiet': n == 0, 'changes': n, 'findings': findings, 'decisions': decisions, 'launch_steps': launch_steps, 'handoffs': handoffs, 'moved': moved, 'screened': screened, 'killed': killed, 'top': top, 'text': '\n'.join(L),
+            'rule': 'the digest lists only what changed since the last weekly note (findings from the seen snapshot, decisions, launch steps, hand-offs, candidate moves); a quiet week says so in one line'}
+
+
 # ---------------------------------------------------------------- founder answers written back (round 6.5)
 
 ANSWER_SECTIONS = {'claim': 'claims', 'policy': 'policies', 'offer': 'offers'}
@@ -3071,6 +3127,8 @@ def handle(req):
             return 405, {'error': 'read only, except the candidate pipeline, the seen snapshot, a founder answer, a hand-off send, a go candidate hand-off and the floors'}
         if req.path == ['overview']:
             return overview(data, brand)
+        if req.path == ['digest']:
+            return digest(data, brand, req.arg('since', None) or None)
         if req.path == ['findings']:
             return {'findings': audit.run(brand, None, data=data), 'rules': audit.RULES}
         if len(req.path) == 3 and req.path[0] == 'candidates' and req.path[2] == 'brief':
@@ -3101,9 +3159,7 @@ def handle(req):
             return decisions_on_desk(data, brand)
         if req.path == ['reports']:
             if 'weekly' not in _SAMPLE:
-                spec = importlib.util.spec_from_file_location('ecomos_research_weekly', HERE / 'weekly.py')
-                _SAMPLE['weekly'] = importlib.util.module_from_spec(spec)
-                spec.loader.exec_module(_SAMPLE['weekly'])
+                _weekly()
             return {'brand': brand or 'sample', 'reports': _SAMPLE['weekly'].past(brand), 'command': f'python3 app/screens/01-market-research/weekly.py --brand {brand or "sample"}',
                     'note': 'Each note is the desk report and the week plan on that day. Scheduling the command is the lead\'s call; nothing here runs on its own.'}
         if req.path == ['log']:
@@ -3117,4 +3173,4 @@ def handle(req):
             return {'parked': r['parked'], 'decided': r['decided'], 'snooze_days': rank_mod.SNOOZE_DAYS, 'window': r['window']}
     except ValueError as exc:
         return 400, {'error': str(exc)}
-    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank', 'parked', 'decisions', 'calendar', 'week', 'report', 'reports', 'changes', 'log', 'candidates/<id>/brief', 'candidates/<id>/launch', 'candidates/<id>/report', 'floors (POST)', 'candidates/<id>/handoff/<team> (POST)', 'handoff/<finding_id>', 'handoffs', 'product_candidates', 'tests']}
+    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank', 'parked', 'decisions', 'calendar', 'week', 'report', 'reports', 'digest', 'changes', 'log', 'candidates/<id>/brief', 'candidates/<id>/launch', 'candidates/<id>/report', 'floors (POST)', 'candidates/<id>/handoff/<team> (POST)', 'handoff/<finding_id>', 'handoffs', 'product_candidates', 'tests']}
