@@ -560,7 +560,7 @@ def restore():
     return used
 
 
-WIDGET = """<div id="refreshBox" style="position:fixed;right:12px;bottom:48px;z-index:9999;background:#fff;color:#1d1b18;border:1px solid #e2ddd3;border-radius:12px;padding:8px 12px;font:12px/1.45 system-ui,sans-serif;box-shadow:0 2px 10px rgba(0,0,0,.08);max-width:300px"></div>
+WIDGET = """<div id="refreshBox" style="position:fixed;right:12px;bottom:48px;z-index:9999;background:#fff;color:#1d1b18;border:1px solid #e2ddd3;border-radius:12px;padding:8px 12px;font:12px/1.45 system-ui,sans-serif;box-shadow:0 2px 10px rgba(0,0,0,.08);max-width:min(300px,calc(100vw - 24px));box-sizing:border-box"></div>
 <script>
 (() => {
   const box = document.getElementById('refreshBox');
@@ -572,6 +572,9 @@ WIDGET = """<div id="refreshBox" style="position:fixed;right:12px;bottom:48px;z-
     box.textContent = '';
     const d = st.dates || {};
     add(`Ads to ${day(d.ads)} \\u00b7 sales to ${day(d.sales)}`);
+    const cf = st.configured || {};
+    if (!cf.meta) add('Meta ads: not set up (add META_ACCESS_TOKEN to .env)', '#6b665d');
+    if (!cf.metabase) add('Website sales: not set up (add METABASE_USER and METABASE_PASSWORD to .env)', '#6b665d');
     if (st.running) add(`Refreshing: ${st.step}\\u2026`, '#8a5a14');
     else {
       const b = document.createElement('button');
