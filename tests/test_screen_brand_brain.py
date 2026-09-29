@@ -2937,6 +2937,25 @@ class Round8QuizAndSchedule(TempBrain):
         self.assertEqual(api.handle(Req(['schedule'], 'POST', body={'weekday': 'x'}))[0], 400)
 
 
+class Round10AttachQuote(TempBrain):
+    """Round 10 feature 1: attach the line that backs a record."""
+
+    def test_attach_closes_a_gap_and_keeps_the_tier(self):
+        g = api.handle(Req(['evidence', 'gaps']))
+        n = g['counts']['gaps']
+        gap = next(x for x in g['gaps'] if x['tier'] == 'site_backed')
+        self.assertEqual(api.handle(Req(['evidence', 'attach'], 'POST', body={'id': gap['id'], 'quote': 'short'}))[0], 400)
+        self.assertEqual(api.handle(Req(['evidence', 'attach'], 'POST', body={'id': 'bombas.offers.nope', 'quote': 'a line long enough to count'}))[0], 404)
+        status, r = api.handle(Req(['evidence', 'attach'], 'POST', body={'id': gap['id'], 'quote': 'Customers have powered more than 200 million donations through 4,000 Giving Partners.'}))
+        self.assertEqual((status, r['evidence'], r['left']), (201, 1, n - 1))
+        rec = next(x for x in self.section(gap['section']) if x['id'] == gap['id'])
+        self.assertEqual((rec['tier'], rec['evidence'][0]['ref'], rec['evidence'][0]['captured_at']), (gap['tier'], gap['source_ref'], '2026-09-28'))
+        self.assertEqual(api.handle(Req(['evidence', 'attach'], 'POST', body={'id': gap['id'], 'quote': 'Customers have powered more than 200 million donations through 4,000 Giving Partners.'}))[0], 400)
+        self.assertNotIn(gap['id'], [x['id'] for x in api.handle(Req(['evidence', 'gaps']))['gaps']])
+        self.assertTrue(any(c['kind'] == 'proof' and c['record'] == gap['id'] for c in api.handle(Req(['changes']))['changes']))
+        self.assertFalse([f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R41' and gap['id'] in f['brain_refs']])
+
+
 class Round9EvidenceGaps(TempBrain):
     """Round 9 feature 10: strong records without evidence."""
 

@@ -205,6 +205,23 @@ Sources: round 6's candidates (the alert digest, notes on audience profiles, res
 
 Note (29 Sep 2026): `app/brain/<brand>/review/trust.history.jsonl` is runtime state a running server writes (one trust point a day, feature 8.5), like `reads.log.jsonl`; it is git-ignored the same way (the lead asked for runtime logs to go in `.gitignore`), and the tests drop it from their copy. Lead's answers read on 29 Sep: `MAX_BODY` is 8 MB (fa7d99d), so the export diff and the restore travel in one request and the 24 KB parts stay as a fallback; the shared hand-offs table at `GET/POST /api/handoffs` takes the hand-off pack brief (9.3) with the person's team as `to`.
 
+## Round 10 (manager, 29 Sep 2026): 10 features, one commit each
+
+Picked from the round 9 note, the lead's shared hand-offs table and the loops round 9 opened. Every feature ends in a build or an action on the plan with an owner. Rules BRN-R42 onward.
+
+| # | Feature | Status | Why the founder cares |
+|---|---|---|---|
+| 10.1 | Attach a quote to a record (`POST evidence/attach`): paste the line that backs a record and where it came from; the record keeps its tier and gains an evidence entry with the date; from the no-evidence tab (9.10) and logged as a proof | done | Close a no-evidence line in 20 seconds when you have the page open |
+| 10.2 | Old approvals: still true? | todo | |
+| 10.3 | What is new for a reader since its last read | todo | |
+| 10.4 | The hand-offs inbox from other screens | todo | |
+| 10.5 | A snapshot before every bulk move, and a restore from it | todo | |
+| 10.6 | What buyers say most: repeated lines as signal | todo | |
+| 10.7 | Open questions that ask the same thing | todo | |
+| 10.8 | Objections with no answering claim | todo | |
+| 10.9 | What changed in the agent file since its last build | todo | |
+| 10.10 | Retire with the dependents in view | todo | |
+
 ## Round 9 (manager, 29 Sep 2026): 10 features, one commit each
 
 Picked from the round 8 note, the room spec and what the register, the changes list and the quiz made possible. Every feature ends in a build or an action on the plan with an owner. Rules BRN-R39 onward.

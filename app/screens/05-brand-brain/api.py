@@ -24,6 +24,7 @@ question, and accept or ignore on a proposed record. Nothing external.
   GET  sources                  where every fact came from: one row per source reference with sections, tiers, dates
   GET  evidence/gaps            strong-tier records in the fact sections with no quote behind them, with the fix for each
   POST evidence/retire          {id, why}: retire a record that nothing backs; logged with the why, undo on the changes list
+  POST evidence/attach          {id, quote, ref}: attach the line that backs a record and where it came from; the tier stays
   GET  sources/approve          ?ref=&sections=: the records one source would approve, with the tier each has now
   POST sources/approve          {ref, sections, note}: approve every record from a source after reading it; logged once, review record on team
   GET  sources/retire           ?ref=&sections=: the records a retire of that source would touch
@@ -1847,6 +1848,33 @@ def handle(req):
         g = evidencegaps.gaps(brain)
         g.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "BRN-C02", "autonomy": "agent_does"})
         return g
+    if req.method == "POST" and parts == ["evidence", "attach"]:
+        body = req.body or {}
+        rid = str(body.get("id") or "")
+        quote = str(body.get("quote") or "").strip()
+        ref = str(body.get("ref") or "").strip()
+        if not re.fullmatch(r"[a-z0-9_-]+\.[a-z_]+\.[A-Za-z0-9_.-]{1,120}", rid):
+            return 400, {"error": "id must be a record id"}
+        if len(quote) < 8:
+            return 400, {"error": "paste the line that backs the record (8 characters or more)"}
+        sec = rid.split(".")[1]
+        raw = next((r for r in brain.raw(sec) if r.get("id") == rid), None) if sec in SECTIONS else None
+        if raw is None:
+            return 404, {"error": "no such record", "id": rid}
+        ref = ref or str((raw.get("source") or {}).get("ref") or "")
+        if not ref:
+            return 400, {"error": "say where the line comes from (a url, a file or a run id)"}
+        ev = list(raw.get("evidence") or [])
+        if any(e.get("quote") == quote[:600] for e in ev):
+            return 400, {"error": "that quote is already on the record", "id": rid}
+        ev.append({"quote": quote[:600], "ref": ref[:300], "captured_at": brain.today.isoformat()})
+        before_v = brain.version()
+        errs = brain.put(dict(raw, evidence=ev))
+        if errs:
+            return 400, {"error": "record not valid", "details": errs}
+        changes.log(brain, "proof", sec, rid, f"quote attached from {ref[:80]}: {quote[:100]}")
+        changes.version_step(brain, before_v, f"quote attached to {rid}")
+        return 201, {"ok": True, "record": rid, "evidence": len(ev), "left": evidencegaps.gaps(brain)["counts"]["gaps"], "version": brain.version(), "next": f"Attached. {rid} now carries {len(ev)} quote{'s' if len(ev) != 1 else ''}; its tier stays {raw.get('tier')}."}
     if req.method == "POST" and parts == ["evidence", "retire"]:
         body = req.body or {}
         rid = str(body.get("id") or "")
