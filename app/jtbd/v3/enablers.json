@@ -1,0 +1,735 @@
+[
+ {
+  "id": "awareness-map",
+  "name": "Awareness heat map",
+  "what": "Tags every ad, post, email and page we run, and every competitor ad, by awareness level (unaware, problem aware, solution aware, product aware, most aware) and funnel stage. Weights by spend and shows where we are thin, per platform, next to competitors.",
+  "inputs": [
+   "our ads with spend and results (Meta, Google, TikTok)",
+   "competitor ads from the Ad Library by page id",
+   "our emails and landing pages",
+   "a written rubric with 5 examples per level"
+  ],
+  "powers": [
+   "share of spend by awareness level",
+   "gap to competitors by level",
+   "which level has the cheapest new customers",
+   "what to make next and where to find inspiration for it",
+   "Google search terms split top, middle and bottom of funnel"
+  ],
+  "screens": [
+   "09-creative",
+   "11-paid-social",
+   "12-google-ads",
+   "03-competitors",
+   "10-copy",
+   "14-email-messaging",
+   "16-organic-content"
+  ],
+  "note": "Levels of awareness across your brand and are you servicing it vs competitors"
+ },
+ {
+  "id": "creative-archive",
+  "name": "Past creative archive",
+  "what": "One place with every ad we have run: the media, the copy, spend, results, dates, audience and placement, sortable and searchable. Dynamic and mixed creatives flagged.",
+  "inputs": [
+   "Meta and TikTok ad history with media",
+   "Google asset reports",
+   "naming conventions"
+  ],
+  "powers": [
+   "find past winners in seconds",
+   "stop remaking ads that already failed",
+   "raw material for tags, postmortems and variants"
+  ],
+  "screens": [
+   "09-creative",
+   "11-paid-social",
+   "25-experiments"
+  ],
+  "note": "Easy to use interface for past creatives"
+ },
+ {
+  "id": "creative-tags",
+  "name": "Creative decomposition tags",
+  "what": "Breaks each ad into parts: hook, angle, pain point, avatar, awareness level, format, length, first frame, proof type, offer, CTA, talent, setting. Same tags on our ads, competitor ads and the inspiration library, so they can be matched.",
+  "inputs": [
+   "creative archive",
+   "competitor ads",
+   "inspiration library",
+   "tag list with definitions and examples",
+   "a person to check 20 tags a week"
+  ],
+  "powers": [
+   "what winning ads share",
+   "tags that lose money",
+   "match a winner to library ads with the same tags",
+   "tag coverage gaps"
+  ],
+  "screens": [
+   "09-creative",
+   "10-copy",
+   "11-paid-social",
+   "03-competitors"
+  ],
+  "note": "Based on creatives which have worked in the past, decomposed and mapped to the database of creatives. Create tags for each and match tags"
+ },
+ {
+  "id": "principle-matcher",
+  "name": "Why-it-worked matcher",
+  "what": "Takes a winning ad's tags and checks them against the idea bank, the knowledge cards and the inspiration library. States the principle it followed, with a test anyone can repeat, and flags claims it cannot verify.",
+  "inputs": [
+   "creative tags",
+   "idea bank (ideas/v1)",
+   "knowledge cards (library-v3)",
+   "results by ad"
+  ],
+  "powers": [
+   "a plain reason each winner won",
+   "principles to reuse in new concepts",
+   "principles that do not hold for this brand"
+  ],
+  "screens": [
+   "09-creative",
+   "10-copy",
+   "25-experiments"
+  ],
+  "note": "Understand what made that creative work. Compare that against databases"
+ },
+ {
+  "id": "variant-stack",
+  "name": "Variant builder",
+  "what": "From one winner, makes near variants (new hook, new first frame, new length) and far variants (new angle, new avatar, new format) that keep the principle. Labels each as near or far.",
+  "inputs": [
+   "the winner and its tags",
+   "the principle it followed",
+   "brand brain voice and claims",
+   "product photos"
+  ],
+  "powers": [
+   "a weekly batch of variants tied to a reason",
+   "a split of near and far bets"
+  ],
+  "screens": [
+   "09-creative",
+   "10-copy",
+   "11-paid-social"
+  ],
+  "note": "Create variants some similar some different"
+ },
+ {
+  "id": "script-builder",
+  "name": "Script builder",
+  "what": "Writes ad scripts from a principle, an avatar and a pain point: hook options, body, proof, CTA, with shot notes. Produces variations of the script.",
+  "inputs": [
+   "principle",
+   "avatar and pain points from the brain",
+   "claims allowed",
+   "past winning scripts"
+  ],
+  "powers": [
+   "scripts for UGC, founder, AI video and static storyboards",
+   "a script bank linked to results"
+  ],
+  "screens": [
+   "09-creative",
+   "10-copy",
+   "16-organic-content"
+  ],
+  "note": "Create into variants and new concepts mapped to the best practices that the winning ad followed scripts available too"
+ },
+ {
+  "id": "video-stack",
+  "name": "AI video stack",
+  "what": "Takes one script, makes 3 to 5 variations, cuts each to 15, 30 and 30 to 45 seconds, renders with a video tool, and lays out the grid so one cut per stack is picked to launch.",
+  "inputs": [
+   "access to a video tool such as Higgsfield",
+   "the script and its variations",
+   "real product photos and clips",
+   "brand kit"
+  ],
+  "powers": [
+   "more video tests per week at a lower cost per test",
+   "which length wins for this brand"
+  ],
+  "screens": [
+   "09-creative",
+   "11-paid-social"
+  ],
+  "note": null
+ },
+ {
+  "id": "segment-map",
+  "name": "Best segment map",
+  "what": "Shows which age, gender, placement and region buy at the lowest cost per new customer, per creative and per tag. Tells the writer who the ad is for.",
+  "inputs": [
+   "Meta and TikTok breakdowns by age, gender, placement, region",
+   "purchases and value"
+  ],
+  "powers": [
+   "tailor copy and creative to the best segment",
+   "spot placements that burn money",
+   "spot segments no ad speaks to"
+  ],
+  "screens": [
+   "09-creative",
+   "10-copy",
+   "11-paid-social",
+   "02-customers-avatars"
+  ],
+  "note": "Copy and creative will be tailored to the best performing segment of the population (age/gender/placement)"
+ },
+ {
+  "id": "format-translator",
+  "name": "Format translator",
+  "what": "Takes a principle that worked in one format and rewrites it for others: static, carousel, UGC video, founder video, native article, email, landing page block.",
+  "inputs": [
+   "principle and winning ad",
+   "format specs per platform"
+  ],
+  "powers": [
+   "more formats from one proven idea",
+   "native and advertorial ads for top of funnel"
+  ],
+  "screens": [
+   "09-creative",
+   "10-copy",
+   "16-organic-content"
+  ],
+  "note": "Recommends different formats following the same principles"
+ },
+ {
+  "id": "competitor-feed",
+  "name": "Competitor feed",
+  "what": "Pulls competitor ads (Ad Library by page id) and organic posts on a schedule, records how long each ad has run, and tags them. Long-running ads are treated as signals, never as proven winners.",
+  "inputs": [
+   "list of competitors with page ids and handles",
+   "Ad Library access",
+   "organic post pulls"
+  ],
+  "powers": [
+   "what rivals push and at which awareness level",
+   "new launches and offers the day they appear",
+   "principles to test in our own words"
+  ],
+  "screens": [
+   "03-competitors",
+   "09-creative",
+   "16-organic-content",
+   "04-offers-pricing"
+  ],
+  "note": "Feed in competition. Look through their organic content + ads library and get ideas from there. Convert those ideas into base principles"
+ },
+ {
+  "id": "swipe-file",
+  "name": "Swipe file with notes",
+  "what": "A saved library of ads and posts anyone on the team can clip, with a short note on why it was saved and which tag or gap it fills.",
+  "inputs": [
+   "competitor feed",
+   "manual saves",
+   "creative tags"
+  ],
+  "powers": [
+   "inspiration filtered by awareness level, format or angle",
+   "notes that turn into briefs"
+  ],
+  "screens": [
+   "09-creative",
+   "16-organic-content",
+   "03-competitors"
+  ],
+  "note": "AdLibNote. Muse for content on meta"
+ },
+ {
+  "id": "creative-postmortem",
+  "name": "Creative postmortem",
+  "what": "For each ad that lost money: spend, reach, who saw it (age, gender, placement), where people dropped (thumb stop, hold, click, page, cart), and the likely cause. Ends with a fix and a relaunch plan, or a kill note.",
+  "inputs": [
+   "creative archive",
+   "segment map",
+   "landing page data",
+   "tags"
+  ],
+  "powers": [
+   "fix and relaunch instead of starting from zero",
+   "a record of what fails for this brand"
+  ],
+  "screens": [
+   "09-creative",
+   "11-paid-social",
+   "25-experiments"
+  ],
+  "note": "Postmortem of bad creatives with really good context on spend and demographic data and how you can improve and relaunch"
+ },
+ {
+  "id": "creator-roster",
+  "name": "Creator and partnership roster",
+  "what": "A list of creators and partners with fit, rates, rights, content delivered and the results of partnership ads run through their handles.",
+  "inputs": [
+   "creator outreach list",
+   "rights and usage terms",
+   "partnership ad results from Meta"
+  ],
+  "powers": [
+   "which creators sell",
+   "whitelisting and partnership ads",
+   "renewals and cuts"
+  ],
+  "screens": [
+   "09-creative",
+   "11-paid-social",
+   "16-organic-content",
+   "27-wild-bets-pr"
+  ],
+  "note": "Influencer marketing and partnership ads"
+ },
+ {
+  "id": "copy-decomposer",
+  "name": "Copy decomposition by avatar and pain",
+  "what": "Splits every ad and page into avatar, pain point, promise, proof and CTA, and counts spend and results for each avatar and pain pair.",
+  "inputs": [
+   "ad copy and results",
+   "avatar list and pain points from the brain",
+   "landing page text"
+  ],
+  "powers": [
+   "which avatar and pain pairs sell",
+   "pairs we never speak to",
+   "copy briefs per pair"
+  ],
+  "screens": [
+   "10-copy",
+   "02-customers-avatars",
+   "09-creative"
+  ],
+  "note": "Ad copy decomposition based on avatar and pain point"
+ },
+ {
+  "id": "signal-bridge",
+  "name": "Cross-channel signal bridge",
+  "what": "Moves proven words and angles between channels: Google search terms, Amazon reviews and questions, site search and tickets into Meta hooks, and Meta winners into Google ads, SEO and pages.",
+  "inputs": [
+   "Google search terms",
+   "Search Console queries",
+   "Amazon reviews and Q&A",
+   "site search",
+   "Meta winning copy"
+  ],
+  "powers": [
+   "hooks in the customer's own words",
+   "new keyword and article ideas from ad winners"
+  ],
+  "screens": [
+   "10-copy",
+   "11-paid-social",
+   "12-google-ads",
+   "17-seo",
+   "20-marketplaces"
+  ],
+  "note": "Funnel Google insights/amazon reviews/search data into meta ads and vice versa"
+ },
+ {
+  "id": "review-miner",
+  "name": "Review miner",
+  "what": "Reads our reviews and competitors' reviews (site, Amazon, marketplaces), groups what people love, hate and wish for, and counts each theme.",
+  "inputs": [
+   "our reviews",
+   "competitor reviews on Amazon and their sites",
+   "return reasons"
+  ],
+  "powers": [
+   "claims and objections to use in ads and pages",
+   "product fixes",
+   "where rivals fail and we can win"
+  ],
+  "screens": [
+   "02-customers-avatars",
+   "03-competitors",
+   "10-copy",
+   "15-customers-cx",
+   "01-market-research"
+  ],
+  "note": "Competitor review mining - get insights on what doesn't work or what's working and incorporate it into your marketing"
+ },
+ {
+  "id": "question-matrix",
+  "name": "Question coverage matrix",
+  "what": "Lists every question customers ask (tickets, chat, Amazon Q&A, reviews, search) and marks where it is answered: product page, FAQ, ad, email, help centre. Blank cells are the work.",
+  "inputs": [
+   "tickets and chat logs",
+   "Amazon questions",
+   "site search terms",
+   "page and FAQ text"
+  ],
+  "powers": [
+   "fewer tickets",
+   "higher conversion from answered objections",
+   "article and FAQ briefs"
+  ],
+  "screens": [
+   "15-customers-cx",
+   "07-landing-pages-cro",
+   "17-seo",
+   "18-answer-engines",
+   "20-marketplaces"
+  ],
+  "note": "Coverage matrix from customer tickets amazon"
+ },
+ {
+  "id": "ticket-clock",
+  "name": "Ticket clock",
+  "what": "Tracks first reply time, time to resolution, follow-ups owed and reopen rate per ticket, with the order value at stake.",
+  "inputs": [
+   "helpdesk (Gorgias, Zendesk, Freshdesk or email)",
+   "order data"
+  ],
+  "powers": [
+   "no customer left waiting",
+   "which issues cost the most",
+   "staffing needs"
+  ],
+  "screens": [
+   "15-customers-cx",
+   "23-team-ops"
+  ],
+  "note": "Follow up and time to resolution of tickets"
+ },
+ {
+  "id": "vip-list",
+  "name": "VIP list",
+  "what": "Ranks customers by value and recency, picks the top slice, and runs quiet perks: a personal letter, early access, a private offer. Tracks who got what and what they did next.",
+  "inputs": [
+   "orders and customer records",
+   "margin by order",
+   "a letter template and budget"
+  ],
+  "powers": [
+   "repeat rate of top customers",
+   "referrals",
+   "early reads on new products"
+  ],
+  "screens": [
+   "15-customers-cx",
+   "14-email-messaging",
+   "02-customers-avatars"
+  ],
+  "note": "Sending personal letters to high value clients /vip clients giving them special access be secretive about it"
+ },
+ {
+  "id": "behaviour-map",
+  "name": "Page behaviour map",
+  "what": "Joins scroll depth, heatmaps and recordings (Clarity or similar) with GA4 funnels per page and device, and names where shoppers stop.",
+  "inputs": [
+   "Clarity or Hotjar",
+   "GA4",
+   "page list with traffic sources"
+  ],
+  "powers": [
+   "the one block to fix on each money page",
+   "CRO test ideas with evidence"
+  ],
+  "screens": [
+   "07-landing-pages-cro",
+   "08-site-speed"
+  ],
+  "note": "Scroll depth and clarity/GA insights to drive CRO changes"
+ },
+ {
+  "id": "congruence-check",
+  "name": "Ad to page congruence check",
+  "what": "For each ad with spend, compares the ad's promise, offer, visual and awareness level with the page it lands on and scores the match. Flags ads whose page breaks the promise.",
+  "inputs": [
+   "ads with URLs and results",
+   "landing page text and screenshots",
+   "creative tags"
+  ],
+  "powers": [
+   "fix the page for the best ads first",
+   "new pages for winning angles",
+   "fewer bounces from paid traffic"
+  ],
+  "screens": [
+   "07-landing-pages-cro",
+   "11-paid-social",
+   "12-google-ads",
+   "09-creative"
+  ],
+  "note": "Ad changes linked to landing pages. Congruence of ad + LP. Ad to landing page congruence of best ads to promote best practices"
+ },
+ {
+  "id": "app-audit",
+  "name": "App and code audit",
+  "what": "Lists every installed app and script, whether it is still used, what it costs a month, and how much it slows pages. Ties the slowdown to lost revenue.",
+  "inputs": [
+   "store admin app list and billing",
+   "theme code",
+   "page speed tests",
+   "conversion by load time"
+  ],
+  "powers": [
+   "apps to remove",
+   "monthly savings",
+   "revenue lost to slow pages"
+  ],
+  "screens": [
+   "08-site-speed",
+   "06-store-health",
+   "21-finance-cash"
+  ],
+  "note": "Old app code deleted are you using these tie to revenue lost"
+ },
+ {
+  "id": "theme-twin",
+  "name": "Theme twin test",
+  "what": "Duplicates the live theme, makes the speed or flow change on the copy, tests both (speed and a checkout walk-through), and merges only when the copy wins.",
+  "inputs": [
+   "theme access",
+   "speed test tool",
+   "checkout test script"
+  ],
+  "powers": [
+   "safe speed fixes",
+   "no broken checkout on a Friday"
+  ],
+  "screens": [
+   "08-site-speed",
+   "06-store-health",
+   "07-landing-pages-cro"
+  ],
+  "note": "Duplicate and test speed on both. Test flow and then merge"
+ },
+ {
+  "id": "win-loss-ledger",
+  "name": "Win and loss ledger",
+  "what": "Every test gets a result. A win is promoted to the standard (T0) that all new work starts from. A loss writes a fail note with why. Sets the date to recheck each rule.",
+  "inputs": [
+   "experiment list",
+   "results",
+   "a recheck rule per standard"
+  ],
+  "powers": [
+   "what works for this brand, with proof",
+   "no repeated failed tests",
+   "standards that expire when they stop working"
+  ],
+  "screens": [
+   "25-experiments",
+   "09-creative",
+   "07-landing-pages-cro",
+   "14-email-messaging"
+  ],
+  "note": "Win promotes to T0 loss writes a fail when to check what all things work and what doesn't"
+ },
+ {
+  "id": "search-feed",
+  "name": "Search and answer engine feed",
+  "what": "Pulls Search Console, SEO tool data and answer engine checks (what ChatGPT, Gemini and Perplexity say about us and the category).",
+  "inputs": [
+   "Search Console",
+   "an SEO data source such as OpenSEO",
+   "a list of buyer questions to ask assistants"
+  ],
+  "powers": [
+   "queries rising and falling",
+   "pages losing clicks",
+   "where assistants mention rivals and not us"
+  ],
+  "screens": [
+   "17-seo",
+   "18-answer-engines",
+   "01-market-research"
+  ],
+  "note": "Openseo geo GSC mcp"
+ },
+ {
+  "id": "article-brief",
+  "name": "Article brief builder",
+  "what": "Builds SEO article briefs from Search Console gaps, ad winners, search terms, reviews and tickets, with the question, the angle, the proof and the product link.",
+  "inputs": [
+   "search feed",
+   "signal bridge",
+   "review miner",
+   "question matrix"
+  ],
+  "powers": [
+   "articles that answer real questions and sell",
+   "content for answer engines"
+  ],
+  "screens": [
+   "17-seo",
+   "18-answer-engines",
+   "16-organic-content"
+  ],
+  "note": "Also SEO focused articles can be built from Google insights, meta ads data and search data/reviews"
+ },
+ {
+  "id": "marketplace-plan",
+  "name": "Marketplace plan",
+  "what": "A per-channel plan for Amazon, TikTok Shop and quick commerce: listings, pricing floor, ads, reviews, stock and fees, with margin per unit after fees.",
+  "inputs": [
+   "Seller Central and TikTok Shop data",
+   "fees",
+   "unit costs",
+   "stock"
+  ],
+  "powers": [
+   "which SKUs to list where",
+   "margin per channel",
+   "listing fixes"
+  ],
+  "screens": [
+   "20-marketplaces",
+   "13-affiliate-marketplace-ads",
+   "19-supply-inventory"
+  ],
+  "note": "Amazon seller and tiktok shop strategy"
+ },
+ {
+  "id": "brain-graph",
+  "name": "Brain intake and split",
+  "what": "Takes everything we ingest (site, ads, reviews, tickets, documents, interviews) and files it onto the brain's shelves, linked like a graph: product to claim to proof to avatar to ad.",
+  "inputs": [
+   "connected sources",
+   "founder interview",
+   "the 22 shelves in BRAIN-CONTENTS.md"
+  ],
+  "powers": [
+   "every agent starts from the same facts",
+   "find the proof for any claim in one step"
+  ],
+  "screens": [
+   "05-brand-brain",
+   "02-customers-avatars",
+   "09-creative"
+  ],
+  "note": "Main ingestion and split - splits into categories accordingly think like a graph. Choose a brand first build brand brain then select appropriate creatives landing pages etc"
+ },
+ {
+  "id": "customer-jobs",
+  "name": "Customer jobs map",
+  "what": "Finds why customers hire the product: the moment, the progress wanted, what they used before, what nearly stopped them. From reviews, tickets, post-purchase surveys and a few interviews.",
+  "inputs": [
+   "post-purchase survey",
+   "reviews",
+   "tickets",
+   "5 to 10 customer calls"
+  ],
+  "powers": [
+   "angles and hooks from real moments",
+   "new audiences in other moments",
+   "product and bundle ideas"
+  ],
+  "screens": [
+   "02-customers-avatars",
+   "10-copy",
+   "09-creative",
+   "01-market-research"
+  ],
+  "note": "Jobs to be done why are they hiring"
+ },
+ {
+  "id": "work-board",
+  "name": "Work board",
+  "what": "A kanban board of every task from every screen: to do, doing, waiting on approval, live, measured. Each card links to the job, owner, due date and the metric it should move.",
+  "inputs": [
+   "tasks from each screen",
+   "team list",
+   "approval rules from the brain"
+  ],
+  "powers": [
+   "nothing lost between screens and people",
+   "who is overloaded",
+   "what shipped and what it did"
+  ],
+  "screens": [
+   "23-team-ops",
+   "00-today",
+   "26-reports"
+  ],
+  "note": "Kanban board"
+ },
+ {
+  "id": "access-vault",
+  "name": "Security folder",
+  "what": "A register of every account, who has access, 2-step status, and the recovery path, plus a folder for policies and incident notes. Holds no passwords itself.",
+  "inputs": [
+   "account list",
+   "team list",
+   "admin checks per platform"
+  ],
+  "powers": [
+   "no lost access when someone leaves",
+   "fast recovery after a takeover"
+  ],
+  "screens": [
+   "24-security",
+   "23-team-ops"
+  ],
+  "note": "Security folder"
+ },
+ {
+  "id": "funnel-mix",
+  "name": "Funnel stage mix",
+  "what": "Splits spend and results by funnel stage on every channel: prospecting vs retargeting on Meta, generic vs brand search on Google, new vs returning buyers.",
+  "inputs": [
+   "Meta campaigns and audiences",
+   "Google campaigns and search terms",
+   "new vs returning from orders"
+  ],
+  "powers": [
+   "are we buying new customers or rebuying old ones",
+   "brand search inflation",
+   "where to add top of funnel spend"
+  ],
+  "screens": [
+   "11-paid-social",
+   "12-google-ads",
+   "22-measurement",
+   "00-today"
+  ],
+  "note": "Levels of awareness across your brand ... top of funnel, middle of funnel, bottom of funnel"
+ },
+ {
+  "id": "margin-view",
+  "name": "Margin view",
+  "what": "Gross profit per order, per product and per channel after product cost, shipping, fees, discounts and returns.",
+  "inputs": [
+   "orders",
+   "product costs",
+   "shipping and fees",
+   "returns"
+  ],
+  "powers": [
+   "which ads and offers make money, not just revenue",
+   "floors for cost per purchase"
+  ],
+  "screens": [
+   "21-finance-cash",
+   "04-offers-pricing",
+   "11-paid-social",
+   "00-today"
+  ],
+  "note": null
+ },
+ {
+  "id": "market-pulse",
+  "name": "Market pulse",
+  "what": "Quarter by quarter view of the category: search demand, marketplace sales rank, competitor launches, input costs and allied categories, next to our own growth.",
+  "inputs": [
+   "Google Trends and search volumes",
+   "marketplace best seller data",
+   "input cost indices",
+   "our sales by quarter"
+  ],
+  "powers": [
+   "is the category growing and are we keeping pace",
+   "costs about to rise",
+   "trends to catch early"
+  ],
+  "screens": [
+   "01-market-research",
+   "03-competitors",
+   "19-supply-inventory"
+  ],
+  "note": null
+ }
+]
