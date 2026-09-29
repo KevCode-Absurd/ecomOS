@@ -2937,6 +2937,38 @@ class Round8QuizAndSchedule(TempBrain):
         self.assertEqual(api.handle(Req(['schedule'], 'POST', body={'weekday': 'x'}))[0], 400)
 
 
+class Round9NearDuplicates(TempBrain):
+    """Round 9 feature 5: near-duplicate records join the duplicates list and the same retire."""
+
+    def test_near_twin_found_kept_stronger_and_retired(self):
+        rows = self.section('claims')
+        base = next(r for r in rows if isinstance(r.get('text'), str) and len(r['text'].split()) >= 10)
+        twin = dict(base, id=base['id'] + '_twin', field=(base.get('field') or 'x') + '_twin', text=base['text'].replace(' the ', ' a ', 1) + ' Also true today.', tier='unverified',
+                    source={'type': 'document', 'ref': 'notes/second-scrape.md', 'captured_at': '2026-09-20'}, confidence=0.3)
+        twin.pop('history', None); twin.pop('evidence', None)
+        rows.append(twin); self.write('claims', rows)
+        sa = api.handle(Req(['selfaudit']))
+        near = [d for d in sa['duplicates'] if d.get('near') and twin['id'] in (d['keep'], d['retire'])]
+        self.assertEqual(len(near), 1)
+        d = near[0]
+        self.assertEqual((d['retire'], d['keep']), (twin['id'], base['id']))
+        self.assertGreaterEqual(d['similarity'], 0.75)
+        self.assertIn('percent of words shared', d['match'])
+        self.assertTrue(d['other_text'])
+        status, r = api.handle(Req(['selfaudit', 'retire'], 'POST', body={'retire': d['retire'], 'keep': d['keep']}))
+        self.assertEqual((status, r['retired']), (201, twin['id']))
+        self.assertEqual([x['status'] for x in self.section('claims') if x['id'] == twin['id']], ['retired'])
+        self.assertFalse([d for d in api.handle(Req(['selfaudit']))['duplicates'] if twin['id'] in (d['keep'], d['retire'])])
+
+    def test_two_facts_are_not_a_pair(self):
+        rows = self.section('policies')
+        rows.append({'id': 'bombas.policies.near_a', 'brand': 'bombas', 'section': 'policies', 'field': 'near_a', 'text': 'Standard shipping takes 3 to 5 business days inside the United States for every order.', 'tier': 'unverified', 'source': {'type': 'document', 'ref': 'n.md', 'captured_at': '2026-09-20'}})
+        rows.append({'id': 'bombas.policies.near_b', 'brand': 'bombas', 'section': 'policies', 'field': 'near_b', 'text': 'Priority shipping takes 1 to 3 business days and costs extra on every order under the threshold.', 'tier': 'unverified', 'source': {'type': 'document', 'ref': 'n.md', 'captured_at': '2026-09-20'}})
+        self.write('policies', rows)
+        sa = api.handle(Req(['selfaudit']))
+        self.assertFalse([d for d in sa['duplicates'] if 'near_a' in d['keep'] + d['retire'] and 'near_b' in d['keep'] + d['retire']])
+
+
 class Round9Misses(TempBrain):
     """Round 9 feature 4: questions the brain could not answer."""
 

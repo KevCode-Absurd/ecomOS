@@ -473,11 +473,11 @@
     });
     const dupWrap = el('div', { class: 'stack' });
     if (sa.duplicates.length) {
-      dupWrap.append(el('div', null, el('b', { text: sa.duplicates.length + ' duplicate pair' + (sa.duplicates.length === 1 ? '' : 's') + ': ' }), 'the stronger record is kept; retiring the twin keeps it in history.'));
+      dupWrap.append(el('div', null, el('b', { text: sa.duplicates.length + ' duplicate pair' + (sa.duplicates.length === 1 ? '' : 's') + ': ' }), 'the stronger record is kept; retiring the twin keeps it in history. A near twin shows both texts: unpick it when they are two facts.'));
       for (const d of sa.duplicates.slice(0, 20)) {
         const b = el('button', { class: 'btn sm', type: 'button', text: 'Retire the twin' });
         b.addEventListener('click', async () => { b.disabled = true; try { const r = await api(BASE + 'selfaudit/retire', { method: 'POST', body: { retire: d.retire, keep: d.keep } }); status.textContent = 'Retired ' + r.retired + ', kept ' + r.kept + '. ' + r.left + ' pairs left.'; loadSelfAudit(actions); } catch (e) { b.disabled = false; status.textContent = 'Could not retire: ' + e.message; } });
-        dupWrap.append(el('div', { class: 'row card flat' }, el('span', { class: 'chip', text: pretty(d.section) }), el('span', { class: 'chip mono good', text: 'keep ' + d.keep + ' (' + pretty(d.keep_tier) + ')' }), el('span', { class: 'chip mono warn', text: 'retire ' + d.retire + ' (' + pretty(d.retire_tier) + ')' }), el('span', { class: 'small', text: d.match + ': ' + d.text }), b));
+        dupWrap.append(el('div', { class: 'row card flat' }, el('span', { class: 'chip', text: pretty(d.section) }), d.near ? el('span', { class: 'chip', text: 'near' }) : null, el('span', { class: 'chip mono good', text: 'keep ' + d.keep + ' (' + pretty(d.keep_tier) + ')' }), el('span', { class: 'chip mono warn', text: 'retire ' + d.retire + ' (' + pretty(d.retire_tier) + ')' }), el('span', { class: 'small' }, d.match + ': ' + d.text, d.near ? el('span', { class: 'micro faint', text: ' | the twin says: ' + d.other_text }) : null), b));
       }
     } else dupWrap.append(el('div', { class: 'muted small', text: 'No two active records say the same thing.' }));
     const reads = el('div', { class: 'stack' });

@@ -5,8 +5,10 @@ Four checks, none needing a model:
    documents in the manifest never extracted, BRAIN.md rows and version drifted from the records, links in BRAIN.md
    that point at missing files. Each is a proposal with a before, an after and a reason; here it gains a fix.
 2. Duplicates: two active records in one section that say the same thing (same normalised text, or same scalar value
-   under the same field). The stronger record (merge.strength: source rank, confidence, capture date) is kept, the
-   other is proposed for retirement. Retire never deletes.
+   under the same field), and since round 9 near twins: texts that share 3 words in 4 without being the same (negations count, words common to
+   most of a section do not, the language bank is exact only). The
+   stronger record (merge.strength: source rank, confidence, capture date) is kept, the other is proposed for
+   retirement, with both texts shown so a person can unpick a pair that is two facts. Retire never deletes.
 3. Read coverage: which sections screens read (the store's read log) against which sections hold records. A section
    nobody reads is held for no one; a section read often and thin is where a pull pays. Unavailable until a read is
    logged.
@@ -74,6 +76,63 @@ def duplicates(brain) -> list[dict]:
                                 "text": (keep.get("text") or str(keep.get("value")))[:140], "match": "same text" if k[0] == "text" else f"same value on {k[1]}"})
                 else:
                     seen.setdefault(k, r)
+    out.extend(near_duplicates(brain, {(d["keep"], d["retire"]) for d in out}))
+    return out
+
+
+STOP = {"the", "and", "for", "with", "that", "this", "from", "are", "was", "were", "has", "have", "its", "our", "you", "your", "but", "can", "all", "any", "one", "per", "into", "than", "then", "they", "them", "their", "will", "each", "more", "most", "also", "when", "what", "which", "about"}
+NEAR_MIN_TOKENS = 6
+NEAR_SIMILARITY = 0.75
+NEAR_SKIP = {"language_bank"}  # quotes are meant to sound alike; only exact twins count there
+NEAR_BOILERPLATE = 0.3  # a word in more than 3 records in 10 of a section is boilerplate (a shared prefix), not a shared fact
+
+
+def _tokens(text: str) -> frozenset:
+    return frozenset(w for w in _norm(text).split() if len(w) >= 3 and w not in STOP)
+
+
+def near_duplicates(brain, seen_pairs: set | None = None) -> list[dict]:
+    """Pairs of active records in one section whose texts share 3 words in 4 (Jaccard on word sets, 6 words or more),
+    without being the same text. The stronger record is kept, as for exact twins. O(n squared) per section on word
+    sets, which is fine at a few hundred records a section."""
+    seen_pairs = seen_pairs or set()
+    out = []
+    for sec in SECTIONS:
+        if sec in SKIP_DUP:
+            continue
+        if sec in NEAR_SKIP:
+            continue
+        recs = [(r, _tokens(r.get("text") or "")) for r in brain.records(sec) if isinstance(r.get("text"), str)]
+        if len(recs) >= 10:
+            df: dict[str, int] = {}
+            for _, t in recs:
+                for w in t:
+                    df[w] = df.get(w, 0) + 1
+            boiler = {w for w, n in df.items() if n / len(recs) > NEAR_BOILERPLATE}
+            recs = [(r, t - boiler) for r, t in recs]
+        recs = [(r, t) for r, t in recs if len(t) >= NEAR_MIN_TOKENS]
+        for i in range(len(recs)):
+            ra, ta = recs[i]
+            for j in range(i + 1, len(recs)):
+                rb, tb = recs[j]
+                inter = len(ta & tb)
+                if inter < NEAR_MIN_TOKENS:
+                    continue
+                sim = inter / len(ta | tb)
+                if sim < NEAR_SIMILARITY or _norm(ra["text"]) == _norm(rb["text"]):
+                    continue
+                na, nb = set(re.findall(r"\d+(?:\.\d+)?", ra["text"])), set(re.findall(r"\d+(?:\.\d+)?", rb["text"]))
+                if (na or nb) and na != nb:
+                    continue  # the same words around different numbers are two facts, not a twin
+                keep, drop = (ra, rb) if merge.strength(ra) >= merge.strength(rb) else (rb, ra)
+                if (keep["id"], drop["id"]) in seen_pairs or (drop["id"], keep["id"]) in seen_pairs:
+                    continue
+                seen_pairs.add((keep["id"], drop["id"]))
+                out.append({"section": sec, "keep": keep["id"], "retire": drop["id"], "keep_tier": keep["tier"], "retire_tier": drop["tier"],
+                            "keep_source": (keep.get("source") or {}).get("type"), "retire_source": (drop.get("source") or {}).get("type"),
+                            "text": (keep.get("text") or "")[:140], "other_text": (drop.get("text") or "")[:140], "near": True, "similarity": round(sim, 2),
+                            "match": f"near twin, {round(sim * 100)} percent of words shared"})
+    out.sort(key=lambda d: (-d["similarity"], d["section"], d["keep"]))
     return out
 
 
