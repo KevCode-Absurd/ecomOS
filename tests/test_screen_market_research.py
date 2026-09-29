@@ -2437,6 +2437,32 @@ class HandoffCreativeTest(unittest.TestCase):
         finally:
             audit.SHARED_HANDOFFS_PATH, audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH, api.DECISIONS_PATH, api.HANDOFFS_DIR, api.HANDOFFS_PATH, api.SEEN_DIR = saved
 
+    def test_expected_go_from_the_median_days(self):
+        import tempfile
+        saved = (audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH, api.DECISIONS_PATH, audit.SHARED_HANDOFFS_PATH)
+        tmp = Path(tempfile.mkdtemp())
+        audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH, api.DECISIONS_PATH, audit.SHARED_HANDOFFS_PATH = tmp / 'p.json', tmp / 'pc.json', tmp / 'pt.json', tmp / 'd.json', tmp / 'h.json'
+        try:
+            data = api.sample_data()
+            D = audit.last_full_day(data, None)
+            d = lambda n: (D - timedelta(days=n)).isoformat()   # noqa: E731
+            gone = [{'candidate_id': f'x{i}', 'brand': 'sample', 'name': f'X{i}', 'category': 'socks', 'stage': 'go', 'screen_in_date': d(60), 'log': [{'on': d(56), 'what': 'screened to researched'}, {'on': d(46), 'what': 'researched to gated'}, {'on': d(40), 'what': 'gated to shortlisted'}, {'on': d(30), 'what': 'shortlisted to go'}]} for i in range(2)]
+            rows = gone + [{'candidate_id': 's1', 'brand': 'sample', 'name': 'S', 'category': 'socks', 'stage': 'shortlisted', 'screen_in_date': d(20), 'lead_time_days': 10, 'log': [{'on': d(10), 'what': 'gated to shortlisted'}]},
+                           {'candidate_id': 'g1', 'brand': 'sample', 'name': 'G', 'category': 'socks', 'stage': 'gated', 'screen_in_date': d(5), 'first_run': {'units': 100}}]
+            audit.PIPELINE_PATH.write_text(json.dumps({'rows': rows}), encoding='utf-8')
+            lp = api.launch_plan(data, None, 's1')
+            self.assertTrue(lp['estimated'])
+            self.assertEqual(lp['target'], (D + timedelta(days=10 + 10 + audit.ORDER_SAFETY_DAYS)).isoformat())   # 10 median days at shortlisted, plus the lead time and the safety days
+            self.assertIn('estimate: 10 days to go', lp['target_source'])
+            self.assertIn('(estimate)', lp['text'])
+            self.assertEqual(next(x for x in lp['steps'] if x['key'] == 'target')['state'], 'due')             # an estimate is a prompt to set the real target
+            self.assertEqual(next(x for x in lp['steps'] if x['key'] == 'order')['state'], 'due')
+            lp2 = api.launch_plan(data, None, 'g1')                                                           # gated needs gated and shortlisted medians: both exist here
+            self.assertTrue(lp2['estimated'])
+            self.assertIn('gated 6, shortlisted 10', lp2['target_source'])
+        finally:
+            audit.PIPELINE_PATH, api.HANDOFF_PATH, api.TESTS_PATH, api.DECISIONS_PATH, audit.SHARED_HANDOFFS_PATH = saved
+
     def test_avatar_handoff_names_the_buyer(self):
         fid = next(f['id'] for f in audit.run('bombas', {'ends_on': '2026-09-27'}) if f['rule_id'] == 'PROD-R11')
         h = api.creative_handoff('bombas', fid)

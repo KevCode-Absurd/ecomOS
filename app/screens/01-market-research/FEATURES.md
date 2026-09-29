@@ -306,7 +306,7 @@ Picked from the round 10 note and the idea pass (PRD-125 the read that decides, 
 | 11.4 | Founder pick on a tie (bank idea PRD-108): two or more shortlisted candidates within 3 scorecard points; rule PROD-R63 a tie with no founder pick and reason written (`ties`, greedy groups from the top score); the pick and its reason on the candidate (`founder_pick_reason`) from a strip above the scorecard; merged into the candidate card | done |
 | 11.5 | Days per stage from the candidate logs (`stage_spans`, `days_per_stage`): the median days to leave each stage (a norm from 2 or more), the longest open wait with its candidate, the slowest and the stalled stage, as a block whose gap line opens the stalled candidate's decide-or-kill card | done |
 | 11.6 | Hand-off ageing: rule PROD-R64 a hand-off proposed on the shared log for 7 or more days with no status change from the team, with a nudge action for the owner | todo |
-| 11.7 | The expected go date on the launch plan from the median days per stage when no launch target is set, said as an estimate | todo |
+| 11.7 | The expected go date on the launch plan from the median days per stage when no launch target is set, said as an estimate (only when every remaining stage has a norm; the target step stays due so the real date gets set; the plan and the panel say estimate) | done |
 | 11.8 | The digest and the load in the weekly note: `weekly.py` writes the digest first, then the desk report, then the week plan (which carries the load by owner) | done |
 | 11.9 | Second brand pass; every new block and route on Tallgrass Goods | todo |
 | 11.10 | Recipes, tests, round11.png, founder note | todo |

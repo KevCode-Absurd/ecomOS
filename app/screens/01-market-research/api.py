@@ -2295,6 +2295,16 @@ def launch_plan(data, brand, cid):
         if peak:
             peak_d = peak if isinstance(peak, dt.date) else dt.date.fromisoformat(str(peak)[:10])
             target, target_src = peak_d - dt.timedelta(days=audit.ORDER_SAFETY_DAYS), f'{audit.ORDER_SAFETY_DAYS} days before the {str(peak)[:7]} peak (seasonal)'
+    estimated = False
+    if target is None and cand.get('stage') in audit.STAGES and cand.get('stage') != 'go':
+        sd = audit.days_per_stage(brand or 'sample', ends_on)
+        meds = {r['stage']: r['median_days'] for r in sd['rows'] if r['norm']}
+        remaining = audit.STAGES[audit.STAGES.index(cand['stage']):-1]
+        if remaining and all(st in meds for st in remaining):
+            to_go = sum(meds[st] for st in remaining)
+            target = ends_on + dt.timedelta(days=int(round(to_go)) + (lead or 0) + audit.ORDER_SAFETY_DAYS)
+            target_src = f'estimate: {int(round(to_go))} days to go on the median days per stage ({", ".join(f"{st} {meds[st]:g}" for st in remaining)}), plus the lead time and {audit.ORDER_SAFETY_DAYS} days of safety'
+            estimated = True
     order_due = (target - dt.timedelta(days=(lead or 0) + audit.ORDER_SAFETY_DAYS)) if target and lead is not None else None
     creative = audit.team_status(cid, 'creative')
     sv = audit.sample_verdict(cand.get('sample'))
@@ -2324,13 +2334,15 @@ def launch_plan(data, brand, cid):
             why = 'no lead time on the candidate or the brand, so the order date cannot be placed'
         else:
             why = rule
+        if key == 'target' and estimated:
+            done['target'] = False   # an estimated target is a prompt to set one, not a target
         state = 'done' if done[key] else ('no_date' if due is None else 'overdue' if due < ends_on else 'due')
         steps.append({'key': key, 'label': label, 'owner': owner, 'due': due.isoformat() if due else None, 'days': (due - ends_on).days if due else None, 'state': state, 'done_when': why})
     open_steps = [x for x in steps if x['state'] != 'done']
-    return {'candidate_id': cid, 'name': cand.get('name'), 'stage': cand.get('stage'), 'ends_on': ends_on.isoformat(), 'target': target.isoformat() if target else None, 'target_source': target_src,
+    return {'candidate_id': cid, 'name': cand.get('name'), 'stage': cand.get('stage'), 'ends_on': ends_on.isoformat(), 'target': target.isoformat() if target else None, 'target_source': target_src, 'estimated': estimated,
             'lead_time_days': lead, 'lead_time_source': lead_src, 'steps': steps, 'open': len(open_steps), 'overdue': sum(1 for x in steps if x['state'] == 'overdue'),
             'launch_ready': bool(ready and ready.get('launch_ready')),
-            'text': '\n'.join([f'LAUNCH PLAN: {cand.get("name")} ({cand.get("stage")})', f'Target: {target.isoformat() if target else "not set"} ({target_src or "set launch_target on the candidate"}). Lead time: {lead if lead is not None else "unknown"} days ({lead_src or "none on file"}).', '']
+            'text': '\n'.join([f'LAUNCH PLAN: {cand.get("name")} ({cand.get("stage")})', f'Target: {target.isoformat() if target else "not set"}{" (estimate)" if estimated else ""} ({target_src or "set launch_target on the candidate"}). Lead time: {lead if lead is not None else "unknown"} days ({lead_src or "none on file"}).', '']
                               + [f'- {x["due"] or "no date"}  {x["label"]}  [{x["owner"]}]  {x["state"]}' + ('' if x['state'] == 'done' else f'  (done when: {x["done_when"]})') for x in steps]),
             'rule': f'dates work back from the launch target: the order goes in lead time plus {audit.ORDER_SAFETY_DAYS} days before launch, the quote {LAUNCH_QUOTE_DAYS} days and the passed sample {LAUNCH_SAMPLE_DAYS} days before the order, copy and the ad brief 14 days and the page 10 days before launch, stock lands {audit.ORDER_SAFETY_DAYS} days before, the first read 28 days after; a step with no date says why'}
 
