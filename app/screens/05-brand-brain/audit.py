@@ -313,6 +313,10 @@ _mispec = importlib.util.spec_from_file_location("brand_brain_misses", Path(__fi
 misses = importlib.util.module_from_spec(_mispec)
 _mispec.loader.exec_module(misses)
 
+_slspec = importlib.util.spec_from_file_location("brand_brain_shelf", Path(__file__).resolve().parent / "shelf.py")
+shelf = importlib.util.module_from_spec(_slspec)
+_slspec.loader.exec_module(shelf)
+
 _uspec = importlib.util.spec_from_file_location("brand_brain_assumptions", Path(__file__).resolve().parent / "assumptions.py")
 assumptions = importlib.util.module_from_spec(_uspec)
 _uspec.loader.exec_module(assumptions)
@@ -590,7 +594,7 @@ def rule_signals(brain: Brain, ends_on: str) -> list[dict]:
 
 def rule_weak_sections(brain: Brain, ends_on: str) -> list[dict]:
     out = []
-    for s in health.heatmap(brain)["sections"]:
+    for s in health.heatmap(brain, shelf.table(brain, health.SHELF_DAYS))["sections"]:
         if s["verdict"]["kind"] != "ask" or not s["records"]:
             continue
         ev = [_row("weak_share", round(s["weak_share"], 2), "share", ends_on, s["age_days"], health.WEAK_SHARE, f"brain.{s['section']}"),
@@ -944,7 +948,7 @@ def rule_misses(brain: Brain, ends_on: str) -> list[dict]:
 
 def rule_expiring(brain: Brain, ends_on: str) -> list[dict]:
     out = []
-    ex = expiring.expiring(brain, health.SHELF_DAYS)
+    ex = expiring.expiring(brain, shelf.table(brain, health.SHELF_DAYS))
     for g in ex["groups"]:
         ev = [_row("records_expiring", g["records"], "n", ends_on, None, 0, g["source"]), _row("records_expired", g["expired"], "n", ends_on, None, 0, g["source"])]
         f = _finding("BRN-R36", "medium" if g["expired"] else "low", {"type": "brand", "id": f"expiring_{g['source']}", "label": f"{g['source'].replace('_', ' ')} records"}, ev,
@@ -956,7 +960,7 @@ def rule_expiring(brain: Brain, ends_on: str) -> list[dict]:
 
 def rule_owners(brain: Brain, ends_on: str) -> list[dict]:
     out = []
-    ow = owners.owners(brain, health.SHELF_DAYS, health.META_SECTIONS, brain.section_stats())
+    ow = owners.owners(brain, shelf.table(brain, health.SHELF_DAYS), health.META_SECTIONS, brain.section_stats())
     for row in ow["rows"]:
         if row["state"] != "overdue":
             continue

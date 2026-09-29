@@ -44,6 +44,8 @@ question, and accept or ignore on a proposed record. Nothing external.
   POST alerts/sent              mark the digest sent today; the next one flags what is new since
   GET  onepage                  the brain in one page for a new team member (markdown)
   GET  owners                   section owners and review cadence; overdue reviews first
+  GET  shelf                    days a record stays fresh per section: the default and the founder's override
+  POST shelf                    {section, days, why}: set a section's shelf life (1 to 365 days); days empty puts the default back
   POST owners/<section>         {owner, cadence_days, reviewed}: set the owner or cadence, or mark reviewed today
   GET  redlines                 the red lines register: never say, required lines, blocking rules, logo, rejected ideas, decisions, with reasons
   POST redlines/reason          {record, reason}: the reason written onto a red line's record
@@ -297,6 +299,14 @@ _afspec.loader.exec_module(answersfrom)
 _shspec = importlib.util.spec_from_file_location("brand_brain_sheets", HERE / "sheets.py")
 sheets = importlib.util.module_from_spec(_shspec)
 _shspec.loader.exec_module(sheets)
+_slspec = importlib.util.spec_from_file_location("brand_brain_shelf", HERE / "shelf.py")
+shelf = importlib.util.module_from_spec(_slspec)
+_slspec.loader.exec_module(shelf)
+
+
+def _shelf(brain: Brain) -> dict:
+    """The shelf-life table with the founder's per-section overrides (feature 9.8)."""
+    return shelf.table(brain, health.SHELF_DAYS)
 _rsspec = importlib.util.spec_from_file_location("brand_brain_restore", HERE / "restore.py")
 restore = importlib.util.module_from_spec(_rsspec)
 _rsspec.loader.exec_module(restore)
@@ -1254,7 +1264,7 @@ def report_view(brain: Brain, days: int) -> dict:
     except Exception:  # noqa: BLE001
         actions = []
     out = report.weekly(brain, days, changes.recent(brain, days), decisions_log(brain), questions_ranked(brain), conflicts_view(brain), sitediff.diff(brain), documents(brain),
-                        health.heatmap(brain), actions, market.pages(brain) | {"gaps": market.gaps(brain)})
+                        health.heatmap(brain, _shelf(brain)), actions, market.pages(brain) | {"gaps": market.gaps(brain)})
     out.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())
     return out
 
@@ -1276,7 +1286,7 @@ def round_view(brain: Brain, req) -> dict:
             actions = rank(brain.brand, _window(req, brain))["actions"]
         except Exception:  # noqa: BLE001
             actions = []
-    ow = owners.owners(brain, health.SHELF_DAYS, health.META_SECTIONS, brain.section_stats())
+    ow = owners.owners(brain, _shelf(brain), health.META_SECTIONS, brain.section_stats())
     carried = []
     for r in brain.records("decisions"):
         v = r.get("value") if isinstance(r.get("value"), dict) else {}
@@ -1292,7 +1302,7 @@ def digest_view(brain: Brain) -> dict:
         actions = rank(brain.brand, _window_dict(brain))["actions"]
     except Exception:  # noqa: BLE001
         actions = []
-    out = report.digest(brain, questions_ranked(brain), review_queue(brain), health.heatmap(brain), actions, health.connectors(brain))
+    out = report.digest(brain, questions_ranked(brain), review_queue(brain), health.heatmap(brain, _shelf(brain)), actions, health.connectors(brain, shelf=_shelf(brain)))
     out.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())
     return out
 
@@ -1620,7 +1630,7 @@ def onepage_view(brain: Brain, decisions_path: Path, reader: str | None = None) 
     parts_ = {"t0": t0_card(brain), "frame": {"tier": frame["tier"], "text": frame.get("text") or str(frame.get("value"))} if frame else None,
               "proof_points": ", ".join(str(x) for x in proof["value"]) if proof and isinstance(proof.get("value"), list) else (proof.get("text") if proof else None),
               "audiences": audiences.profiles(brain, ladderproof), "voice": voice.sheet(brain), "redlines": redlines.register(brain), "locks": locks.zones(brain, voice),
-              "owners": owners.owners(brain, health.SHELF_DAYS, health.META_SECTIONS, brain.section_stats()), "connectors": health.connectors(brain), "competitors": comp,
+              "owners": owners.owners(brain, _shelf(brain), health.META_SECTIONS, brain.section_stats()), "connectors": health.connectors(brain, shelf=_shelf(brain)), "competitors": comp,
               "questions": [q for q in qs if not q.get("answered_on")], "decisions": dec[:5], "tokens": package_mod.tokens}
     res = onepage.build(brain, parts_)
     _log_read(brain, ["identity", "positioning", "avatars", "voice", "claims", "team"], reader or "onepage")
@@ -1671,8 +1681,8 @@ def handle(req):
     if req.method == "POST" and len(parts) == 2 and parts[0] == "conflicts":
         return conflict_resolve(brain, parts[1], req.body)
     if req.method == "GET" and parts == ["health"]:
-        h = health.heatmap(brain)
-        h["connectors"] = health.connectors(brain)
+        h = health.heatmap(brain, _shelf(brain))
+        h["connectors"] = health.connectors(brain, shelf=_shelf(brain))
         h.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())
         return h
     if req.method == "GET" and parts == ["health", "cell"]:
@@ -2346,7 +2356,7 @@ def handle(req):
         founder_put(brain, dec, "founder_edit", dec["text"][:160])
         return 201, {"ok": True, "round": st["key"], "done": len(done), "carried": carried, "decision": dec["id"], "version": brain.version(), "next": "Closed and logged. The next round lists what was carried over first."}
     if req.method == "GET" and parts == ["trust"]:
-        t = trust.scores(brain, health.heatmap(brain), owners.owners(brain, health.SHELF_DAYS, health.META_SECTIONS, brain.section_stats()), health.META_SECTIONS)
+        t = trust.scores(brain, health.heatmap(brain, _shelf(brain)), owners.owners(brain, _shelf(brain), health.META_SECTIONS, brain.section_stats()), health.META_SECTIONS)
         t.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "BRN-C12", "autonomy": "agent_does"})
         try:
             t["point_written"] = trusthistory.append(brain, t)
@@ -2495,7 +2505,7 @@ def handle(req):
                 flagged = flag["id"]
         return 201, {"ok": True, "record": rec["id"], "flagged": flagged, "version": brain.version(), "next": "On the record: the brain file lists it under mistakes agents made." + (" The section is flagged for review today." if flagged else "")}
     if req.method == "GET" and parts == ["expiring"]:
-        ex = expiring.expiring(brain, health.SHELF_DAYS)
+        ex = expiring.expiring(brain, _shelf(brain))
         ex.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "BRN-C02", "autonomy": "agent_does"})
         return ex
     if req.method == "POST" and parts == ["expiring", "confirm"]:
@@ -2505,7 +2515,7 @@ def handle(req):
             return 400, {"error": "send id or ids"}
         done, failed = [], []
         for rid in [str(x) for x in ids][:200]:
-            res = expiring.confirmed(brain, rid, health.SHELF_DAYS)
+            res = expiring.confirmed(brain, rid, _shelf(brain))
             if isinstance(res, tuple):
                 failed.append({"id": rid, "error": res[1].get("error")})
                 continue
@@ -2544,7 +2554,7 @@ def handle(req):
             except Exception:  # noqa: BLE001
                 return default
         parts_ = {"site": safe(lambda: sitediff.diff(brain), {}), "market": safe(lambda: market.pages(brain), {}), "assets": safe(lambda: assets.register(brain), {}), "consents": safe(lambda: ugc.register(brain), {}),
-                  "owners": safe(lambda: owners.owners(brain, health.SHELF_DAYS, health.META_SECTIONS, brain.section_stats()), {}), "peaks": safe(lambda: peaks.readiness(brain, market.angles_of, legal, assumptions), {}),
+                  "owners": safe(lambda: owners.owners(brain, _shelf(brain), health.META_SECTIONS, brain.section_stats()), {}), "peaks": safe(lambda: peaks.readiness(brain, market.angles_of, legal, assumptions), {}),
                   "redlines": safe(lambda: redlines.register(brain), {}), "rejected": safe(lambda: list(bottlenecks.rejected_ideas(brain).values()), []),
                   "questions": safe(lambda: [q for q in questions_ranked(brain).get("questions") or [] if not q.get("answered_on")], []), "changes": safe(lambda: changes.recent(brain, 7), {})}
         res = alerts.build(brain, parts_)
@@ -2558,8 +2568,35 @@ def handle(req):
         return 201, {"ok": True, "since": rec["value"], "version": brain.version(), "next": "Marked sent. The next digest flags what appears after today."}
     if req.method == "GET" and parts == ["onepage"]:
         return onepage_view(brain, _decisions_path(req), req.arg("reader"))
+    if req.method == "GET" and parts == ["shelf"]:
+        v = shelf.view(brain, health.SHELF_DAYS, brain.section_stats(), health.META_SECTIONS)
+        v.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "BRN-C12", "autonomy": "founder_gate"})
+        return v
+    if req.method == "POST" and parts == ["shelf"]:
+        body = req.body or {}
+        sec = str(body.get("section") or "")
+        if sec not in health.SHELF_DAYS or sec in health.META_SECTIONS or health.SHELF_DAYS.get(sec) is None:
+            return 404, {"error": "no such section, or one without a shelf life", "section": sec}
+        days = body.get("days")
+        if days in (None, "", 0):
+            cur = next((r for r in brain.raw("team") if r.get("field") == f"shelf_{sec}" and r.get("status", "active") != "retired"), None)
+            if cur:
+                brain.retire(cur["id"])
+                changes.log(brain, "owner", "team", cur["id"], f"shelf life of {sec.replace('_', ' ')} back to the default {health.SHELF_DAYS[sec]} days")
+            return 201, {"ok": True, "section": sec, "days": health.SHELF_DAYS[sec], "set": False, "version": brain.version()}
+        try:
+            days = int(days)
+        except (TypeError, ValueError):
+            return 400, {"error": "days must be a number"}
+        if not (shelf.MIN_DAYS <= days <= shelf.MAX_DAYS):
+            return 400, {"error": f"days must be between {shelf.MIN_DAYS} and {shelf.MAX_DAYS}"}
+        rec = shelf.record(brain, sec, days, str(body.get("why") or ""))
+        errs = founder_put(brain, rec, "owner", rec["text"][:160])
+        if errs:
+            return 400, {"error": "; ".join(errs)}
+        return 201, {"ok": True, "section": sec, "days": days, "set": True, "record": rec["id"], "version": brain.version(), "next": f"Set. {sec.replace('_', ' ')} records now count as fresh for {days} days; the heatmap, the owners' cadence and this week's expiries read it."}
     if req.method == "GET" and parts == ["owners"]:
-        ow = owners.owners(brain, health.SHELF_DAYS, health.META_SECTIONS, brain.section_stats())
+        ow = owners.owners(brain, _shelf(brain), health.META_SECTIONS, brain.section_stats())
         ow.update(brand=brain.brand, today=brain.today.isoformat(), roles=health.ROLES, capability={"id": "BRN-C12", "autonomy": "founder_gate"})
         return ow
     if req.method == "POST" and len(parts) == 2 and parts[0] == "owners":

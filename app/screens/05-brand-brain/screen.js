@@ -1640,6 +1640,7 @@
   async function loadOwners(actions) {
     let ow;
     try { ow = await api(BASE + 'owners'); } catch (e) { mount('#owners', el('p', { class: 'muted', text: 'Owners unavailable: ' + e.message })); return; }
+    let shelfRows = null; try { const sv = await api(BASE + 'shelf'); shelfRows = {}; for (const x of sv.sections) shelfRows[x.section] = x; } catch (e) { shelfRows = null; }
     const byAct = {}; for (const a of actions || []) if (a.rule_id === 'BRN-R35' && a.entity) byAct[a.entity.id] = a;
     const c = ow.counts;
     mount('#owners-tools', UI.orientation([{ label: 'sections', value: c.sections, unit: 'n' }, { label: 'with an owner', value: c.assigned, unit: 'n' }, { label: 'overdue', value: c.overdue, unit: 'n', tone: c.overdue ? 'bad' : 'good' }, { label: 'due in 7 days', value: c.due_soon, unit: 'n', tone: c.due_soon ? 'warn' : null }]));
@@ -1648,12 +1649,17 @@
       const act = byAct['review_' + r.section];
       const owner = el('input', { class: 'text sm', placeholder: 'owner: a role or a name', value: r.owner || '', style: { flex: '1 1 200px' } });
       const cad = el('input', { class: 'text sm', type: 'number', placeholder: 'cadence, days', value: r.cadence_default ? '' : r.cadence_days, style: { maxWidth: '140px' } });
+      // 9.8: the section's shelf life, the founder's number over the default
+      const sh = (shelfRows || {})[r.section];
+      const shelfIn = el('input', { class: 'text sm', type: 'number', placeholder: sh ? 'shelf life, default ' + sh.default_days : 'shelf life, days', value: sh && sh.set ? sh.days : '', title: 'days a record stays fresh before it is due for a look', style: { maxWidth: '170px' } });
+      const shelfBtn = el('button', { class: 'btn sm soft', type: 'button', text: 'Set shelf life' });
+      shelfBtn.addEventListener('click', async () => { shelfBtn.disabled = true; try { const res = await api(BASE + 'shelf', { method: 'POST', body: { section: r.section, days: shelfIn.value.trim() || null } }); status.textContent = res.next || ('Back to the default ' + res.days + ' days.'); loadOwners(actions); loadHealth(); } catch (e) { shelfBtn.disabled = false; status.textContent = 'Could not set: ' + e.message; } });
       const save = el('button', { class: 'btn sm', type: 'button', text: 'Save' });
       const done = el('button', { class: 'btn primary sm', type: 'button', text: 'Mark reviewed today' });
       const post = async (body) => { try { await api(BASE + 'owners/' + r.section, { method: 'POST', body }); panel.close(); loadOwners(actions); loadPlan(); } catch (e) { status.textContent = 'Could not save: ' + e.message; } };
       save.addEventListener('click', () => post({ owner: owner.value.trim(), cadence_days: cad.value || null }));
       done.addEventListener('click', () => post({ reviewed: true }));
-      const panel = UI.panel({ title: pretty(r.section) + ': owner and cadence', body: el('div', { class: 'stack' }, el('div', { class: 'row' }, UI.verdict(r.verdict.kind, r.verdict.text), el('span', { class: 'chip', text: r.records + ' records' }), el('span', { class: 'small', text: (r.basis ? 'Last ' + (r.basis === 'review' ? 'reviewed' : 'updated') + ' ' + fmt.date(r.last) : 'Never reviewed or updated') + ', cadence ' + r.cadence_days + ' days' + (r.cadence_default ? ' (shelf life)' : '') + '.' })), act ? el('div', { class: 'small' }, el('b', { text: act.title })) : null, el('div', { class: 'row' }, owner, cad, save, done), status) });
+      const panel = UI.panel({ title: pretty(r.section) + ': owner and cadence', body: el('div', { class: 'stack' }, el('div', { class: 'row' }, UI.verdict(r.verdict.kind, r.verdict.text), el('span', { class: 'chip', text: r.records + ' records' }), el('span', { class: 'small', text: (r.basis ? 'Last ' + (r.basis === 'review' ? 'reviewed' : 'updated') + ' ' + fmt.date(r.last) : 'Never reviewed or updated') + ', cadence ' + r.cadence_days + ' days' + (r.cadence_default ? ' (shelf life)' : '') + '.' })), act ? el('div', { class: 'small' }, el('b', { text: act.title })) : null, el('div', { class: 'row' }, owner, cad, save, done), el('div', { class: 'row' }, el('span', { class: 'micro faint', text: 'Shelf life: days a record stays fresh here (default ' + (sh ? sh.default_days : '?') + ').' }), shelfIn, shelfBtn), status) });
     };
     const table = UI.verdictTable({ columns: [{ key: 'label', label: 'Section' }, { key: 'owner', label: 'Owner', format: (v) => v || 'unassigned' }, { key: 'cadence_days', label: 'Cadence, days', num: true }, { key: 'last', label: 'Last', format: (v, r) => v ? fmt.date(v) + (r.basis === 'update' ? ' (update)' : '') : NA }, { key: 'records', label: 'Records', num: true }],
       verdict: { at: 1, kind: (r) => r.verdict.kind, text: (r) => r.verdict.text, reason: (r) => r.state }, rows: ow.rows, sort: false, empty: 'No section.', onRow: open, actions: { label: 'Set', onClick: open } });

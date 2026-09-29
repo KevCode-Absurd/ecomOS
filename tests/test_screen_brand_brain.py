@@ -2937,6 +2937,40 @@ class Round8QuizAndSchedule(TempBrain):
         self.assertEqual(api.handle(Req(['schedule'], 'POST', body={'weekday': 'x'}))[0], 400)
 
 
+class Round9ShelfLife(TempBrain):
+    """Round 9 feature 8: shelf life per section, set by the founder and read everywhere."""
+
+    def test_override_flows_to_heatmap_owners_expiring_and_confirm(self):
+        v = api.handle(Req(['shelf']))
+        offers = next(r for r in v['sections'] if r['section'] == 'offers')
+        self.assertEqual((offers['default_days'], offers['days'], offers['set'], v['counts']['set']), (1, 1, False, 0))
+        self.assertEqual(api.handle(Req(['shelf'], 'POST', body={'section': 'changes', 'days': 5}))[0], 404)
+        self.assertEqual(api.handle(Req(['shelf'], 'POST', body={'section': 'offers', 'days': 900}))[0], 400)
+        status, r = api.handle(Req(['shelf'], 'POST', body={'section': 'offers', 'days': 21, 'why': 'we change offers monthly'}))
+        self.assertEqual((status, r['days'], r['record']), (201, 21, 'bombas.team.shelf_offers'))
+        v = api.handle(Req(['shelf']))
+        offers = next(r for r in v['sections'] if r['section'] == 'offers')
+        self.assertEqual((offers['days'], offers['set'], offers['why']), (21, True, 'we change offers monthly'))
+        h = api.handle(Req(['health']))
+        self.assertEqual(next(x for x in h['sections'] if x['section'] == 'offers')['shelf_days'], 21)
+        ow = api.handle(Req(['owners']))
+        row = next(x for x in ow['rows'] if x['section'] == 'offers')
+        self.assertEqual((row['cadence_days'], row['cadence_default']), (21, True))
+        api.handle(Req(['profile', 'offers', 'shelf_probe'], 'POST', body={'text': 'a probe with no number'}))
+        rows = self.section('offers')
+        next(x for x in rows if x['field'] == 'shelf_probe')['expires_at'] = '2026-09-29'
+        self.write('offers', rows)
+        ex = api.handle(Req(['expiring']))
+        self.assertIn('bombas.offers.shelf_probe', [x['id'] for x in ex['rows']])
+        status, c = api.handle(Req(['expiring', 'confirm'], 'POST', body={'id': 'bombas.offers.shelf_probe'}))
+        self.assertEqual(status, 201)
+        probe = next(x for x in self.section('offers') if x['field'] == 'shelf_probe')
+        self.assertEqual(probe['expires_at'], '2026-10-19')  # today plus the founder's 21 days, not the default 1
+        status, r = api.handle(Req(['shelf'], 'POST', body={'section': 'offers', 'days': None}))
+        self.assertEqual((status, r['days'], r['set']), (201, 1, False))
+        self.assertEqual(next(x for x in api.handle(Req(['health']))['sections'] if x['section'] == 'offers')['shelf_days'], 1)
+
+
 class Round9ProductSheets(TempBrain):
     """Round 9 feature 7: product line fact sheets."""
 
@@ -3344,7 +3378,7 @@ class Round8SourcesTrustHistory(TempBrain):
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
-    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'], ['onepage'], ['brainmd', 'notes'], ['alerts'], ['glossary'], ['expiring'], ['feedback'], ['numbers'], ['proofs'], ['trust'], ['round'], ['brandbook'], ['quiz'], ['schedule'], ['sources'], ['records', 'csv'], ['trust', 'history'], ['contradict'], ['changes'], ['handoff'], ['ask', 'misses'], ['products', 'sheets'],
+    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'], ['onepage'], ['brainmd', 'notes'], ['alerts'], ['glossary'], ['expiring'], ['feedback'], ['numbers'], ['proofs'], ['trust'], ['round'], ['brandbook'], ['quiz'], ['schedule'], ['sources'], ['records', 'csv'], ['trust', 'history'], ['contradict'], ['changes'], ['handoff'], ['ask', 'misses'], ['products', 'sheets'], ['shelf'],
               ['decisions'], ['flows'], ['claims'], ['site', 'diff'], ['parity'], ['contracts'], ['legal'], ['voice'], ['battlecards'], ['permissions'],
               ['export'], ['assumptions'], ['facts'], ['summaries'], ['changes'], ['learn'], ['report'], ['digest'], ['review'], ['bottlenecks'], ['audit']]
 

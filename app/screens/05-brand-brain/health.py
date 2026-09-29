@@ -93,7 +93,8 @@ def _verdict(sec: str, st: dict, rooms: list[str], srcs: list[dict], empty_field
             "reason": f"{st['records']} records, newest {st['age_days']} days old, {round((st['strong_share'] or 0) * 100)} percent approved, site backed or reported", "steps": []}
 
 
-def heatmap(brain) -> dict:
+def heatmap(brain, shelf: dict | None = None) -> dict:
+    shelf = shelf or SHELF_DAYS
     """Rows are sections, columns are tiers, cells are record counts. Each row carries freshness and its one action."""
     try:
         bank = keeper.load_bank()
@@ -124,7 +125,7 @@ def heatmap(brain) -> dict:
         confs = [r["confidence"] for r in recs if isinstance(r["confidence"], (int, float))]
         n = len(recs)
         st = {"records": n, "stale": sum(1 for r in recs if r["status"] == "stale"), "age_days": min(ages) if ages else None,
-              "oldest_days": max(ages) if ages else None, "undated": n - len(ages), "shelf_days": SHELF_DAYS.get(sec),
+              "oldest_days": max(ages) if ages else None, "undated": n - len(ages), "shelf_days": shelf.get(sec),
               "confidence": round(sum(confs) / len(confs), 2) if confs else None,
               "strong": sum(counts[t] for t in STRONG), "weak": sum(counts[t] for t in WEAK),
               "strong_share": (sum(counts[t] for t in STRONG) / n) if n else None, "weak_share": (sum(counts[t] for t in WEAK) / n) if n else None}
@@ -173,7 +174,8 @@ PUBLIC_LANES = {  # how a source in the registry shows up in the brand's sources
 }
 
 
-def connectors(brain, today: dt.date | None = None) -> dict:
+def connectors(brain, today: dt.date | None = None, shelf: dict | None = None) -> dict:
+    shelf_table = shelf or SHELF_DAYS
     """What is connected, what each fills, when it last pulled, and the connect action for what is not."""
     today = today or brain.today
     try:
@@ -219,7 +221,7 @@ def connectors(brain, today: dt.date | None = None) -> dict:
             status = "not pulled"
         else:
             status = "not connected"   # no private connector is live yet; a real key shows here when Setup has it
-        shelf = min([SHELF_DAYS.get(sec) or 999 for sec in fills] or [None])
+        shelf = min([shelf_table.get(sec) or 999 for sec in fills] or [None])
         rows.append({"id": sid, "name": s.get("name"), "category": s.get("category"), "access": s.get("access"), "status": status,
                      "fills_sections": fills, "fills_tables": s.get("fills_tables") or [], "unblocks_rooms": unblocks,
                      "pulls": len(pulls) if pulls else None, "failed": failed if pulls else None, "last_pull": last, "age_days": age,
