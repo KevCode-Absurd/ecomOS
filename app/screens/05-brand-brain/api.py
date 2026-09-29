@@ -145,6 +145,7 @@ question, and accept or ignore on a proposed record. Nothing external.
   GET  battlecards              one card per tracked competitor: their angles, where they beat us, the doubt they
                                 exploit, our proof, how we win, CX and copy lines, plain text to copy
   GET  ask?q=                   answers from records with tier, source and date; "can we say" routes to the claims
+  GET  package/since            ?capability=&reader=: what changed for that reader since its last package read (added, gone, changed), as a note to read first
   POST ask/open                 {q, why}: save an unanswered question as an open question
   GET  ask/misses               ?days=: asks with no record behind them, grouped by question, with who asked and whether it is opened
   POST ask/misses/open          {q}: turn a miss into an open question with the ask count as the why
@@ -312,6 +313,9 @@ _rrspec.loader.exec_module(roundreport)
 _egspec = importlib.util.spec_from_file_location("brand_brain_evidencegaps", HERE / "evidencegaps.py")
 evidencegaps = importlib.util.module_from_spec(_egspec)
 _egspec.loader.exec_module(evidencegaps)
+_snspec = importlib.util.spec_from_file_location("brand_brain_since", HERE / "since.py")
+since_mod = importlib.util.module_from_spec(_snspec)
+_snspec.loader.exec_module(since_mod)
 
 
 def _shelf(brain: Brain) -> dict:
@@ -2065,6 +2069,17 @@ def handle(req):
             if res.get("record_ids"):
                 trail.log_records(brain, req.arg("reader") or res["capability"], res["record_ids"], res.get("public_facing"))
         return res
+    if req.method == "GET" and parts == ["package", "since"]:
+        reader = re.sub(r"[^A-Za-z0-9_.:-]+", "", str(req.arg("reader") or ""))[:80]
+        cap_id = req.arg("capability", "") or ""
+        if not reader:
+            return 400, {"error": "reader is the agent or screen name that built the package before"}
+        res = package_view(brain, cap_id)
+        if isinstance(res, tuple):
+            return res
+        out = since_mod.build(brain, reader, cap_id, res["record_ids"], trail.record_reads(brain), changes.recent(brain, days=100000)["changes"])
+        out.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())
+        return out
     if req.method == "GET" and parts == ["facts"]:
         fp = facts.pairs(brain)
         fp.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())

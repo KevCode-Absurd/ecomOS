@@ -213,7 +213,7 @@ Picked from the round 9 note, the lead's shared hand-offs table and the loops ro
 |---|---|---|---|
 | 10.1 | Attach a quote to a record (`POST evidence/attach`): paste the line that backs a record and where it came from; the record keeps its tier and gains an evidence entry with the date; from the no-evidence tab (9.10) and logged as a proof | done | Close a no-evidence line in 20 seconds when you have the page open |
 | 10.2 | Old approvals, still true? (`expiring.old_approvals`, in `GET expiring`): a record approved on the founder's word never gets an expiry, so nothing asks whether it still holds; now any such record not confirmed for longer than 3 times its section's shelf life (30 to 365 days) is listed under what goes stale with still true (the existing confirm, which gives it an expiry and puts it in the weekly check) and retire with a why; rule BRN-R42 puts them on the plan | done | Your own word from 6 months ago gets asked again before an agent quotes it |
-| 10.3 | What is new for a reader since its last read | todo | |
+| 10.3 | What is new for a reader since its last read (`since.py`, `GET package/since`): an agent or screen that built a package before gets the records added to it, gone from it, and changed since the day of its last read (from the agent-reads log and the changes list), as a note to read first; a reader with no earlier read is told the first build is the baseline; from the package block | done | An agent re-reads 3 lines, not 200, and never misses a fact you changed |
 | 10.4 | The hand-offs inbox from other screens | todo | |
 | 10.5 | A snapshot before every bulk move, and a restore from it | todo | |
 | 10.6 | What buyers say most: repeated lines as signal | todo | |

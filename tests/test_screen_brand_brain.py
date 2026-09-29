@@ -4,6 +4,7 @@ import base64
 import datetime as dt
 import importlib.util
 import json
+import re
 import shutil
 import sys
 import tempfile
@@ -2935,6 +2936,31 @@ class Round8QuizAndSchedule(TempBrain):
         self.assertEqual(api.handle(Req(['schedule']))['next'], '2026-10-01')
         self.assertEqual(api.handle(Req(['schedule'], 'POST', body={'weekday': 9}))[0], 400)
         self.assertEqual(api.handle(Req(['schedule'], 'POST', body={'weekday': 'x'}))[0], 400)
+
+
+class Round10Since(TempBrain):
+    """Round 10 feature 3: what is new for a reader since its last read."""
+
+    def test_baseline_then_added_changed_gone(self):
+        r0 = api.handle(Req(['package', 'since'], query={'capability': ['CREA-C06'], 'reader': ['10-copy']}))
+        self.assertFalse(r0['available'])
+        self.assertEqual(api.handle(Req(['package', 'since'], query={'capability': ['CREA-C06']}))[0], 400)
+        pk = api.handle(Req(['package'], query={'capability': ['CREA-C06'], 'reader': ['10-copy']}))
+        ids = pk['record_ids']
+        self.assertGreater(len(ids), 5)
+        r1 = api.handle(Req(['package', 'since'], query={'capability': ['CREA-C06'], 'reader': ['10-copy']}))
+        self.assertEqual((r1['available'], r1['counts']), (True, {'added': 0, 'gone': 0, 'changed': 0}))
+        self.assertIn('Nothing changed for you.', r1['text'])
+        target = next(i for i in ids if not i.startswith('bombas.changes.'))
+        status, ap = api.handle(Req(['approve', target], 'POST', body={'choice': 'approve'}))  # a tier change keeps the record in the package and logs a line
+        self.assertEqual(status, 201)
+        api.handle(Req(['claims'], 'POST', body={'text': 'A brand new approved claim for the since test.', 'tier': 'approved'}))
+        r2 = api.handle(Req(['package', 'since'], query={'capability': ['CREA-C06'], 'reader': ['10-copy']}))
+        self.assertTrue(target in [c['id'] for c in r2['changed']] or target in r2['gone'], (target, r2['counts']))
+        self.assertGreaterEqual(r2['counts']['changed'] + r2['counts']['gone'], 1)
+        self.assertGreaterEqual(r2['counts']['added'], 1 if any(i.startswith('bombas.claims.') for i in ids) else 0)
+        self.assertIn('## Changed', r2['text'])
+        self.assertEqual(api.handle(Req(['package', 'since'], query={'capability': ['CREA-C06'], 'reader': ['09-creative']}))['available'], False)
 
 
 class Round10OldApprovals(TempBrain):
