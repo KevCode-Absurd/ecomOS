@@ -2800,6 +2800,8 @@ class ReportNewBlocks(TempBrain):
         sec = {s['title']: s['lines'] for s in rep['sections']}
         self.assertTrue(any(l.startswith('Buyers drift: durability complaints') for l in sec['Risks to the brand']))
         self.assertTrue(any('mystery shopper' in l for l in sec['What we do not know yet']))
+        # 12.8: what is ours and missing
+        self.assertTrue(any(l.startswith('Not in the brain yet: social handles') for l in sec['What we do not know yet']))
 
 
 class ShopperResults(TempBrain):
@@ -2853,6 +2855,8 @@ class ShopperResults(TempBrain):
             self.assertEqual(t['source']['type'], 'pretest')
             self.assertEqual(t['metric']['name'], 'ctr')
             self.assertEqual(t['status'], 'proposed')
+            rep = {s_['title']: s_['lines'] for s_ in api.handle(Req(['report']))['sections']}
+            self.assertIn('The mystery shopper failed the cart step on the last run.', rep['Risks to the brand'])
         self.with_fixture(body, check)
 
     def test_old_run_still_fires(self):
