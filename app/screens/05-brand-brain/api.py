@@ -137,6 +137,8 @@ question, and accept or ignore on a proposed record. Nothing external.
                                 exploit, our proof, how we win, CX and copy lines, plain text to copy
   GET  ask?q=                   answers from records with tier, source and date; "can we say" routes to the claims
   POST ask/open                 {q, why}: save an unanswered question as an open question
+  GET  ask/misses               ?days=: asks with no record behind them, grouped by question, with who asked and whether it is opened
+  POST ask/misses/open          {q}: turn a miss into an open question with the ask count as the why
   GET  permissions              sections by role (founder, in-house, agency, specialist), restricted by default
   POST permissions/<section>    {roles: {role: full | read | none}}: a founder record team.permission_<section>
   GET  export                   the whole brain as one portable JSON (records, manifest, router, conflicts)
@@ -283,6 +285,9 @@ _unspec.loader.exec_module(undo)
 _hospec = importlib.util.spec_from_file_location("brand_brain_handoff", HERE / "handoff.py")
 handoff = importlib.util.module_from_spec(_hospec)
 _hospec.loader.exec_module(handoff)
+_mispec = importlib.util.spec_from_file_location("brand_brain_misses", HERE / "misses.py")
+misses = importlib.util.module_from_spec(_mispec)
+_mispec.loader.exec_module(misses)
 _rsspec = importlib.util.spec_from_file_location("brand_brain_restore", HERE / "restore.py")
 restore = importlib.util.module_from_spec(_rsspec)
 _rsspec.loader.exec_module(restore)
@@ -2141,7 +2146,23 @@ def handle(req):
         except Exception as exc:  # noqa: BLE001
             deep = {"intent": "error", "answer": f"typed answer unavailable: {exc}", "verdict": "unavailable", "records": []}
         res["deep"] = deep
+        res["missed"] = misses.log(brain, q, req.arg("reader") or "founder", res)
         return res
+    if req.method == "GET" and parts == ["ask", "misses"]:
+        g = misses.grouped(brain, int(req.arg("days") or misses.WINDOW_DAYS))
+        g.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "BRN-C03", "autonomy": "agent_does"})
+        return g
+    if req.method == "POST" and parts == ["ask", "misses", "open"]:
+        q = str((req.body or {}).get("q") or "").strip()
+        if len(q) < 4:
+            return 400, {"error": "q is empty"}
+        g = next((x for x in misses.grouped(brain)["misses"] if x["key"] == misses.norm(q)), None)
+        why = (f"asked {g['times']} time{'s' if g['times'] != 1 else ''} by {', '.join(g['readers'])} with no record behind it" if g else "asked with no record behind it")
+        res = ask.to_open_question(brain, q[:300], why)
+        if not res["ok"]:
+            return 400, {"error": "record not valid", "details": res["errors"]}
+        changes.log(brain, "answer", "open_questions", res["record"], f"open question from a miss: {q[:100]}")
+        return 201, dict(res, why=why, version=brain.version())
     if req.method == "POST" and parts == ["ask", "open"]:
         q = str((req.body or {}).get("q") or "").strip()
         if len(q) < 4:

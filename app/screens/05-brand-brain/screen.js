@@ -129,7 +129,18 @@
     };
     btn.addEventListener('click', run);
     input.addEventListener('keydown', (e) => { if (e.key === 'Enter') run(); });
-    mount('#ask', el('div', { class: 'card flat ask' }, el('div', { class: 'row' }, input, btn), out));
+    const missesBox = el('div');
+    mount('#ask', el('div', { class: 'card flat ask' }, el('div', { class: 'row' }, input, btn), out, missesBox));
+    loadMisses(missesBox);
+  }
+  // 9.4: what the brain could not answer
+  async function loadMisses(box) {
+    let m; try { m = await api(BASE + 'ask/misses'); } catch (e) { return; }
+    const open = m.misses.filter((x) => x.state !== 'answered').slice(0, 8);
+    if (!open.length) { mount(box, el('p', { class: 'micro faint', text: m.available ? 'Every ask in the last ' + m.days + ' days found a record.' : 'Asks with no record behind them will show here.' })); return; }
+    const st = el('span', { class: 'micro muted' });
+    const rows = open.map((x) => { const b = el('button', { class: 'btn xs soft', type: 'button', text: x.state === 'opened' ? 'opened' : 'Open as a question', disabled: x.state === 'opened' }); b.addEventListener('click', async () => { b.disabled = true; try { const r = await api(BASE + 'ask/misses/open', { method: 'POST', body: { q: x.q } }); st.textContent = 'Opened ' + r.record + ' (' + r.why + ').'; loadQuestions(); loadMisses(box); } catch (e) { b.disabled = false; st.textContent = 'Could not open: ' + e.message; } }); return el('div', { class: 'row small' }, el('span', { class: 'chip' + (x.due ? ' warn' : ''), text: x.times + 'x' }), el('span', { text: x.q }), el('span', { class: 'micro faint', text: x.readers.join(', ') + ', last ' + fmt.date(x.last) }), b); });
+    mount(box, el('div', { class: 'row' }, el('b', { class: 'small', text: 'Asked with no answer on file' }), el('span', { class: 'micro faint', text: m.counts.unanswered + ' unanswered, ' + m.counts.by_agents + ' from agents, ' + m.days + ' days.' }), st), ...rows);
   }
 
   // ---------- 5e2. assumptions register ----------

@@ -294,6 +294,8 @@ RULES = [
      "inputs": ["plans.settle_*"], "capability": "BRN-C05", "owner_screen": SCREEN},
     {"rule_id": "BRN-R39", "name": "a hand-off without a passed quiz", "entity_type": "brand",
      "inputs": ["team.handoff_*"], "capability": "BRN-C12", "owner_screen": SCREEN},
+    {"rule_id": "BRN-R40", "name": "a question asked with no record behind it", "entity_type": "brand",
+     "inputs": ["review/ask-misses.jsonl", "open_questions"], "capability": "BRN-C03", "owner_screen": SCREEN},
 ]
 AUTONOMY = {"BRN-C12": "agent_does", "BRN-C07": "founder_gate", "BRN-C03": "agent_does",
             "CREA-C19": "agent_does", "CREA-C04": "agent_does", "BRN-C11": "agent_does", "CREA-C06": "agent_does",
@@ -306,6 +308,10 @@ _ctspec.loader.exec_module(contradict)
 _hospec = importlib.util.spec_from_file_location("brand_brain_handoff", Path(__file__).resolve().parent / "handoff.py")
 handoff = importlib.util.module_from_spec(_hospec)
 _hospec.loader.exec_module(handoff)
+
+_mispec = importlib.util.spec_from_file_location("brand_brain_misses", Path(__file__).resolve().parent / "misses.py")
+misses = importlib.util.module_from_spec(_mispec)
+_mispec.loader.exec_module(misses)
 
 _uspec = importlib.util.spec_from_file_location("brand_brain_assumptions", Path(__file__).resolve().parent / "assumptions.py")
 assumptions = importlib.util.module_from_spec(_uspec)
@@ -923,6 +929,19 @@ def rule_handoffs(brain: Brain, ends_on: str) -> list[dict]:
     return out
 
 
+def rule_misses(brain: Brain, ends_on: str) -> list[dict]:
+    g = misses.grouped(brain)
+    due = [m for m in g["misses"] if m["due"]]
+    if not due:
+        return []
+    ev = [_row("questions_due", len(due), "n", ends_on, None, 0, "review/ask-misses.jsonl"), _row("asks_no_answer", g["counts"]["asks"], "n", ends_on, None, None, "review/ask-misses.jsonl")]
+    agents = [m for m in due if m["agent_asked"]]
+    sent = (f"{len(due)} question{'s' if len(due) != 1 else ''} came to the brain with no record behind {'them' if len(due) != 1 else 'it'}" + (f", {len(agents)} from agents" if agents else "") + ": " + "; ".join(f'"{m["q"][:60]}" ({m["times"]}x)' for m in due[:3]) + ("..." if len(due) > 3 else "") + ".")
+    f = _finding("BRN-R40", "medium" if agents else "low", {"type": "brand", "id": "ask_misses", "label": "questions with no answer on file"}, ev, sent, [], ends_on, 0.9)
+    f["misses"] = [{"q": m["q"], "times": m["times"], "readers": m["readers"], "last": m["last"]} for m in due[:8]]
+    return [f]
+
+
 def rule_expiring(brain: Brain, ends_on: str) -> list[dict]:
     out = []
     ex = expiring.expiring(brain, health.SHELF_DAYS)
@@ -1074,7 +1093,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
         bank = keeper.load_bank()
     except (OSError, ValueError, KeyError):
         bank = None
-    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_untiered_claims(brain, ends_on) + rule_site_changes(brain, ends_on) + rule_parity(brain, ends_on) + rule_contracts(brain, ends_on) + rule_legal(brain, ends_on) + rule_picked_ideas(brain, ends_on) + rule_ladder_proof(brain, ends_on) + rule_self_audit(brain, ends_on) + rule_peaks(brain, ends_on) + rule_visual(brain, ends_on) + rule_visibility(brain, ends_on) + rule_rejected_due(brain, ends_on) + rule_assets(brain, ends_on) + rule_consents(brain, ends_on) + rule_drift(brain, ends_on) + rule_audiences(brain, ends_on) + rule_redlines(brain, ends_on) + rule_owners(brain, ends_on) + rule_expiring(brain, ends_on) + rule_number_dependents(brain, ends_on) + rule_contradictions(brain, ends_on) + rule_handoffs(brain, ends_on) + rule_permissions(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
+    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_untiered_claims(brain, ends_on) + rule_site_changes(brain, ends_on) + rule_parity(brain, ends_on) + rule_contracts(brain, ends_on) + rule_legal(brain, ends_on) + rule_picked_ideas(brain, ends_on) + rule_ladder_proof(brain, ends_on) + rule_self_audit(brain, ends_on) + rule_peaks(brain, ends_on) + rule_visual(brain, ends_on) + rule_visibility(brain, ends_on) + rule_rejected_due(brain, ends_on) + rule_assets(brain, ends_on) + rule_consents(brain, ends_on) + rule_drift(brain, ends_on) + rule_audiences(brain, ends_on) + rule_redlines(brain, ends_on) + rule_owners(brain, ends_on) + rule_expiring(brain, ends_on) + rule_number_dependents(brain, ends_on) + rule_contradictions(brain, ends_on) + rule_handoffs(brain, ends_on) + rule_misses(brain, ends_on) + rule_permissions(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
     if bank is None:
         for rid, sev in (("BRN-R02", "medium"), ("BRN-R03", "medium")):
             f = _finding(rid, sev, {"type": "brand", "id": "question_bank", "label": "question bank"},

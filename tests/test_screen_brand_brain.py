@@ -47,7 +47,7 @@ class TempBrain(unittest.TestCase):
     def setUp(self):
         self.tmp = Path(tempfile.mkdtemp())
         shutil.copytree(BRAIN / 'bombas', self.tmp / 'bombas')
-        for log in ('reads.log.jsonl', 'review/agent-reads.jsonl', 'review/trust.history.jsonl'):  # session logs a running server writes; never test state
+        for log in ('reads.log.jsonl', 'review/agent-reads.jsonl', 'review/trust.history.jsonl', 'review/ask-misses.jsonl'):  # session logs a running server writes; never test state
             (self.tmp / 'bombas' / log).unlink(missing_ok=True)
         api.BRAIN_ROOT = self.tmp
         api.HANDOFFS_PATH = self.tmp / 'handoffs.json'
@@ -2937,6 +2937,37 @@ class Round8QuizAndSchedule(TempBrain):
         self.assertEqual(api.handle(Req(['schedule'], 'POST', body={'weekday': 'x'}))[0], 400)
 
 
+class Round9Misses(TempBrain):
+    """Round 9 feature 4: questions the brain could not answer."""
+
+    def test_miss_logged_grouped_opened_and_ruled(self):
+        hit = api.handle(Req(['ask'], query={'q': ['what is our free shipping threshold']}))
+        self.assertFalse(hit['missed'])
+        miss = api.handle(Req(['ask'], query={'q': ['which zebra warehouse ships to guam'], 'reader': ['10-copy']}))
+        self.assertTrue(miss['missed'])
+        api.handle(Req(['ask'], query={'q': ['Which zebra warehouse ships to Guam?']}))
+        g = api.handle(Req(['ask', 'misses']))
+        self.assertEqual((g['counts']['questions'], g['counts']['asks'], g['counts']['by_agents'], g['counts']['due']), (1, 2, 1, 1))
+        m = g['misses'][0]
+        self.assertEqual((m['times'], sorted(m['readers']), m['state'], m['due']), (2, ['10-copy', 'founder'], 'unanswered', True))
+        acts = [a for a in api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions'] if a['rule_id'] == 'BRN-R40']
+        self.assertEqual(len(acts), 1)
+        self.assertTrue(acts[0]['title'].startswith('Answer 1 question'))
+        self.assertEqual(acts[0]['owner'], 'person')
+        status, r = api.handle(Req(['ask', 'misses', 'open'], 'POST', body={'q': m['q']}))
+        self.assertEqual(status, 201)
+        self.assertIn('asked 2 times by', r['why'])
+        g = api.handle(Req(['ask', 'misses']))
+        self.assertEqual((g['misses'][0]['state'], g['misses'][0]['opened'], g['counts']['due']), ('opened', r['record'], 0))
+        self.assertFalse([f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R40'])
+        self.assertEqual(api.handle(Req(['ask', 'misses', 'open'], 'POST', body={'q': 'x'}))[0], 400)
+
+    def test_can_we_say_and_typed_answers_are_not_misses(self):
+        r = api.handle(Req(['ask'], query={'q': ['can we say the socks are the best in the world']}))
+        self.assertFalse(r['missed'])
+        self.assertEqual(api.handle(Req(['ask', 'misses']))['counts']['questions'], 0)
+
+
 class Round9Handoff(TempBrain):
     """Round 9 feature 3: a hand-off pack for a named person, closed by their quiz."""
 
@@ -3207,7 +3238,7 @@ class Round8SourcesTrustHistory(TempBrain):
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
-    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'], ['onepage'], ['brainmd', 'notes'], ['alerts'], ['glossary'], ['expiring'], ['feedback'], ['numbers'], ['proofs'], ['trust'], ['round'], ['brandbook'], ['quiz'], ['schedule'], ['sources'], ['records', 'csv'], ['trust', 'history'], ['contradict'], ['changes'], ['handoff'],
+    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'], ['onepage'], ['brainmd', 'notes'], ['alerts'], ['glossary'], ['expiring'], ['feedback'], ['numbers'], ['proofs'], ['trust'], ['round'], ['brandbook'], ['quiz'], ['schedule'], ['sources'], ['records', 'csv'], ['trust', 'history'], ['contradict'], ['changes'], ['handoff'], ['ask', 'misses'],
               ['decisions'], ['flows'], ['claims'], ['site', 'diff'], ['parity'], ['contracts'], ['legal'], ['voice'], ['battlecards'], ['permissions'],
               ['export'], ['assumptions'], ['facts'], ['summaries'], ['changes'], ['learn'], ['report'], ['digest'], ['review'], ['bottlenecks'], ['audit']]
 

@@ -159,6 +159,12 @@ def build(f: dict, nr: float | None) -> dict:
                         {"n": 3, "who": "person", "text": "Pick the record as proof, or approve the drafted fact as an approved record."},
                         {"n": 4, "who": "agent", "text": f"Attach it to the rung. The surfaces that use the rung ({surfaces or 'copy, page, listing, macro'}) read the proof on their next brief."}],
                  check_on=_check_on(f, 7), time_to_ship_hours=1)
+    elif rid == "BRN-R40":
+        ms = f.get("misses") or []
+        a.update(title=f"Answer {len(ms)} question{'s' if len(ms) != 1 else ''} the brain could not: " + "; ".join(m["q"][:40] for m in ms[:2]) + ("..." if len(ms) > 2 else ""), owner="person",
+                 artefact={"kind": "brain_record", "label": "one record per question, approved, so the next ask finds it", "draft": "\n".join(f"- {m['q']} (asked {m['times']}x by {', '.join(m['readers'])}, last {m['last']})" for m in ms)},
+                 steps=[{"n": 1, "who": "agent", "text": "Open each as a question with the ask count as the why."}, {"n": 2, "who": "person", "text": "Answer each in the profile or the questions block; a fact you do not have goes to the person who does."}, {"n": 3, "who": "agent", "text": "The next ask finds the record; the miss reads as answered."}],
+                 check_on=_check_on(f, 7), time_to_ship_hours=0.5)
     elif rid == "BRN-R39":
         h = f.get("handoff") or {}
         failed = h.get("state") == "failed"
