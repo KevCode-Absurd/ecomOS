@@ -140,6 +140,8 @@ question, and accept or ignore on a proposed record. Nothing external.
   GET  changes                  the changes log (every write through this screen and every site change), newest
   GET  changes/undo             ?change=<change id>: what undoing that line would do, or why it cannot be undone
   POST changes/undo             {change}: put the brain back the way it was before that line; logged, never deletes
+  GET  changes/undo/section     ?section=&since=: every change in a section since a date and whether each can be undone
+  POST changes/undo/section     {section, since}: undo them newest first; the ones that cannot say why and are skipped
                                 first, with counts for the week and the version steps
   GET  dependents?record=<id>   what depends on one fact: records, ladder rungs, questions, snippets, ads
   GET  assumptions              the register: the numbers the simulation runs on, status, unit, as of, rooms
@@ -1929,6 +1931,19 @@ def handle(req):
             x["undo"] = {"can": pl["can"], "how": pl["how"], "reason": pl["reason"]}
         ch.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version(), undoable=sum(1 for x in shown[:60] if x.get("undo", {}).get("can")))
         return ch
+    if parts == ["changes", "undo", "section"]:
+        body = req.body or {} if req.method == "POST" else {}
+        section = str(body.get("section") or req.arg("section") or "").strip()
+        since = str(body.get("since") or req.arg("since") or "").strip()
+        if section not in SECTIONS:
+            return 400, {"error": "section must be a brain section", "sections": SECTIONS}
+        if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", since):
+            return 400, {"error": "since must be a date, like 2026-09-28"}
+        rows = changes.recent(brain, days=100000)["changes"]
+        if req.method == "GET":
+            return undo.section_plan(brain, rows, section, since, changes)
+        res = undo.section_apply(brain, rows, section, since, changes, history, founder_put)
+        return 201, dict(res, version=brain.version())
     if req.method == "GET" and parts == ["changes", "undo"]:
         cid = str(req.arg("change") or "")
         row = next((x for x in changes.recent(brain, days=100000)["changes"] if x["id"] == cid), None)

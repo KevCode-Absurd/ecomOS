@@ -29,8 +29,9 @@ def _raw(brain, rid: str):
     return next((r for r in brain.raw(parts[1]) if r.get("id") == rid), None)
 
 
-def plan(brain, row: dict, changes_mod) -> dict:
-    """What undoing this change would do: {can, how, index, reason, record}."""
+def plan(brain, row: dict, changes_mod, assume_value: str | None = None) -> dict:
+    """What undoing this change would do: {can, how, index, reason, record}. `assume_value` is the record's value once
+    newer lines are undone first (the section undo plans in sequence)."""
     kind, rid = row.get("kind"), row.get("record")
     out = {"change": row.get("id"), "record": rid, "kind": kind, "can": False, "how": None, "reason": None}
     if row.get("undone"):
@@ -66,8 +67,9 @@ def plan(brain, row: dict, changes_mod) -> dict:
         return out
     before, after = row.get("before"), row.get("after")
     if before is not None and after is not None:
-        if changes_mod._short(raw.get("value")) != after:
-            out["reason"] = f"the value moved on since this change (now {changes_mod._short(raw.get('value'))}); restore from the record's history instead"
+        now = assume_value if assume_value is not None else changes_mod._short(raw.get("value"))
+        if now != after:
+            out["reason"] = f"the value moved on since this change (now {now}); restore from the record's history instead"
             return out
         idx = next((i for i in range(len(hist) - 1, -1, -1) if changes_mod._short(hist[i].get("value")) == before), None)
         if idx is None:
@@ -137,3 +139,39 @@ def _mark(brain, change_id: str, today: str) -> None:
             c["value"]["undone"] = today
             brain.put(c)
             return
+
+
+# ---------------------------------------------------------------- a section back to a time (9.2)
+
+def section_rows(rows: list[dict], section: str, since: str) -> list[dict]:
+    """The changes in one section on or after a date, newest first, not yet undone."""
+    out = [x for x in rows if x.get("section") == section and (x.get("date") or "") >= since and not x.get("undone")]
+    out.sort(key=lambda x: ((x.get("date") or ""), x["id"]), reverse=True)
+    return out
+
+
+def section_plan(brain, rows: list[dict], section: str, since: str, changes_mod) -> dict:
+    picked = section_rows(rows, section, since)
+    plans, value_after = [], {}
+    for x in picked:
+        pl = plan(brain, x, changes_mod, assume_value=value_after.get(x.get("record")))
+        if pl["can"] and pl["how"] == "restore":
+            value_after[x["record"]] = x.get("before")  # once this line is undone, the record reads its before value
+        plans.append(dict(pl, what=x.get("what"), date=x.get("date"), label=x.get("label")))
+    can = [p for p in plans if p["can"]]
+    return {"section": section, "since": since, "lines": plans, "counts": {"lines": len(plans), "can": len(can), "cannot": len(plans) - len(can)},
+            "records": sorted({p["record"] for p in can if p.get("record")}),
+            "note": "Newest first, so each undo sees the state the one after it left. A line that cannot be undone says why and is skipped; the rest still go back."}
+
+
+def section_apply(brain, rows: list[dict], section: str, since: str, changes_mod, history_mod, founder_put) -> dict:
+    picked = section_rows(rows, section, since)
+    done, skipped = [], []
+    for x in picked:
+        res = apply(brain, x, changes_mod, history_mod, founder_put)
+        if isinstance(res, tuple):
+            skipped.append({"change": x["id"], "reason": res[1].get("error")})
+        else:
+            done.append({"change": x["id"], "record": res["record"], "how": res["how"]})
+    return {"ok": True, "section": section, "since": since, "undone": done, "skipped": skipped, "counts": {"undone": len(done), "skipped": len(skipped)},
+            "next": (f"{len(done)} change{'s' if len(done) != 1 else ''} in {section.replace('_', ' ')} undone back to {since}" + (f"; {len(skipped)} skipped, each with its reason" if skipped else "") + ". Every undo is on the list and can be undone in turn.")}

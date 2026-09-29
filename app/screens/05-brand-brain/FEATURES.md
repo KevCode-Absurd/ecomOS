@@ -212,7 +212,7 @@ Picked from the round 8 note, the room spec and what the register, the changes l
 | # | Feature | Status | Why the founder cares |
 |---|---|---|---|
 | 9.1 | Retire a whole source (`GET sources/retire`, `POST sources/retire`): a dead page, a wrong scrape or an actor you no longer trust; every active record it filled goes to retired in one step with a reason, one changes line, one version step and a `team.source_retire_NNN` record; nothing is deleted and each record comes back from the changes list | done | Pull a bad source out of every package in one move, with the why on file |
-| 9.2 | Undo a section back to a time | todo | |
+| 9.2 | Undo a section back to a time (`GET changes/undo/section`, `POST changes/undo/section`): pick a section and a date on the changes block; the plan lists every change since then, newest first, with whether each can go back and why not; the undo runs them in that order so each sees the state the one after it left, skips what cannot go back with the reason, and logs every step | done | Take a bad afternoon out of one section without touching the rest |
 | 9.3 | A hand-off pack for a named person | todo | |
 | 9.4 | Questions agents asked that the brain could not answer | todo | |
 | 9.5 | Near-duplicate records | todo | |

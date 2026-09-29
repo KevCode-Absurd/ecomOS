@@ -2932,6 +2932,31 @@ class Round8QuizAndSchedule(TempBrain):
         self.assertEqual(api.handle(Req(['schedule'], 'POST', body={'weekday': 'x'}))[0], 400)
 
 
+class Round9SectionUndo(TempBrain):
+    """Round 9 feature 2: undo a section back to a time."""
+
+    def test_plan_then_apply_newest_first_with_skips(self):
+        api.handle(Req(['profile', 'offers', 'free_shipping_threshold_usd'], 'POST', body={'text': '80', 'force': True}))
+        api.handle(Req(['profile', 'offers', 'free_shipping_threshold_usd'], 'POST', body={'text': '90', 'force': True}))
+        api.handle(Req(['profile', 'offers', 'new_line_note'], 'POST', body={'text': 'a plain note'}))
+        api.handle(Req(['profile', 'positioning', 'frame'], 'POST', body={'text': 'Comfort that lasts.'}))
+        pl = api.handle(Req(['changes', 'undo', 'section'], query={'section': ['offers'], 'since': ['2026-09-28']}))
+        self.assertEqual(pl['counts']['lines'], pl['counts']['can'] + pl['counts']['cannot'])
+        self.assertGreaterEqual(pl['counts']['can'], 3)
+        self.assertIn('bombas.offers.free_shipping_threshold_usd', pl['records'])
+        self.assertEqual(api.handle(Req(['changes', 'undo', 'section'], query={'section': ['nope'], 'since': ['2026-09-28']}))[0], 400)
+        self.assertEqual(api.handle(Req(['changes', 'undo', 'section'], query={'section': ['offers'], 'since': ['yesterday']}))[0], 400)
+        status, r = api.handle(Req(['changes', 'undo', 'section'], 'POST', body={'section': 'offers', 'since': '2026-09-28'}))
+        self.assertEqual((status, r['counts']['undone'] >= 3), (201, True))
+        offers = {x['id']: x for x in self.section('offers')}
+        self.assertEqual(offers['bombas.offers.free_shipping_threshold_usd']['value'], 75)
+        self.assertEqual(offers['bombas.offers.new_line_note']['status'], 'retired')
+        pos = next(x for x in self.section('positioning') if x['id'] == 'bombas.positioning.frame')
+        self.assertEqual(pos['text'], 'Comfort that lasts.')  # the other section is untouched
+        again = api.handle(Req(['changes', 'undo', 'section'], query={'section': ['offers'], 'since': ['2026-09-28']}))
+        self.assertTrue(all(l['kind'] == 'undo' or not l['can'] for l in again['lines']))
+
+
 class Round9SourceRetire(TempBrain):
     """Round 9 feature 1: retire a whole source with the reason on file."""
 
