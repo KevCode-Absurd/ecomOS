@@ -3503,6 +3503,7 @@ def _apply_results(out: dict, results: dict | None, as_of: str) -> dict:
                             "title": f"Fix the {r['step'].lower()} step the shopper failed",
                             "capability": {"id": "BRAND-C67", "autonomy": "founder_gate"},
                             "why": f"The {last['date'][:10]} run failed it: {c.get('note') or 'no note'}.",
+                            "size": {"text": f"1 of {len(got)} checkpoints failed on the {last['date'][:10]} run", "usd": None},
                             "stop_rule": "the same checkpoint fails on the next run",
                             "draft": f"DRAFT fix\nStep: {r['step']}\nChecked: {r['check']}\nExpected: {r['expect'] or 'no brain fact'}\n"
                                      f"Seen: {c.get('note') or 'no note'}\nFix: make the step match the brain fact, or correct the fact",
@@ -3524,6 +3525,7 @@ def _apply_results(out: dict, results: dict | None, as_of: str) -> dict:
             p["lead"] = {"id": f"{SCREEN}.pretest.lead.{p['key']}", "kind": "copy", "owner": "agent_drafts",
                          "title": f"Lead with \"{p['b']}\" for {p['name']}", "capability": {"id": "BRAND-C66", "autonomy": "agent_does"},
                          "why": f"Buyers chose their words {b} to {a}.", "check_on": p["action"]["check_on"],
+                         "size": {"text": f"{b} of {a + b} buyers chose their words", "usd": None},
                          "stop_rule": "click-through on the new line falls under the old one for 7 days",
                          "draft": f"DRAFT copy change\nFor: {p['name']}\nFrom: {p['a']}\nTo: \"{p['b']}\"\nWhere: ads and the product page first screen for this avatar",
                          "steps": [{"n": 1, "who": "agent", "text": "Draft the ad and page lines with the winning words."},

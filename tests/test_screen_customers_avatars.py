@@ -2843,6 +2843,11 @@ class ShopperResults(TempBrain):
             acts = api.rank('bombas', RANK_WINDOW)['actions']
             fix = next(a for a in acts if any('CUST-R35' in f for f in a['finding_ids']))
             self.assertEqual(fix['title'], 'Fix the cart step the shopper failed')
+            # 12.5: result moves are sized, with a stop rule and a check date (depth rule 5)
+            for m in (cart['fix'], p['lead']):
+                self.assertRegex(m['size']['text'], r'\d')
+                self.assertTrue(m['stop_rule'] and m['check_on'])
+            self.assertTrue(fix['size'] and fix['stop_rule'])
         self.with_fixture(body, check)
 
     def test_old_run_still_fires(self):
