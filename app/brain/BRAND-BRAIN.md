@@ -1,291 +1,211 @@
 # Brand brain: {brand name}
 
-One file per brand. Every screen, agent and brief reads this file first and nothing else about the brand. It is written in plain words so the founder can read it, correct it and sign it.
+The one page every agent and screen loads first. Under 3,000 words. Everything deeper lives on a shelf this page points to (see `BRAIN-CONTENTS.md`). Written in plain words so the founder can read it in one sitting, correct it and sign it.
 
-Version: {date}. Owner: {founder name}. Home market: {country}. Industry: {category in the founder's words}.
+Version {date}. Signed by {founder}. Home market {country}. Industry {category in the founder's words}.
 
-## How this file works
+## How to read this page
 
-Every line carries a source and a date in square brackets. The sources:
+Every line ends with a source and a date: F founder, S site, A ads, D connected data, R public research, ? unknown. A founder line beats a site line. A site line beats a data guess. Unknown stays unknown. Numbers are dated snapshots that point at the data layer; the data layer is the truth for numbers.
 
-| Tag | Means | Filled by |
+Which jobs read which sections and shelves:
+
+| Job | Sections here | Shelves |
 |---|---|---|
-| I | intake form, written by the founder before the call | founder |
-| F12 | founder interview, question 12 (see FOUNDER-INTERVIEW.md) | founder, on the call |
-| S | the brand's own site | crawl |
-| A | the brand's ads and competitor ads, Meta Ad Library by page id | crawl |
-| D | connected accounts: store, ads, analytics, email, support | data pull, refreshed on a schedule |
-| R | public sources: press, reviews, forums, job posts | research |
-| ? | nobody knows yet | open question, owner and date in section 16 |
+| ad copy | 3, 4, 5, 6, 9 | messaging, claims, voice, customers, ads, offers |
+| ad creative | 3, 4, 6, 9 | ads, assets, creators, competitors, brand kit |
+| paid media | 5, 8, 9, 10, 11, 14 | ads, history, calendar, finance, operations |
+| landing pages | 3, 4, 5, 6, 9 | site, customers, claims, products, history, audits |
+| email and SMS | 3, 4, 5, 6, 14 | email, offers, calendar, voice |
+| SEO and answer engines | 3, 4, 6, 7 | seo, site, claims, competitors |
+| creators | 3, 4, 9 | creators, assets, customers, history |
+| organic content | 3, 4, 14 | content, brand kit, voice, story bank |
+| offers and pricing | 4, 5, 6, 8, 11 | finance, offers, competitors, products |
+| research and product | 4, 6, 7, 9 | market, customers, products, competitors |
+| service and retention | 3, 4, 5, 13 | operations, customers, policies |
+| finance and reports | 8, 11, 12 | finance, trust |
+| any proposal to the founder | 2, 8, 9, 12, 13, 15 | goals, history, decisions |
 
-Rules.
-- A founder line beats a site line. A site line beats a data guess. A public line never overrides the founder.
-- Unknown stays "unknown". Never a guess in a fact's place.
-- Numbers come from D when D has them. A founder number is a range and says so.
-- Market-specific fields are split by country. A brand in one country has one column.
-- When a line changes, the old line goes to the change log (section 17) with the reason.
-- No jargon. If a term needs a definition, it does not belong here.
+## 1. The brand in one paragraph
 
-Which parts of the business read which sections:
+{What we sell, for whom, why it is better, since when, where, how big, how sold.} [S, I, D]
 
-| Work | Reads |
-|---|---|
-| research and product | 1, 2, 5, 9, 10, 15 |
-| customers and avatars | 6, 7, 8, 12 |
-| competitors | 2, 7, 10, 11 |
-| offers and pricing | 4, 5, 11, 15 |
-| creative and copy | 6, 7, 8, 9, 10 |
-| paid and organic | 4, 6, 8, 12, 15 |
-| email and retention | 5, 6, 11, 15 |
-| operations and finance | 4, 5, 13, 14 |
-| every proposal to the founder | 3, 13, 14, 16 |
+- Model: direct {share}, marketplaces {share}, wholesale {share}, offline {share} [D, F]
+- Size band: orders per month {range}, revenue band {range}, team {n} [D, I]
+- Stage: {new, growing, steady, turning around} [F]
 
-## 1. Identity
+## 2. Goals and limits
 
-- Brand name, site, year started: {} [I]
-- Founder or founders, and who runs day to day: {} [I]
-- Industry and category, in the founder's words: {} [I]
-- What we sell in one sentence: {} [S, founder confirms]
-- Business model: direct to consumer {share}, marketplaces {share}, wholesale or retail {share}, offline {share} [D for what is connected, F6 for the rest]
-- Size band: orders per month {range}, revenue band {range}, team size {n} [D, I]
-- Stage: {new, growing, steady, turning around} [F1, F2]
+- 12 month target, one number: {} [F]
+- 12 month target, not a number: {} [F]
+- What breaks first if sales doubled: {} [F]
+- Off the table even if it would sell: {} [F]
+- Red lines no proposal crosses: {} [F]
+- The one fix for the next 30 days: {} [F]
 
-## 2. Markets
+## 3. Who we sell to
 
-One column per country sold in. Home market first.
+- ICP in one paragraph: {} [F, D, R]
 
-| Field | {Country A, home} | {Country B} | Source |
-|---|---|---|---|
-| Share of revenue, last 12 months | | | D |
-| Currency, tax and duty rules | | | I, R |
-| Marketplaces used | | | I |
-| Delivery expectation, days | | | F R7, S |
-| Cash on delivery share | | | D |
-| Price difference from home | | | S, F R7 |
-| Language of ads and site | | | S |
-| Peaks and dead zones | | | F24 |
-| Biggest customer difference | | | F R7 |
+| Avatar | Share of orders | First product | Why they buy | Top doubt | Their words | Source |
+|---|---|---|---|---|---|---|
+| {} | | | | | | D, R, F |
 
-- Where to grow next, and why: {} [F8]
-- Where we refuse to sell, and why: {} [F8]
-- What stopped growth in the next market so far: {} [F8]
-- What an outsider gets wrong about this category: {} [F9]
-- The founder's rule of thumb a new hire always doubts: {} [F9]
+- The best customer as a person the founder has talked to: {} [F]
+- Why customers leave, in their words: {} [F, R]
+- Top 3 doubts ranked by sales lost, with the answer that works: {} [F] (full ladder: shelf customers)
 
-## 3. Goal and limits
+## 4. What we say
 
-- The 12 month target, one number: {} [F1]
-- The 12 month target, one thing that is not a number: {} [F1]
-- Which of the two matters more: {} [F1]
-- What breaks first if sales doubled next month: {} [F2]
-- What must be in place before that growth is wanted: {} [F2]
-- Off the table, even if it would sell: {list} [F3]
-- The one fix for the next 30 days, in the founder's words: {} [F25]
+- Positioning, one line: {} [F, signed]
+- The win moment, when a buyer picks us over the rest: {} [F]
+- Value props ranked, each with its proof: 1 {} 2 {} 3 {} 4 {} 5 {} [F, S]
+- Angles that have won, with the hook that carried them: {} [A, D] (full library: shelf messaging)
+- Angles that lost or fatigued: {} [A, D]
+- Story bank, the 3 stories that land: {} [F, R]
+- Their words for the product and the problem: {} [R, F]
+- Our words they never use: {} [F]
+- Voice in three words, then the 5 rules: {} [F, S] (liked and disliked examples: shelf voice)
+- Banned words and phrases: {} [F]
+- Claims allowed, with proof: {} [F, S] (proof files: shelf claims)
+- Claims forbidden, and why: {} [F]
+- Founder on camera: {yes, no, sometimes}, {hours per week} [F]
 
-Every proposal checks itself against this section before it reaches the founder.
+## 5. What we sell
 
-## 4. Money
-
-Top products, one row each:
-
-| Product | Price | Landed cost per unit | Margin per unit | Best or worst margin | Source |
-|---|---|---|---|---|---|
-| {} | | | | | S for price, F4 for cost, computed |
-
-- Lowest contribution per order the founder can live with: {} [F5]
-- Most the founder would pay for a new customer: {} [F5]
-- Is the floor different for a repeat order: {} [F5]
-- What the founder looks at today to judge ads, if no floor exists: {} [F5]
-- Revenue not in the connected accounts: {kind, share, where the records live} [F6]
-- Does any of it appear inside store data as bulk or test orders: {} [F6]
-- Real cost of a return: {shipping both ways, restock, write-off} [F7]
-- Worst products and regions for returns: {} [F7]
-- Share of returns that are the customer's expectation versus our fault: {} [F7]
-- Cash cycle: supplier payment terms, marketplace and gateway payout days, the tight month: {} [F R1]
-- From the data, last 90 days: average order value {}, repeat rate {}, return rate {}, ad spend {}, blended cost per order {} [D]
-
-## 5. Products
-
-| Product | Line | Price | Hero | Stock cover, days | Reorder lead time | Minimum order | Can it scale | Going away | Source |
+| Product | Line | Price per market | Hero | For whom | Best proof | Margin band | Stock cover | Can it scale | Source |
 |---|---|---|---|---|---|---|---|---|---|
-| {} | | | | | | | | | S, D, F22 |
+| {} | | | | | | | | | S, D, F |
 
-- Launches in the next 90 days: {} [F22]
-- The product the founder would push hardest if stock were no issue: {} [F22]
-- Uses the product was not designed for, and any surprising segment: {} [F R3]
-- Sizes, materials, care and specs: as listed on the site, not repeated here [S]
+- Launches in the next 90 days: {} [F]
+- The product to push if stock were no issue: {} [F]
+- Uses we did not design for: {} [F, R]
+- Full catalogue, specs, FAQ per product, photos with rights: shelf products.
 
-## 6. Customers
+## 6. Offers and rules
 
-The best customer, as a person the founder has talked to:
-- Who they are: {} [F12]
-- Why they buy: {} [F12]
-- What they say when they reorder: {} [F12]
-- What they read, watch or follow: {} [F12]
+- Live offers, one line each, and what each is for: {} [S, A]
+- Deepest discount allowed, per market: {} [F]
+- Never discounted: {} [F]
+- When discounts are allowed: {} [F]
+- Shipping threshold and why it sits there: {} [S, F]
+- Guarantees we make: {} [S, F]
+- Offers that worked and stopped: {} [F, D]
+- Offers that failed and must not return: {} [F]
+- Offer archive and economics: shelf offers.
 
-Avatars, up to 4, each backed by data and quotes:
+## 7. Where we win and lose
 
-| Avatar | Share of orders | What they buy first | Why they buy | Top doubt | Their words | Source |
+| Competitor | Why buyers pick them | Their price band | Their lead angle | What we refuse to copy | Threat in 12 months | Source |
 |---|---|---|---|---|---|---|
-| {} | | | | | | D, R, F12 |
+| {} | | | | | | F, A, S |
 
-- Why customers leave or do not reorder, in their words: {} [F14]
-- Which of those reasons could be fixed in 30 days: {} [F14]
-- Marketplace buyers: same avatar or a different one: {} [D, F R7]
+- The one that worries the founder most: {} [F]
+- Angles they run that we never run: {} [A]
+- The substitute when buyers pick neither: {} [F, R]
+- Names forums recommend instead, and the doubt behind each: {} [R]
+- Battlecards, crawls and ad archives per competitor: shelf competitors.
 
-## 7. Doubts and answers
+## 8. Markets
 
-The three doubts heard most on calls, WhatsApp, DMs and support, ranked by sales lost:
-
-| Rank | Doubt, in the customer's words | What the founder says back | Does it work | Our proof | Where the answer lives today | Source |
-|---|---|---|---|---|---|---|
-| 1 | | | | | | F13, F16 |
-| 2 | | | | | | F13 |
-| 3 | | | | | | F13 |
-
-- Doubts from reviews and public threads, added under the founder's three, never above them [R]
-- Claims unhappy buyers throw back at us: {} [R]
-
-## 8. Words
-
-- What customers call the product: {} [F15]
-- What customers call the problem: {} [F15]
-- Our words customers never use: {} [F15]
-- A word the founder is tired of: {} [F15]
-- A word the founder is proud of: {} [F15]
-- Lines buyers repeat that could open an ad, with source and date: {} [R]
-- Tone in three words, from the site and the founder: {} [S, founder confirms]
-- Banned words and phrases: {} [F17]
-- Founder as the face of the brand: {yes, no, sometimes} and hours per week: {} [F R6]
-
-## 9. Positioning and story
-
-- What we want to be known for, one line: {} [F R8, founder signs]
-- The moment a customer chooses us over the others: {} [F R8]
-- Does that reason appear on the site or in the ads today: {} [S, A]
-- The making of the product: choices that cost money and were kept, and why: {} [F18]
-- Which of those choices a customer would pay more for if they knew: {} [F18]
-- Origin story, as the founder tells it: {} [F18, R]
-- Category frames buyers use, and whether our line matches them: {} [R, F9]
-- The substitute: what people do when they buy neither us nor a competitor: {} [F R2]
-
-## 10. Claims
-
-Allowed, with proof:
-
-| Claim | Proof | Where the evidence file is | Used today | Source |
-|---|---|---|---|---|
-| {} | | | | F16 |
-
-- Site claims not yet backed by a proof file: {list} [S, waiting on F16]
-- A proof the founder has and has never used: {} [F16]
-
-Forbidden:
-
-| Never say | Why | Who said so | Source |
+| Field | {home country} | {country 2} | Source |
 |---|---|---|---|
-| {} | legal, regulator, platform, cannot keep, shaky, off-brand | | F17 |
+| Share of revenue, 12 months | | | D |
+| Currency, tax, duty | | | I, R |
+| Marketplaces | | | I |
+| Delivery expectation | | | F, S |
+| Cash on delivery share | | | D |
+| Price difference from home | | | S, F |
+| Language | | | S |
+| Peaks and dead zones | | | F |
+| Regulation notes for this category | | | R |
 
-- Has a regulator, platform or lawyer ever pushed back on a claim: {} [F17]
-- Customer photos, videos and quotes we may use, and where the permission is recorded: {} [F R5]
+- Grow next: {} and why [F]. Refuse: {} and why [F].
+- What an outsider gets wrong about this category: {} [F]
+- Category facts, seasonality, demand signals: shelf market.
 
-## 11. Competitors
+## 9. What works and what fails
 
-The brands we actually lose sales to, 3 to 5:
-
-| Brand | Why the customer picks them | Their price band | Their lead angle in ads | Their formats | What we refuse to copy | What we wish we had started earlier | Threat in 12 months | Source |
-|---|---|---|---|---|---|---|---|---|
-| {} | | | | | | | | F10, F11, A, S |
-
-- The one that worries the founder most, and why: {} [F10]
-- A move the founder is about to copy: {} [F11]
-- Angles competitors run that we never run: {} [A]
-- Names public threads recommend instead of us, and the doubt behind each: {} [R]
-
-## 12. Offers and policies
-
-- Live offers, prices, bundles, shipping threshold, returns policy: as on the site, not repeated here [S]
-- Discount limits: deepest discount allowed {}, products never discounted {}, when discounts are allowed {} [F3, F5]
-- Guarantees we make: {} [S, F16]
-- Loyalty or subscription, if any: {} [S, D]
-- Offers that worked and stopped: {} [F19]
-- Offers that failed and must not return: {} [F20]
-
-## 13. Channels and history
-
-From the data, last 12 months:
-
-| Channel | Share of revenue | Spend | Return on spend | Trend | Source |
-|---|---|---|---|---|---|
-| {} | | | | | D |
-
-What worked and then stopped, or could not scale:
-
-| What | When | Why it stopped | What it would take to bring back | Source |
+| What | Result | Why it stopped or failed | Never repeat | Source |
 |---|---|---|---|---|
-| {} | | | | F19 |
+| {} | | | | F, D |
 
-What failed and must not be repeated:
+- The 5 learnings every agent must know before proposing anything: 1 {} 2 {} 3 {} 4 {} 5 {} [F, D]
+- The full experiment registry, agency history and founder ratings of agent work: shelf history.
 
-| What | When | Idea or execution | The lesson | Source |
-|---|---|---|---|---|
-| {} | | | | F20 |
+## 10. Channels live today
 
-- Agencies, creators and affiliates paid, cost, use again or not: {} [F R4]
-- Live ad angles, formats and hooks: from the Ad Library, not repeated here [A]
-
-## 14. Data trust
-
-- Accounts connected: {store, ads, analytics, email, support, marketplace} with last refresh date [I, D]
-- Accounts not connected, and what we cannot see because of it: {} [I]
-- Numbers the founder does not trust, and why: {tracking gap, attribution, bulk orders, test orders, offline, broken pixel} [F21]
-- When each problem started: {} [F21]
-- Revenue outside the connected accounts: see section 4 [F6]
-- The rule: a screen that uses an untrusted number says so next to the number.
-
-## 15. Team, approvals and calendar
-
-Who does what:
-
-| Area | Person or agency | Approves | Typical speed | Would hand to an agent | Source |
+| Channel | State in one line | Share of revenue | What is running | Owner | Source |
 |---|---|---|---|---|---|
-| creative | | | | | F23 |
-| offers and pricing | | | | | F23 |
-| ad spend | | | | | F23 |
-| site and landing pages | | | | | F23 |
-| email and messages | | | | | F23 |
-| support | | | | | F23 |
-| stock and supply | | | | | F23 |
+| paid social | | | | | D, A |
+| search and shopping | | | | | D |
+| email and SMS | | | | | D |
+| organic and creators | | | | | D, F |
+| SEO | | | | | D |
+| marketplaces | | | | | D, I |
+| wholesale and offline | | | | | F |
 
-Calendar, per market:
+Archives per channel: shelves ads, email, seo, creators, content.
 
-| Peak or dead zone | Market | Dates | Prep starts | Under-prepared last year | Source |
-|---|---|---|---|---|---|
-| {} | | | | | F24 |
+## 11. The numbers to know
 
-- Launches and events in the next 90 days: {} [F22]
+Dated snapshot; the data layer is the truth. {date}
 
-## 16. Open questions
-
-| Question | Owner | Due | Asked on | Source |
+| Number | Value | Window | Trust | Source |
 |---|---|---|---|---|
-| {every "I would have to check" from the call} | | | | F |
-| {what the founder said we should have asked} | | | | F26 |
+| revenue | | 28 days | | D |
+| orders and average order value | | 28 days | | D |
+| new versus repeat share | | 90 days | | D |
+| repeat rate | | 12 months | | D |
+| conversion rate | | 28 days | | D |
+| ad spend and return on spend | | 28 days | | D |
+| blended cost per order | | 28 days | | D |
+| return rate | | 90 days | | D |
+| list size and growth | | 28 days | | D |
+| contribution margin band | | | | F |
+| margin floor and cost per new customer ceiling | | | | F |
 
-## 17. Change log
+## 12. Trust and access
 
-| Date | Section | Old line | New line | Why | Who |
+- Connected: {accounts, last refresh} [D]
+- Not connected, and what we cannot see: {} [I]
+- Numbers not to trust, why, since when: {} [F]
+- Revenue outside the accounts: {} [F]
+- Who sees what: {roles} [F]
+
+## 13. Team and approvals
+
+| Area | Person or agency | Approves | Speed | Agent may do alone | Source |
 |---|---|---|---|---|---|
-| {date} | | | | | |
+| creative | | | | | F |
+| copy | | | | | F |
+| offers and pricing | | | | | F |
+| ad spend | | | | | F |
+| site and pages | | | | | F |
+| email | | | | | F |
+| support | | | | | F |
+| stock and supply | | | | | F |
 
-## 18. Decisions
+## 14. Calendar
 
-| Date | Decision | Why | Who | Source |
+| Peak, launch or event | Market | Dates | Prep starts | Last year's lesson | Source |
+|---|---|---|---|---|---|
+| {} | | | | | F, D |
+
+## 15. Open questions
+
+| Question | Owner | Due | Source |
+|---|---|---|---|
+| {} | | | |
+
+## 16. Decisions and changes
+
+| Date | Decision or change | Why | Who | Source |
 |---|---|---|---|---|
-| {date} | | | | |
+| {} | | | | |
 
 ## Sign-off
 
-The founder reads sections 1 to 15 in one sitting, corrects anything wrong, and signs with a date. Nothing in this file is used by a screen or an agent before that signature. Re-sign after every interview and at least every 90 days.
+The founder reads sections 1 to 14 in one sitting, corrects what is wrong, and signs with a date. No screen or agent uses this page before that signature. Re-sign after every founder round and at least every 90 days.
 
-Signed: {name}, {date}.
+Signed {name}, {date}.
