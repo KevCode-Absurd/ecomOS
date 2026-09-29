@@ -84,7 +84,7 @@ Follow-up: which one worries you most 12 months out?
 Feeds: competitors, decisions, red lines. Why ask: only the founder can say which competitor moves are forbidden here.
 Follow-up: is there a move you are about to copy?
 
-### E. What customers tell you that never gets written down (8 minutes)
+### E. What customers tell you that never gets written down (7 minutes)
 
 **12. Describe your best customer as a person you have talked to.** Who they are, why they buy, what they say when they reorder.
 Feeds: avatars. Why ask: reviews are public and skew to extremes; conversations are private and specific.
@@ -116,7 +116,7 @@ Follow-up: has a regulator, platform or lawyer ever pushed back on a claim?
 Feeds: story bank, positioning, claims. Why ask: this is the story behind the specs, and it is nowhere public unless the founder tells it.
 Follow-up: which of those choices would a customer pay more for if they knew?
 
-### G. History: what you tried (6 minutes)
+### G. History: what you tried (5 minutes)
 
 **19. Top 3 things that worked and then stopped, or could not scale.** Why did they stop?
 Feeds: learnings, experiments memory. Why ask: the ad account shows spend, not why a winner was turned off.
