@@ -2937,6 +2937,47 @@ class Round8QuizAndSchedule(TempBrain):
         self.assertEqual(api.handle(Req(['schedule'], 'POST', body={'weekday': 'x'}))[0], 400)
 
 
+class Round9AnswersFromText(TempBrain):
+    """Round 9 feature 6: answer open questions from a pasted document."""
+
+    def test_propose_then_confirm_writes_through_the_answer_routes(self):
+        api.handle(Req(['ask', 'open'], 'POST', body={'q': 'Who is our 3PL and where is the warehouse?', 'why': 'ops asked'}))
+        api.handle(Req(['ask', 'open'], 'POST', body={'q': 'What is the wholesale minimum order in dollars?', 'why': 'a retailer asked'}))
+        qv = api.handle(Req(['questions']))
+        oq = [q for q in qv['questions'] if q['kind'] == 'brain' and not q['answered_on']]
+        self.assertGreaterEqual(len(oq), 2)
+        text = ("Call with ops, 27 Sep. Our 3PL is ShipBob and the warehouse is in Moreno Valley.\n"
+                "The wholesale minimum order is $2,500 per season. Nothing else changed.")
+        self.assertEqual(api.handle(Req(['questions', 'from_text'], 'POST', body={'text': 'short'}))[0], 400)
+        r = api.handle(Req(['questions', 'from_text'], 'POST', body={'text': text}))
+        by_q = {p['question']: p for p in r['proposals']}
+        pl = next(p for q, p in by_q.items() if '3PL' in q)
+        self.assertIn('ShipBob', pl['answer'])
+        self.assertEqual(pl['kind'], 'brain')
+        wh = next(p for q, p in by_q.items() if 'wholesale' in q)
+        self.assertTrue(wh['has_unit'] and '2,500' in wh['answer'])
+        self.assertEqual(r['counts']['sentences'], 4)
+        status, w = api.handle(Req(['questions', 'from_text', 'confirm'], 'POST', body={'items': [{'id': pl['id'], 'kind': pl['kind'], 'field': pl['field'], 'answer': pl['answer']}, {'id': 'x', 'kind': 'brain', 'field': 'nope', 'answer': 'y'}]}))
+        self.assertEqual((status, w['counts']['written'], w['counts']['errors']), (201, 1, 1))
+        rec = next(x for x in self.section('open_questions') if x['id'] == pl['id'])
+        self.assertEqual(rec['value']['answered_on'], '2026-09-28')
+        r2 = api.handle(Req(['questions', 'from_text'], 'POST', body={'text': text}))
+        self.assertNotIn(pl['id'], [p['id'] for p in r2['proposals']])
+        self.assertTrue(any(c['kind'] == 'answer' for c in api.handle(Req(['changes']))['changes']))
+
+    def test_bank_question_from_text(self):
+        qv = api.handle(Req(['questions']))
+        bank = [q for q in qv['questions'] if q['kind'] == 'bank' and not q['answered_on']]
+        if not bank:
+            self.skipTest('no open bank question on the sample brain')
+        q = bank[0]
+        text = q['question'] + ' The answer is 42 and that is final.\nAnother line about nothing in particular here.'
+        r = api.handle(Req(['questions', 'from_text'], 'POST', body={'text': text}))
+        p = next((p for p in r['proposals'] if p['id'] == q['id']), None)
+        self.assertIsNotNone(p)
+        self.assertEqual(p['route'], 'questions/bank/' + q['id'])
+
+
 class Round9NearDuplicates(TempBrain):
     """Round 9 feature 5: near-duplicate records join the duplicates list and the same retire."""
 

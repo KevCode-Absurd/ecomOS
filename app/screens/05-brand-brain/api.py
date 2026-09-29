@@ -99,6 +99,8 @@ question, and accept or ignore on a proposed record. Nothing external.
   POST conflicts/<id>           {record_id | index | text, reason}: the founder decides; writes an approved founder
                                 record for the field, marks the conflict resolved, logs a decisions record
   GET  questions                every open question ranked by weight times rooms unblocked, with the pull-first
+  POST questions/from_text      {text}: the open questions a pasted note or document answers, one proposed sentence each
+  POST questions/from_text/confirm  {items: [{id, kind, field, answer}]}: write the confirmed answers through the answer routes
                                 hint, the fields an answer fills and the screens it unblocks
   POST questions/bank/<qid>     {answer}: answers a bank question with an approved founder record on its first field
   GET  decisions                the decisions timeline: action decisions from every screen plus the brain's
@@ -288,6 +290,9 @@ _hospec.loader.exec_module(handoff)
 _mispec = importlib.util.spec_from_file_location("brand_brain_misses", HERE / "misses.py")
 misses = importlib.util.module_from_spec(_mispec)
 _mispec.loader.exec_module(misses)
+_afspec = importlib.util.spec_from_file_location("brand_brain_answersfrom", HERE / "answersfrom.py")
+answersfrom = importlib.util.module_from_spec(_afspec)
+_afspec.loader.exec_module(answersfrom)
 _rsspec = importlib.util.spec_from_file_location("brand_brain_restore", HERE / "restore.py")
 restore = importlib.util.module_from_spec(_rsspec)
 _rsspec.loader.exec_module(restore)
@@ -2838,6 +2843,32 @@ def handle(req):
         qv = questions_ranked(brain)
         qv.update(brand=brain.brand, today=brain.today.isoformat(), version=brain.version())
         return qv
+    if req.method == "POST" and parts == ["questions", "from_text"]:
+        text = str((req.body or {}).get("text") or "")
+        if len(text.strip()) < 20:
+            return 400, {"error": "paste a note or a document first (20 characters or more)"}
+        res = answersfrom.propose(text, questions_ranked(brain).get("questions") or [])
+        res.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "BRN-C03", "autonomy": "founder_gate"})
+        return res
+    if req.method == "POST" and parts == ["questions", "from_text", "confirm"]:
+        items = (req.body or {}).get("items")
+        if not isinstance(items, list) or not items:
+            return 400, {"error": "items is a list of {id, kind, field, answer}"}
+        written, errors = [], []
+        for it in items[:50]:
+            if not isinstance(it, dict) or not str(it.get("answer") or "").strip():
+                errors.append({"id": (it or {}).get("id") if isinstance(it, dict) else None, "error": "answer is empty"})
+                continue
+            if it.get("kind") == "bank":
+                res = answer_bank(brain, str(it.get("id") or ""), {"answer": it["answer"]})
+            else:
+                res = answer(brain, str(it.get("field") or ""), {"answer": it["answer"]})
+            if isinstance(res, tuple) and res[0] >= 400:
+                errors.append({"id": it.get("id"), "error": res[1].get("error")})
+            else:
+                written.append({"id": it.get("id"), "record": (res[1] if isinstance(res, tuple) else res).get("record")})
+        return 201, {"ok": True, "written": written, "errors": errors, "counts": {"written": len(written), "errors": len(errors)}, "version": brain.version(),
+                     "next": f"{len(written)} question{'s' if len(written) != 1 else ''} answered from the text as approved records." + (f" {len(errors)} could not be written; each says why." if errors else "")}
     if req.method == "POST" and len(parts) == 3 and parts[:2] == ["questions", "bank"]:
         return answer_bank(brain, parts[2], req.body)
     if req.method == "POST" and len(parts) == 2 and parts[0] == "questions":

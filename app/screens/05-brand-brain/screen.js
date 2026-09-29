@@ -1464,6 +1464,13 @@
       { label: 'open', value: qv.counts.open, unit: 'n', tone: qv.counts.round_due ? 'bad' : null, title: 'a founder round is due at ' + qv.round_at },
       { label: 'answer by connecting', value: qv.counts.connect_first, unit: 'n' }, { label: 'rooms blocked', value: qv.counts.rooms_blocked, unit: 'n' }, { label: 'answered', value: qv.counts.answered, unit: 'n', tone: 'good' }]));
     const open = qv.questions.filter((q) => !q.answered_on);
+    // 9.6: answer open questions from a pasted document
+    const fromText = (() => {
+      const ta = el('textarea', { class: 'text', rows: 4, placeholder: 'Paste a call note, a supplier email or a policy page. Each open question it answers gets a proposed sentence; confirm the ones that are right.' });
+      const go = el('button', { class: 'btn sm', type: 'button', text: 'Find the answers in it' }); const st = el('span', { class: 'micro muted' }); const out = el('div', { class: 'stack' });
+      go.addEventListener('click', async () => { go.disabled = true; try { const r = await api(BASE + 'questions/from_text', { method: 'POST', body: { text: ta.value } }); if (!r.proposals.length) { mount(out, el('p', { class: 'muted small', text: r.counts.sentences + ' sentences, ' + r.counts.questions + ' open questions, none matched. ' + r.note })); go.disabled = false; return; } const picks = new Map(); const rows = r.proposals.map((p) => { const cb = el('input', { type: 'checkbox', checked: p.score >= 0.7 }); const ans = el('input', { class: 'text sm', value: p.answer, style: { flex: '1 1 320px' } }); picks.set(p.id, { p, cb, ans }); return el('div', { class: 'row small' }, cb, el('span', { class: 'chip' + (p.score >= 0.7 ? ' good' : ''), text: Math.round(p.score * 100) + ' percent' }), el('b', { text: p.question }), ans, p.unit && !p.has_unit ? el('span', { class: 'chip warn', text: 'no ' + p.unit + ' in it' }) : null); }); const confirmBtn = el('button', { class: 'btn primary sm', type: 'button', text: 'Write the ticked answers' }); confirmBtn.addEventListener('click', async () => { const items = [...picks.values()].filter((x) => x.cb.checked).map((x) => ({ id: x.p.id, kind: x.p.kind, field: x.p.field, answer: x.ans.value.trim() })); if (!items.length) { st.textContent = 'Tick at least one.'; return; } confirmBtn.disabled = true; try { const w = await api(BASE + 'questions/from_text/confirm', { method: 'POST', body: { items } }); st.textContent = w.next; loadQuestions(); loadProfile(); loadChanges(); } catch (e) { confirmBtn.disabled = false; st.textContent = 'Could not write: ' + e.message; } }); mount(out, el('p', { class: 'micro faint', text: r.counts.proposed + ' of ' + r.counts.questions + ' open questions matched in ' + r.counts.sentences + ' sentences. Edit a sentence before you write it.' }), ...rows, el('div', { class: 'row' }, confirmBtn, st)); } catch (e) { st.textContent = 'Could not read it: ' + e.message; } go.disabled = false; });
+      return el('div', { class: 'card flat stack', style: { gridColumn: '1 / -1' } }, el('b', { class: 'small', text: 'Answer from a note or a document' }), ta, el('div', { class: 'row' }, go, st), out);
+    })();
     const done = qv.questions.filter((q) => q.answered_on);
     const items = open.slice(0, 5).map((q) => questionCard(q, loadQuestions));
     if (!open.length) items.push(el('p', { class: 'muted', text: 'Nothing waits on you. The next pull or audit may add a question.' }));
@@ -1479,7 +1486,7 @@
       btn.addEventListener('click', () => { list.hidden = !list.hidden; btn.textContent = list.hidden ? 'Show ' + done.length + ' answered' : 'Hide answered'; if (!list.hidden && !list.children.length) mount(list, ...done.map((q) => questionCard(q, loadQuestions))); });
       items.push(el('div', { class: 'row' }, btn), list);
     }
-    mount('#questions', ...items);
+    mount('#questions', fromText, ...items);
   }
 
   function reviewCard(r, reload) {
