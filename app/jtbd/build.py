@@ -65,7 +65,7 @@ def md(screens):
 
 def page(screens):
     e = html.escape
-    nav = "".join(f'<a href="#{e(s["screen"])}">{e(s["screen"][:2])} {e(s["title"])}<span class="num">{len(s["jobs"])}</span></a>' for s in screens)
+    nav = '<a href="#" data-s="">All screens<span class="num">' + str(sum(len(s["jobs"]) for s in screens)) + '</span></a>' + "".join(f'<a href="#{e(s["screen"])}" data-s="{e(s["screen"])}">{e(s["screen"][:2])} {e(s["title"])}<span class="num">{len(s["jobs"])}</span></a>' for s in screens)
     body = ""
     for s in screens:
         rows = ""
@@ -91,6 +91,8 @@ def page(screens):
 h1{{font-size:24px;margin:0;line-height:1.15}} h2{{font-size:19px;margin:2px 0 0;line-height:1.2}}
 .top{{position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);border-bottom:1px solid var(--line);z-index:4}}
 .topin{{max-width:1240px;margin:0 auto;padding:10px 20px;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center}}
+.topin select{{border:1px solid var(--line);background:var(--panel);color:var(--fg);border-radius:var(--r);padding:7px 10px;font:inherit;max-width:100%}}
+.nav a.on{{background:var(--soft);color:var(--fg);font-weight:600}}
 .topin input{{flex:1 1 220px;min-width:160px;border:1px solid var(--line);background:var(--panel);color:var(--fg);border-radius:var(--r);padding:7px 10px;font:inherit}}
 .hits{{font-size:12px;color:var(--muted)}}
 .wrap{{max-width:1240px;margin:0 auto;padding-inline:20px;padding-block:18px 70px;display:grid;grid-template-columns:230px minmax(0,1fr);gap:22px;align-items:start}}
@@ -109,7 +111,7 @@ h1{{font-size:24px;margin:0;line-height:1.15}} h2{{font-size:19px;margin:2px 0 0
 .who{{font-size:11px;color:var(--faint);margin-top:4px}}
 @media (max-width:820px){{.wrap{{grid-template-columns:1fr;padding-inline:16px}} .nav{{display:none}} .job{{grid-template-columns:28px minmax(0,1fr)}} .sc{{grid-column:2;text-align:left;display:flex;gap:10px;align-items:center}} .bars{{margin:0}}}}
 </style>
-<div class="top"><div class="topin"><strong>Jobs to be done</strong><input id="q" type="search" placeholder="Filter jobs by a word: bounce, margin, stockout, claim" aria-label="Filter jobs"><span class="hits" id="hits">{n} jobs across {len(screens)} screens</span></div></div>
+<div class="top"><div class="topin"><strong>Jobs to be done</strong><select id="screen" aria-label="Choose a screen"><option value="">All screens</option>{"".join(f'<option value="{e(s["screen"])}">{e(s["screen"][:2])} {e(s["title"])}</option>' for s in screens)}</select><input id="q" type="search" placeholder="Filter jobs by a word: bounce, margin, stockout, claim" aria-label="Filter jobs"><span class="hits" id="hits">{n} jobs across {len(screens)} screens</span></div></div>
 <div class="wrap">
   <nav class="nav" aria-label="Screens">{nav}</nav>
   <div>
@@ -120,8 +122,21 @@ h1{{font-size:24px;margin:0;line-height:1.15}} h2{{font-size:19px;margin:2px 0 0
   </div>
 </div>
 <script>
-const q=document.getElementById('q'),jobs=[...document.querySelectorAll('.job')],hits=document.getElementById('hits'),N={n};
-q.addEventListener('input',()=>{{const v=q.value.trim().toLowerCase();let k=0;jobs.forEach(j=>{{const on=!v||j.dataset.t.includes(v);j.classList.toggle('hide',!on);if(on)k++;}});document.querySelectorAll('.scr').forEach(s=>{{s.style.display=s.querySelectorAll('.job:not(.hide)').length?'':'none';}});hits.textContent=v?k+' of '+N+' jobs match':N+' jobs across {len(screens)} screens';}});
+const q=document.getElementById('q'),sel=document.getElementById('screen'),jobs=[...document.querySelectorAll('.job')],hits=document.getElementById('hits'),N={n},NS={len(screens)};
+function apply(){{
+  const v=q.value.trim().toLowerCase(), s=sel.value; let k=0;
+  document.querySelectorAll('.scr').forEach(sec=>{{
+    const inScreen=!s||sec.id===s; let kk=0;
+    sec.querySelectorAll('.job').forEach(j=>{{const on=inScreen&&(!v||j.dataset.t.includes(v));j.classList.toggle('hide',!on);if(on)kk++;}});
+    sec.style.display=kk?'':'none'; k+=kk;
+  }});
+  document.querySelectorAll('.nav a').forEach(a=>a.classList.toggle('on',a.dataset.s===s));
+  hits.textContent=(s?sel.options[sel.selectedIndex].text+': ':'')+(v?k+' jobs match "'+v+'"':k+' jobs'+(s?'':' across '+NS+' screens'));
+  try{{localStorage.setItem('jtbd-screen',s);}}catch(e){{}}
+}}
+q.addEventListener('input',apply); sel.addEventListener('change',()=>{{apply(); window.scrollTo({{top:0}});}});
+document.querySelectorAll('.nav a').forEach(a=>a.addEventListener('click',ev=>{{ev.preventDefault();sel.value=a.dataset.s;apply();window.scrollTo({{top:0}});}}));
+(function(){{let s='';try{{s=localStorage.getItem('jtbd-screen')||'';}}catch(e){{}} const h=(location.hash||'').slice(1); if(h&&[...sel.options].some(o=>o.value===h)) s=h; if([...sel.options].some(o=>o.value===s)) sel.value=s; apply();}})();
 </script>'''
 
 
