@@ -292,6 +292,8 @@ RULES = [
      "inputs": ["plans.update_*"], "capability": "BRN-C01", "owner_screen": SCREEN},
     {"rule_id": "BRN-R38", "name": "a save over a contradiction not settled", "entity_type": "brand",
      "inputs": ["plans.settle_*"], "capability": "BRN-C05", "owner_screen": SCREEN},
+    {"rule_id": "BRN-R39", "name": "a hand-off without a passed quiz", "entity_type": "brand",
+     "inputs": ["team.handoff_*"], "capability": "BRN-C12", "owner_screen": SCREEN},
 ]
 AUTONOMY = {"BRN-C12": "agent_does", "BRN-C07": "founder_gate", "BRN-C03": "agent_does",
             "CREA-C19": "agent_does", "CREA-C04": "agent_does", "BRN-C11": "agent_does", "CREA-C06": "agent_does",
@@ -300,6 +302,10 @@ AUTONOMY = {"BRN-C12": "agent_does", "BRN-C07": "founder_gate", "BRN-C03": "agen
 _ctspec = importlib.util.spec_from_file_location("brand_brain_contradict", Path(__file__).resolve().parent / "contradict.py")
 contradict = importlib.util.module_from_spec(_ctspec)
 _ctspec.loader.exec_module(contradict)
+
+_hospec = importlib.util.spec_from_file_location("brand_brain_handoff", Path(__file__).resolve().parent / "handoff.py")
+handoff = importlib.util.module_from_spec(_hospec)
+_hospec.loader.exec_module(handoff)
 
 _uspec = importlib.util.spec_from_file_location("brand_brain_assumptions", Path(__file__).resolve().parent / "assumptions.py")
 assumptions = importlib.util.module_from_spec(_uspec)
@@ -903,6 +909,20 @@ def rule_contradictions(brain: Brain, ends_on: str) -> list[dict]:
     return out
 
 
+def rule_handoffs(brain: Brain, ends_on: str) -> list[dict]:
+    out = []
+    for h in handoff.handoffs(brain):
+        if h["state"] not in ("overdue", "failed"):
+            continue
+        ev = [_row("days_since_handoff", h["days"], "days", ends_on, None, handoff.QUIZ_DUE_DAYS, "team"), _row("quiz_pct", h["pct"], "%", ends_on, None, handoff.PASS_PCT, "team")]
+        sent = (f"{h['to']} got the brain {h['days']} days ago and no quiz came back." if h["state"] == "overdue"
+                else f"{h['to']} scored {h['score']} of {h['of']} on the quiz ({h['pct']} percent): under the bar.")
+        f = _finding("BRN-R39", "medium" if h["state"] == "failed" else "low", {"type": "brand", "id": f"handoff_{h['key']}", "label": f"hand-off to {h['to']}"}, ev, sent, [h["record"]], ends_on, 0.95)
+        f["handoff"] = h
+        out.append(f)
+    return out
+
+
 def rule_expiring(brain: Brain, ends_on: str) -> list[dict]:
     out = []
     ex = expiring.expiring(brain, health.SHELF_DAYS)
@@ -1054,7 +1074,7 @@ def run(brand: str, window: dict | None = None, root: Path | None = None) -> lis
         bank = keeper.load_bank()
     except (OSError, ValueError, KeyError):
         bank = None
-    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_untiered_claims(brain, ends_on) + rule_site_changes(brain, ends_on) + rule_parity(brain, ends_on) + rule_contracts(brain, ends_on) + rule_legal(brain, ends_on) + rule_picked_ideas(brain, ends_on) + rule_ladder_proof(brain, ends_on) + rule_self_audit(brain, ends_on) + rule_peaks(brain, ends_on) + rule_visual(brain, ends_on) + rule_visibility(brain, ends_on) + rule_rejected_due(brain, ends_on) + rule_assets(brain, ends_on) + rule_consents(brain, ends_on) + rule_drift(brain, ends_on) + rule_audiences(brain, ends_on) + rule_redlines(brain, ends_on) + rule_owners(brain, ends_on) + rule_expiring(brain, ends_on) + rule_number_dependents(brain, ends_on) + rule_contradictions(brain, ends_on) + rule_permissions(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
+    out = rule_stale(brain, ends_on) + rule_claims(brain, ends_on) + rule_competitor_gaps(brain, ends_on) + rule_angle_gaps(brain, ends_on) + rule_signals(brain, ends_on) + rule_weak_sections(brain, ends_on) + rule_conflicts(brain, ends_on) + rule_untiered_claims(brain, ends_on) + rule_site_changes(brain, ends_on) + rule_parity(brain, ends_on) + rule_contracts(brain, ends_on) + rule_legal(brain, ends_on) + rule_picked_ideas(brain, ends_on) + rule_ladder_proof(brain, ends_on) + rule_self_audit(brain, ends_on) + rule_peaks(brain, ends_on) + rule_visual(brain, ends_on) + rule_visibility(brain, ends_on) + rule_rejected_due(brain, ends_on) + rule_assets(brain, ends_on) + rule_consents(brain, ends_on) + rule_drift(brain, ends_on) + rule_audiences(brain, ends_on) + rule_redlines(brain, ends_on) + rule_owners(brain, ends_on) + rule_expiring(brain, ends_on) + rule_number_dependents(brain, ends_on) + rule_contradictions(brain, ends_on) + rule_handoffs(brain, ends_on) + rule_permissions(brain, ends_on) + rule_snapshot_stale(brain, ends_on)
     if bank is None:
         for rid, sev in (("BRN-R02", "medium"), ("BRN-R03", "medium")):
             f = _finding(rid, sev, {"type": "brand", "id": "question_bank", "label": "question bank"},

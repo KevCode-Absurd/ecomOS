@@ -2932,6 +2932,50 @@ class Round8QuizAndSchedule(TempBrain):
         self.assertEqual(api.handle(Req(['schedule'], 'POST', body={'weekday': 'x'}))[0], 400)
 
 
+class Round9Handoff(TempBrain):
+    """Round 9 feature 3: a hand-off pack for a named person, closed by their quiz."""
+
+    def test_pack_record_quiz_and_rule(self):
+        self.assertEqual(api.handle(Req(['handoff']))['handoffs'], [])
+        self.assertEqual(api.handle(Req(['handoff', 'pack']))[0], 400)
+        pk = api.handle(Req(['handoff', 'pack'], query={'to': ['Maya Chen'], 'role': ['agency writer']}))
+        self.assertEqual((pk['key'], pk['sections'][:2]), ('maya_chen', ['1. The brain in one page', '2. The brand book']))
+        self.assertTrue(pk['pieces']['onepage'] and pk['pieces']['brandbook'] and pk['pieces']['quiz'] >= 5)
+        self.assertIn('hand-off for Maya Chen (agency writer)', pk['text'])
+        self.assertNotIn('answer key', pk['text'].lower())
+        self.assertFalse([x for x in self.section('team') if x['field'] == 'handoff_maya_chen'])
+        status, r = api.handle(Req(['handoff'], 'POST', body={'to': 'Maya Chen', 'role': 'agency writer'}))
+        self.assertEqual((status, r['record']), (201, 'bombas.team.handoff_maya_chen'))
+        hs = api.handle(Req(['handoff']))['handoffs']
+        self.assertEqual((hs[0]['state'], hs[0]['due'], hs[0]['pct']), ('waiting', '2026-10-05', None))
+        self.assertFalse([f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R39'])
+        q = api.handle(Req(['quiz']))
+        key = [ln.split('. ', 1)[1].rsplit(' (', 1)[0] for ln in q['key'].splitlines()]
+        wrong = ['no idea'] * len(key)
+        res = api.handle(Req(['quiz', 'check'], 'POST', body={'answers': wrong, 'who': 'Maya Chen'}))
+        self.assertEqual((res['handoff']['record'], res['handoff']['passed']), ('bombas.team.handoff_maya_chen', False))
+        hs = api.handle(Req(['handoff']))['handoffs']
+        self.assertEqual((hs[0]['state'], hs[0]['checked_on']), ('failed', '2026-09-28'))
+        acts = [a for a in api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions'] if a['rule_id'] == 'BRN-R39']
+        self.assertEqual(len(acts), 1)
+        self.assertTrue(acts[0]['title'].startswith('Walk Maya Chen through'))
+        res = api.handle(Req(['quiz', 'check'], 'POST', body={'answers': key, 'who': 'maya chen'}))
+        self.assertTrue(res['handoff']['passed'])
+        self.assertEqual(api.handle(Req(['handoff']))['handoffs'][0]['state'], 'passed')
+        self.assertFalse([f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R39'])
+        self.assertIsNone(api.handle(Req(['quiz', 'check'], 'POST', body={'answers': key, 'who': 'nobody here'}))['handoff'])
+
+    def test_overdue_after_seven_days(self):
+        api.handle(Req(['handoff'], 'POST', body={'to': 'Sam'}))
+        rows = self.section('team')
+        next(x for x in rows if x['field'] == 'handoff_sam')['value']['on'] = '2026-09-10'
+        self.write('team', rows)
+        hs = api.handle(Req(['handoff']))['handoffs']
+        self.assertEqual(hs[0]['state'], 'overdue')
+        acts = [a for a in api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions'] if a['rule_id'] == 'BRN-R39']
+        self.assertTrue(acts and acts[0]['title'].startswith('Chase Sam'))
+
+
 class Round9SectionUndo(TempBrain):
     """Round 9 feature 2: undo a section back to a time."""
 
@@ -3154,7 +3198,7 @@ class Round8SourcesTrustHistory(TempBrain):
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
-    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'], ['onepage'], ['brainmd', 'notes'], ['alerts'], ['glossary'], ['expiring'], ['feedback'], ['numbers'], ['proofs'], ['trust'], ['round'], ['brandbook'], ['quiz'], ['schedule'], ['sources'], ['records', 'csv'], ['trust', 'history'], ['contradict'], ['changes'],
+    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'], ['onepage'], ['brainmd', 'notes'], ['alerts'], ['glossary'], ['expiring'], ['feedback'], ['numbers'], ['proofs'], ['trust'], ['round'], ['brandbook'], ['quiz'], ['schedule'], ['sources'], ['records', 'csv'], ['trust', 'history'], ['contradict'], ['changes'], ['handoff'],
               ['decisions'], ['flows'], ['claims'], ['site', 'diff'], ['parity'], ['contracts'], ['legal'], ['voice'], ['battlecards'], ['permissions'],
               ['export'], ['assumptions'], ['facts'], ['summaries'], ['changes'], ['learn'], ['report'], ['digest'], ['review'], ['bottlenecks'], ['audit']]
 

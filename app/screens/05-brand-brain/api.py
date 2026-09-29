@@ -13,6 +13,9 @@ question, and accept or ignore on a proposed record. Nothing external.
   POST quiz/check               {text | answers, who}: pasted answers scored in code against the key
   GET|POST schedule             the founder round's day and hour, read and set
   GET  brandbook                the brand book from the records (markdown): identity, positioning, audiences, voice, glossary, red lines, locks, palette, facts
+  GET  handoff                  every person handed the brain, with the quiz state (waiting, overdue, passed, failed)
+  GET  handoff/pack             ?to=&role=: the pack for a person (one page, brand book, red lines, questions) without recording it
+  POST handoff                  {to, role}: build the pack and record the hand-off on the team section
   GET  round                    the founder round as a checklist: questions, the review queue, moves, reviews due, carried over
   POST round/tick               {key, done}: tick or untick an item; POST round/close closes the round with one dated decision
   GET  trust/history            the trust number per day since the first run (the chart), optional ?sections=
@@ -277,6 +280,9 @@ _ctspec.loader.exec_module(contradict)
 _unspec = importlib.util.spec_from_file_location("brand_brain_undo", HERE / "undo.py")
 undo = importlib.util.module_from_spec(_unspec)
 _unspec.loader.exec_module(undo)
+_hospec = importlib.util.spec_from_file_location("brand_brain_handoff", HERE / "handoff.py")
+handoff = importlib.util.module_from_spec(_hospec)
+_hospec.loader.exec_module(handoff)
 _rsspec = importlib.util.spec_from_file_location("brand_brain_restore", HERE / "restore.py")
 restore = importlib.util.module_from_spec(_rsspec)
 _rsspec.loader.exec_module(restore)
@@ -1537,6 +1543,55 @@ def flows(brain: Brain) -> dict:
             "note": "Read by: screens whose api reads the section from the brain store, from a scan of their code. T0: screens that read the compact brand card, which carries every profile section. An edit here reaches them on their next load."}
 
 
+def brandbook_view(brain: Brain, reader: str | None = None) -> dict:
+    ident = {}
+    for r in brain.records("identity"):
+        f = r.get("field") or ""
+        if f in ("name", "one_line_pitch", "category", "founded", "headquarters", "giving_model", "mission", "site_url", "market") and isinstance(r.get("value"), (str, int, float)):
+            ident[f] = r["value"]
+        elif f == "headquarters" and isinstance(r.get("value"), dict):
+            ident[f] = ", ".join(str(x) for x in r["value"].values() if isinstance(x, str))
+    pos = {}
+    for r in brain.records("positioning"):
+        if r["id"].endswith(".positioning.frame"):
+            pos["frame"] = r.get("text") or str(r.get("value"))
+        elif r.get("field") == "proof_points":
+            pos["proof_points"] = ", ".join(str(x) for x in r["value"]) if isinstance(r.get("value"), list) else r.get("text")
+        elif r.get("field") == "category_frame":
+            pos["category_frame"] = r.get("text") or str(r.get("value"))
+    parts_ = {"name": ident.get("name"), "identity": ident, "positioning": pos, "audiences": audiences.profiles(brain, ladderproof)["profiles"], "voice": voice.sheet(brain), "glossary": glossary.terms(brain)["terms"],
+              "redlines": redlines.register(brain)["lines"], "locks": locks.zones(brain, voice), "visual": visual.palette(brain), "facts": facts.pairs(brain)["pairs"], "tokens": package_mod.tokens}
+    res = brandbook.build(brain, parts_)
+    _log_read(brain, ["identity", "positioning", "avatars", "voice", "claims", "visual", "content"], reader or "brandbook")
+    return res
+
+
+def onepage_view(brain: Brain, decisions_path: Path, reader: str | None = None) -> dict:
+    frame = next((r for r in brain.records("positioning") if r["id"].endswith(".positioning.frame")), None)
+    proof = next((r for r in brain.records("positioning") if r.get("field") == "proof_points"), None)
+    try:
+        qs = questions_ranked(brain).get("questions") or []
+    except Exception:  # noqa: BLE001
+        qs = []
+    try:
+        dl = decisions_log(brain, decisions_path)
+        dec = [it for it in dl["items"] if it["kind"] == "brain"] + [dict(it, text=(it.get("finding_id") or it.get("capability") or "") + ": " + (it.get("choice") or "")) for it in dl["items"] if it["kind"] == "action" and it.get("current")]
+    except Exception:  # noqa: BLE001
+        dec = []
+    try:
+        comp = [p["name"] for p in market.pages(brain)["pages"] if p.get("role") == "competitor"]
+    except Exception:  # noqa: BLE001
+        comp = []
+    parts_ = {"t0": t0_card(brain), "frame": {"tier": frame["tier"], "text": frame.get("text") or str(frame.get("value"))} if frame else None,
+              "proof_points": ", ".join(str(x) for x in proof["value"]) if proof and isinstance(proof.get("value"), list) else (proof.get("text") if proof else None),
+              "audiences": audiences.profiles(brain, ladderproof), "voice": voice.sheet(brain), "redlines": redlines.register(brain), "locks": locks.zones(brain, voice),
+              "owners": owners.owners(brain, health.SHELF_DAYS, health.META_SECTIONS, brain.section_stats()), "connectors": health.connectors(brain), "competitors": comp,
+              "questions": [q for q in qs if not q.get("answered_on")], "decisions": dec[:5], "tokens": package_mod.tokens}
+    res = onepage.build(brain, parts_)
+    _log_read(brain, ["identity", "positioning", "avatars", "voice", "claims", "team"], reader or "onepage")
+    return res
+
+
 def handle(req):
     try:
         brain = _brain(req)
@@ -2142,7 +2197,11 @@ def handle(req):
         if not q["questions"]:
             return 400, {"error": "the brain holds no question to check against yet"}
         res = quiz.check(brain, q["questions"], answers)
-        res.update(brand=brain.brand, who=str(body.get("who") or "")[:40] or None)
+        res.update(brand=brain.brand, who=str(body.get("who") or "")[:40] or None, handoff=None)
+        if res["who"]:
+            ho = handoff.scored(brain, res["who"], res)
+            if ho is not None and not founder_put(brain, ho, "handoff", ho["text"][:160]):
+                res["handoff"] = {"record": ho["id"], "pct": ho["value"]["pct"], "passed": (ho["value"]["pct"] or 0) >= handoff.PASS_PCT}
         return res
     if req.method == "GET" and parts == ["schedule"]:
         r = next((x for x in brain.records("team") if x.get("field") == "round_schedule" and isinstance(x.get("value"), dict)), None)
@@ -2169,27 +2228,29 @@ def handle(req):
         if errs:
             return 400, {"error": "; ".join(errs)}
         return 201, {"ok": True, "weekday": wd, "hour": hour, "version": brain.version(), "next": f"Set. The round and the digest read {names[wd]} as the day."}
+    if req.method == "GET" and parts == ["handoff"]:
+        return {"handoffs": handoff.handoffs(brain), "brand": brain.brand, "today": brain.today.isoformat(), "due_days": handoff.QUIZ_DUE_DAYS, "pass_pct": handoff.PASS_PCT, "capability": {"id": "BRN-C12", "autonomy": "agent_does"},
+                "note": "One record per person handed the brain. Their quiz answers, scored with their name in the quiz panel, close it; after 7 days without, or under 70 percent, it is on the plan."}
+    if parts == ["handoff", "pack"] or (req.method == "POST" and parts == ["handoff"]):
+        body = req.body or {} if req.method == "POST" else {}
+        to = str(body.get("to") or req.arg("to") or "").strip()[:60]
+        role = str(body.get("role") or req.arg("role") or "").strip()[:60]
+        if len(to) < 2:
+            return 400, {"error": "to is the person's name"}
+        q = quiz.questions(brain, {"redlines": redlines.register(brain)["lines"], "audiences": audiences.profiles(brain, ladderproof), "locks": locks.zones(brain, voice)})
+        pieces = {"name": next((r["value"] for r in brain.records("identity") if r.get("field") == "name" and isinstance(r.get("value"), str)), None),
+                  "onepage": onepage_view(brain, _decisions_path(req), f"handoff:{handoff.slug(to)}"), "brandbook": brandbook_view(brain, f"handoff:{handoff.slug(to)}"),
+                  "redlines": redlines.register(brain)["lines"], "quiz": q, "tokens": package_mod.tokens}
+        pack = handoff.build(brain, to, role, pieces)
+        if req.method == "GET":
+            return pack
+        rec = handoff.record(brain, pack)
+        errs = founder_put(brain, rec, "handoff", rec["text"][:160])
+        if errs:
+            return 400, {"error": "; ".join(errs)}
+        return 201, dict(pack, record=rec["id"], next=f"Recorded. Send the file to {to}; their answers, scored with their name, close the hand-off. It is on the plan if nothing comes back in {handoff.QUIZ_DUE_DAYS} days.")
     if req.method == "GET" and parts == ["brandbook"]:
-        ident = {}
-        for r in brain.records("identity"):
-            f = r.get("field") or ""
-            if f in ("name", "one_line_pitch", "category", "founded", "headquarters", "giving_model", "mission", "site_url", "market") and isinstance(r.get("value"), (str, int, float)):
-                ident[f] = r["value"]
-            elif f == "headquarters" and isinstance(r.get("value"), dict):
-                ident[f] = ", ".join(str(x) for x in r["value"].values() if isinstance(x, str))
-        pos = {}
-        for r in brain.records("positioning"):
-            if r["id"].endswith(".positioning.frame"):
-                pos["frame"] = r.get("text") or str(r.get("value"))
-            elif r.get("field") == "proof_points":
-                pos["proof_points"] = ", ".join(str(x) for x in r["value"]) if isinstance(r.get("value"), list) else r.get("text")
-            elif r.get("field") == "category_frame":
-                pos["category_frame"] = r.get("text") or str(r.get("value"))
-        parts_ = {"name": ident.get("name"), "identity": ident, "positioning": pos, "audiences": audiences.profiles(brain, ladderproof)["profiles"], "voice": voice.sheet(brain), "glossary": glossary.terms(brain)["terms"],
-                  "redlines": redlines.register(brain)["lines"], "locks": locks.zones(brain, voice), "visual": visual.palette(brain), "facts": facts.pairs(brain)["pairs"], "tokens": package_mod.tokens}
-        res = brandbook.build(brain, parts_)
-        _log_read(brain, ["identity", "positioning", "avatars", "voice", "claims", "visual", "content"], req.arg("reader") or "brandbook")
-        return res
+        return brandbook_view(brain, req.arg("reader"))
     if req.method == "GET" and parts == ["round"]:
         return round_view(brain, req)
     if req.method == "POST" and parts == ["round", "tick"]:
@@ -2427,29 +2488,7 @@ def handle(req):
             return 400, {"error": "; ".join(errs)}
         return 201, {"ok": True, "since": rec["value"], "version": brain.version(), "next": "Marked sent. The next digest flags what appears after today."}
     if req.method == "GET" and parts == ["onepage"]:
-        frame = next((r for r in brain.records("positioning") if r["id"].endswith(".positioning.frame")), None)
-        proof = next((r for r in brain.records("positioning") if r.get("field") == "proof_points"), None)
-        try:
-            qs = questions_ranked(brain).get("questions") or []
-        except Exception:  # noqa: BLE001
-            qs = []
-        try:
-            dl = decisions_log(brain, _decisions_path(req))
-            dec = [it for it in dl["items"] if it["kind"] == "brain"] + [dict(it, text=(it.get("finding_id") or it.get("capability") or "") + ": " + (it.get("choice") or "")) for it in dl["items"] if it["kind"] == "action" and it.get("current")]
-        except Exception:  # noqa: BLE001
-            dec = []
-        try:
-            comp = [p["name"] for p in market.pages(brain)["pages"] if p.get("role") == "competitor"]
-        except Exception:  # noqa: BLE001
-            comp = []
-        parts_ = {"t0": t0_card(brain), "frame": {"tier": frame["tier"], "text": frame.get("text") or str(frame.get("value"))} if frame else None,
-                  "proof_points": ", ".join(str(x) for x in proof["value"]) if proof and isinstance(proof.get("value"), list) else (proof.get("text") if proof else None),
-                  "audiences": audiences.profiles(brain, ladderproof), "voice": voice.sheet(brain), "redlines": redlines.register(brain), "locks": locks.zones(brain, voice),
-                  "owners": owners.owners(brain, health.SHELF_DAYS, health.META_SECTIONS, brain.section_stats()), "connectors": health.connectors(brain), "competitors": comp,
-                  "questions": [q for q in qs if not q.get("answered_on")], "decisions": dec[:5], "tokens": package_mod.tokens}
-        res = onepage.build(brain, parts_)
-        _log_read(brain, ["identity", "positioning", "avatars", "voice", "claims", "team"], req.arg("reader") or "onepage")
-        return res
+        return onepage_view(brain, _decisions_path(req), req.arg("reader"))
     if req.method == "GET" and parts == ["owners"]:
         ow = owners.owners(brain, health.SHELF_DAYS, health.META_SECTIONS, brain.section_stats())
         ow.update(brand=brain.brand, today=brain.today.isoformat(), roles=health.ROLES, capability={"id": "BRN-C12", "autonomy": "founder_gate"})

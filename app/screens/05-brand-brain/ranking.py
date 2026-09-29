@@ -159,6 +159,14 @@ def build(f: dict, nr: float | None) -> dict:
                         {"n": 3, "who": "person", "text": "Pick the record as proof, or approve the drafted fact as an approved record."},
                         {"n": 4, "who": "agent", "text": f"Attach it to the rung. The surfaces that use the rung ({surfaces or 'copy, page, listing, macro'}) read the proof on their next brief."}],
                  check_on=_check_on(f, 7), time_to_ship_hours=1)
+    elif rid == "BRN-R39":
+        h = f.get("handoff") or {}
+        failed = h.get("state") == "failed"
+        a.update(title=(f"Walk {h.get('to')} through the {len(h.get('misses') or [])} quiz misses" if failed else f"Chase {h.get('to')} for the quiz answers, {h.get('days')} days after the hand-off"), owner="person",
+                 artefact={"kind": "brain_record", "label": "the hand-off closed with a passed quiz" , "draft": ("\n".join(f"- {m.get('n')}. {m.get('question')}" for m in (h.get("misses") or [])) or None)},
+                 steps=([{"n": 1, "who": "agent", "text": "List each missed question with the right answer and its record."}, {"n": 2, "who": "person", "text": "Go through the misses with them, then have them answer again with their name."}, {"n": 3, "who": "agent", "text": "The hand-off closes at 70 percent or better."}] if failed else
+                        [{"n": 1, "who": "person", "text": "Ask for the 10 answers, one per line."}, {"n": 2, "who": "person", "text": "Paste them in the quiz panel with their name; the hand-off takes the score."}]),
+                 check_on=_check_on(f, 3), time_to_ship_hours=0.5)
     elif rid == "BRN-R38":
         st = f.get("settle") or {}
         left = st.get("left") or []
