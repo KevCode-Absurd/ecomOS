@@ -1,6 +1,6 @@
 # Customers and avatars: hand-off
 
-For Kevin and the next session on this screen. Written 28 Sep 2026 after 10 rounds, brought up to date after round 11. `FEATURES.md` has every feature by round; this note says how the screen works and what to do next.
+For Kevin and the next session on this screen. Written 28 Sep 2026 after 10 rounds, brought up to date after round 12. `FEATURES.md` has every feature by round; this note says how the screen works and what to do next.
 
 ## What the screen does
 
@@ -17,10 +17,11 @@ The page reads top to bottom:
 ## Files
 
 - `api.py`: the routes, the cached overview and rank, the plans behind each action.
-- `audit.py`: 34 rules, CUST-R01 to CUST-R34. Each rule is described in the module docstring.
+- `audit.py`: 35 rules, CUST-R01 to CUST-R35. Each rule is described in the module docstring.
 - `builds.py`: pure builders. Every threshold is a named constant here, with a comment.
 - `screen.js`, `index.html`, `screen.css`: the page. No threshold or brand fact lives here.
 - `fixtures/sku_lines/<brand>.json`: the local SKU to product-line map.
+- `fixtures/shopper_runs/<brand>.json` and `fixtures/survey_answers/<brand>.json`: read when present, until their tables exist. Neither exists today.
 - `tests/test_screen_customers_avatars.py`: about 200 tests, including a browser smoke test.
 
 ## Routes
@@ -34,6 +35,7 @@ All under `/api/02-customers-avatars/`, all take `?brand=` and `?today=`.
 ## Hand-offs and decisions
 
 - **Sending.** Each pack is also a list of rows in the shared hand-offs table's shape (`events.md`). "Send N to <team>" posts the rows that team does not already have from this screen. The row carries the move's why, stop rule, check date, owner, capability and id. This screen never edits a row once posted.
+- **What came back.** A receiving team's choice on a hand-off is a decision logged against the hand-off's id. Each pack's line counts them.
 - **The inbox.** Rows other screens send to this screen, or to the brand or customers team, show under "What have other screens asked of us?". Each has its draft and a decision row keyed to the hand-off's id.
 - **Decisions by brand.** `api.decisions_for` reads only this brand's decisions; a row with no brand is the default brand's, as the server reads it.
 - **Every block acts.** An unavailable block shows "Fill this block": the drafted move that gets its input.
@@ -54,6 +56,10 @@ All under `/api/02-customers-avatars/`, all take `?brand=` and `?today=`.
 - **Size and stop rule.** Every move that spends money or changes a page has a size from its finding, a stop rule and a check date.
 - **Drift in what buyers say.** Each theme's share of praise and complaint reviews, the last 180 days against the 180 before, from dated public reviews. Worse at 5 points with 10 or more mentions; watch with 5 to 9.
 - **Mystery shopper run sheet.** 8 checkpoints, each against the brain fact it must match. Message pretests put our line against one in the avatar's own words.
+  - Results read back from `shopper_runs` or its fixture: a failed step is CUST-R35 with a drafted fix; CUST-R34 resolves while a run is under 90 days old.
+  - A pretest the buyers' line wins becomes a move to lead with it and a proposed live test.
+- **Scan one of our own assets.** What the brain captured of our site, ads and email, with dates, is the baseline the next quarterly scan compares against.
+- **What is ours.** Name, domains, our Ad Library page, social handles and trademarks, each on file or missing, with a drafted monthly watch.
 
 ## Thresholds a brand can tune
 
@@ -72,12 +78,13 @@ A `learnings` record with field `threshold_<name>` and a number sets one of 12 t
 - **`situations` brain record per category.** Replace `builds.SITUATIONS` with the record.
 - **A `brand` field on hand-off rows.** Drop the default-brand guard in `sendButton` in `screen.js`.
 - **The kit's decision row sends `brand`.** Pass the brand from the page; `decisions_for` already reads it.
-- **`shopper_runs` and `pretests` tables.** Read results into `builds.shopper_run` in place of `result: None`, and let CUST-R34 resolve once a run is on file.
+- **`shopper_runs` table** (runs with checkpoints, and pretest votes). `audit.load_shopper_results` already reads it by name; delete the fixture path after.
+- **Social handles and trademark records in the brain identity.** `builds.ours_watch` reads fields named with `handle`, `social`, `trademark` or `registration`.
 
 ## Still open
 
 - **Drift of our own assets.** Buyer drift is read. Our site, ads and email need a dated scan each quarter; the scan plan is drafted in the drift block.
-- **Shopper and pretest results.** The run sheet and pretests are drafted; results wait on their tables.
+- **Shopper and pretest results.** Read back once the table or fixture has them; none exist yet.
 - **Trademark, domain and handle watch.** Only lookalike pages from the Ad Library are read.
 - **The master list.** None of this screen's moves is in the top 10 today. The sample data is smooth, so no rule shows a money gap against its own past. Real data will change that.
 

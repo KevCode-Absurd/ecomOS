@@ -202,8 +202,10 @@ Lead's review: rounds 1 to 4 passed. Focus: returns and tickets by avatar, depth
 | 12.4 | Watch what is ours: the lookalike block now opens with what is ours on file (brand name, domains, our Ad Library page, social handles, trademark registrations), each on file or missing, and "Plan the monthly watch": a person-owned watch of our name in the Ad Library inside the weekly cap, close domain spellings and unknown marketplace sellers, with what to add to the brain first. Bombas: 3 of 5 on file; handles and trademarks are not in the brain | done |
 | 12.5 | Third depth pass on rounds 11 and 12. The new blocks (drift, shopper, inbox) already pass the writing sweep, the rule and gap lines, the empty brand, phone width and the no-action browser check. One gap was found: the result moves (a shopper fix, a pretest lead) change a page or copy but had no size. They now carry one ("1 of 8 checkpoints failed on the 20 Sep run", "4 of 5 buyers chose their words") with their stop rule and check date, tested through `rank` | done |
 | 12.6 | Pretests into the experiment registry: a pretest the buyers' line wins becomes a proposed live test (their line against ours on click-through, 14 days, the avatar as an audience tag, source type pretest). A pretest without votes proposes nothing: the 5-buyer check comes first. Bombas: none yet; tested on a temp fixture | done |
-| 12.7 | HANDOFF.md and the API docstring brought up to round 12 | todo |
-| 12.8 to 12.10 | Picked after 12.7; close with round12.png | todo |
+| 12.7 | `HANDOFF.md` brought up to round 12: 35 rules, the two fixture paths read when present, what came back from the teams, results read-back, scan one and the watch on what is ours, and the asks for a `shopper_runs` table and handle and trademark records | done |
+| 12.8 | The audit table and the report carry the round 12 reads | todo |
+| 12.9 | A brand with nothing, re-walked with rounds 11 and 12 | todo |
+| 12.10 | Round 12 close, `round12.png` | todo |
 
 ### Round 11 founder note (28 Sep 2026)
 
