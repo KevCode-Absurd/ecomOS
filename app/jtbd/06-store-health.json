@@ -1,0 +1,582 @@
+{
+  "screen": "06-store-health",
+  "title": "Store health",
+  "hired_for": "To keep the store open, the checkout working and every order paid and delivered, so no sale is lost to something broken that nobody noticed.",
+  "jobs": [
+    {
+      "rank": 1,
+      "job": "Tell me within minutes when the store or checkout stops taking orders",
+      "why": "An outage on a busy evening can cost a full day of sales before anyone notices. Every minute the checkout is down, paid ads keep sending shoppers who cannot buy.",
+      "watch": {
+        "metric": "hours with zero orders during normal trading hours, 30 days (proxy for downtime; a direct uptime check needs a monitor the store adds)",
+        "unit": "hours",
+        "source": "Shopify orders by hour"
+      },
+      "drives": {
+        "metric": "revenue lost to downtime (proxy: expected orders minus actual orders in the gap, times average order value)",
+        "unit": "currency"
+      },
+      "business": "revenue",
+      "now_after": "Example: Now a checkout fault ran 3 hours on a Saturday before a customer emailed. After: an alert within 5 minutes and a fix in under 1 hour.",
+      "score": {
+        "money": 5,
+        "satisfaction": 5,
+        "speed": 5,
+        "ease": 3
+      },
+      "who_today": "nobody; found when a customer complains"
+    },
+    {
+      "rank": 2,
+      "job": "Make sure every payment method actually completes an order",
+      "why": "A card gateway, PayPal or Shop Pay button can fail quietly after an update. Shoppers who pick that method reach the last step and cannot pay.",
+      "watch": {
+        "metric": "checkout completion rate by payment method, 7 days",
+        "unit": "percent",
+        "source": "Shopify orders and checkouts"
+      },
+      "drives": {
+        "metric": "checkout to order rate",
+        "unit": "percent"
+      },
+      "business": "revenue",
+      "now_after": "Example: Now Apple Pay completes 41% of attempts against 78% for cards. After: all methods within 5 points of each other, tested each week with a real order.",
+      "score": {
+        "money": 5,
+        "satisfaction": 4,
+        "speed": 5,
+        "ease": 4
+      },
+      "who_today": "developer or founder, only at launch"
+    },
+    {
+      "rank": 3,
+      "job": "Catch what broke after a theme, app or platform change before shoppers do",
+      "why": "A new app or theme edit can break add to cart, the cart drawer or a discount code. Sales drop for days while everyone blames the ads.",
+      "watch": {
+        "metric": "add to cart rate and checkout start rate, day after each change against the 14 day average",
+        "unit": "percent",
+        "source": "GA4"
+      },
+      "drives": {
+        "metric": "conversion rate",
+        "unit": "percent"
+      },
+      "business": "revenue",
+      "now_after": "Example: Now a discount code broke for 4 days after an app update. After: the drop is flagged the next morning and the change rolled back the same day.",
+      "score": {
+        "money": 5,
+        "satisfaction": 4,
+        "speed": 5,
+        "ease": 3
+      },
+      "who_today": "developer, when told something is wrong"
+    },
+    {
+      "rank": 4,
+      "job": "Keep checkout free of settings that cost sales",
+      "why": "Forced account creation, extra form fields and missing express wallets make shoppers quit at the last step. These are settings, not redesigns, so the fix is fast.",
+      "watch": {
+        "metric": "checkout to order rate, 30 days",
+        "unit": "percent",
+        "source": "Shopify checkouts"
+      },
+      "drives": {
+        "metric": "conversion rate",
+        "unit": "percent"
+      },
+      "business": "revenue",
+      "now_after": "Example: Now checkout asks for 11 fields and forces an account. After: guest checkout on, 7 fields, express wallets first; completion up from 52% to 58%.",
+      "score": {
+        "money": 5,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 4
+      },
+      "who_today": "developer or agency at setup, then nobody"
+    },
+    {
+      "rank": 5,
+      "job": "Keep stock counts true so we never sell what we do not have",
+      "why": "When the store shows stock the warehouse does not have, orders get cancelled and refunded. The customer is let down and often leaves a bad review.",
+      "watch": {
+        "metric": "orders cancelled for no stock, share of orders, 30 days",
+        "unit": "percent",
+        "source": "Shopify orders and inventory"
+      },
+      "drives": {
+        "metric": "refunds and 1 star reviews that mention stock",
+        "unit": "count"
+      },
+      "business": "customer satisfaction",
+      "now_after": "Example: Now 2.4% of orders are cancelled for no stock. After: under 0.5%, with a weekly count check against the warehouse.",
+      "score": {
+        "money": 4,
+        "satisfaction": 5,
+        "speed": 4,
+        "ease": 3
+      },
+      "who_today": "operations lead, in a spreadsheet"
+    },
+    {
+      "rank": 6,
+      "job": "Find broken links and dead pages before shoppers land on them",
+      "why": "A broken link in the menu or an ad sending traffic to a deleted product wastes the visit. The shopper bounces and the ad money is gone.",
+      "watch": {
+        "metric": "sessions that land on a page not found, share of sessions, 30 days",
+        "unit": "percent",
+        "source": "GA4 and Search Console"
+      },
+      "drives": {
+        "metric": "bounce rate on entry pages",
+        "unit": "percent"
+      },
+      "business": "revenue",
+      "now_after": "Example: Now 1.8% of sessions hit a dead page, 3 links from the main menu. After: under 0.2%, with a weekly link sweep.",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 5,
+        "ease": 5
+      },
+      "who_today": "nobody"
+    },
+    {
+      "rank": 7,
+      "job": "Cut cash on delivery orders that come back unpaid (market option, reads unavailable for US stores)",
+      "why": "In markets like India, many cash on delivery orders are refused at the door. The brand pays shipping both ways and earns nothing.",
+      "watch": {
+        "metric": "return to origin rate on cash on delivery orders, 30 days",
+        "unit": "percent",
+        "source": "Shopify orders with carrier status"
+      },
+      "drives": {
+        "metric": "shipping cost lost per 100 orders",
+        "unit": "currency"
+      },
+      "business": "gross profit",
+      "now_after": "Example: Now 24% of COD orders come back. After: 15% within 60 days, with order confirmation and pincode rules.",
+      "score": {
+        "money": 5,
+        "satisfaction": 2,
+        "speed": 4,
+        "ease": 3
+      },
+      "who_today": "operations lead or a COD tool"
+    },
+    {
+      "rank": 8,
+      "job": "Prove every launch step with a real test, not a ticked box",
+      "why": "A checklist that says 'payments done' means nothing until a real order goes through and a real email arrives. Launch mistakes cost the first weeks of paid traffic.",
+      "watch": {
+        "metric": "launch steps verified by a real customer action, share of all steps",
+        "unit": "percent",
+        "source": "Shopify test orders and the launch checklist"
+      },
+      "drives": {
+        "metric": "checkout completion rate in the first 14 days",
+        "unit": "percent"
+      },
+      "business": "revenue",
+      "now_after": "Example: Now 30 of 42 steps are ticked, 12 of them proven. After: 42 of 42 proven with a real order, refund and email before the password comes off.",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 3
+      },
+      "who_today": "founder or build agency"
+    },
+    {
+      "rank": 9,
+      "job": "Stop orders shipping to addresses that will not deliver",
+      "why": "A typo in the address means a lost parcel, a reship and an angry customer. Checking the address at checkout is cheaper than paying twice.",
+      "watch": {
+        "metric": "orders returned to sender by the carrier, share of orders, 30 days",
+        "unit": "percent",
+        "source": "Shopify fulfillment status"
+      },
+      "drives": {
+        "metric": "reship and lost order cost per month",
+        "unit": "currency"
+      },
+      "business": "gross profit",
+      "now_after": "Example: Now 1.6% of parcels come back to sender. After: 0.6% with address checks at checkout.",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 4
+      },
+      "who_today": "customer service, after the fact"
+    },
+    {
+      "rank": 10,
+      "job": "Keep shipping and tax rates right in every region we sell to",
+      "why": "A shipping rate set too low loses money on every order. A tax set wrong becomes a bill later.",
+      "watch": {
+        "metric": "orders where shipping charged is below the label cost, share, 30 days",
+        "unit": "percent",
+        "source": "Shopify orders and shipping labels"
+      },
+      "drives": {
+        "metric": "shipping margin per order",
+        "unit": "currency"
+      },
+      "business": "gross profit",
+      "now_after": "Example: Now 19% of orders charge less for shipping than the label costs. After: under 5% after rates are reset by zone and weight.",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 3
+      },
+      "who_today": "founder or bookkeeper, once at setup"
+    },
+    {
+      "rank": 11,
+      "job": "Keep payouts landing in the right account on time",
+      "why": "A payout held for a verification problem or a wrong bank detail can freeze cash for weeks. Stock and ads still need paying.",
+      "watch": {
+        "metric": "payouts held or failed, count, 30 days",
+        "unit": "count",
+        "source": "Shopify Payments payouts"
+      },
+      "drives": {
+        "metric": "days of cash in the bank",
+        "unit": "days"
+      },
+      "business": "cash",
+      "now_after": "Example: Now 1 payout of $18,000 was held for 9 days over a missing document. After: 0 holds; documents checked each quarter.",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 5,
+        "ease": 4
+      },
+      "who_today": "founder or bookkeeper"
+    },
+    {
+      "rank": 12,
+      "job": "Keep staff and agency access safe",
+      "why": "Old staff accounts, shared logins and no 2 step login are how stores get taken over. One stolen login can change payouts or prices.",
+      "watch": {
+        "metric": "staff and collaborator accounts without 2 step login or unused for 90 days, count",
+        "unit": "count",
+        "source": "Shopify admin staff list"
+      },
+      "drives": {
+        "metric": "store access incidents",
+        "unit": "count"
+      },
+      "business": "risk",
+      "now_after": "Example: Now 6 accounts lack 2 step login and 3 past freelancers still have access. After: 0 and 0, checked each month.",
+      "score": {
+        "money": 2,
+        "satisfaction": 4,
+        "speed": 5,
+        "ease": 5
+      },
+      "who_today": "founder, rarely"
+    },
+    {
+      "rank": 13,
+      "job": "Get the store ready so it holds up on the biggest sale days",
+      "why": "Black Friday can bring 5 to 10 times normal traffic. A slow or failing checkout on that day loses the best sales of the year.",
+      "watch": {
+        "metric": "checkout completion rate during peak hours against a normal day",
+        "unit": "percent",
+        "source": "Shopify checkouts"
+      },
+      "drives": {
+        "metric": "peak day revenue",
+        "unit": "currency"
+      },
+      "business": "revenue",
+      "now_after": "Example: Now last year's peak day checkout completion fell from 55% to 38% for 2 hours. After: under 5 points of drop, with a change freeze and a tested fallback.",
+      "score": {
+        "money": 5,
+        "satisfaction": 4,
+        "speed": 2,
+        "ease": 2
+      },
+      "who_today": "developer or agency, if anyone"
+    },
+    {
+      "rank": 14,
+      "job": "Show me all reversed orders in one place: returns, chargebacks and parcels sent back",
+      "why": "Money leaks out through three doors after the sale. Seeing them together shows which door is costing most this month.",
+      "watch": {
+        "metric": "reversed orders (returns, return to sender, chargebacks), share of orders, 30 days",
+        "unit": "percent",
+        "source": "Shopify orders, returns and payments"
+      },
+      "drives": {
+        "metric": "net revenue after reversals",
+        "unit": "currency"
+      },
+      "business": "gross profit",
+      "now_after": "Example: Now 9.1% of orders reverse and no one sees the total. After: the total tracked weekly; the biggest leg named and cut to 7% in 90 days.",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 3
+      },
+      "who_today": "bookkeeper at month end"
+    },
+    {
+      "rank": 15,
+      "job": "Make order and shipping emails arrive every time",
+      "why": "When the confirmation or tracking email does not arrive, the customer writes in. Each 'where is my order' ticket costs time and some turn into refunds.",
+      "watch": {
+        "metric": "'where is my order' tickets per 100 orders, 30 days",
+        "unit": "count",
+        "source": "Gorgias"
+      },
+      "drives": {
+        "metric": "first reply time and customer rating",
+        "unit": "hours"
+      },
+      "business": "customer satisfaction",
+      "now_after": "Example: Now 6 of every 100 orders create a 'where is my order' ticket. After: 3, once every notification is tested after each change.",
+      "score": {
+        "money": 2,
+        "satisfaction": 5,
+        "speed": 4,
+        "ease": 4
+      },
+      "who_today": "customer service lead"
+    },
+    {
+      "rank": 16,
+      "job": "Keep policies real, current and linked at checkout",
+      "why": "Placeholder or copied policies confuse shoppers and weaken the brand in a dispute. The checkout terms box must point to the real terms.",
+      "watch": {
+        "metric": "policy pages missing, unedited or not linked at checkout, count",
+        "unit": "count",
+        "source": "Shopify policies and site check"
+      },
+      "drives": {
+        "metric": "tickets asking about returns or shipping terms per 100 orders",
+        "unit": "count"
+      },
+      "business": "risk",
+      "now_after": "Example: Now the returns page still has template text and checkout links to an old terms page. After: all 4 policies current and linked.",
+      "score": {
+        "money": 2,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 5
+      },
+      "who_today": "founder, once at launch"
+    },
+    {
+      "rank": 17,
+      "job": "Keep chargebacks low and fight the ones we can win",
+      "why": "Each chargeback costs the order, a fee and a mark against the account. Too many and the payment provider can hold payouts.",
+      "watch": {
+        "metric": "chargeback rate, share of paid orders, 30 and 90 days",
+        "unit": "percent",
+        "source": "Shopify Payments disputes"
+      },
+      "drives": {
+        "metric": "chargeback losses and fees",
+        "unit": "currency"
+      },
+      "business": "gross profit",
+      "now_after": "Example: Now 0.7% of orders end in a chargeback and none are answered. After: under 0.4%, with every dispute answered with proof of delivery.",
+      "score": {
+        "money": 4,
+        "satisfaction": 2,
+        "speed": 3,
+        "ease": 3
+      },
+      "who_today": "founder, or nobody"
+    },
+    {
+      "rank": 18,
+      "job": "Stop fake orders, bots and card testing",
+      "why": "Card testers and fraud orders bring chargebacks, fees and wasted stock. Some bots also fill carts and skew the numbers.",
+      "watch": {
+        "metric": "orders flagged high fraud risk, share of orders, 30 days",
+        "unit": "percent",
+        "source": "Shopify fraud analysis"
+      },
+      "drives": {
+        "metric": "chargebacks and fraud losses",
+        "unit": "currency"
+      },
+      "business": "gross profit",
+      "now_after": "Example: Now 1.1% of orders are high risk and all ship. After: high risk orders held for review; fraud losses down by half in 60 days.",
+      "score": {
+        "money": 3,
+        "satisfaction": 2,
+        "speed": 4,
+        "ease": 4
+      },
+      "who_today": "founder or a fraud app"
+    },
+    {
+      "rank": 19,
+      "job": "Cut apps and scripts we pay for that earn nothing back",
+      "why": "Many stores run 20 or more apps, some unused for months. Each one costs a monthly fee and slows the page.",
+      "watch": {
+        "metric": "monthly app fees with no link to sales, 90 days",
+        "unit": "currency",
+        "source": "Shopify billing and app list"
+      },
+      "drives": {
+        "metric": "software cost per order",
+        "unit": "currency"
+      },
+      "business": "gross profit",
+      "now_after": "Example: Now $640 a month goes to 7 apps with no sales tied to them. After: 5 removed, $470 a month saved.",
+      "score": {
+        "money": 3,
+        "satisfaction": 2,
+        "speed": 4,
+        "ease": 4
+      },
+      "who_today": "founder, at renewal time"
+    },
+    {
+      "rank": 20,
+      "job": "Keep every product complete: price, weight, cost, SKU and images",
+      "why": "A product with no cost breaks the margin report. A product with no weight breaks shipping rates. Gaps pile up as the catalog grows.",
+      "watch": {
+        "metric": "active products missing cost, weight, SKU or image, count",
+        "unit": "count",
+        "source": "Shopify products"
+      },
+      "drives": {
+        "metric": "orders where margin or shipping cost cannot be computed",
+        "unit": "percent"
+      },
+      "business": "gross profit",
+      "now_after": "Example: Now 38 of 120 products have no cost and 12 no weight. After: 0 missing, checked each week.",
+      "score": {
+        "money": 3,
+        "satisfaction": 2,
+        "speed": 4,
+        "ease": 4
+      },
+      "who_today": "merchandiser, now and then"
+    },
+    {
+      "rank": 21,
+      "job": "Only test changes on a copy of the theme, never on the live store",
+      "why": "Editing the live theme means shoppers see every mistake as it happens. A copy and a backup make every change safe to undo.",
+      "watch": {
+        "metric": "live theme edits made without a copy or backup, count, 30 days (proxy: theme change history)",
+        "unit": "count",
+        "source": "Shopify theme history"
+      },
+      "drives": {
+        "metric": "hours of broken storefront after a change",
+        "unit": "hours"
+      },
+      "business": "risk",
+      "now_after": "Example: Now 5 live edits last month, 1 broke the header on phones for a day. After: 0 live edits; every change made on a copy first.",
+      "score": {
+        "money": 2,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 5
+      },
+      "who_today": "developer, if they follow the habit"
+    },
+    {
+      "rank": 22,
+      "job": "Make tracking scripts wait for consent where the law says so",
+      "why": "In states like California, tags that fire before consent can bring fines and lawsuits. A banner alone is not enough if scripts load first.",
+      "watch": {
+        "metric": "tags firing before consent on test page loads, share, per region (proxy: GA4 consent mode status)",
+        "unit": "percent",
+        "source": "GA4 consent mode and a site check"
+      },
+      "drives": {
+        "metric": "privacy complaints and legal notices",
+        "unit": "count"
+      },
+      "business": "risk",
+      "now_after": "Example: Now 4 of 12 tags fire before consent. After: 0 of 12 on every test load.",
+      "score": {
+        "money": 2,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 4
+      },
+      "who_today": "nobody, or a consent app"
+    },
+    {
+      "rank": 23,
+      "job": "Make sure a shopper who uses a keyboard or screen reader can buy",
+      "why": "Stores that block disabled shoppers lose those sales and face demand letters in the US. Most blocks are small fixes on a few templates.",
+      "watch": {
+        "metric": "critical accessibility errors on the 5 key templates, count",
+        "unit": "count",
+        "source": "PageSpeed accessibility audit"
+      },
+      "drives": {
+        "metric": "accessibility demand letters and complaints",
+        "unit": "count"
+      },
+      "business": "risk",
+      "now_after": "Example: Now 17 critical errors, most on the variant picker and cart drawer. After: 0 on the 5 key templates.",
+      "score": {
+        "money": 2,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 3
+      },
+      "who_today": "nobody, or a developer after a letter"
+    },
+    {
+      "rank": 24,
+      "job": "Make product pages readable by Google and AI answers",
+      "why": "Without clean product data on the page, search and AI answers cannot show price, stock and stars. The listing looks weaker than a rival's.",
+      "watch": {
+        "metric": "product pages with valid product markup, share of product pages",
+        "unit": "percent",
+        "source": "Search Console enhancement report"
+      },
+      "drives": {
+        "metric": "organic clicks to product pages, 28 days",
+        "unit": "count"
+      },
+      "business": "revenue",
+      "now_after": "Example: Now 55% of product pages have valid markup and 40 have errors. After: 98% valid.",
+      "score": {
+        "money": 3,
+        "satisfaction": 2,
+        "speed": 2,
+        "ease": 4
+      },
+      "who_today": "SEO freelancer or theme default"
+    },
+    {
+      "rank": 25,
+      "job": "Remove leftover code from apps we already uninstalled",
+      "why": "Uninstalled apps often leave scripts behind that still load on every page. The store pays in speed for something it no longer uses.",
+      "watch": {
+        "metric": "scripts on key pages from apps no longer installed, count",
+        "unit": "count",
+        "source": "PageSpeed request list against the Shopify app list"
+      },
+      "drives": {
+        "metric": "page weight on key templates",
+        "unit": "KB"
+      },
+      "business": "revenue",
+      "now_after": "Example: Now 4 old app scripts still load on every page. After: 0.",
+      "score": {
+        "money": 2,
+        "satisfaction": 2,
+        "speed": 4,
+        "ease": 4
+      },
+      "who_today": "developer, if asked"
+    }
+  ]
+}
