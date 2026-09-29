@@ -1,0 +1,1171 @@
+{
+  "screen": "04-offers-pricing",
+  "title": "Offers and pricing",
+  "top_jobs": [
+    {
+      "id": "T1",
+      "job": "When someone on the team or at the agency wants to run a discount or change an offer, help me see what it costs in gross profit, how many extra orders it needs, the new most we can pay per purchase, and whether the ad, page and cart all show the same offer, so I do not give away the month's profit",
+      "metric": "gross profit per order during offers against normal weeks",
+      "from_v2": [
+        1,
+        9,
+        11,
+        14,
+        17
+      ]
+    },
+    {
+      "id": "T2",
+      "job": "When sales only come during promotions and every visitor gets a code, help me see how much revenue depends on discounts and which discounts go to buyers who would have bought anyway, so I stop training buyers to wait",
+      "metric": "share of revenue on a discount code, new vs returning",
+      "from_v2": [
+        2,
+        8,
+        13,
+        15,
+        26
+      ]
+    },
+    {
+      "id": "T3",
+      "job": "When order size is stuck and shoppers hesitate, help me raise order value and remove the biggest doubt with thresholds, bundles, gifts and guarantees that still clear the margin floor, so each order earns more without a deeper discount",
+      "metric": "gross profit per order and average order value",
+      "from_v2": [
+        5,
+        7,
+        21,
+        6,
+        12
+      ]
+    },
+    {
+      "id": "T4",
+      "job": "When a tariff, freight or supplier cost rise lands, or a new product needs a price, help me choose between raising price, changing the pack or absorbing it, using real costs and the rival range, so margin holds without losing buyers",
+      "metric": "gross margin percent on the top 10 SKUs",
+      "from_v2": [
+        4,
+        10,
+        18,
+        32
+      ]
+    },
+    {
+      "id": "T5",
+      "job": "When Black Friday or a rival's big sale is coming, or an offer has gone stale, help me plan an answer that adds profit and does not just pull orders forward or match their price, so the season lifts the year",
+      "metric": "season gross profit against normal weeks, counting the dip after",
+      "from_v2": [
+        3,
+        16,
+        29,
+        23
+      ]
+    }
+  ],
+  "jobs": [
+    {
+      "id": "04-01",
+      "top": "T1",
+      "job": "Cost every proposed discount before it runs: gross profit per order at that depth, extra orders needed to break even, and a yes or no against the margin floor",
+      "trigger": "every time someone proposes a discount, before it goes live",
+      "enablers": [
+        "offer-math",
+        "margin-view"
+      ],
+      "inputs": [
+        {
+          "need": "margin per SKU",
+          "from": "margin-view",
+          "status": "enabler"
+        },
+        {
+          "need": "baseline orders per day for the products in the offer",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "the proposal: products, depth, dates, channels",
+          "from": "the person asking",
+          "status": "founder"
+        },
+        {
+          "need": "margin floor and deepest discount allowed",
+          "from": "offers and finance shelves",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Take the products, depth and dates from the proposal",
+        "Compute gross profit per order at full price and at the offer",
+        "Compute the extra orders needed to make the same gross profit",
+        "Compare with lift from past offers of the same depth",
+        "Write yes, no or change, with the numbers, and log it"
+      ],
+      "output": "a 1 page offer cost sheet with break even orders and a yes, no or change",
+      "next": "feeds 04-03 (new max cost per purchase) and 04-04 (sale review)",
+      "watch": {
+        "metric": "gross profit per order during offers",
+        "window": "per offer",
+        "source": "Shopify"
+      },
+      "drives": "gross profit kept per month",
+      "business": "gross profit",
+      "score": {
+        "money": 5,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "04-02",
+      "top": "T1",
+      "job": "Write discount rules the founder signs: deepest discount per product, a never discount list, how often, who may make codes, and check every live code against them each week",
+      "trigger": "once, then every Monday",
+      "enablers": [
+        "code-watch"
+      ],
+      "inputs": [
+        {
+          "need": "all live codes with creator and depth",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "founder's limits",
+          "from": "founder interview",
+          "status": "founder"
+        },
+        {
+          "need": "rival discount habits",
+          "from": "competitors shelf",
+          "status": "brain"
+        },
+        {
+          "need": "rule ideas for discount policy",
+          "from": "idea bank ideas/v1 03-OFF",
+          "status": "have"
+        }
+      ],
+      "steps": [
+        "Draft rules from margins, rival habits and the founder's limits",
+        "Founder signs and the rules go on the offers shelf",
+        "List live codes and check each against the rules",
+        "Flag breaking codes with who made them and margin given away",
+        "Turn off or fix breaking codes with the founder's yes"
+      ],
+      "output": "signed discount rules and a weekly list of codes that break them",
+      "next": "feeds 04-06 (leaks) and 14 email offers",
+      "watch": {
+        "metric": "codes breaking the rules",
+        "window": "7 day",
+        "source": "Shopify"
+      },
+      "drives": "margin given away",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 5,
+        "speed": 4,
+        "ease": 5
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "04-03",
+      "top": "T1",
+      "job": "Send the media buyer the new most we can pay per purchase, per product, the day an offer or price changes",
+      "trigger": "the day any price, offer or cost changes",
+      "enablers": [
+        "offer-math",
+        "margin-view"
+      ],
+      "inputs": [
+        {
+          "need": "new price or offer",
+          "from": "offers shelf",
+          "status": "brain"
+        },
+        {
+          "need": "margin per SKU",
+          "from": "margin-view",
+          "status": "enabler"
+        },
+        {
+          "need": "180 day value per new customer",
+          "from": "buyer-cohorts",
+          "status": "enabler"
+        }
+      ],
+      "steps": [
+        "Recompute gross profit per first order at the new price",
+        "Add expected repeat profit where the founder allows it",
+        "Set the most we can pay per purchase, first order and with repeat",
+        "Send both numbers to the media buyer and the ad screens",
+        "Log the change date"
+      ],
+      "output": "a cost per purchase target per product with the date it changed",
+      "next": "feeds 11 paid social and 12 Google ads targets",
+      "watch": {
+        "metric": "ads judged against the current target",
+        "window": "7 day",
+        "source": "ad platforms"
+      },
+      "drives": "contribution after ads",
+      "business": "contribution margin",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 5,
+        "ease": 5
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "04-04",
+      "top": "T1",
+      "job": "Review every sale 3 weeks after it ends: the 2 weeks before, the sale and the 3 weeks after against a normal baseline, and record whether to run it again",
+      "trigger": "3 weeks after each sale ends",
+      "enablers": [
+        "offer-math",
+        "win-loss-ledger"
+      ],
+      "inputs": [
+        {
+          "need": "orders and gross profit by day, 8 weeks around the sale",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "ad spend by day",
+          "from": "Meta Ads and Google Ads",
+          "status": "connected"
+        },
+        {
+          "need": "the offer's cost sheet",
+          "from": "offer-math",
+          "status": "enabler"
+        },
+        {
+          "need": "offer archive",
+          "from": "offers shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Set a baseline from normal weeks",
+        "Sum gross profit above baseline in the sale and below baseline before and after",
+        "Split new vs returning buyers in the sale",
+        "Write the true lift and whether to run it again",
+        "File in the offer archive and the ledger"
+      ],
+      "output": "a sale review with true lift, new buyer share and a run again call",
+      "next": "feeds 04-19 (big sale plan)",
+      "watch": {
+        "metric": "gross profit per sale against baseline",
+        "window": "per sale",
+        "source": "Shopify"
+      },
+      "drives": "gross profit from sales",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "04-05",
+      "top": "T2",
+      "job": "Show promo dependence each month for 24 months: share of revenue and orders on a code, split new vs returning",
+      "trigger": "monthly",
+      "enablers": [
+        "code-watch",
+        "buyer-cohorts"
+      ],
+      "inputs": [
+        {
+          "need": "orders with codes and discounts, 24 months",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "new vs returning flag",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "known sale dates",
+          "from": "calendar shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Sum revenue on a code and at full price per month",
+        "Split each by new and returning buyers",
+        "Plot share on a code over 24 months",
+        "Mark months where full price sales fell as code sales rose",
+        "Write the trend in 1 line"
+      ],
+      "output": "a 24 month chart of discount share, new vs returning",
+      "next": "feeds 04-02 (rules) and 04-09 (loyal vs new offers)",
+      "watch": {
+        "metric": "share of revenue on a code",
+        "window": "30 day",
+        "source": "Shopify"
+      },
+      "drives": "full price revenue",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 2,
+        "ease": 5
+      },
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "04-06",
+      "top": "T2",
+      "job": "Find codes leaked to coupon sites and browser extensions from the referrer on each order, shut them and swap in unique codes",
+      "trigger": "every Monday",
+      "enablers": [
+        "code-watch"
+      ],
+      "inputs": [
+        {
+          "need": "orders with code, referrer and UTM",
+          "from": "Shopify and GA4",
+          "status": "connected"
+        },
+        {
+          "need": "list of coupon sites and extensions",
+          "from": "a public list, kept in a Google Sheet",
+          "status": "setup"
+        },
+        {
+          "need": "which codes are meant to be public",
+          "from": "offers shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "List codes used by orders from coupon sites or with no source",
+        "Mark codes not meant to be public",
+        "Sum discount given away on those orders",
+        "Turn them off and issue unique codes for their true purpose",
+        "Check next week for new leaks"
+      ],
+      "output": "a leak list with dollars given away and codes swapped",
+      "next": "feeds 04-05 (dependence falls)",
+      "watch": {
+        "metric": "discount dollars on leaked codes",
+        "window": "7 day",
+        "source": "Shopify"
+      },
+      "drives": "margin given away",
+      "business": "gross profit",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 5,
+        "ease": 5
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "04-07",
+      "top": "T2",
+      "job": "Test the welcome pop-up offer: hold back 20 percent of new visitors from the discount for 4 weeks and compare conversion and gross profit per visitor",
+      "trigger": "once, then each year",
+      "enablers": [
+        "offer-math",
+        "win-loss-ledger"
+      ],
+      "inputs": [
+        {
+          "need": "pop-up tool with a hold back option",
+          "from": "email platform",
+          "status": "setup"
+        },
+        {
+          "need": "orders and margin per visitor group",
+          "from": "Shopify and GA4",
+          "status": "connected"
+        },
+        {
+          "need": "sample size rule",
+          "from": "idea bank ideas/v1 09-CRO",
+          "status": "have"
+        }
+      ],
+      "steps": [
+        "Set a 20 percent hold back with no discount, email capture kept",
+        "Run 4 weeks or until the sample size is met",
+        "Compare conversion, order value and gross profit per visitor",
+        "Write keep, cut the depth, or swap for a non cash reward",
+        "Log in the ledger"
+      ],
+      "output": "a pop-up test result with gross profit per visitor for each group",
+      "next": "feeds 14 email welcome flow",
+      "watch": {
+        "metric": "gross profit per new visitor",
+        "window": "28 day",
+        "source": "Shopify and GA4"
+      },
+      "drives": "gross profit from new visitors",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "weeks"
+    },
+    {
+      "id": "04-08",
+      "top": "T2",
+      "job": "Test the first cart reminder with and without a discount, and keep the discount only if it adds gross profit",
+      "trigger": "once, then twice a year",
+      "enablers": [
+        "offer-math",
+        "win-loss-ledger"
+      ],
+      "inputs": [
+        {
+          "need": "cart and checkout reminder flows",
+          "from": "email platform",
+          "status": "setup"
+        },
+        {
+          "need": "recovered orders and margin",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "current reminder offer",
+          "from": "email shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Split the first reminder: no discount vs current discount",
+        "Keep later reminders the same",
+        "Run 4 weeks",
+        "Compare recovered orders and gross profit per cart",
+        "Keep the winner and log it"
+      ],
+      "output": "a reminder test result and the kept version",
+      "next": "feeds 14 email flows",
+      "watch": {
+        "metric": "gross profit per abandoned cart",
+        "window": "28 day",
+        "source": "Shopify"
+      },
+      "drives": "recovered gross profit",
+      "business": "gross profit",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "weeks"
+    },
+    {
+      "id": "04-09",
+      "top": "T2",
+      "job": "Stop giving loyal buyers new customer codes: count returning buyers using welcome codes, and replace their discount with early access or a gift",
+      "trigger": "quarterly",
+      "enablers": [
+        "buyer-cohorts",
+        "vip-list",
+        "code-watch"
+      ],
+      "inputs": [
+        {
+          "need": "orders with codes and new vs returning flag",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "VIP list",
+          "from": "vip-list",
+          "status": "enabler"
+        },
+        {
+          "need": "allowed perks",
+          "from": "offers shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Count returning buyers who used welcome or new customer codes",
+        "Sum the discount given to them",
+        "Limit welcome codes to first orders",
+        "Offer returning buyers early access or a gift instead",
+        "Track repeat rate for 90 days"
+      ],
+      "output": "a count of discount to loyal buyers and a new loyal offer",
+      "next": "feeds 14 email and 02-18 (VIP letters)",
+      "watch": {
+        "metric": "discount dollars to returning buyers",
+        "window": "90 day",
+        "source": "Shopify"
+      },
+      "drives": "gross profit per repeat order",
+      "business": "gross profit",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 2,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "04-10",
+      "top": "T3",
+      "job": "Set the free shipping line from the order value spread and shipping cost per order, pick the line that lifts order size and pays for itself, and test it",
+      "trigger": "once, then when shipping rates change",
+      "enablers": [
+        "offer-math",
+        "margin-view"
+      ],
+      "inputs": [
+        {
+          "need": "order values, 90 days",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "shipping cost per order",
+          "from": "carrier invoices or Shopify",
+          "status": "setup"
+        },
+        {
+          "need": "rival free shipping lines",
+          "from": "competitors shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Plot the order value spread and find the peaks",
+        "Test 3 lines 15 to 30 percent above the median order",
+        "Cost each: shipping paid vs extra gross profit from buyers moving up",
+        "Pick the best and run it for 4 weeks",
+        "Compare order value and gross profit per order"
+      ],
+      "output": "a chosen free shipping line with a 4 week result",
+      "next": "feeds 07 cart messages",
+      "watch": {
+        "metric": "gross profit per order",
+        "window": "28 day",
+        "source": "Shopify"
+      },
+      "drives": "gross profit per order",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "04-11",
+      "top": "T3",
+      "job": "Build 3 bundles from products bought together, price each to keep gross profit per order above the floor, and launch on the top product pages",
+      "trigger": "twice a year",
+      "enablers": [
+        "offer-math",
+        "margin-view"
+      ],
+      "inputs": [
+        {
+          "need": "baskets with 2 or more products",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "margin per SKU",
+          "from": "margin-view",
+          "status": "enabler"
+        },
+        {
+          "need": "pack and price per unit issues from buyers",
+          "from": "customers shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Find the top pairs and sets in baskets",
+        "Pick 3 bundles that fit a buyer job",
+        "Price each so gross profit per order beats the average",
+        "Add to the top product pages",
+        "Read attach rate and order value for 4 weeks"
+      ],
+      "output": "3 live bundles with prices and a 4 week read",
+      "next": "feeds 07 product pages and 14 email",
+      "watch": {
+        "metric": "bundle attach rate and order value",
+        "window": "28 day",
+        "source": "Shopify"
+      },
+      "drives": "gross profit per order",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "04-12",
+      "top": "T3",
+      "job": "Test a free gift at an order value tier against 10 percent off, and keep the one with more gross profit per visitor",
+      "trigger": "once, then each season",
+      "enablers": [
+        "offer-math",
+        "win-loss-ledger"
+      ],
+      "inputs": [
+        {
+          "need": "gift options with cost",
+          "from": "operations shelf",
+          "status": "brain"
+        },
+        {
+          "need": "order values and margin",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "a split test tool or a split by week",
+          "from": "store app or schedule",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "Pick a tier just above the most common order value",
+        "Pick a gift that costs less than the discount it replaces",
+        "Run gift vs 10 percent off for 4 weeks",
+        "Compare conversion, order value and gross profit per visitor",
+        "Keep the winner and log it"
+      ],
+      "output": "a gift vs discount result with the kept offer",
+      "next": "feeds 04-19 (big sale plan)",
+      "watch": {
+        "metric": "gross profit per visitor",
+        "window": "28 day",
+        "source": "Shopify and GA4"
+      },
+      "drives": "gross profit per order",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "weeks"
+    },
+    {
+      "id": "04-13",
+      "top": "T3",
+      "job": "Build an offer around the biggest doubt from the objection ladder, such as a fit guarantee or a trial, and cost it at the expected claim rate",
+      "trigger": "after each objection ladder update",
+      "enablers": [
+        "offer-math",
+        "review-miner"
+      ],
+      "inputs": [
+        {
+          "need": "top doubt from the objection ladder",
+          "from": "customers shelf",
+          "status": "brain"
+        },
+        {
+          "need": "return and claim rates",
+          "from": "Shopify and returns app",
+          "status": "connected"
+        },
+        {
+          "need": "current guarantee terms",
+          "from": "offers shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pick the doubt that costs the most sales",
+        "Write 2 offers that remove it",
+        "Cost each at the claim rate and at 2 times that rate",
+        "Put the best on the product page and in ads",
+        "Read conversion and claims for 6 weeks"
+      ],
+      "output": "a costed doubt offer, live, with a 6 week read",
+      "next": "feeds 07 product pages and 10 copy",
+      "watch": {
+        "metric": "conversion rate on the product",
+        "window": "42 day",
+        "source": "GA4 and Shopify"
+      },
+      "drives": "conversion without deeper discounts",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 3
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "04-14",
+      "top": "T1",
+      "job": "Check every week that each live ad's offer matches its landing page, cart and emails, and fix mismatches before buyers see them",
+      "trigger": "every Monday and before any offer launch",
+      "enablers": [
+        "congruence-check"
+      ],
+      "inputs": [
+        {
+          "need": "live ads with copy and URLs",
+          "from": "Meta Ads and Google Ads",
+          "status": "connected"
+        },
+        {
+          "need": "page, cart and checkout text",
+          "from": "site shelf",
+          "status": "brain"
+        },
+        {
+          "need": "live email offers",
+          "from": "email platform",
+          "status": "setup"
+        },
+        {
+          "need": "live offers and codes",
+          "from": "offers shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "List every offer claim in live ads",
+        "Open each landing page and cart and read the offer shown",
+        "Check emails sent this week for the same offer",
+        "Flag mismatches with spend on the ad",
+        "Send fixes to the owner the same day"
+      ],
+      "output": "a weekly offer match list with mismatches fixed",
+      "next": "feeds 07 landing pages and 11 paid social",
+      "watch": {
+        "metric": "ads with offer mismatches",
+        "window": "7 day",
+        "source": "congruence-check log"
+      },
+      "drives": "trust at checkout",
+      "business": "customer satisfaction",
+      "score": {
+        "money": 3,
+        "satisfaction": 5,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "04-15",
+      "top": "T4",
+      "job": "When a cost rise lands, compare raising price, changing the pack and absorbing it for each SKU hit, in gross profit per month at 3 levels of buyer loss",
+      "trigger": "the week a cost rise lands",
+      "enablers": [
+        "offer-math",
+        "margin-view",
+        "price-bands"
+      ],
+      "inputs": [
+        {
+          "need": "new landed cost per SKU",
+          "from": "market-pulse",
+          "status": "enabler"
+        },
+        {
+          "need": "sales and margin per SKU",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "price band position",
+          "from": "price-bands",
+          "status": "enabler"
+        },
+        {
+          "need": "pack options",
+          "from": "operations shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "List SKUs hit and the cost change per unit",
+        "Model 3 options for each: raise price, change pack, absorb",
+        "For each, compute gross profit per month at 0, 5 and 10 percent fewer buyers",
+        "Check each new price against the rival band",
+        "Founder picks; log the reason"
+      ],
+      "output": "an option table per SKU with a founder pick",
+      "next": "feeds 04-16 (price test) and 04-03 (new cost per purchase target)",
+      "watch": {
+        "metric": "gross margin on SKUs hit",
+        "window": "90 day",
+        "source": "Shopify"
+      },
+      "drives": "gross margin",
+      "business": "gross profit",
+      "score": {
+        "money": 5,
+        "satisfaction": 3,
+        "speed": 2,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "04-16",
+      "top": "T4",
+      "job": "Test a price rise of 5 to 10 percent on 1 product for 4 weeks and read conversion and gross profit per visitor",
+      "trigger": "once a quarter, on 1 product",
+      "enablers": [
+        "win-loss-ledger",
+        "price-bands"
+      ],
+      "inputs": [
+        {
+          "need": "product page traffic and conversion",
+          "from": "GA4 and Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "price test tool or a before and after plan",
+          "from": "store app",
+          "status": "setup"
+        },
+        {
+          "need": "price band position",
+          "from": "price-bands",
+          "status": "enabler"
+        }
+      ],
+      "steps": [
+        "Pick a product with steady traffic and room in its band",
+        "Raise the price on all channels at once",
+        "Run 4 weeks",
+        "Compare conversion and gross profit per visitor with the 4 weeks before",
+        "Keep, roll back, or move to the next product"
+      ],
+      "output": "a price test result and a keep or roll back call",
+      "next": "feeds 25 experiments and 04-15",
+      "watch": {
+        "metric": "gross profit per visitor on the product",
+        "window": "28 day",
+        "source": "Shopify and GA4"
+      },
+      "drives": "gross profit per order",
+      "business": "gross profit",
+      "score": {
+        "money": 5,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "weeks"
+    },
+    {
+      "id": "04-17",
+      "top": "T4",
+      "job": "Price a new product from 3 numbers: landed cost floor, the rival band, and what 100 buyers say is cheap, fair and too much",
+      "trigger": "before each launch",
+      "enablers": [
+        "price-bands",
+        "launch-scorecard",
+        "margin-view"
+      ],
+      "inputs": [
+        {
+          "need": "landed cost and fees",
+          "from": "launch-scorecard",
+          "status": "enabler"
+        },
+        {
+          "need": "rival band",
+          "from": "price-bands",
+          "status": "enabler"
+        },
+        {
+          "need": "a 4 question price survey to 100 buyers",
+          "from": "email platform or Google Form",
+          "status": "setup"
+        },
+        {
+          "need": "target margin",
+          "from": "finance shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Compute the floor price for the target margin",
+        "Read the rival band for the product",
+        "Survey 100 buyers: too cheap, a bargain, getting pricey, too much",
+        "Pick a price in the overlap of all 3",
+        "Set the cost per purchase target at that price"
+      ],
+      "output": "a launch price with the 3 numbers behind it",
+      "next": "feeds 04-03 (cost per purchase target) and 01-17 (90 day review)",
+      "watch": {
+        "metric": "gross margin and conversion in the first 30 days",
+        "window": "30 day",
+        "source": "Shopify"
+      },
+      "drives": "launch margin",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 2,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "04-18",
+      "top": "T5",
+      "job": "When an offer stops working, refresh it in order: new creative, then new copy, then a new wrapper or name, then new length, before any deeper discount",
+      "trigger": "when an offer's conversion falls 20 percent from its first 4 weeks",
+      "enablers": [
+        "offer-math",
+        "variant-stack"
+      ],
+      "inputs": [
+        {
+          "need": "offer results by week",
+          "from": "Shopify",
+          "status": "connected"
+        },
+        {
+          "need": "the offer's ads",
+          "from": "Meta Ads",
+          "status": "connected"
+        },
+        {
+          "need": "offer archive",
+          "from": "offers shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Confirm the drop is the offer, not traffic or stock",
+        "Swap creative first and read 2 weeks",
+        "Then copy, then the name or wrapper, then the end date",
+        "Only then cost a deeper discount",
+        "Log what brought it back"
+      ],
+      "output": "a refreshed offer and a note on which step worked",
+      "next": "feeds 09 creative and 25 experiments",
+      "watch": {
+        "metric": "offer conversion rate",
+        "window": "14 day",
+        "source": "Shopify"
+      },
+      "drives": "gross profit kept",
+      "business": "gross profit",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "04-19",
+      "top": "T5",
+      "job": "Plan the Black Friday offer 8 weeks out: read the last 2 years, cost 3 offer shapes, pick one that adds profit after the dip, and check stock",
+      "trigger": "8 weeks before Black Friday",
+      "enablers": [
+        "offer-math",
+        "win-loss-ledger",
+        "competitor-feed"
+      ],
+      "inputs": [
+        {
+          "need": "last 2 years of sale results",
+          "from": "Shopify and offers shelf",
+          "status": "connected"
+        },
+        {
+          "need": "rival sale calendar and offers",
+          "from": "competitor-feed",
+          "status": "enabler"
+        },
+        {
+          "need": "stock by SKU and lead times",
+          "from": "Shopify and operations shelf",
+          "status": "connected"
+        },
+        {
+          "need": "margin floor",
+          "from": "finance shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Read true lift from the last 2 sales, counting the dip",
+        "Cost 3 shapes: sitewide percent off, gift tiers, bundles",
+        "Pick the shape with the most gross profit above baseline",
+        "Check stock covers the plan and order now if not",
+        "Set dates for creative, emails and page, and put them on the board"
+      ],
+      "output": "a costed sale plan with stock check and dates",
+      "next": "feeds 09 creative, 14 email and 00 Today board",
+      "watch": {
+        "metric": "gross profit in sale weeks against baseline",
+        "window": "sale window",
+        "source": "Shopify"
+      },
+      "drives": "season gross profit",
+      "business": "gross profit",
+      "score": {
+        "money": 5,
+        "satisfaction": 4,
+        "speed": 2,
+        "ease": 3
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "04-20",
+      "top": "T5",
+      "job": "Answer a rival's big sale within 24 hours without matching their price: add a gift, a bundle or a longer guarantee that costs less than their discount",
+      "trigger": "within 24 hours of a rival sale alert",
+      "enablers": [
+        "offer-math",
+        "rival-site-watch"
+      ],
+      "inputs": [
+        {
+          "need": "rival sale alert",
+          "from": "rival-site-watch",
+          "status": "enabler"
+        },
+        {
+          "need": "margin per SKU",
+          "from": "margin-view",
+          "status": "enabler"
+        },
+        {
+          "need": "allowed offers",
+          "from": "offers shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Read which of our products the rival sale touches",
+        "Cost a gift, a bundle and a guarantee against their discount",
+        "Pick the one with the lowest cost per order",
+        "Brief 1 ad and 1 email with the answer",
+        "Read our sales on those products for 7 days"
+      ],
+      "output": "a live value answer with its cost and a 7 day read",
+      "next": "feeds 09 creative and 14 email",
+      "watch": {
+        "metric": "our sales on touched products",
+        "window": "7 day",
+        "source": "Shopify"
+      },
+      "drives": "revenue kept at full price",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "hours"
+    }
+  ],
+  "new_enablers": [
+    {
+      "id": "offer-math",
+      "name": "Offer calculator",
+      "what": "Costs any offer before it runs: gross profit per order at the new price or depth, extra orders needed to break even, the new most we can pay per purchase, and the cost of gifts, free shipping and guarantees at expected claim rates. After it runs, reads true lift against a baseline, counting the weeks before and the dip after.",
+      "inputs": [
+        "margin per order and per SKU",
+        "baseline orders by week",
+        "ad cost per purchase",
+        "claim and return rates"
+      ],
+      "powers": [
+        "break even lift for any discount",
+        "new cost per purchase targets after a price change",
+        "true sale lift with the dip counted",
+        "threshold and bundle pricing"
+      ],
+      "screens": [
+        "04-offers-pricing",
+        "11-paid-social",
+        "14-email-messaging",
+        "21-finance-cash"
+      ],
+      "note": null
+    },
+    {
+      "id": "code-watch",
+      "name": "Discount code watch",
+      "what": "Lists every discount code with who made it, depth, uses, revenue, margin given away, new vs returning buyers, and where the buyers came from. Flags codes that leak to coupon sites and codes that break the discount rules.",
+      "inputs": [
+        "orders with codes and discounts",
+        "referrer and UTM on each order",
+        "customer new or returning",
+        "discount rules from the brain"
+      ],
+      "powers": [
+        "share of revenue on a code",
+        "leaked codes",
+        "codes that break the rules",
+        "margin given away per month"
+      ],
+      "screens": [
+        "04-offers-pricing",
+        "14-email-messaging",
+        "22-measurement"
+      ],
+      "note": null
+    }
+  ]
+}

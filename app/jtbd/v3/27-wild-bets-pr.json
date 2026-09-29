@@ -1,0 +1,1201 @@
+{
+  "screen": "27-wild-bets-pr",
+  "title": "Wild bets and PR",
+  "top_jobs": [
+    {
+      "id": "T1",
+      "job": "When a bold idea gets a yes or a bet has run for weeks, help me set its cost cap, stop rule and read date and read it against a group left out, so a big swing never quietly sinks the quarter",
+      "metric": "spend to date on each live bet against its cap, and share of bets launched with a cap, stop rule, read date and comparison group on file",
+      "from_v2": [
+        1,
+        4,
+        7,
+        8,
+        10,
+        13,
+        21,
+        23,
+        24,
+        27
+      ]
+    },
+    {
+      "id": "T2",
+      "job": "When a creator, ambassador or partner deal is up for a yes or a renewal, help me see the orders, new customers and cost per order it brought next to paid ads, so I renew only the ones that paid",
+      "metric": "orders and new customers from each partner's code or link, 30 days, and cost per order against paid ads",
+      "from_v2": [
+        5,
+        16,
+        20,
+        25
+      ]
+    },
+    {
+      "id": "T3",
+      "job": "When a launch has a story or press lands, help me pitch the right writers and turn the wave of visitors into orders and lasting links, so PR sells and keeps selling",
+      "metric": "visits, orders and conversion rate from each press piece, 14 days",
+      "from_v2": [
+        3,
+        9,
+        12,
+        22,
+        29,
+        31,
+        34
+      ]
+    },
+    {
+      "id": "T4",
+      "job": "When a bad post spreads, a partner slips up, or we know a problem is coming, help me size it fast and reply first with a message I approved, so it stops in hours, not weeks",
+      "metric": "hours from a negative spike to an approved public reply",
+      "from_v2": [
+        2,
+        15,
+        19,
+        30,
+        33
+      ]
+    },
+    {
+      "id": "T5",
+      "job": "When the top 2 percent of buyers drive a large share of profit, help me treat them as insiders with quiet perks and prove it against similar buyers left out, so we keep and grow them",
+      "metric": "repeat purchase rate of the inner circle against similar buyers left out, 90 days",
+      "from_v2": [
+        11,
+        17,
+        18,
+        32
+      ]
+    }
+  ],
+  "jobs": [
+    {
+      "id": "27-01",
+      "top": "T1",
+      "job": "Write a bet card before any money moves: the category habit it breaks, the most it can cost, the stop rule, the read date, the named metric and a group left out, signed by the founder",
+      "trigger": "before any bet, stunt, partnership or event gets money",
+      "enablers": [
+        "bet-ledger"
+      ],
+      "inputs": [
+        {
+          "need": "the idea and its owner",
+          "from": "founder",
+          "status": "founder"
+        },
+        {
+          "need": "the quarter's bet cap and cash floor",
+          "from": "finance shelf",
+          "status": "brain"
+        },
+        {
+          "need": "past bets and lessons",
+          "from": "history shelf",
+          "status": "brain"
+        },
+        {
+          "need": "wild bet ideas and stop rule examples",
+          "from": "idea bank ideas/v1 (19-WLD)",
+          "status": "have"
+        }
+      ],
+      "steps": [
+        "Name the habit in our category the bet breaks",
+        "Write the most it can cost in cash, product and team hours",
+        "Write the stop rule and the read date",
+        "Pick 1 metric and a left-out group of similar customers",
+        "Check it against past bets for a repeat",
+        "Founder signs; no card, no spend"
+      ],
+      "output": "a signed bet card with cap, stop rule, read date, metric and comparison group",
+      "next": "feeds 27-02 (cap tracking) and 27-03 (read)",
+      "watch": {
+        "metric": "share of bets launched with a cost cap, stop rule, read date and comparison group on file",
+        "window": "quarterly",
+        "source": "bet ledger"
+      },
+      "drives": "bets that cannot become a crisis",
+      "business": "cash",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 5
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "27-02",
+      "top": "T1",
+      "job": "Set the quarter's total bet cap as a share of profit after ads, and show spend to date on each live bet against its cap every Monday",
+      "trigger": "at quarter planning, then every Monday",
+      "enablers": [
+        "bet-ledger",
+        "margin-view"
+      ],
+      "inputs": [
+        {
+          "need": "profit after ads, last quarter and plan",
+          "from": "finance shelf",
+          "status": "brain"
+        },
+        {
+          "need": "spend per bet: ads, product, fees, hours",
+          "from": "bet-ledger",
+          "status": "enabler"
+        },
+        {
+          "need": "ad spend tagged to bets",
+          "from": "Meta Ads and Google Ads",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Founder sets the cap, for example 5 percent of the quarter's profit after ads",
+        "Log every dollar and product unit to its bet",
+        "Show each bet's spend against its own cap and the total against the quarter cap",
+        "Flag any bet past 80 percent of its cap",
+        "Stop or re-sign any bet past its cap"
+      ],
+      "output": "a Monday bet table: spend against cap per bet and in total",
+      "next": "feeds 26-01 (Monday pack)",
+      "watch": {
+        "metric": "total bet spend this quarter as a share of profit after ads",
+        "window": "weekly",
+        "source": "bet ledger"
+      },
+      "drives": "cash kept safe from runaway bets",
+      "business": "cash",
+      "score": {
+        "money": 3,
+        "satisfaction": 5,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "27-03",
+      "top": "T1",
+      "job": "At each bet's read date, compare the bet group with the left-out group on the named metric, and call scale in steps, stop or rerun, testing any borrowed stunt on a small group first",
+      "trigger": "at each bet's read date",
+      "enablers": [
+        "bet-ledger",
+        "margin-view"
+      ],
+      "inputs": [
+        {
+          "need": "the bet card",
+          "from": "bet-ledger",
+          "status": "enabler"
+        },
+        {
+          "need": "orders, gross profit and repeat rate per group",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "cost to date",
+          "from": "bet-ledger",
+          "status": "enabler"
+        }
+      ],
+      "steps": [
+        "Pull the named metric for both groups",
+        "Compute the gain per customer and the gross profit per customer reached",
+        "Call scale to the next step, stop or rerun",
+        "For a scale, set the next step size and its check",
+        "Write the result and 1 lesson in the ledger"
+      ],
+      "output": "a bet read with the call, the next step size, and a lesson on file",
+      "next": "feeds 25-03 (fail note) or 25-02 (promote win)",
+      "watch": {
+        "metric": "gain on the bet's named metric against the left-out group",
+        "window": "at the read date",
+        "source": "store platform"
+      },
+      "drives": "gross profit per customer reached",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "27-04",
+      "top": "T1",
+      "job": "Launch the next new product as a pre-order or a 200 unit drop with a sales target set before launch, and order full stock only if the target is hit",
+      "trigger": "for every new product before the first full stock order",
+      "enablers": [
+        "bet-ledger",
+        "marketplace-plan"
+      ],
+      "inputs": [
+        {
+          "need": "the product, price and landed cost",
+          "from": "products shelf",
+          "status": "brain"
+        },
+        {
+          "need": "supplier minimum order and lead time",
+          "from": "operations shelf",
+          "status": "brain"
+        },
+        {
+          "need": "email list and top buyers",
+          "from": "store platform customers",
+          "status": "connected"
+        },
+        {
+          "need": "a pre-order setting or app",
+          "from": "store platform",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "Set the target and the window, for example 300 pre-orders in 14 days",
+        "Build the pre-order page with honest ship dates",
+        "Send to the list and the top buyers first",
+        "Count pre-orders daily against target",
+        "Order full stock, a smaller run, or refund and drop"
+      ],
+      "output": "a pre-order result against target and a stock decision",
+      "next": "feeds 19 (supply and inventory)",
+      "watch": {
+        "metric": "pre-orders or drop sales against the target set before launch",
+        "window": "launch window",
+        "source": "store platform orders"
+      },
+      "drives": "cash tied up in stock that does not sell",
+      "business": "cash",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 3
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "27-05",
+      "top": "T1",
+      "job": "Run a 90 day capped test on TikTok Shop or Amazon with 3 hero products, a price floor after fees, and a stop rule on profit per order",
+      "trigger": "once, when the founder wants a new channel; read at 30, 60 and 90 days",
+      "enablers": [
+        "marketplace-plan",
+        "bet-ledger"
+      ],
+      "inputs": [
+        {
+          "need": "hero products with landed cost",
+          "from": "products shelf",
+          "status": "brain"
+        },
+        {
+          "need": "channel fees, shipping and ad costs",
+          "from": "marketplace-plan",
+          "status": "enabler"
+        },
+        {
+          "need": "a seller account on the channel",
+          "from": "TikTok Shop or Amazon Seller Central",
+          "status": "setup"
+        },
+        {
+          "need": "creators for TikTok Shop videos",
+          "from": "creators shelf",
+          "status": "buy"
+        }
+      ],
+      "steps": [
+        "Pick 3 hero products and set the price floor after fees",
+        "Set up listings with the best images and review proof",
+        "Cap spend and stock for 90 days",
+        "Read orders and profit per order at 30, 60 and 90 days",
+        "Scale, hold or close on the stop rule"
+      ],
+      "output": "a 90 day channel test with profit per order and a call",
+      "next": "feeds 20 (marketplaces)",
+      "watch": {
+        "metric": "orders and profit per order in the test channel",
+        "window": "90 day",
+        "source": "channel seller account"
+      },
+      "drives": "new revenue without a new business",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 2,
+        "ease": 2
+      },
+      "ready": 2,
+      "effort": "weeks"
+    },
+    {
+      "id": "27-06",
+      "top": "T2",
+      "job": "Shortlist 20 creators whose followers match our best buyers by age, gender and region, check their past brand deals and comments, and send product to the top 10 with a code each",
+      "trigger": "monthly, and before each launch",
+      "enablers": [
+        "creator-roster",
+        "segment-map"
+      ],
+      "inputs": [
+        {
+          "need": "our best segment by age, gender, placement and region",
+          "from": "segment-map",
+          "status": "enabler"
+        },
+        {
+          "need": "creators and past results",
+          "from": "creators shelf",
+          "status": "brain"
+        },
+        {
+          "need": "creator search and audience data",
+          "from": "creator tool or manual search",
+          "status": "buy"
+        },
+        {
+          "need": "product units for seeding",
+          "from": "operations shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Pull the segment that buys at the lowest cost per new customer",
+        "Find 20 creators whose audience matches it",
+        "Check past brand deals, comment quality and fake follower share",
+        "Send product to the top 10 with a unique code and no tight script",
+        "Log each in the roster with cost and date"
+      ],
+      "output": "a seeded list of 10 creators with codes, costs and match notes",
+      "next": "feeds 27-07 (partnership ads) and 27-08 (read)",
+      "watch": {
+        "metric": "orders per creator code within 30 days, and product cost per order",
+        "window": "30 day",
+        "source": "store platform orders"
+      },
+      "drives": "new customers from creators",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "27-07",
+      "top": "T2",
+      "job": "Run each creator's best post as a partnership ad through their handle at $50 a day for 7 days, and rank creators by cost per new customer against our own best ads",
+      "trigger": "after each creator posts",
+      "enablers": [
+        "creator-roster",
+        "creative-archive"
+      ],
+      "inputs": [
+        {
+          "need": "creator posts and ad rights",
+          "from": "creators shelf",
+          "status": "brain"
+        },
+        {
+          "need": "partnership ad results",
+          "from": "Meta Ads",
+          "status": "connected"
+        },
+        {
+          "need": "our best ads' cost per new customer",
+          "from": "creative-archive",
+          "status": "enabler"
+        },
+        {
+          "need": "the media buyer to launch in Ads Manager (ecomOS reads only)",
+          "from": "team",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "Get written rights and partnership ad access from each creator",
+        "Media buyer launches the best post at $50 a day for 7 days",
+        "Pull cost per new customer, hold rate and segment",
+        "Rank creators against our own best ads",
+        "Scale the top 2, renew or end the rest"
+      ],
+      "output": "a creator rank by cost per new customer with a scale list",
+      "next": "feeds 27-08 (renewals) and 09 (creative variants)",
+      "watch": {
+        "metric": "cost per new customer from partnership ads against our own ads",
+        "window": "7 day",
+        "source": "Meta Ads"
+      },
+      "drives": "new customers per week",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "27-08",
+      "top": "T2",
+      "job": "Close each creator deal, ambassador term or collab with a 1 page read: orders, new customers, cost per order and product cost next to paid ads, then renew, renegotiate or end",
+      "trigger": "at the end of each deal or term",
+      "enablers": [
+        "creator-roster",
+        "bet-ledger",
+        "margin-view"
+      ],
+      "inputs": [
+        {
+          "need": "orders by the partner's code or link",
+          "from": "store platform orders",
+          "status": "connected"
+        },
+        {
+          "need": "fees, product and shipping paid",
+          "from": "creators shelf",
+          "status": "brain"
+        },
+        {
+          "need": "paid ads cost per order",
+          "from": "Meta Ads and Google Ads",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Pull orders and new customers for 30 days by code and link",
+        "Total the deal cost",
+        "Compare cost per order with paid ads",
+        "Write renew, renegotiate or end",
+        "Update the roster and the do-not-work-with list"
+      ],
+      "output": "a partner read with cost per order and a call",
+      "next": "feeds 27-06 (next shortlist)",
+      "watch": {
+        "metric": "orders and new customers from the partner's code or link, and cost per order",
+        "window": "30 day",
+        "source": "store platform orders"
+      },
+      "drives": "partner spend that pays",
+      "business": "gross profit",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 5
+      },
+      "ready": 5,
+      "effort": "hours"
+    },
+    {
+      "id": "27-09",
+      "top": "T2",
+      "job": "Vet every partner, creator or licensee before signing: past posts, brand clashes, audience match and fake follower share, filed as pass or flag",
+      "trigger": "before any contract",
+      "enablers": [
+        "creator-roster",
+        "mention-watch"
+      ],
+      "inputs": [
+        {
+          "need": "the partner's handles and site",
+          "from": "founder",
+          "status": "founder"
+        },
+        {
+          "need": "past posts and comments",
+          "from": "public social profiles",
+          "status": "setup"
+        },
+        {
+          "need": "do-not-work-with list",
+          "from": "creators shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Read 12 months of posts for clashes with our values and category",
+        "Check audience match and fake follower share",
+        "Check news and reviews for problems",
+        "File pass or flag with the reason",
+        "Add an exit clause for flags that still go ahead"
+      ],
+      "output": "a vetting note per partner with pass or flag",
+      "next": "feeds 27-17 (partner problem watch)",
+      "watch": {
+        "metric": "partners approved with an open reputation flag",
+        "window": "quarterly",
+        "source": "creator roster"
+      },
+      "drives": "partners who embarrass the brand",
+      "business": "risk",
+      "score": {
+        "money": 2,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "27-10",
+      "top": "T2",
+      "job": "Run the ambassador program on a weekly routine: tasks sent Monday, posts checked by Wednesday, orders per code counted Friday",
+      "trigger": "every week while the program runs",
+      "enablers": [
+        "creator-roster",
+        "work-board"
+      ],
+      "inputs": [
+        {
+          "need": "ambassador list with codes",
+          "from": "creators shelf",
+          "status": "brain"
+        },
+        {
+          "need": "orders per code",
+          "from": "store platform orders",
+          "status": "connected"
+        },
+        {
+          "need": "brand voice rules",
+          "from": "voice shelf",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Send each ambassador 1 task on Monday",
+        "Check posts against voice and claims by Wednesday",
+        "Count orders per code on Friday",
+        "Drop anyone with 0 orders for 8 weeks"
+      ],
+      "output": "a weekly ambassador sheet: tasks, posts checked, orders per code",
+      "next": "feeds 27-08 (term read)",
+      "watch": {
+        "metric": "orders from ambassador codes per month, and posts waiting past the review deadline",
+        "window": "monthly",
+        "source": "store platform orders"
+      },
+      "drives": "founder hours on the program",
+      "business": "gross profit",
+      "score": {
+        "money": 2,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "27-11",
+      "top": "T3",
+      "job": "Find the angle a journalist would run for the next launch (data, founder story, trend or stunt), and build a list of 25 writers who covered that topic in the last 90 days",
+      "trigger": "6 weeks before a launch or news",
+      "enablers": [
+        "press-tracker"
+      ],
+      "inputs": [
+        {
+          "need": "the launch and what is new about it",
+          "from": "calendar shelf",
+          "status": "brain"
+        },
+        {
+          "need": "our own data a writer could use, like survey or order trends",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "writers and recent articles",
+          "from": "press database or manual search",
+          "status": "buy"
+        },
+        {
+          "need": "founder story",
+          "from": "founder interview",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "Write 3 angles that are news, not ads",
+        "Pick 1 with our own data behind it",
+        "Find 25 writers who covered the topic in 90 days",
+        "Write a 5 line pitch per writer group",
+        "Track replies per pitch"
+      ],
+      "output": "an angle, a checked list of 25 writers, and pitches with reply tracking",
+      "next": "feeds 27-12 (ready the site) and 27-13 (count results)",
+      "watch": {
+        "metric": "reply rate on pitches, per story",
+        "window": "per story",
+        "source": "press tracker"
+      },
+      "drives": "press that sells",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 2,
+        "ease": 3
+      },
+      "ready": 2,
+      "effort": "days"
+    },
+    {
+      "id": "27-12",
+      "top": "T3",
+      "job": "Before a press piece or planned spike lands, check stock on the featured product, a matching landing page, email capture and a retargeting audience, all within 24 hours",
+      "trigger": "the day a piece is confirmed, and within 2 hours of a viral post",
+      "enablers": [
+        "press-tracker",
+        "congruence-check"
+      ],
+      "inputs": [
+        {
+          "need": "featured product stock",
+          "from": "store platform inventory",
+          "status": "connected"
+        },
+        {
+          "need": "the piece or post and what it promises",
+          "from": "press-tracker",
+          "status": "enabler"
+        },
+        {
+          "need": "landing page and email capture",
+          "from": "store platform",
+          "status": "connected"
+        },
+        {
+          "need": "audience for visitors from the piece",
+          "from": "Meta Ads",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Check stock covers 3x a normal week of the featured product",
+        "Point the link to a page that matches the story",
+        "Turn on email capture for the visitors",
+        "Ask the media buyer to build a retargeting audience",
+        "Watch orders hourly for 72 hours"
+      ],
+      "output": "a 24 hour readiness check passed, and hourly orders for 72 hours",
+      "next": "feeds 27-13 (count results)",
+      "watch": {
+        "metric": "orders in the 72 hours after a spike against a normal 72 hours",
+        "window": "72 hours",
+        "source": "store platform orders"
+      },
+      "drives": "orders from each spike",
+      "business": "revenue",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 5,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "27-13",
+      "top": "T3",
+      "job": "Count visits, orders, sign-ups and new linking sites from each press placement over 14 days and over the retainer term, before the PR agency renews",
+      "trigger": "14 days after each placement, and 30 days before the retainer renews",
+      "enablers": [
+        "press-tracker"
+      ],
+      "inputs": [
+        {
+          "need": "visits and orders by referring site",
+          "from": "GA4 and store platform",
+          "status": "connected"
+        },
+        {
+          "need": "new linking sites",
+          "from": "Search Console links",
+          "status": "connected"
+        },
+        {
+          "need": "the retainer cost and term",
+          "from": "PR agency contract",
+          "status": "founder"
+        }
+      ],
+      "steps": [
+        "List placements with dates",
+        "Pull visits, orders and sign-ups from each for 14 days",
+        "Pull new links from each",
+        "Total cost per order over the term",
+        "Renew, renegotiate or end on the numbers"
+      ],
+      "output": "a placement table and a renewal call with cost per order",
+      "next": "feeds 26-11 (client report)",
+      "watch": {
+        "metric": "visits, new linking sites and orders from each placement",
+        "window": "retainer term",
+        "source": "GA4 and Search Console"
+      },
+      "drives": "PR spend that pays",
+      "business": "revenue",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "27-14",
+      "top": "T3",
+      "job": "Ask every outlet that names us without a link to add one, and check 30 days later whether AI answers and search now name us for the topic",
+      "trigger": "within 7 days of each mention, and 30 days after",
+      "enablers": [
+        "press-tracker",
+        "search-feed"
+      ],
+      "inputs": [
+        {
+          "need": "mentions of the brand without a link",
+          "from": "mention-watch",
+          "status": "enabler"
+        },
+        {
+          "need": "search results and AI answers for the topic",
+          "from": "search-feed",
+          "status": "enabler"
+        }
+      ],
+      "steps": [
+        "List new mentions and whether each links to us",
+        "Send a short thank you with the link request",
+        "Log each outcome",
+        "30 days later, check AI answers and search for the topic"
+      ],
+      "output": "linked mentions gained and a before and after on AI answers",
+      "next": "feeds 18 (answer engines) and 17 (SEO)",
+      "watch": {
+        "metric": "new sites mentioning or linking to the brand",
+        "window": "quarterly",
+        "source": "Search Console"
+      },
+      "drives": "buyers from search and AI answers for a year",
+      "business": "revenue",
+      "score": {
+        "money": 2,
+        "satisfaction": 2,
+        "speed": 2,
+        "ease": 5
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "27-15",
+      "top": "T4",
+      "job": "Watch reviews, social mentions and tickets for a spike in a negative theme, size it within 2 hours (posts, reach, orders at risk), and draft a reply for the founder to approve",
+      "trigger": "hourly check; alert when a negative theme doubles its daily average",
+      "enablers": [
+        "mention-watch",
+        "review-miner"
+      ],
+      "inputs": [
+        {
+          "need": "new reviews with rating and text",
+          "from": "reviews app",
+          "status": "connected"
+        },
+        {
+          "need": "tickets with tags",
+          "from": "helpdesk",
+          "status": "connected"
+        },
+        {
+          "need": "public social mentions",
+          "from": "social listening tool",
+          "status": "setup"
+        },
+        {
+          "need": "voice and claims rules",
+          "from": "voice and claims shelves",
+          "status": "brain"
+        }
+      ],
+      "steps": [
+        "Group new reviews, tickets and mentions by theme",
+        "Alert when a negative theme doubles",
+        "Size it: posts, reach, orders from affected customers",
+        "Draft a reply and a fix in our voice",
+        "Founder approves; post and reply to each customer",
+        "Log hours from spike to reply"
+      ],
+      "output": "an alert, a size estimate, and an approved reply within hours",
+      "next": "feeds 27-16 (prepared statements)",
+      "watch": {
+        "metric": "hours from a negative spike to an approved public reply",
+        "window": "per spike",
+        "source": "mention watch"
+      },
+      "drives": "reputation damage and lost orders",
+      "business": "risk",
+      "score": {
+        "money": 3,
+        "satisfaction": 5,
+        "speed": 5,
+        "ease": 3
+      },
+      "ready": 3,
+      "effort": "days"
+    },
+    {
+      "id": "27-16",
+      "top": "T4",
+      "job": "When a recall, delay or price rise is known, draft the customer email, the FAQ line and the post before customers find out, and send within 48 hours",
+      "trigger": "the day the team knows",
+      "enablers": [
+        "mention-watch",
+        "question-matrix"
+      ],
+      "inputs": [
+        {
+          "need": "affected orders and customers",
+          "from": "store platform orders",
+          "status": "connected"
+        },
+        {
+          "need": "the facts and the fix",
+          "from": "founder",
+          "status": "founder"
+        },
+        {
+          "need": "where each question is answered",
+          "from": "question-matrix",
+          "status": "enabler"
+        }
+      ],
+      "steps": [
+        "List affected customers and orders",
+        "Draft the email, FAQ line, post and support macro",
+        "Founder approves",
+        "Send to affected customers first, then post",
+        "Track tickets and refunds for 14 days"
+      ],
+      "output": "an approved message set sent within 48 hours, with tickets tracked",
+      "next": "feeds 15 (CX macros)",
+      "watch": {
+        "metric": "days from knowing a problem to telling affected customers",
+        "window": "per event",
+        "source": "helpdesk"
+      },
+      "drives": "trust kept through bad news",
+      "business": "risk",
+      "score": {
+        "money": 2,
+        "satisfaction": 5,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "27-17",
+      "top": "T4",
+      "job": "Watch each partner's and ambassador's public posts daily, and keep a written exit clause and a holding statement ready for each",
+      "trigger": "daily while any partner is live",
+      "enablers": [
+        "mention-watch",
+        "creator-roster"
+      ],
+      "inputs": [
+        {
+          "need": "live partners and handles",
+          "from": "creators shelf",
+          "status": "brain"
+        },
+        {
+          "need": "contracts with exit clauses",
+          "from": "creator contracts",
+          "status": "founder"
+        },
+        {
+          "need": "public posts",
+          "from": "social listening tool",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "List live partners and their handles",
+        "Scan daily for clashes or news",
+        "Keep a holding statement per partner",
+        "On a flag, pause ads through their handle and decide within 24 hours"
+      ],
+      "output": "a daily partner watch with a holding statement per partner",
+      "next": "feeds 27-09 (vetting)",
+      "watch": {
+        "metric": "hours from a partner's public problem to our response",
+        "window": "per event",
+        "source": "mention watch"
+      },
+      "drives": "partner problems that become ours",
+      "business": "risk",
+      "score": {
+        "money": 2,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 4
+      },
+      "ready": 3,
+      "effort": "hours"
+    },
+    {
+      "id": "27-18",
+      "top": "T5",
+      "job": "Pick the top 2 percent of buyers by profit and recency, leave out anyone with an open complaint, send half a personal letter from the founder with private early access, and keep the other half as the comparison",
+      "trigger": "quarterly",
+      "enablers": [
+        "vip-list",
+        "bet-ledger",
+        "ticket-clock"
+      ],
+      "inputs": [
+        {
+          "need": "customers ranked by profit and recency",
+          "from": "store platform customers",
+          "status": "connected"
+        },
+        {
+          "need": "open tickets and complaints",
+          "from": "helpdesk",
+          "status": "connected"
+        },
+        {
+          "need": "the founder's letter in their voice",
+          "from": "voice shelf",
+          "status": "brain"
+        },
+        {
+          "need": "printing and mailing, or a handwritten note service",
+          "from": "mail service",
+          "status": "buy"
+        }
+      ],
+      "steps": [
+        "Rank customers and take the top 2 percent",
+        "Drop anyone with an open ticket or a recent bad review",
+        "Split at random into letter and no letter",
+        "Send the letter with a private link and no discount code on the envelope",
+        "Keep it quiet: no public post about the program",
+        "Compare repeat rate and profit per customer after 90 days"
+      ],
+      "output": "a VIP letter test: who got what, and repeat rate against the comparison group",
+      "next": "feeds 27-19 (inner circle drops) and 14 (email)",
+      "watch": {
+        "metric": "repeat orders, mailed group against not mailed",
+        "window": "90 day",
+        "source": "store platform orders"
+      },
+      "drives": "profit from top customers",
+      "business": "gross profit",
+      "score": {
+        "money": 4,
+        "satisfaction": 5,
+        "speed": 2,
+        "ease": 3
+      },
+      "ready": 4,
+      "effort": "days"
+    },
+    {
+      "id": "27-19",
+      "top": "T5",
+      "job": "Give the inner circle first access to the next drop through a private link 48 hours early, and compare their repeat rate and referrals with similar buyers left out after 90 days",
+      "trigger": "before each drop or launch",
+      "enablers": [
+        "vip-list",
+        "bet-ledger"
+      ],
+      "inputs": [
+        {
+          "need": "inner circle list",
+          "from": "vip-list",
+          "status": "enabler"
+        },
+        {
+          "need": "the drop date and stock",
+          "from": "calendar shelf",
+          "status": "brain"
+        },
+        {
+          "need": "orders by private link",
+          "from": "store platform orders",
+          "status": "connected"
+        }
+      ],
+      "steps": [
+        "Set aside stock for the inner circle",
+        "Send the private link 48 hours early",
+        "Count orders and referrals from the link",
+        "Compare with left-out buyers at 90 days"
+      ],
+      "output": "an inner circle read: orders, referrals and repeat rate against left-out buyers",
+      "next": "feeds 27-03 (bet read)",
+      "watch": {
+        "metric": "repeat purchase rate of the inner circle against similar buyers left out",
+        "window": "90 day",
+        "source": "store platform orders"
+      },
+      "drives": "repeat revenue",
+      "business": "gross profit",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "hours"
+    },
+    {
+      "id": "27-20",
+      "top": "T5",
+      "job": "Find a reason worth telling a friend in the words happy buyers use in reviews, give top buyers a referral link with a product reward, and count orders per link",
+      "trigger": "once to set up, then monthly",
+      "enablers": [
+        "vip-list",
+        "review-miner"
+      ],
+      "inputs": [
+        {
+          "need": "5 star reviews and survey answers",
+          "from": "reviews app",
+          "status": "connected"
+        },
+        {
+          "need": "top buyers",
+          "from": "store platform customers",
+          "status": "connected"
+        },
+        {
+          "need": "a referral app or link tracking",
+          "from": "referral app",
+          "status": "setup"
+        }
+      ],
+      "steps": [
+        "Pull the phrases happy buyers repeat most",
+        "Write the ask in those words",
+        "Send top buyers a link with a product reward, not a discount",
+        "Count orders and new customers per link monthly"
+      ],
+      "output": "a referral ask in customers' words and orders per link",
+      "next": "feeds 14 (email) and 10 (copy)",
+      "watch": {
+        "metric": "share of orders from a referral code or link",
+        "window": "monthly",
+        "source": "store platform orders"
+      },
+      "drives": "new customers at low cost",
+      "business": "gross profit",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 4
+      },
+      "ready": 4,
+      "effort": "days"
+    }
+  ],
+  "new_enablers": [
+    {
+      "id": "bet-ledger",
+      "name": "Bet ledger",
+      "what": "Every bold bet with its card (habit broken, cost cap, stop rule, read date, metric, left-out group), spend to date against its cap and the quarter cap, the read, and one lesson when it closes.",
+      "inputs": [
+        "bet cards",
+        "spend and product per bet",
+        "orders per group",
+        "quarter profit"
+      ],
+      "powers": [
+        "bets that cannot sink the quarter",
+        "scale in steps on proof",
+        "no repeat wild ideas"
+      ],
+      "screens": [
+        "27-wild-bets-pr",
+        "25-experiments",
+        "21-finance-cash"
+      ],
+      "note": null
+    },
+    {
+      "id": "press-tracker",
+      "name": "Press tracker",
+      "what": "Stories and angles, the writer list with a checked beat, pitches and replies, placements, and visits, orders, sign-ups and links from each piece. Holds the 24 hour readiness check for a spike.",
+      "inputs": [
+        "writer list",
+        "pitches",
+        "GA4 referrals",
+        "Search Console links",
+        "PR contract"
+      ],
+      "powers": [
+        "pitches that get replies",
+        "spikes that turn into orders",
+        "PR agency renewals on numbers"
+      ],
+      "screens": [
+        "27-wild-bets-pr",
+        "17-seo",
+        "18-answer-engines"
+      ],
+      "note": null
+    },
+    {
+      "id": "mention-watch",
+      "name": "Mention and reputation watch",
+      "what": "Watches reviews, tickets and public posts about the brand and its partners, groups them by theme, alerts when a negative theme spikes, and keeps holding statements and approved replies.",
+      "inputs": [
+        "reviews app",
+        "helpdesk",
+        "social listening",
+        "partner handles",
+        "voice and claims rules"
+      ],
+      "powers": [
+        "replies in hours",
+        "prepared bad news",
+        "partner problems caught in a day",
+        "unlinked mentions found"
+      ],
+      "screens": [
+        "27-wild-bets-pr",
+        "15-customers-cx",
+        "24-security"
+      ],
+      "note": null
+    }
+  ]
+}
