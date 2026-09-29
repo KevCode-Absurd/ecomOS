@@ -1,0 +1,582 @@
+{
+  "screen": "22-measurement",
+  "title": "Measurement and data health",
+  "hired_for": "An owner hires this screen so every number they act on is right: no tracking gaps, platform and store numbers agree or the gap is explained, and each number shows how fresh it is.",
+  "jobs": [
+    {
+      "rank": 1,
+      "job": "Tell me each morning which numbers I can trust",
+      "why": "Budgets move on yesterday's numbers. If a feed broke or a tag stopped firing, the owner acts on a wrong number and loses money before anyone notices.",
+      "watch": {
+        "metric": "pass, warn or fail grade for yesterday's data across every connected source, daily",
+        "unit": "score",
+        "source": "checks run on Shopify, GA4, Meta, Google Ads, Klaviyo and marketplace feeds"
+      },
+      "drives": {
+        "metric": "share of spend decisions made on data that passed the check",
+        "unit": "percent"
+      },
+      "business": "gross profit",
+      "now_after": "Example: Now: nobody checks, and a broken Meta feed showed zero sales for 2 days before budgets were cut. After: the check flags it by 9am and no budget moves on bad data.",
+      "score": {
+        "money": 4,
+        "satisfaction": 5,
+        "speed": 5,
+        "ease": 3
+      },
+      "who_today": "analyst or agency, or nobody"
+    },
+    {
+      "rank": 2,
+      "job": "Close the gap between what ad platforms claim and what the store sold",
+      "why": "Meta, Google and TikTok each take credit for the same sales, so their totals add up to more than the store made. Scaling on claimed revenue burns cash.",
+      "watch": {
+        "metric": "platform-reported revenue divided by store-reported revenue for the same days: Meta plus Google Ads claimed purchase value against Shopify net sales, weekly",
+        "unit": "ratio",
+        "source": "Meta Ads Manager, Google Ads, Shopify"
+      },
+      "drives": {
+        "metric": "ad budget moved on store-confirmed sales",
+        "unit": "currency"
+      },
+      "business": "gross profit",
+      "now_after": "Example: Now: platforms claim $610,000 against $420,000 in store sales, a 1.45 ratio nobody explains. After: the gap is split by cause and budgets use the store number within 2 weeks.",
+      "score": {
+        "money": 5,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 3
+      },
+      "who_today": "media agency or analyst"
+    },
+    {
+      "rank": 3,
+      "job": "Know where each order came from",
+      "why": "If a large share of orders has no known source, the owner cannot tell which channel to grow. Each unknown order is a budget decision made blind.",
+      "watch": {
+        "metric": "share of store orders with a known source (tracked link, ad click id or survey answer), weekly",
+        "unit": "percent",
+        "source": "Shopify orders with UTM and click id fields, GA4, post-purchase survey"
+      },
+      "drives": {
+        "metric": "share of revenue that can be credited to a channel",
+        "unit": "percent"
+      },
+      "business": "gross profit",
+      "now_after": "Example: Now: 38% of orders show as direct or unknown. After: link tags and a survey bring known source orders from 62% to 85% within 30 days.",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 4
+      },
+      "who_today": "analyst or agency"
+    },
+    {
+      "rank": 4,
+      "job": "Make sure every purchase gets tracked",
+      "why": "When GA4 misses purchases, conversion rate, channel reports and funnel numbers are all wrong, and good channels look weak.",
+      "watch": {
+        "metric": "GA4 purchases divided by Shopify orders for the same dates, daily",
+        "unit": "percent",
+        "source": "GA4 and Shopify"
+      },
+      "drives": {
+        "metric": "accuracy of channel and conversion reports",
+        "unit": "percent"
+      },
+      "business": "gross profit",
+      "now_after": "Example: Now: GA4 records 81% of store orders. After: the checkout tag and consent setup are fixed and GA4 records 95% within 7 days.",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 5,
+        "ease": 3
+      },
+      "who_today": "developer or agency"
+    },
+    {
+      "rank": 5,
+      "job": "Make Meta see every sale once, and match it to a real person",
+      "why": "Meta learns who to show ads to from purchase signals. Missed, doubled or poorly matched sales make it bid on the wrong people and raise cost per sale.",
+      "watch": {
+        "metric": "Meta event match quality score for Purchase (0 to 10) and duplicate purchase share, weekly",
+        "unit": "score",
+        "source": "Meta Events Manager"
+      },
+      "drives": {
+        "metric": "Meta cost per purchase",
+        "unit": "currency"
+      },
+      "business": "gross profit",
+      "now_after": "Example: Now: match quality is 5.1 and 9% of purchases count twice. After: browser and server events share one event id, match quality reaches 7.8, and doubles fall under 2% within 14 days.",
+      "score": {
+        "money": 5,
+        "satisfaction": 2,
+        "speed": 4,
+        "ease": 3
+      },
+      "who_today": "developer or media agency"
+    },
+    {
+      "rank": 6,
+      "job": "Know how fresh each number is",
+      "why": "A report that looks current may be 3 days old because a sync failed. The owner needs to see the age of a number next to the number.",
+      "watch": {
+        "metric": "hours since each source last synced against its expected schedule, live",
+        "unit": "hours",
+        "source": "sync log for Shopify, GA4, Meta, Google Ads, Klaviyo and marketplace feeds"
+      },
+      "drives": {
+        "metric": "share of numbers read while stale",
+        "unit": "percent"
+      },
+      "business": "risk",
+      "now_after": "Example: Now: the Amazon feed has not synced in 52 hours and nothing says so. After: every number carries its age and stale sources are flagged within 1 hour.",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 5,
+        "ease": 4
+      },
+      "who_today": "nobody"
+    },
+    {
+      "rank": 7,
+      "job": "Check tracking after every site or app change",
+      "why": "A new theme, checkout app or consent banner can silently stop purchase or add to cart events. Every day it runs broken is a day of wrong reports.",
+      "watch": {
+        "metric": "count of key events (view product, add to cart, begin checkout, purchase) that dropped over 30% in the 24 hours after a site change",
+        "unit": "count",
+        "source": "GA4, Meta Events Manager, change log in the brand brain"
+      },
+      "drives": {
+        "metric": "days of broken tracking per quarter",
+        "unit": "days"
+      },
+      "business": "gross profit",
+      "now_after": "Example: Now: a theme update broke add to cart tracking for 11 days. After: the check runs the day after each change and breaks are fixed within 24 hours.",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 5,
+        "ease": 3
+      },
+      "who_today": "developer, or nobody"
+    },
+    {
+      "rank": 8,
+      "job": "Explain why a number moved before anyone reacts",
+      "why": "When revenue drops, teams guess and change the wrong thing. Splitting the change into visits, buy rate and order size shows where to look first.",
+      "watch": {
+        "metric": "share of revenue swings over 10% split into sessions, conversion rate and order value within 24 hours",
+        "unit": "percent",
+        "source": "Shopify and GA4"
+      },
+      "drives": {
+        "metric": "wrong fixes avoided per month",
+        "unit": "count"
+      },
+      "business": "gross profit",
+      "now_after": "Example: Now: a 15% drop sets off a creative rebuild. After: the split shows sessions held and order value fell after a free shipping change, which is reversed in 2 days.",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 4
+      },
+      "who_today": "founder or analyst"
+    },
+    {
+      "rank": 9,
+      "job": "Ask buyers where they heard about us",
+      "why": "Podcasts, word of mouth, creators and TV do not leave a click to track. A one-question survey after checkout shows the sources pixels cannot see.",
+      "watch": {
+        "metric": "share of orders with a survey answer and the top 5 answers, weekly",
+        "unit": "percent",
+        "source": "Shopify post-purchase survey or Klaviyo"
+      },
+      "drives": {
+        "metric": "share of orders with a known source",
+        "unit": "percent"
+      },
+      "business": "gross profit",
+      "now_after": "Example: Now: no survey runs. After: 42% of buyers answer and podcasts show up as 12% of new customers, a channel no pixel credited.",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 5
+      },
+      "who_today": "nobody"
+    },
+    {
+      "rank": 10,
+      "job": "Make Google Ads count only real purchases",
+      "why": "Google Ads often counts add to carts, page views or duplicate purchases as sales, which inflates its return and misleads its bidding.",
+      "watch": {
+        "metric": "Google Ads purchase conversions divided by store orders from Google traffic, weekly, and whether purchase is the only main conversion",
+        "unit": "ratio",
+        "source": "Google Ads, Shopify, GA4"
+      },
+      "drives": {
+        "metric": "Google Ads cost per real purchase",
+        "unit": "currency"
+      },
+      "business": "gross profit",
+      "now_after": "Example: Now: Google Ads reports 1.6 conversions for every store order it drove. After: only purchase stays as a main conversion and the ratio is 1.05 within 7 days.",
+      "score": {
+        "money": 4,
+        "satisfaction": 2,
+        "speed": 4,
+        "ease": 4
+      },
+      "who_today": "media agency"
+    },
+    {
+      "rank": 11,
+      "job": "Spot a broken funnel step the day it breaks",
+      "why": "A drop from cart to checkout can be a bug, a stock issue or a real change in shoppers. Comparing each step to the brand's own history catches it early.",
+      "watch": {
+        "metric": "conversion at each step (product view, add to cart, checkout, purchase) against the brand's own 90-day average, daily",
+        "unit": "percent",
+        "source": "GA4 ecommerce events"
+      },
+      "drives": {
+        "metric": "store conversion rate",
+        "unit": "percent"
+      },
+      "business": "revenue",
+      "now_after": "Example: Now: checkout to purchase fell from 52% to 41% for 4 days before anyone looked. After: the drop is flagged on day 1 and a payment app bug is fixed the same day.",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 3
+      },
+      "who_today": "analyst or developer"
+    },
+    {
+      "rank": 12,
+      "job": "Tag every link so each channel gets fair credit",
+      "why": "Links without tracking tags show up as direct or unassigned, so email, creators and paid social look smaller than they are.",
+      "watch": {
+        "metric": "share of paid and email clicks that arrive with valid link tags, and share of sessions in direct or unassigned, weekly",
+        "unit": "percent",
+        "source": "GA4 traffic acquisition"
+      },
+      "drives": {
+        "metric": "share of orders with a known source",
+        "unit": "percent"
+      },
+      "business": "gross profit",
+      "now_after": "Example: Now: 27% of sessions land in direct or unassigned. After: one tagging rule is applied to every link and that share falls to 12% within 14 days.",
+      "score": {
+        "money": 3,
+        "satisfaction": 2,
+        "speed": 5,
+        "ease": 4
+      },
+      "who_today": "marketing lead or agency"
+    },
+    {
+      "rank": 13,
+      "job": "Keep test orders and our own visits out of the numbers",
+      "why": "Staff visits, agency checks and test orders inflate traffic, lower conversion rate and add fake sales.",
+      "watch": {
+        "metric": "share of sessions from internal addresses and count of test orders in revenue, weekly",
+        "unit": "percent",
+        "source": "GA4 internal traffic filter, Shopify orders"
+      },
+      "drives": {
+        "metric": "accuracy of conversion rate and revenue",
+        "unit": "percent"
+      },
+      "business": "risk",
+      "now_after": "Example: Now: 6% of sessions are staff and agencies, and 14 test orders sit in revenue. After: both are filtered out and conversion rate is restated within a day.",
+      "score": {
+        "money": 2,
+        "satisfaction": 3,
+        "speed": 5,
+        "ease": 5
+      },
+      "who_today": "nobody"
+    },
+    {
+      "rank": 14,
+      "job": "Audit the GA4 setup from end to end",
+      "why": "Short data retention, wrong time zone, missing domains or wrong key events make every GA4 report quietly wrong.",
+      "watch": {
+        "metric": "share of critical GA4 setup checks passing (retention, domains, filters, key events, currency, time zone), weekly",
+        "unit": "percent",
+        "source": "GA4 Admin settings"
+      },
+      "drives": {
+        "metric": "share of purchases GA4 records",
+        "unit": "percent"
+      },
+      "business": "risk",
+      "now_after": "Example: Now: 7 of 12 checks pass and data is kept for 2 months only. After: all 12 pass and history is kept for 14 months within a week.",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 4
+      },
+      "who_today": "agency or developer"
+    },
+    {
+      "rank": 15,
+      "job": "Keep bots out of the numbers",
+      "why": "Bot visits raise sessions, lower conversion rate and can make a good page or campaign look broken.",
+      "watch": {
+        "metric": "share of sessions flagged as bots against the brand's own baseline, and days when Shopify and GA4 sessions split by over 20%, daily",
+        "unit": "percent",
+        "source": "GA4, Shopify sessions, Cloudflare or platform bot reports"
+      },
+      "drives": {
+        "metric": "accuracy of conversion rate",
+        "unit": "percent"
+      },
+      "business": "risk",
+      "now_after": "Example: Now: one day shows 18,000 extra sessions from a single city and conversion rate halves. After: the traffic is flagged as bots and excluded before anyone acts on it.",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 3
+      },
+      "who_today": "developer, or nobody"
+    },
+    {
+      "rank": 16,
+      "job": "Send ad platforms the value of a sale that matters",
+      "why": "When purchase events carry the wrong value, currency or include tax and shipping, the platforms optimise for the wrong customers.",
+      "watch": {
+        "metric": "share of purchase events sent with correct value, currency, product ids and a new or returning flag, weekly",
+        "unit": "percent",
+        "source": "Meta Events Manager, Google Ads conversion diagnostics"
+      },
+      "drives": {
+        "metric": "cost per new customer",
+        "unit": "currency"
+      },
+      "business": "gross profit",
+      "now_after": "Example: Now: purchase value includes tax and shipping and no new customer flag is sent. After: value is net sales with a new customer flag and cost per new customer falls within 30 days.",
+      "score": {
+        "money": 4,
+        "satisfaction": 2,
+        "speed": 3,
+        "ease": 3
+      },
+      "who_today": "developer or media agency"
+    },
+    {
+      "rank": 17,
+      "job": "Count new customers the same way everywhere",
+      "why": "Meta, Google and the store each define new customer differently. Without one count, cost per new customer is a guess.",
+      "watch": {
+        "metric": "gap between platform-reported new customers and store first-time orders, weekly",
+        "unit": "percent",
+        "source": "Shopify first-order flag, Meta and Google Ads new customer reports"
+      },
+      "drives": {
+        "metric": "cost per new customer from store data",
+        "unit": "currency"
+      },
+      "business": "gross profit",
+      "now_after": "Example: Now: Meta reports 1,900 new customers in a month and the store shows 1,150. After: the store count is the one number used and budgets reset against it.",
+      "score": {
+        "money": 4,
+        "satisfaction": 2,
+        "speed": 3,
+        "ease": 3
+      },
+      "who_today": "analyst, or nobody"
+    },
+    {
+      "rank": 18,
+      "job": "Find out if a channel really adds sales",
+      "why": "A channel can claim sales that would have happened anyway, like branded search or retargeting. A holdout test shows what it truly adds.",
+      "watch": {
+        "metric": "extra orders from a holdout test divided by the orders the platform claimed, per test",
+        "unit": "ratio",
+        "source": "Meta or Google Ads lift tests, geo holdout against Shopify orders"
+      },
+      "drives": {
+        "metric": "budget moved to channels that add sales",
+        "unit": "currency"
+      },
+      "business": "gross profit",
+      "now_after": "Example: Now: retargeting claims 900 orders a month. After: a 4 week holdout shows it adds 250, and $12,000 a month moves to prospecting.",
+      "score": {
+        "money": 5,
+        "satisfaction": 3,
+        "speed": 1,
+        "ease": 2
+      },
+      "who_today": "media agency or analyst"
+    },
+    {
+      "rank": 19,
+      "job": "Use one meaning for each number",
+      "why": "When revenue means one thing in Shopify, another in the agency deck and another in the books, meetings turn into arguments about numbers instead of decisions.",
+      "watch": {
+        "metric": "count of key numbers with more than one definition in use",
+        "unit": "count",
+        "source": "metric definitions in the brand brain"
+      },
+      "drives": {
+        "metric": "time spent reconciling numbers each week",
+        "unit": "hours"
+      },
+      "business": "risk",
+      "now_after": "Example: Now: revenue has 3 definitions across reports. After: one written rule (net sales, tax out, returns counted) is used everywhere within 2 weeks.",
+      "score": {
+        "money": 2,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 4
+      },
+      "who_today": "founder or analyst"
+    },
+    {
+      "rank": 20,
+      "job": "Line up attribution windows across platforms",
+      "why": "Meta counts a sale up to 7 days after a click and GA4 uses a different model. Comparing them without the same window leads to wrong budget moves.",
+      "watch": {
+        "metric": "gap between last click and platform credit per channel on the same window, weekly",
+        "unit": "percent",
+        "source": "GA4 attribution reports, Meta and Google Ads"
+      },
+      "drives": {
+        "metric": "budget moved on like-for-like numbers",
+        "unit": "currency"
+      },
+      "business": "gross profit",
+      "now_after": "Example: Now: Meta shows 3.2x return and GA4 shows 1.1x for the same week. After: both are read on the same window with the gap labelled and explained.",
+      "score": {
+        "money": 3,
+        "satisfaction": 2,
+        "speed": 4,
+        "ease": 4
+      },
+      "who_today": "analyst or agency"
+    },
+    {
+      "rank": 21,
+      "job": "Keep privacy consent from blinding the tracking",
+      "why": "Consent banners set up wrong either block tracking for most visitors or fire tags before consent. One loses data, the other is a legal risk.",
+      "watch": {
+        "metric": "share of sessions with analytics consent granted and share of tags firing before consent, weekly",
+        "unit": "percent",
+        "source": "GA4 consent reports, consent banner logs"
+      },
+      "drives": {
+        "metric": "share of purchases GA4 records",
+        "unit": "percent"
+      },
+      "business": "risk",
+      "now_after": "Example: Now: tags fire before consent on 3 pages and 30% of EU visits are lost. After: the banner is fixed and consent mode fills modelled data within a week.",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 3
+      },
+      "who_today": "developer, or nobody"
+    },
+    {
+      "rank": 22,
+      "job": "Read repeat buying by cohort, not one blended rate",
+      "why": "A blended returning customer rate hides whether newer customers come back less than older ones. Cohorts show it months earlier.",
+      "watch": {
+        "metric": "90-day repeat purchase rate by first-order month, monthly",
+        "unit": "percent",
+        "source": "Shopify orders by customer"
+      },
+      "drives": {
+        "metric": "accuracy of lifetime value estimates",
+        "unit": "percent"
+      },
+      "business": "gross profit",
+      "now_after": "Example: Now: returning rate is 31% and looks stable. After: cohorts show 90-day repeat fell from 18% to 12% for spring customers, so the welcome flow is fixed.",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 2,
+        "ease": 4
+      },
+      "who_today": "analyst, or nobody"
+    },
+    {
+      "rank": 23,
+      "job": "See AI assistant visits as their own source",
+      "why": "Shoppers now arrive from ChatGPT, Perplexity and similar tools. Lumped into referral or direct, this growing source stays invisible.",
+      "watch": {
+        "metric": "sessions and orders from AI assistants, weekly",
+        "unit": "count",
+        "source": "GA4 with a custom channel group"
+      },
+      "drives": {
+        "metric": "share of orders with a known source",
+        "unit": "percent"
+      },
+      "business": "revenue",
+      "now_after": "Example: Now: AI visits hide in referral. After: a custom channel shows 1,400 sessions and 60 orders a month from AI assistants.",
+      "score": {
+        "money": 2,
+        "satisfaction": 2,
+        "speed": 4,
+        "ease": 5
+      },
+      "who_today": "nobody"
+    },
+    {
+      "rank": 24,
+      "job": "Credit ads for the sales they drive on Amazon and in stores",
+      "why": "Meta and TikTok ads also push sales on Amazon and at retail, which the store never sees. Without this, good ads get cut.",
+      "watch": {
+        "metric": "Amazon branded search volume and sales against weekly ad spend, and sales from tagged links to Amazon",
+        "unit": "currency",
+        "source": "Amazon Brand Analytics, Amazon Attribution, Meta Ads Manager"
+      },
+      "drives": {
+        "metric": "total revenue credited to each channel",
+        "unit": "currency"
+      },
+      "business": "gross profit",
+      "now_after": "Example: Now: Meta is judged on store sales only. After: Amazon branded sales rise 20% in weeks of heavy Meta spend, and that lift is shown next to Meta.",
+      "score": {
+        "money": 3,
+        "satisfaction": 2,
+        "speed": 3,
+        "ease": 3
+      },
+      "who_today": "nobody"
+    },
+    {
+      "rank": 25,
+      "job": "Split budget across channels with a model that sees untracked ones",
+      "why": "Click tracking misses TV, podcasts, creators and word of mouth. A model built on weekly spend and sales estimates what each channel adds.",
+      "watch": {
+        "metric": "modelled share of sales per channel against what each platform claims, monthly",
+        "unit": "percent",
+        "source": "weekly Shopify sales and spend by channel"
+      },
+      "drives": {
+        "metric": "budget split across channels",
+        "unit": "currency"
+      },
+      "business": "gross profit",
+      "now_after": "Example: Now: no model exists. After: 2 years of weekly data show podcasts add more than their clicks show and Google brand search adds less.",
+      "score": {
+        "money": 4,
+        "satisfaction": 2,
+        "speed": 1,
+        "ease": 1
+      },
+      "who_today": "analyst or measurement vendor"
+    }
+  ]
+}

@@ -1,0 +1,582 @@
+{
+  "screen": "24-security",
+  "title": "Security",
+  "hired_for": "An owner hires this screen so the store does not lose money to fraud, chargebacks and fake traffic, nobody takes over an account, and the business can recover within a day if something breaks.",
+  "jobs": [
+    {
+      "rank": 1,
+      "job": "Stop anyone taking over my store, ad, email or bank accounts",
+      "why": "One stolen login can empty an ad account, change payout details or send a fake email to every customer. Two-step login on every admin account stops most of it.",
+      "watch": {
+        "metric": "share of admin and staff accounts with two-step login or a passkey across Shopify, Meta, Google, Klaviyo, the bank and the domain registrar, weekly",
+        "unit": "percent",
+        "source": "Shopify staff accounts, Meta Business Manager, Google Admin, Klaviyo users"
+      },
+      "drives": {
+        "metric": "account takeover incidents per year",
+        "unit": "count"
+      },
+      "business": "risk",
+      "now_after": "Example: Now: 7 of 19 admin accounts have no two-step login, including 2 agency users on Meta. After: all 19 have it on within 1 week.",
+      "score": {
+        "money": 4,
+        "satisfaction": 5,
+        "speed": 5,
+        "ease": 5
+      },
+      "who_today": "founder, or nobody"
+    },
+    {
+      "rank": 2,
+      "job": "Be able to restore the store within a day",
+      "why": "A bad app, a wrong bulk edit or a hack can wipe products, customers or the theme. A backup only counts if a restore has been tested.",
+      "watch": {
+        "metric": "days since the last successful restore test of products, customers, orders and theme",
+        "unit": "days",
+        "source": "backup app log (Rewind or similar), brand brain runbook"
+      },
+      "drives": {
+        "metric": "hours to recover from a data loss",
+        "unit": "hours"
+      },
+      "business": "risk",
+      "now_after": "Example: Now: backups run but no restore has ever been tried. After: a test restore of the theme and 100 products works and is repeated every 30 days.",
+      "score": {
+        "money": 4,
+        "satisfaction": 5,
+        "speed": 4,
+        "ease": 4
+      },
+      "who_today": "developer, or nobody"
+    },
+    {
+      "rank": 3,
+      "job": "Stop fraud orders before they ship",
+      "why": "A fraud order loses the product, the postage and the sale, then adds a chargeback fee. Catching it before it ships saves all of it.",
+      "watch": {
+        "metric": "fraud loss: orders shipped then charged back as fraud, dollars per month",
+        "unit": "currency",
+        "source": "Shopify fraud analysis and Shopify Payments disputes"
+      },
+      "drives": {
+        "metric": "chargeback loss per month",
+        "unit": "currency"
+      },
+      "business": "gross profit",
+      "now_after": "Example: Now: $4,200 a month ships to fraud orders flagged high risk. After: high risk orders are held for review and fraud loss falls to $900 within 30 days.",
+      "score": {
+        "money": 5,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 3
+      },
+      "who_today": "founder or customer service"
+    },
+    {
+      "rank": 4,
+      "job": "Keep chargebacks under the payment processor's warning line",
+      "why": "Past a set rate of disputes (often near 1% of orders), the processor adds fees, holds payouts or closes the account. Losing card payments stops the business.",
+      "watch": {
+        "metric": "disputes divided by orders, monthly, against the processor's warning line",
+        "unit": "percent",
+        "source": "Shopify Payments or Stripe disputes, PayPal disputes"
+      },
+      "drives": {
+        "metric": "risk of held payouts or a closed payment account",
+        "unit": "percent"
+      },
+      "business": "risk",
+      "now_after": "Example: Now: disputes are 0.7% and rising. After: clearer billing names and faster refunds bring them to 0.3% within 2 months.",
+      "score": {
+        "money": 5,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 3
+      },
+      "who_today": "founder, or nobody"
+    },
+    {
+      "rank": 5,
+      "job": "Keep domain and DNS locked down",
+      "why": "If someone takes the domain, the store, email and ads all go dark. A registrar lock and a clean DNS list take an afternoon.",
+      "watch": {
+        "metric": "registrar lock and two-step login on the registrar, and count of DNS records pointing at nothing, weekly",
+        "unit": "count",
+        "source": "domain registrar, DNS provider"
+      },
+      "drives": {
+        "metric": "domain hijack risk",
+        "unit": "count"
+      },
+      "business": "risk",
+      "now_after": "Example: Now: the registrar has no lock and 3 old records point at closed services. After: the lock is on and all 3 are removed today.",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 5,
+        "ease": 5
+      },
+      "who_today": "developer, or nobody"
+    },
+    {
+      "rank": 6,
+      "job": "Stop blocking good customers by mistake",
+      "why": "Strict fraud rules and card checks turn away real buyers. A lost good order costs more than most fraud.",
+      "watch": {
+        "metric": "share of orders cancelled or declined as fraud that were later shown to be good, and payment approval rate, monthly",
+        "unit": "percent",
+        "source": "Shopify fraud analysis, Shopify Payments or Stripe approval data"
+      },
+      "drives": {
+        "metric": "revenue lost to false declines",
+        "unit": "currency"
+      },
+      "business": "revenue",
+      "now_after": "Example: Now: 2.4% of orders are cancelled as risky and half of those were good. After: rules are tuned and false cancels fall to 0.6% within 30 days.",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 3
+      },
+      "who_today": "customer service or nobody"
+    },
+    {
+      "rank": 7,
+      "job": "Remove access people should not have",
+      "why": "Ex-staff, old agencies and staff with full admin rights they do not need are the easiest way in for a thief.",
+      "watch": {
+        "metric": "count of active accounts held by ex-staff or ex-agencies, and share of accounts reviewed in the last 90 days",
+        "unit": "count",
+        "source": "Shopify staff accounts, Meta Business Manager, Google, Klaviyo"
+      },
+      "drives": {
+        "metric": "accounts with more access than their role needs",
+        "unit": "count"
+      },
+      "business": "risk",
+      "now_after": "Example: Now: 5 people who left still have access and 8 staff have full admin. After: the 5 are removed and 6 of 8 move to limited roles within a week.",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 5,
+        "ease": 4
+      },
+      "who_today": "founder"
+    },
+    {
+      "rank": 8,
+      "job": "Keep checkout free of card-stealing scripts",
+      "why": "A script on the checkout or payment page can copy card details. Card rules now ask stores to list and approve every script on payment pages.",
+      "watch": {
+        "metric": "count of third-party scripts on checkout and payment pages that are not on the approved list, weekly",
+        "unit": "count",
+        "source": "Shopify checkout settings and customer events, site script scan"
+      },
+      "drives": {
+        "metric": "card theft incidents",
+        "unit": "count"
+      },
+      "business": "risk",
+      "now_after": "Example: Now: 11 scripts load on the thank you and checkout pages and 4 have no known owner. After: the 4 are removed and the list is checked every week.",
+      "score": {
+        "money": 4,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 3
+      },
+      "who_today": "developer"
+    },
+    {
+      "rank": 9,
+      "job": "Block card testing attacks",
+      "why": "Fraudsters test stolen cards with many small orders in minutes. Each attempt costs fees, and a burst can trip the processor's alarms.",
+      "watch": {
+        "metric": "count of card testing bursts (many failed payments in a short window), daily",
+        "unit": "count",
+        "source": "Shopify Payments or Stripe payment logs"
+      },
+      "drives": {
+        "metric": "payment fees and dispute risk",
+        "unit": "currency"
+      },
+      "business": "risk",
+      "now_after": "Example: Now: 2 bursts last month brought 1,400 failed payments. After: bot checks at checkout and rate limits stop the next burst within minutes.",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 5,
+        "ease": 4
+      },
+      "who_today": "developer, or nobody"
+    },
+    {
+      "rank": 10,
+      "job": "Stop fake emails sent in my brand's name",
+      "why": "Without email checks at the strictest setting (DMARC at reject), anyone can send mail that looks like it came from the brand. It also hurts email reach.",
+      "watch": {
+        "metric": "email check setting per sending domain (none, quarantine or reject) and share of mail passing, weekly",
+        "unit": "percent",
+        "source": "DNS records, DMARC reports, Klaviyo sending domain"
+      },
+      "drives": {
+        "metric": "spoofed emails reaching customers",
+        "unit": "count"
+      },
+      "business": "risk",
+      "now_after": "Example: Now: the policy is set to none, so fake mail goes through. After: it moves to reject in 3 steps over 6 weeks with no drop in real mail.",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 4
+      },
+      "who_today": "developer or email agency"
+    },
+    {
+      "rank": 11,
+      "job": "Stop discount codes leaking and being abused",
+      "why": "A code meant for one partner ends up on coupon sites and gets used on full price orders by customers who would have paid anyway.",
+      "watch": {
+        "metric": "share of orders using a code outside its intended audience, weekly",
+        "unit": "percent",
+        "source": "Shopify discount reports"
+      },
+      "drives": {
+        "metric": "discount rate on full price orders",
+        "unit": "percent"
+      },
+      "business": "gross profit",
+      "now_after": "Example: Now: an influencer code is used on 900 orders a month, 70% from coupon sites. After: codes are single use or capped and leaked use falls 80% within a week.",
+      "score": {
+        "money": 3,
+        "satisfaction": 2,
+        "speed": 5,
+        "ease": 4
+      },
+      "who_today": "nobody"
+    },
+    {
+      "rank": 12,
+      "job": "Close serious security findings fast",
+      "why": "A known weak spot left open is an open door. Critical findings should close within days, not months.",
+      "watch": {
+        "metric": "count of open critical and high findings and days each has been open, weekly",
+        "unit": "count",
+        "source": "weekly security scan results"
+      },
+      "drives": {
+        "metric": "findings open past their fix window",
+        "unit": "count"
+      },
+      "business": "risk",
+      "now_after": "Example: Now: 3 critical findings have been open for 40 days. After: all 3 close within 7 days and new ones close within a week.",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 3
+      },
+      "who_today": "developer"
+    },
+    {
+      "rank": 13,
+      "job": "Protect customer accounts from takeover",
+      "why": "Stolen passwords from other sites get tried on the store. A taken account can drain store credit or send orders to a new address.",
+      "watch": {
+        "metric": "failed customer logins per hour against baseline, and accounts whose email or address changed right after a new-device login, daily",
+        "unit": "count",
+        "source": "Shopify customer accounts, bot protection logs"
+      },
+      "drives": {
+        "metric": "customer account takeover complaints",
+        "unit": "count"
+      },
+      "business": "customer satisfaction",
+      "now_after": "Example: Now: a spike of 20,000 failed logins went unseen. After: login rate limits are on and spikes are flagged within the hour.",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 3
+      },
+      "who_today": "developer, or nobody"
+    },
+    {
+      "rank": 14,
+      "job": "Keep bot traffic out of my numbers and my checkout",
+      "why": "Bots inflate visits, drag down conversion rate, pollute ad audiences and hammer checkout. The owner needs to know how much traffic is not human.",
+      "watch": {
+        "metric": "share of sessions scored as bots, with the checkout share shown apart, daily against the brand's own baseline",
+        "unit": "percent",
+        "source": "Cloudflare or platform bot reports, GA4"
+      },
+      "drives": {
+        "metric": "accuracy of conversion rate and ad audiences",
+        "unit": "percent"
+      },
+      "business": "risk",
+      "now_after": "Example: Now: 22% of sessions are bots and nobody knows. After: bad bots are challenged and the bot share falls to 8%, lifting reported conversion to its true level.",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 3
+      },
+      "who_today": "developer, or nobody"
+    },
+    {
+      "rank": 15,
+      "job": "Stop scammers pretending to be us",
+      "why": "Lookalike sites and fake social ads use the brand's name and photos to steal payments. Customers blame the brand.",
+      "watch": {
+        "metric": "count of new lookalike domains and fake ads or pages using the brand, weekly",
+        "unit": "count",
+        "source": "domain watch service, Meta Ad Library search, customer reports in Gorgias"
+      },
+      "drives": {
+        "metric": "scam complaints from customers",
+        "unit": "count"
+      },
+      "business": "risk",
+      "now_after": "Example: Now: 2 lookalike stores run Meta ads with the brand's photos. After: both are reported and taken down within 10 days and new ones are caught weekly.",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 3
+      },
+      "who_today": "founder, or nobody"
+    },
+    {
+      "rank": 16,
+      "job": "Check every app, script and vendor that can touch customer data",
+      "why": "Each app with access to customers or orders is another way in. Old apps nobody uses still hold that access.",
+      "watch": {
+        "metric": "count of installed apps and vendors with customer or order access that have not been reviewed in 90 days",
+        "unit": "count",
+        "source": "Shopify installed apps and their permissions, vendor list in the brand brain"
+      },
+      "drives": {
+        "metric": "apps with more access than they need",
+        "unit": "count"
+      },
+      "business": "risk",
+      "now_after": "Example: Now: 34 apps are installed, 9 unused, and 5 can read all customer data. After: the 9 are removed and access is cut on 3 more within 2 weeks.",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 3
+      },
+      "who_today": "developer, or nobody"
+    },
+    {
+      "rank": 17,
+      "job": "Know what to do in the first hour of an incident",
+      "why": "When a hack, a leak or a ransom note lands, a written plan with names and first steps saves hours and money.",
+      "watch": {
+        "metric": "written incident plan in place and days since the last practice run",
+        "unit": "days",
+        "source": "runbook in the brand brain"
+      },
+      "drives": {
+        "metric": "hours to contain an incident",
+        "unit": "hours"
+      },
+      "business": "risk",
+      "now_after": "Example: Now: no written plan exists. After: a 1 page plan names who does what and a 30 minute practice runs every 6 months.",
+      "score": {
+        "money": 3,
+        "satisfaction": 5,
+        "speed": 2,
+        "ease": 3
+      },
+      "who_today": "nobody"
+    },
+    {
+      "rank": 18,
+      "job": "Win the disputes I should win",
+      "why": "Many disputes are customers who forgot a purchase or claim it never came. With order, delivery and contact records, most can be won.",
+      "watch": {
+        "metric": "dispute win rate and dollars recovered, monthly",
+        "unit": "percent",
+        "source": "Shopify Payments or Stripe disputes, carrier tracking"
+      },
+      "drives": {
+        "metric": "net chargeback loss",
+        "unit": "currency"
+      },
+      "business": "gross profit",
+      "now_after": "Example: Now: the brand answers 30% of disputes and wins 20% of those. After: every dispute gets a proof pack and the win rate reaches 55% within 60 days.",
+      "score": {
+        "money": 3,
+        "satisfaction": 2,
+        "speed": 3,
+        "ease": 4
+      },
+      "who_today": "customer service, or nobody"
+    },
+    {
+      "rank": 19,
+      "job": "Stay on the right side of privacy laws",
+      "why": "US state privacy laws and EU rules set how data is collected and when customers can ask for it back. A missed request or a tag firing before consent can bring fines.",
+      "watch": {
+        "metric": "share of tags firing only after consent where required, and customer data requests open past the legal deadline",
+        "unit": "percent",
+        "source": "consent banner logs, Shopify customer privacy requests"
+      },
+      "drives": {
+        "metric": "privacy complaints and fines",
+        "unit": "count"
+      },
+      "business": "risk",
+      "now_after": "Example: Now: 4 tags fire before consent and 2 data requests are 50 days old. After: the tags wait for consent and both requests close this week.",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 3
+      },
+      "who_today": "developer or lawyer, or nobody"
+    },
+    {
+      "rank": 20,
+      "job": "Train staff to spot phishing",
+      "why": "Most breaches start with a staff member clicking a fake login email. Short, regular practice cuts the click rate.",
+      "watch": {
+        "metric": "share of staff who clicked the last practice phishing email, quarterly",
+        "unit": "percent",
+        "source": "phishing practice tool"
+      },
+      "drives": {
+        "metric": "real phishing incidents per year",
+        "unit": "count"
+      },
+      "business": "risk",
+      "now_after": "Example: Now: no training runs. After: the first practice email gets 30% clicks, and the third one 6 months later gets 8%.",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 2,
+        "ease": 3
+      },
+      "who_today": "nobody"
+    },
+    {
+      "rank": 21,
+      "job": "Rotate keys and passwords for connected tools on time",
+      "why": "Old API keys shared with past agencies or apps stay valid for years. A leaked key can read orders or customers.",
+      "watch": {
+        "metric": "count of API keys and access tokens overdue for rotation or unused for 90 days, monthly",
+        "unit": "count",
+        "source": "key list in the brand brain, Shopify custom apps, platform settings"
+      },
+      "drives": {
+        "metric": "keys held by people or apps no longer in use",
+        "unit": "count"
+      },
+      "business": "risk",
+      "now_after": "Example: Now: 12 keys exist and 5 belong to past agencies. After: the 5 are revoked and the rest rotate every 90 days.",
+      "score": {
+        "money": 2,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 4
+      },
+      "who_today": "developer, or nobody"
+    },
+    {
+      "rank": 22,
+      "job": "Stop resale bots from buying up limited drops",
+      "why": "When a limited product sells out in minutes to bots, real fans leave angry and the items show up on resale sites.",
+      "watch": {
+        "metric": "share of drop units bought by accounts that share a card, address or device, per drop",
+        "unit": "percent",
+        "source": "Shopify orders, bot protection logs"
+      },
+      "drives": {
+        "metric": "real customers served per drop",
+        "unit": "count"
+      },
+      "business": "customer satisfaction",
+      "now_after": "Example: Now: 25% of the last drop went to 30 linked accounts. After: order limits and bot checks cut that to under 5% on the next drop.",
+      "score": {
+        "money": 2,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 3
+      },
+      "who_today": "developer, or nobody"
+    },
+    {
+      "rank": 23,
+      "job": "Stop return and refund abuse",
+      "why": "A small group of customers returns most of what they buy or claims items never came. Left alone, the cost grows.",
+      "watch": {
+        "metric": "share of refund dollars going to customers who returned most of their last orders, monthly",
+        "unit": "percent",
+        "source": "Shopify returns and refunds, Gorgias"
+      },
+      "drives": {
+        "metric": "refund cost as a share of sales",
+        "unit": "percent"
+      },
+      "business": "gross profit",
+      "now_after": "Example: Now: 40 customers took $6,000 in refunds last quarter, returning 8 of every 10 orders. After: they are flagged, returns need review, and that cost halves.",
+      "score": {
+        "money": 3,
+        "satisfaction": 2,
+        "speed": 3,
+        "ease": 3
+      },
+      "who_today": "customer service"
+    },
+    {
+      "rank": 24,
+      "job": "Confirm which card security rules apply to us once a year",
+      "why": "Card rules (PCI) differ by how the checkout is built. Using a hosted checkout keeps the rules light, but a change can quietly widen them.",
+      "watch": {
+        "metric": "card security self-check type confirmed and the date it was last confirmed",
+        "unit": "days",
+        "source": "payment processor account and the brand brain"
+      },
+      "drives": {
+        "metric": "risk of fines or losing card payments",
+        "unit": "count"
+      },
+      "business": "risk",
+      "now_after": "Example: Now: nobody knows which self-check applies. After: the processor confirms it in writing and the date is logged for next year.",
+      "score": {
+        "money": 2,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 4
+      },
+      "who_today": "developer or accountant"
+    },
+    {
+      "rank": 25,
+      "job": "Set rules for AI shopping agents and crawlers",
+      "why": "AI assistants and shopping agents now visit and even buy. Blocking all of them loses sales; allowing all of them invites scraping and fraud.",
+      "watch": {
+        "metric": "AI agent and crawler visits by type and what they did (browse, cart, checkout), weekly",
+        "unit": "count",
+        "source": "Cloudflare or platform bot reports, GA4 AI referral sessions"
+      },
+      "drives": {
+        "metric": "orders from AI assistants and agents",
+        "unit": "count"
+      },
+      "business": "revenue",
+      "now_after": "Example: Now: all bots get the same treatment. After: known AI assistants can browse, unknown agents are challenged at checkout, and AI referral orders are tracked.",
+      "score": {
+        "money": 2,
+        "satisfaction": 2,
+        "speed": 3,
+        "ease": 3
+      },
+      "who_today": "developer, or nobody"
+    }
+  ]
+}
