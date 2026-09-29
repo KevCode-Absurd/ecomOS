@@ -19,6 +19,7 @@ question, and accept or ignore on a proposed record. Nothing external.
   POST handoff                  {to, role}: build the pack and record the hand-off on the team section
   GET  round                    the founder round as a checklist: questions, the review queue, moves, reviews due, carried over
   POST round/tick               {key, done}: tick or untick an item; POST round/close closes the round with one dated decision
+  GET  round/report             this round against the last: done and carried, trust moved, what was written, what is still open
   GET  trust/history            the trust number per day since the first run (the chart), optional ?sections=
   GET  sources                  where every fact came from: one row per source reference with sections, tiers, dates
   GET  sources/approve          ?ref=&sections=: the records one source would approve, with the tier each has now
@@ -302,6 +303,9 @@ _shspec.loader.exec_module(sheets)
 _slspec = importlib.util.spec_from_file_location("brand_brain_shelf", HERE / "shelf.py")
 shelf = importlib.util.module_from_spec(_slspec)
 _slspec.loader.exec_module(shelf)
+_rrspec = importlib.util.spec_from_file_location("brand_brain_roundreport", HERE / "roundreport.py")
+roundreport = importlib.util.module_from_spec(_rrspec)
+_rrspec.loader.exec_module(roundreport)
 
 
 def _shelf(brain: Brain) -> dict:
@@ -2332,6 +2336,18 @@ def handle(req):
         return brandbook_view(brain, req.arg("reader"))
     if req.method == "GET" and parts == ["round"]:
         return round_view(brain, req)
+    if req.method == "GET" and parts == ["round", "report"]:
+        cur = round_view(brain, req)
+        try:
+            ex_n = expiring.expiring(brain, _shelf(brain))["counts"]["records"]
+        except Exception:  # noqa: BLE001
+            ex_n = None
+        open_now = {"contradictions to settle": sum(p["left"] for p in contradict.open_plans(brain)), "questions asked with no answer": misses.grouped(brain)["counts"]["unanswered"],
+                    "hand-offs waiting on a quiz": sum(1 for h in handoff.handoffs(brain) if h["state"] in ("waiting", "overdue")), "records expiring this week": ex_n,
+                    "open questions": sum(1 for q in (cur.get("items") or []) if q.get("kind") == "question")}
+        res = roundreport.build(brain, cur, trusthistory.read(brain), changes.recent(brain, days=100000)["changes"], open_now)
+        res.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "BRN-C12", "autonomy": "agent_does"})
+        return res
     if req.method == "POST" and parts == ["round", "tick"]:
         body = req.body or {}
         key = str(body.get("key") or "")

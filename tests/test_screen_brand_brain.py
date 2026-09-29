@@ -2937,6 +2937,39 @@ class Round8QuizAndSchedule(TempBrain):
         self.assertEqual(api.handle(Req(['schedule'], 'POST', body={'weekday': 'x'}))[0], 400)
 
 
+class Round9RoundReport(TempBrain):
+    """Round 9 feature 9: the round-over-round report."""
+
+    def test_report_with_no_earlier_round_then_with_one(self):
+        rp = api.handle(Req(['round', 'report']))
+        self.assertIsNone(rp['previous'])
+        self.assertIsNone(rp['trust'])
+        self.assertIn('No earlier round on file', rp['text'])
+        self.assertIn('unavailable: the trust line needs', rp['text'])
+        self.assertEqual(rp['week'], {'start': '2026-09-28', 'end': '2026-10-04'})
+        api.handle(Req(['profile', 'offers', 'free_shipping_threshold_usd'], 'POST', body={'text': '80', 'force': True}))
+        api.handle(Req(['approve', 'bombas.positioning.frame'], 'POST', body={'choice': 'approve'}))
+        rows = self.section('team')
+        rows.append({'id': 'bombas.team.round_20260921', 'brand': 'bombas', 'section': 'team', 'field': 'round_20260921', 'value': {'round': '2026-09-21', 'ticked': {'a': True, 'b': True}, 'closed_on': '2026-09-25', 'summary': None}, 'text': 'Founder round of 2026-09-21: 2 items done, closed 2026-09-25.', 'tier': 'approved', 'confidence': 1.0, 'visibility': 'private', 'source': {'type': 'founder', 'ref': '05-brand-brain founder round', 'captured_at': '2026-09-25'}})
+        self.write('team', rows)
+        dec = self.section('decisions')
+        dec.append({'id': 'bombas.decisions.round_20260921_closed', 'brand': 'bombas', 'section': 'decisions', 'field': 'round_20260921_closed', 'value': {'round': '2026-09-21', 'done': ['a', 'b'], 'carried': ['Answer the 3PL question'], 'closed_on': '2026-09-25'}, 'text': 'closed', 'tier': 'approved', 'confidence': 1.0, 'visibility': 'private', 'source': {'type': 'founder', 'ref': '05-brand-brain founder round', 'captured_at': '2026-09-25'}})
+        self.write('decisions', dec)
+        hist = self.tmp / 'bombas' / 'review' / 'trust.history.jsonl'
+        hist.write_text(json.dumps({'date': '2026-09-27', 'overall': 60.0, 'sections': {'offers': 50.0, 'claims': 70.0}}) + '\n' + json.dumps({'date': '2026-09-28', 'overall': 63.5, 'sections': {'offers': 58.0, 'claims': 70.0}}) + '\n', encoding='utf-8')
+        rp = api.handle(Req(['round', 'report']))
+        self.assertEqual((rp['previous']['round'], rp['previous']['ticked'], rp['previous']['carried']), ('2026-09-21', 2, ['Answer the 3PL question']))
+        self.assertEqual((rp['trust']['from'], rp['trust']['to'], rp['trust']['delta']), (60.0, 63.5, 3.5))
+        self.assertEqual(rp['trust']['movers'][0]['section'], 'offers')
+        self.assertGreaterEqual(rp['writes']['this']['by_kind'].get('founder_edit', 0), 1)
+        self.assertGreaterEqual(rp['writes']['this']['by_kind'].get('approve', 0), 1)
+        self.assertEqual(rp['writes']['previous']['total'], 0)
+        self.assertEqual(rp['open']['contradictions to settle'], 1)
+        self.assertIn('Brain trust 60.0 to 63.5 (+3.5)', rp['text'])
+        self.assertIn('carried: Answer the 3PL question', rp['text'])
+        self.assertIn('- contradictions to settle: 1', rp['text'])
+
+
 class Round9ShelfLife(TempBrain):
     """Round 9 feature 8: shelf life per section, set by the founder and read everywhere."""
 
@@ -3378,7 +3411,7 @@ class Round8SourcesTrustHistory(TempBrain):
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
-    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'], ['onepage'], ['brainmd', 'notes'], ['alerts'], ['glossary'], ['expiring'], ['feedback'], ['numbers'], ['proofs'], ['trust'], ['round'], ['brandbook'], ['quiz'], ['schedule'], ['sources'], ['records', 'csv'], ['trust', 'history'], ['contradict'], ['changes'], ['handoff'], ['ask', 'misses'], ['products', 'sheets'], ['shelf'],
+    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'], ['onepage'], ['brainmd', 'notes'], ['alerts'], ['glossary'], ['expiring'], ['feedback'], ['numbers'], ['proofs'], ['trust'], ['round'], ['brandbook'], ['quiz'], ['schedule'], ['sources'], ['records', 'csv'], ['trust', 'history'], ['contradict'], ['changes'], ['handoff'], ['ask', 'misses'], ['products', 'sheets'], ['shelf'], ['round', 'report'],
               ['decisions'], ['flows'], ['claims'], ['site', 'diff'], ['parity'], ['contracts'], ['legal'], ['voice'], ['battlecards'], ['permissions'],
               ['export'], ['assumptions'], ['facts'], ['summaries'], ['changes'], ['learn'], ['report'], ['digest'], ['review'], ['bottlenecks'], ['audit']]
 
