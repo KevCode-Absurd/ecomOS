@@ -83,6 +83,7 @@
     const con = d.plan.filter((a) => a.status === 'unavailable');
     const w = d.window;
     mount('#plan', UI.planBoard({
+      onDecision: brandDecision,
       title: 'The plan: offer and price moves to approve',
       sub: w.days + ' days to ' + fmt.date(w.ends_on) + '. ' + open.length + ' moves, ranked by the rubric.',
       orient: d.orientation, actions: open, limit: 10, screen: SLUG,
@@ -119,7 +120,7 @@
     mount('#connect', con.length ? el('div', { class: 'card flat connect' },
       el('div', { class: 'sec-head' }, el('h2', { text: 'Connect first: ' + con.length + ' rules wait on a source' }),
         el('span', { class: 'sub', text: 'Each is a person task in Setup, read-only keys only. They never crowd out work that can start today.' })),
-      el('div', { class: 'grid' }, con.map((a) => UI.actionCard(a, { compact: true, screen: SLUG })))) : null, blindBlock(blind));
+      el('div', { class: 'grid' }, con.map((a) => UI.actionCard(a, { compact: true, screen: SLUG, onDecision: brandDecision })))) : null, blindBlock(blind));
   }
   /** What the screen cannot see yet. Each stays unavailable until its data lands; nothing is estimated in its place. */
   function blindBlock(rows) {
@@ -156,6 +157,16 @@
         sort: false,
       }),
       (d.resolved || []).length ? el('p', { class: 'micro faint', text: 'Resolved in the last 28 days: ' + d.resolved.map((h) => (h.label || h.rule_id) + ' (' + fmt.date(h.resolved_on) + ')').join('; ') + '.' }) : null);
+  }
+
+  /** The kit logs a decision without a brand; this screen's finding ids are the same for every brand, so the page
+      adds a branded copy as the latest row (server: an unbranded row is the sample brand's). Contract ask in FEATURES.md. */
+  async function brandDecision(dec) {
+    if (!dec || brand === 'sample' || dec.brand) return;
+    try {
+      await UI.api('/api/decisions', { method: 'POST', body: { screen: dec.screen, capability: dec.capability, choice: dec.choice,
+        reason: dec.reason, autonomy: dec.autonomy, finding_id: dec.finding_id, brand: brand } });
+    } catch (e) { /* the unbranded row stands; the sample brand would read it */ }
   }
 
   /** Read back this screen's hand-offs by status (events.md): who has each brief and where it stands. */
@@ -203,7 +214,7 @@
   function actionsList(d) {
     const open = d.plan.filter((a) => a.status !== 'unavailable');
     mount('#actions', UI.sectionHead({ title: 'Actions: how each move gets done', sub: 'Owner, steps with who does each, the artefact it produces, the win and stop rules, the check date.' }),
-      el('div', { class: 'grid' }, open.map((a, i) => UI.actionCard(a, { expanded: i === 0, screen: SLUG, extra: el('div', null, saveRow(a), priceFile(a), calendarFile(a)) }))));
+      el('div', { class: 'grid' }, open.map((a, i) => UI.actionCard(a, { expanded: i === 0, screen: SLUG, onDecision: brandDecision, extra: el('div', null, saveRow(a), priceFile(a), calendarFile(a)) }))));
   }
 
   /** A price move's file for arm B: SKU, today's price, the test price. */

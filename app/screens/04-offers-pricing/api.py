@@ -16,7 +16,7 @@ import math
 import re
 import statistics
 import sys
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -313,10 +313,52 @@ def page_settings():
             'promo_ratio': pb.PROMO_DAY_RATIO, 'price_move': pb.PRICE_MOVE, 'code_dependent': pb.CODE_DEPENDENT}
 
 
-def with_decisions(acts, today=None, path=None):
+def brand_decisions(brand, path=None, out=None):
+    """This brand's own decision trail (server: a row without a brand is the sample brand's). This screen's finding
+    ids are the same for every brand, so a Not now on one brand must not snooze another. Writes the filtered trail to a
+    git-ignored file the shared helpers read, and returns its path."""
+    src = Path(path) if path else actions.RANK.DECISIONS
+    try:
+        rows = json.loads(src.read_text(encoding='utf-8'))
+    except (OSError, ValueError):
+        rows = []
+    want = brand or None
+    rows = [r for r in rows if isinstance(r, dict)]
+
+    def stamp(r):
+        try:
+            return datetime.fromisoformat(str(r.get("time")).replace("Z", "+00:00"))
+        except ValueError:
+            return None
+
+    # the kit's unbranded row, followed within 2 minutes by this page's branded twin, belongs to the twin's brand
+    twins = [(r.get('finding_id'), r.get('choice'), stamp(r)) for r in rows if r.get('brand')]
+
+    def owner(r):
+        if r.get('brand'):
+            return r['brand']
+        t = stamp(r)
+        for fid, ch, t2 in twins:
+            if fid == r.get('finding_id') and ch == r.get('choice') and t and t2 and timedelta(0) <= t2 - t <= timedelta(minutes=2):
+                return 'twin'
+        return None
+    keep = [r for r in rows if owner(r) == want]
+    dst = Path(out) if out else approvals.OUTBOX / f'decisions.{brand or "sample"}.json'
+    try:
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        dst.write_text(json.dumps(keep), encoding='utf-8')
+    except OSError:
+        return None
+    return dst
+
+
+def with_decisions(acts, today=None, path=None, brand=False):
     """depth.md rule 14: decisions from the log show on each move; 'not now' hides a move for 14 days.
-    Returns (plan, snoozed) where snoozed lists the hidden moves with the day they come back."""
+    Returns (plan, snoozed) where snoozed lists the hidden moves with the day they come back. With a brand (None is
+    the sample brand), only that brand's decisions count."""
     rk = actions.RANK
+    if brand is not False:
+        path = brand_decisions(brand, path, DECISIONS_OUT.get(brand)) or path
     kw = {'path': path} if path else {}
     kept = rk.apply_decisions([dict(a) for a in acts], today=today, **kw)
     ids = {a['id'] for a in kept}
@@ -408,6 +450,7 @@ def week(ranked, rd=None):
 
 
 HISTORY_PATH = {}   # tests point a brand's history at a temporary file
+DECISIONS_OUT = {}  # and a brand's filtered decision trail
 FINDINGS_KEEP_DAYS = 28
 
 
@@ -464,7 +507,7 @@ def overview(data, brand):
     ranked = actions.rank(brand, {'ends_on': ends_on.isoformat()}, data=None if brand else data)
     hist = finding_history(brand, ranked['findings'], ends_on, HISTORY_PATH.get(brand))
     desk = {k: ranked[k] for k in DESK_KEYS}
-    plan, snoozed = with_decisions(ranked['actions'])
+    plan, snoozed = with_decisions(ranked['actions'], brand=brand)
     mark_snoozed(ranked['findings'], snoozed)
     made = approvals.planned(rd) if brand else {}
     for a in plan:

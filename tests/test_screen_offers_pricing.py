@@ -30,6 +30,7 @@ audit = api.audit
 import tempfile as _tf
 _HIST = Path(_tf.mkdtemp())
 api.HISTORY_PATH.update({'bombas': _HIST / 'findings.bombas.json', None: _HIST / 'findings.sample.json'})   # never the real outbox
+api.DECISIONS_OUT.update({'bombas': _HIST / 'decisions.bombas.json', None: _HIST / 'decisions.sample.json'})
 
 
 class Req:
@@ -2418,6 +2419,43 @@ class SettingsFileTest(unittest.TestCase):
         import server
         a = next(x for x in api.actions.rank(None, None, server.Data())['actions'] if x['rule_id'] == 'OFFER-R32')
         self.assertIn('WELCOME10', a['price_file']['rows'][0]['value'])
+
+
+class BrandDecisionTest(unittest.TestCase):
+    """Round 11 feature 1: a Not now on one brand never snoozes another brand's move (decisions brand field)."""
+
+    def test_filter(self):
+        import json, tempfile
+        from datetime import date
+        acts = api.actions.rank('bombas')['actions'][:2]
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / 'decisions.json'
+            path.write_text(json.dumps([
+                {'finding_id': acts[0]['id'], 'choice': 'not_now', 'time': '2026-09-27T10:00:00Z', 'brand': 'bombas'},
+                {'finding_id': acts[1]['id'], 'choice': 'not_now', 'time': '2026-09-27T10:00:00Z'}]), encoding='utf-8')
+            plan_b, snoozed_b = api.with_decisions(acts, today=date(2026, 9, 28), path=path, brand='bombas')
+            plan_s, snoozed_s = api.with_decisions(acts, today=date(2026, 9, 28), path=path, brand=None)
+            self.assertEqual([x['id'] for x in snoozed_b], [acts[0]['id']])   # only the branded row
+            self.assertEqual([x['id'] for x in snoozed_s], [acts[1]['id']])   # an unbranded row is the sample's
+
+    def test_kit_row_with_branded_twin(self):
+        import json, tempfile
+        from datetime import date
+        acts = api.actions.rank('bombas')['actions'][:1]
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / 'decisions.json'
+            path.write_text(json.dumps([
+                {'finding_id': acts[0]['id'], 'choice': 'not_now', 'time': '2026-09-27T10:00:00Z'},
+                {'finding_id': acts[0]['id'], 'choice': 'not_now', 'time': '2026-09-27T10:00:01Z', 'brand': 'bombas'}]), encoding='utf-8')
+            _, snoozed_s = api.with_decisions(acts, today=date(2026, 9, 28), path=path, brand=None)
+            _, snoozed_b = api.with_decisions(acts, today=date(2026, 9, 28), path=path, brand='bombas')
+            self.assertEqual(snoozed_s, [])                # the kit's row belongs to its branded twin
+            self.assertEqual(len(snoozed_b), 1)
+
+    def test_js_posts_brand(self):
+        js = (SCREEN / 'screen.js').read_text(encoding='utf-8')
+        self.assertEqual(js.count('onDecision: brandDecision'), 3)
+        self.assertIn('brand: brand }', js)
 
 
 if __name__ == '__main__':

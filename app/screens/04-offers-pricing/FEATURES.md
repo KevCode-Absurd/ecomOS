@@ -239,8 +239,15 @@ Known gaps from round 0:
 5. Your week now says how many of the first moves have a file ready: 2 of 7 for Bombas.
 6. Next (round 11): act on your review of rounds 1 to 10 when it lands; no lead or founder note for this screen was found this round. Contract asks still open: findings table, registry table, baseline kinds, data layer speed.
 
+## Round 11: decisions per brand, and what the shared tables enable (from 29 Sep 2026)
+
+| # | Feature | Status |
+|---|---|---|
+| 11.1 | Decisions per brand (lead's decisions brand field, 28 Sep): this screen's finding ids are the same for every brand, so a "Not now" on Bombas used to snooze the sample brand's move too. The screen now reads only its brand's trail (an unbranded row is the sample brand's, per the server), and after the kit logs a decision the page adds a branded copy as the latest row; the kit's unbranded row followed within 2 minutes by its branded twin belongs to that brand. Checked in the browser with the decisions API stubbed | done |
+
 ## Contract asks
 
+- UI kit: `decisionRow` (and the plan board and action card that use it) posts `brand` when the screen passes one, so no screen needs a branded twin row. Local fallback: 04 posts the twin through /api/decisions and attributes the kit's row to it.
 - Data layer speed: `server.Data` coerces every CSV cell with a regex (`_coerce`), about 1.3 of 3 seconds on the sample brand's first load. A per-column type map from `tables.json` would parse once. Local fallback: none needed; later loads are cached.
 - A shared `findings` table the server writes after each audit run (audit.md section 4, first_seen, last_seen, resolved_on). Local fallback: 04 keeps `outbox/findings.<brand>.json` (git-ignored) and reads its own history only.
 - audit.md baseline kinds: add `own_segment` (another group of the same brand's rows in the same window, like code orders against full-price orders) and `own_before` (the same metric before a date, like 28 days before a launch). Local fallback: 04 maps both to `own_median` and names the comparison in the window text.
@@ -379,6 +386,7 @@ Intelligems (threshold and price tests scored by profit per visitor), Rebuy (tie
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.9 | 2026-09-28 | S3.9; screenshot round0.png |
+| 11 | 11.1 onward: decisions per brand | 2026-09-29 | in progress |
 | 10 | 10.1 to 10.10: hand-offs, read back, price files, build files, files in hand-offs and briefs, window dates, settings, ready count, close | 2026-09-28 | screenshot round10.png |
 | 9 | 9.1 to 9.10: promo stakes this year, window agreement, year rules, stale inputs, finding history, whole drafts, snoozed, rule register, since last run, close | 2026-09-28 | screenshot round9.png (sample brand) |
 | 8 | 8.1 to 8.10: one money scale, exposure, your week, unlocks, start dates, baseline kinds, stake inputs, severity and wording, confidence, close | 2026-09-28 | screenshot round8.png |
