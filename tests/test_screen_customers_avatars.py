@@ -2848,6 +2848,11 @@ class ShopperResults(TempBrain):
                 self.assertRegex(m['size']['text'], r'\d')
                 self.assertTrue(m['stop_rule'] and m['check_on'])
             self.assertTrue(fix['size'] and fix['stop_rule'])
+            # 12.6: the won pretest becomes a proposed live test in the registry shape
+            t = next(r for r in api.handle(Req(['tests']))['rows'] if r['proposal_key'].endswith('pretest_durability_disappointed_repeat_customer'))
+            self.assertEqual(t['source']['type'], 'pretest')
+            self.assertEqual(t['metric']['name'], 'ctr')
+            self.assertEqual(t['status'], 'proposed')
         self.with_fixture(body, check)
 
     def test_old_run_still_fires(self):
@@ -2895,3 +2900,11 @@ class OursWatch(TempBrain):
         api.BRAIN_ROOT = None
         o = api.handle(Req(['overview'], query={'brand': ['example']}))['lookalikes']['ours']
         self.assertNotIn('bombas', json.dumps(o).lower())
+
+
+class PretestTests(TempBrain):
+    """Feature 12.6: no pretest votes, no proposed live test from a pretest."""
+
+    def test_none_without_votes(self):
+        rows = api.handle(Req(['tests']))['rows']
+        self.assertFalse([r for r in rows if 'pretest_' in r['proposal_key']])

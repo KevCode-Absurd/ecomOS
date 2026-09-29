@@ -2016,6 +2016,13 @@ def proposed_tests(d: dict, brand: str, as_of: str) -> list[dict]:
             add(f"fit_block_{r['line']}", f"A fit block on the {r['line'].replace('_', ' ')} page cuts returns for {r['avatar']}.",
                 f"{SCREEN}.CUST-R05.{r['line']}.{r['avatar_key']}", "return_rate", "down", 45, "page as today", "fit and size block above the size picker",
                 ["dtc_site", f"pdp_{r['line']}"], [f"{brand}.avatars.{r['avatar_key']}"])
+    # 12.6: a pretest the buyers' line won becomes the live test it earns; a pretest with no votes proposes nothing yet
+    for pt in (d.get("shopper") or {}).get("pretests", []):
+        if (pt.get("result") or {}).get("verdict") == "b_wins":
+            add(f"pretest_{pt['key']}", f"For {pt['name']}, the line in their words (\"{pt['b']}\") beats our line on click-through.",
+                pt["action"]["id"], "ctr", "up", 14, pt["a"], f"\"{pt['b']}\"", ["meta", "prospecting", f"avatar_{pt['key']}"],
+                [f"{brand}.avatars.{pt['key']}"])
+            rows[-1]["source"]["type"] = "pretest"
     return rows
 
 
