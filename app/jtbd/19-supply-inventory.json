@@ -1,0 +1,559 @@
+{
+  "screen": "19-supply-inventory",
+  "title": "Supply and inventory",
+  "hired_for": "To keep best sellers in stock without tying cash up in slow stock, know what each unit really costs to land, and get every parcel delivered the first time.",
+  "jobs": [
+    {
+      "rank": 1,
+      "job": "Never run out of a best seller",
+      "why": "A stockout on a top product stops sales, wastes the ads pointing at it and sends buyers to a rival who may keep them.",
+      "watch": {
+        "metric": "stockout days on the top 20 products by gross profit, 30 day",
+        "unit": "days",
+        "source": "Shopify inventory or the warehouse system (3PL or WMS)"
+      },
+      "drives": {
+        "metric": "sales lost to stockouts (proxy: average daily sales times stockout days)",
+        "unit": "currency"
+      },
+      "business": "gross profit",
+      "now_after": "Example. Now: 3 top products were out for 11 days last month, about $38,000 in lost sales. After: reorders placed on time, 0 stockout days next month.",
+      "score": {
+        "money": 5,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 3
+      },
+      "who_today": "founder or ops lead"
+    },
+    {
+      "rank": 2,
+      "job": "Order the right amount at the right time",
+      "why": "Ordering by gut means too much of slow items and too little of fast ones. A reorder point per product, from sales speed and supplier lead time, fixes both.",
+      "watch": {
+        "metric": "products below their reorder point with no open purchase order, weekly",
+        "unit": "count",
+        "source": "Shopify inventory or the warehouse system (3PL or WMS) and supplier and purchase order records in the brand brain"
+      },
+      "drives": {
+        "metric": "stockout days on top products",
+        "unit": "days"
+      },
+      "business": "gross profit",
+      "now_after": "Example. Now: 7 products below reorder point with no order placed. After: a weekly review keeps it at 0.",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 4
+      },
+      "who_today": "ops lead or founder"
+    },
+    {
+      "rank": 3,
+      "job": "Stop ads and promos on products about to run out",
+      "why": "Spending to sell a product that will be gone in a week buys angry customers and back orders. Pausing or shifting spend protects both.",
+      "watch": {
+        "metric": "ad spend on products with under 14 days of stock left, weekly",
+        "unit": "currency",
+        "source": "Meta Ads Manager and Google Ads, joined to Shopify inventory or the warehouse system (3PL or WMS)"
+      },
+      "drives": {
+        "metric": "wasted ad spend",
+        "unit": "currency"
+      },
+      "business": "gross profit",
+      "now_after": "Example. Now: $4,200 last week on ads for a product with 6 days of stock. After: spend moved to products with 60 days of stock.",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 5,
+        "ease": 5
+      },
+      "who_today": "media buyer or nobody"
+    },
+    {
+      "rank": 4,
+      "job": "Know what each product really costs to land",
+      "why": "The factory price is not the cost. Freight, duty, tariffs and exchange rates can add 20% to 40%, and margins set on the old number are wrong.",
+      "watch": {
+        "metric": "landed cost per unit versus the cost used in the margin plan, per purchase order",
+        "unit": "currency",
+        "source": "supplier and purchase order records in the brand brain and Shopify product cost field"
+      },
+      "drives": {
+        "metric": "gross margin per product",
+        "unit": "percent"
+      },
+      "business": "gross profit",
+      "now_after": "Example. Now: margin plan uses $3.10 per pair, true landed cost is $3.85 after a new tariff. After: prices and promos reset on $3.85.",
+      "score": {
+        "money": 4,
+        "satisfaction": 2,
+        "speed": 4,
+        "ease": 4
+      },
+      "who_today": "founder or finance"
+    },
+    {
+      "rank": 5,
+      "job": "Be ready for the peak season",
+      "why": "Q4 and Black Friday can be a third of the year's sales. Stock that lands late, or a warehouse without staff, loses the best weeks.",
+      "watch": {
+        "metric": "top products with stock on hand versus the peak target, and share of peak orders landed by the cut-off date",
+        "unit": "percent",
+        "source": "Shopify inventory or the warehouse system (3PL or WMS) and supplier and purchase order records in the brand brain"
+      },
+      "drives": {
+        "metric": "stockout days in the peak weeks",
+        "unit": "days"
+      },
+      "business": "revenue",
+      "now_after": "Example. Now: 60% of peak stock is due to land after 1 November. After: orders moved up 3 weeks, 95% lands by 15 October.",
+      "score": {
+        "money": 5,
+        "satisfaction": 4,
+        "speed": 2,
+        "ease": 2
+      },
+      "who_today": "ops lead"
+    },
+    {
+      "rank": 6,
+      "job": "Cut failed deliveries and parcels sent back",
+      "why": "A failed delivery means paying to ship twice or refunding, plus a worried customer. Some carriers and regions fail far more than others.",
+      "watch": {
+        "metric": "first-attempt delivery rate and return-to-sender rate by carrier and region, 30 day",
+        "unit": "percent",
+        "source": "Shopify fulfilment events and the shipping app (ShipStation, AfterShip)"
+      },
+      "drives": {
+        "metric": "shipping and refund cost per order",
+        "unit": "currency"
+      },
+      "business": "contribution margin",
+      "now_after": "Example. Now: 4% of parcels go back to sender in 2 rural regions. After: address checks and a better carrier there bring it to 1.5%.",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 4
+      },
+      "who_today": "ops lead or 3PL"
+    },
+    {
+      "rank": 7,
+      "job": "Work today's delivery problems before the parcel goes back",
+      "why": "A wrong address or missed delivery has a short window to fix. Miss it and the parcel returns, costing 2 shipping legs.",
+      "watch": {
+        "metric": "open delivery exceptions with under 24 hours left to act, daily",
+        "unit": "count",
+        "source": "Shopify fulfilment events and the shipping app (ShipStation, AfterShip)"
+      },
+      "drives": {
+        "metric": "return-to-sender rate",
+        "unit": "percent"
+      },
+      "business": "contribution margin",
+      "now_after": "Example. Now: 35 open exceptions, 12 close today. After: a daily queue gets each one a call or text, 3 end up returned.",
+      "score": {
+        "money": 2,
+        "satisfaction": 4,
+        "speed": 5,
+        "ease": 4
+      },
+      "who_today": "support team or 3PL"
+    },
+    {
+      "rank": 8,
+      "job": "Free cash stuck in slow and dead stock",
+      "why": "Stock that does not sell is cash you cannot spend on ads or new product. It also costs storage every month.",
+      "watch": {
+        "metric": "value of stock with no sale in 180 days, at landed cost, monthly",
+        "unit": "currency",
+        "source": "Shopify inventory or the warehouse system (3PL or WMS)"
+      },
+      "drives": {
+        "metric": "cash available",
+        "unit": "currency"
+      },
+      "business": "cash",
+      "now_after": "Example. Now: $62,000 in stock unsold for 180 days. After: bundles and a clearance sale free $40,000 in 60 days.",
+      "score": {
+        "money": 4,
+        "satisfaction": 2,
+        "speed": 3,
+        "ease": 3
+      },
+      "who_today": "founder or ops lead"
+    },
+    {
+      "rank": 9,
+      "job": "Hold the warehouse to the dispatch times it promised",
+      "why": "Late dispatch shows up as late parcels, status tickets and refunds, even when the carrier did its job.",
+      "watch": {
+        "metric": "share of orders shipped within the promised dispatch time, weekly",
+        "unit": "percent",
+        "source": "3PL or warehouse dispatch log and Shopify fulfilment events and the shipping app (ShipStation, AfterShip)"
+      },
+      "drives": {
+        "metric": "delivery status tickets per 100 orders",
+        "unit": "ratio"
+      },
+      "business": "customer satisfaction",
+      "now_after": "Example. Now: 82% of orders ship in 1 business day. After: a service credit clause and weekly review lift it to 97%.",
+      "score": {
+        "money": 2,
+        "satisfaction": 4,
+        "speed": 5,
+        "ease": 3
+      },
+      "who_today": "ops lead"
+    },
+    {
+      "rank": 10,
+      "job": "Order stock ahead of launches, promos and ad pushes",
+      "why": "Past sales do not predict a planned push. A big promo on stock sized for a normal month sells out in days.",
+      "watch": {
+        "metric": "stock on hand versus planned units for products in upcoming promos, weekly",
+        "unit": "percent",
+        "source": "Shopify inventory or the warehouse system (3PL or WMS) and the promo calendar in the brand brain"
+      },
+      "drives": {
+        "metric": "stockout days during promos",
+        "unit": "days"
+      },
+      "business": "revenue",
+      "now_after": "Example. Now: the spring sale plans 8,000 units with 3,000 in stock. After: a demand plan and early order cover 100%.",
+      "score": {
+        "money": 4,
+        "satisfaction": 2,
+        "speed": 3,
+        "ease": 3
+      },
+      "who_today": "ops lead"
+    },
+    {
+      "rank": 11,
+      "job": "See store and marketplace stock in one place",
+      "why": "Stock split across the warehouse and Amazon can starve one channel while the other sits full. Running out on Amazon hurts ranking for weeks.",
+      "watch": {
+        "metric": "stock cover in days per product by channel (store warehouse, Amazon FBA)",
+        "unit": "days",
+        "source": "Shopify inventory or the warehouse system (3PL or WMS) and Amazon Seller Central"
+      },
+      "drives": {
+        "metric": "marketplace stockout days",
+        "unit": "days"
+      },
+      "business": "revenue",
+      "now_after": "Example. Now: FBA out on 2 top products while the home warehouse has 90 days. After: weekly transfers keep FBA above 30 days.",
+      "score": {
+        "money": 4,
+        "satisfaction": 2,
+        "speed": 3,
+        "ease": 3
+      },
+      "who_today": "marketplace manager or ops lead"
+    },
+    {
+      "rank": 12,
+      "job": "Pick the right carrier for each region",
+      "why": "Carriers differ by region on price, speed and failure rate. One default carrier often overpays and underdelivers.",
+      "watch": {
+        "metric": "cost per delivered parcel and on-time share by carrier and region, 30 day",
+        "unit": "currency",
+        "source": "Shopify fulfilment events and the shipping app (ShipStation, AfterShip) and carrier invoices"
+      },
+      "drives": {
+        "metric": "shipping cost per order",
+        "unit": "currency"
+      },
+      "business": "contribution margin",
+      "now_after": "Example. Now: one carrier everywhere, $8.40 per parcel. After: split by region, $7.60 with on-time share up 4 points.",
+      "score": {
+        "money": 3,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 3
+      },
+      "who_today": "ops lead or 3PL"
+    },
+    {
+      "rank": 13,
+      "job": "Catch defects before they reach customers",
+      "why": "A bad batch that ships becomes refunds, returns and bad reviews. An inspection before the goods leave the factory is cheaper than any of those.",
+      "watch": {
+        "metric": "defect rate found at receiving, per purchase order, and returns tagged 'defective', 60 day",
+        "unit": "percent",
+        "source": "supplier and purchase order records in the brand brain and Shopify return reasons"
+      },
+      "drives": {
+        "metric": "return rate",
+        "unit": "percent"
+      },
+      "business": "gross profit",
+      "now_after": "Example. Now: no inspection, 3% of units returned as defective. After: inspection before final payment, under 1%.",
+      "score": {
+        "money": 3,
+        "satisfaction": 4,
+        "speed": 2,
+        "ease": 3
+      },
+      "who_today": "ops lead or sourcing agent"
+    },
+    {
+      "rank": 14,
+      "job": "Renew supplier prices before the deal runs out",
+      "why": "When a price lock ends without notice, the next order can cost more and margin drops before anyone sees it.",
+      "watch": {
+        "metric": "supplier contracts ending in 60 days with no renewal started",
+        "unit": "count",
+        "source": "supplier and purchase order records in the brand brain"
+      },
+      "drives": {
+        "metric": "cost per unit on the next order",
+        "unit": "currency"
+      },
+      "business": "gross profit",
+      "now_after": "Example. Now: 2 contracts end next month, not raised. After: both renewed at the old price for 12 months.",
+      "score": {
+        "money": 2,
+        "satisfaction": 2,
+        "speed": 4,
+        "ease": 5
+      },
+      "who_today": "founder or ops lead"
+    },
+    {
+      "rank": 15,
+      "job": "Collect every cash-on-delivery payment the courier owes (cash on delivery markets only)",
+      "why": "In markets that use cash on delivery, couriers pay the brand later. Short payments add up unless each order is checked. Reads null for a US brand.",
+      "watch": {
+        "metric": "expected cash-on-delivery amount minus amount paid by the courier, weekly",
+        "unit": "currency",
+        "source": "courier payment reports joined to Shopify orders"
+      },
+      "drives": {
+        "metric": "cash received",
+        "unit": "currency"
+      },
+      "business": "cash",
+      "now_after": "Example. Now: 3% of cash-on-delivery value is unaccounted for. After: weekly matching and disputes bring it under 0.3%.",
+      "score": {
+        "money": 3,
+        "satisfaction": 1,
+        "speed": 4,
+        "ease": 4
+      },
+      "who_today": "finance or ops lead"
+    },
+    {
+      "rank": 16,
+      "job": "Do not depend on one supplier or one country",
+      "why": "If one factory or one country makes most of the stock, one fire, strike or tariff stops sales for months.",
+      "watch": {
+        "metric": "largest supplier's share of units bought, 12 month, and top products with a vetted backup factory",
+        "unit": "percent",
+        "source": "supplier and purchase order records in the brand brain"
+      },
+      "drives": {
+        "metric": "stockout days after a supply shock",
+        "unit": "days"
+      },
+      "business": "risk",
+      "now_after": "Example. Now: 85% of units from one factory, no backup. After: a second factory approved for the top 3 products.",
+      "score": {
+        "money": 4,
+        "satisfaction": 3,
+        "speed": 1,
+        "ease": 2
+      },
+      "who_today": "founder"
+    },
+    {
+      "rank": 17,
+      "job": "Score suppliers on time, defects and price",
+      "why": "Suppliers slip slowly. A running score shows who is getting worse before a late or bad order causes a stockout.",
+      "watch": {
+        "metric": "supplier on-time delivery and defect rate per purchase order, rolling 90 day",
+        "unit": "percent",
+        "source": "supplier and purchase order records in the brand brain"
+      },
+      "drives": {
+        "metric": "stockout days and return rate",
+        "unit": "days"
+      },
+      "business": "gross profit",
+      "now_after": "Example. Now: no record of late orders. After: one supplier shows 3 late orders in a row and gets a backup.",
+      "score": {
+        "money": 3,
+        "satisfaction": 2,
+        "speed": 2,
+        "ease": 4
+      },
+      "who_today": "ops lead"
+    },
+    {
+      "rank": 18,
+      "job": "Lower the unit cost of long-running products",
+      "why": "Mature products often keep the price agreed at launch. A cost-down backed by real part costs and a second quote can add points of margin on every unit.",
+      "watch": {
+        "metric": "cost per unit on top products versus the last agreed price, per purchase order",
+        "unit": "currency",
+        "source": "supplier and purchase order records in the brand brain"
+      },
+      "drives": {
+        "metric": "gross margin per product",
+        "unit": "percent"
+      },
+      "business": "gross profit",
+      "now_after": "Example. Now: hero product cost unchanged for 3 years at $3.20. After: a second quote and a volume tier bring it to $2.95.",
+      "score": {
+        "money": 5,
+        "satisfaction": 1,
+        "speed": 1,
+        "ease": 2
+      },
+      "who_today": "founder"
+    },
+    {
+      "rank": 19,
+      "job": "Push supplier payment terms longer as trust grows",
+      "why": "Paying the factory months before the stock sells locks up cash. Longer terms let sales pay for the stock.",
+      "watch": {
+        "metric": "days between paying the supplier and selling the units, quarterly",
+        "unit": "days",
+        "source": "supplier and purchase order records in the brand brain and Shopify sales"
+      },
+      "drives": {
+        "metric": "cash available",
+        "unit": "currency"
+      },
+      "business": "cash",
+      "now_after": "Example. Now: 100% paid before shipping, 140 days cash tied up. After: 30% deposit and balance on arrival, 95 days.",
+      "score": {
+        "money": 4,
+        "satisfaction": 2,
+        "speed": 1,
+        "ease": 2
+      },
+      "who_today": "founder or finance"
+    },
+    {
+      "rank": 20,
+      "job": "Catch carrier overbilling",
+      "why": "Carriers bill surcharges and weight changes after the fact. Small overcharges on every parcel add up over a year.",
+      "watch": {
+        "metric": "carrier invoice amount versus expected charge from shipped weight, monthly",
+        "unit": "currency",
+        "source": "carrier invoices joined to Shopify fulfilment events and the shipping app (ShipStation, AfterShip)"
+      },
+      "drives": {
+        "metric": "shipping cost per order",
+        "unit": "currency"
+      },
+      "business": "contribution margin",
+      "now_after": "Example. Now: invoices never checked. After: $1,300 a month in wrong surcharges found and disputed.",
+      "score": {
+        "money": 2,
+        "satisfaction": 1,
+        "speed": 4,
+        "ease": 4
+      },
+      "who_today": "finance or nobody"
+    },
+    {
+      "rank": 21,
+      "job": "Pay only for stock that actually arrived",
+      "why": "Paying the invoice without checking what arrived means paying for short or wrong shipments.",
+      "watch": {
+        "metric": "purchase orders where the invoice, the order and the goods received do not match, count and value, monthly",
+        "unit": "currency",
+        "source": "supplier and purchase order records in the brand brain and Shopify inventory or the warehouse system (3PL or WMS)"
+      },
+      "drives": {
+        "metric": "cost per unit",
+        "unit": "currency"
+      },
+      "business": "cash",
+      "now_after": "Example. Now: invoices paid on receipt. After: 2 short shipments worth $3,400 caught and credited this quarter.",
+      "score": {
+        "money": 2,
+        "satisfaction": 1,
+        "speed": 4,
+        "ease": 4
+      },
+      "who_today": "bookkeeper or ops lead"
+    },
+    {
+      "rank": 22,
+      "job": "Choose sea or air freight so stock lands on time at the lowest cost",
+      "why": "Air freight saves weeks but can cost 5 times more. Rushing by air because of late planning eats margin.",
+      "watch": {
+        "metric": "freight cost per unit, and shipments landing by the planned date",
+        "unit": "currency",
+        "source": "supplier and purchase order records in the brand brain and freight forwarder invoices"
+      },
+      "drives": {
+        "metric": "landed cost per unit",
+        "unit": "currency"
+      },
+      "business": "gross profit",
+      "now_after": "Example. Now: 40% of units flown because orders were late. After: earlier orders and sea freight bring air to 10%.",
+      "score": {
+        "money": 3,
+        "satisfaction": 1,
+        "speed": 2,
+        "ease": 3
+      },
+      "who_today": "ops lead or freight forwarder"
+    },
+    {
+      "rank": 23,
+      "job": "Watch raw material costs behind the main products",
+      "why": "When cotton or other inputs fall, the supplier rarely lowers the price on their own. When they rise, a price increase follows.",
+      "watch": {
+        "metric": "input cost index versus the price when the product cost was last agreed, monthly",
+        "unit": "ratio",
+        "source": "public commodity price source logged in the brand brain"
+      },
+      "drives": {
+        "metric": "landed cost per unit",
+        "unit": "currency"
+      },
+      "business": "gross profit",
+      "now_after": "Example. Now: cotton down 15% since the last price lock, no ask made. After: a cost-down asked and 4% agreed.",
+      "score": {
+        "money": 2,
+        "satisfaction": 1,
+        "speed": 3,
+        "ease": 4
+      },
+      "who_today": "founder or nobody"
+    },
+    {
+      "rank": 24,
+      "job": "Make stock counts match what is on the shelf",
+      "why": "If the system says 200 and the shelf has 150, the store oversells and the reorder math is wrong.",
+      "watch": {
+        "metric": "counted units versus system units, per cycle count",
+        "unit": "percent",
+        "source": "Shopify inventory or the warehouse system (3PL or WMS)"
+      },
+      "drives": {
+        "metric": "oversold orders",
+        "unit": "count"
+      },
+      "business": "risk",
+      "now_after": "Example. Now: 6% gap between system and shelf on top products. After: monthly counts bring it under 1%.",
+      "score": {
+        "money": 2,
+        "satisfaction": 1,
+        "speed": 3,
+        "ease": 3
+      },
+      "who_today": "3PL or ops lead"
+    }
+  ]
+}
