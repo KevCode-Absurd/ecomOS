@@ -394,8 +394,14 @@
 
   // ---------- desk: lookalike pages ----------
   function renderLookalikes(x) {
-    if (!x.rows.length) { mount('#look', el('p', { class: 'muted small', text: x.line })); return; }
-    mount('#look', ...x.rows.map((r) => UI.actionCard({ id: r.action.id, title: r.action.title, severity: 'high', owner: 'person',
+    const ours = x.ours ? [el('h4', { text: 'What is ours, on file' }),
+      UI.verdictTable({ columns: [{ key: 'what', label: 'What' }, { key: 'value_t', label: 'On file' }],
+        rows: x.ours.items.map((i) => Object.assign({}, i, { value_t: i.value || 'not in the brain',
+          actions: i.status === 'missing' ? [{ label: 'Add it', onClick: () => briefPanel(x.ours.watch) }] : [keep('On file', 'This is in the brain and the monthly watch checks it.')] })),
+        verdict: { at: 1, kind: (r) => r.status === 'missing' ? 'watch' : 'keep', text: (r) => r.status === 'missing' ? 'Missing' : 'On file' }, actions: { label: 'Do' }, sort: false }),
+      el('button', { class: 'btn soft sm', type: 'button', text: 'Plan the monthly watch', onclick: () => briefPanel(x.ours.watch) })] : [];
+    if (!x.rows.length) { mount('#look', el('p', { class: 'muted small', text: x.line }), ...ours); return; }
+    mount('#look', ...ours, ...x.rows.map((r) => UI.actionCard({ id: r.action.id, title: r.action.title, severity: 'high', owner: 'person',
       why: r.ads_seen + ' ads from page ' + r.page_id + ', first seen ' + r.created + ', linking to ' + r.links_to + '. ' + (r.note || ''),
       capability: r.action.capability, steps: r.action.steps, artefact: { kind: 'ticket', label: 'a Meta report, a support macro and a social note', draft: r.action.draft } },
       { compact: true, screen: SLUG, extra: r.ad_library ? el('a', { href: r.ad_library, target: '_blank', rel: 'noopener', class: 'small', text: 'Open in the Ad Library' }) : null })));

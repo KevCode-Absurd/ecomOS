@@ -3569,3 +3569,40 @@ def asset_baseline(records: list[tuple], own_hosts: set, ad_voice_x: dict) -> di
     return {"site": site, "ads": ads, "email": None, "scans": 1 if (site or ads) else 0,
             "line": ("Scan one on file: " + "; ".join(parts) + ". The next scan compares against it.") if (site or ads)
                     else "No scan of our own assets on file yet."}
+
+
+# ---------------------------------------------------------------- what is ours, and the watch on it (12.4)
+
+def ours_watch(name: str, own_hosts: set, baseline_x: dict, identity: list[dict], lookalikes_x: dict, as_of: str) -> dict:
+    """What the brain holds of what is ours (name, domains, our Ad Library page, social handles, trademarks), each on
+    file or missing, and a drafted monthly watch. Handles and trademarks are unavailable until records exist."""
+    import datetime as _dt
+    handles = [r for r in identity if "handle" in str(r.get("field") or "") or "social" in str(r.get("field") or "")]
+    marks = [r for r in identity if "trademark" in str(r.get("field") or "") or "registration" in str(r.get("field") or "")]
+    ads = (baseline_x or {}).get("ads")
+    items = [
+        {"what": "Brand name", "value": name, "status": "on file"},
+        {"what": "Domains", "value": ", ".join(sorted(own_hosts)) or None, "status": "on file" if own_hosts else "missing"},
+        {"what": "Our Ad Library page", "value": f"read {ads['date']}" if ads else None, "status": "on file" if ads else "missing"},
+        {"what": "Social handles", "value": ", ".join(str(r.get("value")) for r in handles) or None, "status": "on file" if handles else "missing"},
+        {"what": "Trademark registrations", "value": ", ".join(str(r.get("value")) for r in marks) or None, "status": "on file" if marks else "missing"},
+    ]
+    missing = [i["what"].lower() for i in items if i["status"] == "missing"]
+    check = (_dt.date.fromisoformat(as_of) + _dt.timedelta(days=30)).isoformat()
+    watch = {"id": f"{SCREEN}.ours.watch", "kind": "research_note", "owner": "person", "check_on": check,
+             "title": "Watch our name, domains and handles each month", "capability": {"id": "MONEY-C48", "autonomy": "human_assist"},
+             "why": (f"{len((lookalikes_x or {}).get('rows') or [])} lookalike page seen so far. " if (lookalikes_x or {}).get("rows") else "")
+                    + (f"Not in the brain yet: {', '.join(missing)}." if missing else "Everything we hold is on file."),
+             "stop_rule": "a lookalike is found; then it becomes a report move of its own",
+             "draft": f"DRAFT monthly watch\nName: {name}\nDomains: {', '.join(sorted(own_hosts)) or 'none on file'}\n"
+                      "Ad Library: search our name and close spellings, inside the weekly cap; list pages that link elsewhere\n"
+                      "Domains: look up close spellings of our domains for new registrations\n"
+                      "Marketplaces: search our name for sellers we do not know\n"
+                      + (f"First add to the brain: {', '.join(missing)}\n" if missing else "")
+                      + "Found one: report it, and post a note to support",
+             "steps": [{"n": 1, "who": "agent", "text": "Run the Ad Library search by name inside the weekly cap and list new pages."},
+                       {"n": 2, "who": "person", "text": "Check close domain spellings and marketplace sellers."},
+                       {"n": 3, "who": "person", "text": "Report any lookalike and log it in the brain."}]}
+    return {"items": items, "missing": missing, "watch": watch,
+            "line": f"{sum(1 for i in items if i['status'] == 'on file')} of {len(items)} things that are ours are on file."
+                    + (f" Missing: {', '.join(missing)}." if missing else "")}

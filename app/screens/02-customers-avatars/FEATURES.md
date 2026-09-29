@@ -199,8 +199,11 @@ Lead's review: rounds 1 to 4 passed. Focus: returns and tickets by avatar, depth
 | 12.1 | What the teams did with our hand-offs: rows are append-only, so a receiving team's choice lives in the decisions log against the hand-off's id. Each pack's line now says how many sent briefs the team answered and how ("1 answered by the team: 1 agent does it, last on 26 Sep"), or that none is answered yet. Browser-tested with a seeded answer in a temp folder | done |
 | 12.2 | Shopper run and pretest results read back from a `shopper_runs` table when the data layer has one, else `fixtures/shopper_runs/<brand>.json`. The latest run marks each checkpoint passed or failed. A fail becomes rule CUST-R35 (high) with a drafted fix by step, a page section for a page step, an email for the order email, a ticket for checkout, support or returns. CUST-R34 resolves while a run is under 90 days old and fires again after. A pretest the buyers' line wins with 3 of 5 votes or more becomes "Lead with it", a copy move with its stop rule. Bombas: no results yet, so nothing changes; tested on a temp fixture both ways. 35 rules | done |
 | 12.3 | Scan one of our own assets: what the brain already captured of our site (distinct pages on our own hosts and the statements read from them), our ads (the Ad Library read of our page) and our email (none), with dates, shown in the drift block as the baseline the next quarterly scan compares against. Bombas: 26 pages and 108 statements, 23 live ads, all 28 Sep 2026; email never captured | done |
-| 12.4 | Watch what is ours: our name, domain and handles on file in the brain, lookalikes seen, and a drafted monthly watch | todo |
-| 12.5 to 12.10 | Picked after 12.4 | todo |
+| 12.4 | Watch what is ours: the lookalike block now opens with what is ours on file (brand name, domains, our Ad Library page, social handles, trademark registrations), each on file or missing, and "Plan the monthly watch": a person-owned watch of our name in the Ad Library inside the weekly cap, close domain spellings and unknown marketplace sellers, with what to add to the brain first. Bombas: 3 of 5 on file; handles and trademarks are not in the brain | done |
+| 12.5 | Third depth pass on everything new in rounds 11 and 12: rule and gap lines, sizes, stop rules, unavailable states, writing rules | todo |
+| 12.6 | Pretests into the experiment registry shape, so an approved pretest is a proposed test | todo |
+| 12.7 | HANDOFF.md and the API docstring brought up to round 12 | todo |
+| 12.8 to 12.10 | Picked after 12.7; close with round12.png | todo |
 
 ### Round 11 founder note (28 Sep 2026)
 
@@ -355,7 +358,7 @@ The job to be done for each avatar is brand data: it lives in `app/brain/<brand>
 | what does the brand stand for right now, in one place | partial | messaging hierarchy here; the brand brain screen owns the rest |
 | do customers describe us the way we describe ourselves | built | perception gap |
 | would a real shopper get stuck, and does this message land | partial | run sheet and pretests drafted from the brain (11.5); results wait on a runs table |
-| is anyone about to take something that is ours | partial | lookalike pages from the Ad Library; trademark, domain and handle watch has no table |
+| is anyone about to take something that is ours | partial | lookalike pages, what is ours on file and a drafted monthly watch (12.4); handles and trademarks wait on brain records |
 | what is the one message this page or email should lead with | built | messaging hierarchy with approve |
 
 ## Candidates from the room spec (pick 10 per round)

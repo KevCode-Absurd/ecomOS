@@ -2871,3 +2871,22 @@ class AssetBaseline(TempBrain):
         self.assertEqual(b['site']['pages'], 1)
         self.assertIsNone(b['ads'])
         self.assertEqual(api.builds.asset_baseline([], set(), {})['scans'], 0)
+
+
+class OursWatch(TempBrain):
+    """Feature 12.4: what is ours, on file or missing, and a drafted monthly watch."""
+
+    def test_ours(self):
+        o = api.handle(Req(['overview']))['lookalikes']['ours']
+        st = {i['what']: i['status'] for i in o['items']}
+        self.assertEqual(st['Brand name'], 'on file')
+        self.assertEqual(st['Domains'], 'on file')
+        self.assertEqual(st['Social handles'], 'missing')
+        self.assertIn('social handles', o['watch']['draft'])
+        self.assertEqual(o['watch']['owner'], 'person')
+        self.assertEqual(o['watch']['capability']['autonomy'], 'human_assist')
+
+    def test_second_brand(self):
+        api.BRAIN_ROOT = None
+        o = api.handle(Req(['overview'], query={'brand': ['example']}))['lookalikes']['ours']
+        self.assertNotIn('bombas', json.dumps(o).lower())
