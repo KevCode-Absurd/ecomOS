@@ -2856,6 +2856,52 @@ def digest(data, brand, since=None):
             'rule': 'the digest lists only what changed since the last weekly note (findings from the seen snapshot, decisions, launch steps, hand-offs, candidate moves); a quiet week says so in one line'}
 
 
+
+# ---------------------------------------------------------------- the lane page: everything the desk knows about one lane
+
+LANE_WORDS_MAX = 12
+
+
+def lane_page(data, brand, key):
+    """One page per lane: the lane's verdict and cards on the plan, the opportunity score with its parts and the last kill, the
+    competitors pushing the lane with the angle words they use (words counted from their ads and positioning in the brain,
+    never the asset: bank idea PRD-030), the launches in the lane, the kills, the open candidates and their hand-offs."""
+    ends_on = audit.last_full_day(data, brand)
+    br = audit.brain(brand, today=ends_on) if brand else None
+    lanes = {k: (label, terms) for k, label, terms in audit.lanes_for(br if br is not None else brand)}
+    if key not in lanes:
+        raise ValueError(f'no lane {key}; lanes: ' + ', '.join(lanes) if lanes else 'this brand has no lanes on file')
+    label, terms = lanes[key]
+    table = next((r for r in audit.subcategory_table(br, ends_on) if r['key'] == key), None)
+    opp = next((r for r in audit.lane_opportunity(br, products(data, brand), ends_on)['rows'] if r['key'] == key), None)
+    pt = next((p for p in audit.lane_map(br, ends_on)['points'] if p['key'] == key), None)
+    comps = [c for c in audit.competitor_signals(br) if any(t in c['text'] for t in terms)]
+    counts = {}
+    for c in comps:
+        for w in audit.content_words(c['text']):
+            counts[w] = counts.get(w, 0) + 1
+    words = [{'word': w, 'competitors': n} for w, n in sorted(counts.items(), key=lambda kv: (-kv[1], kv[0])) if n >= 2 or len(comps) == 1][:LANE_WORDS_MAX]
+    r = rank(brand or 'sample', None)
+    cards = [a for a in r['actions'] if (a.get('entity') or {}).get('id') == key and a.get('rule_id') in LANE_RULES]
+    cands = [c for c in audit.pipeline(brand or 'sample') if c.get('stage') not in ('killed', 'kill') and (c.get('lane') == key or (not c.get('lane') and any(t in (str(c.get('name') or '') + ' ' + str(c.get('angle_text') or '')).lower() for t in terms)))]
+    kills = [k for k in audit.kill_memory(brand or 'sample', ends_on)['rows'] if k.get('lane') == key or (not k.get('lane') and any(t in (str(k.get('name') or '') + ' ' + str(k.get('angle_text') or '')).lower() for t in terms))]
+    cids = {c.get('candidate_id') for c in cands}
+    handoffs = [h for h in handoffs_sent(brand)['rows'] if h.get('candidate_id') in cids]
+    L = [f'LANE: {label} ({key})', f'{brand or "sample"}, {ends_on.isoformat()}. Verdict on the lane table: {table["verdict"] if table else "not on the table"}; ' + (f'trend and sellers: {pt["quadrant"]}, {pt["x"]} sellers' if pt else 'no map point') + '.', '',
+         'THE SCORE'] + ([f'{opp["score"]} of 100, rank {opp["rank"]} ({opp["parts_read"]} of {opp["of"]} parts read): ' + ', '.join(f'{k} {round(v * 100)}' if v is not None else f'{k} not read' for k, v in opp['parts'].items())] if opp and opp.get('score') is not None else ['no score: the lane has no read behind it'])
+    L += ['', f'ON THE PLAN ({len(cards)})'] + ([f'- {a["title"]} ({a.get("owner")}, {round((a.get("rubric") or {}).get("total") or 0)} of 100)' for a in cards] or ['- no card on this lane now'])
+    L += ['', f'COMPETITORS PUSHING IT ({len(comps)})'] + ([f'- {c["name"]}: {c.get("active_ads") if c.get("active_ads") is not None else "n/a"} active ads, longest run {c.get("longest_run_days") if c.get("longest_run_days") is not None else "n/a"} days' for c in comps] or ['- none in the brain'])
+    L += ['', 'THE WORDS THEY USE (counted, never copied)'] + ([f'- {w["word"]} ({w["competitors"]})' for w in words] or ['- none read'])
+    L += ['', f'LAUNCHES IN THE LANE ({len((table or {}).get("launches") or [])})'] + ([f'- {l.get("date")}: {l.get("brand")} {l.get("what")}' + (f' at ${l["price_usd"]:g}' if l.get('price_usd') else '') for l in (table or {}).get('launches') or []] or ['- none in the web pass'])
+    L += ['', f'KILLS ({len(kills)})'] + ([f'- {k["killed_on"]}: {k["name"]}' + (f' ({k["reason"]})' if k.get('reason') else '') + (' , in hold' if k.get('in_hold') else '') for k in kills] or ['- none'])
+    L += ['', f'OPEN CANDIDATES ({len(cands)})'] + ([f'- {c.get("name")} ({c.get("stage")})' + (f', owner {c.get("owner")}' if c.get('owner') else '') for c in cands] or ['- none; the score says whether to screen one in'])
+    L += ['', f'HAND-OFFS ({len(handoffs)})'] + ([f'- {h.get("sent_on")}: {h.get("title")} to {h.get("to")}, {h.get("shared_status")}' for h in handoffs] or ['- none'])
+    return {'key': key, 'label': label, 'terms': terms, 'ends_on': ends_on.isoformat(), 'table': table, 'opportunity': opp, 'point': pt, 'competitors': [{k: c.get(k) for k in ('name', 'active_ads', 'longest_run_days', 'long_runners_30d')} for c in comps], 'words': words,
+            'cards': [{'id': a['id'], 'title': a['title'], 'owner': a.get('owner'), 'rule_id': a.get('rule_id')} for a in cards], 'candidates': [{'candidate_id': c.get('candidate_id'), 'name': c.get('name'), 'stage': c.get('stage'), 'owner': c.get('owner')} for c in cands],
+            'kills': [{k: x.get(k) for k in ('name', 'killed_on', 'reason', 'in_hold', 'hold_until')} for x in kills], 'handoffs': [{k: h.get(k) for k in ('sent_on', 'title', 'to', 'shared_status', 'candidate_id')} for h in handoffs], 'text': '\n'.join(L),
+            'rule': 'one page per lane from the desk\'s own reads; the competitor words are counted from their ads and positioning in the brain and never their assets (bank idea PRD-030)'}
+
+
 # ---------------------------------------------------------------- founder answers written back (round 6.5)
 
 ANSWER_SECTIONS = {'claim': 'claims', 'policy': 'policies', 'offer': 'offers'}
@@ -3140,6 +3186,11 @@ def handle(req):
             return 405, {'error': 'read only, except the candidate pipeline, the seen snapshot, a founder answer, a hand-off send, a go candidate hand-off and the floors'}
         if req.path == ['overview']:
             return overview(data, brand)
+        if len(req.path) == 2 and req.path[0] == 'lanes':
+            try:
+                return lane_page(data, brand, req.path[1])
+            except ValueError as e:
+                return 404, {'error': str(e)}
         if req.path == ['digest']:
             return digest(data, brand, req.arg('since', None) or None)
         if req.path == ['findings']:
@@ -3186,4 +3237,4 @@ def handle(req):
             return {'parked': r['parked'], 'decided': r['decided'], 'snooze_days': rank_mod.SNOOZE_DAYS, 'window': r['window']}
     except ValueError as exc:
         return 400, {'error': str(exc)}
-    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank', 'parked', 'decisions', 'calendar', 'week', 'report', 'reports', 'digest', 'changes', 'log', 'candidates/<id>/brief', 'candidates/<id>/launch', 'candidates/<id>/report', 'floors (POST)', 'candidates/<id>/handoff/<team> (POST)', 'handoff/<finding_id>', 'handoffs', 'product_candidates', 'tests']}
+    return 404, {'error': 'not found', 'routes': ['overview', 'findings', 'rank', 'parked', 'decisions', 'calendar', 'week', 'report', 'reports', 'digest', 'lanes/<key>', 'changes', 'log', 'candidates/<id>/brief', 'candidates/<id>/launch', 'candidates/<id>/report', 'floors (POST)', 'candidates/<id>/handoff/<team> (POST)', 'handoff/<finding_id>', 'handoffs', 'product_candidates', 'tests']}

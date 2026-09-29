@@ -2800,6 +2800,23 @@ class WeeklyNoteDigestTest(unittest.TestCase):
         self.assertIn('changes', note)
 
 
+class LanePageTest(unittest.TestCase):
+    def test_lane_page_gathers_the_lane(self):
+        lp = api.handle(Req(['lanes', 'gifting']))
+        self.assertEqual((lp['key'], lp['label']), ('gifting', 'Gifting'))
+        for head in ('LANE: Gifting', 'THE SCORE', 'ON THE PLAN', 'COMPETITORS PUSHING IT', 'THE WORDS THEY USE (counted, never copied)', 'LAUNCHES IN THE LANE', 'KILLS', 'OPEN CANDIDATES', 'HAND-OFFS'):
+            self.assertIn(head, lp['text'])
+        self.assertIn('Holiday gift box', lp['text'])                              # the open candidate in the lane
+        self.assertEqual(lp['opportunity']['key'], 'gifting')
+        for w in lp['words']:
+            self.assertTrue(w['word'].isalpha() or '-' in w['word'])
+            self.assertNotIn(' ', w['word'])                                       # words, never a line of copy
+        self.assertNotIn('—', lp['text'])
+        self.assertEqual(api.handle(Req(['lanes', 'moon']))[0], 404)
+        sample = api.handle(Req(['lanes', 'gifting'], brand='sample'))
+        self.assertEqual(sample[0], 404)                                           # the sample brand has no lanes on file: said, not invented
+
+
 class SecondBrandTest(unittest.TestCase):
     """The desk is not Bombas-shaped: the sample brand (Tallgrass Goods, kitchen goods, no brain, no web pass) reads
     nothing of Bombas and every route still answers."""

@@ -301,6 +301,17 @@
           el('button', { class: 'btn sm quiet', type: 'button', text: 'Order placed on', onclick: () => setDate('ordered_on', 'Order placed on') }), el('button', { class: 'btn sm quiet', type: 'button', text: 'Stock landed on', onclick: () => setDate('stock_landed_on', 'Stock landed on') }), el('button', { class: 'btn sm quiet', type: 'button', text: 'Launched on', onclick: () => setDate('launched_on', 'Launched on') })),
         el('p', { class: 'micro faint', text: 'Rule: ' + lp.rule + '.' })) });
   }
+  async function openLane(key) {
+    let lp;
+    try { lp = await api(BASE + 'lanes/' + encodeURIComponent(key) + Q); } catch (e) { alert('Lane page unavailable: ' + e.message); return; }
+    const byId = {}; Object.keys(state.byFinding || {}).forEach((k) => { const a = state.byFinding[k]; if (a) byId[a.id] = a; });
+    const cardBtns = (lp.cards || []).map((c) => el('button', { class: 'btn sm quiet', type: 'button', text: c.title.slice(0, 60), onclick: () => { if (byId[c.id]) openAction(byId[c.id]); } }));
+    UI.panel({ title: 'Lane: ' + lp.label, tools: [UI.copyButton({ label: 'Copy lane page', text: () => lp.text })],
+      body: el('div', { class: 'stack' }, el('p', { class: 'micro muted', text: lp.rule }),
+        lp.words && lp.words.length ? el('div', { class: 'row', style: { gap: '6px', flexWrap: 'wrap' } }, ...lp.words.map((w) => el('span', { class: 'pill', text: w.word + ' ' + w.competitors }))) : null,
+        cardBtns.length ? el('div', { class: 'row', style: { gap: '6px', flexWrap: 'wrap' } }, ...cardBtns) : null,
+        el('pre', { class: 'small', style: { whiteSpace: 'pre-wrap', margin: 0 }, text: lp.text })) });
+  }
   async function answerQuestion(r) {
     const answer = prompt('Your answer to "' + (r.doubt || r.question) + '" (one or two lines; it becomes a brain record):');
     if (answer == null || !answer.trim()) return;
@@ -906,7 +917,7 @@
     const screenIn = (r) => { const name = prompt('Name the candidate to screen into ' + r.label + (r.last_kill ? '. Last kill here: ' + killText(r) + '. Name the new signal in the angle.' : ''), ''); if (name == null || !name.trim()) return; candidatePost('candidates', { name: name.trim(), category: 'socks', lane: r.key, time_box_days: 10, angle_text: null, who: 'person' }); };
     const vrows = rows.map((r) => { const a = actionFor(r.finding_id); return Object.assign({}, r, {
       scoreText: r.score == null ? NA : r.score + ' of 100 (' + r.parts_read + ' of ' + r.of + ' parts)', candText: r.open_candidates.length ? r.open_candidates.join(', ') : 'none', quad: r.quadrant, sellersText: String(r.sellers), killTextV: killText(r),
-      actions: [r.verdict === 'strong_no_candidate' ? { label: 'Screen a candidate in', onClick: () => screenIn(r) } : null, a ? { label: 'Open the lane card', cls: 'quiet', onClick: () => openAction(a) } : null].filter(Boolean) }); });
+      actions: [r.verdict === 'strong_no_candidate' ? { label: 'Screen a candidate in', onClick: () => screenIn(r) } : null, { label: 'Lane page', cls: 'quiet', onClick: () => openLane(r.key) }, a ? { label: 'Open the lane card', cls: 'quiet', onClick: () => openAction(a) } : null].filter(Boolean) }); });
     const tbl = UI.verdictTable({
       columns: [{ key: 'label', label: 'Lane' }, { key: 'scoreText', label: 'Score' }, { key: 'quad', label: 'Trend and sellers' }, { key: 'sellersText', label: 'Sellers' }, { key: 'candText', label: 'Open candidates' }, { key: 'killTextV', label: 'Last kill here' }],
       rows: vrows,
