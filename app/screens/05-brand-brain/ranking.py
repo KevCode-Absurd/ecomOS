@@ -159,6 +159,14 @@ def build(f: dict, nr: float | None) -> dict:
                         {"n": 3, "who": "person", "text": "Pick the record as proof, or approve the drafted fact as an approved record."},
                         {"n": 4, "who": "agent", "text": f"Attach it to the rung. The surfaces that use the rung ({surfaces or 'copy, page, listing, macro'}) read the proof on their next brief."}],
                  check_on=_check_on(f, 7), time_to_ship_hours=1)
+    elif rid == "BRN-R41":
+        eg = f.get("evidence_gaps") or {}
+        rows = eg.get("rows") or []
+        bf = eg.get("by_fix") or {}
+        a.update(title=f"Back or retire {len(rows)} strong record{'s' if len(rows) != 1 else ''} with no quote behind {'them' if len(rows) != 1 else 'it'}", owner="agent_drafts",
+                 artefact={"kind": "brain_record", "label": "each record with its quote attached, approved on your word, or retired", "draft": "\n".join(f"- {x['id']} ({x['tier']}): {x['fix_kind']} from {x['ref'] or 'no source'}" for x in rows) or None},
+                 steps=[{"n": 1, "who": "agent", "text": f"Re-read the {bf.get('re-read', 0)} url and file sources and attach the line that backs each record; list the {bf.get('attach', 0)} actor-run records with their item text."}, {"n": 2, "who": "person", "text": f"For the {bf.get('decide', 0)} with no source, and any the agent could not back: approve by hand or retire."}, {"n": 3, "who": "agent", "text": "The list empties; packages read only backed facts."}],
+                 check_on=_check_on(f, 7), time_to_ship_hours=1)
     elif rid == "BRN-R40":
         ms = f.get("misses") or []
         a.update(title=f"Answer {len(ms)} question{'s' if len(ms) != 1 else ''} the brain could not: " + "; ".join(m["q"][:40] for m in ms[:2]) + ("..." if len(ms) > 2 else ""), owner="person",

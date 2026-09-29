@@ -471,6 +471,20 @@
       rows: sa.proposals.map((p) => ({ kind: pretty(p.kind), kindKey: p.kind, target: p.target, before: String(p.before).slice(0, 140), after: p.after, who: pretty(p.fix.who), reason: p.reason })),
       sort: false, empty: 'Nothing past expiry, no open conflict, no empty section a room needs, no unread file, the router matches the records and every link resolves.',
     });
+    // 9.10: strong records without evidence
+    let eg = null; try { eg = await api(BASE + 'evidence/gaps'); } catch (e) { eg = null; }
+    const egWrap = el('div', { class: 'stack' });
+    if (!eg) egWrap.append(el('div', { class: 'muted small', text: 'Evidence check unavailable.' }));
+    else if (!eg.gaps.length) egWrap.append(el('div', { class: 'muted small', text: 'Every strong record in the fact sections carries its quote. ' + eg.counts.checked + ' checked.' }));
+    else {
+      egWrap.append(el('div', null, el('b', { text: eg.counts.gaps + ' of ' + eg.counts.checked + ' strong records carry no quote: ' }), Object.entries(eg.counts.by_fix).filter(([k, n]) => n).map(([k, n]) => n + ' to ' + k).join(', ') + '. ' + eg.note));
+      for (const g of eg.gaps.slice(0, 30)) {
+        const ap = el('button', { class: 'btn xs', type: 'button', text: 'Approve by hand' }); const rt = el('button', { class: 'btn xs soft', type: 'button', text: 'Retire' });
+        ap.addEventListener('click', async () => { if (!confirm('Approve ' + g.id + ' on your word? It becomes a founder fact.')) return; ap.disabled = true; try { await api(BASE + 'approve/' + encodeURIComponent(g.id), { method: 'POST', body: { choice: 'approve' } }); status.textContent = 'Approved ' + g.id + '.'; loadSelfAudit(actions); loadProfile(); } catch (e) { ap.disabled = false; status.textContent = 'Could not approve: ' + e.message; } });
+        rt.addEventListener('click', async () => { const why = prompt('Why retire ' + g.id + '?', 'nothing backs it'); if (!why) return; rt.disabled = true; try { const r = await api(BASE + 'evidence/retire', { method: 'POST', body: { id: g.id, why } }); status.textContent = r.next + ' ' + r.left + ' left.'; loadSelfAudit(actions); loadChanges(); } catch (e) { rt.disabled = false; status.textContent = 'Could not retire: ' + e.message; } });
+        egWrap.append(el('div', { class: 'row card flat small' }, el('span', { class: 'chip', text: pretty(g.section) }), el('span', { class: 'chip ' + (g.tier === 'site_backed' ? 'warn' : ''), text: pretty(g.tier) }), el('span', { class: 'chip mono', text: g.id }), el('span', { text: g.text }), el('span', { class: 'micro faint', text: g.fix }), ap, rt));
+      }
+    }
     const dupWrap = el('div', { class: 'stack' });
     if (sa.duplicates.length) {
       dupWrap.append(el('div', null, el('b', { text: sa.duplicates.length + ' duplicate pair' + (sa.duplicates.length === 1 ? '' : 's') + ': ' }), 'the stronger record is kept; retiring the twin keeps it in history. A near twin shows both texts: unpick it when they are two facts.'));
@@ -490,7 +504,7 @@
     const files = sa.missing_files.length ? el('div', { class: 'warn small' }, el('b', { text: 'Files missing on disk: ' }), sa.missing_files.map((f) => f.file).join(', ') + '. Put the file back under documents/, or remove the manifest row.') : null;
     const act = byAct.router || byAct.duplicates;
     mount('#selfaudit', el('div', { class: 'row' }, regen, act ? UI.decisionRow({ capability: 'BRN-C12', autonomy: 'agent_does', owner: 'agent', screen: SCREEN, compact: true, finding_id: act.id, current: act.decision, stub: act.title + '. ' + act.artefact.label + '.' }) : null, status),
-      UI.tabs({ items: [{ key: 'checks', label: 'Checks', n: sa.proposals.length, panel: table }, { key: 'dups', label: 'Duplicates', n: sa.duplicates.length, panel: dupWrap }, { key: 'reads', label: 'Read coverage', n: sa.reads.available ? sa.reads.total_reads : null, panel: reads }] }),
+      UI.tabs({ items: [{ key: 'checks', label: 'Checks', n: sa.proposals.length, panel: table }, { key: 'dups', label: 'Duplicates', n: sa.duplicates.length, panel: dupWrap }, { key: 'evidence', label: 'No evidence', n: eg ? eg.counts.gaps : null, panel: egWrap }, { key: 'reads', label: 'Read coverage', n: sa.reads.available ? sa.reads.total_reads : null, panel: reads }] }),
       files, el('p', { class: 'micro faint', text: sa.note }));
   }
 

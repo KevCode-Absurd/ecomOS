@@ -22,6 +22,8 @@ question, and accept or ignore on a proposed record. Nothing external.
   GET  round/report             this round against the last: done and carried, trust moved, what was written, what is still open
   GET  trust/history            the trust number per day since the first run (the chart), optional ?sections=
   GET  sources                  where every fact came from: one row per source reference with sections, tiers, dates
+  GET  evidence/gaps            strong-tier records in the fact sections with no quote behind them, with the fix for each
+  POST evidence/retire          {id, why}: retire a record that nothing backs; logged with the why, undo on the changes list
   GET  sources/approve          ?ref=&sections=: the records one source would approve, with the tier each has now
   POST sources/approve          {ref, sections, note}: approve every record from a source after reading it; logged once, review record on team
   GET  sources/retire           ?ref=&sections=: the records a retire of that source would touch
@@ -306,6 +308,9 @@ _slspec.loader.exec_module(shelf)
 _rrspec = importlib.util.spec_from_file_location("brand_brain_roundreport", HERE / "roundreport.py")
 roundreport = importlib.util.module_from_spec(_rrspec)
 _rrspec.loader.exec_module(roundreport)
+_egspec = importlib.util.spec_from_file_location("brand_brain_evidencegaps", HERE / "evidencegaps.py")
+evidencegaps = importlib.util.module_from_spec(_egspec)
+_egspec.loader.exec_module(evidencegaps)
 
 
 def _shelf(brain: Brain) -> dict:
@@ -1838,6 +1843,29 @@ def handle(req):
             return 400, {"error": "; ".join(errs)}
         return 201, {"ok": True, "peak": key, "records": [f"{brain.brand}.offers.peak_{key}", f"{brain.brand}.calendar.peak_{key}"] + ([f"{brain.brand}.policies.holiday_shipping_cutoff"] if body.get("cutoff") else []),
                      "warns": [h["match"] for h in scan_res["hits"] if h["severity"] == "warn"][:5], "version": brain.version(), "next": f"{label} has an offer on file; every screen reads it. The creative brief and the send plan stay on the master list until done."}
+    if req.method == "GET" and parts == ["evidence", "gaps"]:
+        g = evidencegaps.gaps(brain)
+        g.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "BRN-C02", "autonomy": "agent_does"})
+        return g
+    if req.method == "POST" and parts == ["evidence", "retire"]:
+        body = req.body or {}
+        rid = str(body.get("id") or "")
+        why = str(body.get("why") or "").strip()
+        if not re.fullmatch(r"[a-z0-9_-]+\.[a-z_]+\.[A-Za-z0-9_.-]{1,120}", rid):
+            return 400, {"error": "id must be a record id"}
+        if len(why) < 4:
+            return 400, {"error": "say why in a few words; it goes on the changes list"}
+        sec = rid.split(".")[1]
+        raw = next((r for r in brain.raw(sec) if r.get("id") == rid), None) if sec in SECTIONS else None
+        if raw is None:
+            return 404, {"error": "no such record", "id": rid}
+        if raw.get("status") == "retired":
+            return 400, {"error": "already retired", "id": rid}
+        before_v = brain.version()
+        brain.retire(rid)
+        changes.log(brain, "retired", sec, rid, f"retired, no evidence behind its {raw.get('tier')} tier: {why[:120]}")
+        changes.version_step(brain, before_v, f"retired {rid}")
+        return 201, {"ok": True, "retired": rid, "left": evidencegaps.gaps(brain)["counts"]["gaps"], "version": brain.version(), "next": "Retired. It leaves every package; the changes list has an undo."}
     if req.method == "GET" and parts == ["selfaudit"]:
         sa = selfaudit.run(brain)
         sa["capability"] = {"id": "BRN-C12", "autonomy": "agent_does"}

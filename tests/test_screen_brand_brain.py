@@ -2937,6 +2937,43 @@ class Round8QuizAndSchedule(TempBrain):
         self.assertEqual(api.handle(Req(['schedule'], 'POST', body={'weekday': 'x'}))[0], 400)
 
 
+class Round9EvidenceGaps(TempBrain):
+    """Round 9 feature 10: strong records without evidence."""
+
+    def test_gaps_rule_approve_and_retire(self):
+        g = api.handle(Req(['evidence', 'gaps']))
+        self.assertGreaterEqual(g['counts']['gaps'], 10)
+        self.assertLess(g['counts']['gaps'], 40)
+        self.assertNotIn('language_bank', g['counts']['by_section'])
+        self.assertTrue(all(x['tier'] in ('site_backed', 'evidence') for x in g['gaps']))
+        self.assertTrue(all(x['fix_kind'] in ('re-read', 'attach', 'decide') for x in g['gaps']))
+        site = next(x for x in g['gaps'] if x['tier'] == 'site_backed')
+        self.assertEqual(site['fix_kind'], 're-read')
+        acts = [a for a in api.rank('bombas', {'ends_on': '2026-09-27', 'days': 28, 'trailing': 4})['actions'] if a['rule_id'] == 'BRN-R41']
+        self.assertEqual(len(acts), 1)
+        self.assertTrue(acts[0]['title'].startswith('Back or retire'))
+        self.assertEqual(acts[0]['owner'], 'agent_drafts')
+        n = g['counts']['gaps']
+        status, r = api.handle(Req(['approve', site['id']], 'POST', body={'choice': 'approve'}))
+        self.assertEqual(status, 201)
+        self.assertEqual(api.handle(Req(['evidence', 'gaps']))['counts']['gaps'], n - 1)
+        other = next(x for x in api.handle(Req(['evidence', 'gaps']))['gaps'] if x['fix_kind'] == 'attach')
+        self.assertEqual(api.handle(Req(['evidence', 'retire'], 'POST', body={'id': other['id'], 'why': 'no'}))[0], 400)
+        status, r = api.handle(Req(['evidence', 'retire'], 'POST', body={'id': other['id'], 'why': 'the actor run is gone and nothing else backs it'}))
+        self.assertEqual((status, r['left']), (201, n - 2))
+        line = next(x for x in api.handle(Req(['changes']))['changes'] if x['record'] == other['id'] and x['kind'] == 'retired')
+        self.assertEqual(line['undo']['how'], 'unretire')
+        self.assertEqual(api.handle(Req(['evidence', 'retire'], 'POST', body={'id': other['id'], 'why': 'again'}))[0], 400)
+        self.assertEqual(api.handle(Req(['evidence', 'retire'], 'POST', body={'id': 'bombas.offers.nope', 'why': 'gone'}))[0], 404)
+
+    def test_quote_itself_is_not_a_gap(self):
+        rows = self.section('products')
+        rs = next(r for r in rows if r.get('field') == 'review_summary')
+        rs.pop('evidence', None)  # the summary is a quote itself (a pdp and review counts), so it is not a gap even without an evidence list
+        self.write('products', rows)
+        self.assertNotIn(rs['id'], [x['id'] for x in api.handle(Req(['evidence', 'gaps']))['gaps']])
+
+
 class Round9RoundReport(TempBrain):
     """Round 9 feature 9: the round-over-round report."""
 
@@ -3411,7 +3448,7 @@ class Round8SourcesTrustHistory(TempBrain):
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
-    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'], ['onepage'], ['brainmd', 'notes'], ['alerts'], ['glossary'], ['expiring'], ['feedback'], ['numbers'], ['proofs'], ['trust'], ['round'], ['brandbook'], ['quiz'], ['schedule'], ['sources'], ['records', 'csv'], ['trust', 'history'], ['contradict'], ['changes'], ['handoff'], ['ask', 'misses'], ['products', 'sheets'], ['shelf'], ['round', 'report'],
+    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'], ['onepage'], ['brainmd', 'notes'], ['alerts'], ['glossary'], ['expiring'], ['feedback'], ['numbers'], ['proofs'], ['trust'], ['round'], ['brandbook'], ['quiz'], ['schedule'], ['sources'], ['records', 'csv'], ['trust', 'history'], ['contradict'], ['changes'], ['handoff'], ['ask', 'misses'], ['products', 'sheets'], ['shelf'], ['round', 'report'], ['evidence', 'gaps'],
               ['decisions'], ['flows'], ['claims'], ['site', 'diff'], ['parity'], ['contracts'], ['legal'], ['voice'], ['battlecards'], ['permissions'],
               ['export'], ['assumptions'], ['facts'], ['summaries'], ['changes'], ['learn'], ['report'], ['digest'], ['review'], ['bottlenecks'], ['audit']]
 
