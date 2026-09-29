@@ -1,0 +1,1339 @@
+{
+  "screen": "06-store-health",
+  "title": "Store health",
+  "purpose": "When I cannot be sure the store is taking orders and getting paid, open Store health to know it is open, checkout works and every order is paid and delivered, so no sale is lost to something broken nobody saw.",
+  "fires": "The customer email that says 'your checkout is broken', the midnight check on the orders app, the developer called in after the damage, the launch spreadsheet of ticked boxes, and the habit of not looking until sales dip.",
+  "not_for": "A brand whose platform partner or agency already runs round-the-clock monitoring with a named owner and a weekly report the founder reads and trusts.",
+  "jobs": [
+    {
+      "rank": 1,
+      "job": "When the store or checkout stops taking orders at 9 pm on a Saturday or while I sleep, tell me within minutes, so I do not keep paying for ads that send shoppers who cannot buy",
+      "circumstance": "Saturday evening, ads are spending, the payment step throws an error, and nobody is looking",
+      "progress": {
+        "functional": "know within minutes that orders stopped, and where in the path it breaks",
+        "emotional": "sleep without checking the orders app on my phone",
+        "social": "be the one who knew first, not the customer who emailed"
+      },
+      "hire_today": "nothing; a customer email or a strangely quiet sales day is the alarm",
+      "fire": "checking the orders app at night, and the customer email as the alarm",
+      "forces": {
+        "push": "a 3 hour checkout fault on a Saturday cost a day of sales",
+        "pull": "a test order through the path every few minutes, and a call when it fails",
+        "habit": "the platform is supposed to just work",
+        "anxiety": "what if it wakes me for false alarms"
+      },
+      "little_hire": "silent until it matters; a glance each morning",
+      "watch": {
+        "metric": "minutes from checkout breaking to someone being told, per incident, and hours with no orders in normal trading hours, 30 days",
+        "unit": "minutes",
+        "source": "synthetic checkout test log and Shopify orders"
+      },
+      "drives": {
+        "metric": "revenue lost to downtime, 30 days (orders expected minus orders taken in the gap, times average order value)",
+        "unit": "currency"
+      },
+      "business": "revenue",
+      "now_after": "Example. Now: a checkout fault ran 3 hours before a customer emailed. After: an alert within 5 minutes and a fix in under 1 hour.",
+      "score": {
+        "money": 5,
+        "struggle": 5,
+        "satisfaction": 5,
+        "speed": 5,
+        "ease": 4
+      },
+      "not_for": "a store doing a few orders a week, where hours without an order are normal and tell you nothing"
+    },
+    {
+      "rank": 2,
+      "job": "When a shopper picks Apple Pay, PayPal or a card and the payment fails, tell me which method broke, so I stop losing buyers at the very last step",
+      "circumstance": "Apple Pay orders dropped after a checkout app update last week and nobody noticed",
+      "progress": {
+        "functional": "each payment method completes a real order, checked on a schedule",
+        "emotional": "trust that every button on checkout works",
+        "social": "none"
+      },
+      "hire_today": "a test order at launch, then nothing",
+      "fire": "the one-time launch test",
+      "forces": {
+        "push": "Apple Pay completes 41 percent of attempts against 78 percent for cards",
+        "pull": "completion by payment method, with a flag when one falls behind",
+        "habit": "if cards work, everything works",
+        "anxiety": "what if test orders cost money or muddy the numbers"
+      },
+      "little_hire": "weekly, and after any checkout or app change",
+      "watch": {
+        "metric": "checkout completion rate by payment method, 7 days",
+        "unit": "percent",
+        "source": "Shopify checkouts and orders by payment gateway"
+      },
+      "drives": {
+        "metric": "checkout to order rate, 30 days",
+        "unit": "percent"
+      },
+      "business": "revenue",
+      "now_after": "Example. Now: Apple Pay 41 percent against 78 percent for cards. After: every method within 5 points, tested weekly with a real order.",
+      "score": {
+        "money": 5,
+        "struggle": 4,
+        "satisfaction": 4,
+        "speed": 5,
+        "ease": 4
+      },
+      "not_for": "a store with one payment method on a hosted checkout it cannot change"
+    },
+    {
+      "rank": 3,
+      "job": "When a developer, an agency or I change the theme or add an app, tell me the next morning if add to cart, the cart or a discount code broke, so I do not lose a week of sales blaming the ads",
+      "circumstance": "An upsell app went in on Tuesday; by Friday sales are down and the agency says it is the ads",
+      "progress": {
+        "functional": "each change logged and followed by a check of browse, cart, discount and checkout",
+        "emotional": "stop the week of guessing",
+        "social": "settle the argument with the agency using facts"
+      },
+      "hire_today": "a developer who checks when told something is wrong",
+      "fire": "finding breaks from a sales dip",
+      "forces": {
+        "push": "a discount code broke for 4 days after an app update",
+        "pull": "a change log with a before and after on the steps that matter, and the change named",
+        "habit": "changes go live and everyone moves on",
+        "anxiety": "what if it flags every tiny theme tweak"
+      },
+      "little_hire": "the morning after any change",
+      "watch": {
+        "metric": "add to cart rate and checkout start rate, the day after each change against the 14 day average",
+        "unit": "percent",
+        "source": "Shopify and GA4 funnel, with the store change log"
+      },
+      "drives": {
+        "metric": "days a break stays live before it is found, per incident",
+        "unit": "days"
+      },
+      "business": "revenue",
+      "now_after": "Example. Now: a broken discount code ran 4 days. After: flagged the next morning and rolled back the same day.",
+      "score": {
+        "money": 5,
+        "struggle": 4,
+        "satisfaction": 4,
+        "speed": 5,
+        "ease": 4
+      },
+      "not_for": "a store that has not changed its theme or apps in months"
+    },
+    {
+      "rank": 4,
+      "job": "When shoppers reach checkout and leave, help me remove the settings that make them quit, like a forced account or 11 fields, so I turn more of the carts I paid for into orders",
+      "circumstance": "Checkout completion is 52 percent, and the settings were chosen at launch 2 years ago",
+      "progress": {
+        "functional": "checkout has guest checkout, few fields and express wallets first",
+        "emotional": "stop wondering if checkout itself is the leak",
+        "social": "none"
+      },
+      "hire_today": "the developer's setup at launch, then nothing",
+      "fire": "the launch settings nobody revisited",
+      "forces": {
+        "push": "half of checkouts do not finish",
+        "pull": "the exact settings to change, each one small and quick",
+        "habit": "we set it up once",
+        "anxiety": "what if a change lowers order value or lets in more fraud"
+      },
+      "little_hire": "each quarter, and after a platform checkout update",
+      "watch": {
+        "metric": "checkout to order rate, mobile, 30 days",
+        "unit": "percent",
+        "source": "Shopify checkouts and orders"
+      },
+      "drives": {
+        "metric": "orders, 30 days",
+        "unit": "count"
+      },
+      "business": "revenue",
+      "now_after": "Example. Now: 11 fields and a forced account; 52 percent complete. After: 7 fields, guest on, wallets first; 58 percent.",
+      "score": {
+        "money": 5,
+        "struggle": 3,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 5
+      },
+      "not_for": "a store on a checkout it cannot configure"
+    },
+    {
+      "rank": 5,
+      "job": "When orders sit unshipped, stuck on payment pending, a fraud hold or a failed sync to the warehouse, find them before the customer writes in, so I never forget a paid order",
+      "circumstance": "Friday; 14 orders from Tuesday are still unshipped because a tag stopped them syncing to the warehouse",
+      "progress": {
+        "functional": "every paid order ships on time, and stuck ones are listed with the reason",
+        "emotional": "stop the fear of a forgotten order",
+        "social": "customers see a store that keeps its promises"
+      },
+      "hire_today": "customer service, once the customer writes in",
+      "fire": "the customer as the alarm",
+      "forces": {
+        "push": "stuck orders turn into refunds and 1 star reviews",
+        "pull": "a daily list of orders past their ship date, with why",
+        "habit": "the warehouse ships whatever it gets",
+        "anxiety": "what if the list fills up with normal preorders"
+      },
+      "little_hire": "daily",
+      "watch": {
+        "metric": "paid orders not shipped past the promised ship date, count, daily",
+        "unit": "count",
+        "source": "Shopify orders and fulfilments"
+      },
+      "drives": {
+        "metric": "on time ship rate, 30 days",
+        "unit": "percent"
+      },
+      "business": "customer satisfaction",
+      "now_after": "Example. Now: 14 orders stuck 3 days before anyone saw. After: flagged within 24 hours; 0 stuck over 2 days.",
+      "score": {
+        "money": 4,
+        "struggle": 3,
+        "satisfaction": 5,
+        "speed": 5,
+        "ease": 4
+      },
+      "not_for": "a store where the platform and warehouse are one system and orders cannot stall between them"
+    },
+    {
+      "rank": 6,
+      "job": "When a sale is set to go live at midnight, check that the prices, the code and the banner actually changed, so I do not stay up refreshing the store",
+      "circumstance": "Black Friday starts at 12 am, and the founder has set an alarm to check the discounts applied",
+      "progress": {
+        "functional": "a check at the start time that the promo is live everywhere it should be, and gone when it ends",
+        "emotional": "sleep through the launch",
+        "social": "none"
+      },
+      "hire_today": "the founder, awake at midnight",
+      "fire": "the midnight alarm",
+      "forces": {
+        "push": "a sale once started 6 hours late because a schedule failed",
+        "pull": "a message at 12:05 that says live, or says what is not",
+        "habit": "I always check myself",
+        "anxiety": "what if the check says fine and it is not"
+      },
+      "little_hire": "each scheduled promo start and end",
+      "watch": {
+        "metric": "minutes from scheduled promo start to confirmed live, per promo",
+        "unit": "minutes",
+        "source": "Shopify discounts and prices, plus a page check"
+      },
+      "drives": {
+        "metric": "promo day revenue against plan",
+        "unit": "currency"
+      },
+      "business": "revenue",
+      "now_after": "Example. Now: the founder checks by hand at midnight. After: confirmed within 5 minutes while the founder sleeps.",
+      "score": {
+        "money": 3,
+        "struggle": 4,
+        "satisfaction": 5,
+        "speed": 5,
+        "ease": 4
+      },
+      "not_for": "a store that never runs timed promos"
+    },
+    {
+      "rank": 7,
+      "job": "When cash on delivery parcels keep coming back refused, stop the risky orders before they ship, so I do not pay shipping both ways for nothing (market option: reads unavailable for US stores)",
+      "circumstance": "A store selling in India; 1 in 4 cash on delivery orders comes back and the courier bill arrives",
+      "progress": {
+        "functional": "risky cash on delivery orders confirmed or blocked before dispatch, by pincode and buyer",
+        "emotional": "stop the feeling of shipping money away",
+        "social": "none"
+      },
+      "hire_today": "an ops lead calling buyers, or a cash on delivery confirmation tool",
+      "fire": "calling every order and guessing",
+      "forces": {
+        "push": "24 percent of cash on delivery orders come back",
+        "pull": "which checkout control actually cut returns for this brand, not just that it ran",
+        "habit": "offer cash on delivery to everyone, it sells",
+        "anxiety": "what if blocking cash on delivery loses real buyers"
+      },
+      "little_hire": "daily, before dispatch",
+      "watch": {
+        "metric": "return to origin rate on cash on delivery orders, 30 days",
+        "unit": "percent",
+        "source": "Shopify orders and courier delivery status"
+      },
+      "drives": {
+        "metric": "shipping cost lost on returned cash on delivery orders, 30 days",
+        "unit": "currency"
+      },
+      "business": "gross profit",
+      "now_after": "Example. Now: 24 percent come back. After: 15 percent within 60 days.",
+      "score": {
+        "money": 4,
+        "struggle": 5,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 3
+      },
+      "not_for": "any store without cash on delivery, which includes US stores by default"
+    },
+    {
+      "rank": 8,
+      "job": "When the store is about to launch or relaunch, prove every step with a real order, a refund and a real email, so I do not send the first weeks of paid traffic to a broken store",
+      "circumstance": "Launch is Thursday; the checklist says 'payments done' but nobody has placed a real order",
+      "progress": {
+        "functional": "each launch step verified by the action a real customer would take",
+        "emotional": "go live calm instead of crossing my fingers",
+        "social": "look competent to the investor or client watching the launch"
+      },
+      "hire_today": "a build agency's checklist, or the platform's launch guide",
+      "fire": "the ticked box with no proof behind it",
+      "forces": {
+        "push": "launch mistakes eat the first weeks of ad spend",
+        "pull": "a checklist that only turns green when a real order proves it",
+        "habit": "the agency says it is done",
+        "anxiety": "what if a test order shows up in the numbers or costs money"
+      },
+      "little_hire": "each launch, relaunch or new market",
+      "watch": {
+        "metric": "launch steps verified by a real customer action, share of all steps",
+        "unit": "percent",
+        "source": "launch checklist log"
+      },
+      "drives": {
+        "metric": "fault tickets in the first 14 days after launch",
+        "unit": "count"
+      },
+      "business": "revenue",
+      "now_after": "Example. Now: 30 of 42 steps ticked, 12 proven. After: 42 of 42 proven before the password comes off.",
+      "score": {
+        "money": 4,
+        "struggle": 4,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 4
+      },
+      "not_for": "a store that has been live for years with no relaunch planned"
+    },
+    {
+      "rank": 9,
+      "job": "When the store shows stock the warehouse does not have, catch the gap before we sell it, so I do not have to cancel orders and collect bad reviews",
+      "circumstance": "A best seller showed 40 in stock; the warehouse had 6; 34 orders got canceled",
+      "progress": {
+        "functional": "store stock matches warehouse stock, with gaps flagged by product",
+        "emotional": "stop the dread of cancel emails",
+        "social": "keep our word to customers"
+      },
+      "hire_today": "an ops lead with a spreadsheet, or the warehouse telling us late",
+      "fire": "the weekly spreadsheet match",
+      "forces": {
+        "push": "2.4 percent of orders are canceled for no stock",
+        "pull": "a daily gap list, biggest first",
+        "habit": "trust the number in the admin",
+        "anxiety": "what if the warehouse count is itself wrong"
+      },
+      "little_hire": "daily",
+      "watch": {
+        "metric": "orders canceled for no stock, share of orders, 30 days",
+        "unit": "percent",
+        "source": "Shopify orders and inventory against the warehouse count"
+      },
+      "drives": {
+        "metric": "products whose store stock is over 2 percent off the warehouse count, share of checked products",
+        "unit": "percent"
+      },
+      "business": "customer satisfaction",
+      "now_after": "Example. Now: 2.4 percent of orders canceled for no stock. After: under 0.5 percent.",
+      "score": {
+        "money": 4,
+        "struggle": 4,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 3
+      },
+      "not_for": "a made-to-order or print-on-demand store with no stock to count"
+    },
+    {
+      "rank": 10,
+      "job": "When Black Friday, a product drop or a TV mention is coming, get the store ready to take the rush, so I do not watch checkout fail on the best sales day of the year",
+      "circumstance": "3 weeks before Black Friday; last year checkout completion fell from 55 to 38 percent for 2 hours",
+      "progress": {
+        "functional": "a load check, a change freeze and a fallback plan in place before the date",
+        "emotional": "go into the big day calm",
+        "social": "look in control to the team and partners"
+      },
+      "hire_today": "a developer or agency, if anyone",
+      "fire": "hoping it holds",
+      "forces": {
+        "push": "the biggest revenue hours are the riskiest",
+        "pull": "a dated readiness plan with each risk checked off by a real test",
+        "habit": "it held last year, mostly",
+        "anxiety": "what if the freeze blocks a fix we need"
+      },
+      "little_hire": "each big sale date, starting 3 weeks out",
+      "watch": {
+        "metric": "checkout completion in peak hours against a normal day, percentage point drop",
+        "unit": "percent",
+        "source": "Shopify checkouts and orders by hour"
+      },
+      "drives": {
+        "metric": "revenue on peak days against plan",
+        "unit": "currency"
+      },
+      "business": "revenue",
+      "now_after": "Example. Now: a 17 point drop for 2 hours last year. After: under 5 points.",
+      "score": {
+        "money": 5,
+        "struggle": 3,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 3
+      },
+      "not_for": "a store with no big sale days, drops or press moments"
+    },
+    {
+      "rank": 11,
+      "job": "When the store, domain, payment or ad accounts belong to a former employee's or an agency's email, help me move them into the company's name, so I can never be locked out of my own business",
+      "circumstance": "The agency that built the store owns the domain and the ad account, and the contract ends next month",
+      "progress": {
+        "functional": "every key account owned by a company login the founder controls",
+        "emotional": "stop the fear of being locked out",
+        "social": "leave any agency on good terms, with nothing held hostage"
+      },
+      "hire_today": "nothing, until there is a crisis",
+      "fire": "accounts in someone else's name",
+      "forces": {
+        "push": "a partner who leaves can take the domain or the ad account with them",
+        "pull": "a list of key accounts with the owner and one transfer step for each",
+        "habit": "whoever set it up owns it",
+        "anxiety": "what if a transfer breaks something mid-season"
+      },
+      "little_hire": "quarterly, and when a partner changes",
+      "watch": {
+        "metric": "key accounts (store, domain, payments, ads, email) not owned by a company login, count",
+        "unit": "count",
+        "source": "platform, registrar and ad account owner records"
+      },
+      "drives": {
+        "metric": "days of lost access to a key account, 12 months",
+        "unit": "days"
+      },
+      "business": "risk",
+      "now_after": "Example. Now: 3 of 7 key accounts owned by the agency. After: 0, all on company logins.",
+      "score": {
+        "money": 4,
+        "struggle": 3,
+        "satisfaction": 5,
+        "speed": 2,
+        "ease": 4
+      },
+      "not_for": "a founder who set up every account personally on a company email"
+    },
+    {
+      "rank": 12,
+      "job": "When a discount code leaks to coupon sites or stacks with another offer, stop it the same day, so I do not give margin away to shoppers who would have paid full price",
+      "circumstance": "A 25 percent creator code is on 4 coupon sites and was used on 300 orders this week",
+      "progress": {
+        "functional": "codes used only where they were meant to be, with limits and no stacking",
+        "emotional": "stop the sick feeling when I see the discount total",
+        "social": "keep the creator's code fair to the creator"
+      },
+      "hire_today": "nothing; it shows up at month end, if at all",
+      "fire": "open codes with no limits",
+      "forces": {
+        "push": "the discount total doubled in a month",
+        "pull": "codes used outside their channel flagged the same day, with the cost",
+        "habit": "codes are made in a hurry",
+        "anxiety": "what if I shut a code that a creator's fans are still using"
+      },
+      "little_hire": "daily during promos, weekly otherwise",
+      "watch": {
+        "metric": "discount value on codes used outside their channel or stacked, 30 days",
+        "unit": "currency",
+        "source": "Shopify orders and discount codes"
+      },
+      "drives": {
+        "metric": "discount rate, 30 days",
+        "unit": "percent"
+      },
+      "business": "gross profit",
+      "now_after": "Example. Now: $4,200 of discounts in a month from one leaked code. After: under $500, with limits and one code per creator.",
+      "score": {
+        "money": 4,
+        "struggle": 3,
+        "satisfaction": 3,
+        "speed": 5,
+        "ease": 5
+      },
+      "not_for": "a store that never uses discount codes"
+    },
+    {
+      "rank": 13,
+      "job": "When Monday starts, tell me in one line whether anything broke last week, so I stop clicking through 6 admin screens to feel safe",
+      "circumstance": "Monday 8 am coffee; the founder opens orders, payments, apps, email and reviews one by one",
+      "progress": {
+        "functional": "one short read of what broke, what was fixed and what still needs me",
+        "emotional": "start the week calm",
+        "social": "report store health to a partner in one line"
+      },
+      "hire_today": "the founder clicking through admin screens, or the status part of the agency's weekly call",
+      "fire": "the Monday admin tour and the status part of the call",
+      "forces": {
+        "push": "an hour every Monday and still not sure",
+        "pull": "'all clear', or 3 things with owners",
+        "habit": "I like to see it myself",
+        "anxiety": "what if 'all clear' is wrong"
+      },
+      "little_hire": "every Monday",
+      "watch": {
+        "metric": "open store health issues older than 7 days, count, weekly",
+        "unit": "count",
+        "source": "store health issue log"
+      },
+      "drives": {
+        "metric": "founder hours on store checks per week",
+        "unit": "hours"
+      },
+      "business": "gross profit",
+      "now_after": "Example. Now: 1 hour of admin clicking each Monday. After: 5 minutes, with 0 issues older than 7 days.",
+      "score": {
+        "money": 2,
+        "struggle": 4,
+        "satisfaction": 5,
+        "speed": 4,
+        "ease": 5
+      },
+      "not_for": "a store with an ops lead who already sends a Monday status note"
+    },
+    {
+      "rank": 14,
+      "job": "When a payout is held or goes to the wrong account, catch it the same day, so I do not have cash for stock and ads frozen for weeks",
+      "circumstance": "An $18,000 payout was held over a missing document and nobody saw it for 9 days",
+      "progress": {
+        "functional": "every expected payout arrives, and holds are flagged the day they start",
+        "emotional": "stop the cash panic",
+        "social": "pay suppliers and staff on time"
+      },
+      "hire_today": "a bookkeeper checking the bank now and then",
+      "fire": "checking the bank by hand",
+      "forces": {
+        "push": "cash frozen while ad and stock bills are due",
+        "pull": "a payout calendar with anything late or held flagged",
+        "habit": "payouts just arrive",
+        "anxiety": "what if it needs a bank connection I do not trust"
+      },
+      "little_hire": "a daily glance, a weekly check",
+      "watch": {
+        "metric": "payouts held, failed or late, value, 30 days",
+        "unit": "currency",
+        "source": "Shopify Payments and PayPal payout reports"
+      },
+      "drives": {
+        "metric": "days of cash frozen in held payouts, 90 days",
+        "unit": "days"
+      },
+      "business": "cash",
+      "now_after": "Example. Now: one $18,000 payout held for 9 days. After: holds seen the same day; none held over 2 days.",
+      "score": {
+        "money": 4,
+        "struggle": 3,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 4
+      },
+      "not_for": "a store whose bookkeeper reconciles payouts every day"
+    },
+    {
+      "rank": 15,
+      "job": "When staff leave or an agency's contract ends, make sure their logins end too and every account has 2 step login, so I cannot lose payouts or prices to one stolen password",
+      "circumstance": "3 past freelancers still have admin access and 6 accounts have no 2 step login",
+      "progress": {
+        "functional": "each staff and partner account is needed, time bound and on 2 step login",
+        "emotional": "stop the nagging worry about who can get in",
+        "social": "look safe to a partner or a buyer checking access"
+      },
+      "hire_today": "nothing; access is added and never removed",
+      "fire": "accounts that never get removed",
+      "forces": {
+        "push": "one stolen login can change payout details",
+        "pull": "a monthly access list that says who to remove",
+        "habit": "giving full access is quicker",
+        "anxiety": "what if removing someone breaks an app they set up"
+      },
+      "little_hire": "monthly, and when anyone leaves",
+      "watch": {
+        "metric": "staff and partner accounts without 2 step login or unused for 90 days, count",
+        "unit": "count",
+        "source": "Shopify staff and collaborator list"
+      },
+      "drives": {
+        "metric": "security incidents on the store admin, 12 months",
+        "unit": "count"
+      },
+      "business": "risk",
+      "now_after": "Example. Now: 6 accounts without 2 step login and 3 past freelancers. After: 0 and 0, checked monthly.",
+      "score": {
+        "money": 3,
+        "struggle": 3,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 5
+      },
+      "not_for": "a founder-only store with no staff or partner accounts"
+    },
+    {
+      "rank": 16,
+      "job": "When a menu link, an old ad or a deleted product sends shoppers to a dead page, find it first, so I do not pay for clicks that land on a page not found",
+      "circumstance": "An old product was deleted; 3 ads and the main menu still point to it",
+      "progress": {
+        "functional": "no live link, ad or email sends a shopper to a missing page",
+        "emotional": "none",
+        "social": "none"
+      },
+      "hire_today": "nothing",
+      "fire": "not looking",
+      "forces": {
+        "push": "1.8 percent of sessions land on a dead page",
+        "pull": "a weekly sweep with each dead link and where it comes from",
+        "habit": "delete the product and move on",
+        "anxiety": "what if the redirect sends them somewhere worse"
+      },
+      "little_hire": "weekly, and after any product is deleted",
+      "watch": {
+        "metric": "sessions landing on a page not found, share of sessions, 30 days",
+        "unit": "percent",
+        "source": "GA4 page not found views"
+      },
+      "drives": {
+        "metric": "paid clicks landing on a page not found, 30 days",
+        "unit": "count"
+      },
+      "business": "revenue",
+      "now_after": "Example. Now: 1.8 percent of sessions hit a dead page. After: under 0.2 percent.",
+      "score": {
+        "money": 3,
+        "struggle": 3,
+        "satisfaction": 3,
+        "speed": 5,
+        "ease": 5
+      },
+      "not_for": "a tiny store with a handful of pages and no old links"
+    },
+    {
+      "rank": 17,
+      "job": "When the domain or the security certificate is about to lapse, tell me weeks ahead, so I never wake up to a store that has vanished overnight",
+      "circumstance": "The domain renewal emails go to a former employee's inbox, on a card that expired",
+      "progress": {
+        "functional": "domain, certificate and email sender records renew on time and belong to the right owner",
+        "emotional": "stop the nightmare of a dark store",
+        "social": "none"
+      },
+      "hire_today": "nothing; registrar emails go to whoever set it up",
+      "fire": "trusting auto-renew on an old card",
+      "forces": {
+        "push": "a lapsed domain takes the store and the email down at once",
+        "pull": "renewal dates with owner and card, and an alert 30 days out",
+        "habit": "it renews itself",
+        "anxiety": "what if moving the domain breaks the site"
+      },
+      "little_hire": "a monthly glance",
+      "watch": {
+        "metric": "days to the next domain or certificate expiry, and records owned by someone who has left, count",
+        "unit": "days",
+        "source": "domain registrar and DNS records"
+      },
+      "drives": {
+        "metric": "hours of store downtime from a lapsed domain or certificate, 12 months",
+        "unit": "hours"
+      },
+      "business": "risk",
+      "now_after": "Example. Now: the domain renews in 19 days on an expired card. After: renewed 12 months ahead on a company login.",
+      "score": {
+        "money": 4,
+        "struggle": 2,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 5
+      },
+      "not_for": "a store whose domain came with the platform and renews with the plan"
+    },
+    {
+      "rank": 18,
+      "job": "When we switch on a new country, check that prices, tax, shipping and payment all work for a shopper there, so I do not see the first orders from the new market fail",
+      "circumstance": "Canada went live on Monday; the first Canadian shopper saw US prices and no shipping rate",
+      "progress": {
+        "functional": "a real test order from the new country, from product page to confirmation email",
+        "emotional": "launch abroad without the gut drop",
+        "social": "look like a real local store"
+      },
+      "hire_today": "the developer's say-so, or nothing",
+      "fire": "launching and waiting for complaints",
+      "forces": {
+        "push": "new-market ads send shoppers into a broken checkout",
+        "pull": "a pass list per country before ads start",
+        "habit": "it works in the US, so it works",
+        "anxiety": "what if a local rule is missed"
+      },
+      "little_hire": "each new country or currency",
+      "watch": {
+        "metric": "new-market checks passed with a real test order, share",
+        "unit": "percent",
+        "source": "launch checklist log and Shopify orders by country"
+      },
+      "drives": {
+        "metric": "checkout to order rate in the new country, first 30 days",
+        "unit": "percent"
+      },
+      "business": "revenue",
+      "now_after": "Example. Now: Canada launched with 3 of 8 checks. After: 8 of 8 passed before ads start.",
+      "score": {
+        "money": 3,
+        "struggle": 3,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 4
+      },
+      "not_for": "a store selling in one country with no plan to expand"
+    },
+    {
+      "rank": 19,
+      "job": "When I take over a store as a new agency, a new hire or a buyer, show me everything broken in the first week, so I start from a clean list and look sharp to the owner",
+      "circumstance": "An agency signs a new client on Friday and must present a health read at Monday's kickoff",
+      "progress": {
+        "functional": "one audit across checkout, payments, apps, access, policies, stock and orders",
+        "emotional": "stop the fear of inheriting a hidden mess",
+        "social": "look sharp and thorough to the client or the new boss"
+      },
+      "hire_today": "a manual audit that takes days, or a freelancer's checklist",
+      "fire": "the 3 day manual audit",
+      "forces": {
+        "push": "problems found later get blamed on the newcomer",
+        "pull": "a ranked list of what is broken, with the cost of each",
+        "habit": "click through the admin",
+        "anxiety": "what if it misses something and I miss it too"
+      },
+      "little_hire": "each new store taken on",
+      "watch": {
+        "metric": "days from access to a full ranked health list",
+        "unit": "days",
+        "source": "store health audit log"
+      },
+      "drives": {
+        "metric": "issues found after the first 30 days that were there at takeover, count",
+        "unit": "count"
+      },
+      "business": "risk",
+      "now_after": "Example. Now: 3 days of clicking for a partial list. After: a full ranked list in 1 day.",
+      "score": {
+        "money": 3,
+        "struggle": 3,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 4
+      },
+      "not_for": "a founder who built the store and has run it alone since"
+    },
+    {
+      "rank": 20,
+      "job": "When order and shipping emails stop arriving, catch it before customers write in, so I do not drown in 'where is my order' tickets",
+      "circumstance": "A notification template was edited and the shipping email stopped sending 10 days ago",
+      "progress": {
+        "functional": "every order email arrives, tested after each change",
+        "emotional": "none",
+        "social": "customers feel looked after"
+      },
+      "hire_today": "customer service noticing a rise in tickets",
+      "fire": "tickets as the alarm",
+      "forces": {
+        "push": "6 of every 100 orders create a 'where is my order' ticket",
+        "pull": "a test send after each change, and a daily check that emails went out",
+        "habit": "emails were set up at launch",
+        "anxiety": "what if two tools both send and customers get double emails"
+      },
+      "little_hire": "after any notification or app change, and daily",
+      "watch": {
+        "metric": "'where is my order' tickets per 100 orders, 30 days",
+        "unit": "count",
+        "source": "Gorgias tickets and Shopify orders"
+      },
+      "drives": {
+        "metric": "support cost per order, 30 days",
+        "unit": "currency"
+      },
+      "business": "customer satisfaction",
+      "now_after": "Example. Now: 6 per 100 orders. After: 3.",
+      "score": {
+        "money": 3,
+        "struggle": 3,
+        "satisfaction": 4,
+        "speed": 4,
+        "ease": 4
+      },
+      "not_for": "a store whose shipping partner sends all tracking emails and owns the tickets"
+    },
+    {
+      "rank": 21,
+      "job": "When the shipping a shopper pays is below what the label costs us, find the zones and weights that leak, so I stop losing money on every order that ships",
+      "circumstance": "Month end; shipping cost is 30 percent above what shoppers paid, and nobody knows why",
+      "progress": {
+        "functional": "shipping charged per order compared to the label cost, by zone and weight",
+        "emotional": "stop the surprise at month end",
+        "social": "none"
+      },
+      "hire_today": "a bookkeeper at month end, or nothing",
+      "fire": "the month end surprise",
+      "forces": {
+        "push": "19 percent of orders charge less than the label costs",
+        "pull": "the exact zones and weights to fix",
+        "habit": "rates were set at launch",
+        "anxiety": "what if higher shipping lowers conversion"
+      },
+      "little_hire": "monthly",
+      "watch": {
+        "metric": "orders where shipping charged is below the label cost, share, 30 days",
+        "unit": "percent",
+        "source": "Shopify orders and shipping label costs"
+      },
+      "drives": {
+        "metric": "shipping margin (charged minus label cost), 30 days",
+        "unit": "currency"
+      },
+      "business": "gross profit",
+      "now_after": "Example. Now: 19 percent of orders undercharge. After: under 5 percent.",
+      "score": {
+        "money": 4,
+        "struggle": 3,
+        "satisfaction": 2,
+        "speed": 4,
+        "ease": 4
+      },
+      "not_for": "a store that offers free shipping and absorbs the cost on purpose"
+    },
+    {
+      "rank": 22,
+      "job": "When a shopper types a wrong address, catch it at checkout, so I do not pay for a lost parcel, a reship and an angry email",
+      "circumstance": "A parcel comes back 'address unknown' twice a week and support reships at our cost",
+      "progress": {
+        "functional": "addresses checked at checkout",
+        "emotional": "none",
+        "social": "none"
+      },
+      "hire_today": "customer service fixing it after the fact",
+      "fire": "the reship as the fix",
+      "forces": {
+        "push": "1.6 percent of parcels come back to sender",
+        "pull": "an address check while the shopper types",
+        "habit": "the carrier sorts it out",
+        "anxiety": "what if the check blocks a real address and loses the order"
+      },
+      "little_hire": "a monthly look at the rate",
+      "watch": {
+        "metric": "orders returned to sender by the carrier, share of orders, 30 days",
+        "unit": "percent",
+        "source": "Shopify fulfilments and carrier tracking"
+      },
+      "drives": {
+        "metric": "reship cost, 30 days",
+        "unit": "currency"
+      },
+      "business": "gross profit",
+      "now_after": "Example. Now: 1.6 percent back to sender. After: 0.6 percent.",
+      "score": {
+        "money": 3,
+        "struggle": 3,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 4
+      },
+      "not_for": "a store with only a few failed deliveries a month"
+    },
+    {
+      "rank": 23,
+      "job": "When money leaks out after the sale through returns, chargebacks and parcels sent back, show me all three in one place, so I see which door costs most this month",
+      "circumstance": "Month end; revenue looks fine, but the bank balance does not",
+      "progress": {
+        "functional": "all reversed orders in one view, split by type and cost",
+        "emotional": "stop the feeling that money disappears after the sale",
+        "social": "give a partner or investor the real net number"
+      },
+      "hire_today": "a bookkeeper at month end, in pieces",
+      "fire": "three reports read in three places",
+      "forces": {
+        "push": "9 percent of orders reverse and nobody sees the total",
+        "pull": "the biggest leak named, with its cost",
+        "habit": "look at gross sales",
+        "anxiety": "what if the numbers do not match the bookkeeper's"
+      },
+      "little_hire": "weekly",
+      "watch": {
+        "metric": "reversed orders (returns, sent back, chargebacks), share of orders and value, 30 days",
+        "unit": "percent",
+        "source": "Shopify refunds, carrier status and payment disputes"
+      },
+      "drives": {
+        "metric": "net revenue after reversals, 30 days",
+        "unit": "currency"
+      },
+      "business": "gross profit",
+      "now_after": "Example. Now: 9.1 percent of orders reverse, unseen. After: tracked weekly; the biggest leg cut so the total falls to 7 percent in 90 days.",
+      "score": {
+        "money": 4,
+        "struggle": 3,
+        "satisfaction": 3,
+        "speed": 2,
+        "ease": 3
+      },
+      "not_for": "a store with almost no returns or disputes"
+    },
+    {
+      "rank": 24,
+      "job": "When card testers, bots or fake orders hit the store, hold them before they ship, so I do not eat the chargebacks, fees and lost stock",
+      "circumstance": "Overnight, 200 $1 orders from one card range, and 3 high risk orders already shipped",
+      "progress": {
+        "functional": "high risk orders held for review; card testing blocked",
+        "emotional": "stop the morning shock",
+        "social": "none"
+      },
+      "hire_today": "the platform's fraud flag, sometimes a fraud app, often ignored",
+      "fire": "shipping flagged orders anyway",
+      "forces": {
+        "push": "high risk orders ship and turn into chargebacks",
+        "pull": "a hold queue with the reason for each order",
+        "habit": "ship everything fast",
+        "anxiety": "what if a real customer gets held"
+      },
+      "little_hire": "daily",
+      "watch": {
+        "metric": "orders flagged high risk that shipped, share of orders, 30 days",
+        "unit": "percent",
+        "source": "Shopify fraud analysis"
+      },
+      "drives": {
+        "metric": "fraud losses including chargebacks, 90 days",
+        "unit": "currency"
+      },
+      "business": "risk",
+      "now_after": "Example. Now: 1.1 percent of orders are high risk and all ship. After: held for review; fraud losses halved in 60 days.",
+      "score": {
+        "money": 3,
+        "struggle": 3,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 4
+      },
+      "not_for": "a store with a fraud app and a person already working the hold queue"
+    },
+    {
+      "rank": 25,
+      "job": "When app bills stack up, find the apps we pay for that earn nothing back, so I cut the cost and the leftover code they add",
+      "circumstance": "The card statement shows 24 app charges and nobody remembers what 7 of them do",
+      "progress": {
+        "functional": "each app with its cost and the sales it can be tied to",
+        "emotional": "stop the guilt of the bloated bill",
+        "social": "none"
+      },
+      "hire_today": "the founder at renewal time, or nothing",
+      "fire": "paying by default",
+      "forces": {
+        "push": "$640 a month on apps with no sales tied to them",
+        "pull": "a keep, cut or check list with money saved",
+        "habit": "someone installed it for a reason",
+        "anxiety": "what if I remove one that quietly did something important"
+      },
+      "little_hire": "monthly, and at each renewal",
+      "watch": {
+        "metric": "monthly app fees with no link to sales, 90 days",
+        "unit": "currency",
+        "source": "Shopify app charges against orders"
+      },
+      "drives": {
+        "metric": "software cost as a share of revenue, monthly",
+        "unit": "percent"
+      },
+      "business": "gross profit",
+      "now_after": "Example. Now: $640 a month on 7 apps with no sales tie. After: 5 removed, $470 a month saved, their leftover code cleared.",
+      "score": {
+        "money": 2,
+        "struggle": 3,
+        "satisfaction": 3,
+        "speed": 5,
+        "ease": 5
+      },
+      "not_for": "a store with a lean stack of a handful of apps"
+    },
+    {
+      "rank": 26,
+      "job": "When shoppers use the contact form, chat or support email, make sure the messages actually reach us, so I never leave a buyer's question unheard",
+      "circumstance": "The contact form sent to an old inbox for 2 months and 60 pre-sale questions went unanswered",
+      "progress": {
+        "functional": "each support channel tested and reaching a person",
+        "emotional": "stop the fear of silent customers",
+        "social": "customers feel heard"
+      },
+      "hire_today": "nothing",
+      "fire": "assuming the form works",
+      "forces": {
+        "push": "lost sales, and reviews that say 'no reply'",
+        "pull": "a weekly test message through each channel",
+        "habit": "we get emails, so it works",
+        "anxiety": "what if test messages clutter the inbox"
+      },
+      "little_hire": "weekly",
+      "watch": {
+        "metric": "support channels that passed a test message in the last 7 days, share",
+        "unit": "percent",
+        "source": "support channel test log and Gorgias"
+      },
+      "drives": {
+        "metric": "reviews or tickets that mention 'no reply', 30 days",
+        "unit": "count"
+      },
+      "business": "customer satisfaction",
+      "now_after": "Example. Now: 1 of 3 channels failing silently. After: 3 of 3 tested weekly.",
+      "score": {
+        "money": 2,
+        "struggle": 2,
+        "satisfaction": 4,
+        "speed": 5,
+        "ease": 5
+      },
+      "not_for": "a store with a support team working the same inbox every hour"
+    },
+    {
+      "rank": 27,
+      "job": "When a chargeback lands, help me answer the ones we can win with proof of delivery and cut the ones that come from confusion, so I do not get payouts held by the payment provider",
+      "circumstance": "0.7 percent of orders end in a chargeback and none have been answered",
+      "progress": {
+        "functional": "each dispute answered with proof, and the causes cut at the source, like a card statement name nobody recognizes",
+        "emotional": "stop feeling robbed",
+        "social": "keep a clean record with the payment provider"
+      },
+      "hire_today": "the founder now and then, a chargeback app, or nothing",
+      "fire": "ignoring disputes",
+      "forces": {
+        "push": "fees and lost orders, and a risk of held payouts",
+        "pull": "each dispute with its proof ready, and a win rate",
+        "habit": "it is not worth the time",
+        "anxiety": "what if fighting upsets real customers"
+      },
+      "little_hire": "each dispute, and a monthly rate check",
+      "watch": {
+        "metric": "chargeback rate, share of paid orders, 30 and 90 days",
+        "unit": "percent",
+        "source": "Shopify Payments disputes"
+      },
+      "drives": {
+        "metric": "money lost to chargebacks including fees, 90 days",
+        "unit": "currency"
+      },
+      "business": "gross profit",
+      "now_after": "Example. Now: 0.7 percent, none answered. After: under 0.4 percent, every one answered.",
+      "score": {
+        "money": 3,
+        "struggle": 3,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 3
+      },
+      "not_for": "a store with a handful of disputes a year"
+    },
+    {
+      "rank": 28,
+      "job": "When sales into a new state or country pass the level where we must collect tax, tell me before the bill comes, so I do not owe tax I never charged",
+      "circumstance": "Sales into Texas grew fast this year and nobody checked if we now have to collect sales tax there",
+      "progress": {
+        "functional": "sales by state and country against each registration threshold, with tax set right where registered",
+        "emotional": "stop the low worry of a tax letter",
+        "social": "look clean to an accountant, a lender or a buyer of the business"
+      },
+      "hire_today": "nothing between the accountant's yearly look",
+      "fire": "the yearly surprise",
+      "forces": {
+        "push": "a back-tax bill can wipe out a year's profit in that state",
+        "pull": "a warning when a state nears its threshold",
+        "habit": "the accountant handles it in April",
+        "anxiety": "what if the screen reads a rule wrong and I trust it"
+      },
+      "little_hire": "monthly",
+      "watch": {
+        "metric": "states or countries over their tax threshold where the store is not collecting, count",
+        "unit": "count",
+        "source": "Shopify orders by ship-to region and tax settings"
+      },
+      "drives": {
+        "metric": "uncollected tax owed, estimate, 12 months",
+        "unit": "currency"
+      },
+      "business": "risk",
+      "now_after": "Example. Now: 2 states over the threshold with no tax collected. After: registered and collecting in both within 30 days.",
+      "score": {
+        "money": 3,
+        "struggle": 3,
+        "satisfaction": 3,
+        "speed": 2,
+        "ease": 3
+      },
+      "not_for": "a store selling into one tax region, or with an accountant who checks this monthly"
+    },
+    {
+      "rank": 29,
+      "job": "When a product goes live without a cost, a weight or a SKU, catch it, so I do not trust margin reports and shipping rates that are quietly wrong",
+      "circumstance": "38 of 120 products have no cost, so the margin report shows 100 percent margin on them",
+      "progress": {
+        "functional": "every live product has price, cost, weight, SKU and image",
+        "emotional": "trust the margin and shipping numbers",
+        "social": "none"
+      },
+      "hire_today": "a merchandiser now and then",
+      "fire": "fixing gaps only when a report looks odd",
+      "forces": {
+        "push": "margin and shipping numbers are wrong and nobody knows",
+        "pull": "a gap list per product",
+        "habit": "we fill fields when we have time",
+        "anxiety": "what if cost fields shared with the team leak our margins"
+      },
+      "little_hire": "weekly, and at each product launch",
+      "watch": {
+        "metric": "active products missing cost, weight, SKU or image, count",
+        "unit": "count",
+        "source": "Shopify products"
+      },
+      "drives": {
+        "metric": "orders with a known gross margin, share, 30 days",
+        "unit": "percent"
+      },
+      "business": "gross profit",
+      "now_after": "Example. Now: 38 products missing cost and 12 missing weight. After: 0 missing.",
+      "score": {
+        "money": 3,
+        "struggle": 2,
+        "satisfaction": 2,
+        "speed": 5,
+        "ease": 5
+      },
+      "not_for": "a store with a tiny catalog the founder keeps by hand"
+    },
+    {
+      "rank": 30,
+      "job": "When an app, an import or a staff mistake wipes products or theme changes, help me get back to yesterday in minutes, so I do not lose a week to one bad click",
+      "circumstance": "A bulk import overwrote 300 product descriptions and prices on a Tuesday afternoon",
+      "progress": {
+        "functional": "a recent copy of products, theme and settings, and a tested way to restore them",
+        "emotional": "work without fear of the one bad click",
+        "social": "none"
+      },
+      "hire_today": "nothing, or a backup app nobody has tested",
+      "fire": "hoping it never happens",
+      "forces": {
+        "push": "a bad import took 4 days to repair by hand",
+        "pull": "a daily copy and a restore that has been tried",
+        "habit": "the platform keeps it safe",
+        "anxiety": "what if restoring wipes good changes made since"
+      },
+      "little_hire": "silent until needed; a monthly restore test",
+      "watch": {
+        "metric": "days since the last tested restore of products and theme",
+        "unit": "days",
+        "source": "backup log"
+      },
+      "drives": {
+        "metric": "hours to recover from a data loss, per incident",
+        "unit": "hours"
+      },
+      "business": "risk",
+      "now_after": "Example. Now: no backup ever tested. After: daily copies and a restore tested monthly.",
+      "score": {
+        "money": 3,
+        "struggle": 2,
+        "satisfaction": 4,
+        "speed": 2,
+        "ease": 4
+      },
+      "not_for": "a store whose developer keeps version control and tested backups"
+    },
+    {
+      "rank": 31,
+      "job": "When the platform or an app announces a change that will break something on a set date, tell me before the date, so I do not have a retired feature stop sales",
+      "circumstance": "An email said the old checkout scripts retire in August; it went to an inbox nobody reads",
+      "progress": {
+        "functional": "each platform and app notice with a date, read and given an owner",
+        "emotional": "stop being caught out",
+        "social": "none"
+      },
+      "hire_today": "nothing; the notices go unread",
+      "fire": "the unread inbox",
+      "forces": {
+        "push": "a retired checkout feature broke upsells on the day",
+        "pull": "a short list of notices with dates and what they touch",
+        "habit": "the developer will know",
+        "anxiety": "what if it is just noise"
+      },
+      "little_hire": "monthly",
+      "watch": {
+        "metric": "platform and app notices past their date and still unread, count",
+        "unit": "count",
+        "source": "platform changelog and app notices"
+      },
+      "drives": {
+        "metric": "breaks caused by a retired feature, 12 months",
+        "unit": "count"
+      },
+      "business": "risk",
+      "now_after": "Example. Now: 3 notices past due and unread. After: 0; each read 30 days before its date.",
+      "score": {
+        "money": 3,
+        "struggle": 2,
+        "satisfaction": 3,
+        "speed": 3,
+        "ease": 4
+      },
+      "not_for": "a store with a developer on retainer who tracks platform changes"
+    },
+    {
+      "rank": 32,
+      "job": "When I have not bought from my own store in months, put me through what a real shopper sees on a phone, so I find the snags no report shows",
+      "circumstance": "The founder browses the site on a laptop on office wifi; most buyers are on phones in the evening",
+      "progress": {
+        "functional": "a real order on a real phone each month, with each snag written down",
+        "emotional": "feel close to the customer again",
+        "social": "none"
+      },
+      "hire_today": "the founder or a friend placing an order now and then",
+      "fire": "browsing the site on a laptop",
+      "forces": {
+        "push": "shoppers complain about things the team never sees",
+        "pull": "a monthly test order with notes and fixes",
+        "habit": "the team knows the site too well to see it",
+        "anxiety": "what if it turns up too many small things to fix"
+      },
+      "little_hire": "monthly",
+      "watch": {
+        "metric": "snags found per monthly test order, count, and share fixed within 14 days",
+        "unit": "count",
+        "source": "test order log"
+      },
+      "drives": {
+        "metric": "checkout to order rate, mobile, 30 days",
+        "unit": "percent"
+      },
+      "business": "customer satisfaction",
+      "now_after": "Example. Now: no test order in 5 months. After: one a month; 6 snags found and fixed in the first quarter.",
+      "score": {
+        "money": 2,
+        "struggle": 2,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 5
+      },
+      "not_for": "a founder who already buys from the store on a phone every month"
+    },
+    {
+      "rank": 33,
+      "job": "When a shopper opens our returns or terms page, make sure it is real, current and the one checkout links to, so I win disputes and do not look careless",
+      "circumstance": "The returns page still has template text, and checkout links to an old terms page",
+      "progress": {
+        "functional": "all policy pages current, edited and linked at checkout",
+        "emotional": "none",
+        "social": "look like a real business to shoppers and payment providers"
+      },
+      "hire_today": "the founder, once at launch",
+      "fire": "the launch template",
+      "forces": {
+        "push": "a dispute was lost because the terms did not match",
+        "pull": "a list of pages with template text or broken links",
+        "habit": "set once, never read again",
+        "anxiety": "what if changing a policy upsets past buyers"
+      },
+      "little_hire": "quarterly, and after any policy change",
+      "watch": {
+        "metric": "policy pages missing, unedited or not linked at checkout, count",
+        "unit": "count",
+        "source": "site crawl of policy pages and checkout links"
+      },
+      "drives": {
+        "metric": "disputes lost citing terms, 90 days",
+        "unit": "count"
+      },
+      "business": "risk",
+      "now_after": "Example. Now: 2 of 4 policies have template text. After: 4 of 4 current and linked.",
+      "score": {
+        "money": 2,
+        "struggle": 2,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 5
+      },
+      "not_for": "a store whose lawyer reviews the policy pages every quarter"
+    },
+    {
+      "rank": 34,
+      "job": "When tracking tags fire before a shopper agrees to them in a state that requires consent, fix it, so I do not invite fines or a lawsuit",
+      "circumstance": "A California privacy demand letter hit a peer brand, and nobody knows if our tags wait",
+      "progress": {
+        "functional": "tags fire only after consent where the law requires it",
+        "emotional": "stop the vague legal worry",
+        "social": "look careful to partners and customers"
+      },
+      "hire_today": "a consent banner app set up once",
+      "fire": "the banner taken as proof",
+      "forces": {
+        "push": "privacy demand letters are rising",
+        "pull": "a test that shows which tags fire early",
+        "habit": "the banner is there, so we are fine",
+        "anxiety": "what if holding tags back hurts ad tracking and costs rise"
+      },
+      "little_hire": "monthly, and after tag changes",
+      "watch": {
+        "metric": "tags firing before consent on test page loads, share, per region",
+        "unit": "percent",
+        "source": "consent test log"
+      },
+      "drives": {
+        "metric": "privacy complaints or letters, 12 months",
+        "unit": "count"
+      },
+      "business": "risk",
+      "now_after": "Example. Now: 4 of 12 tags fire before consent. After: 0 of 12.",
+      "score": {
+        "money": 2,
+        "struggle": 2,
+        "satisfaction": 3,
+        "speed": 4,
+        "ease": 4
+      },
+      "not_for": "a store selling only where no consent law applies, with no plan to expand"
+    },
+    {
+      "rank": 35,
+      "job": "When a shopper who uses a keyboard or a screen reader cannot pick a size or open the cart, fix the few places that block them, so I do not lose their sale or get a demand letter",
+      "circumstance": "A demand letter hit a peer brand, and our size picker cannot be used without a mouse",
+      "progress": {
+        "functional": "the 5 key templates can be used to buy without a mouse or with a screen reader",
+        "emotional": "feel we did right by every shopper",
+        "social": "avoid a public complaint"
+      },
+      "hire_today": "nothing, or a developer after a letter arrives",
+      "fire": "waiting for the letter",
+      "forces": {
+        "push": "US demand letters cost more than the fix",
+        "pull": "the blocking issues grouped by template, with a developer brief",
+        "habit": "the site looks fine on screen",
+        "anxiety": "what if it turns into a big rebuild"
+      },
+      "little_hire": "quarterly, and after template changes",
+      "watch": {
+        "metric": "critical accessibility errors on the 5 key templates, count",
+        "unit": "count",
+        "source": "accessibility scan log"
+      },
+      "drives": {
+        "metric": "accessibility complaints or letters, 12 months",
+        "unit": "count"
+      },
+      "business": "risk",
+      "now_after": "Example. Now: 17 critical errors, most on the size picker and cart drawer. After: 0 on the 5 key templates.",
+      "score": {
+        "money": 2,
+        "struggle": 2,
+        "satisfaction": 4,
+        "speed": 3,
+        "ease": 3
+      },
+      "not_for": "a store audited for access in the last 6 months with no template changes since"
+    }
+  ]
+}
