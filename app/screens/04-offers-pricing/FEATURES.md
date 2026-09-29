@@ -228,6 +228,16 @@ Known gaps from round 0:
 | 10.7 | Promo window dates in a calendar: each promo window move carries its 4 dates (approve the offer, creative and email briefs a week later, the window's start and end) and exports them as an .ics file of all-day events from the action card. Bombas: holiday gifting and Black Friday to Cyber Monday | done |
 | 10.8 | Offer tests ship their settings: the first-order test exports the discount settings per arm (A today's code; B a free item with the order, the gift SKU with its value and cost, customers with no prior order, one use each, combines with shipping discounts only, the split), and the welcome code holdout exports the pop-up tool settings per arm. Rows a person types in; nothing is changed from here | done |
 | 10.9 | Your week counts what is ready to hand over: the week line now says how many of the first moves carry a file (price file, build list, settings or dates). Bombas: 2 of the 7 moves that start 4 Oct | done |
+| 10.10 | Round close: 1,120 screen tests run, only the 4 known site speed tests fail; the rank route returns 25 valid Bombas moves; 360 px clean on both brands; round10.png | done |
+
+### Round 10 note for Kevin (28 Sep 2026)
+
+1. When you approve a move, it now goes on the shared hand-off list to the team that does it (landing pages, creative, email, store admin, experiments), once, and the plan shows who has what.
+2. Moves now ship with the file the team needs: the 6 new pack prices for the cost test, the pack price, the bundles to build, the SKUs to exclude from a code, and the discount or pop-up settings for each arm.
+3. The promo windows export their 4 dates (approve, briefs due, start, end) as a calendar file.
+4. The same files travel inside the hand-off and the exported brief pack, so what you forward and what the team gets never differ.
+5. Your week now says how many of the first moves have a file ready: 2 of 7 for Bombas.
+6. Next (round 11): act on your review of rounds 1 to 10 when it lands; no lead or founder note for this screen was found this round. Contract asks still open: findings table, registry table, baseline kinds, data layer speed.
 
 ## Contract asks
 
@@ -369,7 +379,7 @@ Intelligems (threshold and price tests scored by profit per visitor), Rebuy (tie
 | Round | Features picked | Date | Notes |
 |---|---|---|---|
 | 0 | skeleton, 0.1 to 0.9 | 2026-09-28 | S3.9; screenshot round0.png |
-| 10 | 10.1 onward: hand-offs | 2026-09-28 | in progress |
+| 10 | 10.1 to 10.10: hand-offs, read back, price files, build files, files in hand-offs and briefs, window dates, settings, ready count, close | 2026-09-28 | screenshot round10.png |
 | 9 | 9.1 to 9.10: promo stakes this year, window agreement, year rules, stale inputs, finding history, whole drafts, snoozed, rule register, since last run, close | 2026-09-28 | screenshot round9.png (sample brand) |
 | 8 | 8.1 to 8.10: one money scale, exposure, your week, unlocks, start dates, baseline kinds, stake inputs, severity and wording, confidence, close | 2026-09-28 | screenshot round8.png |
 | 7 | 7.1 to 7.10: paid prices, attach rate, returns by code, test power, code leaks, returning-buyer codes, code depth, app blind spots, one read of orders, close | 2026-09-28 | screenshot round7.png (sample brand) |
