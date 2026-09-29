@@ -2937,6 +2937,39 @@ class Round8QuizAndSchedule(TempBrain):
         self.assertEqual(api.handle(Req(['schedule'], 'POST', body={'weekday': 'x'}))[0], 400)
 
 
+class Round9ProductSheets(TempBrain):
+    """Round 9 feature 7: product line fact sheets."""
+
+    def test_socks_sheet_from_records(self):
+        r = api.handle(Req(['products', 'sheets']))
+        self.assertIn('socks', r['lines'])
+        self.assertNotIn('plunge bralettes', r['lines'])
+        socks = next(s for s in r['sheets'] if s['line'] == 'socks')
+        self.assertGreaterEqual(socks['counts']['claims_strong'], 2)
+        self.assertEqual((socks['price']['min_usd'], socks['price']['max_usd']), (13.0, 215.0))
+        self.assertGreaterEqual(socks['counts']['review_products'], 4)
+        self.assertGreater(socks['counts']['reviews'], 50000)
+        self.assertTrue(4.0 < socks['average'] < 5.0)
+        self.assertIn('## Materials', socks['text'])
+        self.assertIn('merino wool', socks['text'])
+        self.assertIn('Listed from $13 to $215', socks['text'])
+        self.assertTrue(r['tokens'] and r['text'].count('# ') >= len(r['sheets']))
+        thin = next(s for s in r['sheets'] if s['counts']['claims_strong'] == 0)
+        self.assertIn('nothing site backed or approved names this line', thin['text'])
+        gift = next(s for s in r['sheets'] if s['line'] == 'giftcard')
+        self.assertIn('Denominations $25 to $300', gift['text'])
+        log = [json.loads(ln) for ln in (self.tmp / 'bombas' / 'reads.log.jsonl').read_text(encoding='utf-8').splitlines()]
+        self.assertTrue(any(x['reader'] == 'product-sheets' and x['section'] == 'products' for x in log))
+
+    def test_weak_claim_lands_under_proof(self):
+        rows = self.section('claims')
+        rows.append({'id': 'bombas.claims.socks_last_years', 'brand': 'bombas', 'section': 'claims', 'field': 'socks_last_years', 'text': 'Bombas socks last for years of daily wear.', 'tier': 'unverified', 'source': {'type': 'document', 'ref': 'n.md', 'captured_at': '2026-09-20'}})
+        self.write('claims', rows)
+        socks = next(s for s in api.handle(Req(['products', 'sheets']))['sheets'] if s['line'] == 'socks')
+        self.assertIn('bombas.claims.socks_last_years', [x['id'] for x in socks['needs_proof']])
+        self.assertIn('## Claims that still need proof', socks['text'])
+
+
 class Round9AnswersFromText(TempBrain):
     """Round 9 feature 6: answer open questions from a pasted document."""
 
@@ -3311,7 +3344,7 @@ class Round8SourcesTrustHistory(TempBrain):
 class Round4SecondBrand(unittest.TestCase):
     """Round 4 feature 2: plug and play. Every route answers for the example brain (7 records), unavailable never zero."""
 
-    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'], ['onepage'], ['brainmd', 'notes'], ['alerts'], ['glossary'], ['expiring'], ['feedback'], ['numbers'], ['proofs'], ['trust'], ['round'], ['brandbook'], ['quiz'], ['schedule'], ['sources'], ['records', 'csv'], ['trust', 'history'], ['contradict'], ['changes'], ['handoff'], ['ask', 'misses'],
+    ROUTES = [['overview'], ['master'], ['profile'], ['documents'], ['competitors'], ['coverage'], ['signals'], ['health'], ['conflicts'], ['questions'], ['ladders', 'proof'], ['selfaudit'], ['peaks'], ['visual'], ['newbrand'], ['visibility'], ['moves'], ['channels'], ['agentfile', 'endpoints'], ['brainmd'], ['trail'], ['assets'], ['ugc'], ['drift'], ['locks'], ['audiences'], ['walkthrough'], ['redlines'], ['owners'], ['onepage'], ['brainmd', 'notes'], ['alerts'], ['glossary'], ['expiring'], ['feedback'], ['numbers'], ['proofs'], ['trust'], ['round'], ['brandbook'], ['quiz'], ['schedule'], ['sources'], ['records', 'csv'], ['trust', 'history'], ['contradict'], ['changes'], ['handoff'], ['ask', 'misses'], ['products', 'sheets'],
               ['decisions'], ['flows'], ['claims'], ['site', 'diff'], ['parity'], ['contracts'], ['legal'], ['voice'], ['battlecards'], ['permissions'],
               ['export'], ['assumptions'], ['facts'], ['summaries'], ['changes'], ['learn'], ['report'], ['digest'], ['review'], ['bottlenecks'], ['audit']]
 

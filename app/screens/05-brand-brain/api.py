@@ -13,6 +13,7 @@ question, and accept or ignore on a proposed record. Nothing external.
   POST quiz/check               {text | answers, who}: pasted answers scored in code against the key
   GET|POST schedule             the founder round's day and hour, read and set
   GET  brandbook                the brand book from the records (markdown): identity, positioning, audiences, voice, glossary, red lines, locks, palette, facts
+  GET  products/sheets          one fact sheet per product line: claims by tier, price and packs, materials, reviews, objections, red lines
   GET  handoff                  every person handed the brain, with the quiz state (waiting, overdue, passed, failed)
   GET  handoff/pack             ?to=&role=: the pack for a person (one page, brand book, red lines, questions) without recording it
   POST handoff                  {to, role}: build the pack and record the hand-off on the team section
@@ -293,6 +294,9 @@ _mispec.loader.exec_module(misses)
 _afspec = importlib.util.spec_from_file_location("brand_brain_answersfrom", HERE / "answersfrom.py")
 answersfrom = importlib.util.module_from_spec(_afspec)
 _afspec.loader.exec_module(answersfrom)
+_shspec = importlib.util.spec_from_file_location("brand_brain_sheets", HERE / "sheets.py")
+sheets = importlib.util.module_from_spec(_shspec)
+_shspec.loader.exec_module(sheets)
 _rsspec = importlib.util.spec_from_file_location("brand_brain_restore", HERE / "restore.py")
 restore = importlib.util.module_from_spec(_rsspec)
 _rsspec.loader.exec_module(restore)
@@ -2309,6 +2313,11 @@ def handle(req):
             except (ValueError, OSError) as exc:
                 why_not = str(exc)[:120]
         return 201, dict(pack, record=rec["id"], handoff_row=row_id, handoff_row_error=why_not, next=f"Recorded. Send the file to {to}; their answers, scored with their name, close the hand-off. It is on the plan if nothing comes back in {handoff.QUIZ_DUE_DAYS} days." + (" The brief is on the shared hand-offs table too." if row_id else ""))
+    if req.method == "GET" and parts == ["products", "sheets"]:
+        res = sheets.build(brain, redlines.register(brain)["lines"], package_mod.tokens)
+        res.update(brand=brain.brand, today=brain.today.isoformat(), capability={"id": "BRN-C12", "autonomy": "agent_does"})
+        _log_read(brain, ["products", "claims", "objections"], req.arg("reader") or "product-sheets")
+        return res
     if req.method == "GET" and parts == ["brandbook"]:
         return brandbook_view(brain, req.arg("reader"))
     if req.method == "GET" and parts == ["round"]:
