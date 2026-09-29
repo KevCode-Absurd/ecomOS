@@ -50,6 +50,7 @@ class TempBrain(unittest.TestCase):
         for log in ('reads.log.jsonl', 'review/agent-reads.jsonl', 'review/trust.history.jsonl'):  # session logs a running server writes; never test state
             (self.tmp / 'bombas' / log).unlink(missing_ok=True)
         api.BRAIN_ROOT = self.tmp
+        api.HANDOFFS_PATH = self.tmp / 'handoffs.json'
 
     def tearDown(self):
         api.BRAIN_ROOT = None
@@ -57,6 +58,10 @@ class TempBrain(unittest.TestCase):
 
     def section(self, name):
         return json.loads((self.tmp / 'bombas' / f'{name}.json').read_text(encoding='utf-8'))
+
+    def handoffs_table(self):
+        p = self.tmp / 'handoffs.json'
+        return json.loads(p.read_text(encoding='utf-8')) if p.is_file() else []
 
     def write(self, name, rows):
         (self.tmp / 'bombas' / f'{name}.json').write_text(json.dumps(rows), encoding='utf-8')
@@ -2946,6 +2951,10 @@ class Round9Handoff(TempBrain):
         self.assertFalse([x for x in self.section('team') if x['field'] == 'handoff_maya_chen'])
         status, r = api.handle(Req(['handoff'], 'POST', body={'to': 'Maya Chen', 'role': 'agency writer'}))
         self.assertEqual((status, r['record']), (201, 'bombas.team.handoff_maya_chen'))
+        self.assertTrue(r['handoff_row'] and r['handoff_row'].startswith('HO-'), r.get('handoff_row_error'))
+        rows = self.handoffs_table()
+        self.assertEqual((rows[-1]['from_screen'], rows[-1]['to'], rows[-1]['kind'], rows[-1]['status'], rows[-1]['check_on']), ('05-brand-brain', 'copy', 'report', 'decided', '2026-10-05'))
+        self.assertIn('hand-off for Maya Chen', rows[-1]['draft'])
         hs = api.handle(Req(['handoff']))['handoffs']
         self.assertEqual((hs[0]['state'], hs[0]['due'], hs[0]['pct']), ('waiting', '2026-10-05', None))
         self.assertFalse([f for f in api.handle(Req(['audit']))['findings'] if f['rule_id'] == 'BRN-R39'])

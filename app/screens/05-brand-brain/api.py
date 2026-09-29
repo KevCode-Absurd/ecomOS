@@ -68,7 +68,7 @@ question, and accept or ignore on a proposed record. Nothing external.
   GET  trail?days=7             who read what: section reads by reader, facts handed to agents, private facts to public readers
   POST export/diff              {bundle | content_base64}: what changed since that export, record by record
   POST export/restore           {bundle | token, sections, dry_run}: put an export's records back for the sections named; a dry run first
-  POST export/diff/start|part|finish  the same export in 24 KB base64 parts (the server takes 32 KB a request)
+  POST export/diff/start|part|finish  the same export in 24 KB base64 parts; a fallback for a server with a small body limit (the app's is 8 MB since fa7d99d)
   POST review/draft             {text, channel, kind}: every check in one call and the route
   GET  overview                 T0 card, section table, tiles, insights, chart, ladders,
                                 open questions, review queue, conflicts
@@ -478,6 +478,27 @@ ROOM_SCREEN = {"today": "00-today", "research": "01-market-research", "avatars":
 
 
 DECISIONS_PATH = APP / "data" / "decisions.json"
+HANDOFFS_PATH = None  # tests point the shared hand-offs table at a temp file; the app uses data/handoffs.json next to the decisions log
+ROLE_TEAMS = (("writ", "copy"), ("copy", "copy"), ("design", "creative"), ("creativ", "creative"), ("agency", "creative"), ("email", "email"), ("cx", "cx"), ("support", "cx"), ("landing", "landing pages"), ("cro", "landing pages"))
+
+
+def _handoffs_table():
+    """The shared hand-offs table from the server module (events.md), loaded on first use; None when it cannot load."""
+    try:
+        spec = importlib.util.spec_from_file_location("ecomos_server_for_handoffs", APP / "server.py")
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return mod.Handoffs(HANDOFFS_PATH or (DECISIONS_PATH.parent / "handoffs.json"))
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def _team_for(role: str, fallback: str) -> str:
+    r = (role or "").lower()
+    for key, team in ROLE_TEAMS:
+        if key in r:
+            return team
+    return fallback
 
 
 def _decisions_path(req) -> Path:
@@ -2248,7 +2269,20 @@ def handle(req):
         errs = founder_put(brain, rec, "handoff", rec["text"][:160])
         if errs:
             return 400, {"error": "; ".join(errs)}
-        return 201, dict(pack, record=rec["id"], next=f"Recorded. Send the file to {to}; their answers, scored with their name, close the hand-off. It is on the plan if nothing comes back in {handoff.QUIZ_DUE_DAYS} days.")
+        # the shared hand-offs table (events.md): the receiving team's screen reads it by `to`
+        table, row_id, why_not = _handoffs_table(), None, None
+        if table is None:
+            why_not = "the shared hand-offs table could not load"
+        else:
+            draft = pack["text"] if len(pack["text"]) <= 19_000 else pack["text"][:18_900] + "\n\n(cut here; the full pack is on the brand brain screen, hand-off pack for " + to + ")"
+            try:
+                row_id = table.append({"from_screen": "05-brand-brain", "to": _team_for(role, to), "kind": "report", "title": f"Hand-off pack for {to}" + (f" ({role})" if role else ""),
+                                       "why": f"{to} is new on the brand; the pack is the brain in one page, the brand book, the red lines and 10 questions. Their answers, scored with their name, close it.",
+                                       "draft": draft, "win_rule": f"quiz at {handoff.PASS_PCT} percent or better", "stop_rule": f"no answers in {handoff.QUIZ_DUE_DAYS} days: chase or reassign",
+                                       "check_on": (brain.today + dt.timedelta(days=handoff.QUIZ_DUE_DAYS)).isoformat(), "capability": "BRN-C12", "owner": "person", "status": "decided", "finding_id": rec["id"]})["id"]
+            except (ValueError, OSError) as exc:
+                why_not = str(exc)[:120]
+        return 201, dict(pack, record=rec["id"], handoff_row=row_id, handoff_row_error=why_not, next=f"Recorded. Send the file to {to}; their answers, scored with their name, close the hand-off. It is on the plan if nothing comes back in {handoff.QUIZ_DUE_DAYS} days." + (" The brief is on the shared hand-offs table too." if row_id else ""))
     if req.method == "GET" and parts == ["brandbook"]:
         return brandbook_view(brain, req.arg("reader"))
     if req.method == "GET" and parts == ["round"]:
