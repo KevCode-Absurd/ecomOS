@@ -15,8 +15,9 @@ async def main(url):
     os.makedirs(STORE, exist_ok=True)
     idx, order = {}, []
     async with async_playwright() as p:
-        browser = await p.chromium.launch(executable_path=CHROME, headless=True, args=["--no-sandbox"])
-        ctx = await browser.new_context(user_agent=UA, viewport={"width": 393, "height": 851}, device_scale_factor=2.75, is_mobile=True, has_touch=True)
+        proxy = {"server": os.environ["HTTPS_PROXY"]} if os.environ.get("HTTPS_PROXY") else None  # sandboxed sessions reach the web through a proxy
+        browser = await p.chromium.launch(executable_path=CHROME, headless=True, args=["--no-sandbox"], proxy=proxy)
+        ctx = await browser.new_context(user_agent=UA, viewport={"width": 393, "height": 851}, device_scale_factor=2.75, is_mobile=True, has_touch=True, ignore_https_errors=bool(proxy))
         page = await ctx.new_page()
         pending = []
 

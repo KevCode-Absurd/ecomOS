@@ -3,7 +3,7 @@ import hashlib, json, os, shutil
 from urllib.parse import urlsplit, urlunsplit
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-STORE = os.path.join(ROOT, "store")
+STORE = os.environ.get("SPEED_LAB_STORE") or os.path.join(ROOT, "store")  # set SPEED_LAB_STORE to record or serve another capture
 VARIANTS = os.path.join(ROOT, "variants")
 ACTIVE = os.path.join(ROOT, "ACTIVE_VARIANT")
 

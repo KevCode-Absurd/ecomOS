@@ -18,7 +18,8 @@ RUN = os.path.join(ROOT, "ACTIVE_RUN")
 UA = "Mozilla/5.0 (Linux; Android 12; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36"
 
 INIT_JS = r"""
-window.__m = {lcp:[], cls:[], longtasks:[], fcp:null};
+window.__m = {lcp:[], cls:[], longtasks:[], fcp:null, hydrated:null};
+try{var __hp=setInterval(function(){var n=document.getElementById("__next");if(n&&Object.keys(n).some(function(k){return k.indexOf("__react")===0})){window.__m.hydrated=performance.now();clearInterval(__hp);}},100);}catch(e){}
 try{
 new PerformanceObserver(l=>{for(const e of l.getEntries()){window.__m.lcp.push({t:e.startTime,size:e.size,url:e.url||null,tag:e.element?e.element.tagName:null,text:e.element?(e.element.innerText||'').slice(0,60):null});}}).observe({type:'largest-contentful-paint',buffered:true});
 new PerformanceObserver(l=>{for(const e of l.getEntries()){if(!e.hadRecentInput)window.__m.cls.push(e.value);}}).observe({type:'layout-shift',buffered:true});
@@ -51,7 +52,7 @@ def read_log(run):
     return rows
 
 
-async def run(url, label, variant, runs):
+async def run(url, label, variant, runs, settle=6):
     os.makedirs(OUT, exist_ok=True)
     lock = open(os.path.join(ROOT, ".measure.lock"), "w")
     fcntl.flock(lock, fcntl.LOCK_EX)  # one measurement at a time; the replay server has one active variant
@@ -77,7 +78,7 @@ async def run(url, label, variant, runs):
             err = None
             try:
                 await page.goto(url, wait_until="load", timeout=180000)
-                await page.wait_for_timeout(6000)
+                await page.wait_for_timeout(settle * 1000)  # settle time after load; tags that fire on a timer need 25 s or more
             except Exception as e:
                 err = str(e)[:200]
             data = None
@@ -101,7 +102,7 @@ async def run(url, label, variant, runs):
                 "run": i + 1, "variant": variant or "base", "error": err,
                 "fcp_ms": data["m"]["fcp"], "lcp_ms": lcp["t"] if lcp else None, "lcp_el": lcp,
                 "dcl_ms": data["nav"]["dcl"] if data["nav"] else None, "load_ms": data["nav"]["load"] if data["nav"] else None,
-                "cls": round(sum(data["m"]["cls"]), 4), "long_tasks": len(data["m"]["longtasks"]), "tbt_est_ms": round(sum(max(0, lt["d"] - 50) for lt in data["m"]["longtasks"])),
+                "cls": round(sum(data["m"]["cls"]), 4), "hydrated_ms": data["m"].get("hydrated"), "tags_start_ms": min([x["start"] for x in data["res"] if any(t in x["name"] for t in ("googletagmanager.com/gtm.js", "klaviyo.js?company", "fbevents.js"))] or [None]) if data["res"] else None, "long_tasks": len(data["m"]["longtasks"]), "tbt_est_ms": round(sum(max(0, lt["d"] - 50) for lt in data["m"]["longtasks"])),
                 "requests_served": len(served), "misses": sum(1 for r in served if r["status"] == 404 and r["src"] == "miss"),
                 "wire_bytes": sum(r["wire"] for r in served), "by_type": by_type, "by_host": by_host,
                 "first_party_bytes": sum(v[1] for h, v in by_host.items() if h.endswith("gehnaindia.com")),
@@ -113,10 +114,10 @@ async def run(url, label, variant, runs):
             print(json.dumps({k: v for k, v in summary.items() if k not in ("by_type", "by_host", "lcp_el", "console_errors", "failed_requests")}), flush=True)
         await browser.close()
     med = {}
-    for k in ("fcp_ms", "lcp_ms", "dcl_ms", "load_ms", "cls", "tbt_est_ms", "wire_bytes", "first_party_bytes", "third_party_bytes", "requests_served"):
+    for k in ("fcp_ms", "lcp_ms", "dcl_ms", "load_ms", "hydrated_ms", "tags_start_ms", "cls", "tbt_est_ms", "wire_bytes", "first_party_bytes", "third_party_bytes", "requests_served"):
         vals = [r["summary"][k] for r in results if r["summary"][k] is not None]
         med[k] = statistics.median(vals) if vals else None
-    out = {"label": label, "variant": variant or "base", "url": url, "profile": "Pixel 5, slow 4G 1.6 Mbps 150 ms RTT, 4x CPU, cold cache", "runs": results, "median": med, "by_type_run1": results[0]["summary"]["by_type"], "by_host_run1": results[0]["summary"]["by_host"]}
+    out = {"label": label, "variant": variant or "base", "url": url, "profile": "Pixel 5, slow 4G 1.6 Mbps 150 ms RTT, 4x CPU, cold cache", "settle_s": settle, "store": os.environ.get("SPEED_LAB_STORE") or "store", "runs": results, "median": med, "by_type_run1": results[0]["summary"]["by_type"], "by_host_run1": results[0]["summary"]["by_host"]}
     json.dump(out, open(os.path.join(OUT, f"{label}.json"), "w"), indent=1)
     set_active(None)
     fcntl.flock(lock, fcntl.LOCK_UN)
@@ -126,6 +127,6 @@ async def run(url, label, variant, runs):
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("label"); ap.add_argument("--variant", default=None); ap.add_argument("--runs", type=int, default=3); ap.add_argument("--url", default="https://www.gehnaindia.com/")
+    ap.add_argument("label"); ap.add_argument("--variant", default=None); ap.add_argument("--runs", type=int, default=3); ap.add_argument("--url", default="https://www.gehnaindia.com/"); ap.add_argument("--settle", type=int, default=6, help="seconds to wait after load")
     a = ap.parse_args()
-    asyncio.run(run(a.url, a.label, a.variant, a.runs))
+    asyncio.run(run(a.url, a.label, a.variant, a.runs, a.settle))
