@@ -15,3 +15,6 @@ Two agents, same offline mirror of the Gehna homepage, same harness, same web bu
 Result: Arm A slightly ahead. Both found the same 7 core fixes; Arm A added inlining the render-blocking CSS and ordered Rocket Loader before the fonts. The idea bank matched 4 of Arm B's 8 fixes, all of which its own audit had also found; Arm B challenged 6 bank ideas as not applicable here. On this page the bank was confirmation, not discovery.
 
 Harness notes: absolute numbers are kinder than the live site (localhost, HTTP/1.1, no server time); deltas are fair. The replay server initially did not read POST bodies, which produced random console errors; it was fixed and every variant was re-measured on the corrected server. First-pass numbers are archived in speed_lab/results/first-pass/.
+
+
+Retest on 12 Oct 2026 after Gehna shipped the font and icon fixes: `RETEST-2026-10-12.md`. Load 15.5 s to 1.4 s, interactive 17.7 s to 10.5 s, Rocket Loader is now the limiter.
